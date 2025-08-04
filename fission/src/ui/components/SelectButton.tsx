@@ -73,7 +73,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, 
                 "Select the parent node for this object to follow. Click the button below, then click a part of the robot or field."
             )}
             <Button
-                style={{ background: color }}
+                sx={{ bgcolor: color }}
                 onClick={() => {
                     // send selecting state
                     if (selecting) {

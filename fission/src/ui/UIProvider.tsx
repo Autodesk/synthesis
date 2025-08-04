@@ -3,8 +3,8 @@ import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
-import type { ReactElement, ReactNode } from "react"
-import { useCallback, useState } from "react"
+import type { FunctionComponent, ReactNode } from "react"
+import { useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import {
     CloseType,
@@ -21,14 +21,18 @@ import {
     type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
+import type { PanelImplProps } from "./components/Panel"
+import type { ModalImplProps } from "./components/Modal"
 
 export type UIProviderProps = {
     children?: ReactNode
 }
 
+// biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
-    const [modal, setModal] = useState<Modal<unknown> | undefined>(undefined)
-    const [panels, setPanels] = useState<Panel<unknown>[]>([])
+    const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
+    const [panels, setPanels] = useState<Panel<any, any>[]>([])
+    const [_, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
@@ -37,7 +41,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         hideCancel: false,
         acceptText: "Accept",
         cancelText: "Cancel",
-    } as UIScreenProps
+    } as UIScreenProps<any>
 
     const DEFAULT_MODAL_PROPS = {
         ...DEFAULT_PROPS,
@@ -47,13 +51,14 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const DEFAULT_PANEL_PROPS = {
         ...DEFAULT_PROPS,
         position: "right",
-    } as PanelProps
+    } as PanelProps<any>
 
     const openModal: OpenModalFn = useCallback(
-        <T,>(
-            content: ReactElement,
-            parent?: UIScreen<T>,
-            props: Omit<ModalProps, "type" | "configured"> &
+        <T, P>(
+            content: FunctionComponent<ModalImplProps<T, P>>,
+            customProps: P,
+            parent?: UIScreen<any, any>,
+            props: Omit<ModalProps<P>, "type" | "configured" | "custom"> &
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS
         ) => {
             const id = uuidv4()
@@ -64,8 +69,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 props: {
                     ...DEFAULT_MODAL_PROPS,
                     ...props,
+                    custom: customProps,
                 },
-            } as Modal<T>
+            } as Modal<T, P>
             modal?.onClose?.(CloseType.Overwrite)
 
             newModal.props.configured = false
@@ -82,17 +88,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             newModal.onCancel = new UICallback()
             if (props.onCancel) newModal.onCancel.setUserDefinedFunc(props.onCancel)
 
-            setModal(newModal as Modal<unknown>)
+            setModal(newModal as Modal<any, any>)
             return id
         },
         [modal]
     )
 
     const openPanel: OpenPanelFn = useCallback(
-        <T,>(
-            content: ReactElement,
-            parent?: UIScreen<T>,
-            props: Omit<PanelProps, "type" | "configured"> &
+        <T, P>(
+            content: FunctionComponent<PanelImplProps<T, P>>,
+            customProps: P,
+            parent?: UIScreen<any, any>,
+            props: Omit<PanelProps<P>, "type" | "configured" | "custom"> &
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PANEL_PROPS
         ) => {
             const id = uuidv4()
@@ -103,8 +110,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 props: {
                     ...DEFAULT_PANEL_PROPS,
                     ...props,
+                    custom: customProps,
                 },
-            } as Panel<T>
+            } as Panel<T, P>
 
             panel.props.configured = false
 
@@ -120,13 +128,13 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             panel.onCancel = new UICallback()
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
-            setPanels([...panels, panel as Panel<unknown>])
+            setPanels([...panels, panel as Panel<any, any>])
             return id
         },
         [panels]
     )
 
-    const closeCallbacks = <T,>(elem: Panel<T> | Modal<T>, closeType: CloseType) => {
+    const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
         elem.onClose?.(closeType)
         switch (closeType) {
             case CloseType.Accept: {
@@ -143,8 +151,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     }
 
     const closeModal = useCallback(
-        <T,>(closeType: CloseType) => {
-            if (modal) closeCallbacks<T>(modal as Modal<T>, closeType)
+        <T, P>(closeType: CloseType) => {
+            if (modal) closeCallbacks<T, P>(modal as Modal<T, P>, closeType)
             setModal(undefined)
         },
         [modal]
@@ -152,11 +160,12 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
     const closePanel = useCallback((id: string, closeType: CloseType) => {
         setPanels(p => {
-            const panel = p.find((p: Panel<unknown>) => p.id === id)
+            const panel = p.find((p: Panel<any, any>) => p.id === id)
             if (panel) closeCallbacks(panel, closeType)
-            return p.filter((pnl: Panel<unknown>) => pnl.id !== id)
+            return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
         })
     }, [])
+    // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
     const snackbarAction = useCallback(
         (snackbarId: SnackbarKey) => (
@@ -188,7 +197,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         [enqueueSnackbar]
     )
 
-    const configureScreen: ConfigureScreenFn = (screen, props, callbacks) => {
+    const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {
         type PropKey = keyof typeof screen.props
         type PropValue = (typeof screen.props)[keyof typeof screen.props]
 
@@ -201,7 +210,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
         if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
         if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
-    }
+
+        refresh()
+    }, [])
 
     return (
         <UIContext.Provider

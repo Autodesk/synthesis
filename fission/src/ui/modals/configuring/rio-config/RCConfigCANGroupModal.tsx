@@ -15,7 +15,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
-const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const RCConfigCANGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
     const [name, setName] = useState<string>("")
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
@@ -46,7 +46,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             }
         }
         const onCancel = () => {
-            openModal(<RoboRIOModal />, modal)
+            openModal(RoboRIOModal, undefined, modal)
         }
 
         configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })

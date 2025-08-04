@@ -21,7 +21,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
-import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -36,9 +36,9 @@ import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeRead
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SimConfigData } from "@/systems/simulation/SimConfigShared"
-import React from "react"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 const DEBUG_BODIES = false
 
@@ -63,39 +63,6 @@ export function setSpotlightAssembly(assembly: MirabufSceneObject) {
 export function getSpotlightAssembly(): MirabufSceneObject | undefined {
     return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
 }
-
-/**
- * Interface for UI actions that can be registered with MirabufSceneObject
- */
-interface UIActionHandlers {
-    openMovePanel?: (assembly: MirabufSceneObject) => void
-    openConfigurePanel?: (assembly: MirabufSceneObject) => void
-    openAutoTestPanel?: () => void
-}
-
-/**
- * Global registry for UI action handlers
- * This allows React components to register handlers with MirabufSceneObject
- */
-
-class UIActionRegistry {
-    private static handlers: UIActionHandlers = {}
-
-    public static registerHandlers(handlers: UIActionHandlers): void {
-        this.handlers = { ...this.handlers, ...handlers }
-    }
-
-    public static getHandlers(): UIActionHandlers {
-        return this.handlers
-    }
-
-    public static clearHandlers(): void {
-        this.handlers = {}
-    }
-}
-
-// Export the registry so UI components can use it
-export { UIActionRegistry }
 
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _assemblyName: string
@@ -854,44 +821,34 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             items: [],
         }
 
-        const uiHandlers = UIActionRegistry.getHandlers()
-
         data.items.push(
             {
                 name: "Move",
-                func: () => {
-                    if (uiHandlers.openMovePanel) {
-                        uiHandlers.openMovePanel(this)
-                    } else {
-                        // Fallback to basic panel opening
-                        globalOpenPanel(React.createElement(ConfigurePanel))
-                    }
+                customProps: {
+                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configMode: ConfigMode.MOVE,
+                    selectedAssembly: this,
                 },
+                screen: ConfigurePanel,
+                type: "panel",
             },
             {
                 name: "Configure",
-                func: () => {
-                    if (uiHandlers.openConfigurePanel) {
-                        uiHandlers.openConfigurePanel(this)
-                    } else {
-                        // Fallback to basic panel opening
-                        globalOpenPanel(React.createElement(ConfigurePanel))
-                    }
+                customProps: {
+                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configMode: undefined,
+                    selectedAssembly: this,
                 },
+                screen: ConfigurePanel,
+                type: "panel",
             }
         )
 
         if (this.brain?.brainType == "wpilib") {
             data.items.push({
                 name: "Auto Testing",
-                func: () => {
-                    if (uiHandlers.openAutoTestPanel) {
-                        uiHandlers.openAutoTestPanel()
-                    } else {
-                        // Fallback to basic panel opening
-                        globalOpenPanel(React.createElement(AutoTestPanel))
-                    }
-                },
+                screen: AutoTestPanel,
+                type: "panel",
             })
         }
 
@@ -901,7 +858,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 data.items.push({
                     name: "Camera: Unfocus",
                     func: () => {
-                        cameraControls.focusProvider = undefined
+                        cameraControls.unfocus()
                     },
                 })
 

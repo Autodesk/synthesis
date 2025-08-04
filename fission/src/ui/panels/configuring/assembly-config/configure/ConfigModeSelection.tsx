@@ -1,6 +1,6 @@
 import type React from "react"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import { ConfigMode } from "../ConfigTypes"
+import type { ConfigMode } from "../ConfigTypes"
 
 export class ConfigModeSelectionOption extends SelectMenuOption {
     configMode: ConfigMode
@@ -14,9 +14,12 @@ export class ConfigModeSelectionOption extends SelectMenuOption {
 interface ConfigModeSelectionProps {
     onModeSelected: (mode?: ConfigMode) => void
     modes: ConfigModeSelectionOption[]
+    configMode?: ConfigMode
 }
 
-const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ onModeSelected, modes }) => {
+const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ onModeSelected, modes, configMode }) => {
+    const defaultSelected = modes.find(mode => mode.configMode === configMode)
+
     return (
         <SelectMenu
             options={modes}
@@ -26,7 +29,7 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ onModeSelecte
             defaultHeaderText="Select a Configuration Mode"
             // TODO:
             // indentation={1}
-            defaultSelectedOption={undefined}
+            defaultSelectedOption={defaultSelected}
         />
     )
 }

@@ -22,7 +22,6 @@ import {
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import Label from "@/ui/components/Label"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -305,11 +304,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             />
 
             {/* Checkbox for showing intake zone indicator at all times */}
-            <Checkbox
-                label="Show intake zone indicator always"
-                checked={showZoneAlways}
-                onClick={setShowZoneAlways}
-            />
+            <Checkbox label="Show intake zone indicator always" checked={showZoneAlways} onClick={setShowZoneAlways} />
             {gizmoComponent}
             {Spacer(10)}
             <Button

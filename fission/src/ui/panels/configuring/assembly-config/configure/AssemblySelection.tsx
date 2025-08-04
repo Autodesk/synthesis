@@ -10,6 +10,7 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type { ConfigurationType } from "../ConfigTypes"
+import { ConfigurePanelCustomProps } from "../ConfigurePanel"
 
 interface AssemblySelectionProps {
     configurationType: ConfigurationType
@@ -35,7 +36,7 @@ function makeSelectionOption(configurationType: ConfigurationType, assembly: Mir
     )
 }
 
-const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void>> = ({
+const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, ConfigurePanelCustomProps>> = ({
     panel,
     configurationType,
     onAssemblySelected,
@@ -75,7 +76,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void>>
                 update()
             }}
             onAddClicked={() => {
-                openPanel(<ImportMirabufPanel />, undefined)
+                openPanel(ImportMirabufPanel, undefined, undefined)
                 closePanel(panel!.id, CloseType.Overwrite)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}

@@ -5,6 +5,7 @@ import { UIProvider } from "@/ui/UIProvider"
 import { Panel } from "@/ui/components/Panel"
 import { CloseType, PanelPosition, UIScreen } from "@/ui/helpers/UIProviderHelpers"
 import { UICallback } from "@/ui/UICallbacks"
+import React from "react"
 
 describe("MatchModeConfigPanel", () => {
     // Mock console methods to suppress output during tests
@@ -39,13 +40,14 @@ describe("MatchModeConfigPanel", () => {
         // Create mock context provider
         const panel = {
             id: "match-mode",
-            content: <MatchModeConfigPanel />,
+            content: MatchModeConfigPanel,
             props: {
                 type: "panel" as const,
                 configured: true,
                 position: "center" as PanelPosition,
+                custom: {},
             },
-            parent: {} as UIScreen<unknown>,
+            parent: {} as UIScreen<unknown, unknown>,
             onClose: new UICallback<[CloseType], void>(),
             onCancel: new UICallback<[void], void>(),
             onAccept: new UICallback<[unknown], void>(),
@@ -54,7 +56,7 @@ describe("MatchModeConfigPanel", () => {
         return render(
             <UIProvider>
                 <Panel panel={panel} parent={undefined}>
-                    {panel.content}
+                    {React.createElement(panel.content)}
                 </Panel>
             </UIProvider>
         ).container

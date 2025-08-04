@@ -5,7 +5,6 @@ import beep from "@/assets/sound-files/beep.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
-import React from "react"
 import RobotDimensionTracker from "./RobotDimensionTracker"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import {
@@ -115,7 +114,7 @@ class MatchMode {
         SoundPlayer.play(MatchEnd)
         clearInterval(this._intervalId as number)
         this.setMatchModeType(MatchModeType.MATCH_ENDED)
-        globalOpenModal?.(React.createElement(MatchResultsModal), undefined, {
+        globalOpenModal?.(MatchResultsModal, undefined, undefined, {
             allowClickAway: false,
             hideCancel: true,
             hideAccept: true,

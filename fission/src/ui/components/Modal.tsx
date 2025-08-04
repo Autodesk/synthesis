@@ -1,29 +1,25 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
-import React, { useEffect, useState, type ReactElement } from "react"
+import React, { type ReactElement } from "react"
 import type { Modal as ModalType, Panel as PanelType } from "../helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 
-export type ModalImplProps<T> = Partial<{
-    modal: ModalType<T>
-    parent: PanelType<T> | ModalType<T>
+export type ModalImplProps<T, P> = Partial<{
+    modal: ModalType<T, P>
+    parent: PanelType<T, P> | ModalType<T, P>
 }>
 
-interface ModalElementProps<T> {
-    children?: ReactElement<ModalImplProps<T>>
-    modal: ModalType<T>
-    parent?: ModalType<T> | PanelType<T>
+// biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
+interface ModalElementProps<T, P> {
+    children?: ReactElement<ModalImplProps<any, any>>
+    modal: ModalType<T, P>
+    parent?: ModalType<any, any> | PanelType<any, any>
 }
+// biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
-export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => {
+export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>) => {
     const { closeModal } = useUIContext()
-    const props = modal.props
-    const [_, refresh] = useState(false)
-    console.log(props.configured)
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: to refresh on configure
-    useEffect(() => {
-        refresh(x => !x)
-    }, [modal.props.configured, modal.props.hideAccept])
+    const props = modal.props
 
     return (
         <MUIModal

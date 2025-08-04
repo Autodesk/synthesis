@@ -13,7 +13,7 @@ import RoboRIOModal from "../RoboRIOModal"
 import Label from "@/ui/components/Label"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
-const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const RCConfigEncoderModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
     const [_name, setName] = useState<string>("")
 
@@ -47,7 +47,7 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             if (selectedDevice && selectedStimulus && brain)
                 brain.addSimInput(new SimEncoderInput(selectedDevice, selectedStimulus))
         }
-        const onCancel = () => openModal(<RoboRIOModal />, modal)
+        const onCancel = () => openModal(RoboRIOModal, undefined, modal)
 
         configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
     }, [brain, selectedDevice, selectedStimulus, openModal, modal])

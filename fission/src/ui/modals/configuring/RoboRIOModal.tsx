@@ -5,7 +5,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import RCCreateDeviceModal from "./rio-config/RCCreateDeviceModal"
 import { useEffect } from "react"
 
-const RoboRIOModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const RoboRIOModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
     useEffect(() => {
         configureScreen(modal!, { title: "RoboRIO Configuration" }, {})
@@ -14,7 +14,7 @@ const RoboRIOModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     return (
         <FormControlLabel
             label="cbdbcc,ds,vsdv"
-            control={<Button value="Create Device" onClick={() => openModal(<RCCreateDeviceModal />)} />}
+            control={<Button value="Create Device" onClick={() => openModal(RCCreateDeviceModal, undefined)} />}
         />
     )
 }

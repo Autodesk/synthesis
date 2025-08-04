@@ -36,7 +36,7 @@ const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: strin
     )
 }
 
-export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+export const ThemeEditorPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const {
         mode,
         setMode,

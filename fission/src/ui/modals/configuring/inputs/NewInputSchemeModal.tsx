@@ -14,7 +14,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 
-const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openPanel, configureScreen, closeModal, addToast } = useUIContext()
     const { setSelectedScheme, setConfigurationType } = useStateContext()
 
@@ -59,7 +59,15 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
 
             setConfigurationType("INPUTS")
             setSelectedScheme(scheme)
-            openPanel(<ConfigurePanel />, modal)
+            openPanel(
+                ConfigurePanel,
+                {
+                    configMode: undefined,
+                    selectedAssembly: undefined,
+                },
+                modal,
+                { position: "left" }
+            )
         }
 
         const onCancel = () => {

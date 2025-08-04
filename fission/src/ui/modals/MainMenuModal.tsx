@@ -6,12 +6,16 @@ import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { useLayoutEffect } from "react"
 import { useStateContext } from "../helpers/StateProviderHelpers"
 
-const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback: () => void }> = ({
-    modal,
-    startSingleplayerCallback,
-}) => {
+interface MainMenuCustomProps {
+    startSingleplayerCallback: () => void
+}
+
+const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ modal }) => {
     const { configureScreen, closeModal } = useUIContext()
     const { setIsMainMenuOpen } = useStateContext()
+
+    const { startSingleplayerCallback } = modal!.props.custom!
+
     useLayoutEffect(() => {
         setIsMainMenuOpen(true)
         configureScreen(modal!, { title: "Welcome", hideAccept: true, hideCancel: true, allowClickAway: false }, {})

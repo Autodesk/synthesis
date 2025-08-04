@@ -43,7 +43,7 @@ const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }
     color: winnerColor,
 }))
 
-const MatchResultsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { configureScreen, closeModal } = useUIContext()
 
     const { message, color } = getMatchWinner()

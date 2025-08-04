@@ -23,7 +23,7 @@ const VisuallyHiddenInput = styled("input")({
     width: 1,
 })
 
-const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
     const { openPanel, closeModal, configureScreen } = useUIContext()
 
@@ -38,7 +38,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     }
 
     useEffect(() => {
-        const onCancel = () => openPanel(<ImportMirabufPanel />, undefined)
+        const onCancel = () => openPanel(ImportMirabufPanel, undefined, undefined)
 
         const onBeforeAccept = async () => {
             if (selectedFile && miraType !== undefined) {
@@ -55,7 +55,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                         if (x) {
                             World.sceneRenderer.registerSceneObject(x)
 
-                            openPanel(<InitialConfigPanel />, modal)
+                            openPanel(InitialConfigPanel, undefined, modal)
                             closeModal(CloseType.Overwrite)
                         }
                     })

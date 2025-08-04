@@ -4,7 +4,7 @@ import { Button, MenuItem, Select, Stack } from "@mui/material"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { PanelImplProps } from "@/ui/components/Panel"
 
-const DriverStationPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const DriverStationPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [enabled, setEnabled] = useState(false)
 

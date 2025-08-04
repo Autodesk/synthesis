@@ -1,6 +1,8 @@
 import { VariantType } from "notistack"
-import { createContext, ReactElement, ReactNode, useContext } from "react"
+import { createContext, FunctionComponent, ReactNode, useContext } from "react"
 import { UICallback } from "../UICallbacks"
+import { ModalImplProps } from "../components/Modal"
+import { PanelImplProps } from "../components/Panel"
 
 export enum CloseType {
     Accept = 0,
@@ -18,19 +20,20 @@ export interface UIScreenCallbacks<T> {
 /**
  *  Props for generic UIScreen
  */
-export interface UIScreenProps {
+export interface UIScreenProps<P> {
     configured: boolean
     title?: string
     hideCancel?: boolean
     hideAccept?: boolean
     cancelText?: string
     acceptText?: string
+    custom: P
 }
 
 /**
  * Modal-specific props for creating a modal
  */
-export interface ModalProps extends UIScreenProps {
+export interface ModalProps<P> extends UIScreenProps<P> {
     // required for PanelProps to not satisfy ModalProps
     type: "modal"
     allowClickAway?: boolean
@@ -39,19 +42,18 @@ export interface ModalProps extends UIScreenProps {
 /**
  * Panel-specific props for creating a panel
  */
-export interface PanelProps extends UIScreenProps {
+export interface PanelProps<P> extends UIScreenProps<P> {
     type: "panel"
     position: PanelPosition
 }
 
-/**
- * UIScreen type
- */
-export interface UIScreen<T> {
+// biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
+
+export interface UIScreen<T, P> {
     id: string
-    parent?: UIScreen<unknown>
-    content: ReactElement
-    props: ModalProps | PanelProps
+    parent?: UIScreen<any, any>
+    content: FunctionComponent
+    props: ModalProps<P> | PanelProps<P>
     onClose: UICallback<[CloseType], void>
     onCancel: UICallback<[], void>
     onAccept: UICallback<[T], void>
@@ -69,41 +71,46 @@ export type PanelPosition =
     | "bottom"
     | "bottom-right"
 
-export interface Modal<T> extends UIScreen<T> {
-    props: ModalProps
+export interface Modal<T, P> extends UIScreen<T, P> {
+    props: ModalProps<P>
 }
 
-export interface Panel<T> extends UIScreen<T> {
-    props: PanelProps
+export interface Panel<T, P> extends UIScreen<T, P> {
+    props: PanelProps<P>
 }
 
-export type OpenModalFn = <T>(
-    contents: ReactElement,
-    parent?: UIScreen<T>,
-    props?: Omit<ModalProps, "type" | "configured">
+export type OpenModalFn = <T, P>(
+    contents: FunctionComponent<ModalImplProps<T, P>>,
+    customProps: P,
+    parent?: UIScreen<any, any>,
+    props?: Omit<ModalProps<P>, "type" | "configured" | "custom">
 ) => string
-export type OpenPanelFn = <T>(
-    contents: ReactElement,
-    parent?: UIScreen<T>,
-    props?: Omit<PanelProps, "type" | "configured">
+export type OpenPanelFn = <T, P>(
+    contents: FunctionComponent<PanelImplProps<T, P>>,
+    customProps: P,
+    parent?: UIScreen<any, any>,
+    props?: Omit<PanelProps<P>, "type" | "configured" | "custom">
 ) => string
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: ReactNode[]) => void
-// biome-ignore lint/suspicious/noExplicitAny: T necessarily must extend any type of UIScreen
-export type ConfigureScreenFn = <T extends UIScreen<any>>(
+export type ConfigureScreenFn = <T extends UIScreen<any, any>>(
     screen: T,
-    props: T extends Panel<infer _> ? Partial<Omit<PanelProps, "configured">> : Partial<Omit<ModalProps, "configured">>,
-    callbacks: T extends Modal<infer S>
-        ? Omit<Partial<UIScreenCallbacks<S>>, "onAccept">
-        : T extends Panel<infer S>
-          ? Omit<Partial<UIScreenCallbacks<S>>, "onAccept">
+    props: T extends Panel<infer _1, infer P>
+        ? Partial<Omit<PanelProps<P>, "configured">>
+        : T extends Modal<infer _, infer P>
+          ? Partial<Omit<ModalProps<P>, "configured">>
+          : never,
+    callbacks: T extends Modal<infer S, infer _>
+        ? Partial<Omit<UIScreenCallbacks<S>, "onAccept">>
+        : T extends Panel<infer S, infer _>
+          ? Partial<Omit<UIScreenCallbacks<S>, "onAccept">>
           : never
 ) => void
 
 export type UIContextProps = {
-    modal?: Modal<unknown>
-    panels: Panel<unknown>[]
+    modal?: Modal<any, any>
+    panels: Panel<any, any>[]
     openModal: OpenModalFn
     openPanel: OpenPanelFn
     closeModal: CloseModalFn
@@ -112,10 +119,17 @@ export type UIContextProps = {
     configureScreen: ConfigureScreenFn
 }
 
+// biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
+
 export const UIContext = createContext<UIContextProps>({
     panels: [],
-    openModal: (_content, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
-    openPanel: (_content, _parent, _props = { hideAccept: false, hideCancel: false, position: "center" }) => "",
+    openModal: (_content, _customProps, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
+    openPanel: (
+        _content,
+        _customProps,
+        _parent,
+        _props = { hideAccept: false, hideCancel: false, position: "center" }
+    ) => "",
     closeModal: _closeType => {},
     closePanel: (_id, _closeType) => {},
     addToast: (_variant, ..._msg) => "",

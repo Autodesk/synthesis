@@ -61,7 +61,7 @@ function affect(
     }
 }
 
-const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const PokerPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [punch, setPunch] = useState(PUNCH_DEFAULT)
     const [punchForce, setPunchForce] = useState(PUNCH_FORCE_DEFAULT)

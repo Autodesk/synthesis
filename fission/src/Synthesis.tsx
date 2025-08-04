@@ -31,24 +31,21 @@ function Synthesis() {
             window.close()
             return
         }
-        globalOpenModal(
-            <MainMenuModal
-                startSingleplayerCallback={() => {
-                    World.initWorld()
+        const startSingleplayerCallback = () => {
+            World.initWorld()
 
-                    if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
-                        setConsentPopupDisable(false)
-                    }
+            if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
+                setConsentPopupDisable(false)
+            }
 
-                    const mainLoop = () => {
-                        mainLoopHandle.current = requestAnimationFrame(mainLoop)
-                        World.updateWorld()
-                    }
+            const mainLoop = () => {
+                mainLoopHandle.current = requestAnimationFrame(mainLoop)
+                World.updateWorld()
+            }
 
-                    mainLoop()
-                }}
-            />
-        )
+            mainLoop()
+        }
+        globalOpenModal(MainMenuModal, { startSingleplayerCallback })
         // Cleanup
         return () => {
             // TODO: Teardown literally everything

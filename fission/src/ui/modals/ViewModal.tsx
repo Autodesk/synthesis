@@ -6,7 +6,7 @@ import { useUIContext } from "../helpers/UIProviderHelpers"
 
 type ViewType = "Orbit" | "Freecam" | "Overview" | "Driver Station"
 
-const ViewModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const ViewModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
     const [view, setView] = useState<ViewType>("Orbit")
 

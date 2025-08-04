@@ -20,7 +20,6 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
-import React from "react"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 
 const CLEAR_COLOR = 0x121212
@@ -539,7 +538,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel(React.createElement(ImportMirabufPanel))
+                    globalOpenPanel(ImportMirabufPanel, undefined)
                 },
             })
         }

@@ -8,6 +8,7 @@ import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import WiringPanel from "@/ui/panels/simulation/WiringPanel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import Checkbox from "@/ui/components/Checkbox"
+import { ConfigurePanelCustomProps } from "../ConfigurePanel"
 
 type SimulationInterfaceProps = {
     selectedAssembly: MirabufSceneObject
@@ -16,7 +17,7 @@ type SimulationInterfaceProps = {
 export default function SimulationInterface({
     selectedAssembly,
     panel,
-}: SimulationInterfaceProps & PanelImplProps<void>) {
+}: SimulationInterfaceProps & PanelImplProps<void, ConfigurePanelCustomProps>) {
     const { openPanel, closePanel } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(
         PreferencesSystem.getGlobalPreference("SimAutoReconnect")
@@ -36,7 +37,7 @@ export default function SimulationInterface({
                 className="self-center"
                 onClick={() => {
                     setSpotlightAssembly(selectedAssembly)
-                    openPanel(<WiringPanel />, panel)
+                    openPanel(WiringPanel, undefined, panel)
                 }}
             >
                 Wiring Panel
@@ -44,7 +45,7 @@ export default function SimulationInterface({
             <Button
                 className="self-center"
                 onClick={() => {
-                    openPanel(<AutoTestPanel />, panel)
+                    openPanel(AutoTestPanel, undefined, panel)
                     if (panel) closePanel(panel.id, CloseType.Overwrite)
                 }}
             >

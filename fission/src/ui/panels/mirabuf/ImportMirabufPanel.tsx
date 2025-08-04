@@ -112,7 +112,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         World.sceneRenderer.registerSceneObject(x)
                         progressHandle.done()
 
-                        globalOpenPanel(<InitialConfigPanel />)
+                        globalOpenPanel(InitialConfigPanel, undefined)
                     } else {
                         progressHandle.fail()
                     }
@@ -130,7 +130,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
         })
 }
 
-const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
+const ImportMirabufPanel: React.FC<PanelImplProps<void, void>> = ({ panel, parent }) => {
     const { addToast, closePanel, openModal, configureScreen } = useUIContext()
     const { unconfirmedImport, configurationType, setConfigurationType } = useStateContext()
 
@@ -239,7 +239,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
             const status = new ProgressHandle(info.displayName)
             status.update("Downloading from Synthesis...", 0.05)
 
-            MirabufCachingService.cacheRemote(info.src, type)
+            MirabufCachingService.cacheRemote(info.src, type, info.displayName)
                 .then(cacheInfo => {
                     if (cacheInfo) {
                         spawnCachedMira(cacheInfo, type, status)
@@ -259,7 +259,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
         const status = new ProgressHandle(info.displayName)
         status.update("Downloading from Synthesis...", 0.05)
 
-        MirabufCachingService.cacheRemote(info.src, type)
+        MirabufCachingService.cacheRemote(info.src, type, info.displayName)
             .then(cacheInfo => {
                 if (cacheInfo) {
                     status.done()
@@ -517,7 +517,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
             <Box alignSelf={"center"}>
                 <Button
                     onClick={() => {
-                        openModal(<ImportLocalMirabufModal />)
+                        openModal(ImportLocalMirabufModal, undefined)
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                 >

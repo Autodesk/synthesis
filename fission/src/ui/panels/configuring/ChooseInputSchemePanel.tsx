@@ -14,7 +14,7 @@ import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 
-const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { openModal, openPanel, closePanel, configureScreen } = useUIContext()
     const { setSelectedScheme, setConfigurationType } = useStateContext()
 
@@ -60,11 +60,11 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     brainIndex={brainIndex}
                     onSelect={() => closePanel(panel!.id, CloseType.Accept)}
                     onEdit={() => {
-                        openPanel(<ConfigurePanel />)
+                        openPanel(ConfigurePanel, {})
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                     onCreateNew={() => {
-                        openModal(<NewInputSchemeModal />)
+                        openModal(NewInputSchemeModal, undefined)
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                 />
