@@ -34,7 +34,7 @@ class SchemeSelectionOption extends SelectMenuOption {
 
 const ConfigureInputsInterface: React.FC = () => {
     const { openModal } = useUIContext()
-    const { selectedScheme: currentSelectedScheme } = useStateContext()
+    const { selectedScheme: currentSelectedScheme, setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
 
     const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(currentSelectedScheme)
     const [schemes, setSchemes] = useState<InputScheme[]>(InputSchemeManager.allInputSchemes)
@@ -48,9 +48,10 @@ const ConfigureInputsInterface: React.FC = () => {
 
         return () => {
             setSelectedScheme(undefined)
+            setGlobalSelectedScheme(undefined)
             ConfigurationSavedEvent.removeListener(saveEvent)
         }
-    }, [saveEvent])
+    }, [saveEvent, setGlobalSelectedScheme])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()

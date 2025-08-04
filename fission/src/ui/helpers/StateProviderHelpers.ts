@@ -12,7 +12,7 @@ export interface AppState {
     setUnconfirmedImport: (_state: boolean) => void
     // ConfigureInputs stuff
     selectedScheme?: InputScheme
-    setSelectedScheme: (_scheme: InputScheme) => void
+    setSelectedScheme: (_scheme: InputScheme | undefined) => void
     // Configure Panel
     configurationType: ConfigurationType
     setConfigurationType: (_type: ConfigurationType) => void
