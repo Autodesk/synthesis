@@ -29,6 +29,41 @@ export class SimCameraVisualization extends SceneObject {
         console.log("📹 [VISUAL] SimCameraVisualization added to scene")
     }
 
+    public update(): void {
+        if (!this._isVisible) return
+
+        this.updateCameraTransform()
+    }
+
+    private updateCameraTransform() {
+        if (!this._robot.mechanism.rootBody) return
+
+        const robotBody = World.physicsSystem.getBody(
+            this._robot.mechanism.nodeToBody.get(this._robot.mechanism.rootBody)!
+        )
+
+        if (!robotBody) return
+
+        const robotPos = robotBody.GetPosition()
+        const robotRot = robotBody.GetRotation()
+
+        const robotPosition = new THREE.Vector3(robotPos.GetX(), robotPos.GetY(), robotPos.GetZ())
+        const robotQuaternion = new THREE.Quaternion(robotRot.GetX(), robotRot.GetY(), robotRot.GetZ(), robotRot.GetW())
+
+        const worldCameraPos = this._cameraPosition.clone()
+        worldCameraPos.applyQuaternion(robotQuaternion)
+        worldCameraPos.add(robotPosition)
+
+        const cameraRotation = new THREE.Quaternion()
+        cameraRotation.copy(robotQuaternion)
+        const forwardFix = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
+        const upFix = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI)
+        cameraRotation.multiply(forwardFix).multiply(upFix)
+
+        this._cameraGroup.position.copy(worldCameraPos)
+        this._cameraGroup.quaternion.copy(cameraRotation)
+    }
+
     public setVisible(visible: boolean) {
         this._isVisible = visible
         this._cameraGroup.visible = visible
