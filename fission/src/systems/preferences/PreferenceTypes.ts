@@ -31,6 +31,7 @@ export type GlobalPreferences = {
 export type GlobalPreference = keyof GlobalPreferences
 
 export type Preferences = GlobalPreferences & {
+    version: string
     [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
     [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
     [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>

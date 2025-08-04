@@ -1,7 +1,7 @@
 {
   "name": "synthesis-fission",
   "private": false,
-  "version": "0.0.1",
+  "version": "7.2.0",
   "type": "module",
   "scripts": {
     "init": "(bun run assetpack && bun run playwright:install) || (npm run assetpack && npm run playwright:install)",

@@ -1,3 +1,5 @@
+import { migratePreferences } from "./PreferenceMigrations"
+import { version } from "../../../package.json"
 import {
     defaultFieldPreferences,
     defaultGlobalPreferences,
@@ -210,15 +212,17 @@ class PreferencesSystem {
         const loadedPrefs = window.localStorage.getItem(this._localStorageKey)
 
         if (loadedPrefs == undefined) {
-            this._preferences = {}
+            this._preferences = { version: version }
             return
         }
 
         try {
-            this._preferences = JSON.parse(loadedPrefs)
+            const parsed = JSON.parse(loadedPrefs)
+            this._preferences = migratePreferences(parsed)
+            this._preferences.version = version
         } catch (e) {
             console.error(e)
-            this._preferences = {}
+            this._preferences = { version: version }
         }
     }
 
