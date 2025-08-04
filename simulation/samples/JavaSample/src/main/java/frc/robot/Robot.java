@@ -11,15 +11,29 @@ import com.autodesk.synthesis.io.*;
 import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.wpilibj.ADXL362;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogOutput;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.VideoMode;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.core.CvType;
 
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
 import com.kauailabs.navx.frc.AHRS;
 import com.autodesk.synthesis.ctre.TalonFX;
+import com.autodesk.synthesis.Camera;
+import com.autodesk.synthesis.CameraFrameHandler;
+import com.autodesk.synthesis.WebSocketMessageHandler;
+import com.autodesk.synthesis.SynthesisWebSocketServer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -43,6 +57,8 @@ public class Robot extends TimedRobot {
 
   private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
   private AHRS m_Gyro = new AHRS();
+  private Camera m_Camera = new Camera("USB Camera 0", 0);
+  private CvSource m_videoSource;
 
   private DigitalInput m_DI = new DigitalInput(0);
   private DigitalOutput m_DO = new DigitalOutput(1);
@@ -188,6 +204,10 @@ public class Robot extends TimedRobot {
       m_SparkMax5.set(0.0);
       m_SparkMax6.set(0.0);
       m_AO.setVoltage(12.0);
+      
+      // Stop WebSocket server when robot is disabled
+      System.out.println("🛑 Stopping WebSocket server...");
+      SynthesisWebSocketServer.getInstance().stopServer();
   }
 
   /** This function is called periodically when disabled. */
