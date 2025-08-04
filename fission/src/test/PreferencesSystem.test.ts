@@ -1,13 +1,14 @@
 import { describe, expect, test } from "vitest"
+import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
+import { MatchModeType } from "@/systems/match_mode/MatchMode"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
+    defaultFieldPreferences,
     FieldPreferences,
     GraphicsPreferences,
     MotorPreferences,
     RobotPreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import { MatchModeType } from "@/systems/match_mode/MatchMode"
-import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
 
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
@@ -170,7 +171,7 @@ describe("Preference System Robot/Field", () => {
 
     test("Setting field preferences", () => {
         const fieldPreferences1: FieldPreferences = {
-            defaultSpawnLocation: [0, 1, 0],
+            spawnLocations: defaultFieldPreferences().spawnLocations,
             scoringZones: [
                 {
                     name: "Zone1",
@@ -185,7 +186,7 @@ describe("Preference System Robot/Field", () => {
             protectedZones: [],
         }
         const fieldPreferences2: FieldPreferences = {
-            defaultSpawnLocation: [1, 1, 1],
+            spawnLocations: defaultFieldPreferences().spawnLocations,
             scoringZones: [
                 {
                     name: "Zone2",

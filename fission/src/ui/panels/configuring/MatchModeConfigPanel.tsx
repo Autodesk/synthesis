@@ -1,6 +1,20 @@
 import { Box } from "@mui/material"
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
+import Checkbox from "@/components/Checkbox.tsx"
 import { LabelSize } from "@/components/Label"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
+import MatchMode, {
+    DEFAULT_AUTONOMOUS_TIME,
+    DEFAULT_ENDGAME_TIME,
+    DEFAULT_HEIGHT_PENALTY,
+    DEFAULT_IGNORE_ROTATION,
+    DEFAULT_MAX_HEIGHT,
+    DEFAULT_TELEOP_TIME,
+} from "@/systems/match_mode/MatchMode"
+import World from "@/systems/World.ts"
+import Button from "@/ui/components/Button"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import {
     NegativeButton,
@@ -9,23 +23,9 @@ import {
     SectionLabel,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import MatchMode, {
-    DEFAULT_AUTONOMOUS_TIME,
-    DEFAULT_TELEOP_TIME,
-    DEFAULT_ENDGAME_TIME,
-    DEFAULT_IGNORE_ROTATION,
-    DEFAULT_MAX_HEIGHT,
-    DEFAULT_HEIGHT_PENALTY,
-} from "@/systems/match_mode/MatchMode"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import Button from "@/ui/components/Button"
-import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
-import { convertFeetToMeters } from "@/util/UnitConversions"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import Checkbox from "@/components/Checkbox.tsx";
-import World from "@/systems/World.ts";
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts";
+import { convertFeetToMeters } from "@/util/UnitConversions"
 
 /**
  * Configuration for match mode rules and timing.
@@ -72,7 +72,6 @@ export interface MatchModeConfig {
      */
     heightPenalty: number
 }
-
 
 interface ItemCardProps {
     id: string
@@ -151,7 +150,9 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 return
                             }
                             if (useSpawnPositions) {
-                                World.sceneRenderer.sceneObjects.forEach((obj) => obj instanceof MirabufSceneObject && obj.moveToSpawnLocation())
+                                World.sceneRenderer.sceneObjects.forEach(
+                                    obj => obj instanceof MirabufSceneObject && obj.moveToSpawnLocation()
+                                )
                             }
                             MatchMode.getInstance().setMatchModeConfig(config)
 
@@ -335,7 +336,11 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             <SectionDivider />
             {matchModeConfigElements}
             <SectionDivider />
-            <Checkbox defaultState={useSpawnPositions} label={"Move Robots to Starting Positions"} onClick={(v) => setUseSpawnPositions(v)}/>
+            <Checkbox
+                defaultState={useSpawnPositions}
+                label={"Move Robots to Starting Positions"}
+                onClick={v => setUseSpawnPositions(v)}
+            />
             <SectionDivider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
