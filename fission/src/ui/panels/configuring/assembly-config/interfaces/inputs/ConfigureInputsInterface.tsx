@@ -43,15 +43,21 @@ const ConfigureInputsInterface: React.FC = () => {
         InputSchemeManager.saveSchemes()
     }, [])
 
+    const handleSchemeChange = useCallback(() => {
+        setSchemes(InputSchemeManager.allInputSchemes)
+    }, [])
+
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
+        window.addEventListener('inputSchemeChanged', handleSchemeChange)
 
         return () => {
             setSelectedScheme(undefined)
             setGlobalSelectedScheme(undefined)
             ConfigurationSavedEvent.removeListener(saveEvent)
+            window.removeEventListener('inputSchemeChanged', handleSchemeChange)
         }
-    }, [saveEvent, setGlobalSelectedScheme])
+    }, [saveEvent, setGlobalSelectedScheme, handleSchemeChange])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()
