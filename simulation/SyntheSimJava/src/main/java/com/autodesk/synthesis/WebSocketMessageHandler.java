@@ -55,4 +55,25 @@ public class WebSocketMessageHandler {
         CameraFrameHandler.getInstance().handleFrame(device, frameData, width, height);
             
     }
+    
+    /**
+     * Simulate receiving a camera frame (for testing)
+     */
+    public void simulateTestMessage() {
+        String testMessage = """
+            {
+                "type": "CAMERA_FRAME",
+                "device": "USB Camera 0",
+                "data": {
+                    "frame": "",
+                    "width": 640,
+                    "height": 480,
+                    "timestamp": %d
+                }
+            }
+            """.formatted(System.currentTimeMillis());
+        
+        System.out.println("Simulating test WebSocket message...");
+        handleMessage(testMessage);
+    }
 } 
