@@ -20,7 +20,7 @@ interface InputSchemeSelectionProps {
 }
 
 export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
-    const { setSelectedScheme, setConfigurationType } = useStateContext()
+    const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
@@ -72,7 +72,6 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                         {EditButton(() => {
                             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
-                            setConfigurationType("INPUTS")
                             setSelectedScheme(scheme)
                             onEdit?.()
                         })}

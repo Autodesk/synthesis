@@ -126,7 +126,7 @@ class InputSchemeManager {
             const conflictingSchemes = scheme.inputs.flatMap(input =>
                 input.keysUsed.flatMap(key => usedKeyMap.get(key) ?? [])
             )
-            console.log(conflictingSchemes)
+            // console.log(conflictingSchemes)
             if (conflictingSchemes.length > 0) {
                 result[scheme.schemeName] ??= {
                     scheme,

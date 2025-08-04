@@ -16,7 +16,7 @@ import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeMo
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { openModal, openPanel, closePanel, configureScreen } = useUIContext()
-    const { setSelectedScheme, setConfigurationType } = useStateContext()
+    const { setSelectedScheme } = useStateContext()
 
     const targetAssembly = useMemo(() => {
         const assembly = getSpotlightAssembly()
@@ -44,7 +44,6 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
             if (scheme) {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
             }
-            setConfigurationType("INPUTS")
             if (scheme) setSelectedScheme(scheme)
         }
     }, [closePanel, targetAssembly])

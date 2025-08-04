@@ -22,7 +22,7 @@ import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeMo
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
-    const { setSelectedScheme, setUnconfirmedImport, setConfigurationType } = useStateContext()
+    const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
     const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
@@ -43,7 +43,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             targetAssembly.station = station
             SimulationSystem.addPerRobotScore(targetAssembly, 0)
 
-            setConfigurationType("ROBOTS")
             const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
             if (brainIndex === undefined) return
@@ -58,8 +57,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
                 setSelectedScheme(scheme)
             }
-        } else {
-            setConfigurationType("FIELDS")
         }
     }, [closePanel, panel, targetAssembly])
 
@@ -150,7 +147,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 <InputSchemeSelection
                     brainIndex={brainIndex}
                     onSelect={() => {}}
-                    onEdit={() => openPanel(ConfigurePanel, {}, panel)}
+                    onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
                     onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
                 />
             )}

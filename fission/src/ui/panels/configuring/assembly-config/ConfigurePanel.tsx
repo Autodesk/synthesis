@@ -12,7 +12,6 @@ import type { FieldPreferences, MotorPreferences, RobotPreferences } from "@/sys
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext, type UIScreen } from "@/ui/helpers/UIProviderHelpers"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
@@ -31,12 +30,7 @@ import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScorin
 import Label from "@/ui/components/Label"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { ConfigMode, CONFIG_OPTS } from "./ConfigTypes"
-
-export interface ConfigurePanelSettings {
-    configMode?: ConfigMode
-    selectedAssembly: MirabufSceneObject
-}
+import { ConfigMode, CONFIG_OPTS, ConfigurationType } from "./ConfigTypes"
 
 interface ConfigInterfaceProps<T, P> {
     panel: UIScreen<T, P>
@@ -123,16 +117,21 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
 export interface ConfigurePanelCustomProps {
     selectedAssembly?: MirabufSceneObject
     configMode?: ConfigMode
+    configurationType?: ConfigurationType
 }
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const { configurationType, setConfigurationType } = useStateContext()
 
-    const { configMode: initialConfigMode, selectedAssembly: initialSelectedAssembly } = panel!.props.custom
+    const {
+        configMode: initialConfigMode,
+        selectedAssembly: initialSelectedAssembly,
+        configurationType: initialConfigurationType,
+    } = panel!.props.custom
 
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(initialSelectedAssembly)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(initialConfigMode)
+    const [configurationType, setConfigurationType] = useState<ConfigurationType>(initialConfigurationType ?? "ROBOTS")
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
     const originalRobotPrefs = useRef<RobotPreferences | null>(null)
@@ -169,7 +168,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
-            setConfigurationType(configurationType)
             new ConfigurationSavedEvent()
         }
         const onCancel = () => {
@@ -201,7 +199,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
             { onBeforeAccept, onCancel }
         )
-    }, [configurationType, selectedAssembly, pendingDeletes])
+    }, [selectedAssembly, pendingDeletes])
 
     const modes = useMemo(() => {
         switch (configurationType) {

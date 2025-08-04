@@ -1,6 +1,5 @@
 import { createContext, type ReactNode, useContext } from "react"
 import type { InputScheme } from "@/systems/input/InputTypes"
-import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 
 export interface StateProviderProps {
     children: ReactNode
@@ -13,9 +12,6 @@ export interface AppState {
     // ConfigureInputs stuff
     selectedScheme?: InputScheme
     setSelectedScheme: (_scheme: InputScheme) => void
-    // Configure Panel
-    configurationType: ConfigurationType
-    setConfigurationType: (_type: ConfigurationType) => void
     // View Cube
     isMainMenuOpen: boolean
     setIsMainMenuOpen: (_state: boolean) => void
@@ -26,8 +22,6 @@ export const StateContext = createContext<AppState>({
     setUnconfirmedImport: () => {},
     selectedScheme: undefined,
     setSelectedScheme: () => {},
-    configurationType: "ROBOTS",
-    setConfigurationType: () => {},
     isMainMenuOpen: true,
     setIsMainMenuOpen: () => {},
 })

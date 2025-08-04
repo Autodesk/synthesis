@@ -22,6 +22,7 @@ import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import MatchMode, { MatchStateChangeEvent } from "@/systems/match_mode/MatchMode"
 import { useThemeContext } from "../helpers/ThemeProviderHelpers"
+import { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 
 type ButtonProps = {
     value: string
@@ -205,7 +206,7 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={SynthesisIcons.ADD}
                     larger={true}
-                    onClick={() => openPanel(ImportMirabufPanel, undefined)}
+                    onClick={() => openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })}
                 />
                 <Stack direction="column" sx={{ borderRadius: "7px", padding: "4px" }} bgcolor="primary.main" gap={0.5}>
                     <MainHUDButton

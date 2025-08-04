@@ -12,7 +12,7 @@ import { Stack } from "@mui/system"
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openPanel, configureScreen } = useUIContext()
-    const { setSelectedScheme, setConfigurationType } = useStateContext()
+    const { setSelectedScheme } = useStateContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
     const [type, setType] = useState<DriveType>(DriveType.ARCADE)
@@ -24,22 +24,21 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
 
             InputSchemeManager.addCustomScheme(scheme)
             InputSchemeManager.saveSchemes()
-            console.log(InputSchemeManager.allInputSchemes)
 
-            setConfigurationType("INPUTS")
             setSelectedScheme(scheme)
             openPanel(
                 ConfigurePanel,
                 {
                     configMode: undefined,
                     selectedAssembly: undefined,
+                    configurationType: "INPUTS",
                 },
                 modal,
                 { position: "left" }
             )
         }
         configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onBeforeAccept })
-    }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])
+    }, [name, setSelectedScheme, openPanel, modal])
 
     return (
         <>

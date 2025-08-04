@@ -30,8 +30,9 @@ export class AssemblySelectionOption extends SelectMenuOption {
 }
 
 function makeSelectionOption(configurationType: ConfigurationType, assembly: MirabufSceneObject) {
+    console.log("MAKING SELECTION OPTION FOR", configurationType)
     return new AssemblySelectionOption(
-        `${configurationType === "ROBOTS" ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}]` : ""} ${assembly.assemblyName}`,
+        `${configurationType === "ROBOTS" ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
         assembly
     )
 }
@@ -59,6 +60,8 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
             .filter(x => !pendingDeletes.includes(x.id))
     }, [u, pendingDeletes])
 
+    console.log(robots[0], fields[0])
+
     const options = useMemo(() => {
         const list = configurationType === "ROBOTS" ? robots : fields
         return list
@@ -76,7 +79,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
                 update()
             }}
             onAddClicked={() => {
-                openPanel(ImportMirabufPanel, undefined, undefined)
+                openPanel(ImportMirabufPanel, { configurationType })
                 closePanel(panel!.id, CloseType.Overwrite)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
