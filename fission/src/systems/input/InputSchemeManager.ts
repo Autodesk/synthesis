@@ -136,7 +136,7 @@ class InputSchemeManager {
                     conflicts_with_names: [...new Set(conflictingSchemes)].join(", "),
                 }
             } else {
-                result[scheme.schemeName] = {
+                result[scheme.schemeName] ??= {
                     scheme,
                     status: InputSchemeUseType.AVAILABLE,
                 }
