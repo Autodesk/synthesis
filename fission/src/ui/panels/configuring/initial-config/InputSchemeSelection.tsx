@@ -47,7 +47,8 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
         scheme: InputScheme,
         style: React.CSSProperties,
         message: string,
-        disabled: boolean = false
+        disabled: boolean = false,
+        status?: InputSchemeUseType
     ): ReactElement | null => {
         if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
         return (
@@ -90,8 +91,8 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                             onEdit?.()
                         })}
 
-                        {/** Delete button (only if the scheme is customized) */}
-                        {scheme.customized ? (
+                        {/** Delete button (only if the scheme is customized and not in use) */}
+                        {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
                             DeleteButton(() => {
                                 // Fetch current custom schemes
                                 InputSchemeManager.saveSchemes()
@@ -154,7 +155,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
                     .map(scheme => {
-                        return SchemeSelector(scheme.scheme, {}, "Available", false)
+                        return SchemeSelector(scheme.scheme, {}, "Available", false, scheme.status)
                     })}
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
@@ -166,7 +167,8 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     scheme.scheme,
                                     { filter: "brightness(60%)" },
                                     "Conflicts with " + scheme.conflicts_with_names,
-                                    false
+                                    false,
+                                    scheme.status
                                 )}
                             </>
                         )
@@ -177,7 +179,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                         return (
                             <>
                                 {i == 0 && <Divider />}
-                                {SchemeSelector(scheme.scheme, {}, "In Use", true)}
+                                {SchemeSelector(scheme.scheme, {}, "In Use", true, scheme.status)}
                             </>
                         )
                     })}
