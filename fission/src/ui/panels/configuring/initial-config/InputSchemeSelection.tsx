@@ -25,11 +25,11 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
     )
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
-    
+
     const refreshAvailableSchemes = () => {
         setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
     }
-    
+
     useEffect(() => {
         refreshAvailableSchemes()
     }, [robotDriveType])
@@ -38,9 +38,9 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
         const handleSchemeChange = () => {
             refreshAvailableSchemes()
         }
-        
-        window.addEventListener('inputSchemeChanged', handleSchemeChange)
-        return () => window.removeEventListener('inputSchemeChanged', handleSchemeChange)
+
+        window.addEventListener("inputSchemeChanged", handleSchemeChange)
+        return () => window.removeEventListener("inputSchemeChanged", handleSchemeChange)
     }, [robotDriveType])
 
     const SchemeSelector = (

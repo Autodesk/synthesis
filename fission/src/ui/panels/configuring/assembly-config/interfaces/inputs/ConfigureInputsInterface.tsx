@@ -49,13 +49,13 @@ const ConfigureInputsInterface: React.FC = () => {
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
-        window.addEventListener('inputSchemeChanged', handleSchemeChange)
+        window.addEventListener("inputSchemeChanged", handleSchemeChange)
 
         return () => {
             setSelectedScheme(undefined)
             setGlobalSelectedScheme(undefined)
             ConfigurationSavedEvent.removeListener(saveEvent)
-            window.removeEventListener('inputSchemeChanged', handleSchemeChange)
+            window.removeEventListener("inputSchemeChanged", handleSchemeChange)
         }
     }, [saveEvent, setGlobalSelectedScheme, handleSchemeChange])
 
@@ -102,9 +102,9 @@ const ConfigureInputsInterface: React.FC = () => {
                         // Save to preferences
                         PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
                         PreferencesSystem.savePreferences()
-                        
+
                         // Fire event to notify of input scheme changes
-                        window.dispatchEvent(new CustomEvent('inputSchemeChanged'))
+                        window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
 
                         // Update UI with new schemes
                         setSchemes(InputSchemeManager.allInputSchemes)

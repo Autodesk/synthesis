@@ -27,7 +27,7 @@ class InputSchemeManager {
     /** Registers a new custom scheme */
     public static addCustomScheme(scheme: InputScheme) {
         this.customInputSchemes.push(scheme)
-        window.dispatchEvent(new CustomEvent('inputSchemeChanged'))
+        window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
     }
 
     /** Parses a schemes inputs into working Input instances */
@@ -79,7 +79,7 @@ class InputSchemeManager {
     public static resetDefaultSchemes() {
         this._defaultInputSchemes = DefaultInputs.defaultInputCopies
         this._customSchemes = undefined
-        window.dispatchEvent(new CustomEvent('inputSchemeChanged'))
+        window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
     }
 
     /** Creates an array of every input scheme that is either a default or customized by the user. Custom themes will appear on top. */
@@ -183,7 +183,7 @@ class InputSchemeManager {
 
         PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)
         PreferencesSystem.savePreferences()
-        window.dispatchEvent(new CustomEvent('inputSchemeChanged'))
+        window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
     }
 }
 
