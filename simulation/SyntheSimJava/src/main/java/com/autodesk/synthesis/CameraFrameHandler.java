@@ -48,18 +48,18 @@ public class CameraFrameHandler {
             System.out.println("DEBUG: Camera not registered for " + deviceName);
             return;
         }
+      
         if (base64Frame == null || base64Frame.trim().isEmpty()) {
             System.out.println("DEBUG: Skipping empty frame for " + deviceName);
             return;
         }
-
+        
         System.out.println("DEBUG: Received real 3D frame for " + deviceName + 
                          " (" + width + "x" + height + ", " + base64Frame.length() + " chars)");
         
         try {
             byte[] frameData = Base64.getDecoder().decode(base64Frame);
             
-            // Check if decoded data is empty
             if (frameData.length == 0) {
                 System.out.println("INFO: Skipping frame with empty data for " + deviceName);
                 return;
@@ -81,10 +81,9 @@ public class CameraFrameHandler {
                                  ", got " + frame.cols() + "x" + frame.rows());
             }
             
-            // Feed frame to CvSource and automatically streams to dashboards
+            // Feed frame to CvSource 
             source.putFrame(frame);
-            
-            // Clean up
+
             frame.release();
             matOfByte.release();
             
@@ -94,7 +93,7 @@ public class CameraFrameHandler {
     }
     
     /**
-     * Create a test pattern frame 
+     * Create a test pattern frame (for debugging)
      */
     public void sendTestFrame(String deviceName, int width, int height) {
         CvSource source = cameraSources.get(deviceName);
