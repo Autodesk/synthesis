@@ -7,6 +7,7 @@ import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import { SimCameraRenderer } from "./SimCameraRenderer"
+import { SimCameraVisualization } from "./SimCameraVisualization"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 export abstract class SimInput {
@@ -132,6 +133,7 @@ export class SimCameraInput extends SimInput {
     private _defaultFPS: number = 30
     private _isInitialized: boolean = false
     private _cameraRenderer?: SimCameraRenderer
+    private _cameraVisualization: SimCameraVisualization
     private _robot: MirabufSceneObject
     private _frameInterval: number = 0
     private _lastFrameTime: number = 0
@@ -140,19 +142,28 @@ export class SimCameraInput extends SimInput {
         super(device)
         this._robot = robot
         if (width) this._defaultWidth = width
-        if (height) this._defaultHeight = height  
+        if (height) this._defaultHeight = height
         if (fps) this._defaultFPS = fps
         this._frameInterval = 1000 / this._defaultFPS // ms between frames
-        
-        console.log(`🎬 [CONSTRUCTOR] SimCameraInput created for ${device} (${this._defaultWidth}x${this._defaultHeight} @ ${this._defaultFPS}fps, interval=${this._frameInterval}ms)`)
+
+        // Create camera visualization
+        this._cameraVisualization = new SimCameraVisualization(robot)
+        this._cameraVisualization.setup()
+
+        console.log(
+            `🎬 [CONSTRUCTOR] SimCameraInput created for ${device} (${this._defaultWidth}x${this._defaultHeight} @ ${this._defaultFPS}fps, interval=${this._frameInterval}ms)`
+        )
     }
 
     public update(deltaT: number) {
         // Add occasional logging to confirm update is being called
-        if (Math.random() < 0.01) { // ~1% chance per frame
-            console.log(`🔄 [UPDATE] SimCameraInput.update() called for ${this.device} (initialized: ${this._isInitialized})`)
+        if (Math.random() < 0.01) {
+            // ~1% chance per frame
+            console.log(
+                `🔄 [UPDATE] SimCameraInput.update() called for ${this.device} (initialized: ${this._isInitialized})`
+            )
         }
-        
+
         if (!this._isInitialized) {
             this.initializeCamera()
             this._isInitialized = true
@@ -160,11 +171,14 @@ export class SimCameraInput extends SimInput {
 
         this.updateCameraSettings()
         this.generateVideoFrame(deltaT)
+
+        // Update camera visualization
+        this._cameraVisualization.update()
     }
 
     private initializeCamera() {
         console.log(`🎥 [INIT] Starting camera initialization for ${this.device}`)
-        
+
         // Initialize metadata
         SimCamera.setConnected(this.device, true)
         SimCamera.setResolutionWidth(this.device, this._defaultWidth)
@@ -180,15 +194,21 @@ export class SimCameraInput extends SimInput {
             // Initialize video renderer for 3D scene capture
             this._cameraRenderer = new SimCameraRenderer(this._robot, this._defaultWidth, this._defaultHeight)
             console.log(`✅ [INIT] Camera ${this.device} initialized successfully - 3D frames will be generated`)
-            
+
+            // Show camera visualization in 3D scene
+            this._cameraVisualization.setVisible(true)
+
             // Force immediate test frame to verify renderer works
             console.log(`🧪 [TEST] Attempting immediate test frame capture...`)
-            this._cameraRenderer.captureFrameAsJPEG().then(blob => {
-                console.log(`🧪 [TEST] Initial test frame captured: ${blob.size} bytes - renderer is working!`)
-                this.sendFrameToRobot(blob)
-            }).catch(error => {
-                console.error(`❌ [TEST] Initial test frame failed:`, error)
-            })
+            this._cameraRenderer
+                .captureFrameAsJPEG()
+                .then(blob => {
+                    console.log(`🧪 [TEST] Initial test frame captured: ${blob.size} bytes - renderer is working!`)
+                    this.sendFrameToRobot(blob)
+                })
+                .catch(error => {
+                    console.error(`❌ [TEST] Initial test frame failed:`, error)
+                })
         } catch (error) {
             console.error(`❌ [INIT] Failed to create camera renderer:`, error)
         }
@@ -230,27 +250,33 @@ export class SimCameraInput extends SimInput {
             console.warn(`📹 [FRAME] No camera renderer for ${this.device} - skipping frame generation`)
             return
         }
-        
+
         this._lastFrameTime += deltaT * 1000 // Convert to ms
-        
+
         // Add timing debug logs occasionally
-        if (Math.random() < 0.01) { // ~1% chance per frame
-            console.log(`⏱️ [TIMING] ${this.device}: lastFrameTime=${this._lastFrameTime.toFixed(1)}ms, interval=${this._frameInterval}ms, deltaT=${(deltaT*1000).toFixed(1)}ms`)
+        if (Math.random() < 0.01) {
+            // ~1% chance per frame
+            console.log(
+                `⏱️ [TIMING] ${this.device}: lastFrameTime=${this._lastFrameTime.toFixed(1)}ms, interval=${this._frameInterval}ms, deltaT=${(deltaT * 1000).toFixed(1)}ms`
+            )
         }
-        
+
         // Generate frame at specified FPS
         if (this._lastFrameTime >= this._frameInterval) {
             this._lastFrameTime = 0
-            
+
             console.log(`📹 [FRAME] Capturing 3D frame for ${this.device}`)
-            
+
             // Capture frame from 3D scene (robot perspective)
-            this._cameraRenderer.captureFrameAsJPEG().then(blob => {
-                console.log(`📹 [FRAME] Successfully captured ${blob.size} bytes, sending to robot`)
-                this.sendFrameToRobot(blob)
-            }).catch(error => {
-                console.error(`❌ [FRAME] Failed to capture camera frame:`, error)
-            })
+            this._cameraRenderer
+                .captureFrameAsJPEG()
+                .then(blob => {
+                    console.log(`📹 [FRAME] Successfully captured ${blob.size} bytes, sending to robot`)
+                    this.sendFrameToRobot(blob)
+                })
+                .catch(error => {
+                    console.error(`❌ [FRAME] Failed to capture camera frame:`, error)
+                })
         }
     }
 
@@ -259,9 +285,9 @@ export class SimCameraInput extends SimInput {
             // Convert blob to base64 for WebSocket transmission
             const arrayBuffer = await frameBlob.arrayBuffer()
             const base64Frame = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
-            
+
             console.log(`🚀 [SEND] Converting frame: ${arrayBuffer.byteLength} bytes → ${base64Frame.length} chars`)
-            
+
             // Send frame through WebSocket protocol
             const frameMessage = {
                 type: "CAMERA_FRAME",
@@ -270,14 +296,13 @@ export class SimCameraInput extends SimInput {
                     frame: base64Frame,
                     width: this._defaultWidth,
                     height: this._defaultHeight,
-                    timestamp: Date.now()
-                }
+                    timestamp: Date.now(),
+                },
             }
-            
+
             // Send through the existing WebSocket worker
             const success = SimGeneric.sendCameraFrame(this.device, frameMessage.data)
-            console.log(`📡 [SEND] WebSocket frame sent for ${this.device}: ${success ? 'SUCCESS' : 'FAILED'}`)
-            
+            console.log(`📡 [SEND] WebSocket frame sent for ${this.device}: ${success ? "SUCCESS" : "FAILED"}`)
         } catch (error) {
             console.error(`❌ [SEND] Failed to send camera frame:`, error)
         }
@@ -297,10 +322,14 @@ export class SimCameraInput extends SimInput {
         SimCamera.setConnected(this._device, true)
         this._isInitialized = false // set false so reinitialize on next update
     }
-    
+
     public disconnect() {
         SimCamera.setConnected(this._device, false)
-        this._isInitialized = false 
+        this._isInitialized = false
+
+        // Hide camera visualization
+        this._cameraVisualization.setVisible(false)
+
         if (this._cameraRenderer) {
             this._cameraRenderer.dispose()
             this._cameraRenderer = undefined
