@@ -3,8 +3,9 @@ from inspect import getmembers, isfunction
 import adsk.core
 
 from src import APP_NAME, APP_TITLE, INTERNAL_ID, gm
+from src.lib import Events
 from src.Logging import logFailure
-from src.UI import HUI, Events
+from src.UI import HUI
 
 
 def check_solid_open() -> bool:

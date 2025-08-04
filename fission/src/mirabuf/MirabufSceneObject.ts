@@ -867,7 +867,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 data.items.push({
                     name: "Camera: Unfocus",
                     func: () => {
-                        cameraControls.focusProvider = undefined
+                        cameraControls.unfocus()
                     },
                 })
 
