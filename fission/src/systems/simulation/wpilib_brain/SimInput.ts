@@ -335,6 +335,11 @@ export class SimCameraInput extends SimInput {
             this._cameraRenderer = undefined
         }
     }
+
+    public dispose() {
+        this.disconnect()
+        this._cameraVisualization.dispose()
+    }
 }
 
 export class SimDigitalInput extends SimInput {
