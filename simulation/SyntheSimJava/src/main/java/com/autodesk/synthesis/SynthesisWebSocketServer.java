@@ -20,7 +20,7 @@ public class SynthesisWebSocketServer extends WebSocketServer {
     
     public static SynthesisWebSocketServer getInstance() {
         if (instance == null) {
-            instance = new SynthesisWebSocketServer(new SocketAddress("localhost", 3300));
+            instance = new SynthesisWebSocketServer(new InetSocketAddress("localhost", 3300));
         }
         return instance;
     }
