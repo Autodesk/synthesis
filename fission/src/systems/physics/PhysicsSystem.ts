@@ -1325,6 +1325,12 @@ class PhysicsSystem extends WorldSystem {
                                       if (!rootBodyId) return
                                       const rootBody = World.physicsSystem.getBody(rootBodyId)
 
+                                      const sceneObject = World.sceneRenderer.sceneObjects.get(
+                                          sceneObjectKey
+                                      ) as MirabufSceneObject
+                                      const gamePiecesControlled: number[] = sceneObject.activeEjectables.map(bodyId =>
+                                          bodyId.GetIndexAndSequenceNumber()
+                                      )
                                       const linearVelocity = rootBody.GetLinearVelocity()
                                       const angularVelocity = rootBody.GetAngularVelocity()
                                       const position = rootBody.GetPosition()
@@ -1332,6 +1338,7 @@ class PhysicsSystem extends WorldSystem {
 
                                       return {
                                           sceneObjectKey,
+                                          gamePiecesControlled,
                                           linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
                                           angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
                                           positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,

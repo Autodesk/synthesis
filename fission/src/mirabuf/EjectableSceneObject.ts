@@ -14,8 +14,8 @@ import MirabufSceneObject from "./MirabufSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 class EjectableSceneObject extends SceneObject {
-    private _parentAssembly: MirabufSceneObject
-    private _gamePieceBodyId?: Jolt.BodyID
+    private _parentSceneObject: MirabufSceneObject
+    private _gamePieceBodyId: Jolt.BodyID
 
     private _parentBodyId?: Jolt.BodyID
     private _deltaTransformation?: THREE.Matrix4
@@ -44,25 +44,29 @@ class EjectableSceneObject extends SceneObject {
         return this._parentBodyId
     }
 
+    public get parentSceneObject(): MirabufSceneObject {
+        return this._parentSceneObject
+    }
+
     public constructor(parentAssembly: MirabufSceneObject, gamePieceBody: Jolt.BodyID) {
         super()
 
         console.debug("Trying to create ejectable...")
 
-        this._parentAssembly = parentAssembly
+        this._parentSceneObject = parentAssembly
         this._gamePieceBodyId = gamePieceBody
     }
 
     public setup(): void {
-        if (this._parentAssembly.ejectorPreferences && this._gamePieceBodyId) {
-            this._parentBodyId = this._parentAssembly.mechanism.nodeToBody.get(
-                this._parentAssembly.ejectorPreferences.parentNode ?? this._parentAssembly.rootNodeId
+        if (this._parentSceneObject.ejectorPreferences && this._gamePieceBodyId) {
+            this._parentBodyId = this._parentSceneObject.mechanism.nodeToBody.get(
+                this._parentSceneObject.ejectorPreferences.parentNode ?? this._parentSceneObject.rootNodeId
             )
 
             this._deltaTransformation = convertArrayToThreeMatrix4(
-                this._parentAssembly.ejectorPreferences.deltaTransformation
+                this._parentSceneObject.ejectorPreferences.deltaTransformation
             )
-            this._ejectVelocity = this._parentAssembly.ejectorPreferences.ejectorVelocity
+            this._ejectVelocity = this._parentSceneObject.ejectorPreferences.ejectorVelocity
 
             // Record start transform at the game piece center of mass
             const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)

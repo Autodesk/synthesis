@@ -579,9 +579,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // 3) avoid duplicates
         const key = bodyId.GetIndexAndSequenceNumber()
-        if (this._ejectables.some(e => e.gamePieceBodyId!.GetIndexAndSequenceNumber() === key)) {
-            return false
-        }
+        if (this._ejectables.some(e => e.gamePieceBodyId!.GetIndexAndSequenceNumber() === key)) return false
 
         const ejectable = new EjectableSceneObject(this, bodyId)
         this._ejectables.push(ejectable)

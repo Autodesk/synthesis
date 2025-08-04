@@ -63,6 +63,7 @@ export type InitData = {
 
 export type UpdateObjectData = {
     sceneObjectKey: number
+    gamePiecesControlled: number[] // BodyID
     // {x, y, z, w?}
     linearVelocityStr: string
     angularVelocityStr: string
