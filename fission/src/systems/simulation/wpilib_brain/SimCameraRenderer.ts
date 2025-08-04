@@ -45,21 +45,26 @@ export class SimCameraRenderer {
 
         if (!robotBody) return
 
-        // Position camera relative to robot
         const robotPos = robotBody.GetPosition()
         const robotRot = robotBody.GetRotation()
 
-        // Convert Jolt to Three.js
         const robotPosition = new THREE.Vector3(robotPos.GetX(), robotPos.GetY(), robotPos.GetZ())
         const robotQuaternion = new THREE.Quaternion(robotRot.GetX(), robotRot.GetY(), robotRot.GetZ(), robotRot.GetW())
 
-        // Apply camera offset
         const worldCameraPos = this._cameraPosition.clone()
         worldCameraPos.applyQuaternion(robotQuaternion)
         worldCameraPos.add(robotPosition)
 
+        const cameraRotation = new THREE.Quaternion()
+        cameraRotation.copy(robotQuaternion)
+
+        const forwardFix = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
+        const upFix = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI)
+        
+        cameraRotation.multiply(forwardFix).multiply(upFix)
+
         this._camera.position.copy(worldCameraPos)
-        this._camera.quaternion.copy(robotQuaternion)
+        this._camera.quaternion.copy(cameraRotation)
         this._camera.updateMatrixWorld()
     }
 
