@@ -25,16 +25,22 @@ public class SynthesisWebSocketServer extends WebSocketServer {
         return instance;
     }
     
-    /**
-     * Called when the server stops
-     */
+    @Override
+    public void onOpen(WebSocket conn, ClientHandshake handshake) {
+        System.out.println("WebSocket connection opened: " + conn.getRemoteSocketAddress());
+    }
+    
+    @Override
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        System.out.println("WebSocket connection closed: " + conn.getRemoteSocketAddress());
+    }
+
     public void onServerStop() {
         isRunning = false;
     }
     
     @Override
     public void onMessage(WebSocket conn, String message) {
-        // Forward the message to our handler
         WebSocketMessageHandler.getInstance().handleMessage(message);
     }
     
@@ -49,10 +55,7 @@ public class SynthesisWebSocketServer extends WebSocketServer {
         System.out.println("WebSocket server started on port 3300");
         System.out.println("Listening for camera frames from Fission simulator...");
     }
-    
-    /**
-     * Start the WebSocket server
-     */
+
     public void startServer() {
         if (!isRunning) {
             try {
@@ -66,9 +69,6 @@ public class SynthesisWebSocketServer extends WebSocketServer {
         }
     }
     
-    /**
-     * Stop the WebSocket server
-     */
     public void stopServer() {
         if (isRunning) {
             try {
