@@ -95,6 +95,9 @@ const ConfigureInputsInterface: React.FC = () => {
                         // Save to preferences
                         PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
                         PreferencesSystem.savePreferences()
+                        
+                        // Fire event to notify of input scheme changes
+                        window.dispatchEvent(new CustomEvent('inputSchemeChanged'))
 
                         // Update UI with new schemes
                         setSchemes(InputSchemeManager.allInputSchemes)

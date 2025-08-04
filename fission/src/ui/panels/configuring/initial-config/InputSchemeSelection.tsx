@@ -25,8 +25,22 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
     )
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
-    useEffect(() => {
+    
+    const refreshAvailableSchemes = () => {
         setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
+    }
+    
+    useEffect(() => {
+        refreshAvailableSchemes()
+    }, [robotDriveType])
+
+    useEffect(() => {
+        const handleSchemeChange = () => {
+            refreshAvailableSchemes()
+        }
+        
+        window.addEventListener('inputSchemeChanged', handleSchemeChange)
+        return () => window.removeEventListener('inputSchemeChanged', handleSchemeChange)
     }, [robotDriveType])
 
     const SchemeSelector = (
@@ -59,7 +73,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
                                     }
-                                    setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
+                                    refreshAvailableSchemes()
                                     onSelect?.()
                                     update()
                                 }}
@@ -92,6 +106,8 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                 PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
                                 PreferencesSystem.savePreferences()
 
+                                // Update the available schemes list to reflect the deletion
+                                refreshAvailableSchemes()
                                 update()
                             })
                         ) : (
