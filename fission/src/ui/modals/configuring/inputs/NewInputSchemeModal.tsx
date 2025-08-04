@@ -71,11 +71,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
         }
 
         const onCancel = () => {
-            for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap.entries()) {
-                if (!scheme.schemeName || scheme.schemeName.trim() === "") {
-                    InputSystem.brainIndexSchemeMap.delete(brainIndex)
-                }
-            }
+            // Will automatically close the modal
         }
 
         configureScreen(modal!, { title: "New Input Scheme" }, { onBeforeAccept, onCancel })

@@ -1,6 +1,5 @@
 import { Box, Button, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
 import { ReactElement, useEffect, useReducer, useState } from "react"
-import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSystem from "@/systems/input/InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -172,7 +171,6 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                 color="success"
                 variant="outlined"
                 onClick={() => {
-                    InputSystem.brainIndexSchemeMap.set(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
                     onCreateNew?.()
                 }}
             >
