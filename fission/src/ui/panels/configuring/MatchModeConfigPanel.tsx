@@ -23,6 +23,9 @@ import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfig
 import { convertFeetToMeters } from "@/util/UnitConversions"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import Checkbox from "@/components/Checkbox.tsx";
+import World from "@/systems/World.ts";
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts";
 
 /**
  * Configuration for match mode rules and timing.
@@ -70,20 +73,6 @@ export interface MatchModeConfig {
     heightPenalty: number
 }
 
-function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
-    if (MatchMode.getInstance().isMatchEnabled()) {
-        globalAddToast(
-            "error",
-            "Match Mode Already Running",
-            "You can't modify the match mode ruleset while a match is running"
-        )
-        return
-    }
-
-    MatchMode.getInstance().setMatchModeConfig(config)
-
-    MatchMode.getInstance().start(openModal)
-}
 
 interface ItemCardProps {
     id: string
@@ -124,7 +113,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { openModal } = useModalControlContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
-
+    const [useSpawnPositions, setUseSpawnPositions] = useState(false)
     useEffect(() => {
         const loadConfigs = () => {
             try {
@@ -153,7 +142,20 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
                         primaryOnClick={() => {
-                            matchConfigSelected(config, openModal)
+                            if (MatchMode.getInstance().isMatchEnabled()) {
+                                globalAddToast(
+                                    "error",
+                                    "Match Mode Already Running",
+                                    "You can't modify the match mode ruleset while a match is running"
+                                )
+                                return
+                            }
+                            if (useSpawnPositions) {
+                                World.sceneRenderer.sceneObjects.forEach((obj) => obj instanceof MirabufSceneObject && obj.moveToSpawnLocation())
+                            }
+                            MatchMode.getInstance().setMatchModeConfig(config)
+
+                            MatchMode.getInstance().start(openModal)
                             closePanel("match-mode-config")
                         }}
                         secondaryOnClick={
@@ -176,7 +178,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     />
                 )
             }),
-        [matchModeConfigs, openModal, closePanel]
+        [matchModeConfigs, openModal, closePanel, useSpawnPositions]
     )
 
     const fileUploadRef = useRef<HTMLInputElement>(null)
@@ -332,6 +334,9 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             </SectionLabel>
             <SectionDivider />
             {matchModeConfigElements}
+            <SectionDivider />
+            <Checkbox defaultState={useSpawnPositions} label={"Move Robots to Starting Positions"} onClick={(v) => setUseSpawnPositions(v)}/>
+            <SectionDivider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
             <Box alignSelf={"center"}>
