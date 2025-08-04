@@ -156,9 +156,7 @@ export class SimCameraInput extends SimInput {
     }
 
     public update(deltaT: number) {
-        // Add occasional logging to confirm update is being called
         if (Math.random() < 0.01) {
-            // ~1% chance per frame
             console.log(
                 `🔄 [UPDATE] SimCameraInput.update() called for ${this.device} (initialized: ${this._isInitialized})`
             )
@@ -193,13 +191,13 @@ export class SimCameraInput extends SimInput {
         try {
             // Initialize video renderer for 3D scene capture
             this._cameraRenderer = new SimCameraRenderer(this._robot, this._defaultWidth, this._defaultHeight)
-            console.log(`✅ [INIT] Camera ${this.device} initialized successfully - 3D frames will be generated`)
+            console.log(`[INIT] Camera ${this.device} initialized successfully - 3D frames will be generated`)
 
             // Show camera visualization in 3D scene
             this._cameraVisualization.setVisible(true)
 
             // Force immediate test frame to verify renderer works
-            console.log(`🧪 [TEST] Attempting immediate test frame capture...`)
+            console.log(`[TEST] Attempting immediate test frame capture...`)
             this._cameraRenderer
                 .captureFrameAsJPEG()
                 .then(blob => {
@@ -251,13 +249,12 @@ export class SimCameraInput extends SimInput {
             return
         }
 
-        this._lastFrameTime += deltaT * 1000 // Convert to ms
+        this._lastFrameTime += deltaT * 1000 
 
         // Add timing debug logs occasionally
         if (Math.random() < 0.01) {
-            // ~1% chance per frame
             console.log(
-                `⏱️ [TIMING] ${this.device}: lastFrameTime=${this._lastFrameTime.toFixed(1)}ms, interval=${this._frameInterval}ms, deltaT=${(deltaT * 1000).toFixed(1)}ms`
+                `⏱[TIMING] ${this.device}: lastFrameTime=${this._lastFrameTime.toFixed(1)}ms, interval=${this._frameInterval}ms, deltaT=${(deltaT * 1000).toFixed(1)}ms`
             )
         }
 
@@ -265,24 +262,23 @@ export class SimCameraInput extends SimInput {
         if (this._lastFrameTime >= this._frameInterval) {
             this._lastFrameTime = 0
 
-            console.log(`📹 [FRAME] Capturing 3D frame for ${this.device}`)
+            console.log(`[FRAME] Capturing 3D frame for ${this.device}`)
 
             // Capture frame from 3D scene (robot perspective)
             this._cameraRenderer
                 .captureFrameAsJPEG()
                 .then(blob => {
-                    console.log(`📹 [FRAME] Successfully captured ${blob.size} bytes, sending to robot`)
+                    console.log(`[FRAME] Successfully captured ${blob.size} bytes, sending to robot`)
                     this.sendFrameToRobot(blob)
                 })
                 .catch(error => {
-                    console.error(`❌ [FRAME] Failed to capture camera frame:`, error)
+                    console.error(`[FRAME] Failed to capture camera frame:`, error)
                 })
         }
     }
 
     private async sendFrameToRobot(frameBlob: Blob) {
         try {
-            // Convert blob to base64 for WebSocket transmission
             const arrayBuffer = await frameBlob.arrayBuffer()
             const base64Frame = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
 
@@ -302,9 +298,9 @@ export class SimCameraInput extends SimInput {
 
             // Send through the existing WebSocket worker
             const success = SimGeneric.sendCameraFrame(this.device, frameMessage.data)
-            console.log(`📡 [SEND] WebSocket frame sent for ${this.device}: ${success ? "SUCCESS" : "FAILED"}`)
+            console.log(`[SEND] WebSocket frame sent for ${this.device}: ${success ? "SUCCESS" : "FAILED"}`)
         } catch (error) {
-            console.error(`❌ [SEND] Failed to send camera frame:`, error)
+            console.error(`[SEND] Failed to send camera frame:`, error)
         }
     }
 
@@ -326,8 +322,6 @@ export class SimCameraInput extends SimInput {
     public disconnect() {
         SimCamera.setConnected(this._device, false)
         this._isInitialized = false
-
-        // Hide camera visualization
         this._cameraVisualization.setVisible(false)
 
         if (this._cameraRenderer) {
