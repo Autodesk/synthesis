@@ -94,6 +94,20 @@ public class CameraFrameHandler {
     }
     
     /**
+     * Create a test pattern frame 
+     */
+    public void sendTestFrame(String deviceName, int width, int height) {
+        CvSource source = cameraSources.get(deviceName);
+        if (source == null) return;
+        
+        Mat testFrame = new Mat(height, width, CvType.CV_8UC3);
+        testFrame.setTo(new org.opencv.core.Scalar(100, 150, 200)); // Light blue
+        
+        source.putFrame(testFrame);
+        testFrame.release();
+    }
+    
+    /**
      * Get registered camera count
      */
     public int getCameraCount() {
