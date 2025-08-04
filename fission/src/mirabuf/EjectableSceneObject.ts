@@ -15,7 +15,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 class EjectableSceneObject extends SceneObject {
     private _parentSceneObject: MirabufSceneObject
-    private _gamePieceBodyId: Jolt.BodyID
+    private _gamePieceBodyId?: Jolt.BodyID
 
     private _parentBodyId?: Jolt.BodyID
     private _deltaTransformation?: THREE.Matrix4

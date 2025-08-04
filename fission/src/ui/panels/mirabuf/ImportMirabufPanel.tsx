@@ -107,11 +107,17 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         World.sceneRenderer.registerSceneObject(x)
 
                         if (World.multiplayerSystem != null) {
+                            const encodedAssembly =
+                                x.miraType !== MiraType.FIELD
+                                    ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
+                                    : undefined
+
                             const message: Message = {
                                 type: "newObject",
                                 data: {
                                     sceneObjectKey: x.id,
-                                    assembly: mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly,
+                                    assembly: encodedAssembly,
+                                    assemblyName: assembly.info?.name ?? "",
                                 },
                             }
                             World.multiplayerSystem?.broadcast(message)

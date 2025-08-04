@@ -9,6 +9,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
 import type {
+    AssemblyRequestData,
     ClientInfo,
     CollisionData,
     EncodedAssembly,
@@ -18,6 +19,7 @@ import type {
     MetadataUpdateData,
     UpdateObjectData,
 } from "./types"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 
 const COLLISION_TIMEOUT = 500
 
@@ -210,6 +212,10 @@ class MultiplayerSystem {
             case "newObject":
                 await this.handleNewObject(message.data, peerId)
                 break
+            case "needAssembly":
+                await this.handleAssemblyRequest(message.data, peerId)
+                break
+
             case "metadataUpdate":
                 await this.handleMetadataUpdate(message.data)
         }
@@ -320,7 +326,30 @@ class MultiplayerSystem {
     }
 
     async handleNewObject(data: InitObjectData, peerId: string) {
-        const assembly = mirabuf.Assembly.decode(data.assembly)
+        const assemblyName = data.assemblyName
+        let assembly: mirabuf.Assembly
+        if (data.assembly) {
+            assembly = mirabuf.Assembly.decode(data.assembly)
+        } else {
+            const cachedFields = Object.values(MirabufCachingService.getCacheMap(MiraType.FIELD))
+            const fieldInfo = cachedFields.find(f => f.name === assemblyName)
+            if (fieldInfo) {
+                const fieldAssembly = await MirabufCachingService.get(fieldInfo.id, MiraType.FIELD)
+                if (fieldAssembly) {
+                    assembly = fieldAssembly
+                } else {
+                    this.send(peerId, {
+                        type: "needAssembly",
+                        data: { assemblyName, sceneObjectKey: data.sceneObjectKey },
+                    })
+                    return
+                }
+            } else {
+                this.send(peerId, { type: "needAssembly", data: { assemblyName, sceneObjectKey: data.sceneObjectKey } })
+                return
+            }
+        }
+
         const object = await createMirabuf(assembly)
         if (object == null) return
 
@@ -332,6 +361,36 @@ class MultiplayerSystem {
         World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
 
         this._clientToObjectMap.get(peerId)?.push(object.id) || this._clientToObjectMap.set(peerId, [object.id])
+    }
+
+    async handleAssemblyRequest(data: AssemblyRequestData, peerId: string) {
+        const assemblyName = data.assemblyName
+        const sceneObjectKey = data.sceneObjectKey
+
+        const cachedFields = Object.values(MirabufCachingService.getCacheMap(MiraType.FIELD))
+        const assemblyInfo = cachedFields.find(n => n.name === assemblyName)
+        if (!assemblyInfo) {
+            console.error(`Cannot find requested assembly in cache: ${assemblyName}`)
+            return
+        }
+        const assembly = await MirabufCachingService.get(assemblyInfo.id, MiraType.FIELD)
+        if (!assembly) {
+            console.error(`Failed to get assembly: ${assemblyName} from cache`)
+            return
+        }
+
+        const encodedAssembly = mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly
+
+        const message: Message = {
+            type: "newObject",
+            data: {
+                sceneObjectKey,
+                assembly: encodedAssembly,
+                assemblyName,
+            },
+        }
+
+        this.send(peerId, message)
     }
 
     async handleMetadataUpdate(data: MetadataUpdateData) {

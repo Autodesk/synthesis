@@ -26,16 +26,17 @@ interface MessageType {
     metadataUpdate: MetadataUpdateData
     collision: CollisionData
     newObject: InitObjectData
+    needAssembly: AssemblyRequestData
     robotLeft: RobotLeftData
     ping: PingData
     pong: PingData
 }
 
+export type Message = { [K in keyof MessageType]: { type: K; data: MessageType[K] } }[keyof MessageType]
+
 // biome-ignore lint: We're using this for type safety
 export type EncodedAssembly = Uint8Array & { __: "encodedassembly" }
 export type EncodedRootBody = string
-
-export type Message = { [K in keyof MessageType]: { type: K; data: MessageType[K] } }[keyof MessageType]
 
 export type ClientInfo = {
     displayName: string
@@ -46,7 +47,13 @@ export type ClientInfo = {
 
 export type InitObjectData = {
     sceneObjectKey: number
-    assembly: EncodedAssembly
+    assembly?: EncodedAssembly
+    assemblyName: string
+}
+
+export type AssemblyRequestData = {
+    sceneObjectKey: number
+    assemblyName: string
 }
 
 export type MetadataUpdateData = {
