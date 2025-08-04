@@ -249,7 +249,7 @@ export class SimCameraInput extends SimInput {
             return
         }
 
-        this._lastFrameTime += deltaT * 1000 
+        this._lastFrameTime += deltaT * 1000
 
         // Add timing debug logs occasionally
         if (Math.random() < 0.01) {

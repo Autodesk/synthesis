@@ -60,7 +60,7 @@ export class SimCameraRenderer {
 
         const forwardFix = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI)
         const upFix = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI)
-        
+
         cameraRotation.multiply(forwardFix).multiply(upFix)
 
         this._camera.position.copy(worldCameraPos)
