@@ -206,7 +206,7 @@ public class Robot extends TimedRobot {
       m_AO.setVoltage(12.0);
       
       // Stop WebSocket server when robot is disabled
-      System.out.println("🛑 Stopping WebSocket server...");
+      System.out.println("Stopping WebSocket server...");
       SynthesisWebSocketServer.getInstance().stopServer();
   }
 

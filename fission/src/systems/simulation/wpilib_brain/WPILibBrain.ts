@@ -639,7 +639,7 @@ class WPILibBrain extends Brain {
     constructor(assembly: MirabufSceneObject) {
         super(assembly.mechanism, "wpilib")
 
-        console.log(`🧠 [WPILIBRAIN] Constructor called for assembly: ${assembly.assemblyName}`)
+        console.log(`[WPILIBRAIN] Constructor called for assembly: ${assembly.assemblyName}`)
 
         this._assembly = assembly
 
@@ -650,7 +650,7 @@ class WPILibBrain extends Brain {
             return
         }
 
-        console.log(`🧠 [WPILIBRAIN] SimulationLayer found, setting up devices...`)
+        console.log(`[WPILIBRAIN] SimulationLayer found, setting up devices...`)
 
         this.addSimInput(new SimGyroInput("Test Gyro[1]", this._mechanism))
         this.addSimInput(new SimAccelInput("ADXL362[4]", this._mechanism))
@@ -674,9 +674,9 @@ class WPILibBrain extends Brain {
     }
 
     public addSimInput(input: SimInput) {
-        console.log(`➕ [WPILIBRAIN] Adding SimInput: ${input.constructor.name} for device "${input.device}"`)
+        console.log(`[WPILIBRAIN] Adding SimInput: ${input.constructor.name} for device "${input.device}"`)
         this._simInputs.push(input)
-        console.log(`📊 [WPILIBRAIN] Total inputs: ${this._simInputs.length}`)
+        console.log(`[WPILIBRAIN] Total inputs: ${this._simInputs.length}`)
     }
 
     public addSimFlow(flow: SimFlow): boolean {

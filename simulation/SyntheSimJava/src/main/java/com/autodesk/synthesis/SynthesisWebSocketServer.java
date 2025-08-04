@@ -60,7 +60,7 @@ public class SynthesisWebSocketServer extends WebSocketServer {
         if (!isRunning) {
             try {
                 start();
-                System.out.println("🚀 Synthesis WebSocket server starting on ws://localhost:3300/wpilibws");
+                System.out.println("Synthesis WebSocket server starting on ws://localhost:3300/wpilibws");
             } catch (Exception e) {
                 System.err.println("Error starting WebSocket server: " + e.getMessage());
             }

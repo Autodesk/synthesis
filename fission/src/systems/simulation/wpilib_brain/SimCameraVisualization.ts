@@ -17,16 +17,14 @@ export class SimCameraVisualization extends SceneObject {
         super()
         this._robot = robot
 
-        // Same position as SimCameraRenderer
-        this._cameraPosition = new THREE.Vector3(0, 0.5, 0.2) // Mounted on robot
+        this._cameraPosition = new THREE.Vector3(0, 0.5, 0.2)
 
         this._cameraGroup = new THREE.Group()
     }
 
     public setup(): void {
-        // Add to scene
         World.sceneRenderer.addObject(this._cameraGroup)
-        console.log("📹 [VISUAL] SimCameraVisualization added to scene")
+        console.log("[VISUAL] SimCameraVisualization added to scene")
     }
 
     public update(): void {
@@ -68,11 +66,11 @@ export class SimCameraVisualization extends SceneObject {
         this._isVisible = visible
         this._cameraGroup.visible = visible
 
-        if (visible) {
-            console.log("📹 [VISUAL] Camera visualization enabled - you should see a camera model on your robot")
-        } else {
-            console.log("📹 [VISUAL] Camera visualization disabled")
-        }
+        // if (visible) {
+        //     console.log("📹 [VISUAL] Camera visualization enabled - you should see a camera model on your robot")
+        // } else {
+        //     console.log("📹 [VISUAL] Camera visualization disabled")
+        // }
     }
 
     public dispose(): void {
@@ -80,7 +78,6 @@ export class SimCameraVisualization extends SceneObject {
             this._cameraGroup.parent.remove(this._cameraGroup)
         }
 
-        // Dispose of geometries and materials
         this._cameraGroup.traverse(child => {
             if (child instanceof THREE.Mesh) {
                 child.geometry.dispose()
@@ -92,6 +89,6 @@ export class SimCameraVisualization extends SceneObject {
             }
         })
 
-        console.log("📹 [VISUAL] SimCameraVisualization disposed")
+        console.log("[VISUAL] SimCameraVisualization disposed")
     }
 }

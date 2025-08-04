@@ -151,16 +151,16 @@ export class SimCameraInput extends SimInput {
         this._cameraVisualization.setup()
 
         console.log(
-            `🎬 [CONSTRUCTOR] SimCameraInput created for ${device} (${this._defaultWidth}x${this._defaultHeight} @ ${this._defaultFPS}fps, interval=${this._frameInterval}ms)`
+            `[CONSTRUCTOR] SimCameraInput created for ${device} (${this._defaultWidth}x${this._defaultHeight} @ ${this._defaultFPS}fps, interval=${this._frameInterval}ms)`
         )
     }
 
     public update(deltaT: number) {
-        if (Math.random() < 0.01) {
-            console.log(
-                `🔄 [UPDATE] SimCameraInput.update() called for ${this.device} (initialized: ${this._isInitialized})`
-            )
-        }
+        // if (Math.random() < 0.01) {
+        //     console.log(
+        //         `🔄 [UPDATE] SimCameraInput.update() called for ${this.device} (initialized: ${this._isInitialized})`
+        //     )
+        // }
 
         if (!this._isInitialized) {
             this.initializeCamera()
@@ -175,7 +175,7 @@ export class SimCameraInput extends SimInput {
     }
 
     private initializeCamera() {
-        console.log(`🎥 [INIT] Starting camera initialization for ${this.device}`)
+        console.log(`[INIT] Starting camera initialization for ${this.device}`)
 
         // Initialize metadata
         SimCamera.setConnected(this.device, true)
@@ -186,7 +186,7 @@ export class SimCameraInput extends SimInput {
         SimCamera.setExposure(this.device, 50)
         SimCamera.setAutoExposure(this.device, true)
 
-        console.log(`🎥 [INIT] Camera metadata set, creating renderer...`)
+        // console.log(`🎥 [INIT] Camera metadata set, creating renderer...`)
 
         try {
             // Initialize video renderer for 3D scene capture
@@ -197,18 +197,18 @@ export class SimCameraInput extends SimInput {
             this._cameraVisualization.setVisible(true)
 
             // Force immediate test frame to verify renderer works
-            console.log(`[TEST] Attempting immediate test frame capture...`)
+            // console.log(`[TEST] Attempting immediate test frame capture...`)
             this._cameraRenderer
                 .captureFrameAsJPEG()
                 .then(blob => {
-                    console.log(`🧪 [TEST] Initial test frame captured: ${blob.size} bytes - renderer is working!`)
+                    // console.log(`🧪 [TEST] Initial test frame captured: ${blob.size} bytes - renderer is working!`)
                     this.sendFrameToRobot(blob)
                 })
                 .catch(error => {
-                    console.error(`❌ [TEST] Initial test frame failed:`, error)
+                    console.error(`[TEST] Initial test frame failed:`, error)
                 })
         } catch (error) {
-            console.error(`❌ [INIT] Failed to create camera renderer:`, error)
+            console.error(`[INIT] Failed to create camera renderer:`, error)
         }
     }
 
@@ -245,24 +245,24 @@ export class SimCameraInput extends SimInput {
 
     private generateVideoFrame(deltaT: number) {
         if (!this._cameraRenderer) {
-            console.warn(`📹 [FRAME] No camera renderer for ${this.device} - skipping frame generation`)
+            // console.warn(`📹 [FRAME] No camera renderer for ${this.device} - skipping frame generation`)
             return
         }
 
         this._lastFrameTime += deltaT * 1000
 
         // Add timing debug logs occasionally
-        if (Math.random() < 0.01) {
-            console.log(
-                `⏱[TIMING] ${this.device}: lastFrameTime=${this._lastFrameTime.toFixed(1)}ms, interval=${this._frameInterval}ms, deltaT=${(deltaT * 1000).toFixed(1)}ms`
-            )
-        }
+        // if (Math.random() < 0.01) {
+        //     console.log(
+        //         `⏱[TIMING] ${this.device}: lastFrameTime=${this._lastFrameTime.toFixed(1)}ms, interval=${this._frameInterval}ms, deltaT=${(deltaT * 1000).toFixed(1)}ms`
+        //     )
+        // }
 
         // Generate frame at specified FPS
         if (this._lastFrameTime >= this._frameInterval) {
             this._lastFrameTime = 0
 
-            console.log(`[FRAME] Capturing 3D frame for ${this.device}`)
+            // console.log(`[FRAME] Capturing 3D frame for ${this.device}`)
 
             // Capture frame from 3D scene (robot perspective)
             this._cameraRenderer
@@ -282,7 +282,7 @@ export class SimCameraInput extends SimInput {
             const arrayBuffer = await frameBlob.arrayBuffer()
             const base64Frame = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
 
-            console.log(`🚀 [SEND] Converting frame: ${arrayBuffer.byteLength} bytes → ${base64Frame.length} chars`)
+            console.log(`[SEND] Converting frame: ${arrayBuffer.byteLength} bytes → ${base64Frame.length} chars`)
 
             // Send frame through WebSocket protocol
             const frameMessage = {

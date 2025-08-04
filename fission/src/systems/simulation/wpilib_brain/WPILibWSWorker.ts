@@ -39,7 +39,7 @@ async function tryConnect(port?: number): Promise<void> {
 
             socket.addEventListener("message", onMessage)
         })
-        .then(() => console.debug("Mutex released"))
+        .then(() => { /* console.debug("Mutex released") */ })
 }
 
 async function tryDisconnect(): Promise<void> {
@@ -51,12 +51,9 @@ async function tryDisconnect(): Promise<void> {
     })
 }
 
-// Posts incoming messages
 function onMessage(event: MessageEvent) {
     self.postMessage(event.data)
 }
-
-// Sends outgoing messages
 self.addEventListener("message", e => {
     switch (e.data.command) {
         case "enable": {
@@ -91,7 +88,6 @@ self.addEventListener("message", e => {
         }
         case "camera_frame": {
             if (socketOpen()) {
-                // Send camera frame data through WebSocket
                 const frameMessage = {
                     type: "CAMERA_FRAME",
                     device: e.data.data.device,
