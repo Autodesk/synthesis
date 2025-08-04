@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/correctness/noUndeclaredVariables: In Progress */
 import Peer, { DataConnection } from "peerjs"
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { ConfigurationSavedEvent } from "@/panels/configuring/assembly-config/ConfigurationSavedEvent.ts"
 import { mirabuf } from "@/proto/mirabuf"
@@ -19,7 +20,6 @@ import type {
     MetadataUpdateData,
     UpdateObjectData,
 } from "./types"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 
 const COLLISION_TIMEOUT = 500
 
@@ -47,8 +47,8 @@ class MultiplayerSystem {
         this.info = { clientId: this.clientId, displayName: displayName, isHost, creationTime: Date.now() }
 
         this._client = new Peer(this.clientId, {
-            host: window.location.hostname,
-            port: 9000,
+            host: "synthesis.rutmanz.com",
+            port: 9876,
             path: "/",
         })
         this._client.on("error", console.log)
@@ -329,14 +329,17 @@ class MultiplayerSystem {
                 if (fieldAssembly) {
                     assembly = fieldAssembly
                 } else {
-                    this.send(peerId, {
+                    await this.send(peerId, {
                         type: "needAssembly",
                         data: { assemblyName, sceneObjectKey: data.sceneObjectKey },
                     })
                     return
                 }
             } else {
-                this.send(peerId, { type: "needAssembly", data: { assemblyName, sceneObjectKey: data.sceneObjectKey } })
+                await this.send(peerId, {
+                    type: "needAssembly",
+                    data: { assemblyName, sceneObjectKey: data.sceneObjectKey },
+                })
                 return
             }
         }
@@ -346,8 +349,9 @@ class MultiplayerSystem {
 
         object.nameOverride =
             (this._clientToInfoMap.get(peerId)?.displayName ?? peerId) +
-            " " +
-            (this._clientToObjectMap.get(peerId)?.length ?? "0")
+            " (" +
+            (this._clientToObjectMap.get(peerId)?.length ?? "0") +
+            ")"
 
         World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
 
@@ -381,7 +385,7 @@ class MultiplayerSystem {
             },
         }
 
-        this.send(peerId, message)
+        await this.send(peerId, message)
     }
 
     async handleMetadataUpdate(data: MetadataUpdateData) {
@@ -389,6 +393,7 @@ class MultiplayerSystem {
         if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
 
         sceneObject.multiplayerInfo = data
+        console.error({ metadata: data })
     }
 
     async send(peer: string, message: Message) {
