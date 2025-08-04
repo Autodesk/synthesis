@@ -1,8 +1,8 @@
 import { Vector3Tuple } from "three"
-import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
-import { InputScheme } from "../input/InputSchemeManager"
 import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
 import { MatchModeType } from "@/systems/match_mode/MatchMode"
+import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
+import { InputScheme } from "../input/InputSchemeManager"
 
 /** Names of all global preferences. */
 
@@ -168,9 +168,16 @@ export type ProtectedZonePreferences = {
     deltaTransformation: number[]
 }
 
+export interface SpawnLocation {
+    pos: Vector3Tuple
+    yaw: number
+}
 export type FieldPreferences = {
-    // TODO: implement this
-    defaultSpawnLocation: Vector3Tuple
+    spawnLocations: {
+        [A in Alliance]: {
+            [S in Station]: SpawnLocation
+        }
+    } & { default: SpawnLocation }
     scoringZones: ScoringZonePreferences[]
     protectedZones: ProtectedZonePreferences[]
 }
@@ -198,9 +205,28 @@ export function defaultRobotPreferences(): RobotPreferences {
     }
 }
 
+// The object will be moved such that the y-value specified is the bottom of the object, and the x and z values are the center
+export function defaultFieldSpawnLocation(): SpawnLocation {
+    return { pos: [0, 0.1, 0], yaw: 0 }
+}
+export function defaultRobotSpawnLocation(): SpawnLocation {
+    return { pos: [0, 0.1, 0], yaw: 0 }
+}
 export function defaultFieldPreferences(): FieldPreferences {
     return {
-        defaultSpawnLocation: [0, 1, 0],
+        spawnLocations: {
+            red: {
+                1: defaultRobotSpawnLocation(),
+                2: defaultRobotSpawnLocation(),
+                3: defaultRobotSpawnLocation(),
+            },
+            blue: {
+                1: defaultRobotSpawnLocation(),
+                2: defaultRobotSpawnLocation(),
+                3: defaultRobotSpawnLocation(),
+            },
+            default: defaultRobotSpawnLocation(),
+        },
         scoringZones: [],
         protectedZones: [],
     }

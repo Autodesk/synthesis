@@ -1,10 +1,10 @@
-import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { FieldPreferences, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { mirabuf } from "../proto/mirabuf"
 
-interface DevtoolMiraData {
+export interface DevtoolMiraData {
     "devtool:scoring_zones": ScoringZonePreferences[]
     "devtool:camera_locations": unknown
-    "devtool:spawn_points": unknown
+    "devtool:spawn_locations": FieldPreferences["spawnLocations"]
     "devtool:a": unknown
     "devtool:b": unknown
     "devtool:test": unknown

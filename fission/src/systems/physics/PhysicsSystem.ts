@@ -132,7 +132,7 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
 
         const ground = this.createBox(
-            new THREE.Vector3(7.5, 0.1, 7.5),
+            new THREE.Vector3(10, 0.1, 10),
             undefined,
             new THREE.Vector3(0.0, -0.1, 0.0),
             undefined
