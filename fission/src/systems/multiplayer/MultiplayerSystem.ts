@@ -256,7 +256,6 @@ class MultiplayerSystem {
                 positionStr,
                 rotationStr,
             }) => {
-                // const rootBody: Jolt.Body = JSON.parse(encodedRootBody)
                 const lin: { x: number; y: number; z: number } = JSON.parse(linearVelocityStr)
                 const ang: { x: number; y: number; z: number } = JSON.parse(angularVelocityStr)
                 const pos: { x: number; y: number; z: number } = JSON.parse(positionStr)
@@ -292,14 +291,6 @@ class MultiplayerSystem {
                         const bodyId = new JOLT.BodyID(id)
                         return sceneObject.setEjectable(bodyId)
                     })
-
-                // const piecesSet = gamePiecesControlled.map(id => {
-                //     const bodyId = new JOLT.BodyID(id)
-                //     return sceneObject.setEjectable(bodyId)
-                // })
-                // if (piecesSet.some(success => !success)) {
-                //     console.error(`Failed to set object(s) as ejectables`)
-                // }
 
                 const clientMechanism = sceneObject.mechanism
                 const clientBodyId = clientMechanism.nodeToBody.get(clientMechanism.rootBody)
