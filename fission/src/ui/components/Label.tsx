@@ -1,40 +1,27 @@
-import React, { ReactNode } from "react"
+import { Typography, TypographyProps } from "@mui/material"
+import { Variant } from "@mui/material/styles/createTypography"
+import type React from "react"
+import { PropsWithChildren } from "react"
 
-export enum LabelSize {
-    SMALL,
-    MEDIUM,
-    LARGE,
-    XL,
+type LabelSize = "sm" | "md" | "lg" | "xl"
+
+interface LabelProps {
+    size: LabelSize
 }
 
-const labelSizeToClassName = (size?: LabelSize) => {
-    switch (size) {
-        case LabelSize.SMALL:
-            return "text-sm"
-        case LabelSize.MEDIUM:
-            return "text-xl"
-        case LabelSize.LARGE:
-            return "text-2xl"
-        case LabelSize.XL:
-            return "text-4xl"
-        default:
-            return "text-base"
-    }
+const sizeToVariant: { [key in LabelSize]: Variant } = {
+    sm: "body1",
+    md: "h6",
+    lg: "h4",
+    xl: "h1",
 }
 
-type LabelProps = {
-    size?: LabelSize
-    children?: ReactNode
-    className?: string
+const Label: React.FC<PropsWithChildren<LabelProps> & TypographyProps> = ({ children, size, ...props }) => {
+    return (
+        <Typography variant={sizeToVariant[size]} {...props}>
+            {children}
+        </Typography>
+    )
 }
-
-const Label: React.FC<LabelProps> = ({ children, size, className }) => (
-    <span
-        className={`text-main-text h-min ${labelSizeToClassName(size)} ${className}`}
-        style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
-    >
-        {children}
-    </span>
-)
 
 export default Label

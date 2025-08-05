@@ -302,29 +302,43 @@ export async function requestMirabufFiles() {
             getHubs().then(async hubs => {
                 if (!hubs) {
                     window.dispatchEvent(
-                        new MirabufFilesStatusUpdateEvent({ isDone: true, message: "Failed to get Hubs" })
+                        new MirabufFilesStatusUpdateEvent({
+                            isDone: true,
+                            message: "Failed to get Hubs",
+                            progress: 1,
+                        })
                     )
                     return
                 }
                 const fileData: Data[] = []
-                for (const hub of hubs) {
-                    const projects = await getProjects(hub)
-                    if (!projects) continue
-                    for (const project of projects) {
-                        window.dispatchEvent(
-                            new MirabufFilesStatusUpdateEvent({
-                                isDone: false,
-                                message: `Searching Project '${project.name}'`,
-                            })
-                        )
-                        const data = await searchRootForMira(project)
-                        if (data) fileData.push(...data)
-                    }
+                let i = 0
+
+                const projects = (
+                    await Promise.all(
+                        hubs.map(async hub => {
+                            const projects = await getProjects(hub)
+                            return projects ?? []
+                        })
+                    )
+                ).flat()
+
+                if (!projects.length) return
+                for (const project of projects) {
+                    window.dispatchEvent(
+                        new MirabufFilesStatusUpdateEvent({
+                            isDone: false,
+                            message: `Searching Project '${project.name}'`,
+                            progress: i++ / projects.length,
+                        })
+                    )
+                    const data = await searchRootForMira(project)
+                    if (data) fileData.push(...data)
                 }
                 window.dispatchEvent(
                     new MirabufFilesStatusUpdateEvent({
                         isDone: true,
                         message: `Found ${fileData.length} file${fileData.length == 1 ? "" : "s"}`,
+                        progress: 1,
                     })
                 )
                 mirabufFiles = fileData

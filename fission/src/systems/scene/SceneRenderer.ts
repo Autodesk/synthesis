@@ -12,7 +12,6 @@ import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuDa
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
-import { Theme } from "@/ui/helpers/UseThemeHelpers"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { GraphicsPreferences } from "../preferences/PreferenceTypes"
@@ -21,6 +20,8 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -175,7 +176,9 @@ class SceneRenderer extends WorldSystem {
         this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
 
         if (PreferencesSystem.getGraphicsPreferences().antiAliasing) {
-            const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+            const antiAliasEffect = new SMAAEffect({
+                edgeDetectionMode: EdgeDetectionMode.COLOR,
+            })
             const antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
             this._composer.addPass(antiAliasPass)
         }
@@ -458,18 +461,19 @@ class SceneRenderer extends WorldSystem {
     }
 
     /**
+     * TODO: remove
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
      */
-    public updateSkyboxColors(currentTheme: Theme) {
-        if (!this._skybox) return
-        if (this._skybox.material instanceof THREE.ShaderMaterial) {
-            this._skybox.material.uniforms.rColor.value = currentTheme["Background"]["color"]["r"]
-            this._skybox.material.uniforms.gColor.value = currentTheme["Background"]["color"]["g"]
-            this._skybox.material.uniforms.bColor.value = currentTheme["Background"]["color"]["b"]
-        }
-    }
+    // public updateSkyboxColors(currentTheme: Theme) {
+    //     if (!this._skybox) return
+    //     if (this._skybox.material instanceof THREE.ShaderMaterial) {
+    //         this._skybox.material.uniforms.rColor.value = currentTheme["Background"]["color"]["r"]
+    //         this._skybox.material.uniforms.gColor.value = currentTheme["Background"]["color"]["g"]
+    //         this._skybox.material.uniforms.bColor.value = currentTheme["Background"]["color"]["b"]
+    //     }
+    // }
 
     /** returns whether any gizmos are being currently dragged */
     public isAnyGizmoDragging(): boolean {
@@ -535,7 +539,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel("import-mirabuf")
+                    globalOpenPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
                 },
             })
         }

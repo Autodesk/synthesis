@@ -56,8 +56,13 @@ const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
     const interpProgress = useInterp(500, progressData)
 
     useEffect(() => {
-        setProgressData({ lastValue: progressData.currentValue, currentValue: handle.progress, lastUpdate: Date.now() })
-    }, [handle.progress, progressData.currentValue])
+        setProgressData({
+            lastValue: progressData.currentValue,
+            currentValue: handle.progress,
+            lastUpdate: Date.now(),
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [handle.progress])
 
     return (
         <Box
