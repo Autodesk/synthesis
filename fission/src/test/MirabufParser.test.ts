@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest"
-import MirabufCachingService, { MiraType } from "../../mirabuf/MirabufLoader"
-import MirabufParser, { type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
-import { mirabuf } from "../../proto/mirabuf"
+import MirabufCachingService, { MiraType } from "../mirabuf/MirabufLoader"
+import MirabufParser, { type RigidNodeReadOnly } from "../mirabuf/MirabufParser"
+import { mirabuf } from "../proto/mirabuf"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
@@ -12,6 +12,7 @@ describe("Mirabuf Parser Tests", () => {
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
+
         expect(filterNonPhysicsNodes(rn, spikeMira!).length).toBe(7)
 
         // Validate joints
@@ -57,12 +58,12 @@ describe("Mirabuf Parser Tests", () => {
 
     test("Generate Rigid Nodes (FRC Field 2018_v13.mira)", async () => {
         const field = await MirabufCachingService.cacheRemote(
-            "/api/mira/fields/FRC Field 2018_v13.mira",
+            "/api/mira/Fields/FRC Field 2018_v13.mira",
             MiraType.FIELD
         ).then(x => MirabufCachingService.get(x!.id, MiraType.FIELD))
         const t = new MirabufParser(field!)
 
-        expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(2)
+        expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(34)
     })
 })
 
