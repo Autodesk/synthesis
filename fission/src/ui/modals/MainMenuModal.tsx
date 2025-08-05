@@ -2,11 +2,11 @@ import { Button, Stack } from "@mui/material"
 import type React from "react"
 import { useLayoutEffect } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import type { ModalImplProps } from "../components/Modal"
 import { useStateContext } from "../helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { spawnCachedMira } from "../panels/mirabuf/ImportMirabufPanel"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 
 interface MainMenuCustomProps {
     startSingleplayerCallback: () => void
@@ -69,4 +69,4 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
     )
 }
 
-export default MainMenuModal;
+export default MainMenuModal
