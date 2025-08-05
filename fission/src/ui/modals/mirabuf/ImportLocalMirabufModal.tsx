@@ -91,7 +91,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
             </ToggleButtonGroup>
             <Button component="label" role={undefined}>
                 Upload File
-                <VisuallyHiddenInput type="file" onChange={onInputChanged} multiple />
+                <VisuallyHiddenInput type="file" onChange={onInputChanged} multiple accept=".mira" />
             </Button>
             {selectedFile && <Label className="text-center" size="sm">{`Selected File: ${selectedFile.name}`}</Label>}
         </Stack>
