@@ -1,30 +1,28 @@
-import React, { useState } from "react"
-import Button from "@/components/Button"
-import Label, { LabelSize } from "@/components/Label"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import Stack, { StackDirection } from "@/components/Stack"
-import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { SynthesisIcons } from "../components/StyledComponents"
+import { Button, Stack } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
+import Checkbox from "@/components/Checkbox.tsx"
+import Label from "../components/Label"
+import { useUIContext } from "../helpers/UIProviderHelpers"
+import { PanelImplProps } from "../components/Panel"
 
-const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+const RobotSwitchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
     const [selected, setSelected] = useState(0)
-    const { openModal } = useModalControlContext()
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "MultiBot" }, {})
+    }, [])
+
     return (
-        <Panel
-            name={"MultiBot"}
-            icon={SynthesisIcons.PEOPLE}
-            panelId={panelId}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
-        >
-            <Label size={LabelSize.MEDIUM}>MultiBot</Label>
+        <>
+            <Label size="md">MultiBot</Label>
             <form>
                 <fieldset>
                     {robots.map((name: string, i: number) => (
                         // fixme: new checkbox
-                        <StatefulCheckbox
+                        <Checkbox
                             label={name}
                             checked={i == selected}
                             className="whitespace-nowrap"
@@ -34,11 +32,11 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     ))}
                 </fieldset>
             </form>
-            <Stack direction={StackDirection.HORIZONTAL}>
-                <Button value="Add" onClick={() => openModal("robots")} />
-                <Button value="Remove" onClick={() => setRobots(robots.filter(r => r !== robots[selected]))} />
+            <Stack direction="row">
+                <Button onClick={() => /* TODO: openModal("robots") <- what modal is this??? */ undefined}>Add</Button>
+                <Button onClick={() => setRobots(robots.filter(r => r !== robots[selected]))}>Remove</Button>
             </Stack>
-        </Panel>
+        </>
     )
 }
 

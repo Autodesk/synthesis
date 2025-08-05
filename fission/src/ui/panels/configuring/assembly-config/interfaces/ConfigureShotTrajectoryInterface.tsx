@@ -1,26 +1,25 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
-import Button from "@/ui/components/Button"
-import Slider from "@/ui/components/Slider"
 import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import { Button, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -87,11 +86,6 @@ interface ConfigEjectorProps {
 }
 
 const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ selectedRobot }) => {
-    const { currentTheme, themes } = useTheme()
-    const theme = useMemo(() => {
-        return themes[currentTheme]
-    }, [currentTheme, themes])
-
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
     const [ejectOrder, setEjectOrder] = useState<"FIFO" | "LIFO">(
@@ -120,9 +114,12 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     const placeholderMesh = useMemo(() => {
         return new THREE.Mesh(
             new THREE.ConeGeometry(0.1, 0.4, 4).rotateX(Math.PI / 2.0).translate(0, 0, 0.2),
-            World.sceneRenderer.createToonMaterial(convertReactRgbaColorToThreeColor(theme.HighlightHover.color))
+            // TODO: dynamic color
+            World.sceneRenderer.createToonMaterial(
+                convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 })
+            )
         )
-    }, [theme])
+    }, [])
 
     const gizmoComponent = useMemo(() => {
         if (selectedRobot?.ejectorPreferences) {
@@ -199,7 +196,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             }
 
             const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
-            if (!assoc || !assoc.sceneObject || assoc.sceneObject != selectedRobot) {
+            if (!assoc || !assoc.sceneObject || assoc.sceneObject !== selectedRobot) {
                 return false
             }
 
@@ -219,7 +216,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             />
 
             {/* Toggle for adjusting eject order */}
-            <div className="mt-4 flex items-center space-x-2">
+            <Stack direction="row" spacing={2} alignItems="center" className="mt-4">
                 {LabelWithTooltip(
                     "Eject Order",
                     "Choose how to eject pieces: FIFO (first in, first out) ejects the oldest-loaded item first, or LIFO (last in, first out) ejects the most recently loaded item first."
@@ -227,21 +224,22 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 <ToggleButtonGroup
                     value={ejectOrder}
                     exclusive
-                    onChange={(_, v) => v && setEjectOrder(v as "FIFO" | "LIFO")}
+                    onChange={(_: unknown, v: "FIFO" | "LIFO") => v && setEjectOrder(v)}
                 >
                     <ToggleButton value="FIFO">FIFO</ToggleButton>
                     <ToggleButton value="LIFO">LIFO</ToggleButton>
                 </ToggleButtonGroup>
-            </div>
+            </Stack>
 
             {/* Slider for user to set velocity of ejector configuration */}
-            <Slider
+            <StatefulSlider
+                label="Velocity"
                 min={MIN_VELOCITY}
                 max={MAX_VELOCITY}
-                value={ejectorVelocity}
-                label="Velocity"
-                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                onChange={(_, vel: number | number[]) => {
+                defaultValue={ejectorVelocity}
+                // TODO:
+                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={vel => {
                     setEjectorVelocity(vel as number)
                 }}
                 step={0.01}
@@ -251,7 +249,6 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             {gizmoComponent}
             {Spacer(10)}
             <Button
-                value="Reset"
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
@@ -264,7 +261,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                     setSelectedNode(selectedRobot?.rootNodeId)
                     setEjectOrder(selectedRobot.ejectorPreferences?.ejectOrder ?? "FIFO")
                 }}
-            />
+            >
+                Reset
+            </Button>
         </>
     )
 }

@@ -21,18 +21,9 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
-import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
-import {
-    ConfigurationType,
-    setSelectedConfigurationType,
-} from "@/ui/panels/configuring/assembly-config/ConfigurationType"
-import {
-    ConfigMode,
-    setNextConfigurePanelSettings,
-} from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
-import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import SceneObject from "../systems/scene/SceneObject"
@@ -41,9 +32,13 @@ import FieldMiraEditor from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
 import { MiraType } from "./MirabufLoader"
-import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
+import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import { SimConfigData } from "@/systems/simulation/SimConfigShared"
+import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 const DEBUG_BODIES = false
 
@@ -54,7 +49,7 @@ interface RnDebugMeshes {
 
 /**
  * The goal with the spotlight assembly is to provide a contextual target assembly
- * the user would like to modifiy. Generally this will be which even assembly was
+ * the user would like to modify. Generally this will be which even assembly was
  * last spawned in, however, systems (such as the configuration UI) can elect
  * assemblies to be in the spotlight when moving from interface to interface.
  */
@@ -279,7 +274,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         // Simulation
-        if (this.miraType == MiraType.ROBOT) {
+        if (this.miraType === MiraType.ROBOT) {
             World.simulationSystem.registerMechanism(this._mechanism)
             const simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
             this._brain = new SynthesisBrain(this, this._assemblyName)
@@ -434,7 +429,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
             this.updateNodeParts(rn, transform)
 
-            if (isNaN(body.GetPosition().GetX())) {
+            if (Number.isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
                 const pos = body.GetPosition()
                 console.warn(
@@ -821,43 +816,39 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public getSupplierData(): ContextData {
-        const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
+        const data: ContextData = {
+            title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
+            items: [],
+        }
 
         data.items.push(
             {
                 name: "Move",
-                func: () => {
-                    setSelectedConfigurationType(
-                        this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
-                    )
-                    setNextConfigurePanelSettings({
-                        configMode: ConfigMode.MOVE,
-                        selectedAssembly: this,
-                    })
-                    globalOpenPanel("configure")
+                customProps: {
+                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configMode: ConfigMode.MOVE,
+                    selectedAssembly: this,
                 },
+                screen: ConfigurePanel,
+                type: "panel",
             },
             {
                 name: "Configure",
-                func: () => {
-                    setSelectedConfigurationType(
-                        this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
-                    )
-                    setNextConfigurePanelSettings({
-                        configMode: undefined,
-                        selectedAssembly: this,
-                    })
-                    globalOpenPanel("configure")
+                customProps: {
+                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configMode: undefined,
+                    selectedAssembly: this,
                 },
+                screen: ConfigurePanel,
+                type: "panel",
             }
         )
 
         if (this.brain?.brainType == "wpilib") {
             data.items.push({
                 name: "Auto Testing",
-                func: () => {
-                    globalOpenPanel("auto-test")
-                },
+                screen: AutoTestPanel,
+                type: "panel",
             })
         }
 
@@ -867,7 +858,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 data.items.push({
                     name: "Camera: Unfocus",
                     func: () => {
-                        cameraControls.focusProvider = undefined
+                        cameraControls.unfocus()
                     },
                 })
 

@@ -240,7 +240,7 @@ class APS {
                 const json = await res.json()
                 if (!res.ok) {
                     if (shouldRelog) {
-                        globalAddToast("warning", "Must Re-signin.", json.userMessage)
+                        globalAddToast("warning", "Must Re-signin.", `${json.userMessage}`)
                         this._auth = undefined
                         await this.requestAuthCode()
                         return false
@@ -285,7 +285,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Login Failure")
-                globalAddToast("error", "Error signing in.", json.userMessage)
+                globalAddToast("error", "Error signing in.", `${json.userMessage}`)
                 this._auth = undefined
                 return
             }
@@ -331,7 +331,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Failure: User Info")
-                globalAddToast("error", "Error fetching user data.", json.userMessage)
+                globalAddToast("error", "Error fetching user data.", `${json.userMessage}`)
                 this._auth = undefined
                 await this.requestAuthCode()
                 return

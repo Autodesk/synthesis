@@ -1,8 +1,8 @@
-import React, { useState } from "react"
-import Button from "@/components/Button"
-import Label from "@/components/Label"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
+import { Box, Button, Stack } from "@mui/material"
+import { useState } from "react"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
+import Label from "@/ui/components/Label"
 
 type AllianceSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
@@ -21,20 +21,20 @@ const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({
     const [station, setStation] = useState<Station>(selectedAssembly.station ?? 1)
 
     return (
-        <div className="flex flex-col gap-2">
-            <div>
-                <Label>Alliance: </Label>
+        <Stack gap={2}>
+            <Box>
+                <Label size="md">Alliance: </Label>
                 <Button
                     value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
                     onClick={() => {
                         setAlliance(alliance == "blue" ? "red" : "blue")
                         saveSetAlliance(alliance == "blue" ? "red" : "blue", selectedAssembly)
                     }}
-                    colorOverrideClass={`bg-match-${alliance}-alliance`}
-                />
-            </div>
+                    sx={{ bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" }}
+                >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
+            </Box>
             <div>
-                <Label>Station: </Label>
+                <Label size="md">Station: </Label>
                 <div className="flex gap-2">
                     <Button
                         value="1"
@@ -42,27 +42,33 @@ const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({
                             setStation(1)
                             saveSetStation(1, selectedAssembly)
                         }}
-                        colorOverrideClass={station === 1 ? `bg-match-${alliance}-alliance` : ""}
-                    />
+                        sx={station === 1 ? { bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                    >
+                        1
+                    </Button>
                     <Button
                         value="2"
                         onClick={() => {
                             setStation(2)
                             saveSetStation(2, selectedAssembly)
                         }}
-                        colorOverrideClass={station === 2 ? `bg-match-${alliance}-alliance` : ""}
-                    />
+                        sx={station === 2 ? { bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                    >
+                        2
+                    </Button>
                     <Button
                         value="3"
                         onClick={() => {
                             setStation(3)
                             saveSetStation(3, selectedAssembly)
                         }}
-                        colorOverrideClass={station === 3 ? `bg-match-${alliance}-alliance` : ""}
-                    />
+                        sx={station === 3 ? { bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                    >
+                        3
+                    </Button>
                 </div>
             </div>
-        </div>
+        </Stack>
     )
 }
 

@@ -1,43 +1,41 @@
-import "@xyflow/react/dist/style.css"
+import { Button, Grid, Stack } from "@mui/material"
 import {
-    Connection,
-    FinalConnectionState,
-    Edge as FlowEdge,
-    Node as FlowNode,
-    NodeProps,
+    type Connection,
+    type FinalConnectionState,
+    type Edge as FlowEdge,
+    type Node as FlowNode,
     ReactFlow,
     ReactFlowProvider,
+    NodeProps,
     useEdgesState,
     useNodesState,
     useReactFlow,
 } from "@xyflow/react"
-import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
+import type React from "react"
+import { type ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import { isNoraDeconstructable } from "@/systems/simulation/Nora"
-import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import World from "@/systems/World"
-import Button from "@/ui/components/Button"
-import Checkbox from "@/ui/components/Checkbox"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import Label, { LabelSize } from "@/ui/components/Label"
-import ScrollView from "@/ui/components/ScrollView"
-import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import FlowControls from "./FlowControls"
-import FlowInfo from "./FlowInfo"
 import {
-    ConfigState,
-    HandleInfo,
+    type ConfigState,
+    type HandleInfo,
     handleInfoDisplayCompare,
     NODE_ID_ROBOT_IO,
     NODE_ID_SIM_IN,
     NODE_ID_SIM_OUT,
     SimConfig,
-    SimConfigData,
-} from "./SimConfigShared"
+    type SimConfigData,
+} from "@/systems/simulation/SimConfigShared"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
+import World from "@/systems/World"
+import FlowControls from "@/ui/components/simulation/FlowControls"
+import FlowInfo from "@/ui/components/simulation/FlowInfo"
+import { useUIContext } from "../../helpers/UIProviderHelpers"
 import WiringNode from "./WiringNode"
+import ScrollView from "@/ui/components/ScrollView"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import Checkbox from "@/ui/components/Checkbox"
+import Label from "@/ui/components/Label"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -53,9 +51,10 @@ type NodeType = ComponentType<
     }
 >
 
-// This took way too long
-const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{ [k: string]: NodeType }>((prev, next) => {
-    prev[next.name] = next
+const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
+    [k: string]: NodeType
+}>((prev, next) => {
+    prev[next.name] = next as NodeType
     return prev
 }, {})
 
@@ -67,11 +66,11 @@ function generateGraph(
     const nodes: Map<string, FlowNode> = new Map()
     const edges: FlowEdge[] = []
 
-    Object.entries(simConfig.nodes).forEach(([_k, v]) => {
-        let onEdit: (() => void) | undefined = undefined
-        let onRefresh: (() => void) | undefined = undefined
-        let onDelete: (() => void) | undefined = undefined
-        let title: string = ""
+    for (const [_k, v] of Object.entries(simConfig.nodes)) {
+        let onEdit: (() => void) | undefined
+        let onRefresh: (() => void) | undefined
+        let onDelete: (() => void) | undefined
+        let title = ""
 
         switch (v.id) {
             case NODE_ID_ROBOT_IO:
@@ -92,40 +91,38 @@ function generateGraph(
                 break
             default:
                 onDelete = () => {
-                    if (SimConfig.removeNode(simConfig, v.id)) refreshGraph()
+                    if (SimConfig.RemoveNode(simConfig, v.id)) refreshGraph()
                 }
                 break
         }
 
         nodes.set(v.id, {
-            id: v.id,
-            type: v.type,
-            position: v.position,
+            ...v,
             data: {
-                title: title,
-                onEdit: onEdit,
-                onRefresh: onRefresh,
-                onDelete: onDelete,
-                simConfig: simConfig,
+                title,
+                onEdit,
+                onRefresh,
+                onDelete,
+                simConfig,
                 input: [],
                 output: [],
                 tooltip: v.tooltip,
             },
         })
-    })
+    }
 
-    Object.entries(simConfig.handles).forEach(([_k, v]) => {
-        if (!v.enabled) return
+    for (const [_k, v] of Object.entries(simConfig.handles)) {
+        if (!v.enabled) break
         const node = nodes.get(v.nodeId)
         if (!node) {
             console.warn("Orphaned handle found")
-            return
+            break
         }
         const list = (v.isSource ? node.data.output : node.data.input) as unknown[]
         list.push(v)
-    })
+    }
 
-    Object.entries(simConfig.edges).forEach(([k, v]) => {
+    for (const [k, v] of Object.entries(simConfig.edges)) {
         const sourceHandle = simConfig.handles[v.sourceId]
         const targetHandle = simConfig.handles[v.targetId]
 
@@ -138,86 +135,78 @@ function generateGraph(
                 targetHandle: targetHandle.id,
             })
         }
-    })
+    }
 
     return [[...nodes.values()], edges]
 }
 
-const SimIOComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
+function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
-    Object.entries(simConfig.handles).forEach(([_k, v]) => {
-        if (v.nodeId == NODE_ID_SIM_OUT || v.nodeId == NODE_ID_SIM_IN) {
+    for (const [_k, v] of Object.entries(simConfig.handles)) {
+        if (v.nodeId === NODE_ID_SIM_OUT || v.nodeId === NODE_ID_SIM_IN) {
             const list = v.isSource ? simOut : simIn
             list.push(v)
         }
-    })
+    }
 
     return (
-        <div className="flex flex-col w-full gap-4">
-            <Label className="text-center" size={LabelSize.MEDIUM}>
-                Configure the Simulation's IO Modules
-            </Label>
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    columnGap: "1rem",
-                }}
-            >
-                <div className="flex flex-col justify-center grow">
-                    <Label className="text-center">Output</Label>
-                    <ScrollView className="h-full px-2">
+        <Stack gap={4}>
+            <Label size="md">Configure the Simulation's IO Modules</Label>
+            <Grid>
+                <Stack>
+                    <Label size="sm">Output</Label>
+                    <ScrollView>
                         {simOut.sort(handleInfoDisplayCompare).map(handle => (
                             <Checkbox
-                                key={handle.id}
                                 label={`${handle.displayName}`}
-                                defaultState={handle.enabled}
+                                key={handle.id}
+                                checked={handle.enabled}
                                 onClick={checked => {
                                     handle.enabled = checked
                                 }}
                             />
                         ))}
                     </ScrollView>
-                </div>
-                <div className="flex flex-col justify-center grow">
-                    <Label className="text-center">Input</Label>
-                    <ScrollView className="h-full px-2">
+                </Stack>
+                <Stack>
+                    <Label size="sm">Input</Label>
+                    <ScrollView>
                         {simIn.sort(handleInfoDisplayCompare).map(handle => (
                             <Checkbox
-                                key={handle.id}
                                 label={`${handle.displayName}`}
-                                defaultState={handle.enabled}
+                                key={handle.id}
+                                checked={handle.enabled}
                                 onClick={checked => {
                                     handle.enabled = checked
                                 }}
                             />
                         ))}
                     </ScrollView>
-                </div>
-            </div>
-            <Button className="self-center" value={"Back to wiring view"} onClick={() => setConfigState("wiring")} />
-        </div>
+                </Stack>
+            </Grid>
+            <Button onClick={() => setConfigState("wiring")}>Back to wiring view</Button>
+        </Stack>
     )
 }
 
-const RobotIOComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
+function RobotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
         const pwmDevices: JSX.Element[] = []
         const accelerometers: JSX.Element[] = []
 
-        Object.entries(simConfig.handles).forEach(([_k, v]) => {
-            if (v.nodeId != NODE_ID_ROBOT_IO) return
+        for (const [_k, v] of Object.entries(simConfig.handles)) {
+            if (v.nodeId !== NODE_ID_ROBOT_IO) return []
 
             const checkbox = (
                 <Checkbox
+                    label={v.displayName}
                     key={v.id}
-                    label={`${v.displayName}`}
-                    defaultState={v.enabled}
-                    onClick={checked => {
-                        v.enabled = checked
+                    checked={v.enabled}
+                    onClick={enabled => {
+                        v.enabled = enabled
                     }}
                 />
             )
@@ -230,72 +219,52 @@ const RobotIOComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
                     pwmDevices.push(checkbox)
                     break
                 case SimType.CAN_ENCODER:
-                    canEncoders.push(checkbox)
+                    pwmDevices.push(checkbox)
                     break
                 case SimType.ACCELEROMETER:
-                    accelerometers.push(checkbox)
+                    pwmDevices.push(checkbox)
                     break
             }
-        })
+        }
 
         return [canEncoders, canMotors, pwmDevices, accelerometers]
     }, [simConfig])
 
     return (
-        <div className="flex flex-col w-full gap-4">
-            <Label className="text-center" size={LabelSize.MEDIUM}>
-                Configure your Robot's IO Module
-            </Label>
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    columnGap: "1rem",
-                }}
-            >
-                <div className="flex flex-col justify-center grow">
-                    <Label className="text-center">Input</Label>
-                    <ScrollView className="h-full px-2">
-                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                            CAN Encoders
-                        </SectionLabel>
-                        <SectionDivider />
+        <Stack gap={4}>
+            <Label size="md">Configure your Robot's IO Module</Label>
+            <Grid>
+                <Stack>
+                    <Label size="sm">Input</Label>
+                    <ScrollView>
+                        <Label size="md">CAN Encoders</Label>
                         {canEncoders}
-                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                            Accelerometers
-                        </SectionLabel>
-                        <SectionDivider />
+                        <Label size="md">Accelerometers</Label>
                         {accelerometers}
                     </ScrollView>
-                </div>
-                <div className="flex flex-col justify-center grow">
-                    <Label className="text-center">Output</Label>
-                    <ScrollView className="h-full px-2">
-                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                            CAN Motors
-                        </SectionLabel>
-                        <SectionDivider />
+                </Stack>
+                <Stack>
+                    <Label size="sm">Output</Label>
+                    <ScrollView>
+                        <Label size="md">CAN Motors</Label>
                         {canMotors}
-                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                            PWM Devices
-                        </SectionLabel>
-                        <SectionDivider />
+                        <Label size="md">PWM Devices</Label>
                         {pwmDevices}
                     </ScrollView>
-                </div>
-            </div>
-            <Button className="self-center" value={"Back to wiring view"} onClick={() => setConfigState("wiring")} />
-        </div>
+                </Stack>
+            </Grid>
+            <Button onClick={() => setConfigState("wiring")}>Back to wiring view</Button>
+        </Stack>
     )
 }
 
-const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig, reset }) => {
+function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])
     const [_refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
 
-    // Essentially a callback, but it can use itself.
+    // Essentially a callback, but it can use itself
     useEffect(() => {
         const [nodes, edges] = generateGraph(simConfig, refreshGraph, setConfigState)
         setNodes(nodes)
@@ -304,7 +273,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
 
     const onEdgeDoubleClick = useCallback(
         (_: React.MouseEvent, edge: FlowEdge) => {
-            if (SimConfig.deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
+            if (SimConfig.DeleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
                 refreshGraph()
             }
         },
@@ -327,7 +296,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         (connection: Connection) => {
             const sourceId = connection.sourceHandle
             const targetId = connection.targetHandle
-            if (SimConfig.makeConnection(simConfig, sourceId!, targetId!)) {
+            if (SimConfig.MakeConnection(simConfig, sourceId!, targetId!)) {
                 refreshGraph()
             }
         },
@@ -347,7 +316,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
                 return
             }
 
-            const newHandleId = (handleInfo.isSource ? SimConfig.addDeconstructorNode : SimConfig.addConstructorNode)(
+            const newHandleId = (handleInfo.isSource ? SimConfig.AddDeconstructorNode : SimConfig.AddConstructorNode)(
                 simConfig,
                 handleInfo.noraType,
                 screenToFlowPosition({ x: clientX, y: clientY })
@@ -356,8 +325,8 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
 
             if (
                 handleInfo.isSource
-                    ? SimConfig.makeConnection(simConfig, handleInfo.id, newHandleId)
-                    : SimConfig.makeConnection(simConfig, newHandleId, handleInfo.id)
+                    ? SimConfig.MakeConnection(simConfig, handleInfo.id, newHandleId)
+                    : SimConfig.MakeConnection(simConfig, newHandleId, handleInfo.id)
             )
                 refreshGraph()
         },
@@ -365,7 +334,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     )
 
     const onCreateJunction = useCallback(() => {
-        SimConfig.addJunctionNode(simConfig)
+        SimConfig.AddJunctionNode(simConfig)
         refreshGraph()
     }, [simConfig])
 
@@ -390,21 +359,19 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     )
 }
 
-const WiringPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [configState, setConfigState] = useState<ConfigState>("wiring")
-    const { closePanel } = usePanelControlContext()
+    const { addToast, configureScreen } = useUIContext()
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
         const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
         if (miraObjs.length > 0) {
             return miraObjs[0][1] as MirabufSceneObject
-        } else {
-            // TEMPORARY: Will be moved to config panel to ensure selected assembly
-            globalAddToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
-            closePanel(panelId)
         }
-    }, [closePanel, panelId])
+        addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
+        // closePanel(panel!.id, CloseType.Cancel)
+    }, [])
 
     useEffect(() => {
         if (!selectedAssembly) return
@@ -413,13 +380,13 @@ const WiringPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         if (existingConfig) {
             setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
         } else {
-            setSimConfig(SimConfig.default(selectedAssembly))
+            setSimConfig(SimConfig.Default(selectedAssembly))
         }
     }, [selectedAssembly])
 
     const save = useCallback(() => {
         if (simConfig && selectedAssembly) {
-            const flows = SimConfig.compile(simConfig, selectedAssembly)
+            const flows = SimConfig.Compile(simConfig, selectedAssembly)
             if (!flows) {
                 console.error("Compilation Failed")
                 return
@@ -432,22 +399,19 @@ const WiringPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const reset = useCallback(() => {
         if (selectedAssembly) {
-            setSimConfig(SimConfig.default(selectedAssembly))
+            setSimConfig(SimConfig.Default(selectedAssembly))
         }
     }, [selectedAssembly])
 
+    useEffect(() => {
+        configureScreen(panel!, { title: "Wiring Panel" }, { onBeforeAccept: save })
+    }, [])
+
     return (
-        <Panel
-            name="Wiring Panel"
-            icon={SynthesisIcons.STEERING_WHEEL}
-            panelId={panelId}
-            openLocation={"center"}
-            full
-            onAccept={save}
-        >
+        <>
             {selectedAssembly && simConfig ? (
                 <div className="flex grow">
-                    {configState === "wiring" ? (
+                    {configState === "wiring" && (
                         <ReactFlowProvider>
                             <WiringComponent
                                 reset={reset}
@@ -456,32 +420,26 @@ const WiringPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 setConfigState={setConfigState}
                             />
                         </ReactFlowProvider>
-                    ) : (
-                        <></>
                     )}
-                    {configState === "robotIO" ? (
-                        <RobotIOComponent
+                    {configState === "robotIO" && (
+                        <RobotIoComponent
                             simConfig={simConfig}
                             selectedAssembly={selectedAssembly}
                             setConfigState={setConfigState}
                         />
-                    ) : (
-                        <></>
                     )}
-                    {configState === "simIO" ? (
-                        <SimIOComponent
+                    {configState === "simIO" && (
+                        <SimIoComponent
                             simConfig={simConfig}
                             selectedAssembly={selectedAssembly}
                             setConfigState={setConfigState}
                         />
-                    ) : (
-                        <></>
                     )}
                 </div>
             ) : (
-                <>ERRR</>
+                "ERRR"
             )}
-        </Panel>
+        </>
     )
 }
 

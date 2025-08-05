@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react"
 import * as THREE from "three"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
 import World from "@/systems/World"
-import Checkbox from "@/ui/components/Checkbox"
-import Slider from "@/ui/components/Slider"
 import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
-import { SynthesisIcons } from "../components/StyledComponents"
+import { Stack } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
+import StatefulSlider from "../components/StatefulSlider"
+import Checkbox from "../components/Checkbox"
+import { PanelImplProps } from "../components/Panel"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const RAY_MAX_LENGTH = 20.0
 
@@ -59,7 +61,8 @@ function affect(
     }
 }
 
-const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const PokerPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [punch, setPunch] = useState(PUNCH_DEFAULT)
     const [punchForce, setPunchForce] = useState(PUNCH_FORCE_DEFAULT)
     const [mark, setMark] = useState(MARK_DEFAULT)
@@ -72,6 +75,8 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             affect(e, punch, mark, punchForce, markRadius, markers)
         }
 
+        console.log(punch, mark)
+
         World.sceneRenderer.renderer.domElement.addEventListener("click", onClick)
 
         return () => {
@@ -81,40 +86,37 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         return () => {
-            markers.forEach(x => {
-                x.geometry.dispose()
-                World.sceneRenderer.scene.remove(x)
-            })
+            for (const marker of markers) {
+                marker.geometry.dispose()
+                World.sceneRenderer.scene.remove(marker)
+            }
         }
     }, [markers])
 
+    useEffect(() => {
+        configureScreen(panel!, { title: "The Poker", hideAccept: true, cancelText: "Close" }, {})
+    }, [])
+
     return (
-        <Panel
-            openLocation="bottom-right"
-            name={"The Poker"}
-            icon={SynthesisIcons.OUTLINED_DOUBLE_RIGHT}
-            panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Close"
-        >
-            <Checkbox label="Punch?" defaultState={PUNCH_DEFAULT} onClick={x => setPunch(x)} />
-            <Slider
+        <Stack>
+            <Checkbox label="Punch?" checked={punch} onClick={setPunch} />
+            <StatefulSlider
                 label="Punch Force"
                 min={PUNCH_FORCE_MIN}
                 max={PUNCH_FORCE_MAX}
-                value={punchForce}
-                onChange={(_, x) => setPunchForce(x as number)}
+                defaultValue={punchForce}
+                onChange={x => setPunchForce(x as number)}
             />
-            <Checkbox label="Mark?" defaultState={MARK_DEFAULT} onClick={x => setMark(x)} />
-            <Slider
+            <Checkbox label="Mark?" checked={mark} onClick={setMark} />
+            <StatefulSlider
                 label="Mark Radius"
                 min={MARK_RADIUS_MIN}
                 max={MARK_RADIUS_MAX}
                 step={MARK_RADIUS_SLIDER_STEP}
-                value={markRadius}
-                onChange={(_, x) => setMarkRadius(x as number)}
+                defaultValue={markRadius}
+                onChange={x => setMarkRadius(x as number)}
             />
-        </Panel>
+        </Stack>
     )
 }
 

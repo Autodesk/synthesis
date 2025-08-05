@@ -60,7 +60,7 @@ class DragModeSystem extends WorldSystem {
         // Precision and sensitivity
         MINIMUM_DISTANCE_THRESHOLD: 0.02, // Minimum distance to apply forces (smaller = more precision)
         WHEEL_SCROLL_SENSITIVITY: -0.01, // Mouse wheel scroll sensitivity for Z-axis
-        ROTATION_SPEED: 200.0, // speed of arrow key rotation. lower = more precise, higher = more
+        ROTATION_SPEED: 1500.0, // speed of arrow key rotation. lower = more precise, higher = more
     } as const
 
     private _enabled: boolean = false
@@ -110,6 +110,10 @@ class DragModeSystem extends WorldSystem {
 
     public get enabled(): boolean {
         return this._enabled
+    }
+
+    public get isTransitioning(): boolean {
+        return this._cameraTransition.isTransitioning
     }
 
     public set enabled(enabled: boolean) {
@@ -566,17 +570,22 @@ class DragModeSystem extends WorldSystem {
             const joltForce = convertThreeVector3ToJoltVec3(forceNeeded)
             body.AddForce(joltForce)
 
+            const inertia = body.GetMotionProperties().GetInverseInertiaDiagonal()
+            const moi = 1.0 / inertia.Length()
             const yawRotation = new JOLT.Vec3(
                 0,
-                DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
+                moi *
+                    DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
                     (InputSystem.isKeyPressed("ArrowRight") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowLeft") ? 1 : 0)),
                 0
             )
             const cameraVector = World.sceneRenderer.mainCamera.getWorldDirection(new THREE.Vector3(0, 0, 0))
             const pitchRotation = new JOLT.Vec3(cameraVector.z, 0, -cameraVector.x).Mul(
-                DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
+                moi *
+                    DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
                     (InputSystem.isKeyPressed("ArrowUp") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowDown") ? 1 : 0))
             )
+
             body.AddTorque(yawRotation)
             body.AddTorque(pitchRotation)
         } else {
