@@ -7,7 +7,7 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import { useUIContext, CloseType } from "@/ui/helpers/UIProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
@@ -15,11 +15,13 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
-    const { openPanel, configureScreen, closeModal, addToast } = useUIContext()
+    const { openPanel, configureScreen } = useUIContext()
     const { setSelectedScheme } = useStateContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
     const [type, setType] = useState<DriveType>(DriveType.ARCADE)
+    const [nameError, setNameError] = useState<boolean>(false)
+    const [nameErrorText, setNameErrorText] = useState<string>("")
 
     const targetAssembly = useMemo(() => {
         const assembly = getSpotlightAssembly()
@@ -32,22 +34,9 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
 
     useEffect(() => {
         const onBeforeAccept = () => {
-            const trimmedName = name.trim()
-            if (trimmedName === "") {
-                closeModal(CloseType.Cancel)
-                addToast("error", "Name cannot be empty")
-                return
-            }
-
-            if (InputSchemeManager.allInputSchemes.map(s => s.schemeName).includes(trimmedName)) {
-                closeModal(CloseType.Cancel)
-                addToast("error", "Name already exists")
-                return
-            }
-
             const scheme = DefaultInputs.newBlankScheme(type)
 
-            scheme.schemeName = trimmedName
+            scheme.schemeName = name
 
             InputSchemeManager.addCustomScheme(scheme)
             InputSchemeManager.saveSchemes()
@@ -71,13 +60,40 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
             )
         }
 
-        configureScreen(modal!, { title: "New Input Scheme" }, { onBeforeAccept })
-    }, [name, type, brainIndex, openPanel, modal, configureScreen, closeModal])
+        configureScreen(modal!, { title: "New Input Scheme", disableAccept: nameError }, { onBeforeAccept })
+    }, [name, type, brainIndex, openPanel, modal, configureScreen, nameError])
+
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setName(e.target.value)
+
+        const trimmedName = e.target.value.trim()
+        if (trimmedName === "") {
+            setNameError(true)
+            setNameErrorText("Name cannot be empty")
+            return
+        }
+
+        if (InputSchemeManager.allInputSchemes.map(s => s.schemeName).includes(trimmedName)) {
+            setNameError(true)
+            setNameErrorText("Name already exists")
+            return
+        }
+
+        setNameError(false)
+        setNameErrorText("")
+    }
 
     return (
         <>
             <Stack gap={2}>
-                <TextField label="Name" placeholder="" defaultValue={name} onChange={e => setName(e.target.value)} />
+                <TextField
+                    label="Name"
+                    placeholder=""
+                    value={name}
+                    onChange={handleNameChange}
+                    error={nameError}
+                    helperText={nameErrorText}
+                />
                 <FormControl fullWidth>
                     <InputLabel id="drive-type-label">Drive Type</InputLabel>
                     <Select

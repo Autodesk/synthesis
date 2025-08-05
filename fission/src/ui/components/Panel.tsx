@@ -93,6 +93,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                                 onClick={() => closePanel(panel.id, CloseType.Accept)}
                                 variant="contained"
                                 color="primary"
+                                disabled={props.disableAccept}
                             >
                                 {props.acceptText ?? "Accept"}
                             </Button>
