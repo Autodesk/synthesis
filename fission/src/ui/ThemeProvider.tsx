@@ -83,7 +83,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                 main: redAllianceColor,
             },
         })
-    }, [mode, primaryColor, secondaryColor, blueAllianceColor, redAllianceColor, themeOptions])
+    }, [mode, primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
 
     const themeContextValue = useMemo(
         () => ({
