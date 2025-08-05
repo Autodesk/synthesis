@@ -1,7 +1,15 @@
 import type { DriveType } from "../simulation/behavior/Behavior"
 import type Input from "./inputs/Input"
 
-export type InputName = "arcadeDrive" | "arcadeTurn" | "tankLeft" | "tankRight" | "intake" | "eject" | `joint ${number}`
+export type InputName =
+    | "arcadeDrive"
+    | "arcadeTurn"
+    | "tankLeft"
+    | "tankRight"
+    | "intake"
+    | "eject"
+    | "unstick"
+    | `joint ${number}`
 
 export type ModifierState = Readonly<{
     alt: boolean
