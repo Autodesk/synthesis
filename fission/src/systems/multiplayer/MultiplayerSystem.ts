@@ -44,6 +44,10 @@ class MultiplayerSystem {
         return await system._initializationPromise
     }
 
+    getClient() {
+        return this._client
+    }
+
     private constructor(roomId: string, clientId: string, displayName: string, isHost: boolean = false) {
         this.roomId = roomId
         this.clientId = clientId
@@ -51,7 +55,7 @@ class MultiplayerSystem {
 
         this._client = new Peer(this.clientId, {
             host: window.location.hostname,
-            port: 9000,
+            port: parseInt(import.meta.env.VITE_MULTIPLAYER_PORT) ?? 9000,
             path: "/",
         })
 
@@ -196,16 +200,7 @@ class MultiplayerSystem {
             ).catch(console.error) // TODO Get actual sceneObjectKey
 
             this._connections.delete(conn.peer)
-
-            if (this._host == null) {
-                const newHost = this._peers.reduce((prev, current) =>
-                    (this._clientToInfoMap.get(prev.peer)?.creationTime ?? Infinity) <
-                    (this._clientToInfoMap.get(current.peer)?.creationTime ?? Infinity)
-                        ? prev
-                        : current
-                )
-                this._clientToInfoMap.get(newHost.peer)!.isHost = true // TODO: enforce that everybody agrees
-            }
+            // TODO: handle host transition
 
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             console.log("Connection closed:", conn.peer)
@@ -356,14 +351,17 @@ class MultiplayerSystem {
                 if (fieldAssembly) {
                     assembly = fieldAssembly
                 } else {
-                    this.send(peerId, {
+                    await this.send(peerId, {
                         type: "needAssembly",
                         data: { assemblyName, sceneObjectKey: data.sceneObjectKey },
                     })
                     return
                 }
             } else {
-                this.send(peerId, { type: "needAssembly", data: { assemblyName, sceneObjectKey: data.sceneObjectKey } })
+                await this.send(peerId, {
+                    type: "needAssembly",
+                    data: { assemblyName, sceneObjectKey: data.sceneObjectKey },
+                })
                 return
             }
         }
@@ -412,7 +410,7 @@ class MultiplayerSystem {
             },
         }
 
-        this.send(peerId, message)
+        await this.send(peerId, message)
     }
 
     handleDeleteObject(sceneObjectKey: number, peerId: string) {
@@ -470,10 +468,6 @@ class MultiplayerSystem {
 
     private get _peers() {
         return [...this._connections.values()]
-    }
-
-    private get _host() {
-        return this._peers.find(conn => this._clientToInfoMap.get(conn.peer)?.isHost)
     }
 
     get peerInfo(): ClientInfo[] {

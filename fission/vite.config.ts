@@ -47,7 +47,7 @@ const localAssetsExist = await fs.access("./public/Downloadables/Mira",fs.consta
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
     process.env = {...process.env, ...loadEnv(mode, process.cwd())};
-
+    process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9000"
     const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")
 
     if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")) {
