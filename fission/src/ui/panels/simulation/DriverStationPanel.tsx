@@ -1,8 +1,8 @@
+import { Button, MenuItem, Select, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { Button, MenuItem, Select, Stack } from "@mui/material"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { PanelImplProps } from "@/ui/components/Panel"
 
 const DriverStationPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()

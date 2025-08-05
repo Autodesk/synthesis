@@ -7,19 +7,19 @@ import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
+import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import Label from "@/ui/components/Label"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { PanelImplProps } from "@/ui/components/Panel"
-import { AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 type StagingProps = {
     state: "Staging"
@@ -159,7 +159,7 @@ function resetBodies(captures: BodyCapture[]) {
     JOLT.destroy(zero)
 }
 
-function End({ assembly, setStaging, captures }: EndProps) {
+const End: React.FC<EndProps> = ({ assembly, setStaging, captures }) => {
     useEffect(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)
     }, [])
@@ -176,7 +176,7 @@ function End({ assembly, setStaging, captures }: EndProps) {
     )
 }
 
-function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
+const Playing: React.FC<PlayingProps> = ({ assembly, setEnd, countdown, captures }) => {
     const [remaining, setRemaining] = useState<number>(countdown)
 
     useEffect(() => {
@@ -227,7 +227,7 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
     )
 }
 
-function Staging({ assembly, setPlaying }: StagingProps) {
+const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
     const [countdown, setCountdown] = useState<number>(15)
     const [station, setStation] = useState<AllianceStation>("red1")
     const [gameData, setGameData] = useState<string>("")

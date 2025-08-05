@@ -1,5 +1,5 @@
 import Pako from "pako"
-import { Data, downloadData } from "@/aps/APSDataManagement"
+import { type Data, downloadData } from "@/aps/APSDataManagement"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"

@@ -1,8 +1,8 @@
-import { VariantType } from "notistack"
-import { createContext, FunctionComponent, ReactNode, useContext } from "react"
-import { UICallback } from "../UICallbacks"
-import { ModalImplProps } from "../components/Modal"
-import { PanelImplProps } from "../components/Panel"
+import type { VariantType } from "notistack"
+import { createContext, type FunctionComponent, type ReactNode, useContext } from "react"
+import type { ModalImplProps } from "../components/Modal"
+import type { PanelImplProps } from "../components/Panel"
+import type { UICallback } from "../UICallbacks"
 
 export enum CloseType {
     Accept = 0,

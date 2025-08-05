@@ -1,9 +1,10 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { Button, Stack } from "@mui/material"
-import Checkbox from "@/ui/components/Checkbox"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
@@ -11,6 +12,8 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 import { Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
@@ -19,9 +22,6 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
-import StatefulSlider from "@/ui/components/StatefulSlider"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1

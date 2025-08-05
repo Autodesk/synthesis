@@ -399,7 +399,6 @@ const ThemeEditorTab: React.FC<{ onActionsChange?: (actions: ThemeEditorTabActio
         </Stack>
     )
 }
-
 const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
     const [_, refresh] = useReducer(x => !x, false)

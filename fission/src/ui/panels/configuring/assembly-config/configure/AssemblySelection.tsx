@@ -7,10 +7,10 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import type { ConfigurationType } from "../ConfigTypes"
-import { ConfigurePanelCustomProps } from "../ConfigurePanel"
+import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
 
 interface AssemblySelectionProps {
     configurationType: ConfigurationType

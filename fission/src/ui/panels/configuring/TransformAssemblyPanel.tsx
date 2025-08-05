@@ -4,9 +4,9 @@ import { useEffect, useMemo } from "react"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { PanelImplProps } from "@/ui/components/Panel"
 
 const TransformAssemblyPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
