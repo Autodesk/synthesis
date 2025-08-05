@@ -1,8 +1,8 @@
 import * as THREE from "three"
-import { Object3D, PerspectiveCamera } from "three"
+import type { Object3D, PerspectiveCamera } from "three"
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeQuaternionToJoltQuat,

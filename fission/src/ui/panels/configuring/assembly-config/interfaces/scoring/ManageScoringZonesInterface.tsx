@@ -1,15 +1,14 @@
-import { Box } from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
-import Label, { LabelSize } from "@/components/Label"
-import ScrollView from "@/components/ScrollView"
-import Stack, { StackDirection } from "@/components/Stack"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
-import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import Label from "@/ui/components/Label"
+import ScrollView from "@/ui/components/ScrollView"
+import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -30,24 +29,22 @@ type ScoringZoneRowProps = {
 
 const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone, selectZone }) => {
     return (
-        <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-            <Stack direction={StackDirection.HORIZONTAL} spacing={8} justify="start">
-                <div className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`} />
-                <Stack direction={StackDirection.VERTICAL} spacing={4} justify={"center"} className="w-max">
-                    <Label size={LabelSize.SMALL}>{zone.name}</Label>
-                    <Label size={LabelSize.SMALL}>
-                        {zone.points} {zone.points == 1 ? "point" : "points"}
+        <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+            <Stack direction="row" gap={8}>
+                <Box
+                    className={`w-12 h-12 rounded-lg`}
+                    sx={{
+                        bgcolor: zone.alliance === "red" ? "redAlliance.main" : "blueAlliance.main",
+                    }}
+                />
+                <Stack direction="row" gap={4} className="w-max">
+                    <Label size="sm">{zone.name}</Label>
+                    <Label size="sm">
+                        {zone.points} {zone.points === 1 ? "point" : "points"}
                     </Label>
                 </Stack>
             </Stack>
-            <Box
-                component={"div"}
-                display={"flex"}
-                flexDirection={"row-reverse"}
-                gap={"0.25rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
-            >
+            <Stack direction={"row-reverse"} gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
                 {EditButton(() => {
                     selectZone(zone)
                     save()
@@ -56,8 +53,8 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone,
                 {DeleteButton(() => {
                     deleteZone()
                 })}
-            </Box>
-        </Box>
+            </Stack>
+        </Stack>
     )
 }
 
@@ -95,30 +92,32 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
     return (
         <>
             {zones?.length > 0 ? (
-                <ScrollView className="flex flex-col gap-4">
-                    {zones.map((zonePrefs: ScoringZonePreferences, i: number) => (
-                        <ScoringZoneRow
-                            key={i}
-                            zone={(() => {
-                                return zonePrefs
-                            })()}
-                            save={() => saveZones(zones, selectedField)}
-                            deleteZone={() => {
-                                setZones(zones.filter((_, idx) => idx !== i))
-                                saveZones(
-                                    zones.filter((_, idx) => idx !== i),
-                                    selectedField
-                                )
-                            }}
-                            selectZone={selectZone}
-                        />
-                    ))}
+                <ScrollView>
+                    <Stack gap={4}>
+                        {zones.map((zonePrefs: ScoringZonePreferences, i: number) => (
+                            <ScoringZoneRow
+                                key={i}
+                                zone={(() => {
+                                    return zonePrefs
+                                })()}
+                                save={() => saveZones(zones, selectedField)}
+                                deleteZone={() => {
+                                    setZones(zones.filter((_, idx) => idx !== i))
+                                    saveZones(
+                                        zones.filter((_, idx) => idx !== i),
+                                        selectedField
+                                    )
+                                }}
+                                selectZone={selectZone}
+                            />
+                        ))}
+                    </Stack>
                 </ScrollView>
             ) : (
-                <Label>No scoring zones</Label>
+                <Label size="md">No scoring zones</Label>
             )}
-            {AddButtonInteractiveColor(() => {
-                if (zones == undefined) return
+            {AddButton(() => {
+                if (zones === undefined) return
 
                 const newZone: ScoringZonePreferences = {
                     name: "New Scoring Zone",

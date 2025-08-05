@@ -1,32 +1,26 @@
-import { Box, Tooltip } from "@mui/material"
-import React, { ReactElement, useEffect, useReducer, useState } from "react"
-import Dropdown from "@/components/Dropdown.tsx"
-import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
-import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
+import { Box, Button, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
+import { type ReactElement, useEffect, useReducer, useState } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
-import InputSchemeManager, {
-    InputScheme,
-    InputSchemeAvailability,
-    InputSchemeUseType,
-} from "@/systems/input/InputSchemeManager"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
+import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
-import { LabelSize } from "@/ui/components/Label"
-import {
-    AddButtonInteractiveColor,
-    DeleteButton,
-    EditButton,
-    PositiveButton,
-    SectionDivider,
-    SectionLabel,
-    SynthesisIcons,
-} from "@/ui/components/StyledComponents"
+import { DriveType } from "@/systems/simulation/behavior/Behavior"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import Label from "@/ui/components/Label"
+import { DeleteButton, EditButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
-import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
-const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex, onSelect, onEdit, onCreateNew }) => {
+interface InputSchemeSelectionProps {
+    brainIndex: number
+    onSelect?: () => void
+    onEdit?: () => void
+    onCreateNew?: () => void
+}
+
+export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
+    const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
@@ -45,30 +39,21 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
         if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
         return (
             <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
-                <Box
-                    component={"div"}
-                    display={"flex"}
+                <Stack
+                    direction="row"
                     justifyContent={"space-between"}
                     alignItems={"center"}
                     gap={"1rem"}
                     key={scheme.schemeName}
                 >
-                    <SectionLabel>
+                    <Label size="sm">
                         {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
-                    </SectionLabel>
-                    <Box
-                        component={"div"}
-                        display={"flex"}
-                        flexDirection={"row-reverse"}
-                        gap={"0.25rem"}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                    >
+                    </Label>
+                    <Stack direction="row-reverse" gap="0.25rem" justifyContent={"center"} alignItems={"center"}>
                         {/** Select button */}
-                        <div style={style}>
+                        <Box sx={style}>
                             <PositiveButton
                                 disabled={disabled}
-                                value={SynthesisIcons.SELECT_LARGE}
                                 onClick={() => {
                                     InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                                     // TODO: if touch controls, then ensure that they are enabled.
@@ -79,13 +64,14 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                                     onSelect?.()
                                     update()
                                 }}
-                            />
-                        </div>
+                            >
+                                {SynthesisIcons.SELECT_LARGE}
+                            </PositiveButton>
+                        </Box>
                         {/** Edit button - same as select but opens the inputs modal */}
                         {EditButton(() => {
                             InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
 
-                            setSelectedConfigurationType(ConfigurationType.INPUTS)
                             setSelectedScheme(scheme)
                             onEdit?.()
                         })}
@@ -111,8 +97,8 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                         ) : (
                             <></>
                         )}
-                    </Box>
-                </Box>
+                    </Stack>
+                </Stack>
             </Tooltip>
         )
     }
@@ -121,24 +107,32 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
             {/** A scroll view with buttons to select default and custom input schemes */}
             <>
                 {/** The label and divider at the top of the scroll view */}
-                <SectionDivider />
-                <Dropdown
-                    label="Drivetrain Type"
-                    options={[DriveType.TANK, DriveType.ARCADE]}
-                    defaultValue={robotDriveType}
-                    onSelect={val => {
-                        const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
-                        if (brain) {
-                            brain.configureDriveBehavior(val)
-                        }
-                        setRobotDriveType(val)
-                    }}
-                />
-                <SectionDivider />
-                <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                <Divider />
+                <FormControl fullWidth>
+                    <InputLabel id="input-scheme-drivetrain-type-label">Drivetrain Type</InputLabel>
+                    <Select
+                        label="Drivetrain Type"
+                        value={robotDriveType}
+                        onChange={e => {
+                            const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
+                            if (brain) {
+                                brain.configureDriveBehavior(e.target.value as DriveType)
+                            }
+                            setRobotDriveType(e.target.value as DriveType)
+                        }}
+                    >
+                        {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                            <MenuItem key={dt} value={dt}>
+                                {dt}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <Divider />
+                <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${availableSchemes?.length} Input Schemes`}
-                </SectionLabel>
-                <SectionDivider />
+                </Label>
+                <Divider />
 
                 {/** Creates list items with buttons */}
                 {availableSchemes
@@ -151,7 +145,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                     .map((scheme, i) => {
                         return (
                             <>
-                                {i == 0 && <SectionDivider />}
+                                {i == 0 && <Divider />}
                                 {SchemeSelector(
                                     scheme.scheme,
                                     { filter: "brightness(60%)" },
@@ -166,19 +160,23 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                     .map((scheme, i) => {
                         return (
                             <>
-                                {i == 0 && <SectionDivider />}
+                                {i == 0 && <Divider />}
                                 {SchemeSelector(scheme.scheme, {}, "In Use", true)}
                             </>
                         )
                     })}
             </>
             {/** New scheme with a randomly assigned name button */}
-            {AddButtonInteractiveColor(() => {
-                InputSystem.setBrainIndexSchemeMapping(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
-                onCreateNew?.()
-            })}
+            <Button
+                color="success"
+                variant="outlined"
+                onClick={() => {
+                    InputSystem.setBrainIndexSchemeMapping(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
+                    onCreateNew?.()
+                }}
+            >
+                {SynthesisIcons.ADD_LARGE}
+            </Button>
         </>
     )
 }
-
-export default InputSchemeSelection

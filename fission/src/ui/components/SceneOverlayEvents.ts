@@ -1,4 +1,4 @@
-import { Alliance } from "@/systems/preferences/PreferenceTypes.ts"
+import type { Alliance } from "@/systems/preferences/PreferenceTypes.ts"
 
 let nextTagId = 0
 

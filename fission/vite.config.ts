@@ -2,7 +2,7 @@ import fs from "node:fs/promises"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import react from "@vitejs/plugin-react-swc"
 import * as path from "path"
-import { loadEnv, ProxyOptions } from "vite"
+import { loadEnv, type ProxyOptions } from "vite"
 import glsl from "vite-plugin-glsl"
 import { defineConfig } from "vitest/config"
 

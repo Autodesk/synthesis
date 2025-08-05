@@ -1,31 +1,13 @@
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import type { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import { random } from "@/util/Random"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import DefaultInputs from "./DefaultInputs"
-import InputSystem, { AxisInput, ButtonInput, Input, KeyDescriptor } from "./InputSystem"
-
-export type InputScheme = {
-    schemeName: string
-    descriptiveName: string
-    customized: boolean
-    usesGamepad: boolean
-    usesTouchControls: boolean
-    supportedDrivetrains: DriveType[]
-    inputs: Input[]
-}
-
-export enum InputSchemeUseType {
-    IN_USE, // bound to a robot
-    CONFLICT, // has keys overlapping with a bound scheme
-    AVAILABLE, // no overlap and not bound
-}
-
-export type InputSchemeAvailability = {
-    scheme: InputScheme
-    status: InputSchemeUseType
-    conflictingSchemeNames?: string
-}
+import InputSystem from "./InputSystem"
+import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType, type KeyDescriptor } from "./InputTypes"
+import AxisInput from "./inputs/AxisInput"
+import ButtonInput from "./inputs/ButtonInput"
+import type Input from "./inputs/Input"
 
 class InputSchemeManager {
     // References to the current custom schemes to avoid parsing every time they are requested
@@ -84,10 +66,17 @@ class InputSchemeManager {
         }
     }
 
-    public static defaultInputSchemes: InputScheme[] = DefaultInputs.defaultInputCopies
+    private static _defaultInputSchemes: InputScheme[] | undefined
+
+    public static get defaultInputSchemes(): InputScheme[] {
+        if (!this._defaultInputSchemes) {
+            this._defaultInputSchemes = DefaultInputs.defaultInputCopies
+        }
+        return this._defaultInputSchemes
+    }
 
     public static resetDefaultSchemes() {
-        this.defaultInputSchemes = DefaultInputs.defaultInputCopies
+        this._defaultInputSchemes = DefaultInputs.defaultInputCopies
         this._customSchemes = undefined
     }
 
@@ -115,7 +104,10 @@ class InputSchemeManager {
         const usedKeyMap = new Map<KeyDescriptor, string[]>()
         const result: Record<string, InputSchemeAvailability> = {}
         for (const scheme of InputSystem.brainIndexSchemeMap.values()) {
-            result[scheme.schemeName] = { scheme, status: InputSchemeUseType.IN_USE }
+            result[scheme.schemeName] = {
+                scheme,
+                status: InputSchemeUseType.IN_USE,
+            }
             scheme?.inputs?.forEach(input => {
                 input.keysUsed
                     .filter(key => key != null)
@@ -134,7 +126,7 @@ class InputSchemeManager {
             const conflictingSchemes = scheme.inputs.flatMap(input =>
                 input.keysUsed.flatMap(key => usedKeyMap.get(key) ?? [])
             )
-            console.log(conflictingSchemes)
+            // console.log(conflictingSchemes)
             if (conflictingSchemes.length > 0) {
                 result[scheme.schemeName] ??= {
                     scheme,
@@ -142,7 +134,10 @@ class InputSchemeManager {
                     conflictingSchemeNames: [...new Set(conflictingSchemes)].join(", "),
                 }
             } else {
-                result[scheme.schemeName] = { scheme, status: InputSchemeUseType.AVAILABLE }
+                result[scheme.schemeName] = {
+                    scheme,
+                    status: InputSchemeUseType.AVAILABLE,
+                }
             }
         })
         return Object.values(result)

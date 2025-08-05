@@ -2,7 +2,7 @@ import { install } from "@haensl/google-analytics"
 import { server } from "@vitest/browser/context"
 import { HttpResponse, http } from "msw"
 import { setupWorker } from "msw/browser"
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, expectTypeOf, Mock, test, vi } from "vitest"
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, expectTypeOf, type Mock, test, vi } from "vitest"
 import AnalyticsSystem from "@/systems/analytics/AnalyticsSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 

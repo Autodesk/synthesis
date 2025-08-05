@@ -1,6 +1,6 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import SceneRenderer from "../scene/SceneRenderer"
+import type SceneRenderer from "../scene/SceneRenderer"
 import MatchMode from "./MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
