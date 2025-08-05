@@ -1,12 +1,11 @@
-import { Divider, Stack } from "@mui/material"
+import { Button, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
-import Button from "@/components/Button.tsx"
 import Checkbox from "@/components/Checkbox.tsx"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import { AxisInput } from "@/systems/input/InputSystem.ts"
 import type { InputScheme } from "@/systems/input/InputTypes"
+import AxisInput from "@/systems/input/inputs/AxisInput.ts"
 import type Input from "@/systems/input/inputs/Input"
 import EditInputInterface from "./EditInputInterface"
 
@@ -98,7 +97,6 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                     )
                 })}
                 <Button
-                    value={"Add Joint Control"}
                     onClick={() => {
                         const existingJointIndexes = selectedScheme.inputs
                             .map(input => parseInt(input.inputName.replace("joint ", "")))
@@ -108,7 +106,9 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                         selectedScheme.customized = true
                         update()
                     }}
-                />
+                >
+                    Add Joint Control
+                </Button>
             </Stack>
         </>
     )
