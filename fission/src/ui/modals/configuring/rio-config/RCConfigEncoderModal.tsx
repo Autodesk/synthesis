@@ -6,12 +6,12 @@ import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
 import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/sim/SimCANEncoder"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibState"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import World from "@/systems/World"
+import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import RoboRIOModal from "../RoboRIOModal"
-import Label from "@/ui/components/Label"
-import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 const RCConfigEncoderModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
@@ -21,10 +21,10 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =
     let simLayer
     let brain: WPILibBrain | undefined
 
-    const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    const miraObjs = MirabufSceneObject.getRobots()
     if (miraObjs.length > 0) {
         // TODO: make the object selectable
-        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+        const mechanism = (miraObjs[0] as MirabufSceneObject).mechanism
         simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         stimuli = simLayer?.stimuli.filter(s => s instanceof EncoderStimulus) ?? []
         brain = simLayer?.brain as WPILibBrain

@@ -4,9 +4,9 @@ import {
     type FinalConnectionState,
     type Edge as FlowEdge,
     type Node as FlowNode,
+    type NodeProps,
     ReactFlow,
     ReactFlowProvider,
-    NodeProps,
     useEdgesState,
     useNodesState,
     useReactFlow,
@@ -28,14 +28,14 @@ import {
 } from "@/systems/simulation/SimConfigShared"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import ScrollView from "@/ui/components/ScrollView"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
 import WiringNode from "./WiringNode"
-import ScrollView from "@/ui/components/ScrollView"
-import type { PanelImplProps } from "@/ui/components/Panel"
-import Checkbox from "@/ui/components/Checkbox"
-import Label from "@/ui/components/Label"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -140,7 +140,7 @@ function generateGraph(
     return [[...nodes.values()], edges]
 }
 
-function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+function simIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
     for (const [_k, v] of Object.entries(simConfig.handles)) {
@@ -190,7 +190,7 @@ function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function RobotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+function robotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
@@ -258,7 +258,7 @@ function RobotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
+function wiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])
@@ -365,9 +365,9 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
-        const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-        if (miraObjs.length > 0) {
-            return miraObjs[0][1] as MirabufSceneObject
+        const miraObj = MirabufSceneObject.getAll()[0]
+        if (miraObj != null) {
+            return miraObj
         }
         addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
         // closePanel(panel!.id, CloseType.Cancel)
@@ -413,7 +413,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                 <div className="flex grow">
                     {configState === "wiring" && (
                         <ReactFlowProvider>
-                            <WiringComponent
+                            <wiringComponent
                                 reset={reset}
                                 simConfig={simConfig}
                                 selectedAssembly={selectedAssembly}
@@ -422,14 +422,14 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         </ReactFlowProvider>
                     )}
                     {configState === "robotIO" && (
-                        <RobotIoComponent
+                        <robotIoComponent
                             simConfig={simConfig}
                             selectedAssembly={selectedAssembly}
                             setConfigState={setConfigState}
                         />
                     )}
                     {configState === "simIO" && (
-                        <SimIoComponent
+                        <simIoComponent
                             simConfig={simConfig}
                             selectedAssembly={selectedAssembly}
                             setConfigState={setConfigState}

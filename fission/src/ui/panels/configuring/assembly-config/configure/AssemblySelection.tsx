@@ -7,10 +7,10 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import type { ConfigurationType } from "../ConfigTypes"
-import { ConfigurePanelCustomProps } from "../ConfigurePanel"
+import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
 
 interface AssemblySelectionProps {
     configurationType: ConfigurationType
@@ -49,15 +49,12 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     const { openPanel, closePanel } = useUIContext()
 
     const robots = useMemo(() => {
-        return [...World.sceneRenderer.sceneObjects.values()]
-            .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
-            .filter(x => !pendingDeletes.includes(x.id))
+        return MirabufSceneObject.getRobots().filter(x => !pendingDeletes.includes(x.id))
     }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
-        return [...World.sceneRenderer.sceneObjects.values()]
-            .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
-            .filter(x => !pendingDeletes.includes(x.id))
+        const field = MirabufSceneObject.getField()
+        return !field || pendingDeletes.includes(field.id) ? [] : [field]
     }, [u, pendingDeletes])
 
     console.log(robots[0], fields[0])

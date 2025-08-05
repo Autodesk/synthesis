@@ -20,15 +20,12 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
     useEffect(() => {
         const onBeforeAccept = () => {
             console.log(type)
-            const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(
-                x => x[1] instanceof MirabufSceneObject
-            )
+            const miraObjs = MirabufSceneObject.getRobots()
             if (miraObjs.length > 0) {
-                const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+                const mechanism = miraObjs[0].mechanism
                 const simLayer = World.simulationSystem.getSimulationLayer(mechanism)
                 console.log("simlayer", simLayer)
-                if (!(simLayer?.brain instanceof WPILibBrain))
-                    simLayer?.setBrain(new WPILibBrain(miraObjs[0][1] as MirabufSceneObject))
+                if (!(simLayer?.brain instanceof WPILibBrain)) simLayer?.setBrain(new WPILibBrain(miraObjs[0]))
             }
             switch (type) {
                 case "PWM":

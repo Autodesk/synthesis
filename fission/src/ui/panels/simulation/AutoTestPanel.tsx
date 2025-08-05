@@ -7,19 +7,19 @@ import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
+import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import Label from "@/ui/components/Label"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { PanelImplProps } from "@/ui/components/Panel"
-import { AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 type StagingProps = {
     state: "Staging"
@@ -159,7 +159,7 @@ function resetBodies(captures: BodyCapture[]) {
     JOLT.destroy(zero)
 }
 
-function End({ assembly, setStaging, captures }: EndProps) {
+function end({ assembly, setStaging, captures }: EndProps) {
     useEffect(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)
     }, [])
@@ -176,7 +176,7 @@ function End({ assembly, setStaging, captures }: EndProps) {
     )
 }
 
-function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
+function playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
     const [remaining, setRemaining] = useState<number>(countdown)
 
     useEffect(() => {
@@ -227,7 +227,7 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
     )
 }
 
-function Staging({ assembly, setPlaying }: StagingProps) {
+function staging({ assembly, setPlaying }: StagingProps) {
     const [countdown, setCountdown] = useState<number>(15)
     const [station, setStation] = useState<AllianceStation>("red1")
     const [gameData, setGameData] = useState<string>("")
@@ -307,13 +307,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
     const { configureScreen } = useUIContext()
 
-    const assembly = useMemo(
-        () =>
-            [...World.sceneRenderer.sceneObjects.values()].find(
-                x => (x as MirabufSceneObject).brain?.brainType === "wpilib"
-            ) as MirabufSceneObject,
-        []
-    )
+    const assembly = useMemo(() => MirabufSceneObject.findWhere(x => x.brain?.brainType === "wpilib"), [])
 
     useEffect(() => {
         configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})
@@ -344,9 +338,9 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         <Stack gap={4}>
             {activeProps !== undefined &&
                 (activeProps.state === "Staging" ? (
-                    <Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
+                    <staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
                 ) : activeProps.state === "Playing" ? (
-                    <Playing
+                    <playing
                         assembly={activeProps.assembly}
                         captures={activeProps.captures}
                         countdown={activeProps.countdown}
@@ -354,7 +348,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         state="Playing"
                     />
                 ) : activeProps.state === "End" ? (
-                    <End
+                    <end
                         assembly={activeProps.assembly}
                         setStaging={setActiveProps}
                         captures={activeProps.captures}

@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from "react"
-import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibState"
-import { PWMOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
-import World from "@/systems/World"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import Driver from "@/systems/simulation/driver/Driver"
-import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
-import { ModalImplProps } from "@/ui/components/Modal"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import RoboRIOModal from "../RoboRIOModal"
 import { Stack, TextField } from "@mui/material"
 import { Box } from "@mui/system"
-import ScrollView from "@/ui/components/ScrollView"
+import type React from "react"
+import { useEffect, useState } from "react"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type Driver from "@/systems/simulation/driver/Driver"
+import { PWMOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibState"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
+import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
+import type { ModalImplProps } from "@/ui/components/Modal"
+import ScrollView from "@/ui/components/ScrollView"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import RoboRIOModal from "../RoboRIOModal"
 
 const RCConfigPWMGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
@@ -25,9 +26,9 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) 
     let simLayer
     let brain: WPILibBrain | undefined
 
-    const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    const miraObjs = MirabufSceneObject.getRobots()
     if (miraObjs.length > 0) {
-        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+        const mechanism = miraObjs[0].mechanism
         simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
         brain = simLayer?.brain as WPILibBrain

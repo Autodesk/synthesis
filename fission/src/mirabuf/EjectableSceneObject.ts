@@ -1,4 +1,4 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
@@ -10,7 +10,7 @@ import {
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
-import MirabufSceneObject from "./MirabufSceneObject"
+import type MirabufSceneObject from "./MirabufSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 class EjectableSceneObject extends SceneObject {
@@ -80,9 +80,9 @@ class EjectableSceneObject extends SceneObject {
             World.physicsSystem.disablePhysicsForBody(this._gamePieceBodyId)
 
             // Remove from any scoring zones
-            const zones = [...World.sceneRenderer.sceneObjects.entries()]
-                .filter(x => x[1] instanceof ScoringZoneSceneObject)
-                .map(x => x[1]) as ScoringZoneSceneObject[]
+            const zones = [...World.sceneRenderer.sceneObjects.values()].filter(
+                x => x instanceof ScoringZoneSceneObject
+            )
 
             zones.forEach(x => {
                 if (this._gamePieceBodyId) ScoringZoneSceneObject.removeGamepiece(x, this._gamePieceBodyId)
