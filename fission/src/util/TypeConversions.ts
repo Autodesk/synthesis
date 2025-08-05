@@ -1,8 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import type { RgbaColor } from "react-colorful"
 import * as THREE from "three"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import type { mirabuf } from "../proto/mirabuf"
 import JOLT from "./loading/JoltSyncLoader"
 
@@ -129,8 +127,4 @@ export function convertMirabufFloatToArrJoltVec3Arr(v: number[]): Jolt.Vec3[] {
 
 export function convertReactRgbaColorToThreeColor(color: RgbaColor) {
     return new THREE.Color(Math.floor(color.r / 255), Math.floor(color.g / 255), Math.floor(color.b / 255))
-}
-
-export function convertMiraTypeToConfigurationType(miraType: MiraType): ConfigurationType {
-    return miraType == MiraType.ROBOT ? "ROBOTS" : miraType === MiraType.PIECE ? "PIECES" : "FIELDS"
 }

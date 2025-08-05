@@ -3,7 +3,7 @@ import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import type Mechanism from "@/systems/physics/Mechanism"
-import { BodyAssociate, type LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { BodyAssociate, LAYER_GENERAL_DYNAMIC, type LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type {
     Alliance,
