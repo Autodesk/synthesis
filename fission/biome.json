@@ -66,6 +66,7 @@
         "useArrayLiterals": "error",
         "useAsConstAssertion": "error",
         "useComponentExportOnlyModules": "warn",
+        "useImportType": "warn",
         "useNamingConvention": {
           "level": "warn",
           "options": {
