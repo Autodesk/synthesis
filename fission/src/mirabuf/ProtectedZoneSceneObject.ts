@@ -1,5 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import MatchMode from "@/systems/match_mode/MatchMode"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { OnContactAddedEvent, OnContactPersistedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -15,11 +17,8 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MiraType } from "./MirabufLoader"
-import MatchMode from "@/systems/match_mode/MatchMode"
-
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
-import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { ContactType } from "./ZoneTypes"
 
 class ProtectedZoneSceneObject extends SceneObject {

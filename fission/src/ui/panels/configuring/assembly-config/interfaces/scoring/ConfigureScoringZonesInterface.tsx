@@ -1,14 +1,14 @@
 import { Box, Button, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import Label from "@/ui/components/Label"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
 import ZoneConfigInterface from "./ScoringZoneConfigInterface"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import Label from "@/ui/components/Label"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return

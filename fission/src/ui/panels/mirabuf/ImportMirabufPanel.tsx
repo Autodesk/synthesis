@@ -29,6 +29,7 @@ import MirabufCachingService, {
     MiraType,
 } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { mirabuf } from "@/proto/mirabuf"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
@@ -49,7 +50,6 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
-import { mirabuf } from "@/proto/mirabuf"
 
 interface ItemCardProps {
     id: string
@@ -539,8 +539,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             configurationType === "ROBOTS"
                 ? MiraType.ROBOT
                 : configurationType === "FIELDS"
-                    ? MiraType.FIELD
-                    : MiraType.PIECE
+                  ? MiraType.FIELD
+                  : MiraType.PIECE
         )
     }, [configurationType])
     return (
@@ -588,8 +588,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     {viewType === MiraType.ROBOT
                         ? cachedRobotElements
                         : viewType === MiraType.FIELD
-                            ? cachedFieldElements
-                            : cachedGamePieces}
+                          ? cachedFieldElements
+                          : cachedGamePieces}
                 </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -647,16 +647,16 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     {viewType === MiraType.ROBOT
                         ? remoteRobotElements
                         : viewType === MiraType.FIELD
-                            ? remoteFieldElements
-                            : remoteGamePieces}
+                          ? remoteFieldElements
+                          : remoteGamePieces}
                     <Stack justifyContent="center" mt={1}>
                         <PositiveButton
                             onClick={
                                 viewType === MiraType.ROBOT
                                     ? downloadAllRemoteRobots
                                     : viewType === MiraType.FIELD
-                                        ? downloadAllRemoteFields
-                                        : downloadAllRemotePieces
+                                      ? downloadAllRemoteFields
+                                      : downloadAllRemotePieces
                             }
                         >
                             Download All

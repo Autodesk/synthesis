@@ -3,7 +3,6 @@
  * make debugging signal data easier.
  */
 
-import SimGeneric from "@/systems/simulation/wpilib_brain/sim/SimGeneric"
 import {
     Box,
     Button,
@@ -21,9 +20,10 @@ import {
     Typography,
 } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
+import SimGeneric from "@/systems/simulation/wpilib_brain/sim/SimGeneric"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import type { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
-import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 const TABLE_UPDATE_INTERVAL = 250
 

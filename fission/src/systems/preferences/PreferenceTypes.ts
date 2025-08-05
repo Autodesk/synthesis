@@ -1,8 +1,8 @@
-import type { SimConfigData } from "../simulation/SimConfigShared"
 import type { Vector3Tuple } from "three"
-import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { ContactType } from "@/mirabuf/ZoneTypes"
+import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { InputScheme } from "../input/InputTypes"
+import type { SimConfigData } from "../simulation/SimConfigShared"
 
 /** Names of all global preferences. */
 

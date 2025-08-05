@@ -1,7 +1,7 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
 import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
+import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"

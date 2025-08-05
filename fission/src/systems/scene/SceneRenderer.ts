@@ -12,6 +12,8 @@ import { type ContextData, ContextSupplierEvent } from "@/ui/components/ContextM
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { type PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import type { GraphicsPreferences } from "../preferences/PreferenceTypes"
@@ -20,8 +22,6 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0

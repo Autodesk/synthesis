@@ -1,12 +1,12 @@
+import { Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import { Divider, Stack } from "@mui/material"
-import EditInputInterface from "./EditInputInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import type Input from "@/systems/input/inputs/Input"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { InputScheme } from "@/systems/input/InputTypes"
+import type Input from "@/systems/input/inputs/Input"
+import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme

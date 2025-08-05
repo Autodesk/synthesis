@@ -17,6 +17,7 @@ import type {
 import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
+import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
@@ -24,6 +25,9 @@ import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuDa
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
+import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -39,10 +43,6 @@ import MirabufCachingService, { type MirabufCacheID, MiraType } from "./MirabufL
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
-import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
-import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 const DEBUG_BODIES = false
 

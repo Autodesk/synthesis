@@ -1,4 +1,4 @@
-import { Button, Stack, styled, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material"
+import { Button, Stack, styled, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import { type ChangeEvent, useEffect, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"

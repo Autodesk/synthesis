@@ -1,12 +1,12 @@
 import { Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
+import Draggable from "react-draggable"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import MatchMode, { UpdateTimeLeft } from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import Label from "./Label"
-import Draggable from "react-draggable"
 
 const showTime = () => {
     return MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX

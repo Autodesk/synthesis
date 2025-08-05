@@ -1,11 +1,11 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import type SceneRenderer from "../scene/SceneRenderer"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import World from "../World"
-import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
-import JOLT from "@/util/loading/JoltSyncLoader"
 import * as THREE from "three"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
+import type SceneRenderer from "../scene/SceneRenderer"
+import World from "../World"
 
 class RobotPositionTracker {
     private static _mapBoundaryY: number = -4

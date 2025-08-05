@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import type IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufParser from "@/mirabuf/MirabufParser"
 import type Mechanism from "@/systems/physics/Mechanism"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import type MirabufInstance from "../../mirabuf/MirabufInstance"
+import MirabufInstanceClass from "../../mirabuf/MirabufInstance"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock } from "../mocks/jolt"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufParser from "@/mirabuf/MirabufParser"
-import MirabufInstanceClass from "../../mirabuf/MirabufInstance"
 
 const mockPhysicsSystem = {
     createMechanismFromParser: vi.fn(() => mockMechanism()),

@@ -1,14 +1,14 @@
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import type Mechanism from "@/systems/physics/Mechanism"
+import World from "@/systems/World"
+import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import type { NoraNumber3 } from "../../Nora"
 import type { SimReceiver } from "../SimDataFlow"
 import { SimInput } from "../SimInput"
 import { receiverTypeMap } from "../WPILibState"
 import { SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
-import type Jolt from "@azaleacolburn/jolt-physics"
-import World from "@/systems/World"
-import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 
 export default class SimAccel {
     private constructor() {}

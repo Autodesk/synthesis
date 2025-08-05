@@ -2,12 +2,12 @@ import * as THREE from "three"
 import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
 import AnalyticsSystem, { type AccumTimes } from "./analytics/AnalyticsSystem"
 import InputSystem from "./input/InputSystem"
+import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
 import PhysicsSystem from "./physics/PhysicsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
-import SimulationSystem from "./simulation/SimulationSystem"
-import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
 import RobotPositionTracker from "./simulation/RobotPositionTracker"
+import SimulationSystem from "./simulation/SimulationSystem"
 
 class World {
     private static _isAlive: boolean = false

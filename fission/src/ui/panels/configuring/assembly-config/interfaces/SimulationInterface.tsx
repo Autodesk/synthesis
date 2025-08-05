@@ -3,11 +3,11 @@ import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import WiringPanel from "@/ui/panels/simulation/WiringPanel"
-import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import Checkbox from "@/ui/components/Checkbox"
 import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
 
 type SimulationInterfaceProps = {

@@ -1,10 +1,10 @@
+import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { BrainType } from "@/systems/simulation/Brain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 
 type BrainSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject

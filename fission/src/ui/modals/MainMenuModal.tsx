@@ -1,10 +1,10 @@
 import { Button, Stack } from "@mui/material"
 import type React from "react"
+import { useLayoutEffect } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type { ModalImplProps } from "../components/Modal"
-import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
-import { useLayoutEffect } from "react"
 import { useStateContext } from "../helpers/StateProviderHelpers"
+import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 
 interface MainMenuCustomProps {
     startSingleplayerCallback: () => void

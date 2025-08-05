@@ -4,9 +4,9 @@ import {
     type FinalConnectionState,
     type Edge as FlowEdge,
     type Node as FlowNode,
+    type NodeProps,
     ReactFlow,
     ReactFlowProvider,
-    type NodeProps,
     useEdgesState,
     useNodesState,
     useReactFlow,
@@ -28,14 +28,14 @@ import {
 } from "@/systems/simulation/SimConfigShared"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import ScrollView from "@/ui/components/ScrollView"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
 import WiringNode from "./WiringNode"
-import ScrollView from "@/ui/components/ScrollView"
-import type { PanelImplProps } from "@/ui/components/Panel"
-import Checkbox from "@/ui/components/Checkbox"
-import Label from "@/ui/components/Label"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -354,7 +354,7 @@ function _wiringComponent({ setConfigState, simConfig, reset }: ConfigComponentP
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo reset={reset ?? (() => { })} />
+            <FlowInfo reset={reset ?? (() => {})} />
         </ReactFlow>
     )
 }

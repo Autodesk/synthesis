@@ -1,9 +1,9 @@
+import { Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { FaCheck, FaXmark } from "react-icons/fa6"
-import { hasSimBrain, getIsConnected } from "@/systems/simulation/wpilib_brain/WPILibState"
+import { getIsConnected, hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 import Label from "@/ui/components/Label"
-import { Stack } from "@mui/material"
 
 const WPILibConnectionStatus: React.FC = () => {
     const [status, setStatus] = useState<boolean>(false)

@@ -1,23 +1,4 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import * as THREE from "three"
-import type { RigidNodeId } from "@/mirabuf/MirabufParser"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import World from "@/systems/World"
-import SelectButton from "@/ui/components/SelectButton"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import {
-    convertArrayToThreeMatrix4,
-    convertJoltMat44ToThreeMatrix4,
-    convertThreeMatrix4ToArray,
-} from "@/util/TypeConversions"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import {
     Button,
     Checkbox,
@@ -30,9 +11,28 @@ import {
     Stack,
     TextField,
 } from "@mui/material"
-import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import * as THREE from "three"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
 import { ContactType } from "@/mirabuf/ZoneTypes"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import type { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import World from "@/systems/World"
+import SelectButton from "@/ui/components/SelectButton"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import {
+    convertArrayToThreeMatrix4,
+    convertJoltMat44ToThreeMatrix4,
+    convertThreeMatrix4ToArray,
+} from "@/util/TypeConversions"
+import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 
 const MATCH_MODE_OPTIONS: MatchModeType[] = [
     MatchModeType.SANDBOX,

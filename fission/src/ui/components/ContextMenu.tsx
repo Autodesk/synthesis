@@ -1,9 +1,9 @@
 import { Button, Divider, Stack } from "@mui/material"
+import type React from "react"
 import { useEffect, useState } from "react"
 import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
-import Label from "./Label"
 import { globalOpenModal, globalOpenPanel } from "./GlobalUIControls"
-import type React from "react"
+import Label from "./Label"
 
 interface ContextMenuStateData {
     data: ContextData
