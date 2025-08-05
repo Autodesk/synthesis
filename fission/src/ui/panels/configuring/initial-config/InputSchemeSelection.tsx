@@ -16,9 +16,10 @@ interface InputSchemeSelectionProps {
     onSelect?: () => void
     onEdit?: () => void
     onCreateNew?: () => void
+    panelId?: string
 }
 
-export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
+export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew, panelId }: InputSchemeSelectionProps) {
     const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
@@ -74,7 +75,9 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
                                     }
-                                    window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
+                                    window.dispatchEvent(new CustomEvent("inputSchemeChanged", {
+                                        detail: { panelId }
+                                    }))
                                     onSelect?.()
                                     update()
                                 }}
@@ -94,8 +97,8 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                         {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
                             DeleteButton(() => {
                                 // Fetch current custom schemes
-                                InputSchemeManager.saveSchemes()
-                                InputSchemeManager.resetDefaultSchemes()
+                                InputSchemeManager.saveSchemes(panelId)
+                                InputSchemeManager.resetDefaultSchemes(panelId)
                                 const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
                                 // Find and remove this input scheme
@@ -107,7 +110,9 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                 PreferencesSystem.savePreferences()
 
                                 // Update the available schemes list to reflect the deletion
-                                window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
+                                window.dispatchEvent(new CustomEvent("inputSchemeChanged", {
+                                    detail: { panelId }
+                                }))
                                 update()
                             })
                         ) : (

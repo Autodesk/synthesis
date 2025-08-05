@@ -41,7 +41,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<any, any>> = ({ panel })
     const [schemes, setSchemes] = useState<InputScheme[]>(InputSchemeManager.allInputSchemes)
 
     const saveEvent = useCallback(() => {
-        InputSchemeManager.saveSchemes()
+        InputSchemeManager.saveSchemes(panel?.id)
     }, [])
 
     const handleSchemeChange = useCallback(() => {
@@ -93,8 +93,8 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<any, any>> = ({ panel })
                         if (!(val instanceof SchemeSelectionOption)) return
 
                         // Fetch current custom schemes
-                        InputSchemeManager.saveSchemes()
-                        InputSchemeManager.resetDefaultSchemes()
+                        InputSchemeManager.saveSchemes(panel?.id)
+                        InputSchemeManager.resetDefaultSchemes(panel?.id)
 
                         // Find the scheme to remove in preferences
                         const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
@@ -115,7 +115,9 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<any, any>> = ({ panel })
                         PreferencesSystem.savePreferences()
 
                         // Fire event to notify of input scheme changes
-                        window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
+                        window.dispatchEvent(new CustomEvent("inputSchemeChanged", { 
+                            detail: { panelId: panel?.id } 
+                        }))
 
                         // Update UI with new schemes
                         setSchemes(InputSchemeManager.allInputSchemes)
@@ -131,7 +133,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<any, any>> = ({ panel })
                     defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
                 />
             ) : (
-                <ConfigureSchemeInterface selectedScheme={selectedScheme} />
+                <ConfigureSchemeInterface selectedScheme={selectedScheme} panelId={panel?.id} />
             )}
         </>
     )

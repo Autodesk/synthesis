@@ -38,14 +38,16 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
 
             scheme.schemeName = name
 
-            InputSchemeManager.addCustomScheme(scheme)
-            InputSchemeManager.saveSchemes()
+            InputSchemeManager.addCustomScheme(scheme, modal?.id)
+            InputSchemeManager.saveSchemes(modal?.id)
 
             if (brainIndex !== undefined) {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
             }
 
-            window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
+            window.dispatchEvent(new CustomEvent("inputSchemeChanged", {
+                detail: { modalId: modal?.id }
+            }))
 
             setSelectedScheme(scheme)
             openPanel(

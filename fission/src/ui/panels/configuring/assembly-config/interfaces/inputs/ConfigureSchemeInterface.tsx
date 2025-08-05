@@ -10,16 +10,17 @@ import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
+    panelId?: string
 }
 
-const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
+const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme, panelId }) => {
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const saveEvent = useCallback(() => {
-        InputSchemeManager.saveSchemes()
-    }, [])
+        InputSchemeManager.saveSchemes(panelId)
+    }, [panelId])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
