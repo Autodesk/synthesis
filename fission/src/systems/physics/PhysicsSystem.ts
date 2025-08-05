@@ -1298,59 +1298,28 @@ class PhysicsSystem extends WorldSystem {
                     console.warn("Could not find multiplayer robot") // happens when you delete
                     return
                 }
-                const touchedBodies = clientSceneObject.mechanism.touchedBodies
+                const touchedBodies = clientSceneObject.mechanism.touchedObjects
 
                 const message: Message =
                     interObjectCollisions.length > 0
                         ? {
                               type: "collision",
-                              data: {
-                                  // TODO We might not need to send over the entire physicsSystem, we might be able to just send over a more complete list of scene objects
-                                  physicsSystem: this,
-                                  sceneObjects: new Map(
-                                      [...World.sceneRenderer.sceneObjects].filter(
-                                          (x): x is [number, MirabufSceneObject] => x[1] instanceof MirabufSceneObject
-                                      )
-                                  ),
-                              },
+                              data: [...World.sceneRenderer.sceneObjects.values()]
+                                  .map(object => {
+                                      if (object instanceof MirabufSceneObject) return object.getUpdateData()
+                                  })
+                                  .filter(n => n != null),
                           }
                         : {
                               type: "update",
-                              data: [
-                                  [clientSceneObject.id, clientSceneObject.mechanism] as [number, Mechanism],
-                                  ...touchedBodies,
-                              ]
-                                  .map(([sceneObjectKey, mechanism]) => {
-                                      const rootBodyId = mechanism.nodeToBody.get(mechanism.rootBody)
-                                      if (!rootBodyId) return
-                                      const rootBody = World.physicsSystem.getBody(rootBodyId)
-
-                                      const sceneObject = World.sceneRenderer.sceneObjects.get(
-                                          sceneObjectKey
-                                      ) as MirabufSceneObject
-                                      const gamePiecesControlled: number[] = sceneObject.activeEjectables.map(bodyId =>
-                                          bodyId.GetIndexAndSequenceNumber()
-                                      )
-                                      const linearVelocity = rootBody.GetLinearVelocity()
-                                      const angularVelocity = rootBody.GetAngularVelocity()
-                                      const position = rootBody.GetPosition()
-                                      const rotation = rootBody.GetRotation()
-
-                                      return {
-                                          sceneObjectKey,
-                                          gamePiecesControlled,
-                                          linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
-                                          angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
-                                          positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
-                                          rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
-                                      }
-                                  })
+                              data: [clientSceneObject, ...touchedBodies]
+                                  .map(object => object.getUpdateData())
                                   .filter(n => n != null),
                           }
                 World.multiplayerSystem?.broadcast(message)
 
                 if (clientSceneObjectId != null) {
-                    clientSceneObject.mechanism.touchedBodies = []
+                    clientSceneObject.mechanism.touchedObjects = []
                 }
             })
         }
@@ -1550,7 +1519,7 @@ class PhysicsSystem extends WorldSystem {
         const otherSceneObject = this.bodyToMiraSceneObject(other)
         if (robotSceneObject == null || otherSceneObject == null) return
 
-        robotSceneObject.mechanism.touchedBodies.push([otherSceneObject.id, otherSceneObject.mechanism])
+        robotSceneObject.mechanism.touchedObjects.push(otherSceneObject)
     }
 
     /**

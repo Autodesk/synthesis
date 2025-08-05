@@ -11,7 +11,6 @@ import World from "../World"
 import type {
     AssemblyRequestData,
     ClientInfo,
-    CollisionData,
     EncodedAssembly,
     InitData,
     InitObjectData,
@@ -195,7 +194,6 @@ class MultiplayerSystem {
     }
 
     async handlePeerMessage(message: Message, peerId: string) {
-        // console.log(`Received Message of Type: ${message.type}`)
         switch (message.type) {
             case "info":
                 this.handlePeerInfo(message.data)
@@ -214,6 +212,9 @@ class MultiplayerSystem {
                 break
             case "needAssembly":
                 await this.handleAssemblyRequest(message.data, peerId)
+                break
+            case "deleteObject":
+                await this.handleDeleteObject(message.data, peerId)
                 break
 
             case "metadataUpdate":
@@ -308,12 +309,11 @@ class MultiplayerSystem {
         )
     }
 
-    handleCollision(data: CollisionData) {
+    handleCollision(data: UpdateObjectData[]) {
         // TODO Expand on this logic
         if (this.lastSentCollisionTimestamp < COLLISION_TIMEOUT) return
 
-        World.physicsSystem = data.physicsSystem
-        World.sceneRenderer.sceneObjects = data.sceneObjects
+        this.handlePeerUpdate(data)
     }
 
     async handleNewObject(data: InitObjectData, peerId: string) {
@@ -344,6 +344,7 @@ class MultiplayerSystem {
         const object = await createMirabuf(assembly)
         if (object == null) return
 
+        object.setPreferenceData(data.initialPreferences)
         object.nameOverride =
             (this._clientToInfoMap.get(peerId)?.displayName ?? peerId) +
             " " +
@@ -378,10 +379,23 @@ class MultiplayerSystem {
                 sceneObjectKey,
                 assembly: encodedAssembly,
                 assemblyName,
+                initialPreferences: (
+                    World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
+                ).getPreferenceData(),
             },
         }
 
         this.send(peerId, message)
+    }
+
+    async handleDeleteObject(sceneObjectKey: number, peerId: string) {
+        this._clientToObjectMap.delete(peerId)
+
+        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
+        if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
+
+        sceneObject.dispose()
+        World.sceneRenderer.removeSceneObject(sceneObjectKey)
     }
 
     async handleMetadataUpdate(data: MetadataUpdateData) {

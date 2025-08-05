@@ -118,6 +118,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                                     sceneObjectKey: x.id,
                                     assembly: encodedAssembly,
                                     assemblyName: assembly.info?.name ?? "",
+                                    initialPreferences: x.getPreferenceData(),
                                 },
                             }
                             World.multiplayerSystem?.broadcast(message)

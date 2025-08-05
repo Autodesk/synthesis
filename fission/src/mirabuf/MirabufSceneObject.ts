@@ -36,7 +36,7 @@ import {
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
-import type { MetadataUpdateData } from "../systems/multiplayer/types"
+import type { FieldConfiguration, MetadataUpdateData, RobotConfiguration } from "../systems/multiplayer/types"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import FieldMiraEditor from "./FieldMiraEditor"
@@ -816,6 +816,32 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    public getPreferenceData(): FieldConfiguration | RobotConfiguration {
+        return this.miraType == MiraType.FIELD
+            ? {
+                  fieldPreferences: JSON.stringify(this._fieldPreferences),
+                  protectedZones: JSON.stringify(this._protectedZones),
+                  scoringZones: JSON.stringify(this._scoringZones),
+              }
+            : {
+                  intakePreferences: JSON.stringify(this._intakePreferences),
+                  ejectorPreferences: JSON.stringify(this._ejectorPreferences),
+              }
+    }
+
+    public setPreferenceData(preferences: FieldConfiguration | RobotConfiguration) {
+        if (this.miraType == MiraType.FIELD) {
+            const config = preferences as FieldConfiguration
+            this._fieldPreferences = JSON.parse(config.fieldPreferences)
+            this._protectedZones = JSON.parse(config.protectedZones)
+            this._scoringZones = JSON.parse(config.scoringZones)
+        } else {
+            const config = preferences as RobotConfiguration
+            this._intakePreferences = JSON.parse(config.intakePreferences)
+            this._ejectorPreferences = JSON.parse(config.ejectorPreferences)
+        }
+    }
+
     public updateSimConfig(config: SimConfigData | undefined) {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
@@ -932,11 +958,35 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         data.items.push({
             name: "Remove",
             func: () => {
+                World.multiplayerSystem?.broadcast({ type: "deleteObject", data: this.id })
                 World.sceneRenderer.removeSceneObject(this.id)
             },
         })
 
         return data
+    }
+    public getUpdateData() {
+        const rootBodyId = this.getRootNodeId()
+        if (!rootBodyId) return
+        const rootBody = World.physicsSystem.getBody(rootBodyId)
+
+        const sceneObject = World.sceneRenderer.sceneObjects.get(this.id) as MirabufSceneObject
+        const gamePiecesControlled: number[] = sceneObject.activeEjectables.map(bodyId =>
+            bodyId.GetIndexAndSequenceNumber()
+        )
+        const linearVelocity = rootBody.GetLinearVelocity()
+        const angularVelocity = rootBody.GetAngularVelocity()
+        const position = rootBody.GetPosition()
+        const rotation = rootBody.GetRotation()
+
+        return {
+            sceneObjectKey: this.id,
+            gamePiecesControlled,
+            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+        }
     }
 
     private recordRobotCollision(collision: Jolt.BodyID) {

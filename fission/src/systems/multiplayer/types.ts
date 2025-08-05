@@ -24,9 +24,11 @@ interface MessageType {
     init: InitData
     update: UpdateObjectData[]
     metadataUpdate: MetadataUpdateData
-    collision: CollisionData
+    collision: UpdateObjectData[] // just a comprehensive list instead
     newObject: InitObjectData
     needAssembly: AssemblyRequestData
+    deleteObject: number // sceneObjectKey
+    configureObject: ObjectPreferences // sceneObjectKey
     robotLeft: RobotLeftData
     ping: PingData
     pong: PingData
@@ -49,6 +51,21 @@ export type InitObjectData = {
     sceneObjectKey: number
     assembly?: EncodedAssembly
     assemblyName: string
+    initialPreferences: RobotConfiguration | FieldConfiguration
+}
+
+export type RobotConfiguration = {
+    intakePreferences: string // IntakePreferences
+    ejectorPreferences: string // EjectorPreferences
+}
+export type FieldConfiguration = {
+    fieldPreferences: string // FieldPreferences
+    scoringZones: string // ScoringZoneSceneObject[]
+    protectedZones: string // ProtectedZoneSceneObject[]
+}
+export type ObjectPreferences = {
+    sceneObjectKey: number
+    objectConfigurationData: RobotConfiguration | FieldConfiguration
 }
 
 export type AssemblyRequestData = {
