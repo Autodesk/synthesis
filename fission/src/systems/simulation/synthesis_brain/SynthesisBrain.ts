@@ -1,5 +1,5 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"

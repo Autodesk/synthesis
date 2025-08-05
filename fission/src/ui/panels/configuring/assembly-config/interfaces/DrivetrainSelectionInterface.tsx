@@ -1,7 +1,7 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 interface DrivetrainSelectionProps {
     selectedAssembly: MirabufSceneObject

@@ -4,9 +4,9 @@ import {
     type FinalConnectionState,
     type Edge as FlowEdge,
     type Node as FlowNode,
+    type NodeProps,
     ReactFlow,
     ReactFlowProvider,
-    NodeProps,
     useEdgesState,
     useNodesState,
     useReactFlow,
@@ -28,14 +28,14 @@ import {
 } from "@/systems/simulation/SimConfigShared"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import ScrollView from "@/ui/components/ScrollView"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
 import WiringNode from "./WiringNode"
-import ScrollView from "@/ui/components/ScrollView"
-import type { PanelImplProps } from "@/ui/components/Panel"
-import Checkbox from "@/ui/components/Checkbox"
-import Label from "@/ui/components/Label"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -140,7 +140,7 @@ function generateGraph(
     return [[...nodes.values()], edges]
 }
 
-function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
     for (const [_k, v] of Object.entries(simConfig.handles)) {
@@ -190,7 +190,7 @@ function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function RobotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
@@ -258,7 +258,7 @@ function RobotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
+const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig, reset }) => {
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])

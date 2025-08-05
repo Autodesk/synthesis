@@ -1,5 +1,5 @@
 import { getSimMap } from "../WPILibState"
-import { FieldType, SimMapUpdateEvent, worker, type SimType } from "../WPILibTypes"
+import { FieldType, SimMapUpdateEvent, type SimType, worker } from "../WPILibTypes"
 
 function getFieldType(field: string): FieldType {
     if (field.length < 2) {

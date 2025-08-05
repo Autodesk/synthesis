@@ -1,11 +1,11 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufParser from "@/mirabuf/MirabufParser"
-import { RigidNodeId } from "../../mirabuf/MirabufParser"
-import { mirabuf } from "../../proto/mirabuf"
-import Mechanism, { MechanismConstraint } from "../../systems/physics/Mechanism"
-import PhysicsSystem, { LayerReserve } from "../../systems/physics/PhysicsSystem"
+import type { RigidNodeId } from "../../mirabuf/MirabufParser"
+import type { mirabuf } from "../../proto/mirabuf"
+import Mechanism, { type MechanismConstraint } from "../../systems/physics/Mechanism"
+import PhysicsSystem, { type LayerReserve } from "../../systems/physics/PhysicsSystem"
 
 // Mock Jolt types
 const createMockBodyID = (index: number = 123): Jolt.BodyID =>

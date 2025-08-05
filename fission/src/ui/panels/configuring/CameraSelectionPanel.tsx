@@ -1,19 +1,19 @@
-import type React from "react"
-import type { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import { useCallback, useEffect, useState } from "react"
 import { ToggleButton, ToggleButtonGroup } from "@mui/material"
-import World from "@/systems/World"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import type React from "react"
+import { useCallback, useEffect, useState } from "react"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import type { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { PanelImplProps } from "@/ui/components/Panel"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
 }
 
-function OrbitSettings({ controls }: OrbitSettingsProps) {
+const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
     const [locked, setLocked] = useState<boolean>(controls.locked)
 
     useEffect(() => {

@@ -1,4 +1,4 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { afterEach, beforeEach, describe, expect, test } from "vitest"
 import JOLT from "@/util/loading/JoltSyncLoader"

@@ -1,9 +1,9 @@
 import React from "react"
 import { Panel } from "@/components/Panel"
-import { Modal } from "./components/Modal"
-import { useUIContext } from "./helpers/UIProviderHelpers"
-import Scoreboard from "./components/Scoreboard"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { Modal } from "./components/Modal"
+import Scoreboard from "./components/Scoreboard"
+import { useUIContext } from "./helpers/UIProviderHelpers"
 
 export const UIRenderer: React.FC = () => {
     const { modal, panels } = useUIContext()
