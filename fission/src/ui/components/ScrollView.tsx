@@ -1,18 +1,21 @@
-import React, { ReactNode } from "react"
+import { Box } from "@mui/material"
+import type React from "react"
 
-type ScrollViewProps = {
-    children?: ReactNode
-    className?: string
+interface ScrollViewProps {
     maxHeight?: string
 }
 
-const ScrollView: React.FC<ScrollViewProps> = ({ className, maxHeight, children }) => {
+const ScrollView: React.FC<React.PropsWithChildren<ScrollViewProps>> = ({ children, maxHeight }) => {
     return (
-        <div
-            className={`bg-background-secondary p-4 rounded-md ${maxHeight ? maxHeight : "max-h-70vh"} w-full overflow-y-scroll ${className}`}
+        <Box
+            sx={{
+                width: "100%",
+                overflowY: "scroll",
+                maxHeight: maxHeight || "70vh",
+            }}
         >
             {children}
-        </div>
+        </Box>
     )
 }
 

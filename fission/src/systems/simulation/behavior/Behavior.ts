@@ -1,5 +1,5 @@
-import Driver from "@/systems/simulation/driver/Driver"
-import Stimulus from "@/systems/simulation/stimulus/Stimulus"
+import type Driver from "@/systems/simulation/driver/Driver"
+import type Stimulus from "@/systems/simulation/stimulus/Stimulus"
 
 export enum DriveType {
     ARCADE = "Arcade",

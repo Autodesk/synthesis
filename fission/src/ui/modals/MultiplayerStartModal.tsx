@@ -1,36 +1,29 @@
 import { Divider, TextField } from "@mui/material"
 import { Stack } from "@mui/system"
-import React, { useEffect, useState } from "react"
-import Button from "@/components/Button.tsx"
+import React, {useEffect, useLayoutEffect, useState} from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import { SynthesisIcons } from "../components/StyledComponents"
-import { useModalControlContext } from "../helpers/UseModalManager"
+import type {ModalImplProps} from "@/components/Modal.tsx";
 
-const MultiplayerStartModal: React.FC<
-    ModalPropsImpl & {
-        startWorldCallback: (name: string, roomId?: string) => void
-    }
-> = ({ modalId, startWorldCallback }) => {
-    const { closeModal } = useModalControlContext()
+interface MultiplayerStartMenuCustomProps {
+    startWorldCallback: (name: string, roomId?: string) => void
+}
+
+const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuCustomProps>> = ({ modal }) => {
+    const { configureScreen, closeModal } = useUIContext()
     const [room, setRoom] = useState<string>("")
     const [name, setName] = useState<string>(PreferencesSystem.getGlobalPreference("MultiplayerUsername"))
     let isValidName: boolean = name.length >= 3
+
+    useLayoutEffect(() => {
+        configureScreen(modal!, { title: "Start Multiplayer", hideAccept: true, hideCancel: true, allowClickAway: false }, {})
+    }, [])
 
     useEffect(() => {
         isValidName = name.length >= 3
     }, [name, isValidName])
     return (
-        <Modal
-            name={"Start Multiplayer"}
-            icon={SynthesisIcons.PEOPLE}
-            modalId={modalId}
-            middleEnabled={false}
-            cancelEnabled={false}
-            acceptEnabled={false}
-            allowClickAway={false}
-        >
             <Stack direction="column">
                 <TextField
                     type={"text"}
@@ -54,7 +47,7 @@ const MultiplayerStartModal: React.FC<
                         startWorldCallback(name)
                     }}
                     className="w-full my-1"
-                />
+                >Create Game</Button>
                 <Divider />
                 <TextField
                     type={"text"}

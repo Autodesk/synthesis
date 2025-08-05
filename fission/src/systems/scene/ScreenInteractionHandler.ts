@@ -180,7 +180,10 @@ class ScreenInteractionHandler {
 
             this._pointerPosition = [e.movementX, e.movementY]
 
-            this.interactionMove({ interactionType: e.button as InteractionType, movement: [e.movementX, e.movementY] })
+            this.interactionMove({
+                interactionType: e.button as InteractionType,
+                movement: [e.movementX, e.movementY],
+            })
         } else {
             if (e.pointerId == this._primaryTouch) {
                 if (!this._movementThresholdMet) {

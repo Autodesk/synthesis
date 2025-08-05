@@ -1,13 +1,11 @@
-import { styled } from "@mui/material"
-import React from "react"
-import Button from "@/components/Button"
-import Label from "@/components/Label"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import Stack, { StackDirection } from "@/components/Stack"
-import { SynthesisIcons, Spacer } from "../components/StyledComponents"
+import { Button, Stack, styled, Typography } from "@mui/material"
+import type React from "react"
+import { useEffect } from "react"
 import MatchMode from "@/systems/match_mode/MatchMode"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import Label from "../components/Label"
+import type { ModalImplProps } from "../components/Modal"
+import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 
 type Entry = {
     name: string
@@ -37,7 +35,7 @@ const getPerRobotScores = (): { redRobotScores: Entry[]; blueRobotScores: Entry[
     return { redRobotScores, blueRobotScores }
 }
 
-const LabelStyled = styled(Label)<{ winnerColor: string; fontSize: string }>(({ winnerColor, fontSize }) => ({
+const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }>(({ winnerColor, fontSize }) => ({
     fontWeight: 700,
     fontSize: fontSize,
     margin: "0pt",
@@ -45,7 +43,9 @@ const LabelStyled = styled(Label)<{ winnerColor: string; fontSize: string }>(({ 
     color: winnerColor,
 }))
 
-const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { configureScreen, closeModal } = useUIContext()
+
     const { message, color } = getMatchWinner()
 
     const entries: Entry[] = [
@@ -53,30 +53,29 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         { name: "Blue Score", value: SimulationSystem.blueScore },
     ]
 
-    const { redRobotScores: redRobotScores, blueRobotScores: blueRobotScores } = getPerRobotScores()
+    const { redRobotScores, blueRobotScores } = getPerRobotScores()
 
-    const { closeModal } = useModalControlContext()
+    useEffect(() => {
+        configureScreen(
+            modal!,
+            { title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false },
+            {}
+        )
+    }, [])
 
     return (
-        <Modal
-            name={"Match Results"}
-            icon={SynthesisIcons.GAMEPAD}
-            modalId={modalId}
-            cancelEnabled={false}
-            acceptEnabled={false}
-            allowClickAway={false}
-        >
+        <>
             <LabelStyled winnerColor={color} fontSize="1.5rem">
                 {message}
             </LabelStyled>
-            <div className="flex flex-col">
+            <Stack>
                 {entries.map(e => (
-                    <Stack key={e.name} direction={StackDirection.HORIZONTAL}>
-                        <Label>{e.name}</Label>
-                        <Label>{e.value}</Label>
+                    <Stack key={e.name} direction="row">
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
                     </Stack>
                 ))}
-            </div>
+            </Stack>
             <LabelStyled winnerColor={"#ffffff"} fontSize="1.25rem">
                 Robot Score Contributions
             </LabelStyled>
@@ -85,9 +84,9 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             </LabelStyled>
             <div className="flex flex-col">
                 {redRobotScores.map(e => (
-                    <Stack key={e.name} direction={StackDirection.HORIZONTAL}>
-                        <Label>{e.name}</Label>
-                        <Label>{e.value}</Label>
+                    <Stack key={e.name} direction="row">
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
                     </Stack>
                 ))}
             </div>
@@ -96,22 +95,22 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             </LabelStyled>
             <div className="flex flex-col">
                 {blueRobotScores.map(e => (
-                    <Stack key={e.name} direction={StackDirection.HORIZONTAL}>
-                        <Label>{e.name}</Label>
-                        <Label>{e.value}</Label>
+                    <Stack key={e.name} direction="row">
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
                     </Stack>
                 ))}
             </div>
             <Button
-                value="Back to Sandbox Mode"
                 onClick={() => {
-                    closeModal()
+                    closeModal(CloseType.Accept)
                     MatchMode.getInstance().sandboxModeStart()
                 }}
                 className="w-full"
-            />
-            {Spacer(8)}
-        </Modal>
+            >
+                Back to Sandbox Mode
+            </Button>
+        </>
     )
 }
 
