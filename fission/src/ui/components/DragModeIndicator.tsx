@@ -9,7 +9,6 @@ const DragModeIndicator: React.FC = () => {
 
     useEffect(() => {
         const handleDragModeToggle = (event: CustomEvent) => {
-            console.log("toggled")
             setEnabled(event.detail.enabled)
         }
 

@@ -49,6 +49,7 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type TaskStatus from "@/util/TaskStatus"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 
 interface ItemCardProps {
     id: string
@@ -107,7 +108,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                createMirabuf(assembly).then(x => {
+                createMirabuf(assembly, progressHandle, info.id).then(x => {
                     if (x) {
                         World.sceneRenderer.registerSceneObject(x)
                         progressHandle.done()
@@ -130,9 +131,15 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
         })
 }
 
-const ImportMirabufPanel: React.FC<PanelImplProps<void, void>> = ({ panel, parent }) => {
+interface ImportMirabufPanelCustomProps {
+    configurationType: ConfigurationType
+}
+
+const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustomProps>> = ({ panel, parent }) => {
     const { addToast, closePanel, openModal, configureScreen } = useUIContext()
-    const { unconfirmedImport, configurationType, setConfigurationType } = useStateContext()
+    const { unconfirmedImport } = useStateContext()
+
+    const { configurationType } = panel!.props.custom
 
     const [cachedRobots, setCachedRobots] = useState(getCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(getCacheInfo(MiraType.FIELD))
@@ -418,7 +425,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, void>> = ({ panel, paren
     )
     useEffect(() => {
         setViewType(configurationType === "ROBOTS" ? MiraType.ROBOT : MiraType.FIELD)
-        setConfigurationType("ROBOTS")
     }, [])
     return (
         <Stack direction="column" gap={2} className="overflow-y-auto">

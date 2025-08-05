@@ -13,7 +13,7 @@ export interface MirabufCacheInfo {
     id: MirabufCacheID
     miraType: MiraType
     cacheKey: string
-    buffer?: ArrayBuffer
+    buffer?: Uint8Array<ArrayBufferLike>
     name?: string
     thumbnailStorageID?: string
 }
@@ -158,7 +158,7 @@ class MirabufCachingService {
                 id: Date.now().toString(),
                 miraType: miraType ?? (this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
                 cacheKey: fetchLocation,
-                buffer: miraBuff,
+                buffer: new Uint8Array(miraBuff),
                 name: name,
             }
         } catch (e) {
@@ -353,12 +353,16 @@ class MirabufCachingService {
                               create: false,
                           })
                         : undefined
-                    return fileHandle ? await fileHandle.getFile().then(x => x.arrayBuffer()) : undefined
+                    return fileHandle
+                        ? new Uint8Array(
+                              (await fileHandle.getFile().then(async x => await x.arrayBuffer())) as ArrayBuffer
+                          )
+                        : undefined
                 })())
 
             // If we have buffer, get assembly
             if (buff) {
-                const assembly = this.assemblyFromBuffer(buff)
+                const assembly = this.assemblyFromBuffer(buff.buffer as ArrayBuffer)
                 World.analyticsSystem?.event("Cache Get", {
                     key: id,
                     type: miraType == MiraType.ROBOT ? "robot" : "field",
@@ -468,7 +472,7 @@ class MirabufCachingService {
                     : fieldFolderHandle
                 ).getFileHandle(id, { create: false })
                 const writable = await fileHandle.createWritable()
-                await writable.write(updatedBuffer)
+                await writable.write(updatedBuffer.buffer as ArrayBuffer)
                 await writable.close()
             }
 
@@ -537,7 +541,7 @@ class MirabufCachingService {
                 id: backupID,
                 miraType: miraType,
                 cacheKey: key,
-                buffer: miraBuff,
+                buffer: new Uint8Array(miraBuff),
                 name: name,
             }
             cache[backupID] = mapInfo

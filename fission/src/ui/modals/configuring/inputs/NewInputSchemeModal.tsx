@@ -16,7 +16,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openPanel, configureScreen, closeModal, addToast } = useUIContext()
-    const { setSelectedScheme, setConfigurationType } = useStateContext()
+    const { setSelectedScheme } = useStateContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
     const [type, setType] = useState<DriveType>(DriveType.ARCADE)
@@ -51,7 +51,6 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
 
             InputSchemeManager.addCustomScheme(scheme)
             InputSchemeManager.saveSchemes()
-            console.log(InputSchemeManager.allInputSchemes)
 
             if (brainIndex !== undefined) {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
@@ -59,13 +58,13 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
 
             window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
 
-            setConfigurationType("INPUTS")
             setSelectedScheme(scheme)
             openPanel(
                 ConfigurePanel,
                 {
                     configMode: undefined,
                     selectedAssembly: undefined,
+                    configurationType: "INPUTS",
                 },
                 modal,
                 { position: "left" }

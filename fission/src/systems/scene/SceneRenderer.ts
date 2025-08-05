@@ -21,6 +21,7 @@ import GizmoSceneObject from "./GizmoSceneObject"
 import SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -538,7 +539,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel(ImportMirabufPanel, undefined)
+                    globalOpenPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
                 },
             })
         }
