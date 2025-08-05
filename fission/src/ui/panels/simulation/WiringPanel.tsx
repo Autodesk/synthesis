@@ -140,7 +140,7 @@ function generateGraph(
     return [[...nodes.values()], edges]
 }
 
-function _simIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
     for (const [_k, v] of Object.entries(simConfig.handles)) {
@@ -190,7 +190,7 @@ function _simIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function _robotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
@@ -258,7 +258,7 @@ function _robotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) 
     )
 }
 
-function _wiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
+const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig, reset }) => {
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])
@@ -371,7 +371,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         }
         addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
         // closePanel(panel!.id, CloseType.Cancel)
-    }, [addToast])
+    }, [])
 
     useEffect(() => {
         if (!selectedAssembly) return
@@ -405,7 +405,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "Wiring Panel" }, { onBeforeAccept: save })
-    }, [configureScreen, panel, save])
+    }, [])
 
     return (
         <>
