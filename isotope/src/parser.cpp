@@ -50,6 +50,9 @@ void export_design(const GlobalContext& gctx) {
     assembly.mutable_data()->mutable_joints()->CopyFrom(joints);
     assembly.mutable_data()->mutable_signals()->CopyFrom(signals);
 
+    auto joint_hierarchy = create_joint_graph(joints);
+    assembly.mutable_joint_hierarchy()->CopyFrom(joint_hierarchy);
+
     // Print assembly as JSON
     std::string json_output;
     auto _ = google::protobuf::util::MessageToJsonString(assembly, &json_output);
@@ -66,6 +69,4 @@ void export_design(const GlobalContext& gctx) {
     gctx.app->userInterface()->messageBox("Exported assembly:\n" + json_output);
 }
 
-void map_rigid_groups();
-void create_joint_graph();
 void build_joint_part_hierarchy();

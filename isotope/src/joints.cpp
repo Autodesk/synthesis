@@ -22,6 +22,7 @@
 
 #include <variant>
 #include <string>
+#include <unordered_map>
 
 namespace {
 
@@ -295,4 +296,32 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
     }
 
     return { joints, signals };
+}
+
+mirabuf::GraphContainer create_joint_graph(const mirabuf::joint::Joints& joints) {
+    std::unordered_map<std::string, mirabuf::Node> nodes;
+    auto ground_node = mirabuf::Node();
+    ground_node.set_value("ground");
+    nodes[ground_node.value()] = ground_node;
+
+    for (const auto& [_, joint] : joints.joint_definitions()) {
+        if (joint.info().guid().length()) {
+            auto new_node = mirabuf::Node();
+            new_node.set_value(joint.info().guid());
+            nodes[new_node.value()] = new_node;
+        }
+    }
+
+    for (const auto& [_, joint] : joints.joint_definitions()) {
+        if (joint.info().guid().length()) {
+            nodes["ground"].mutable_children()->Add()->CopyFrom(nodes[joint.info().guid()]);
+        }
+    }
+
+    mirabuf::GraphContainer joint_tree;
+    for (const auto& [_, node] : nodes) {
+        joint_tree.mutable_nodes()->Add()->CopyFrom(node);
+    }
+
+    return joint_tree;
 }
