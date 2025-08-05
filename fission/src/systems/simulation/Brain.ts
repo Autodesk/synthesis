@@ -1,4 +1,4 @@
-import Mechanism from "../physics/Mechanism"
+import type Mechanism from "../physics/Mechanism"
 
 export type BrainType = "synthesis" | "wpilib" | "unknown"
 

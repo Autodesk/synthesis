@@ -1,4 +1,4 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 
 export interface CurrentContactData {
     body1: Jolt.BodyID

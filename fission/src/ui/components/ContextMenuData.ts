@@ -1,8 +1,13 @@
 // DATA
 
+import type { FunctionComponent } from "react"
+
 export interface ContextItem {
     name: string
-    func: () => void
+    customProps?: Record<string, unknown>
+    screen?: FunctionComponent
+    type?: "panel" | "modal"
+    func?: () => void
 }
 
 export interface ContextData {

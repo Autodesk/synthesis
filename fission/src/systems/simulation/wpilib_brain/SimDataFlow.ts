@@ -1,4 +1,4 @@
-import { NoraNumber, NoraType, NoraTypes } from "../Nora"
+import { type NoraNumber, type NoraType, NoraTypes } from "../Nora"
 
 export type SimSupplier = {
     getSupplierType(): NoraTypes
