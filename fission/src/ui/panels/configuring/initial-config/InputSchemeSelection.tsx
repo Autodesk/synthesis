@@ -1,5 +1,5 @@
 import { Box, Button, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
-import { type ReactElement, useEffect, useReducer, useState } from "react"
+import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
@@ -26,22 +26,22 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
     )
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
 
-    const refreshAvailableSchemes = () => {
+    const refreshAvailableSchemes = useCallback(() => {
         setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
-    }
-
-    useEffect(() => {
-        refreshAvailableSchemes()
     }, [robotDriveType])
 
     useEffect(() => {
+        // Initial load and when robotDriveType changes
+        refreshAvailableSchemes()
+
+        // Set up event listener for external scheme changes
         const handleSchemeChange = () => {
             refreshAvailableSchemes()
         }
 
         window.addEventListener("inputSchemeChanged", handleSchemeChange)
         return () => window.removeEventListener("inputSchemeChanged", handleSchemeChange)
-    }, [robotDriveType])
+    }, [refreshAvailableSchemes])
 
     const SchemeSelector = (
         scheme: InputScheme,
