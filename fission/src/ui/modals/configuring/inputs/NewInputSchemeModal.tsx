@@ -71,11 +71,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
             )
         }
 
-        const onCancel = () => {
-            // Will automatically close the modal
-        }
-
-        configureScreen(modal!, { title: "New Input Scheme" }, { onBeforeAccept, onCancel })
+        configureScreen(modal!, { title: "New Input Scheme" }, { onBeforeAccept })
     }, [name, type, brainIndex, openPanel, modal, configureScreen, closeModal])
 
     return (
