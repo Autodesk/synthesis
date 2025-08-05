@@ -74,7 +74,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
                                     }
-                                    refreshAvailableSchemes()
+                                    window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
                                     onSelect?.()
                                     update()
                                 }}
@@ -107,7 +107,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                 PreferencesSystem.savePreferences()
 
                                 // Update the available schemes list to reflect the deletion
-                                refreshAvailableSchemes()
+                                window.dispatchEvent(new CustomEvent("inputSchemeChanged"))
                                 update()
                             })
                         ) : (
@@ -160,7 +160,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                     ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
                     .map((scheme, i) => {
                         return (
-                            <>
+                            <div key={`conflict-${scheme.scheme.schemeName}`}>
                                 {i == 0 && <Divider />}
                                 {SchemeSelector(
                                     scheme.scheme,
@@ -169,17 +169,17 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     false,
                                     scheme.status
                                 )}
-                            </>
+                            </div>
                         )
                     })}
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
                     .map((scheme, i) => {
                         return (
-                            <>
+                            <div key={`in-use-${scheme.scheme.schemeName}`}>
                                 {i == 0 && <Divider />}
                                 {SchemeSelector(scheme.scheme, {}, "In Use", true, scheme.status)}
-                            </>
+                            </div>
                         )
                     })}
             </>

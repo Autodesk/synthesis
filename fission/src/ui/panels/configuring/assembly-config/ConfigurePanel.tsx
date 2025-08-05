@@ -300,7 +300,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     </ToggleButton>
                 ))}
             </ToggleButtonGroup>
-            {configurationType === "INPUTS" && <ConfigureInputsInterface />}
+            {configurationType === "INPUTS" && <ConfigureInputsInterface panel={panel!} />}
             {configurationType !== "INPUTS" && (
                 <>
                     <AssemblySelection

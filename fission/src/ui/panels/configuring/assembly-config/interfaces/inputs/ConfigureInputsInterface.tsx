@@ -7,8 +7,9 @@ import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 
@@ -32,8 +33,8 @@ class SchemeSelectionOption extends SelectMenuOption {
     }
 }
 
-const ConfigureInputsInterface: React.FC = () => {
-    const { openModal } = useUIContext()
+const ConfigureInputsInterface: React.FC<PanelImplProps<any, any>> = ({ panel }) => {
+    const { openModal, closePanel } = useUIContext()
     const { selectedScheme: currentSelectedScheme, setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
 
     const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(currentSelectedScheme)
@@ -44,8 +45,18 @@ const ConfigureInputsInterface: React.FC = () => {
     }, [])
 
     const handleSchemeChange = useCallback(() => {
-        setSchemes(InputSchemeManager.allInputSchemes)
-    }, [])
+        const newSchemes = InputSchemeManager.allInputSchemes
+        setSchemes(newSchemes)
+        
+        // If the currently selected scheme was deleted, close the panel
+        if (selectedScheme && !newSchemes.includes(selectedScheme)) {
+            if (panel) {
+                setTimeout(() => {
+                    closePanel(panel.id, CloseType.Overwrite)
+                }, 0)
+            }
+        }
+    }, [panel])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
