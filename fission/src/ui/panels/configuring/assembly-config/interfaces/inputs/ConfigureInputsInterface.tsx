@@ -6,8 +6,8 @@ import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
@@ -33,7 +33,7 @@ class SchemeSelectionOption extends SelectMenuOption {
     }
 }
 
-const ConfigureInputsInterface: React.FC<PanelImplProps<any, any>> = ({ panel }) => {
+const ConfigureInputsInterface: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { openModal, closePanel } = useUIContext()
     const { selectedScheme: currentSelectedScheme, setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
 
