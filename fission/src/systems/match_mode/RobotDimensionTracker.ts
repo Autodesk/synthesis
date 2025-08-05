@@ -1,8 +1,8 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import SceneRenderer from "../scene/SceneRenderer"
-import MatchMode from "./MatchMode"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import type SceneRenderer from "../scene/SceneRenderer"
+import MatchMode from "./MatchMode"
 
 const BUFFER_HEIGHT = 0.1
 

@@ -4,7 +4,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
-import { InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
+import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
 import World from "@/systems/World"
 
 vi.mock("@/systems/World", () => ({

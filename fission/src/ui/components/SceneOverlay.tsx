@@ -1,16 +1,16 @@
 import { Stack } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { useStateContext } from "../helpers/StateProviderHelpers"
+import Label from "./Label"
 import {
     SceneOverlayEvent,
     SceneOverlayEventKey,
-    SceneOverlayTag,
+    type SceneOverlayTag,
     SceneOverlayTagEvent,
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ViewCube from "./ViewCube"
-import Label from "./Label"
-import { useStateContext } from "../helpers/StateProviderHelpers"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 

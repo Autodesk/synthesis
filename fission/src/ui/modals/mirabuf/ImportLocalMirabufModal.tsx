@@ -1,3 +1,5 @@
+import { Button, Stack, styled, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { type ChangeEvent, useEffect, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
@@ -5,12 +7,10 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { Button, Stack, styled, ToggleButton, ToggleButtonGroup } from "@mui/material"
-import { type ChangeEvent, useEffect, useState } from "react"
-import { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",

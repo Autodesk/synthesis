@@ -1,6 +1,8 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
+import { Button, TextField } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
@@ -9,6 +11,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
@@ -17,9 +20,6 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Button, TextField } from "@mui/material"
-import Checkbox from "@/ui/components/Checkbox"
 
 /**
  * Saves ejector configuration to selected field.

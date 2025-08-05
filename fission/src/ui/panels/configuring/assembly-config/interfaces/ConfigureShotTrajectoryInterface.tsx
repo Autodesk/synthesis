@@ -1,7 +1,9 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { useCallback, useEffect, useMemo, useState, useRef } from "react"
+import { Button, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
@@ -9,6 +11,7 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
@@ -17,9 +20,6 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Button, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
-import StatefulSlider from "@/ui/components/StatefulSlider"
 
 // slider constants
 const MIN_VELOCITY = 0.0

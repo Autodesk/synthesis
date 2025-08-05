@@ -1,3 +1,6 @@
+import { Stack } from "@mui/material"
+import { type Connection, type Edge, Handle, type NodeProps, Position } from "@xyflow/react"
+import { useCallback, useMemo } from "react"
 import {
     type HandleInfo,
     handleInfoDisplayCompare,
@@ -7,9 +10,6 @@ import {
 } from "@/systems/simulation/SimConfigShared"
 import Label from "@/ui/components/Label"
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
-import { Stack } from "@mui/material"
-import { type Connection, type Edge, Handle, type NodeProps, Position } from "@xyflow/react"
-import { useCallback, useMemo } from "react"
 
 const WiringNode = ({ data, isConnectable }: NodeProps) => {
     const robotInput = data.input as HandleInfo[] | undefined
