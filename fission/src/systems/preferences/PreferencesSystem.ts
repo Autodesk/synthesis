@@ -1,3 +1,5 @@
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import World from "../World"
 import {
     defaultFieldPreferences,
     defaultGlobalPreferences,
@@ -16,6 +18,7 @@ import {
     ROBOT_PREFERENCE_KEY,
     RobotPreferences,
 } from "./PreferenceTypes"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 
 /** An event that's triggered when a preference is changed. */
 export class PreferenceEvent<K extends GlobalPreference> extends Event {
@@ -105,16 +108,40 @@ class PreferencesSystem {
         return allRoboPrefs[miraName]
     }
 
+    private static sendPreferences(miraName: string, miraType: MiraType) {
+        if (!World.multiplayerSystem) return
+
+        const sceneObjectPair = [...World.sceneRenderer.sceneObjects]
+            .filter(
+                (objectPair): objectPair is [number, MirabufSceneObject] =>
+                    objectPair[1] instanceof MirabufSceneObject && objectPair[1].miraType === miraType
+            )
+            .find(([_id, o]) => o.assemblyName === miraName)
+        if (!sceneObjectPair) return
+
+        World.multiplayerSystem.broadcast({
+            type: "configureObject",
+            data: {
+                sceneObjectKey: sceneObjectPair[0],
+                objectConfigurationData: sceneObjectPair[1].getPreferenceData(),
+            },
+        })
+    }
+
     /** Sets the RobotPreferences object for the robot of a specific mira name */
     public static setRobotPreferences(miraName: string, value: RobotPreferences) {
         const allRoboPrefs = this.getAllRobotPreferences()
         allRoboPrefs[miraName] = value
+
+        this.sendPreferences(miraName, MiraType.ROBOT)
     }
 
     /** Sets the FieldPreferences object for the field of a specific mira name */
     public static setFieldPreferences(miraName: string, value: FieldPreferences) {
         const allFieldPrefs = this.getAllFieldPreferences()
         allFieldPrefs[miraName] = value
+
+        this.sendPreferences(miraName, MiraType.FIELD)
     }
 
     /** Sets the MotorPreferences object for the motor of a specific mira name */

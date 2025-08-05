@@ -16,6 +16,7 @@ import type {
     InitObjectData,
     Message,
     MetadataUpdateData,
+    ObjectPreferences,
     UpdateObjectData,
 } from "./types"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
@@ -214,11 +215,13 @@ class MultiplayerSystem {
                 await this.handleAssemblyRequest(message.data, peerId)
                 break
             case "deleteObject":
-                await this.handleDeleteObject(message.data, peerId)
+                this.handleDeleteObject(message.data, peerId)
                 break
-
+            case "configureObject":
+                this.handleObjectConfiguration(message.data)
+                break
             case "metadataUpdate":
-                await this.handleMetadataUpdate(message.data)
+                this.handleMetadataUpdate(message.data)
         }
     }
 
@@ -388,7 +391,7 @@ class MultiplayerSystem {
         this.send(peerId, message)
     }
 
-    async handleDeleteObject(sceneObjectKey: number, peerId: string) {
+    handleDeleteObject(sceneObjectKey: number, peerId: string) {
         this._clientToObjectMap.delete(peerId)
 
         const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
@@ -398,7 +401,12 @@ class MultiplayerSystem {
         World.sceneRenderer.removeSceneObject(sceneObjectKey)
     }
 
-    async handleMetadataUpdate(data: MetadataUpdateData) {
+    handleObjectConfiguration(data: ObjectPreferences) {
+        const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey) as MirabufSceneObject
+        sceneObject.setPreferenceData(data.objectConfigurationData)
+    }
+
+    handleMetadataUpdate(data: MetadataUpdateData) {
         const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
         if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
 
