@@ -18,6 +18,7 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import { NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { convertFeetToMeters } from "@/util/UnitConversions"
+import CreateNewMatchModeConfigPanel from "./CreateNewMatchModeConfigPanel"
 
 /**
  * Configuration for match mode rules and timing.
@@ -110,7 +111,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
 }
 
 const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { closePanel, openModal, configureScreen } = useUIContext()
+    const { openPanel, closePanel, openModal, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
 
@@ -308,6 +309,11 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         e.target.value = ""
     }
 
+    const createNewMatchModeConfig = () => {
+        openPanel(CreateNewMatchModeConfigPanel, undefined)
+        closePanel(panel!.id, CloseType.Overwrite)
+    }
+
     return (
         <>
             <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
@@ -318,6 +324,15 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             {matchModeConfigElements}
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
+            <Box alignSelf={"center"}>
+                <Button
+                    onClick={() => {
+                        createNewMatchModeConfig()
+                    }}
+                >
+                    Create Match Mode Config
+                </Button>
+            </Box>
             <Box alignSelf={"center"}>
                 <Button onClick={uploadClicked}>Upload File</Button>
             </Box>
