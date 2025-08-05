@@ -1,11 +1,5 @@
 #include "parser.h"
 
-#include "assembly.pb.h"
-#include "components.h"
-#include "materials.h"
-#include "joints.h"
-#include "types.pb.h"
-
 #include <Core/Application/Document.h>
 #include <Core/Application/Product.h>
 #include <Core/Materials/MaterialLibraries.h>
@@ -14,6 +8,13 @@
 #include <Fusion/Fusion/Design.h>
 #include <Fusion/Fusion/FusionDocument.h>
 #include <google/protobuf/util/json_util.h>
+
+#include "assembly.pb.h"
+#include "types.pb.h"
+
+#include "joints.h"
+#include "components.h"
+#include "materials.h"
 
 #include <fstream>
 
@@ -34,43 +35,26 @@ void export_design(const GlobalContext& gctx) {
     // design is a robot or field assembly.
     assembly.set_dynamic(true);
 
-    // auto process_dialog = gctx.ui->createProgressDialog();
-    // process_dialog->isCancelButtonShown(true);
-    // process_dialog->show("Exporting Design", "Exporting design to Isotope format...", 0, 100, 1);
-    // process_dialog->progressValue(1);
-
-    gctx.app->userInterface()->messageBox("Exporting design to Isotope format...");
-    gctx.app->userInterface()->messageBox("Mapping materials...");
-
     auto appearances = design->appearances();
     auto materials   = design->materials();
     assembly.mutable_data()->mutable_materials()->CopyFrom(map_all_materials(appearances, materials));
 
-    gctx.app->userInterface()->messageBox("Mapping components...");
     auto components = design->allComponents();
     assembly.mutable_data()->mutable_parts()->CopyFrom(map_all_parts(components, assembly.data().materials()));
-
-    gctx.app->userInterface()->messageBox("Mapping root node...");
 
     mirabuf::Node root_node = parse_component_root(design->rootComponent(), assembly.mutable_data()->mutable_parts());
     assembly.mutable_design_hierarchy()->mutable_nodes()->Add()->CopyFrom(root_node);
 
-    gctx.app->userInterface()->messageBox("Mapping joints...");
     const auto [joints, signals] = populate_joints(design);
 
     assembly.mutable_data()->mutable_joints()->CopyFrom(joints);
     assembly.mutable_data()->mutable_signals()->CopyFrom(signals);
 
-    gctx.app->userInterface()->messageBox("Done");
-
     // Print assembly as JSON
     std::string json_output;
     auto _ = google::protobuf::util::MessageToJsonString(assembly, &json_output);
 
-    std::string path = std::getenv("HOME") + std::string("/Desktop/assembly_debug.json");
-
-    // std::ofstream output_file("~/Documents/Repos/synthesis/isotope/build/assembly.json");
-    std::ofstream output_file(path);
+    std::ofstream output_file(std::getenv("HOME") + std::string("/Desktop/assembly_debug.json"));
     if (!output_file.is_open()) {
         gctx.app->userInterface()->messageBox("Failed to open output file for writing.");
         return;
@@ -83,6 +67,5 @@ void export_design(const GlobalContext& gctx) {
 }
 
 void map_rigid_groups();
-void populate_joints();
 void create_joint_graph();
 void build_joint_part_hierarchy();
