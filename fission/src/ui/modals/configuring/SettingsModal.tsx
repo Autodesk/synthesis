@@ -1,5 +1,6 @@
 import { Box, Button, Stack, Tab, Tabs, TextField } from "@mui/material"
-import React, { useCallback, useEffect, useReducer, useState } from "react"
+import type React from "react"
+import { useCallback, useEffect, useReducer, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -12,7 +13,7 @@ import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
-import { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
+import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 import { randomColor } from "@/util/Random"
 
 // Graphics settings constants
@@ -58,7 +59,9 @@ const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: strin
     )
 }
 
-const GeneralTab: React.FC<{ writePreference: <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => void }> = ({ writePreference }) => (
+const GeneralTab: React.FC<{
+    writePreference: <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => void
+}> = ({ writePreference }) => (
     <Stack direction="column" gap={2}>
         {Spacer(5)}
         <Label size="sm">Camera Settings</Label>
@@ -194,7 +197,7 @@ const GraphicsTab: React.FC<{ onActionsChange?: (actions: GraphicsTabActions) =>
                 setReload(false)
                 World.sceneRenderer.changeLighting(g.fancyShadows)
             },
-            requiresReload: reload
+            requiresReload: reload,
         }
         onActionsChange?.(actions)
     }, [lightIntensity, fancyShadows, maxFar, cascades, shadowMapSize, antiAliasing, reload, onActionsChange])
@@ -317,7 +320,9 @@ type ThemeEditorTabActions = {
     reset: () => void
 }
 
-const ThemeEditorTab: React.FC<{ onActionsChange?: (actions: ThemeEditorTabActions) => void }> = ({ onActionsChange }) => {
+const ThemeEditorTab: React.FC<{ onActionsChange?: (actions: ThemeEditorTabActions) => void }> = ({
+    onActionsChange,
+}) => {
     const {
         mode,
         setMode,
@@ -350,10 +355,20 @@ const ThemeEditorTab: React.FC<{ onActionsChange?: (actions: ThemeEditorTabActio
                 setTempSecondary(secondaryColor)
                 setTempBlue(blueAllianceColor)
                 setTempRed(redAllianceColor)
-            }
+            },
         }
         onActionsChange?.(actions)
-    }, [tempPrimary, tempSecondary, tempBlue, tempRed, primaryColor, secondaryColor, blueAllianceColor, redAllianceColor, onActionsChange])
+    }, [
+        tempPrimary,
+        tempSecondary,
+        tempBlue,
+        tempRed,
+        primaryColor,
+        secondaryColor,
+        blueAllianceColor,
+        redAllianceColor,
+        onActionsChange,
+    ])
 
     return (
         <Stack gap={4}>
@@ -403,7 +418,7 @@ const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
     const [_, refresh] = useReducer(x => !x, false)
     const [activeTab, setActiveTab] = useState<string>("general")
-    
+
     const [graphicsActions, setGraphicsActions] = useState<GraphicsTabActions | null>(null)
     const [themeActions, setThemeActions] = useState<ThemeEditorTabActions | null>(null)
 
@@ -423,7 +438,7 @@ const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         if (graphicsActions) {
             graphicsActions.save()
         }
-        
+
         if (themeActions) {
             themeActions.save()
         }
@@ -437,11 +452,11 @@ const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         if (graphicsActions) {
             graphicsActions.reset()
         }
-        
+
         if (themeActions) {
             themeActions.reset()
         }
-       
+
         PreferencesSystem.revertPreferences()
         SoundPlayer.changeVolume()
     }, [graphicsActions, themeActions])
@@ -455,7 +470,7 @@ const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         if (!currentTab) return null
 
         const TabComponent = currentTab.component
-        
+
         switch (activeTab) {
             case "general":
                 return <TabComponent writePreference={writePreference} />
@@ -481,10 +496,8 @@ const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                     <Tab key={tab.key} value={tab.key} label={tab.label} />
                 ))}
             </Tabs>
-            
-            <Box sx={{ mt: 2 }}>
-                {renderTabContent()}
-            </Box>
+
+            <Box sx={{ mt: 2 }}>{renderTabContent()}</Box>
         </Stack>
     )
 }
