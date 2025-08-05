@@ -133,12 +133,12 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                             }}
                         />
                     )}
-                    <Slider
+                    <StatefulSlider
                         min={0}
                         max={15000}
-                        value={unstickForce}
+                        defaultValue={unstickForce}
                         label="Unstick Force"
-                        onChange={(_, value: number | number[]) => {
+                        onChange={(value: number | number[]) => {
                             setUnstickForce(value as number)
                             onChange(velocity, force, value as number)
                         }}
