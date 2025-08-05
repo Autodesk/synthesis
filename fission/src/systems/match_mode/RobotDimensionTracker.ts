@@ -1,7 +1,5 @@
-import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import type SceneRenderer from "../scene/SceneRenderer"
 import MatchMode from "./MatchMode"
 
 const BUFFER_HEIGHT = 0.1
@@ -18,14 +16,10 @@ class RobotDimensionTracker {
         this._heightPenalty = heightPenalty
     }
 
-    public static update(sceneRenderer: SceneRenderer): void {
+    public static update(): void {
         if (!MatchMode.getInstance().isMatchEnabled()) return
 
-        const robots = [...sceneRenderer.sceneObjects.values()].filter(
-            (obj): obj is MirabufSceneObject => obj instanceof MirabufSceneObject && obj.miraType === MiraType.ROBOT
-        )
-
-        robots.forEach(robot => {
+        MirabufSceneObject.getRobots().forEach(robot => {
             const dimensions = this._ignoreRotation ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
 
             if (dimensions.height > this._maxHeight + BUFFER_HEIGHT) {

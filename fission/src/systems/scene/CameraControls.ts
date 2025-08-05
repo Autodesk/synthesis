@@ -171,15 +171,12 @@ export class CustomOrbitControls extends CameraControls {
      * Prioritizes robots first, then fields, then any other MirabufSceneObject.
      */
     private findFallbackFocus(mirabufObjects?: MirabufSceneObject[]): MirabufSceneObject | undefined {
-        if (!mirabufObjects) {
-            const sceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
-            mirabufObjects = sceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
-        }
+        mirabufObjects ??= MirabufSceneObject.getAll()
 
         const robots = mirabufObjects.filter(obj => obj.miraType === MiraType.ROBOT)
         const fields = mirabufObjects.filter(obj => obj.miraType === MiraType.FIELD)
 
-        return robots[0] || fields[0] || mirabufObjects[0]
+        return robots[0] ?? fields[0] ?? mirabufObjects[0]
     }
 
     /**
@@ -190,9 +187,7 @@ export class CustomOrbitControls extends CameraControls {
         if (!World.sceneRenderer?.sceneObjects || World.dragModeSystem.isTransitioning) {
             return
         }
-
-        const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
-        const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+        const mirabufObjects = MirabufSceneObject.getAll()
 
         if (this._focusProvider) {
             if (!mirabufObjects.includes(this._focusProvider)) {
