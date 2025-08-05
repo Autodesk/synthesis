@@ -1,6 +1,6 @@
-import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
-import SliderDriver from "../../driver/SliderDriver"
-import SliderStimulus from "../../stimulus/SliderStimulus"
+import type { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import type SliderDriver from "../../driver/SliderDriver"
+import type SliderStimulus from "../../stimulus/SliderStimulus"
 import SequenceableBehavior from "./SequenceableBehavior"
 
 class GenericElevatorBehavior extends SequenceableBehavior {

@@ -1,15 +1,16 @@
 import * as THREE from "three"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import ScreenInteractionHandler, {
-    InteractionEnd,
-    InteractionMove,
-    InteractionStart,
+import World from "../World"
+import type ScreenInteractionHandler from "./ScreenInteractionHandler"
+import {
+    type InteractionEnd,
+    type InteractionMove,
+    type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import World from "../World"
 
 export type CameraControlsType = "Orbit"
 
@@ -145,8 +146,16 @@ export class CustomOrbitControls extends CameraControls {
 
         this.locked = false
 
-        this._nextCoords = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
-        this._coords = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
+        this._nextCoords = {
+            theta: CO_DEFAULT_THETA,
+            phi: CO_DEFAULT_PHI,
+            r: CO_DEFAULT_ZOOM,
+        }
+        this._coords = {
+            theta: CO_DEFAULT_THETA,
+            phi: CO_DEFAULT_PHI,
+            r: CO_DEFAULT_ZOOM,
+        }
         this._activePointerType = -1
 
         // Identity
@@ -336,7 +345,11 @@ export class CustomOrbitControls extends CameraControls {
         this._mainCamera.position.setFromMatrixPosition(deltaTransform)
         this._mainCamera.rotation.setFromRotationMatrix(deltaTransform)
 
-        this._nextCoords = { theta: this._coords.theta, phi: this._coords.phi, r: this._coords.r }
+        this._nextCoords = {
+            theta: this._coords.theta,
+            phi: this._coords.phi,
+            r: this._coords.r,
+        }
     }
 
     public dispose(): void {}

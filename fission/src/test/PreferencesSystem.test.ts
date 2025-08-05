@@ -1,13 +1,13 @@
 import { describe, expect, test } from "vitest"
-import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
-import { MatchModeType } from "@/systems/match_mode/MatchMode"
+import { ContactType } from "@/mirabuf/ZoneTypes"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     defaultFieldPreferences,
-    FieldPreferences,
-    GraphicsPreferences,
-    MotorPreferences,
-    RobotPreferences,
+    type FieldPreferences,
+    type GraphicsPreferences,
+    type MotorPreferences,
+    type RobotPreferences,
 } from "@/systems/preferences/PreferenceTypes"
 
 describe("Preferences System Global Values", () => {

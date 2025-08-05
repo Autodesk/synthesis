@@ -1,7 +1,8 @@
-import InputSystem, { InputName } from "@/systems/input/InputSystem"
-import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
-import Driver from "../../driver/Driver"
-import Stimulus from "../../stimulus/Stimulus"
+import InputSystem from "@/systems/input/InputSystem"
+import type { InputName } from "@/systems/input/InputTypes"
+import type { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import type Driver from "../../driver/Driver"
+import type Stimulus from "../../stimulus/Stimulus"
 import Behavior from "../Behavior"
 
 abstract class SequenceableBehavior extends Behavior {

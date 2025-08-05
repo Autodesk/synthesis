@@ -21,3 +21,7 @@ export function random() {
     const x = Math.abs(Math.sin(seed + 997) * 1425)
     return x - Math.floor(x)
 }
+
+export function randomColor() {
+    return `#${(((1 << 24) * Math.random()) | 0).toString(16).padStart(6, "0")}`
+}

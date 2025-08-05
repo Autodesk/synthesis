@@ -1,30 +1,25 @@
-import { Box } from "@mui/material"
-import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
-import Checkbox from "@/components/Checkbox.tsx"
-import { LabelSize } from "@/components/Label"
+import { Box, Button, Divider } from "@mui/material"
+import { Stack } from "@mui/system"
+import type React from "react"
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
-import MatchMode, {
+import MatchMode from "@/systems/match_mode/MatchMode"
+import {
     DEFAULT_AUTONOMOUS_TIME,
     DEFAULT_ENDGAME_TIME,
     DEFAULT_HEIGHT_PENALTY,
     DEFAULT_IGNORE_ROTATION,
     DEFAULT_MAX_HEIGHT,
     DEFAULT_TELEOP_TIME,
-} from "@/systems/match_mode/MatchMode"
+} from "@/systems/match_mode/MatchModeTypes"
 import World from "@/systems/World.ts"
-import Button from "@/ui/components/Button"
+import Checkbox from "@/ui/components/Checkbox"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
-import {
-    NegativeButton,
-    PositiveButton,
-    SectionDivider,
-    SectionLabel,
-    SynthesisIcons,
-} from "@/ui/components/StyledComponents"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import { NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { convertFeetToMeters } from "@/util/UnitConversions"
 
 /**
@@ -82,37 +77,36 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
     return (
-        <Box
-            component={"div"}
-            display={"flex"}
-            key={id}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            gap={"1rem"}
-        >
-            <SectionLabel className="text-wrap break-all">{name.replace(/.mira$/, "")}</SectionLabel>
-            <Box
-                component={"div"}
-                display={"flex"}
+        <Stack direction="row" key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+            <Label size="sm" className="text-wrap break-all">
+                {name.replace(/.mira$/, "")}
+            </Label>
+            <Stack
                 key={`button-box-${id}`}
-                flexDirection={"row-reverse"}
+                direction="row-reverse"
                 gap={"0.25rem"}
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                {secondaryOnClick && <NegativeButton value={SynthesisIcons.DELETE_LARGE} onClick={secondaryOnClick} />}
-                <PositiveButton value={SynthesisIcons.SELECT_LARGE} onClick={primaryOnClick} />
-            </Box>
-        </Box>
+                {secondaryOnClick && (
+                    <NegativeButton onClick={secondaryOnClick}>{SynthesisIcons.DELETE_LARGE}</NegativeButton>
+                )}
+                <PositiveButton onClick={primaryOnClick}>{SynthesisIcons.SELECT_LARGE}</PositiveButton>
+            </Stack>
+        </Stack>
     )
 }
 
-const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { closePanel } = usePanelControlContext()
-    const { openModal } = useModalControlContext()
+const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { closePanel, openModal, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
     const [useSpawnPositions, setUseSpawnPositions] = useState(false)
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, {})
+    }, [])
+
     useEffect(() => {
         const loadConfigs = () => {
             try {
@@ -156,8 +150,8 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             }
                             MatchMode.getInstance().setMatchModeConfig(config)
 
-                            MatchMode.getInstance().start(openModal)
-                            closePanel("match-mode-config")
+                            MatchMode.getInstance().start()
+                            closePanel(panel!.id, CloseType.Accept)
                         }}
                         secondaryOnClick={
                             !config.isDefault
@@ -319,35 +313,26 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }
 
     return (
-        <Panel
-            name={"Match Mode Config"}
-            icon={SynthesisIcons.IMPORT}
-            panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Back"
-            openLocation="center"
-            onCancel={() => {
-                closePanel("match-mode-config")
-            }}
-        >
-            <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                {matchModeConfigs.length} Match Mode{matchModeConfigs.length === 1 ? "" : "s"}
-            </SectionLabel>
-            <SectionDivider />
+        <>
+            <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                {matchModeConfigs.length} Match Mode
+                {matchModeConfigs.length === 1 ? "" : "s"}
+            </Label>
+            <Divider />
             {matchModeConfigElements}
-            <SectionDivider />
+            <Divider />
             <Checkbox
-                defaultState={useSpawnPositions}
+                checked={useSpawnPositions}
                 label={"Move Robots to Starting Positions"}
                 onClick={v => setUseSpawnPositions(v)}
             />
-            <SectionDivider />
+            <Divider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
             <Box alignSelf={"center"}>
-                <Button value="Upload File" onClick={uploadClicked} />
+                <Button onClick={uploadClicked}>Upload File</Button>
             </Box>
-        </Panel>
+        </>
     )
 }
 

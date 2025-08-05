@@ -1,7 +1,7 @@
 import { server } from "@vitest/browser/context"
-import { ReactElement } from "react"
+import type { ReactElement } from "react"
 import { afterAll, assert, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest"
-import { cleanup, RenderResult, render } from "vitest-browser-react"
+import { cleanup, type RenderResult, render } from "vitest-browser-react"
 import World from "@/systems/World.ts"
 
 const { readFile } = server.commands
@@ -76,12 +76,18 @@ describe("React Mounting", async () => {
         expect(renderMock).toHaveBeenCalledOnce()
         assert(screen != null, "Screen was null")
 
+        await wait(50)
+
         const screenElement = screen.baseElement
         expect(screenElement.querySelector("canvas")).toBeInTheDocument()
         expect(screen.getByText("Singleplayer")).toBeInTheDocument()
         await annotate("DOM successfully updated to include Synthesis components")
         const initWorldSpy = vi.spyOn(World, "initWorld")
-        await screen.getByText("Singleplayer").click()
+        // for some reason threejs canvas intercepts .click()
+        screen
+            .getByText("Singleplayer")
+            .element()
+            .dispatchEvent(new PointerEvent("click", { bubbles: true }))
         expect(initWorldSpy).toHaveBeenCalledOnce()
         await annotate("Singleplayer Button calls initWorld")
 
