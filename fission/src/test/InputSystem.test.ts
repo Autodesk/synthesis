@@ -8,11 +8,11 @@ import {
     type KeyDescriptor,
     type ModifierState,
 } from "@/systems/input/InputTypes"
+import AxisInput from "@/systems/input/inputs/AxisInput"
+import ButtonInput from "@/systems/input/inputs/ButtonInput"
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import ButtonInput from "@/systems/input/inputs/ButtonInput"
-import AxisInput from "@/systems/input/inputs/AxisInput"
 
 describe("Input Scheme Manager Checks", () => {
     test("Available Schemes", () => {

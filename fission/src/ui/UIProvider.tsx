@@ -1,11 +1,13 @@
-import { IconButton } from "@mui/material"
 import CloseIcon from "@mui/icons-material/Close"
+import { IconButton } from "@mui/material"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
 import type { FunctionComponent, ReactNode } from "react"
 import { useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
+import type { ModalImplProps } from "./components/Modal"
+import type { PanelImplProps } from "./components/Panel"
 import {
     CloseType,
     type ConfigureScreenFn,
@@ -21,8 +23,6 @@ import {
     type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
-import type { PanelImplProps } from "./components/Panel"
-import type { ModalImplProps } from "./components/Modal"
 
 export type UIProviderProps = {
     children?: ReactNode

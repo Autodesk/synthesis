@@ -140,7 +140,7 @@ function generateGraph(
     return [[...nodes.values()], edges]
 }
 
-function simIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
     for (const [_k, v] of Object.entries(simConfig.handles)) {
@@ -190,7 +190,7 @@ function simIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function robotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
@@ -258,7 +258,7 @@ function robotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function wiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
+const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig, reset }) => {
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])
@@ -365,9 +365,9 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
-        const miraObj = MirabufSceneObject.getAll()[0]
-        if (miraObj != null) {
-            return miraObj
+        const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+        if (miraObjs.length > 0) {
+            return miraObjs[0][1] as MirabufSceneObject
         }
         addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
         // closePanel(panel!.id, CloseType.Cancel)
@@ -413,7 +413,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                 <div className="flex grow">
                     {configState === "wiring" && (
                         <ReactFlowProvider>
-                            <wiringComponent
+                            <WiringComponent
                                 reset={reset}
                                 simConfig={simConfig}
                                 selectedAssembly={selectedAssembly}
@@ -422,14 +422,14 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         </ReactFlowProvider>
                     )}
                     {configState === "robotIO" && (
-                        <robotIoComponent
+                        <RobotIoComponent
                             simConfig={simConfig}
                             selectedAssembly={selectedAssembly}
                             setConfigState={setConfigState}
                         />
                     )}
                     {configState === "simIO" && (
-                        <simIoComponent
+                        <SimIoComponent
                             simConfig={simConfig}
                             selectedAssembly={selectedAssembly}
                             setConfigState={setConfigState}

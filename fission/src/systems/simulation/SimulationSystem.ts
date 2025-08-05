@@ -1,4 +1,4 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"

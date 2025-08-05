@@ -1,4 +1,4 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { describe, expect, test } from "vitest"
 import { mirabuf } from "../../proto/mirabuf"

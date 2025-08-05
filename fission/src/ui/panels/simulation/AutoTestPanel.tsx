@@ -159,7 +159,7 @@ function resetBodies(captures: BodyCapture[]) {
     JOLT.destroy(zero)
 }
 
-function end({ assembly, setStaging, captures }: EndProps) {
+const End: React.FC<EndProps> = ({ assembly, setStaging, captures }) => {
     useEffect(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)
     }, [])
@@ -176,7 +176,7 @@ function end({ assembly, setStaging, captures }: EndProps) {
     )
 }
 
-function playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
+const Playing: React.FC<PlayingProps> = ({ assembly, setEnd, countdown, captures }) => {
     const [remaining, setRemaining] = useState<number>(countdown)
 
     useEffect(() => {
@@ -227,7 +227,7 @@ function playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
     )
 }
 
-function staging({ assembly, setPlaying }: StagingProps) {
+const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
     const [countdown, setCountdown] = useState<number>(15)
     const [station, setStation] = useState<AllianceStation>("red1")
     const [gameData, setGameData] = useState<string>("")
@@ -307,7 +307,13 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
     const { configureScreen } = useUIContext()
 
-    const assembly = useMemo(() => MirabufSceneObject.findWhere(x => x.brain?.brainType === "wpilib"), [])
+    const assembly = useMemo(
+        () =>
+            [...World.sceneRenderer.sceneObjects.values()].find(
+                x => (x as MirabufSceneObject).brain?.brainType === "wpilib"
+            ) as MirabufSceneObject,
+        []
+    )
 
     useEffect(() => {
         configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})
@@ -338,9 +344,9 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         <Stack gap={4}>
             {activeProps !== undefined &&
                 (activeProps.state === "Staging" ? (
-                    <staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
+                    <Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
                 ) : activeProps.state === "Playing" ? (
-                    <playing
+                    <Playing
                         assembly={activeProps.assembly}
                         captures={activeProps.captures}
                         countdown={activeProps.countdown}
@@ -348,7 +354,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         state="Playing"
                     />
                 ) : activeProps.state === "End" ? (
-                    <end
+                    <End
                         assembly={activeProps.assembly}
                         setStaging={setActiveProps}
                         captures={activeProps.captures}

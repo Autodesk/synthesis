@@ -1,8 +1,9 @@
 import { styled, Typography } from "@mui/material"
 import { Box } from "@mui/system"
-import React, { useEffect, useReducer, useState } from "react"
+import type React from "react"
+import { useEffect, useReducer, useState } from "react"
 import { easeOutQuad } from "@/util/EasingFunctions"
-import { ProgressEvent, ProgressHandle, ProgressHandleStatus } from "./ProgressNotificationData"
+import { ProgressEvent, type ProgressHandle, ProgressHandleStatus } from "./ProgressNotificationData"
 
 interface ProgressData {
     lastValue: number

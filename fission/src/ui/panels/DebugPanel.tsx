@@ -1,5 +1,6 @@
 import { Box, Button, Stack } from "@mui/material"
 import type React from "react"
+import { useEffect } from "react"
 import APS from "@/aps/APS"
 import MirabufCachingService, {
     backUpFields as hashedMiraFields,
@@ -10,12 +11,11 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import { random } from "@/util/Random"
 import { globalAddToast } from "../components/GlobalUIControls"
+import Label from "../components/Label"
 import type { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
-import Label from "../components/Label"
-import { useEffect } from "react"
 
 function toggleDragMode() {
     const dragSystem = World.dragModeSystem

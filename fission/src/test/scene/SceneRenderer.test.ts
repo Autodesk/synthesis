@@ -1,9 +1,9 @@
 import * as THREE from "three"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import SceneObject from "@/systems/scene/SceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import type SceneObject from "@/systems/scene/SceneObject"
 import SceneRenderer, { STANDARD_CAMERA_FOV_X, STANDARD_CAMERA_FOV_Y } from "@/systems/scene/SceneRenderer"
 import JOLT from "@/util/loading/JoltSyncLoader"
 

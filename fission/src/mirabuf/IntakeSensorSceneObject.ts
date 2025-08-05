@@ -1,4 +1,4 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
 import SceneObject from "@/systems/scene/SceneObject"
@@ -10,7 +10,8 @@ import {
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
+import type MirabufSceneObject from "./MirabufSceneObject"
+import type { RigidNodeAssociate } from "./MirabufSceneObject"
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
