@@ -1,5 +1,5 @@
-import * as THREE from "three"
 import type { Object3D, PerspectiveCamera } from "three"
+import * as THREE from "three"
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"

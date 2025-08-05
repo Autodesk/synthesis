@@ -13,7 +13,7 @@ interface OrbitSettingsProps {
     controls: CustomOrbitControls
 }
 
-function orbitSettings({ controls }: OrbitSettingsProps) {
+const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
     const [locked, setLocked] = useState<boolean>(controls.locked)
 
     useEffect(() => {
@@ -61,7 +61,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                 <ToggleButton value="Orbit">Orbit</ToggleButton>
             </ToggleButtonGroup>
             {cameraControlType === "Orbit" && (
-                <orbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
+                <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
             )}
         </>
     )
