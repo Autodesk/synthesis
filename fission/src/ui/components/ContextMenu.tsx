@@ -1,10 +1,9 @@
-import { Box } from "@mui/material"
+import { Button, Divider, Stack } from "@mui/material"
 import { useEffect, useState } from "react"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
-import Button, { ButtonSize } from "./Button"
-import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
-import Label, { LabelSize } from "./Label"
-import { SectionDivider } from "./StyledComponents"
+import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
+import Label from "./Label"
+import { globalOpenModal, globalOpenPanel } from "./GlobalUIControls"
+import React from "react"
 
 interface ContextMenuStateData {
     data: ContextData
@@ -16,7 +15,10 @@ const ContextMenu: React.FC = () => {
 
     useEffect(() => {
         const func = (e: ContextSupplierEvent) => {
-            setState({ data: e.data, location: [e.mousePosition[0], e.mousePosition[1]] })
+            setState({
+                data: e.data,
+                location: [e.mousePosition[0], e.mousePosition[1]],
+            })
         }
 
         ContextSupplierEvent.listen(func)
@@ -28,10 +30,10 @@ const ContextMenu: React.FC = () => {
     return !state ? (
         <></>
     ) : (
-        <Box
+        <Stack
             key="CANCEL"
             component="div"
-            display="flex"
+            direction="column"
             sx={{
                 position: "fixed",
                 left: "0pt",
@@ -42,51 +44,49 @@ const ContextMenu: React.FC = () => {
             onPointerDown={() => setState(undefined)}
             onContextMenu={e => e.preventDefault()}
         >
-            <Box
+            <Stack
                 key="MENU"
                 component="div"
-                display="flex"
+                direction="column"
                 sx={{
                     gap: "0.5rem",
-                    flexDirection: "column",
                     position: "fixed",
                     left: state.location[0],
                     top: state.location[1],
                     padding: "1rem",
                     borderRadius: "0.5rem",
-                    backgroundColor: colorNameToVar("Background"),
-                    color: colorNameToVar("InteractiveElementText"),
+                    bgcolor: "background.default",
                 }}
                 // Why, why, why do I need to do this. This is absurd
                 onPointerDown={e => e.stopPropagation()}
             >
-                <Box
-                    key="CONTEXT-HEADER"
-                    component="div"
-                    display="flex"
-                    sx={{
-                        flexDirection: "column",
-                    }}
-                >
-                    <Label key={"context-title"} size={LabelSize.SMALL}>
+                <Stack key="CONTEXT-HEADER" component="div" direction="column">
+                    <Label key="context-title" size="md">
                         {state.data.title}
                     </Label>
-                    <SectionDivider />
-                </Box>
+                    <Divider />
+                </Stack>
                 {state.data.items.map(x => (
                     <Button
                         key={x.name}
-                        size={ButtonSize.SMALL}
                         className={"w-full text-sm"}
-                        value={x.name}
                         onClick={() => {
                             setState(undefined)
-                            x.func()
+                            if (x.screen) {
+                                if (x.type === "modal") {
+                                    globalOpenModal(x.screen, x.customProps)
+                                } else {
+                                    globalOpenPanel(x.screen, x.customProps)
+                                }
+                            }
+                            x.func?.()
                         }}
-                    />
+                    >
+                        {x.name}
+                    </Button>
                 ))}
-            </Box>
-        </Box>
+            </Stack>
+        </Stack>
     )
 }
 

@@ -1,18 +1,15 @@
-import { Box } from "@mui/material"
-import React, { useEffect, useState } from "react"
-import InputSystem, {
-    AxisInput,
-    ButtonInput,
-    EMPTY_MODIFIER_STATE,
-    Input,
-    ModifierState,
-} from "@/systems/input/InputSystem"
-import { KeyCode } from "@/systems/input/KeyboardTypes"
-import Button from "@/ui/components/Button"
+import { Box, Button, Divider, MenuItem, Select, Stack } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
+import InputSystem from "@/systems/input/InputSystem"
+import { EMPTY_MODIFIER_STATE, type ModifierState } from "@/systems/input/InputTypes"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import type { KeyCode } from "@/systems/input/KeyboardTypes"
 import Checkbox from "@/ui/components/Checkbox"
-import Dropdown from "@/ui/components/Dropdown"
 import Label from "@/ui/components/Label"
-import { SectionDivider, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import ButtonInput from "@/systems/input/inputs/ButtonInput"
+import AxisInput from "@/systems/input/inputs/AxisInput"
+import Input from "@/systems/input/inputs/Input"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {
@@ -81,7 +78,7 @@ const transformKeyName = (keyCode: KeyCode, keyModifiers: ModifierState) => {
     }
 
     const displayName = prefix + keyCodeToCharacter(keyCode)
-    if (displayName == "") return "N/A"
+    if (displayName === "") return "N/A"
 
     return displayName
 }
@@ -110,32 +107,23 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
         return (
             <>
-                <Box
-                    display="flex"
-                    flexDirection={"row"}
-                    gap="10px"
-                    alignItems={"center"}
-                    justifyContent={"space-between"}
-                    width={"98%"}
-                >
-                    <Label>{toTitleCase(input.inputName)}</Label>
+                <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
+                    <Label size="md">{toTitleCase(input.inputName)}</Label>
 
                     <Box>
                         <Button
                             key={input.inputName}
-                            value={
-                                input.inputName == selectedInput
-                                    ? "Press anything"
-                                    : transformKeyName(input.keyCode, input.keyModifiers)
-                            }
                             onClick={() => {
                                 setSelectedInput(input.inputName)
                             }}
-                        />
+                        >
+                            {input.inputName === selectedInput
+                                ? "Press anything"
+                                : transformKeyName(input.keyCode, input.keyModifiers)}
+                        </Button>
                     </Box>
-                </Box>
-                {Spacer(8, 0)}
-                <SectionDivider />
+                </Stack>
+                <Divider />
             </>
         )
     }
@@ -146,48 +134,39 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
         return (
             <>
-                <Box
-                    display="flex"
-                    flexDirection={"row"}
-                    gap="10px"
-                    alignItems={"center"}
-                    justifyContent={"space-between"}
-                    width={"98%"}
-                >
-                    <Label>{toTitleCase(input.inputName)}</Label>
+                <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
+                    <Label size="md">{toTitleCase(input.inputName)}</Label>
 
-                    <Box display="flex" gap="10px" alignItems={"center"}>
+                    <Stack direction="row" gap="10px" alignItems={"center"}>
                         {SynthesisIcons.ADD}
                         {/* Positive key */}
                         <Button
-                            key={"pos" + input.inputName}
-                            value={
-                                "pos" + input.inputName == selectedInput
-                                    ? "Press anything"
-                                    : transformKeyName(input.posKeyCode, input.posKeyModifiers)
-                            }
+                            key={`pos${input.inputName}`}
+                            variant="contained"
                             onClick={() => {
-                                setSelectedInput("pos" + input.inputName)
+                                setSelectedInput(`pos${input.inputName}`)
                             }}
-                        />
-                        {Spacer()}
+                        >
+                            {`pos${input.inputName}` === selectedInput
+                                ? "Press anything"
+                                : transformKeyName(input.posKeyCode, input.posKeyModifiers)}
+                        </Button>
                         {SynthesisIcons.MINUS}
                         {/* Negative key */}
                         <Button
-                            key={"neg" + input.inputName}
-                            value={
-                                "neg" + input.inputName == selectedInput
-                                    ? "Press anything"
-                                    : transformKeyName(input.negKeyCode, input.negKeyModifiers)
-                            }
+                            key={`neg${input.inputName}`}
+                            variant="contained"
                             onClick={() => {
-                                setSelectedInput("neg" + input.inputName)
+                                setSelectedInput(`neg${input.inputName}`)
                             }}
-                        />
-                    </Box>
-                </Box>
-                {Spacer(8, 0)}
-                <SectionDivider />
+                        >
+                            {`neg${input.inputName}` === selectedInput
+                                ? "Press anything"
+                                : transformKeyName(input.negKeyCode, input.negKeyModifiers)}
+                        </Button>
+                    </Stack>
+                </Stack>
+                <Divider />
             </>
         )
     }
@@ -197,21 +176,14 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         if (!(input instanceof ButtonInput)) throw new Error("Input not button type")
         return (
             <>
-                <Box
-                    display="flex"
-                    flexDirection={"row"}
-                    gap="10px"
-                    alignItems={"center"}
-                    justifyContent={"space-between"}
-                    width={"98%"}
-                >
-                    <Label>{toTitleCase(input.inputName)}</Label>
+                <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
+                    <Label size="md">{toTitleCase(input.inputName)}</Label>
                     <Button
                         key={input.inputName}
                         value={
-                            input.inputName == selectedInput
+                            input.inputName === selectedInput
                                 ? "Press anything"
-                                : input.gamepadButton == -1
+                                : input.gamepadButton === -1
                                   ? "N/A"
                                   : gamepadButtons[input.gamepadButton]
                         }
@@ -219,9 +191,8 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             setSelectedInput(input.inputName)
                         }}
                     />
-                </Box>
-                {Spacer(8, 0)}
-                <SectionDivider />
+                </Stack>
+                <Divider />
             </>
         )
     }
@@ -231,27 +202,23 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
 
         return (
-            <>
-                <Box
-                    display="flex"
-                    flexDirection={"row"}
-                    gap="10px"
-                    alignItems={"center"}
-                    justifyContent={"space-between"}
-                    width={"98%"}
+            <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
+                <Label size="md">{toTitleCase(input.inputName)}</Label>
+                <Select
+                    key={input.inputName}
+                    value={gamepadAxes[input.gamepadAxisNumber + 1]}
+                    onChange={e => {
+                        setSelectedInput(input.inputName)
+                        setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value))
+                    }}
                 >
-                    <Label>{toTitleCase(input.inputName)}</Label>
-                    <Dropdown
-                        key={input.inputName}
-                        defaultValue={gamepadAxes[input.gamepadAxisNumber + 1]}
-                        options={gamepadAxes}
-                        onSelect={value => {
-                            setSelectedInput(input.inputName)
-                            setChosenGamepadAxis(gamepadAxes.indexOf(value))
-                        }}
-                    />
-                </Box>
-            </>
+                    {gamepadAxes.map(axis => (
+                        <MenuItem key={`axis-${axis}`} value={axis}>
+                            {axis}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </Stack>
         )
     }
 
@@ -260,52 +227,42 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
 
         return (
-            <>
-                <Box
-                    display="flex"
-                    flexDirection={"row"}
-                    gap="10px"
-                    alignItems={"center"}
-                    justifyContent={"space-between"}
-                    width={"98%"}
-                >
-                    <Label>{toTitleCase(input.inputName)}</Label>
+            <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
+                <Label size="md">{toTitleCase(input.inputName)}</Label>
 
-                    <Box display="flex" gap="10px" alignItems={"center"}>
-                        {/* Positive gamepad button */}
-                        {SynthesisIcons.ADD}
-                        <Button
-                            key={"pos" + input.inputName}
-                            value={
-                                "pos" + input.inputName == selectedInput
-                                    ? "Press anything"
-                                    : input.posGamepadButton == -1
-                                      ? "N/A"
-                                      : gamepadButtons[input.posGamepadButton]
-                            }
-                            onClick={() => {
-                                setSelectedInput("pos" + input.inputName)
-                            }}
-                        />
-                        {Spacer()}
-                        {/* // Negative gamepad button */}
-                        {SynthesisIcons.MINUS}
-                        <Button
-                            key={"neg" + input.inputName}
-                            value={
-                                "neg" + input.inputName == selectedInput
-                                    ? "Press anything"
-                                    : input.negGamepadButton == -1
-                                      ? "N/A"
-                                      : gamepadButtons[input.negGamepadButton]
-                            }
-                            onClick={() => {
-                                setSelectedInput("neg" + input.inputName)
-                            }}
-                        />
-                    </Box>
-                </Box>
-            </>
+                <Stack direction="row" gap="10px" alignItems={"center"}>
+                    {/* Positive gamepad button */}
+                    {SynthesisIcons.ADD}
+                    <Button
+                        key={`pos${input.inputName}`}
+                        value={
+                            `pos${input.inputName}` === selectedInput
+                                ? "Press anything"
+                                : input.posGamepadButton === -1
+                                  ? "N/A"
+                                  : gamepadButtons[input.posGamepadButton]
+                        }
+                        onClick={() => {
+                            setSelectedInput(`pos${input.inputName}`)
+                        }}
+                    />
+                    {/* // Negative gamepad button */}
+                    {SynthesisIcons.MINUS}
+                    <Button
+                        key={`neg${input.inputName}`}
+                        value={
+                            `neg${input.inputName}` === selectedInput
+                                ? "Press anything"
+                                : input.negGamepadButton === -1
+                                  ? "N/A"
+                                  : gamepadButtons[input.negGamepadButton]
+                        }
+                        onClick={() => {
+                            setSelectedInput(`neg${input.inputName}`)
+                        }}
+                    />
+                </Stack>
+            </Stack>
         )
     }
 
@@ -313,27 +270,23 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
 
         return (
-            <>
-                <Box
-                    display="flex"
-                    flexDirection={"row"}
-                    gap="10px"
-                    alignItems={"center"}
-                    justifyContent={"space-between"}
-                    width={"98%"}
+            <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
+                <Label size="md">{toTitleCase(input.inputName)}</Label>
+                <Select
+                    key={input.inputName}
+                    value={touchControlsAxes[input.touchControlAxis]}
+                    onChange={e => {
+                        setSelectedInput(input.inputName)
+                        setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value))
+                    }}
                 >
-                    <Label>{toTitleCase(input.inputName)}</Label>
-                    <Dropdown
-                        key={input.inputName}
-                        defaultValue={touchControlsAxes[input.touchControlAxis]}
-                        options={touchControlsAxes}
-                        onSelect={value => {
-                            setSelectedInput(input.inputName)
-                            setChosenTouchControlsAxis(touchControlsAxes.indexOf(value))
-                        }}
-                    />
-                </Box>
-            </>
+                    {touchControlsAxes.map(axis => (
+                        <MenuItem key={`touch-axis-${axis}`} value={axis}>
+                            {axis}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </Stack>
         )
     }
 
@@ -357,21 +310,21 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         {/* // Button to switch between two buttons and a joystick axis */}
                         <Checkbox
                             label="Use Gamepad Buttons"
-                            defaultState={useGamepadButtons}
-                            onClick={val => {
-                                input.useGamepadButtons = val
-                                setUseGamepadButtons(val)
+                            checked={useGamepadButtons}
+                            onClick={checked => {
+                                input.useGamepadButtons = checked
+                                setUseGamepadButtons(checked)
                             }}
                         />
                         {/* // Button to invert the joystick axis */}
                         <Checkbox
                             label="Invert Joystick"
-                            defaultState={input.joystickInverted}
-                            onClick={val => {
-                                input.joystickInverted = val
+                            checked={input.joystickInverted}
+                            onClick={checked => {
+                                input.joystickInverted = checked
                             }}
                         />
-                        <SectionDivider />
+                        <Divider />
                     </div>
                 )
             }
@@ -384,12 +337,12 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         {/* // Button to invert the joystick axis */}
                         <Checkbox
                             label="Invert Joystick"
-                            defaultState={input.joystickInverted}
-                            onClick={val => {
-                                input.joystickInverted = val
+                            checked={input.joystickInverted}
+                            onClick={checked => {
+                                input.joystickInverted = checked
                             }}
                         />
-                        <SectionDivider />
+                        <Divider />
                     </div>
                 )
             }
@@ -414,7 +367,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     .map(index => index!)
 
                 if (pressedButtons.length > 0) setChosenButton(pressedButtons[0])
-                else if (chosenButton != -1) setChosenButton(-1)
+                else if (chosenButton !== -1) setChosenButton(-1)
             }
             requestAnimationFrame(checkGamepadState)
         }
@@ -448,7 +401,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
             onInputChanged()
         }
         // Assign gamepad button inputs when a button is pressed
-        else if (useGamepad && selectedInput && chosenButton != -1) {
+        else if (useGamepad && selectedInput && chosenButton !== -1) {
             if (selectedInput.startsWith("pos")) {
                 if (!(input instanceof AxisInput)) return
 
@@ -470,7 +423,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         }
 
         // Assign gamepad axis inputs when a gamepad axis is selected
-        if (useGamepad && selectedInput && chosenGamepadAxis != -1) {
+        if (useGamepad && selectedInput && chosenGamepadAxis !== -1) {
             if (!(input instanceof AxisInput)) return
 
             input.gamepadAxisNumber = chosenGamepadAxis - 1
@@ -480,7 +433,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
             setSelectedInput("")
         }
 
-        if (useTouchControls && selectedInput && chosenTouchControlsAxis != -1) {
+        if (useTouchControls && selectedInput && chosenTouchControlsAxis !== -1) {
             if (!(input instanceof AxisInput)) return
 
             input.touchControlAxis = chosenTouchControlsAxis

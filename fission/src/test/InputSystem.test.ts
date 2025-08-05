@@ -1,17 +1,18 @@
 import { assert, beforeEach, describe, expect, test, vi } from "vitest"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import InputSystem, {
-    AxisInput,
-    ButtonInput,
+import InputSystem from "@/systems/input/InputSystem"
+import {
     EMPTY_MODIFIER_STATE,
-    InputName,
-    KeyDescriptor,
-    ModifierState,
-} from "@/systems/input/InputSystem"
-import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
+    type InputName,
+    type KeyDescriptor,
+    type ModifierState,
+} from "@/systems/input/InputTypes"
+import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import ButtonInput from "@/systems/input/inputs/ButtonInput"
+import AxisInput from "@/systems/input/inputs/AxisInput"
 
 describe("Input Scheme Manager Checks", () => {
     test("Available Schemes", () => {

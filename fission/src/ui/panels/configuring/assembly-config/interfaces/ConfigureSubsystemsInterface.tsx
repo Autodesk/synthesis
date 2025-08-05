@@ -1,17 +1,18 @@
-import React, { useMemo, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type React from "react"
+import { useMemo, useState } from "react"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { defaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
-import Driver from "@/systems/simulation/driver/Driver"
+import type Driver from "@/systems/simulation/driver/Driver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import SubsystemRowInterface from "./SubsystemRowInterface"
 
 class ConfigModeSelectionOption extends SelectMenuOption {
@@ -63,7 +64,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
     }, [selectedRobot])
 
     const getSubsystemOptions = () => {
-        if (drivers == undefined) return []
+        if (drivers === undefined) return []
         const options = [new ConfigModeSelectionOption("Drivetrain", drivers.filter(x => x instanceof WheelDriver)[0])]
 
         let jointIndex = 0
@@ -90,13 +91,13 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
             <SelectMenu
                 options={getSubsystemOptions()}
                 onOptionSelected={val => {
-                    if (val != undefined) new ConfigurationSavedEvent()
+                    if (val !== undefined) new ConfigurationSavedEvent()
                     setSelectedConfigMode(val as ConfigModeSelectionOption)
                 }}
                 defaultHeaderText="Select a Subsystem"
-                indentation={2}
+                // indentation={2}
             />
-            {selectedConfigMode != undefined && (
+            {selectedConfigMode !== undefined && (
                 <ConfigInterface
                     configModeOption={selectedConfigMode}
                     selectedRobot={selectedRobot}
