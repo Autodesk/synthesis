@@ -1,7 +1,7 @@
 import * as THREE from "three"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 
 vi.mock("@/systems/World", () => ({

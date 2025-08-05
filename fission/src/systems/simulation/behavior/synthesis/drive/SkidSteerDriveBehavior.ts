@@ -1,7 +1,7 @@
 import InputSystem from "@/systems/input/InputSystem.ts"
 import Behavior from "@/systems/simulation/behavior/Behavior.ts"
-import WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
-import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
+import type WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
+import type WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
 import { clamp } from "@/util/Utility.ts"
 
 class SkidSteerDriveBehavior extends Behavior {

@@ -1,17 +1,16 @@
-import { Box } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
-import Label, { LabelSize } from "@/components/Label"
-import ScrollView from "@/components/ScrollView"
-import Stack, { StackDirection } from "@/components/Stack"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import { MatchModeType } from "@/systems/match_mode/MatchMode"
-import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { ContactType } from "@/mirabuf/ZoneTypes"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
-import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import Label from "@/ui/components/Label"
+import ScrollView from "@/ui/components/ScrollView"
+import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -32,24 +31,17 @@ type ProtectedZoneRowProps = {
 
 const ProtectedZoneRow: React.FC<ProtectedZoneRowProps> = ({ zone, save, deleteZone, selectZone }) => {
     return (
-        <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-            <Stack direction={StackDirection.HORIZONTAL} spacing={8} justify="start">
+        <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+            <Stack direction="row" gap={8}>
                 <div className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`} />
-                <Stack direction={StackDirection.VERTICAL} spacing={4} justify={"center"} className="w-max">
-                    <Label size={LabelSize.SMALL}>{zone.name}</Label>
-                    <Label size={LabelSize.SMALL}>
-                        {zone.penaltyPoints} {zone.penaltyPoints == 1 ? "penalty point" : "penalty points"}
+                <Stack gap={4} className="w-max">
+                    <Label size="sm">{zone.name}</Label>
+                    <Label size="sm">
+                        {zone.penaltyPoints} {zone.penaltyPoints === 1 ? "penalty point" : "penalty points"}
                     </Label>
                 </Stack>
             </Stack>
-            <Box
-                component={"div"}
-                display={"flex"}
-                flexDirection={"row-reverse"}
-                gap={"0.25rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
-            >
+            <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
                 {EditButton(() => {
                     selectZone(zone)
                     save()
@@ -58,8 +50,8 @@ const ProtectedZoneRow: React.FC<ProtectedZoneRowProps> = ({ zone, save, deleteZ
                 {DeleteButton(() => {
                     deleteZone()
                 })}
-            </Box>
-        </Box>
+            </Stack>
+        </Stack>
     )
 }
 
@@ -97,30 +89,32 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
     return (
         <>
             {zones?.length > 0 ? (
-                <ScrollView className="flex flex-col gap-4">
-                    {zones.map((zonePrefs: ProtectedZonePreferences, i: number) => (
-                        <ProtectedZoneRow
-                            key={i}
-                            zone={(() => {
-                                return zonePrefs
-                            })()}
-                            save={() => saveZones(zones, selectedField)}
-                            deleteZone={() => {
-                                setZones(zones.filter((_, idx) => idx !== i))
-                                saveZones(
-                                    zones.filter((_, idx) => idx !== i),
-                                    selectedField
-                                )
-                            }}
-                            selectZone={selectZone}
-                        />
-                    ))}
+                <ScrollView>
+                    <Stack gap={4}>
+                        {zones.map((zonePrefs: ProtectedZonePreferences, i: number) => (
+                            <ProtectedZoneRow
+                                key={i}
+                                zone={(() => {
+                                    return zonePrefs
+                                })()}
+                                save={() => saveZones(zones, selectedField)}
+                                deleteZone={() => {
+                                    setZones(zones.filter((_, idx) => idx !== i))
+                                    saveZones(
+                                        zones.filter((_, idx) => idx !== i),
+                                        selectedField
+                                    )
+                                }}
+                                selectZone={selectZone}
+                            />
+                        ))}
+                    </Stack>
                 </ScrollView>
             ) : (
-                <Label>No protected zones</Label>
+                <Label size="md">No protected zones</Label>
             )}
-            {AddButtonInteractiveColor(() => {
-                if (zones == undefined) return
+            {AddButton(() => {
+                if (zones === undefined) return
 
                 const newZone: ProtectedZonePreferences = {
                     name: "New Protected Zone",
