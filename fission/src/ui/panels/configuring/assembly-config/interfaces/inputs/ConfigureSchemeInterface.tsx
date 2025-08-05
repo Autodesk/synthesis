@@ -1,17 +1,19 @@
-import React, { useCallback, useEffect, useReducer, useRef, useState } from "react"
+import { Divider, Stack } from "@mui/material"
+import type React from "react"
+import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Button from "@/components/Button.tsx"
-import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import Checkbox from "@/components/Checkbox.tsx"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import { AxisInput } from "@/systems/input/InputSystem.ts"
-import { SectionDivider } from "@/ui/components/StyledComponents"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import type { InputScheme } from "@/systems/input/InputTypes"
+import type Input from "@/systems/input/inputs/Input"
 import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
 }
 
-/** Interface to configure a specific input scheme */
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
@@ -52,7 +54,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     return (
         <>
             {/** Toggle the input scheme between controller and keyboard mode */}
-            <StatefulCheckbox
+            <Checkbox
                 label="Use Controller"
                 checked={useGamepad}
                 onClick={val => {
@@ -63,9 +65,9 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                     }
                     selectedScheme.usesGamepad = val
                 }}
-                tooltipText="Supported controllers: Xbox one, Xbox 360."
+                tooltip="Supported controllers: Xbox one, Xbox 360."
             />
-            <StatefulCheckbox
+            <Checkbox
                 label="Use Touch Controls"
                 checked={useTouchControls}
                 onClick={val => {
@@ -76,13 +78,13 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                     }
                     selectedScheme.usesTouchControls = val
                 }}
-                tooltipText="Enable on-screen touch controls (only for mobile devices)."
+                tooltip="Enable on-screen touch controls (only for mobile devices)."
             />
-            <SectionDivider />
+            <Divider />
 
             {/* Scroll view for inputs */}
-            <div ref={scrollRef} tabIndex={0} className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
-                {selectedScheme.inputs.map(i => {
+            <Stack ref={scrollRef} gap={2}>
+                {selectedScheme.inputs.map((i: Input) => {
                     return (
                         <EditInputInterface
                             key={i.inputName}
@@ -95,22 +97,21 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                         />
                     )
                 })}
-                {
-                    <Button
-                        value={"Add Joint Control"}
-                        onClick={() => {
-                            const existingJointIndexes = selectedScheme.inputs
-                                .map(input => parseInt(input.inputName.replace("joint ", "")))
-                                .filter(val => !isNaN(val))
-                            const newJointIndex = Math.max(0, ...existingJointIndexes) + 1
-                            selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
-                            selectedScheme.customized = true
-                            update()
-                        }}
-                    />
-                }
-            </div>
+                <Button
+                    value={"Add Joint Control"}
+                    onClick={() => {
+                        const existingJointIndexes = selectedScheme.inputs
+                            .map(input => parseInt(input.inputName.replace("joint ", "")))
+                            .filter(val => !isNaN(val))
+                        const newJointIndex = Math.max(0, ...existingJointIndexes) + 1
+                        selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
+                        selectedScheme.customized = true
+                        update()
+                    }}
+                />
+            </Stack>
         </>
     )
 }
+
 export default ConfigureSchemeInterface

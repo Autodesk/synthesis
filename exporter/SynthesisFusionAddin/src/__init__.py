@@ -2,8 +2,8 @@ import os
 import platform
 from pathlib import Path
 
-from src.GlobalManager import GlobalManager
-from src.Util import makeDirectories
+from src.lib.GlobalManager import GlobalManager
+from src.lib.Util import makeDirectories
 
 APP_NAME = "Synthesis"
 APP_TITLE = "Synthesis Robot Exporter"

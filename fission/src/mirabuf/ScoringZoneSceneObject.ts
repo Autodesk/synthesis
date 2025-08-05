@@ -2,7 +2,7 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { OnContactAddedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import World from "@/systems/World"
@@ -15,7 +15,8 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { findListDifference } from "@/util/Utility"
-import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
+import type MirabufSceneObject from "./MirabufSceneObject"
+import type { RigidNodeAssociate } from "./MirabufSceneObject"
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
