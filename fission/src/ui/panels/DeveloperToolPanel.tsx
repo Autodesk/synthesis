@@ -229,7 +229,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
         try {
             const encoded = mirabuf.Assembly.encode(assembly).finish()
-            const blob = new Blob([encoded], { type: "application/octet-stream" })
+            const blob = new Blob([encoded.buffer as ArrayBuffer], { type: "application/octet-stream" })
             const url = URL.createObjectURL(blob)
 
             // Check if assembly has devtool data to determine filename
