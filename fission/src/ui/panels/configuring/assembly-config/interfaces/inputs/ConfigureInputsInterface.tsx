@@ -11,6 +11,7 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
+import type { ConfigurePanelCustomProps } from "../../ConfigurePanel"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 
 /** If a scheme is assigned to a robot, find the name of that robot */
@@ -33,7 +34,7 @@ class SchemeSelectionOption extends SelectMenuOption {
     }
 }
 
-const ConfigureInputsInterface: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
     const { openModal, closePanel } = useUIContext()
     const { selectedScheme: currentSelectedScheme, setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
 
