@@ -3,7 +3,7 @@ import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import type { InputName, InputScheme, ModifierState } from "./InputTypes"
-import Input from "./inputs/Input"
+import type Input from "./inputs/Input"
 
 const LOG_GAMEPAD_EVENTS = false
 

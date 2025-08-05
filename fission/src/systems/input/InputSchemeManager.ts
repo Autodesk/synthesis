@@ -7,7 +7,7 @@ import InputSystem from "./InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType, type KeyDescriptor } from "./InputTypes"
 import AxisInput from "./inputs/AxisInput"
 import ButtonInput from "./inputs/ButtonInput"
-import Input from "./inputs/Input"
+import type Input from "./inputs/Input"
 
 class InputSchemeManager {
     // References to the current custom schemes to avoid parsing every time they are requested

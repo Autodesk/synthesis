@@ -1,12 +1,12 @@
-import * as THREE from "three"
-import World from "@/systems/World"
-import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import { Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import StatefulSlider from "../components/StatefulSlider"
+import type * as THREE from "three"
+import World from "@/systems/World"
+import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "../components/Checkbox"
-import { PanelImplProps } from "../components/Panel"
+import type { PanelImplProps } from "../components/Panel"
+import StatefulSlider from "../components/StatefulSlider"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const RAY_MAX_LENGTH = 20.0

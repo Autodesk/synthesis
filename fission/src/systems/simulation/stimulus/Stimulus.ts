@@ -1,8 +1,8 @@
-import { mirabuf } from "@/proto/mirabuf"
-import { MechanismConstraint } from "@/systems/physics/Mechanism"
+import type { mirabuf } from "@/proto/mirabuf"
+import type { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { NoraType, NoraTypes } from "../Nora"
-import { SimSupplier } from "../wpilib_brain/SimDataFlow"
+import type { NoraType, NoraTypes } from "../Nora"
+import type { SimSupplier } from "../wpilib_brain/SimDataFlow"
 
 export enum StimulusType {
     STIM_CHASSIS_ACCEL = "Stim_ChassisAccel",
