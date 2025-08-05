@@ -1,7 +1,7 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ScoringZoneSceneObject, { OnScoreChangedEvent } from "../../mirabuf/ScoringZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
 

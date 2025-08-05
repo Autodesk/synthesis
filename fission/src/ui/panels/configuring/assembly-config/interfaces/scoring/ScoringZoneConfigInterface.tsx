@@ -1,16 +1,13 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
-import Button from "@/components/Button"
-import Checkbox from "@/components/Checkbox"
-import Input from "@/components/Input"
-import NumberInput from "@/components/NumberInput"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import type { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -19,8 +16,10 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import { Button, TextField } from "@mui/material"
+import Checkbox from "@/ui/components/Checkbox"
 
 /**
  * Saves ejector configuration to selected field.
@@ -179,7 +178,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
         return new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
-            selectedZone.alliance == "blue" ? blueMaterial : redMaterial
+            selectedZone.alliance === "blue" ? blueMaterial : redMaterial
         )
     }, [selectedZone, selectedZone.alliance, blueMaterial, redMaterial])
 
@@ -204,7 +203,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 const fieldTransformation = convertJoltMat44ToThreeMatrix4(
                     World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
-                const props = deltaFieldTransformsPhysicalProp(deltaTransformation, fieldTransformation)
+                const props = deltaFieldTransformsVisualProperties(deltaTransformation, fieldTransformation)
 
                 gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
                 gizmo.obj.rotation.setFromQuaternion(props.rotation)
@@ -236,7 +235,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             }
 
             const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
-            if (!assoc || assoc?.sceneObject != selectedField) {
+            if (!assoc || assoc?.sceneObject !== selectedField) {
                 return false
             }
 
@@ -249,18 +248,22 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     return (
         <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
             {/** Set the zone name */}
-            <Input label="Name" placeholder="Enter zone name" defaultValue={selectedZone.name} onInput={setName} />
+            <TextField
+                label="Name"
+                placeholder="Enter zone name"
+                defaultValue={selectedZone.name}
+                onChange={e => setName(e.target.value)}
+            />
 
             {/** Set the alliance color */}
             <Button
-                value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
                 onClick={() => {
-                    setAlliance(alliance == "blue" ? "red" : "blue")
+                    setAlliance(alliance === "blue" ? "red" : "blue")
                     if (gizmoRef.current)
-                        (gizmoRef.current.obj as THREE.Mesh).material = alliance == "blue" ? redMaterial : blueMaterial
+                        (gizmoRef.current.obj as THREE.Mesh).material = alliance === "blue" ? redMaterial : blueMaterial
                 }}
-                colorOverrideClass={`bg-match-${alliance}-alliance`}
-            />
+                sx={{ bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }}
+            >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
 
             {/** Select a parent node */}
             <SelectButton
@@ -270,11 +273,12 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             />
 
             {/** Set the point value */}
-            <NumberInput
+            <TextField
+                inputProps={{ type: "number" }}
                 label="Points"
                 placeholder="Zone points"
                 defaultValue={selectedZone.points}
-                onInput={v => setPoints(v || 1)}
+                onChange={v => setPoints(parseInt(v.target.value) || 1)}
             />
 
             {/** When checked, the zone will destroy gamepieces it comes in contact with */}
@@ -285,7 +289,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 /> */}
 
             {/** When checked, points will stay even when a gamepiece leaves the zone */}
-            <Checkbox label="Persistent Points" defaultState={selectedZone.persistentPoints} onClick={setPersistent} />
+            <Checkbox label="Persistent Points" checked={persistent} onClick={checked => setPersistent(checked)} />
 
             {/** Switch between transform control modes */}
 

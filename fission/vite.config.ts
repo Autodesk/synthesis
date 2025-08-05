@@ -3,7 +3,7 @@ import * as path from "path"
 import react from "@vitejs/plugin-react-swc"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import glsl from "vite-plugin-glsl"
-import { loadEnv, ProxyOptions } from "vite"
+import { loadEnv, type ProxyOptions } from "vite"
 import fs from "node:fs/promises"
 const basePath = "/fission/"
 const serverPort = 3000

@@ -161,7 +161,7 @@ describe("MirabufLoader", () => {
             id,
             miraType,
             cacheKey: key,
-            buffer: new ArrayBuffer(1),
+            buffer: new Uint8Array(new ArrayBuffer(1)),
         }
 
         const name = "Test Robot"

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest"
-import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
 import { mirabuf } from "../../proto/mirabuf"
 

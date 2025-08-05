@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
-import IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
+import type IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
 import type Mechanism from "@/systems/physics/Mechanism"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import type MirabufInstance from "../../mirabuf/MirabufInstance"

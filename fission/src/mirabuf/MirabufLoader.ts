@@ -1,5 +1,5 @@
 import Pako from "pako"
-import { Data, downloadData } from "@/aps/APSDataManagement"
+import { type Data, downloadData } from "@/aps/APSDataManagement"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
@@ -19,7 +19,7 @@ export interface MirabufCacheInfo {
     id: MirabufCacheID
     miraType: MiraType
     cacheKey: string
-    buffer?: ArrayBuffer
+    buffer?: Uint8Array<ArrayBufferLike>
     name?: string
     thumbnailStorageID?: string
 }
@@ -168,6 +168,7 @@ class MirabufCachingService {
             if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`)
 
             const miraBuff = await resp.arrayBuffer()
+            // It's impossible to know if a dynamic assembly is a piece without previously parsing it out of a larger assembly
             miraType ??= this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
 
             World.analyticsSystem?.event("Remote Download", {
@@ -189,7 +190,7 @@ class MirabufCachingService {
                 // There isn't a way to know set this to game piece correctly, since you must parse the assembly to know
                 miraType,
                 cacheKey: fetchLocation,
-                buffer: miraBuff,
+                buffer: new Uint8Array(miraBuff),
                 name: name,
             }
         } catch (e) {
@@ -387,7 +388,7 @@ class MirabufCachingService {
                 return await fileHandle.getFile().then(x => x.arrayBuffer())
             }
 
-            const buff = cache[id]?.buffer ?? (await getOPFSBuffer())
+            const buff = ((cache[id]?.buffer ?? new Uint8Array()).buffer as ArrayBuffer) ?? (await getOPFSBuffer())
             if (!buff) {
                 console.error(`Failed to find arrayBuffer for id: ${id}`)
                 return undefined
@@ -497,7 +498,7 @@ class MirabufCachingService {
                     create: false,
                 })
                 const writable = await fileHandle.createWritable()
-                await writable.write(updatedBuffer)
+                await writable.write(updatedBuffer.buffer as ArrayBuffer)
                 await writable.close()
             }
 
@@ -565,7 +566,7 @@ class MirabufCachingService {
                 id: backupID,
                 miraType: miraType,
                 cacheKey: key,
-                buffer: miraBuff,
+                buffer: new Uint8Array(miraBuff),
                 name: name,
             }
             cache[backupID] = mapInfo

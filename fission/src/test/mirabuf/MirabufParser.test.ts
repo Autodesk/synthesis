@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
 import MirabufCachingService, { MiraType } from "../../mirabuf/MirabufLoader"
-import MirabufParser, { RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
+import MirabufParser, { type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import { mirabuf } from "../../proto/mirabuf"
 
 describe("Mirabuf Parser Tests", () => {

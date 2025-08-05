@@ -1,13 +1,13 @@
-import { Box } from "@mui/material"
-import { useState } from "react"
-import Checkbox from "@/components/Checkbox"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
-import Slider from "@/ui/components/Slider"
-import Button from "../components/Button"
-import { LabelSize } from "../components/Label"
-import Panel, { PanelPropsImpl } from "../components/Panel"
-import { SectionDivider, SectionLabel, Spacer, SynthesisIcons } from "../components/StyledComponents"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { Box, Button, Stack } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
+import type { PanelImplProps } from "../components/Panel"
+import { useUIContext } from "../helpers/UIProviderHelpers"
+import StatefulSlider from "../components/StatefulSlider"
+import Checkbox from "../components/Checkbox"
+import Label from "../components/Label"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -20,9 +20,9 @@ const MAX_CASCADES = 8
 
 const MIN_SHADOW_MAP_SIZE = 1024
 
-const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+const GraphicsSettingsPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [reload, setReload] = useState<boolean>(false)
-
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
     )
@@ -32,153 +32,142 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
 
+    // TODO: save preferences on accept, reload if needed
+    useEffect(() => {
+        const onBeforeAccept = () => {
+            PreferencesSystem.getGraphicsPreferences().fancyShadows = fancyShadows
+            PreferencesSystem.getGraphicsPreferences().lightIntensity = lightIntensity
+            PreferencesSystem.getGraphicsPreferences().maxFar = maxFar
+            PreferencesSystem.getGraphicsPreferences().cascades = cascades
+            PreferencesSystem.getGraphicsPreferences().shadowMapSize = shadowMapSize
+            PreferencesSystem.getGraphicsPreferences().antiAliasing = antiAliasing
+
+            PreferencesSystem.savePreferences()
+
+            if (reload) window.location.reload()
+        }
+        const onCancel = () => {
+            World.sceneRenderer.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+        }
+
+        configureScreen(panel!, { title: "Graphics Settings", position: "center" }, { onBeforeAccept, onCancel })
+    }, [fancyShadows, lightIntensity, maxFar, cascades, shadowMapSize, antiAliasing, reload, configureScreen, panel])
+
     return (
-        <Panel
-            name={"Graphics Settings"}
-            icon={SynthesisIcons.GEAR}
-            panelId={panelId}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
-            onAccept={() => {
-                PreferencesSystem.getGraphicsPreferences().fancyShadows = fancyShadows
-                PreferencesSystem.getGraphicsPreferences().lightIntensity = lightIntensity
-                PreferencesSystem.getGraphicsPreferences().maxFar = maxFar
-                PreferencesSystem.getGraphicsPreferences().cascades = cascades
-                PreferencesSystem.getGraphicsPreferences().shadowMapSize = shadowMapSize
-                PreferencesSystem.getGraphicsPreferences().antiAliasing = antiAliasing
+        <Stack gap={2}>
+            <StatefulSlider
+                label="Light Intensity"
+                min={MIN_LIGHT_INTENSITY}
+                max={MAX_LIGHT_INTENSITY}
+                defaultValue={lightIntensity}
+                valueLabelFormat={(val, _idx) => val.toFixed(2)}
+                onChange={value => {
+                    setLightIntensity(value as number)
+                    World.sceneRenderer.setLightIntensity(value as number)
+                }}
+                step={0.25}
+            />
+            <Checkbox
+                label="Fancy Shadows"
+                checked={fancyShadows}
+                onClick={checked => {
+                    setFancyShadows(checked)
+                    World.sceneRenderer.changeLighting(checked)
+                }}
+            />
+            {fancyShadows && (
+                <>
+                    <StatefulSlider
+                        label="Max Far"
+                        min={MIN_MAX_FAR}
+                        max={MAX_MAX_FAR}
+                        defaultValue={maxFar}
+                        onChange={value => {
+                            setMaxFar(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                maxFar: value as number,
 
-                PreferencesSystem.savePreferences()
+                                lightIntensity,
+                                fancyShadows,
+                                cascades,
+                                shadowMapSize,
+                                antiAliasing,
+                            })
+                        }}
+                        step={1}
+                    />
+                    <StatefulSlider
+                        label="Cascade Count"
+                        min={MIN_CASCADES}
+                        max={MAX_CASCADES}
+                        defaultValue={cascades}
+                        onChange={value => {
+                            setCascades(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                cascades: value as number,
 
-                if (reload) window.location.reload()
-            }}
-            onCancel={() => {
-                World.sceneRenderer.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
-            }}
-        >
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
-                <Slider
-                    min={MIN_LIGHT_INTENSITY}
-                    max={MAX_LIGHT_INTENSITY}
-                    value={lightIntensity}
-                    label="Light Intensity"
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value: number | number[]) => {
-                        setLightIntensity(value as number)
-                        World.sceneRenderer.setLightIntensity(value as number)
-                    }}
-                    step={0.25}
-                />
-                <Checkbox
-                    label="Fancy Shadows"
-                    defaultState={fancyShadows}
-                    onClick={checked => {
-                        setFancyShadows(checked)
-                        World.sceneRenderer.changeLighting(checked)
-                    }}
-                    tooltipText="Cascading shadows implementation"
-                />
-                {fancyShadows ? (
-                    <>
-                        <Slider
-                            min={MIN_MAX_FAR}
-                            max={MAX_MAX_FAR}
-                            value={maxFar}
-                            label="Max Far"
-                            onChange={(_, value: number | number[]) => {
-                                setMaxFar(value as number)
+                                maxFar,
+                                lightIntensity,
+                                fancyShadows,
+                                shadowMapSize,
+                                antiAliasing,
+                            })
+                        }}
+                        step={1}
+                    />
+                    <StatefulSlider
+                        label="Shadow Map Size"
+                        min={MIN_SHADOW_MAP_SIZE}
+                        max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
+                        defaultValue={shadowMapSize}
+                        onChange={value => {
+                            setShadowMapSize(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                shadowMapSize: value as number,
+
+                                maxFar,
+                                lightIntensity,
+                                fancyShadows,
+                                cascades,
+                                antiAliasing,
+                            })
+                        }}
+                        step={1024}
+                    />
+                    <Box alignSelf="center">
+                        <Button
+                            onClick={() => {
+                                setShadowMapSize(4096)
+                                setMaxFar(30)
+                                setLightIntensity(5)
+                                setCascades(4)
+
                                 World.sceneRenderer.changeCSMSettings({
-                                    maxFar: value as number,
-
-                                    lightIntensity: lightIntensity,
-                                    fancyShadows: fancyShadows,
-                                    cascades: cascades,
-                                    shadowMapSize: shadowMapSize,
-                                    antiAliasing: antiAliasing,
+                                    shadowMapSize,
+                                    maxFar,
+                                    lightIntensity,
+                                    fancyShadows,
+                                    cascades,
+                                    antiAliasing,
                                 })
                             }}
-                            step={1}
-                        />
-                        <Slider
-                            min={MIN_CASCADES}
-                            max={MAX_CASCADES}
-                            value={cascades}
-                            label="Cascade Count"
-                            onChange={(_, value: number | number[]) => {
-                                setCascades(value as number)
-                                World.sceneRenderer.changeCSMSettings({
-                                    cascades: value as number,
-
-                                    maxFar: maxFar,
-                                    lightIntensity: lightIntensity,
-                                    fancyShadows: fancyShadows,
-                                    shadowMapSize: shadowMapSize,
-                                    antiAliasing: antiAliasing,
-                                })
-                            }}
-                            step={1}
-                        />
-                        <Slider
-                            min={MIN_SHADOW_MAP_SIZE}
-                            max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
-                            value={shadowMapSize}
-                            label="Shadow Map Size"
-                            onChange={(_, value: number | number[]) => {
-                                setShadowMapSize(value as number)
-                                World.sceneRenderer.changeCSMSettings({
-                                    shadowMapSize: value as number,
-                                    maxFar: maxFar,
-                                    lightIntensity: lightIntensity,
-                                    fancyShadows: fancyShadows,
-                                    cascades: cascades,
-                                    antiAliasing: antiAliasing,
-                                })
-                            }}
-                            step={1024}
-                        />
-                        {Spacer(10)}
-                        <Box alignSelf={"center"}>
-                            <Button
-                                value="Reset Default"
-                                onClick={() => {
-                                    setShadowMapSize(4096)
-                                    setMaxFar(30)
-                                    setLightIntensity(5)
-                                    setCascades(4)
-
-                                    World.sceneRenderer.changeCSMSettings({
-                                        shadowMapSize: 4096,
-                                        maxFar: 30,
-                                        lightIntensity: 5,
-                                        fancyShadows: fancyShadows,
-                                        cascades: 4,
-                                        antiAliasing: antiAliasing,
-                                    })
-                                }}
-                            />
-                        </Box>
-                    </>
-                ) : (
-                    <></>
-                )}
-                <div className="flex items-center justify-center mt-1 mb-0.5 mx-[5%]">
-                    <SectionLabel size={LabelSize.MEDIUM} className="text-center">
-                        Requires Browser Refresh
-                    </SectionLabel>
-                </div>
-                <SectionDivider />
-                <Checkbox
-                    label="Anti-Aliasing"
-                    defaultState={antiAliasing}
-                    onClick={checked => {
-                        // saving the new preference
-                        setAntiAliasing(checked)
-                        setReload(true)
-                    }}
-                    tooltipText="Will automatically refresh the tab when changed, causing all assets to disappear."
-                />
-            </div>
-        </Panel>
+                        >
+                            Reset Default
+                        </Button>
+                    </Box>
+                </>
+            )}
+            <Label size="sm">Requires Browser Refresh</Label>
+            <Checkbox
+                label="Anti-Aliasing"
+                checked={antiAliasing}
+                onClick={checked => {
+                    setAntiAliasing(checked)
+                    setReload(true)
+                }}
+            />
+        </Stack>
     )
 }
 
-export default GraphicsSettings
+export default GraphicsSettingsPanel

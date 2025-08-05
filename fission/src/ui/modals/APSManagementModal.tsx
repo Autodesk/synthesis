@@ -1,23 +1,30 @@
-import React, { useState } from "react"
+import { Stack } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
 import { HiUser } from "react-icons/hi"
 import APS from "@/aps/APS"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import Stack, { StackDirection } from "@/components/Stack"
+import type { ModalImplProps } from "@/ui/components/Modal"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
-const APSManagementModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+const APSManagementModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { configureScreen } = useUIContext()
     const [userInfo, _] = useState(APS.userInfo)
+    useEffect(() => {
+        const onBeforeAccept = () => {
+            APS.logout()
+        }
+
+        configureScreen(modal!, { title: userInfo?.name ?? "Not signed in", acceptText: "Logout" }, { onBeforeAccept })
+    }, [modal, userInfo?.name, configureScreen])
+
     return (
-        <Modal
-            name={userInfo?.name ?? "Not signed in"}
-            icon={userInfo?.picture ? <img src={userInfo?.picture} className="h-10 rounded-full" /> : <HiUser />}
-            modalId={modalId}
-            acceptName="Logout"
-            onAccept={() => {
-                APS.logout()
-            }}
-        >
-            <Stack direction={StackDirection.VERTICAL} spacing={10}></Stack>
-        </Modal>
+        <Stack spacing={10} direction="row">
+            {userInfo?.picture ? (
+                <img alt={userInfo?.name} src={userInfo?.picture} className="h-10 rounded-full" />
+            ) : (
+                <HiUser />
+            )}
+        </Stack>
     )
 }
 

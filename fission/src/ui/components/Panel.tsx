@@ -1,227 +1,105 @@
-import React, { ReactNode } from "react"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material"
+import React, { type ReactElement } from "react"
+import Draggable from "react-draggable"
+import {
+    CloseType,
+    type Modal as ModalType,
+    type PanelPosition,
+    type Panel as PanelType,
+    useUIContext,
+} from "../helpers/UIProviderHelpers"
 
-export type OpenLocation =
-    | "top-left"
-    | "top"
-    | "top-right"
-    | "left"
-    | "center"
-    | "right"
-    | "bottom-left"
-    | "bottom"
-    | "bottom-right"
+// biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
+export type PanelImplProps<T, P> = Partial<{
+    panel: PanelType<T, P>
+    parent?: PanelType<any, any> | ModalType<any, any>
+}>
 
-type LocationOptions = { className: string; styles: { [key: string]: string } }
+interface PanelElementProps<T, P> {
+    children?: ReactElement<PanelImplProps<any, any>>
+    panel: PanelType<T, P>
+    parent?: PanelType<any, any> | ModalType<any, any>
+}
+// biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
-const getLocationClasses = (openLocation: OpenLocation, sidePadding: number): LocationOptions => {
-    // Can't use tailwind left-[custom] because it won't generate the classes since we're using them dynamically with string templating
-    const paddingStyle = `${sidePadding}px`
-    switch (openLocation) {
+// TODO: I don't like this
+const HALF_W = "calc(50vw - 50%)"
+const HALF_H = "calc(50vh - 50%)"
+const FULL_W = "calc(100vw - 100%)"
+const FULL_H = "calc(100vh - 100%)"
+
+// TODO: optimize?
+const getPositionOffset = (position: PanelPosition) => {
+    switch (position) {
         case "top-left":
-            return {
-                className: ``,
-                styles: { left: paddingStyle, top: paddingStyle },
-            }
+            return { x: 0, y: 0 }
         case "top":
-            return {
-                className: `left-1/2 -translate-x-1/2`,
-                styles: { top: paddingStyle },
-            }
+            return { x: HALF_W, y: 0 }
         case "top-right":
-            return {
-                className: ``,
-                styles: { right: paddingStyle, top: paddingStyle },
-            }
+            return { x: FULL_W, y: 0 }
         case "left":
-            return {
-                className: `top-1/2 -translate-y-1/2`,
-                styles: { left: paddingStyle },
-            }
-        case "center":
-            return {
-                className: `left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`,
-                styles: {},
-            }
+            return { x: 0, y: HALF_H }
         case "right":
-            return {
-                className: `top-1/2 -translate-y-1/2`,
-                styles: { right: paddingStyle },
-            }
+            return { x: FULL_W, y: HALF_H }
         case "bottom-left":
-            return {
-                className: ``,
-                styles: { left: paddingStyle, bottom: paddingStyle },
-            }
+            return { x: 0, y: FULL_H }
         case "bottom":
-            return {
-                className: `left-1/2 -translate-x-1/2`,
-                styles: { bottom: paddingStyle },
-            }
+            return { x: HALF_W, y: FULL_H }
         case "bottom-right":
-            return {
-                className: ``,
-                styles: { right: paddingStyle, bottom: paddingStyle },
-            }
+            return { x: FULL_W, y: FULL_H }
+        default:
+            return { x: HALF_W, y: HALF_H }
     }
 }
 
-export type PanelPropsImpl = {
-    panelId: string
-    openLocation?: OpenLocation
-    sidePadding?: number
-}
+export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>) => {
+    const { closePanel } = useUIContext()
 
-type PanelProps = {
-    panelId: string
-    openLocation?: OpenLocation
-    sidePadding?: number
-    name?: string
-    icon?: ReactNode | string
-    onCancel?: () => void
-    onMiddle?: () => void
-    onAccept?: () => void
-    cancelName?: string
-    middleName?: string
-    acceptName?: string
-    cancelEnabled?: boolean
-    middleEnabled?: boolean
-    acceptEnabled?: boolean
-    cancelBlocked?: boolean
-    middleBlocked?: boolean
-    acceptBlocked?: boolean
-    children?: ReactNode
-    className?: string
-    contentClassName?: string
-    full?: boolean
-}
+    const props = panel.props
 
-const Panel: React.FC<PanelProps> = ({
-    children,
-    name,
-    icon,
-    panelId,
-    openLocation,
-    sidePadding,
-    onCancel,
-    onMiddle,
-    onAccept,
-    cancelName,
-    middleName,
-    acceptName,
-    cancelEnabled = true,
-    middleEnabled = false,
-    acceptEnabled = true,
-    cancelBlocked = false,
-    middleBlocked = false,
-    acceptBlocked = false,
-    className,
-    contentClassName,
-    full = false,
-}) => {
-    const { closePanel } = usePanelControlContext()
-    const iconEl: ReactNode = typeof icon === "string" ? <img src={icon} className="w-6" alt="Icon" /> : icon
-    openLocation ||= "center"
-    sidePadding ||= 16
-    const locationClasses = getLocationClasses(openLocation, sidePadding)
-
-    const mainSizing = full ? "left-5 right-5 top-5 bottom-5" : "max-h-[95vh] max-w-[50vw]"
-    const contentSizing = full ? "grow" : "max-h-[75vh]"
-
+    // FIXME: sliders show up as <span> so want to cancel drag on those
+    // however still can drag on dropdown but menu elements are left behind
     return (
-        <div>
-            <div
-                className={`flex flex-col absolute ${!full ? locationClasses.className : ""} ${className || ""} ${mainSizing} bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
-                style={locationClasses.styles}
-                key={"panel-" + panelId}
+        <Draggable cancel="span, input" positionOffset={getPositionOffset(props.position)}>
+            <Card
+                sx={{
+                    display: panel.props.configured ? "" : "none",
+                    position: "absolute",
+                    pointerEvents: "auto",
+                    p: 4,
+                }}
             >
-                {name && (
-                    <div id="header" className="flex items-center gap-8 h-16">
-                        <span className="flex justify-center align-center ml-8 text-icon">{iconEl && iconEl}</span>
-                        <h1
-                            className="text-3xl inline-block align-middle whitespace-nowrap mr-10"
-                            style={{
-                                userSelect: "none",
-                                MozUserSelect: "none",
-                                msUserSelect: "none",
-                                WebkitUserSelect: "none",
-                            }}
-                        >
-                            {name}
-                        </h1>
+                {props.title && <CardHeader title={props.title} className="select-none" />}
+                <CardContent>
+                    <div className="panel-contents">
+                        {React.Children.map(children, child => {
+                            if (React.isValidElement(child)) return React.cloneElement(child, { panel, parent })
+                        })}
                     </div>
+                </CardContent>
+                {(!props.hideCancel || !props.hideAccept) && (
+                    <CardActions>
+                        {!props.hideCancel && (
+                            <Button
+                                onClick={() => closePanel(panel.id, CloseType.Cancel)}
+                                variant="outlined"
+                                color="secondary"
+                            >
+                                {props.cancelText ?? "Cancel"}
+                            </Button>
+                        )}
+                        {!props.hideAccept && (
+                            <Button
+                                onClick={() => closePanel(panel.id, CloseType.Accept)}
+                                variant="contained"
+                                color="primary"
+                            >
+                                {props.acceptText ?? "Accept"}
+                            </Button>
+                        )}
+                    </CardActions>
                 )}
-                <div
-                    id="content"
-                    className={`${contentClassName || ""} ${
-                        !contentClassName?.includes("mx") ? "mx-[2rem]" : ""
-                    } relative flex flex-col gap-4 ${contentSizing}`}
-                >
-                    {children}
-                </div>
-                {(cancelEnabled || middleEnabled || acceptEnabled) && (
-                    <div
-                        id="footer"
-                        className="flex justify-between mx-[2rem] py-[1rem] text-accept-cancel-button-text"
-                    >
-                        {cancelEnabled && (
-                            <input
-                                type="button"
-                                value={cancelName || "Cancel"}
-                                onClick={() => {
-                                    closePanel(panelId)
-                                    if (!cancelBlocked && onCancel) onCancel()
-                                }}
-                                {...SoundPlayer.buttonSoundEffects()}
-                                className={`${
-                                    cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
-                                transform transition-transform hover:scale-[1.03] active:scale-[1.06]`}
-                                style={{ fontWeight: "bold" }}
-                            />
-                        )}
-                        {middleEnabled && (
-                            <input
-                                type="button"
-                                value={middleName || ""}
-                                onClick={() => {
-                                    if (!middleBlocked && onMiddle) onMiddle()
-                                }}
-                                {...SoundPlayer.buttonSoundEffects()}
-                                className={`${
-                                    middleBlocked ? "bg-interactive-background" : "bg-accept-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
-                                transform transition-transform hover:scale-[1.03] active:scale-[1.06]`}
-                                style={{ fontWeight: "bold" }}
-                            />
-                        )}
-                        {acceptEnabled && (
-                            <input
-                                type="button"
-                                value={acceptName || "Accept"}
-                                onClick={() => {
-                                    closePanel(panelId)
-                                    if (!acceptBlocked && onAccept) onAccept()
-                                }}
-                                {...SoundPlayer.buttonSoundEffects()}
-                                className={`${
-                                    acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
-                                transform transition-transform hover:scale-[1.03] active:scale-[1.06]`}
-                                style={{ fontWeight: "bold" }}
-                            />
-                        )}
-                    </div>
-                )}
-            </div>
-        </div>
+            </Card>
+        </Draggable>
     )
 }
-// <div
-//     id={panelId}
-//     className={`${locationClasses} ${className} w-fit h-fit bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
-// >
-//         </div>
-
-export default Panel

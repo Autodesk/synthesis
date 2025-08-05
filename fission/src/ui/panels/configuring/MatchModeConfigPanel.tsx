@@ -1,28 +1,23 @@
-import { Box } from "@mui/material"
-import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
-import { LabelSize } from "@/components/Label"
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import type React from "react"
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
+import { SynthesisIcons, PositiveButton, NegativeButton } from "@/ui/components/StyledComponents"
+import { Box, Button, Divider } from "@mui/material"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import {
-    NegativeButton,
-    PositiveButton,
-    SectionDivider,
-    SectionLabel,
-    SynthesisIcons,
-} from "@/ui/components/StyledComponents"
-import MatchMode, {
     DEFAULT_AUTONOMOUS_TIME,
     DEFAULT_TELEOP_TIME,
     DEFAULT_ENDGAME_TIME,
+    DEFAULT_HEIGHT_PENALTY,
     DEFAULT_IGNORE_ROTATION,
     DEFAULT_MAX_HEIGHT,
-    DEFAULT_HEIGHT_PENALTY,
-} from "@/systems/match_mode/MatchMode"
+} from "@/systems/match_mode/MatchModeTypes"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import Button from "@/ui/components/Button"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { Stack } from "@mui/system"
+import Label from "@/ui/components/Label"
 import { convertFeetToMeters } from "@/util/UnitConversions"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 
 /**
  * Configuration for match mode rules and timing.
@@ -70,7 +65,7 @@ export interface MatchModeConfig {
     heightPenalty: number
 }
 
-function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
+function matchConfigSelected(config: MatchModeConfig) {
     if (MatchMode.getInstance().isMatchEnabled()) {
         globalAddToast(
             "error",
@@ -82,7 +77,7 @@ function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: str
 
     MatchMode.getInstance().setMatchModeConfig(config)
 
-    MatchMode.getInstance().start(openModal)
+    MatchMode.getInstance().start()
 }
 
 interface ItemCardProps {
@@ -94,36 +89,34 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
     return (
-        <Box
-            component={"div"}
-            display={"flex"}
-            key={id}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            gap={"1rem"}
-        >
-            <SectionLabel className="text-wrap break-all">{name.replace(/.mira$/, "")}</SectionLabel>
-            <Box
-                component={"div"}
-                display={"flex"}
+        <Stack direction="row" key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+            <Label size="sm" className="text-wrap break-all">
+                {name.replace(/.mira$/, "")}
+            </Label>
+            <Stack
                 key={`button-box-${id}`}
-                flexDirection={"row-reverse"}
+                direction="row-reverse"
                 gap={"0.25rem"}
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                {secondaryOnClick && <NegativeButton value={SynthesisIcons.DELETE_LARGE} onClick={secondaryOnClick} />}
-                <PositiveButton value={SynthesisIcons.SELECT_LARGE} onClick={primaryOnClick} />
-            </Box>
-        </Box>
+                {secondaryOnClick && (
+                    <NegativeButton onClick={secondaryOnClick}>{SynthesisIcons.DELETE_LARGE}</NegativeButton>
+                )}
+                <PositiveButton onClick={primaryOnClick}>{SynthesisIcons.SELECT_LARGE}</PositiveButton>
+            </Stack>
+        </Stack>
     )
 }
 
-const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { closePanel } = usePanelControlContext()
-    const { openModal } = useModalControlContext()
+const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { closePanel, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, {})
+    }, [configureScreen, panel])
 
     useEffect(() => {
         const loadConfigs = () => {
@@ -153,8 +146,8 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
                         primaryOnClick={() => {
-                            matchConfigSelected(config, openModal)
-                            closePanel("match-mode-config")
+                            matchConfigSelected(config)
+                            closePanel(panel!.id, CloseType.Accept)
                         }}
                         secondaryOnClick={
                             !config.isDefault
@@ -176,7 +169,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     />
                 )
             }),
-        [matchModeConfigs, openModal, closePanel]
+        [matchModeConfigs, closePanel, panel]
     )
 
     const fileUploadRef = useRef<HTMLInputElement>(null)
@@ -316,28 +309,19 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }
 
     return (
-        <Panel
-            name={"Match Mode Config"}
-            icon={SynthesisIcons.IMPORT}
-            panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Back"
-            openLocation="center"
-            onCancel={() => {
-                closePanel("match-mode-config")
-            }}
-        >
-            <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                {matchModeConfigs.length} Match Mode{matchModeConfigs.length === 1 ? "" : "s"}
-            </SectionLabel>
-            <SectionDivider />
+        <>
+            <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                {matchModeConfigs.length} Match Mode
+                {matchModeConfigs.length === 1 ? "" : "s"}
+            </Label>
+            <Divider />
             {matchModeConfigElements}
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
             <Box alignSelf={"center"}>
-                <Button value="Upload File" onClick={uploadClicked} />
+                <Button onClick={uploadClicked}>Upload File</Button>
             </Box>
-        </Panel>
+        </>
     )
 }
 

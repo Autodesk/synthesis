@@ -1,8 +1,11 @@
 import { act, fireEvent, getByText, render } from "@testing-library/react"
 import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
-import { ModalControlProvider } from "@/ui/ModalContext"
-import { PanelControlProvider } from "@/ui/PanelContext"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
+import { UIProvider } from "@/ui/UIProvider"
+import { Panel } from "@/ui/components/Panel"
+import type { CloseType, PanelPosition, UIScreen } from "@/ui/helpers/UIProviderHelpers"
+import { UICallback } from "@/ui/UICallbacks"
+import React from "react"
 
 describe("MatchModeConfigPanel", () => {
     // Mock console methods to suppress output during tests
@@ -30,29 +33,32 @@ describe("MatchModeConfigPanel", () => {
         console.warn = originalConsoleWarn
         console.log = originalConsoleLog
 
-        container.remove()
+        if (container) container.remove()
     })
 
     function createTestContainer() {
-        // Create mock context providers
-        const mockPanelControl = {
-            openPanel: () => {},
-            closePanel: () => {},
-            closeAllPanels: () => {},
+        // Create mock context provider
+        const panel = {
+            id: "match-mode",
+            content: MatchModeConfigPanel,
+            props: {
+                type: "panel" as const,
+                configured: true,
+                position: "center" as PanelPosition,
+                custom: {},
+            },
+            parent: {} as UIScreen<unknown, unknown>,
+            onClose: new UICallback<[CloseType], void>(),
+            onCancel: new UICallback<[void], void>(),
+            onAccept: new UICallback<[unknown], void>(),
+            onBeforeAccept: new UICallback<[void], unknown>(),
         }
-
-        const mockModalControl = {
-            openModal: () => {},
-            closeModal: () => {},
-            activeModalId: null,
-        }
-
         return render(
-            <PanelControlProvider {...mockPanelControl}>
-                <ModalControlProvider {...mockModalControl}>
-                    <MatchModeConfigPanel panelId="test-panel" />
-                </ModalControlProvider>
-            </PanelControlProvider>
+            <UIProvider>
+                <Panel panel={panel} parent={undefined}>
+                    {React.createElement(panel.content)}
+                </Panel>
+            </UIProvider>
         ).container
     }
 

@@ -1,5 +1,5 @@
-import { mirabuf } from "@/proto/mirabuf"
-import Stimulus, { StimulusID } from "./Stimulus"
+import type { mirabuf } from "@/proto/mirabuf"
+import Stimulus, { type StimulusID } from "./Stimulus"
 
 abstract class EncoderStimulus extends Stimulus {
     public abstract get positionValue(): number

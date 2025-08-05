@@ -1,16 +1,14 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
-import Button from "@/components/Button"
-import Input from "@/components/Input"
-import NumberInput from "@/components/NumberInput"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import ProtectedZoneSceneObject, { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import type { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -19,10 +17,22 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import {
+    Button,
+    Checkbox,
+    FormControl,
+    InputLabel,
+    ListItemText,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    Stack,
+    TextField,
+} from "@mui/material"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import Dropdown from "@/ui/components/Dropdown"
-import { MatchModeType } from "@/systems/match_mode/MatchMode"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { ContactType } from "@/mirabuf/ZoneTypes"
 
 const MATCH_MODE_OPTIONS: MatchModeType[] = [
     MatchModeType.SANDBOX,
@@ -179,7 +189,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
         return new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
-            selectedZone.alliance == "blue" ? blueMaterial : redMaterial
+            selectedZone.alliance === "blue" ? blueMaterial : redMaterial
         )
     }, [selectedZone, selectedZone.alliance, blueMaterial, redMaterial])
 
@@ -236,7 +246,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             }
 
             const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
-            if (!assoc || assoc?.sceneObject != selectedField) {
+            if (!assoc || assoc?.sceneObject !== selectedField) {
                 return false
             }
 
@@ -247,20 +257,24 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     )
 
     return (
-        <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
+        <Stack gap={2} className="bg-background-secondary rounded-md p-2">
             {/** Set the zone name */}
-            <Input label="Name" placeholder="Enter zone name" defaultValue={selectedZone.name} onInput={setName} />
+            <TextField
+                label="Name"
+                placeholder="Enter zone name"
+                defaultValue={selectedZone.name}
+                onChange={e => setName(e.target.value)}
+            />
 
             {/** Set the alliance color */}
             <Button
-                value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
                 onClick={() => {
-                    setAlliance(alliance == "blue" ? "red" : "blue")
+                    setAlliance(alliance === "blue" ? "red" : "blue")
                     if (gizmoRef.current)
-                        (gizmoRef.current.obj as THREE.Mesh).material = alliance == "blue" ? redMaterial : blueMaterial
+                        (gizmoRef.current.obj as THREE.Mesh).material = alliance === "blue" ? redMaterial : blueMaterial
                 }}
-                colorOverrideClass={`bg-match-${alliance}-alliance`}
-            />
+                sx={{ bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }}
+            >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
 
             {/** Select a parent node */}
             <SelectButton
@@ -269,40 +283,63 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
             />
 
-            {/** Set the penalty value */}
-            <NumberInput
+            {/** Set the point value */}
+            <TextField
+                inputProps={{ type: "number" }}
                 label="Penalty Points"
                 placeholder="Zone penalty points"
                 defaultValue={selectedZone.penaltyPoints}
-                onInput={v => setPoints(v || 1)}
+                onChange={v => setPoints(parseInt(v.target.value) || 1)}
             />
 
             {/** Determines during what game state the protected zone is active */}
-            <Dropdown
-                label="Active During"
-                options={MATCH_MODE_OPTIONS}
-                onSelect={(selectedOptions: string[]) => {
-                    setActiveDuring(selectedOptions as MatchModeType[])
-                }}
-                defaultValue={activeDuring}
-                maxWidth="15rem"
-                multiSelect={true}
-                textAlign="left"
-            />
+            <FormControl fullWidth>
+                <InputLabel id="active-during-label">Active During</InputLabel>
+                <Select
+                    labelId="active-during-label"
+                    label="Active During"
+                    onChange={e => {
+                        const {
+                            target: { value },
+                        } = e
+                        setActiveDuring(
+                            (typeof value === "string" ? (value as string).split(",") : value) as MatchModeType[]
+                        )
+                    }}
+                    value={activeDuring}
+                    input={<OutlinedInput label="Contact Type" />}
+                    renderValue={selected => selected.join(", ")}
+                    multiple
+                >
+                    {MATCH_MODE_OPTIONS.map(opt => (
+                        <MenuItem key={opt} value={opt}>
+                            <Checkbox checked={activeDuring.includes(opt)} />
+                            <ListItemText primary={opt} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
             {/** Determines what type of contact is required for the penalty to apply */}
-            <Dropdown
-                label="Contact Type"
-                options={CONTACT_TYPE_OPTIONS}
-                onSelect={(selectedOption: string) => {
-                    setContactType(selectedOption as ContactType)
-                }}
-                defaultValue={contactType}
-                textAlign="left"
-            />
+            <FormControl fullWidth>
+                <InputLabel id="contact-type-label">Contact Type</InputLabel>
+                <Select
+                    labelId="contact-type-label"
+                    onChange={e => {
+                        setContactType(e.target.value as ContactType)
+                    }}
+                    value={contactType}
+                >
+                    {CONTACT_TYPE_OPTIONS.map(opt => (
+                        <MenuItem key={opt} value={opt}>
+                            {opt}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
             {gizmoComponent}
-        </div>
+        </Stack>
     )
 }
 

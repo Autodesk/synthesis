@@ -1,23 +1,17 @@
-import { Box, styled } from "@mui/material"
+import { Box, Button, Stack } from "@mui/material"
+import type React from "react"
+import { useEffect } from "react"
 import APS from "@/aps/APS"
-import MirabufCachingService, { backUpMap, MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import { random } from "@/util/Random"
-import Button from "../components/Button"
 import { globalAddToast } from "../components/GlobalUIControls"
 import Label from "../components/Label"
-import Panel, { PanelPropsImpl } from "../components/Panel"
-import { SynthesisIcons } from "../components/StyledComponents"
-import { usePanelControlContext } from "../helpers/UsePanelManager"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
-import { ToastType } from "../ToastContext"
-
-const LabelStyled = styled(Label)({
-    fontWeight: 700,
-    margin: "0pt",
-    marginTop: "0.5rem",
-})
+import type { PanelImplProps } from "../components/Panel"
+import { useUIContext } from "../helpers/UIProviderHelpers"
+import PokerPanel from "./PokerPanel"
+import WsViewPanel from "./WsViewPanel"
 
 function toggleDragMode() {
     const dragSystem = World.dragModeSystem
@@ -28,97 +22,93 @@ function toggleDragMode() {
     }
 }
 
-const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { openPanel } = usePanelControlContext()
+const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { openPanel, configureScreen } = useUIContext()
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Debug Tools", hideAccept: true, cancelText: "Close" }, {})
+    }, [configureScreen, panel])
 
     return (
-        <Panel
-            openLocation="center"
-            name={"Debug Tools"}
-            icon={SynthesisIcons.BUG_LARGE}
-            panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Close"
+        <Box
+            component="div"
+            alignItems="center"
+            sx={{
+                padding: "0.25rem",
+                overflowY: "auto",
+                borderRadius: "0.5rem",
+            }}
+            justifyContent="center"
+            textAlign="center"
+            minWidth="290px"
         >
-            <Box
-                component="div"
-                alignItems="center"
-                sx={{
-                    padding: "0.25rem",
-                    overflowY: "auto",
-                    borderRadius: "0.5rem",
-                    backgroundColor: colorNameToVar("BackgroundSecondary"),
-                }}
-                justifyContent={"center"}
-                textAlign={"center"}
-                minWidth={"290px"}
-            >
-                <Box display="flex" flexDirection={"column"} gap="0.25rem" width={"80%"} margin={"auto"}>
-                    <LabelStyled>Generic</LabelStyled>
-                    <Button
-                        value={"Toasts"}
-                        onClick={() => {
-                            const type: ToastType = ["info", "warning", "error"][Math.floor(random() * 3)] as ToastType
-                            globalAddToast(type, type, "This is a test toast to test the toast system")
-                        }}
-                        className="w-full"
-                    />
-                    <Button
-                        value={"The Poker"}
-                        onClick={() => {
-                            openPanel("poker")
-                        }}
-                        className="w-full"
-                    />
-                    <Button value={"Toggle Drag Mode"} onClick={toggleDragMode} className="w-full" />
-                    <Button
-                        value={"Clear Preferences"}
-                        onClick={() => PreferencesSystem.clearPreferences()}
-                        className="w-full"
-                    />
+            <Stack>
+                <Label size="sm">Generic</Label>
+                <Button
+                    onClick={() => {
+                        const toastType = (["info", "warning", "error"] as const)[Math.floor(random() * 3)]
+                        globalAddToast(toastType, "This is a test toast to test the toast system")
+                        globalAddToast(
+                            toastType,
+                            "This is a test toast to test the toast system",
+                            "with multiple",
+                            "arguments"
+                        )
+                    }}
+                    className="w-full"
+                >
+                    Toasts
+                </Button>
+                <Button onClick={() => openPanel(PokerPanel, undefined, panel)}>The Poker</Button>
+                <Button onClick={toggleDragMode} className="w-full">
+                    Toggle Drag Mode
+                </Button>
+                <Button onClick={() => PreferencesSystem.clearPreferences()} className="w-full">
+                    Clear Preferences
+                </Button>
 
-                    <LabelStyled>Autodesk Platform Services</LabelStyled>
-                    <Button
-                        value={"Refresh APS Token"}
-                        onClick={async () => {
-                            const auth = await APS.getAuth()
-                            auth && APS.refreshAuthToken(auth.refresh_token, true)
-                        }}
-                        className="w-full"
-                    />
-                    <Button
-                        value={"Expire APS Token"}
-                        onClick={async () => {
-                            if (await APS.isSignedIn()) {
-                                APS.setExpiresAt(Date.now())
-                                APS.getAuthOrLogin()
-                            }
-                        }}
-                        className="w-full"
-                    />
+                <Label size="sm">Autodesk Platform Services</Label>
+                <Button
+                    onClick={async () =>
+                        (await APS.isSignedIn()) && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
+                    }
+                    className="w-full"
+                >
+                    Refresh APS Token
+                </Button>
+                <Button
+                    onClick={async () => {
+                        if (await APS.isSignedIn()) {
+                            APS.setExpiresAt(Date.now())
+                            APS.getAuthOrLogin()
+                        }
+                    }}
+                    className="w-full"
+                >
+                    Expire APS Token
+                </Button>
 
-                    <LabelStyled>Caching Service</LabelStyled>
-                    <Button
-                        value={"Print Mira Maps"}
-                        onClick={() => {
-                            console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
-                            console.log(MirabufCachingService.getCacheMap(MiraType.FIELD))
-                            console.log(backUpMap[MiraType.ROBOT])
-                            console.log(backUpMap[MiraType.FIELD])
-                        }}
-                        className="w-full"
-                    />
-                    <Button
-                        value={"Clear Mira Cache"}
-                        onClick={() => MirabufCachingService.removeAll()}
-                        className="w-full"
-                    />
+                <Label size="sm">Caching Services</Label>
+                <Button
+                    onClick={() => {
+                        console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
+                        console.log(MirabufCachingService.getCacheMap(MiraType.FIELD))
+                        console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
+                    }}
+                    className="w-full"
+                >
+                    Print Mira Maps
+                </Button>
+                <Button onClick={() => MirabufCachingService.removeAll()} className="w-full">
+                    Clear Mira Cache
+                </Button>
 
-                    <LabelStyled>Code Simulation</LabelStyled>
-                    <Button value={"WS Viewer"} onClick={() => openPanel("ws-view")} className="w-full" />
-                </Box>
-            </Box>
-        </Panel>
+                <Label size="sm">Code Simulation</Label>
+                <Button onClick={() => openPanel(WsViewPanel, undefined, panel)} className="w-full">
+                    WS Viewer
+                </Button>
+            </Stack>
+        </Box>
     )
 }
 

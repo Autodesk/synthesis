@@ -1,31 +1,26 @@
-import { Box } from "@mui/material"
-import React, { useEffect, useReducer, useState } from "react"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import Label, { LabelSize } from "./Label"
+import { Stack } from "@mui/material"
+import { useEffect, useReducer, useState } from "react"
 import {
     SceneOverlayEvent,
     SceneOverlayEventKey,
-    SceneOverlayTag,
+    type SceneOverlayTag,
     SceneOverlayTagEvent,
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ViewCube from "./ViewCube"
+import Label from "./Label"
+import { useStateContext } from "../helpers/StateProviderHelpers"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
 const SceneOverlay: React.FC = () => {
+    const { isMainMenuOpen } = useStateContext()
     /* State to determine if the overlay is disabled */
     const [isDisabled, setIsDisabled] = useState(false)
 
     /* State to determine if the ViewCube should be shown */
     const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getGlobalPreference("ShowViewCube"))
-
-    /* Get the active modal context to check if main menu is open */
-    const { activeModalId } = useModalControlContext()
-
-    /* Check if the main menu modal is active */
-    const isMainMenuOpen = activeModalId === "main-menu"
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
@@ -43,11 +38,10 @@ const SceneOverlay: React.FC = () => {
                     padding: "8px",
                     whiteSpace: "nowrap",
                     transform: "translate(-50%, -100%)",
+                    color: "white",
                 }}
             >
-                <Label className="select-none" size={LabelSize.LARGE}>
-                    {x.text()}
-                </Label>
+                <Label size="md">{x.text()}</Label>
             </div>
         ))
     }, [])
@@ -102,9 +96,8 @@ const SceneOverlay: React.FC = () => {
 
     /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (
-        <Box
-            component="div"
-            display="flex"
+        <Stack
+            direction="row"
             sx={{
                 position: "fixed",
                 left: "0pt",
@@ -115,9 +108,9 @@ const SceneOverlay: React.FC = () => {
                 pointerEvents: "none",
             }}
         >
-            {components ?? <></>}
+            {components}
             {showViewCube && !isMainMenuOpen && <ViewCube position={{ top: 20, right: 20 }} />}
-        </Box>
+        </Stack>
     )
 }
 
