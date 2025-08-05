@@ -19,7 +19,13 @@ interface InputSchemeSelectionProps {
     panelId?: string
 }
 
-export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew, panelId }: InputSchemeSelectionProps) {
+export default function InputSchemeSelection({
+    brainIndex,
+    onSelect,
+    onEdit,
+    onCreateNew,
+    panelId,
+}: InputSchemeSelectionProps) {
     const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
@@ -75,9 +81,11 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
                                     }
-                                    window.dispatchEvent(new CustomEvent("inputSchemeChanged", {
-                                        detail: { panelId }
-                                    }))
+                                    window.dispatchEvent(
+                                        new CustomEvent("inputSchemeChanged", {
+                                            detail: { panelId },
+                                        })
+                                    )
                                     onSelect?.()
                                     update()
                                 }}
@@ -110,9 +118,11 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                 PreferencesSystem.savePreferences()
 
                                 // Update the available schemes list to reflect the deletion
-                                window.dispatchEvent(new CustomEvent("inputSchemeChanged", {
-                                    detail: { panelId }
-                                }))
+                                window.dispatchEvent(
+                                    new CustomEvent("inputSchemeChanged", {
+                                        detail: { panelId },
+                                    })
+                                )
                                 update()
                             })
                         ) : (

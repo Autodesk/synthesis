@@ -47,7 +47,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<any, any>> = ({ panel })
     const handleSchemeChange = useCallback(() => {
         const newSchemes = InputSchemeManager.allInputSchemes
         setSchemes(newSchemes)
-        
+
         // If the currently selected scheme was deleted, close the panel
         if (selectedScheme && !newSchemes.includes(selectedScheme)) {
             if (panel) {
@@ -115,9 +115,11 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<any, any>> = ({ panel })
                         PreferencesSystem.savePreferences()
 
                         // Fire event to notify of input scheme changes
-                        window.dispatchEvent(new CustomEvent("inputSchemeChanged", { 
-                            detail: { panelId: panel?.id } 
-                        }))
+                        window.dispatchEvent(
+                            new CustomEvent("inputSchemeChanged", {
+                                detail: { panelId: panel?.id },
+                            })
+                        )
 
                         // Update UI with new schemes
                         setSchemes(InputSchemeManager.allInputSchemes)
