@@ -1,72 +1,116 @@
-import React from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import Stack, { StackDirection } from "@/components/Stack"
-import Label from "@/components/Label"
-import { SynthesisIcons, Spacer } from "../components/StyledComponents"
-import Button from "@/components/Button"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { Button, Stack, styled, Typography } from "@mui/material"
+import type React from "react"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import MatchMode from "@/systems/MatchMode"
-import { styled } from "@mui/material"
+import type { ModalImplProps } from "../components/Modal"
+import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
+import { useEffect } from "react"
+import Label from "../components/Label"
 
 type Entry = {
     name: string
     value: number
 }
 
-const getMatchWinner = (): string => {
+const getMatchWinner = (): { message: string; color: string } => {
     if (SimulationSystem.redScore > SimulationSystem.blueScore) {
-        return "Red Team Wins!"
+        return { message: "Red Team Wins!", color: "#ff0000" }
     } else if (SimulationSystem.blueScore > SimulationSystem.redScore) {
-        return "Blue Team Wins!"
+        return { message: "Blue Team Wins!", color: "#1818ff" }
     } else {
-        return "It's a Tie!"
+        return { message: "It's a Tie!", color: "#ffffff" }
     }
 }
 
-const LabelStyled = styled(Label)({
+const getPerRobotScores = (): { redRobotScores: Entry[]; blueRobotScores: Entry[] } => {
+    const redRobotScores: Entry[] = []
+    const blueRobotScores: Entry[] = []
+    SimulationSystem.perRobotScore.forEach((score, robot) => {
+        if (robot.alliance === "red") {
+            redRobotScores.push({ name: `${robot.nameTag?.text()} (${robot.assemblyName})`, value: score })
+        } else {
+            blueRobotScores.push({ name: `${robot.nameTag?.text()} (${robot.assemblyName})`, value: score })
+        }
+    })
+    return { redRobotScores, blueRobotScores }
+}
+
+const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }>(({ winnerColor, fontSize }) => ({
     fontWeight: 700,
-    fontSize: "1.5rem",
+    fontSize: fontSize,
     margin: "0pt",
     marginTop: "0.5rem",
-})
+    color: winnerColor,
+}))
 
-const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { configureScreen, closeModal } = useUIContext()
+
+    const { message, color } = getMatchWinner()
+
     const entries: Entry[] = [
         { name: "Red Score", value: SimulationSystem.redScore },
         { name: "Blue Score", value: SimulationSystem.blueScore },
     ]
 
-    const { closeModal } = useModalControlContext()
+    const { redRobotScores, blueRobotScores } = getPerRobotScores()
+
+    useEffect(() => {
+        configureScreen(
+            modal!,
+            { title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false },
+            {}
+        )
+    }, [])
 
     return (
-        <Modal
-            name={"Match Results"}
-            icon={SynthesisIcons.Gamepad}
-            modalId={modalId}
-            cancelEnabled={false}
-            acceptEnabled={false}
-            allowClickAway={false}
-        >
-            <LabelStyled>{getMatchWinner()}</LabelStyled>
-            <div className="flex flex-col">
+        <>
+            <LabelStyled winnerColor={color} fontSize="1.5rem">
+                {message}
+            </LabelStyled>
+            <Stack>
                 {entries.map(e => (
-                    <Stack key={e.name} direction={StackDirection.Horizontal}>
-                        <Label>{e.name}</Label>
-                        <Label>{e.value}</Label>
+                    <Stack key={e.name} direction="row">
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
+                    </Stack>
+                ))}
+            </Stack>
+            <LabelStyled winnerColor={"#ffffff"} fontSize="1.25rem">
+                Robot Score Contributions
+            </LabelStyled>
+            <LabelStyled winnerColor={"#ff0000"} fontSize="1rem">
+                Red Alliance
+            </LabelStyled>
+            <div className="flex flex-col">
+                {redRobotScores.map(e => (
+                    <Stack key={e.name} direction="row">
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
+                    </Stack>
+                ))}
+            </div>
+            <LabelStyled winnerColor={"#1818ff"} fontSize="1rem">
+                Blue Alliance
+            </LabelStyled>
+            <div className="flex flex-col">
+                {blueRobotScores.map(e => (
+                    <Stack key={e.name} direction="row">
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
                     </Stack>
                 ))}
             </div>
             <Button
-                value="Back to Sandbox Mode"
                 onClick={() => {
-                    closeModal()
+                    closeModal(CloseType.Accept)
                     MatchMode.getInstance().sandboxModeStart()
                 }}
                 className="w-full"
-            />
-            {Spacer(8)}
-        </Modal>
+            >
+                Back to Sandbox Mode
+            </Button>
+        </>
     )
 }
 

@@ -1,5 +1,6 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import * as THREE from "three"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ScreenInteractionHandler, {
     InteractionEnd,
     InteractionMove,
@@ -7,7 +8,8 @@ import ScreenInteractionHandler, {
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import World from "../World"
 
 export type CameraControlsType = "Orbit"
 
@@ -93,6 +95,7 @@ export class CustomOrbitControls extends CameraControls {
     private _focus: THREE.Matrix4
 
     private _focusProvider: MirabufSceneObject | undefined
+    private _isExplicitlyUnfocused: boolean = false
     public locked: boolean
 
     private _interactionHandler: ScreenInteractionHandler
@@ -106,9 +109,20 @@ export class CustomOrbitControls extends CameraControls {
 
     public set focusProvider(provider: MirabufSceneObject | undefined) {
         this._focusProvider = provider
+        if (provider !== undefined) {
+            this._isExplicitlyUnfocused = false
+        }
     }
     public get focusProvider() {
         return this._focusProvider
+    }
+
+    /**
+     * Explicitly unfocus the camera (user-initiated action)
+     */
+    public unfocus(): void {
+        this._focusProvider = undefined
+        this._isExplicitlyUnfocused = true
     }
 
     public get coords(): SphericalCoords {
@@ -131,8 +145,16 @@ export class CustomOrbitControls extends CameraControls {
 
         this.locked = false
 
-        this._nextCoords = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
-        this._coords = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
+        this._nextCoords = {
+            theta: CO_DEFAULT_THETA,
+            phi: CO_DEFAULT_PHI,
+            r: CO_DEFAULT_ZOOM,
+        }
+        this._coords = {
+            theta: CO_DEFAULT_THETA,
+            phi: CO_DEFAULT_PHI,
+            r: CO_DEFAULT_ZOOM,
+        }
         this._activePointerType = -1
 
         // Identity
@@ -141,6 +163,44 @@ export class CustomOrbitControls extends CameraControls {
         this._interactionHandler.interactionStart = e => this.interactionStart(e)
         this._interactionHandler.interactionEnd = e => this.interactionEnd(e)
         this._interactionHandler.interactionMove = e => this.interactionMove(e)
+    }
+
+    /**
+     * Finds a suitable fallback focus target when the current focus is no longer available.
+     * Prioritizes robots first, then fields, then any other MirabufSceneObject.
+     */
+    private findFallbackFocus(mirabufObjects?: MirabufSceneObject[]): MirabufSceneObject | undefined {
+        if (!mirabufObjects) {
+            const sceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
+            mirabufObjects = sceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+        }
+
+        const robots = mirabufObjects.filter(obj => obj.miraType === MiraType.ROBOT)
+        const fields = mirabufObjects.filter(obj => obj.miraType === MiraType.FIELD)
+
+        return robots[0] || fields[0] || mirabufObjects[0]
+    }
+
+    /**
+     * Validates that the current focus provider still exists in the scene.
+     * If not, automatically finds a suitable replacement.
+     */
+    private validateFocusProvider(): void {
+        if (!World.sceneRenderer?.sceneObjects || World.dragModeSystem.isTransitioning) {
+            return
+        }
+
+        const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
+        const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+
+        if (this._focusProvider) {
+            if (!mirabufObjects.includes(this._focusProvider)) {
+                this._focusProvider = this.findFallbackFocus(mirabufObjects)
+                this._isExplicitlyUnfocused = false
+            }
+        } else if (!this._isExplicitlyUnfocused) {
+            this._focusProvider = this.findFallbackFocus(mirabufObjects)
+        }
     }
 
     public interactionEnd(end: InteractionEnd) {
@@ -203,12 +263,6 @@ export class CustomOrbitControls extends CameraControls {
         return { ...this._coords }
     }
 
-    public setTargetCoordinates(coords: Partial<SphericalCoords>) {
-        if (coords.theta !== undefined) this._nextCoords.theta = coords.theta
-        if (coords.phi !== undefined) this._nextCoords.phi = coords.phi
-        if (coords.r !== undefined) this._nextCoords.r = coords.r
-    }
-
     public setImmediateCoordinates(coords: Partial<SphericalCoords>) {
         if (coords.theta !== undefined) {
             this._coords.theta = coords.theta
@@ -252,7 +306,9 @@ export class CustomOrbitControls extends CameraControls {
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 
-        if (this.enabled) this._focusProvider?.LoadFocusTransform(this._focus)
+        this.validateFocusProvider()
+
+        if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
 
         // Generate delta of spherical coordinates
         const omega: SphericalCoords = this.enabled
@@ -263,10 +319,8 @@ export class CustomOrbitControls extends CameraControls {
               }
             : { theta: 0, phi: 0, r: 0 }
 
-        this._coords.theta +=
-            omega.theta * deltaT * PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
-        this._coords.phi +=
-            omega.phi * deltaT * PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
+        this._coords.theta += omega.theta * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
+        this._coords.phi += omega.phi * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
         this._coords.r += omega.r * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(this._coords.r, 1.4)
 
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, this._coords.phi))
@@ -290,7 +344,11 @@ export class CustomOrbitControls extends CameraControls {
         this._mainCamera.position.setFromMatrixPosition(deltaTransform)
         this._mainCamera.rotation.setFromRotationMatrix(deltaTransform)
 
-        this._nextCoords = { theta: this._coords.theta, phi: this._coords.phi, r: this._coords.r }
+        this._nextCoords = {
+            theta: this._coords.theta,
+            phi: this._coords.phi,
+            r: this._coords.r,
+        }
     }
 
     public dispose(): void {}

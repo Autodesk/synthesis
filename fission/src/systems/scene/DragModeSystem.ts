@@ -1,18 +1,19 @@
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import WorldSystem from "../WorldSystem"
-import World from "../World"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { ThreeVector3_JoltVec3, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import InputSystem from "@/systems/input/InputSystem.ts"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
+import World from "../World"
+import WorldSystem from "../WorldSystem"
+import { CustomOrbitControls, SphericalCoords } from "./CameraControls"
 import {
-    InteractionStart,
-    InteractionMove,
     InteractionEnd,
+    InteractionMove,
+    InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
-import { CustomOrbitControls, SphericalCoords } from "./CameraControls"
-import Jolt from "@azaleacolburn/jolt-physics"
-import { MiraType } from "@/mirabuf/MirabufLoader"
 
 interface DragTarget {
     bodyId: Jolt.BodyID
@@ -59,6 +60,7 @@ class DragModeSystem extends WorldSystem {
         // Precision and sensitivity
         MINIMUM_DISTANCE_THRESHOLD: 0.02, // Minimum distance to apply forces (smaller = more precision)
         WHEEL_SCROLL_SENSITIVITY: -0.01, // Mouse wheel scroll sensitivity for Z-axis
+        ROTATION_SPEED: 1500.0, // speed of arrow key rotation. lower = more precise, higher = more
     } as const
 
     private _enabled: boolean = false
@@ -110,6 +112,10 @@ class DragModeSystem extends WorldSystem {
         return this._enabled
     }
 
+    public get isTransitioning(): boolean {
+        return this._cameraTransition.isTransitioning
+    }
+
     public set enabled(enabled: boolean) {
         if (this._enabled === enabled) return
 
@@ -123,14 +129,14 @@ class DragModeSystem extends WorldSystem {
 
             if (this._cameraTransition.isTransitioning) {
                 this._cameraTransition.isTransitioning = false
-                World.SceneRenderer.currentCameraControls.enabled = true
+                World.sceneRenderer.currentCameraControls.enabled = true
             }
         }
 
         window.dispatchEvent(new CustomEvent("dragModeToggled", { detail: { enabled } }))
     }
 
-    public Update(deltaT: number): void {
+    public update(deltaT: number): void {
         if (!this._enabled) return
 
         if (this._isDragging && this._dragTarget) {
@@ -142,12 +148,12 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    public Destroy(): void {
+    public destroy(): void {
         this.enabled = false
 
         if (this._cameraTransition.isTransitioning) {
             this._cameraTransition.isTransitioning = false
-            World.SceneRenderer.currentCameraControls.enabled = true
+            World.sceneRenderer.currentCameraControls.enabled = true
         }
 
         // Clean up debug sphere
@@ -171,7 +177,7 @@ class DragModeSystem extends WorldSystem {
         this._debugSphere.position.copy(position)
 
         // Add to the scene
-        World.SceneRenderer.scene.add(this._debugSphere)
+        World.sceneRenderer.scene.add(this._debugSphere)
     }
 
     private updateDebugSphere(position: THREE.Vector3): void {
@@ -182,7 +188,7 @@ class DragModeSystem extends WorldSystem {
 
     private removeDebugSphere(): void {
         if (this._debugSphere) {
-            World.SceneRenderer.scene.remove(this._debugSphere)
+            World.sceneRenderer.scene.remove(this._debugSphere)
             this._debugSphere.geometry.dispose()
             if (this._debugSphere.material instanceof THREE.Material) {
                 this._debugSphere.material.dispose()
@@ -192,10 +198,10 @@ class DragModeSystem extends WorldSystem {
     }
 
     private hookInteractionHandlers(): void {
-        const handler = World.SceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
+        const handler = World.sceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
         if (!handler) return
 
-        const screenHandler = World.SceneRenderer.screenInteractionHandler
+        const screenHandler = World.sceneRenderer.screenInteractionHandler
         this._originalInteractionStart = screenHandler.interactionStart
         this._originalInteractionMove = screenHandler.interactionMove
         this._originalInteractionEnd = screenHandler.interactionEnd
@@ -211,8 +217,8 @@ class DragModeSystem extends WorldSystem {
     }
 
     private unhookInteractionHandlers(): void {
-        const handler = World.SceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
-        const screenHandler = World.SceneRenderer.screenInteractionHandler
+        const handler = World.sceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
+        const screenHandler = World.sceneRenderer.screenInteractionHandler
         if (!screenHandler) return
 
         if (this._originalInteractionStart) screenHandler.interactionStart = this._originalInteractionStart
@@ -235,16 +241,16 @@ class DragModeSystem extends WorldSystem {
 
         const hitResult = this.raycastFromMouse(interaction.position)
         if (hitResult) {
-            const association = World.PhysicsSystem.GetBodyAssociation(hitResult.data.mBodyID) as RigidNodeAssociate
+            const association = World.physicsSystem.getBodyAssociation(hitResult.data.mBodyID) as RigidNodeAssociate
             if (association?.sceneObject && association.sceneObject instanceof MirabufSceneObject) {
-                const body = World.PhysicsSystem.GetBody(hitResult.data.mBodyID)
+                const body = World.physicsSystem.getBody(hitResult.data.mBodyID)
                 if (body) {
                     const isStatic = body.GetMotionType() === JOLT.EMotionType_Static
                     const isFieldStructure =
                         association.sceneObject.miraType === MiraType.FIELD && !association.isGamePiece
 
                     if (!isStatic && !isFieldStructure) {
-                        const hitPointVec = JoltVec3_ThreeVector3(hitResult.point)
+                        const hitPointVec = convertJoltVec3ToThreeVector3(hitResult.point)
                         this.startDragging(hitResult.data.mBodyID, interaction.position, hitPointVec)
                         return
                     }
@@ -278,16 +284,19 @@ class DragModeSystem extends WorldSystem {
     }
 
     private raycastFromMouse(mousePos: [number, number]) {
-        const camera = World.SceneRenderer.mainCamera
+        const camera = World.sceneRenderer.mainCamera
         const origin = camera.position
-        const worldSpace = World.SceneRenderer.PixelToWorldSpace(mousePos[0], mousePos[1])
+        const worldSpace = World.sceneRenderer.pixelToWorldSpace(mousePos[0], mousePos[1])
         const direction = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
 
-        return World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(direction))
+        return World.physicsSystem.rayCast(
+            convertThreeVector3ToJoltVec3(origin),
+            convertThreeVector3ToJoltVec3(direction)
+        )
     }
 
     private startDragging(bodyId: Jolt.BodyID, mousePos: [number, number], hitPoint: THREE.Vector3): void {
-        const body = World.PhysicsSystem.GetBody(bodyId)
+        const body = World.physicsSystem.getBody(bodyId)
         if (!body) return
 
         const bodyPos = body.GetPosition()
@@ -303,7 +312,7 @@ class DragModeSystem extends WorldSystem {
         const motionProperties = body.GetMotionProperties()
         const mass = 1.0 / motionProperties.GetInverseMass()
 
-        const camera = World.SceneRenderer.mainCamera
+        const camera = World.sceneRenderer.mainCamera
         const cameraToHit = hitPoint.clone().sub(camera.position)
         const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
         const dragDepth = cameraToHit.dot(cameraDirection)
@@ -312,7 +321,7 @@ class DragModeSystem extends WorldSystem {
         const worldOffset = hitPoint.clone().sub(bodyPosition)
         const localOffset = worldOffset.clone().applyQuaternion(bodyQuaternion.clone().invert())
 
-        const association = World.PhysicsSystem.GetBodyAssociation(bodyId) as RigidNodeAssociate
+        const association = World.physicsSystem.getBodyAssociation(bodyId) as RigidNodeAssociate
         const isRobot = association?.sceneObject?.miraType === MiraType.ROBOT
 
         this._dragTarget = {
@@ -331,19 +340,19 @@ class DragModeSystem extends WorldSystem {
         this.createDebugSphere(hitPoint)
 
         if (isRobot) {
-            World.PhysicsSystem.DisablePhysicsForBody(bodyId)
+            World.physicsSystem.disablePhysicsForBody(bodyId)
         }
 
-        World.SceneRenderer.currentCameraControls.enabled = false
+        World.sceneRenderer.currentCameraControls.enabled = false
     }
 
     private stopDragging(): void {
         if (!this._isDragging) return
 
         if (this._dragTarget?.physicsDisabled) {
-            World.PhysicsSystem.EnablePhysicsForBody(this._dragTarget.bodyId)
+            World.physicsSystem.enablePhysicsForBody(this._dragTarget.bodyId)
         } else if (this._dragTarget) {
-            const body = World.PhysicsSystem.GetBody(this._dragTarget.bodyId)
+            const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
             if (body) {
                 const currentVel = body.GetLinearVelocity()
                 const mass = this._dragTarget.mass
@@ -370,7 +379,7 @@ class DragModeSystem extends WorldSystem {
         let shouldTransition = true
 
         if (this._dragTarget) {
-            const association = World.PhysicsSystem.GetBodyAssociation(this._dragTarget.bodyId) as RigidNodeAssociate
+            const association = World.physicsSystem.getBodyAssociation(this._dragTarget.bodyId) as RigidNodeAssociate
             targetSceneObject = association?.sceneObject
             if (association?.isGamePiece) {
                 shouldTransition = false
@@ -386,12 +395,12 @@ class DragModeSystem extends WorldSystem {
         if (shouldTransition) {
             this.startCameraTransition(targetSceneObject)
         } else {
-            World.SceneRenderer.currentCameraControls.enabled = true
+            World.sceneRenderer.currentCameraControls.enabled = true
         }
     }
 
     private startCameraTransition(targetSceneObject: MirabufSceneObject | undefined): void {
-        const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
+        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
 
         this._cameraTransition.startCoords = {
             theta: cameraControls.coords.theta,
@@ -424,7 +433,7 @@ class DragModeSystem extends WorldSystem {
             this._cameraTransition.isTransitioning = false
             this._cameraTransition.transitionProgress = 1.0
 
-            const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
+            const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
 
             if (this._cameraTransition.targetSceneObject) {
                 cameraControls.focusProvider = this._cameraTransition.targetSceneObject
@@ -434,12 +443,12 @@ class DragModeSystem extends WorldSystem {
 
         const t = this.easeInOutCubic(this._cameraTransition.transitionProgress)
 
-        const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
+        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
 
         const currentFocus = new THREE.Matrix4()
         if (this._cameraTransition.targetSceneObject) {
             const targetFocus = new THREE.Matrix4()
-            this._cameraTransition.targetSceneObject.LoadFocusTransform(targetFocus)
+            this._cameraTransition.targetSceneObject.loadFocusTransform(targetFocus)
 
             const startPos = new THREE.Vector3().setFromMatrixPosition(this._cameraTransition.startFocus)
             const targetPos = new THREE.Vector3().setFromMatrixPosition(targetFocus)
@@ -460,7 +469,7 @@ class DragModeSystem extends WorldSystem {
     private updateDragForce(): void {
         if (!this._dragTarget) return
 
-        const body = World.PhysicsSystem.GetBody(this._dragTarget.bodyId)
+        const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
         if (!body) {
             this.stopDragging()
             return
@@ -480,7 +489,7 @@ class DragModeSystem extends WorldSystem {
         const currentWorldOffset = this._dragTarget.localOffset.clone().applyQuaternion(currentQuaternion)
         const currentDragPointWorld = currentPosition.clone().add(currentWorldOffset)
 
-        const camera = World.SceneRenderer.mainCamera
+        const camera = World.sceneRenderer.mainCamera
 
         // Create a ray from the camera through the current mouse position
         const mouseNDC = new THREE.Vector2(
@@ -558,28 +567,27 @@ class DragModeSystem extends WorldSystem {
 
             // Apply force at the center of mass and calculate the torque manually
             // to simulate applying force at the drag point
-            const joltForce = ThreeVector3_JoltVec3(forceNeeded)
+            const joltForce = convertThreeVector3ToJoltVec3(forceNeeded)
             body.AddForce(joltForce)
 
-            // Calculate torque to simulate force applied at the drag point
-            // Use the current world offset (which rotates with the body)
-            const leverArm = currentWorldOffset // vector from COM to drag point in world coordinates
-            const torque = leverArm.cross(forceNeeded) // Cross product gives us the torque
-            const joltTorque = ThreeVector3_JoltVec3(torque)
-            body.AddTorque(joltTorque)
+            const inertia = body.GetMotionProperties().GetInverseInertiaDiagonal()
+            const moi = 1.0 / inertia.Length()
+            const yawRotation = new JOLT.Vec3(
+                0,
+                moi *
+                    DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
+                    (InputSystem.isKeyPressed("ArrowRight") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowLeft") ? 1 : 0)),
+                0
+            )
+            const cameraVector = World.sceneRenderer.mainCamera.getWorldDirection(new THREE.Vector3(0, 0, 0))
+            const pitchRotation = new JOLT.Vec3(cameraVector.z, 0, -cameraVector.x).Mul(
+                moi *
+                    DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
+                    (InputSystem.isKeyPressed("ArrowUp") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowDown") ? 1 : 0))
+            )
 
-            // Reduce angular damping since we want the natural rotation from the applied force
-            const angularVel = body.GetAngularVelocity()
-            const angularDampingStrength = Math.min(
-                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_DAMPING_BASE,
-                DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_DAMPING_MAX
-            )
-            const angularDampingTorque = new JOLT.Vec3(
-                -angularVel.GetX() * angularDampingStrength,
-                -angularVel.GetY() * angularDampingStrength,
-                -angularVel.GetZ() * angularDampingStrength
-            )
-            body.AddTorque(angularDampingTorque)
+            body.AddTorque(yawRotation)
+            body.AddTorque(pitchRotation)
         } else {
             // When close to target, apply braking forces and gravity compensation
             const currentVel = body.GetLinearVelocity()
@@ -599,21 +607,9 @@ class DragModeSystem extends WorldSystem {
                 const gravityCompensationY = mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE
                 brakingForce.SetY(brakingForce.GetY() + gravityCompensationY)
             }
-
             body.AddForce(brakingForce)
-
-            const angularVel = body.GetAngularVelocity()
-            const angularBrakingStrength = Math.min(
-                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_BRAKING_BASE,
-                DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_BRAKING_MAX
-            )
-            const angularBrakingTorque = new JOLT.Vec3(
-                -angularVel.GetX() * angularBrakingStrength,
-                -angularVel.GetY() * angularBrakingStrength,
-                -angularVel.GetZ() * angularBrakingStrength
-            )
-            body.AddTorque(angularBrakingTorque)
         }
+        body.SetAngularVelocity(new JOLT.Vec3())
     }
 
     private handleWheelDuringDrag(event: WheelEvent): void {

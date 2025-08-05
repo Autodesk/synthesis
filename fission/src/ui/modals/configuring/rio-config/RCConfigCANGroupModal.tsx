@@ -1,102 +1,104 @@
-import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import ScrollView from "@/components/ScrollView"
-import Stack, { StackDirection } from "@/components/Stack"
-import Checkbox from "@/components/Checkbox"
-import Container from "@/components/Container"
-import Label, { LabelSize } from "@/components/Label"
-import Input from "@/components/Input"
-import WPILibBrain, { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { CANOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
-import World from "@/systems/World"
+import { Box, Stack, TextField } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import Driver from "@/systems/simulation/driver/Driver"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import type Driver from "@/systems/simulation/driver/Driver"
+import { CANOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibState"
+import World from "@/systems/World"
+import type { ModalImplProps } from "@/ui/components/Modal"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import RoboRIOModal from "../RoboRIOModal"
+import ScrollView from "@/ui/components/ScrollView"
+import Checkbox from "@/ui/components/Checkbox"
+import Label from "@/ui/components/Label"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
-const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext()
+const RCConfigCANGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { openModal, configureScreen } = useUIContext()
     const [name, setName] = useState<string>("")
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
     const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([])
 
     let drivers: Driver[] = []
     let simLayer
-    let brain: WPILibBrain
+    let brain: WPILibBrain | undefined
 
-    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
     if (miraObjs.length > 0) {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-        simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
         brain = simLayer?.brain as WPILibBrain
     }
 
-    const cans = getSimMap()?.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
+    const cans = getSimMap()?.get(SimType.CAN_MOTOR) ?? new Map<string, Map<string, number>>()
     const devices: [string, Map<string, number | boolean | string>][] = [...cans.entries()]
         .filter(([_, data]) => data.get("<init"))
         .reverse()
 
-    return (
-        <Modal
-            name="Create Device"
-            icon={SynthesisIcons.Add}
-            modalId={modalId}
-            acceptName="Done"
-            onAccept={() => {
-                // no eslint complain
+    useEffect(() => {
+        const onBeforeAccept = () => {
+            if (brain) {
                 brain.addSimOutput(new CANOutputGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
-            }}
-            onCancel={() => {
-                openModal("roborio")
-            }}
-        >
-            <Label size={LabelSize.Small}>Name</Label>
-            <Input placeholder="..." className="w-full" onInput={setName} />
-            <Stack direction={StackDirection.Horizontal} className="w-full min-w-full">
-                <Container className="w-max">
-                    <Label>Ports</Label>
-                    <ScrollView className="h-full px-2">
+            }
+        }
+        const onCancel = () => {
+            openModal(RoboRIOModal, undefined, modal)
+        }
+
+        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
+    }, [brain, name, checkedPorts, checkedDrivers, openModal, modal])
+
+    return (
+        <>
+            <Label size="sm">Name</Label>
+            <TextField placeholder="..." className="w-full" onChange={e => setName(e.target.value)} />
+            <Stack direction="row" className="w-full min-w-full">
+                <Box className="w-max">
+                    <Label size="md">Ports</Label>
+                    <ScrollView>
                         {devices.map(([p, _]) => (
                             <Checkbox
-                                key={p}
                                 label={p.toString()}
-                                defaultState={false}
+                                key={p}
+                                checked={false}
                                 onClick={checked => {
                                     const port = parseInt(p.split("[")[1].split("]")[0])
                                     console.log(port)
                                     if (checked && !checkedPorts.includes(port)) {
                                         setCheckedPorts([...checkedPorts, port])
                                     } else if (!checked && checkedPorts.includes(port)) {
-                                        setCheckedPorts(checkedPorts.filter(a => a != port))
+                                        setCheckedPorts(checkedPorts.filter(a => a !== port))
                                     }
                                 }}
                             />
                         ))}
                     </ScrollView>
-                </Container>
-                <Container className="w-max">
-                    <Label>Signals</Label>
-                    <ScrollView className="h-full px-2">
+                </Box>
+                <Box className="w-max">
+                    <Label size="md">Signals</Label>
+                    <ScrollView>
                         {drivers.map((driver, idx) => (
                             <Checkbox
-                                key={`${driver.constructor.name}-${idx}`}
                                 label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
-                                defaultState={false}
+                                key={`${driver.constructor.name}-${idx}`}
+                                checked={false}
                                 onClick={checked => {
                                     if (checked && !checkedDrivers.includes(driver)) {
                                         setCheckedDrivers([...checkedDrivers, driver])
                                     } else if (!checked && checkedDrivers.includes(driver)) {
-                                        setCheckedDrivers(checkedDrivers.filter(a => a != driver))
+                                        setCheckedDrivers(checkedDrivers.filter(a => a !== driver))
                                     }
                                 }}
                             />
                         ))}
                     </ScrollView>
-                </Container>
+                </Box>
             </Stack>
-        </Modal>
+        </>
     )
 }
 

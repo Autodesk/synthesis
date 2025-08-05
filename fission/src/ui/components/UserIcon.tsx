@@ -1,12 +1,12 @@
+import React, { useEffect, useState } from "react"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
-import { useEffect, useState } from "react"
 import { SynthesisIcons } from "./StyledComponents"
 
 interface UserIconProps {
     className: string
 }
 
-export function UserIcon({ className }: UserIconProps) {
+const UserIcon: React.FC<UserIconProps> = ({ className }) => {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
 
     useEffect(() => {
@@ -14,8 +14,10 @@ export function UserIcon({ className }: UserIconProps) {
     }, [])
 
     if (!userInfo) {
-        return SynthesisIcons.Question
+        return SynthesisIcons.QUESTION
     } else {
         return <img src={userInfo.picture} className={`object-contain aspect-square ${className}`}></img>
     }
 }
+
+export default UserIcon

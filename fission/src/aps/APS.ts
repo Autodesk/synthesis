@@ -1,6 +1,6 @@
-import World from "@/systems/World"
-import { Global_AddToast } from "@/ui/components/GlobalUIControls"
 import { Mutex } from "async-mutex"
+import World from "@/systems/World"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
@@ -17,6 +17,7 @@ const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.c
 const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = "https://developer.api.autodesk.com/authentication/v2/revoke"
 const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
 
+// biome-ignore-start lint/style/useNamingConvention: returned from api
 export interface APSAuth {
     access_token: string
     refresh_token: string
@@ -24,6 +25,7 @@ export interface APSAuth {
     expires_at: number
     token_type: number
 }
+// biome-ignore-end lint/style/useNamingConvention: returned from api
 
 export interface APSUserInfo {
     name: string
@@ -32,6 +34,7 @@ export interface APSUserInfo {
     email: string
 }
 
+// biome-ignore lint/style/useNamingConvention: this is pascal case
 class APS {
     static authCode: string | undefined = undefined
     static requestMutex: Mutex = new Mutex()
@@ -47,7 +50,7 @@ class APS {
         this._numApsCalls.clear()
     }
 
-    private static get auth(): APSAuth | undefined {
+    private static get _auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
         try {
             return res ? JSON.parse(res) : undefined
@@ -57,11 +60,11 @@ class APS {
         }
     }
 
-    private static set auth(a: APSAuth | undefined) {
+    private static set _auth(a: APSAuth | undefined) {
         window.localStorage.removeItem(APS_AUTH_KEY)
         if (a) {
             window.localStorage.setItem(APS_AUTH_KEY, JSON.stringify(a))
-            World.AnalyticsSystem?.Event("APS Login")
+            World.analyticsSystem?.event("APS Login")
         }
         this.userInfo = undefined
     }
@@ -69,18 +72,19 @@ class APS {
     /**
      * Sets the timestamp at which the access token expires
      *
-     * @param {number} expires_at - When the token expires
+     * @param {number} expiresAt - When the token expires
      */
-    static setExpiresAt(expires_at: number) {
-        if (this.auth) this.auth.expires_at = expires_at
+    static setExpiresAt(expiresAt: number) {
+        if (this._auth) this._auth.expires_at = expiresAt
     }
 
     /**
      * Returns whether the user is signed in
      * @returns {boolean} Whether the user is signed in
      */
-    static isSignedIn(): boolean {
-        return !!this.getAuth()
+    static async isSignedIn(): Promise<boolean> {
+        const auth = await this.getAuth()
+        return !!auth
     }
 
     /**
@@ -88,14 +92,14 @@ class APS {
      * @returns {(APSAuth | undefined)} Auth data of the current user
      */
     static async getAuth(): Promise<APSAuth | undefined> {
-        const auth = this.auth
+        const auth = this._auth
         if (!auth) return undefined
 
         if (Date.now() > auth.expires_at) {
             console.debug("Expired. Refreshing...")
             await this.refreshAuthToken(auth.refresh_token, false)
         }
-        return this.auth
+        return this._auth
     }
 
     /**
@@ -103,7 +107,7 @@ class APS {
      * @returns {Promise<APSAuth | undefined>} Promise that resolves to the auth data
      */
     static async getAuthOrLogin(): Promise<APSAuth | undefined> {
-        const auth = this.auth
+        const auth = this._auth
         if (!auth) {
             this.requestAuthCode()
             return undefined
@@ -112,7 +116,7 @@ class APS {
         if (Date.now() > auth.expires_at) {
             await this.refreshAuthToken(auth.refresh_token, true)
         }
-        return this.auth
+        return this._auth
     }
 
     static get userInfo(): APSUserInfo | undefined {
@@ -140,7 +144,7 @@ class APS {
      */
     static async logout() {
         await this.revokeTokenPublic()
-        this.auth = undefined
+        this._auth = undefined
     }
 
     /*
@@ -158,7 +162,7 @@ class APS {
             method: "POST",
             headers: headers,
             body: new URLSearchParams([
-                ["token", this.auth?.access_token],
+                ["token", this._auth?.access_token],
                 ["token_type_hint", "access_token"],
                 ["client_id", CLIENT_ID],
             ] as string[][]),
@@ -204,20 +208,20 @@ class APS {
                 window.open(url)
             } catch (e) {
                 console.error(e)
-                World.AnalyticsSystem?.Exception("APS Login Failure")
-                Global_AddToast?.("error", "Error signing in.", "Please try again.")
+                World.analyticsSystem?.exception("APS Login Failure")
+                globalAddToast("error", "Error signing in.", "Please try again.")
             }
         })
     }
 
     /**
      * Refreshes the access token using our refresh token.
-     * @param {string} refresh_token - The refresh token from our auth data
+     * @param {string} refreshToken - The refresh token from our auth data
      *
      * @returns If the promise returns true, that means the auth token is currently available. If not, it means it
      *           is not readily available, although one may be in the works
      */
-    static async refreshAuthToken(refresh_token: string, shouldRelog: boolean): Promise<boolean> {
+    static async refreshAuthToken(refreshToken: string, shouldRelog: boolean): Promise<boolean> {
         return this.requestMutex.runExclusive(async () => {
             try {
                 APS.incApsCalls("authentication-v2-token")
@@ -229,15 +233,15 @@ class APS {
                     body: new URLSearchParams({
                         client_id: CLIENT_ID,
                         grant_type: "refresh_token",
-                        refresh_token: refresh_token,
+                        refresh_token: refreshToken,
                         scope: "data:read",
                     }),
                 })
                 const json = await res.json()
                 if (!res.ok) {
                     if (shouldRelog) {
-                        Global_AddToast?.("warning", "Must Re-signin.", json.userMessage)
-                        this.auth = undefined
+                        globalAddToast("warning", "Must Re-signin.", `${json.userMessage}`)
+                        this._auth = undefined
                         await this.requestAuthCode()
                         return false
                     } else {
@@ -245,18 +249,18 @@ class APS {
                     }
                 }
                 json.expires_at = json.expires_in * 1000 + Date.now()
-                this.auth = json as APSAuth
-                if (this.auth) {
-                    await this.loadUserInfo(this.auth)
+                this._auth = json as APSAuth
+                if (this._auth) {
+                    await this.loadUserInfo(this._auth)
                     if (APS.userInfo) {
-                        Global_AddToast?.("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                        globalAddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
                     }
                 }
                 return true
-            } catch (e) {
-                World.AnalyticsSystem?.Exception("APS Login Failure")
-                Global_AddToast?.("error", "Error signing in.", "Please try again.")
-                this.auth = undefined
+            } catch (_e) {
+                World.analyticsSystem?.exception("APS Login Failure")
+                globalAddToast("error", "Error signing in.", "Please try again.")
+                this._auth = undefined
                 await this.requestAuthCode()
                 return false
             }
@@ -268,7 +272,7 @@ class APS {
      * @param {string} code - The auth code
      */
     static async convertAuthToken(code: string) {
-        let retry_login = false
+        let retryLogin = false
 
         const callbackUrl = import.meta.env.DEV
             ? `http://localhost:3000${import.meta.env.BASE_URL}`
@@ -280,33 +284,33 @@ class APS {
             )
             const json = await res.json()
             if (!res.ok) {
-                World.AnalyticsSystem?.Exception("APS Login Failure")
-                Global_AddToast?.("error", "Error signing in.", json.userMessage)
-                this.auth = undefined
+                World.analyticsSystem?.exception("APS Login Failure")
+                globalAddToast("error", "Error signing in.", `${json.userMessage}`)
+                this._auth = undefined
                 return
             }
-            const auth_res = json.response as APSAuth
-            auth_res.expires_at = auth_res.expires_in * 1000 + Date.now()
-            this.auth = auth_res
+            const authRes = json.response as APSAuth
+            authRes.expires_at = authRes.expires_in * 1000 + Date.now()
+            this._auth = authRes
             console.log("Preloading user info")
             const auth = await this.getAuth()
             if (auth) {
                 await this.loadUserInfo(auth)
                 if (APS.userInfo) {
-                    Global_AddToast?.("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                    globalAddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
                 }
             } else {
                 console.error("Couldn't get auth data.")
-                retry_login = true
+                retryLogin = true
             }
         } catch (e) {
             console.error(e)
-            retry_login = true
+            retryLogin = true
         }
-        if (retry_login) {
-            this.auth = undefined
-            World.AnalyticsSystem?.Exception("APS Login Failure")
-            Global_AddToast?.("error", "Error signing in.", "Please try again.")
+        if (retryLogin) {
+            this._auth = undefined
+            World.analyticsSystem?.exception("APS Login Failure")
+            globalAddToast("error", "Error signing in.", "Please try again.")
         }
     }
 
@@ -326,9 +330,9 @@ class APS {
             })
             const json = await res.json()
             if (!res.ok) {
-                World.AnalyticsSystem?.Exception("APS Failure: User Info")
-                Global_AddToast?.("error", "Error fetching user data.", json.userMessage)
-                this.auth = undefined
+                World.analyticsSystem?.exception("APS Failure: User Info")
+                globalAddToast("error", "Error fetching user data.", `${json.userMessage}`)
+                this._auth = undefined
                 await this.requestAuthCode()
                 return
             }
@@ -342,9 +346,9 @@ class APS {
             this.userInfo = info
         } catch (e) {
             console.error(e)
-            World.AnalyticsSystem?.Exception("APS Login Failure: User Info")
-            Global_AddToast?.("error", "Error signing in.", "Please try again.")
-            this.auth = undefined
+            World.analyticsSystem?.exception("APS Login Failure: User Info")
+            globalAddToast("error", "Error signing in.", "Please try again.")
+            this._auth = undefined
         }
     }
 
@@ -358,8 +362,8 @@ class APS {
             return json["challenge"]
         } catch (e) {
             console.error(e)
-            World.AnalyticsSystem?.Exception("APS Login Failure: Code Challenge")
-            Global_AddToast?.("error", "Error signing in.", "Please try again.")
+            World.analyticsSystem?.exception("APS Login Failure: Code Challenge")
+            globalAddToast("error", "Error signing in.", "Please try again.")
         }
     }
 }

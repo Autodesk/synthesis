@@ -1,45 +1,56 @@
-import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import Button from "@/ui/components/Button"
-import Checkbox from "@/ui/components/Checkbox"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import { Button } from "@mui/material"
 import { useState } from "react"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import WiringPanel from "@/ui/panels/simulation/WiringPanel"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import Checkbox from "@/ui/components/Checkbox"
+import { ConfigurePanelCustomProps } from "../ConfigurePanel"
 
 type SimulationInterfaceProps = {
     selectedAssembly: MirabufSceneObject
 }
 
-export default function SimulationInterface({ selectedAssembly }: SimulationInterfaceProps) {
-    const { openPanel } = usePanelControlContext()
+export default function SimulationInterface({
+    selectedAssembly,
+    panel,
+}: SimulationInterfaceProps & PanelImplProps<void, ConfigurePanelCustomProps>) {
+    const { openPanel, closePanel } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect")
+        PreferencesSystem.getGlobalPreference("SimAutoReconnect")
     )
 
     return (
         <>
             <Checkbox
                 label="Auto Reconnect?"
-                defaultState={autoReconnect}
-                onClick={() => {
+                checked={autoReconnect}
+                onClick={_ => {
                     PreferencesSystem.setGlobalPreference("SimAutoReconnect", !autoReconnect)
                     setAutoReconnect(!autoReconnect)
                 }}
             />
             <Button
-                value="Wiring Panel"
                 className="self-center"
                 onClick={() => {
                     setSpotlightAssembly(selectedAssembly)
-                    openPanel("wiring")
+                    openPanel(WiringPanel, undefined, panel)
                 }}
-            />
+            >
+                Wiring Panel
+            </Button>
             <Button
-                value="Auto Testing"
                 className="self-center"
                 onClick={() => {
-                    openPanel("auto-test")
+                    openPanel(AutoTestPanel, undefined, panel)
+                    if (panel) closePanel(panel.id, CloseType.Overwrite)
                 }}
-            />
+            >
+                Auto Testing
+            </Button>
         </>
     )
 }

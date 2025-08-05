@@ -1,5 +1,5 @@
 import "./Scene.css"
-import { useEffect, useRef } from "react"
+import React, { useEffect, useRef } from "react"
 import Stats from "stats.js"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
@@ -10,21 +10,21 @@ class SceneProps {
     public useStats = false
 }
 
-function Scene({ useStats }: SceneProps) {
+const Scene: React.FC<SceneProps> = ({ useStats }) => {
     const refContainer = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        World.InitWorld()
+        World.initWorld()
 
         if (refContainer.current) {
-            const sr = World.SceneRenderer
+            const sr = World.sceneRenderer
             sr.renderer.domElement.style.width = "100%"
             sr.renderer.domElement.style.height = "100%"
 
             refContainer.current.innerHTML = ""
             refContainer.current.appendChild(sr.renderer.domElement)
             window.addEventListener("resize", () => {
-                sr.UpdateCanvasSize()
+                sr.updateCanvasSize()
             })
 
             if (useStats && !stats) {
@@ -36,14 +36,14 @@ function Scene({ useStats }: SceneProps) {
 
             // Bit hacky but works
             class ComponentSceneObject extends SceneObject {
-                public Setup(): void {}
-                public Update(): void {
+                public setup(): void {}
+                public update(): void {
                     stats?.update()
                 }
-                public Dispose(): void {}
+                public dispose(): void {}
             }
             const cso = new ComponentSceneObject()
-            sr.RegisterSceneObject(cso)
+            sr.registerSceneObject(cso)
         }
     }, [useStats])
 

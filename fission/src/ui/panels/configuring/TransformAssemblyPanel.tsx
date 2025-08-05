@@ -1,50 +1,41 @@
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Stack } from "@mui/material"
+import type React from "react"
 import { useEffect, useMemo } from "react"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
-import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { PanelImplProps } from "@/ui/components/Panel"
 
-const TransformAssemblyPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const targetAssembly = useMemo(() => {
-        return getSpotlightAssembly()
-    }, [])
+const TransformAssemblyPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
+    const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 
+    useEffect(() => {
+        configureScreen(panel!, { title: "Assembly Setup", hideAccept: true, cancelText: "Close" }, {})
+    }, [])
+
     return (
-        <Panel
-            name="Assembly Setup"
-            panelId={panelId}
-            openLocation={"right"}
-            sidePadding={8}
-            acceptEnabled={false}
-            icon={SynthesisIcons.Gamepad}
-            cancelEnabled={true}
-            cancelName="Close"
-        >
-            {/** A scroll view with buttons to select default and custom input schemes */}
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
-                {targetAssembly ? (
-                    <TransformGizmoControl
-                        key={"init-config-gizmo"}
-                        defaultMode="translate"
-                        scaleDisabled={true}
-                        size={3.0}
-                        parent={targetAssembly}
-                    />
-                ) : (
-                    <></>
-                )}
-            </div>
-        </Panel>
+        <Stack gap={2}>
+            {targetAssembly && (
+                <TransformGizmoControl
+                    key="init-config-gizmo"
+                    defaultMode="translate"
+                    scaleDisabled={true}
+                    size={3.0}
+                    parent={targetAssembly}
+                />
+            )}
+        </Stack>
     )
 }
 

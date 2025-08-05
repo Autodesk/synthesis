@@ -1,12 +1,13 @@
-import { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import World from "@/systems/World"
-import Checkbox from "@/ui/components/Checkbox"
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import type React from "react"
+import type { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import { useCallback, useEffect, useState } from "react"
-import { AiOutlineCamera } from "react-icons/ai"
+import { ToggleButton, ToggleButtonGroup } from "@mui/material"
+import World from "@/systems/World"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import Checkbox from "@/ui/components/Checkbox"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { PanelImplProps } from "@/ui/components/Panel"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
@@ -19,18 +20,19 @@ function OrbitSettings({ controls }: OrbitSettingsProps) {
         controls.locked = locked
     }, [controls, locked])
 
-    return <Checkbox label={"Lock to Robot"} defaultState={locked} onClick={v => setLocked(v)} />
+    return <Checkbox label="Lock to Robot" checked={locked} onClick={setLocked} />
 }
 
-const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
-        World.SceneRenderer.currentCameraControls.controlsType
+        World.sceneRenderer.currentCameraControls.controlsType
     )
 
     const setCameraControls = useCallback((t: CameraControlsType) => {
         switch (t) {
             case "Orbit":
-                World.SceneRenderer.SetCameraControls(t)
+                World.sceneRenderer.setCameraControls(t)
                 setCameraControlType(t)
                 break
             default:
@@ -39,37 +41,29 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }, [])
 
+    useEffect(() => {
+        configureScreen(panel!, { title: "Choose a Camera", hideAccept: true, cancelText: "Close" }, {})
+    }, [])
+
     return (
-        <Panel
-            openLocation="right"
-            name={"Choose a Camera"}
-            icon={<AiOutlineCamera />}
-            panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Close"
-            contentClassName="items-center"
-        >
+        <>
             <ToggleButtonGroup
                 orientation="vertical"
                 value={cameraControlType}
                 exclusive
                 onChange={(_, v) => {
-                    if (v != null) {
-                        return
-                    }
+                    if (v !== null) return
 
                     setCameraControls(v)
                 }}
                 onMouseDown={() => SoundPlayer.play(buttonPressSound)}
             >
-                <ToggleButton value={"Orbit"}>Orbit</ToggleButton>
+                <ToggleButton value="Orbit">Orbit</ToggleButton>
             </ToggleButtonGroup>
-            {cameraControlType == "Orbit" ? (
-                <OrbitSettings controls={World.SceneRenderer.currentCameraControls as CustomOrbitControls} />
-            ) : (
-                <></>
+            {cameraControlType === "Orbit" && (
+                <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
             )}
-        </Panel>
+        </>
     )
 }
 

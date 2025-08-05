@@ -1,3 +1,5 @@
+import { Alliance } from "@/systems/preferences/PreferenceTypes.ts"
+
 let nextTagId = 0
 
 /* Coordinates for tags in world space */
@@ -22,9 +24,11 @@ export const enum SceneOverlayEventKey {
  * @param text The text to display
  * @param position The position of the tag in screen space (default: [0,0])
  */
+
 export class SceneOverlayTag {
     private _id: number
     public text: () => string
+    public color?: Alliance
     public position: PixelSpaceCoord // Screen Space
 
     public get id() {
@@ -32,17 +36,29 @@ export class SceneOverlayTag {
     }
 
     /** Create a new tag */
-    public constructor(text: () => string, position?: PixelSpaceCoord) {
+    public constructor(text: () => string, position?: PixelSpaceCoord, color?: Alliance) {
         this._id = nextTagId++
 
         this.text = text
         this.position = position ?? [0, 0]
+        this.color = color
         new SceneOverlayTagEvent(SceneOverlayTagEventKey.ADD, this)
     }
 
     /** Removing the tag */
-    public Dispose() {
+    public dispose() {
         new SceneOverlayTagEvent(SceneOverlayTagEventKey.REMOVE, this)
+    }
+
+    public getCSSColor(): string {
+        switch (this.color) {
+            case "red":
+                return "rgba(166,22,27,0.5)"
+            case "blue":
+                return "rgba(0,74,129,0.5)"
+            default:
+                return "rgba(0,0,0,0.5)"
+        }
     }
 }
 
@@ -58,11 +74,11 @@ export class SceneOverlayTagEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static Listen(eventKey: SceneOverlayTagEventKey, func: (e: Event) => void) {
+    public static listen(eventKey: SceneOverlayTagEventKey, func: (e: Event) => void) {
         window.addEventListener(eventKey, func)
     }
 
-    public static RemoveListener(eventKey: SceneOverlayTagEventKey, func: (e: Event) => void) {
+    public static removeListener(eventKey: SceneOverlayTagEventKey, func: (e: Event) => void) {
         window.removeEventListener(eventKey, func)
     }
 }
@@ -75,11 +91,11 @@ export class SceneOverlayEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static Listen(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
+    public static listen(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
         window.addEventListener(eventKey, func)
     }
 
-    public static RemoveListener(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
+    public static removeListener(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
         window.removeEventListener(eventKey, func)
     }
 }

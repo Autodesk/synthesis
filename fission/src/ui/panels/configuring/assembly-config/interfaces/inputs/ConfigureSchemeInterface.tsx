@@ -1,18 +1,19 @@
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
-import Checkbox from "@/ui/components/Checkbox"
+import React, { useCallback, useEffect, useRef, useState } from "react"
+import Checkbox from "@/components/Checkbox.tsx"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import { Divider, Stack } from "@mui/material"
 import EditInputInterface from "./EditInputInterface"
-import { useCallback, useEffect, useRef, useState } from "react"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import { SectionDivider } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type Input from "@/systems/input/inputs/Input"
+import type { InputScheme } from "@/systems/input/InputTypes"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
 }
 
-/** Interface to configure a specific input scheme */
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
-    const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme.usesGamepad)
-    const [useTouchControls, setUseTouchControls] = useState<boolean>(selectedScheme.usesTouchControls)
+    const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
+    const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const saveEvent = useCallback(() => {
@@ -20,10 +21,10 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     }, [])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -52,27 +53,35 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
             {/** Toggle the input scheme between controller and keyboard mode */}
             <Checkbox
                 label="Use Controller"
-                defaultState={selectedScheme.usesGamepad}
+                checked={useGamepad}
                 onClick={val => {
                     setUseGamepad(val)
+                    if (val) {
+                        setUseTouchControls(false)
+                        selectedScheme.usesTouchControls = false
+                    }
                     selectedScheme.usesGamepad = val
                 }}
-                tooltipText="Supported controllers: Xbox one, Xbox 360."
+                tooltip="Supported controllers: Xbox one, Xbox 360."
             />
             <Checkbox
                 label="Use Touch Controls"
-                defaultState={selectedScheme.usesTouchControls}
+                checked={useTouchControls}
                 onClick={val => {
                     setUseTouchControls(val)
+                    if (val) {
+                        setUseGamepad(false)
+                        selectedScheme.usesGamepad = false
+                    }
                     selectedScheme.usesTouchControls = val
                 }}
-                tooltipText="Enable on-screen touch controls (only for mobile devices)."
+                tooltip="Enable on-screen touch controls (only for mobile devices)."
             />
-            <SectionDivider />
+            <Divider />
 
             {/* Scroll view for inputs */}
-            <div ref={scrollRef} tabIndex={0} className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
-                {selectedScheme.inputs.map(i => {
+            <Stack ref={scrollRef} gap={2}>
+                {selectedScheme.inputs.map((i: Input) => {
                     return (
                         <EditInputInterface
                             key={i.inputName}
@@ -85,8 +94,9 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                         />
                     )
                 })}
-            </div>
+            </Stack>
         </>
     )
 }
+
 export default ConfigureSchemeInterface

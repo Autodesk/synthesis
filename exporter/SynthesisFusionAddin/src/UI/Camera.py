@@ -3,9 +3,9 @@ import os
 import adsk.core
 
 from src import SUPPORT_PATH
+from src.lib.Util import makeDirectories
 from src.Logging import logFailure
 from src.Types import OString
-from src.Util import makeDirectories
 
 
 @logFailure
@@ -47,7 +47,7 @@ def clearIconCache() -> None:
 
     This is useful for now but should be cached in the event the app is closed and re-opened.
     """
-    path = OString.ThumbnailPath("Whatever.png").getDirectory()  # type: ignore[attr-defined]
+    path = OString.thumbnailPath("Whatever.png").getDirectory()  # type: ignore[attr-defined]
 
     for _r, _d, f in os.walk(path):
         for file in f:

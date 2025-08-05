@@ -1,33 +1,26 @@
-import { Box } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import {
-    SceneOverlayTag,
     SceneOverlayEvent,
     SceneOverlayEventKey,
+    SceneOverlayTag,
     SceneOverlayTagEvent,
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
-import Label, { LabelSize } from "./Label"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ViewCube from "./ViewCube"
-import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import Label from "./Label"
+import { useStateContext } from "../helpers/StateProviderHelpers"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
-function SceneOverlay() {
+const SceneOverlay: React.FC = () => {
+    const { isMainMenuOpen } = useStateContext()
     /* State to determine if the overlay is disabled */
-    const [isDisabled, setIsDisabled] = useState<boolean>(false)
+    const [isDisabled, setIsDisabled] = useState(false)
 
     /* State to determine if the ViewCube should be shown */
-    const [showViewCube, setShowViewCube] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
-    )
-
-    /* Get the active modal context to check if main menu is open */
-    const { activeModalId } = useModalControlContext()
-
-    /* Check if the main menu modal is active */
-    const isMainMenuOpen = activeModalId === "main-menu"
+    const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getGlobalPreference("ShowViewCube"))
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
@@ -40,16 +33,15 @@ function SceneOverlay() {
                     position: "absolute",
                     left: x.position[0],
                     top: x.position[1],
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    backgroundColor: x.getCSSColor(),
                     borderRadius: "8px",
                     padding: "8px",
                     whiteSpace: "nowrap",
                     transform: "translate(-50%, -100%)",
+                    color: "white",
                 }}
             >
-                <Label className="select-none" size={LabelSize.Large}>
-                    {x.text()}
-                </Label>
+                <Label size="md">{x.text()}</Label>
             </div>
         ))
     }, [])
@@ -68,58 +60,44 @@ function SceneOverlay() {
             updateComponents()
         }
 
-        const onDisable = () => {
-            setIsDisabled(true)
-            updateComponents()
-        }
-
-        const onEnable = () => {
-            setIsDisabled(false)
-            updateComponents()
-        }
-
         // listening for tags being added and removed
-        SceneOverlayTagEvent.Listen(SceneOverlayTagEventKey.ADD, onTagAdd)
-        SceneOverlayTagEvent.Listen(SceneOverlayTagEventKey.REMOVE, onTagRemove)
+        SceneOverlayTagEvent.listen(SceneOverlayTagEventKey.ADD, onTagAdd)
+        SceneOverlayTagEvent.listen(SceneOverlayTagEventKey.REMOVE, onTagRemove)
 
         // listening for updates to the overlay every frame
-        SceneOverlayEvent.Listen(SceneOverlayEventKey.UPDATE, onUpdate)
+        SceneOverlayEvent.listen(SceneOverlayEventKey.UPDATE, onUpdate)
 
         // listening for disabling and enabling scene tags
-        SceneOverlayEvent.Listen(SceneOverlayEventKey.DISABLE, onDisable)
-        SceneOverlayEvent.Listen(SceneOverlayEventKey.ENABLE, onEnable)
+        const unsubscribe = PreferencesSystem.addPreferenceEventListener("RenderSceneTags", e => {
+            setIsDisabled(!e.prefValue)
+            updateComponents()
+        })
 
         // disposing all the tags and listeners when the scene is destroyed
         return () => {
-            SceneOverlayTagEvent.RemoveListener(SceneOverlayTagEventKey.ADD, onTagAdd)
-            SceneOverlayTagEvent.RemoveListener(SceneOverlayTagEventKey.REMOVE, onTagRemove)
-            SceneOverlayEvent.RemoveListener(SceneOverlayEventKey.UPDATE, onUpdate)
-            SceneOverlayEvent.RemoveListener(SceneOverlayEventKey.DISABLE, onDisable)
-            SceneOverlayEvent.RemoveListener(SceneOverlayEventKey.ENABLE, onEnable)
+            SceneOverlayTagEvent.removeListener(SceneOverlayTagEventKey.ADD, onTagAdd)
+            SceneOverlayTagEvent.removeListener(SceneOverlayTagEventKey.REMOVE, onTagRemove)
+            SceneOverlayEvent.removeListener(SceneOverlayEventKey.UPDATE, onUpdate)
+            unsubscribe()
             tagMap.clear()
         }
     }, [])
 
     /* Update ViewCube visibility when preferences change */
     useEffect(() => {
-        const handlePreferenceChange = (e: PreferenceEvent) => {
-            if (e.prefName === "ShowViewCube") {
-                setShowViewCube(e.prefValue as boolean)
-            }
-        }
-
-        PreferencesSystem.addEventListener(handlePreferenceChange)
+        const removeListener = PreferencesSystem.addPreferenceEventListener("ShowViewCube", e =>
+            setShowViewCube(e.prefValue)
+        )
 
         return () => {
-            window.removeEventListener("preferenceChanged", handlePreferenceChange as EventListener)
+            removeListener()
         }
     }, [])
 
     /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (
-        <Box
-            component="div"
-            display="flex"
+        <Stack
+            direction="row"
             sx={{
                 position: "fixed",
                 left: "0pt",
@@ -130,9 +108,9 @@ function SceneOverlay() {
                 pointerEvents: "none",
             }}
         >
-            {components ?? <></>}
+            {components}
             {showViewCube && !isMainMenuOpen && <ViewCube position={{ top: 20, right: 20 }} />}
-        </Box>
+        </Stack>
     )
 }
 

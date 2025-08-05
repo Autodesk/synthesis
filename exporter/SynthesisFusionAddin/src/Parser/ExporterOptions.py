@@ -7,12 +7,13 @@ import json
 import os
 import platform
 from dataclasses import dataclass, field, fields
+from typing import Any
 
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
 from src import INTERNAL_ID
-from src.Logging import logFailure, timed
+from src.Logging import getLogger, logFailure, timed
 from src.Types import (
     KG,
     ExportLocation,
@@ -42,6 +43,7 @@ class ExporterOptions:
     wheels: list[Wheel] = field(default_factory=list)
     joints: list[Joint] = field(default_factory=list)
     gamepieces: list[Gamepiece] = field(default_factory=list)
+    tags: dict[str, str] = field(default_factory=dict)
     robotWeight: KG = field(default=KG(0.0))
     autoCalcRobotWeight: bool = field(default=False)
     autoCalcGamepieceWeight: bool = field(default=False)
@@ -67,7 +69,19 @@ class ExporterOptions:
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
             if attribute:
-                attrJsonData = makeObjectFromJson(type(field.type), json.loads(attribute.value))
+                attrJsonData = makeObjectFromJson(field.type, json.loads(attribute.value))
+                setattr(self, field.name, attrJsonData)
+
+        self.visualQuality = TriangleMeshQualityOptions.LowQualityTriangleMesh
+        return self
+
+    @logFailure
+    @timed
+    def readFromJSON(self, data: dict[str, Any]) -> "ExporterOptions":
+        for field in fields(self):
+            attribute = data.get(field.name)
+            if attribute is not None:
+                attrJsonData = makeObjectFromJson(field.type, attribute)
                 setattr(self, field.name, attrJsonData)
 
         self.visualQuality = TriangleMeshQualityOptions.LowQualityTriangleMesh
@@ -80,3 +94,12 @@ class ExporterOptions:
         for field in fields(self):
             data = json.dumps(getattr(self, field.name), default=encodeNestedObjects, indent=4)
             designAttributes.add(INTERNAL_ID, field.name, data)
+
+    @logFailure
+    @timed
+    def writeToJson(self) -> dict[str, Any]:
+        out = {}
+        for field in fields(self):
+            data = json.dumps(getattr(self, field.name), default=encodeNestedObjects, indent=4)
+            out[field.name] = json.loads(data)
+        return out

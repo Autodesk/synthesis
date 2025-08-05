@@ -3,10 +3,12 @@
  * make debugging signal data easier.
  */
 
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import SimGeneric from "@/systems/simulation/wpilib_brain/sim/SimGeneric"
 import {
     Box,
+    Button,
+    MenuItem,
+    Select,
     Stack,
     styled,
     Table,
@@ -15,13 +17,13 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
     Typography,
 } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
-import Dropdown from "../components/Dropdown"
-import Input from "../components/Input"
-import Button from "../components/Button"
-import { SynthesisIcons } from "../components/StyledComponents"
+import { PanelImplProps } from "../components/Panel"
+import { useUIContext } from "../helpers/UIProviderHelpers"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 const TABLE_UPDATE_INTERVAL = 250
 
@@ -85,22 +87,23 @@ function generateTableBody() {
 function setGeneric(simType: SimType, device: string, field: string, value: string, valueType: ValueType) {
     switch (valueType) {
         case "number":
-            SimGeneric.Set(simType, device, field, parseFloat(value))
+            SimGeneric.set(simType, device, field, parseFloat(value))
             break
         case "object":
-            SimGeneric.Set(simType, device, field, JSON.parse(value))
+            SimGeneric.set(simType, device, field, JSON.parse(value))
             break
         case "boolean":
-            SimGeneric.Set(simType, device, field, parseInt(value)) // 1 or 0 (change to float if needed)
+            SimGeneric.set(simType, device, field, parseInt(value)) // 1 or 0 (change to float if needed)
             break
         default:
-            SimGeneric.Set(simType, device, field, parseFloat(value))
+            SimGeneric.set(simType, device, field, parseFloat(value))
             break
     }
 }
 
-const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const WSViewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // const [tb, setTb] = useState(generateTableBody())
+    const { configureScreen } = useUIContext()
 
     const [table, updateTable] = useReducer(_ => generateTableBody(), generateTableBody())
 
@@ -120,7 +123,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         setSelectedDevice(undefined)
-    }, [selectedType])
+    }, [])
 
     useEffect(() => {
         const func = () => {
@@ -131,16 +134,14 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => {
             clearTimeout(id)
         }
-    }, [updateTable])
+    }, [])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "WS View Panel" }, {})
+    }, [])
 
     return (
-        <Panel
-            name={"WS View Panel"}
-            icon={SynthesisIcons.Connect}
-            panelId={panelId}
-            openLocation="right"
-            sidePadding={4}
-        >
+        <Stack>
             <TableContainer
                 sx={{
                     maxWidth: "80vw",
@@ -165,31 +166,41 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 </Table>
             </TableContainer>
             <Stack>
-                <Dropdown
-                    options={["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro"]}
-                    onSelect={v => setSelectedType(v as unknown as SimType)}
-                />
+                <Select value={selectedType} onChange={e => setSelectedType(e.target.value as SimType)}>
+                    {["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro"].map(t => (
+                        <MenuItem key={`device-type-${t}`} value={t}>
+                            {t}
+                        </MenuItem>
+                    ))}
+                </Select>
                 {/* {deviceSelect} */}
                 {selectedDevice ? (
                     <Box>
-                        <Input placeholder="Field Name" onInput={v => setField(v)} />
-                        <Input placeholder="Value" onInput={v => setValue(v)} />
-                        <Dropdown
-                            options={["string", "number", "object", "boolean"]}
-                            onSelect={v => setSelectedValueType(v as ValueType)}
-                        />
+                        <TextField placeholder="Field Name" onChange={e => setField(e.target.value)} />
+                        <TextField placeholder="Value" onChange={e => setValue(e.target.value)} />
+                        <Select
+                            value={selectedValueType}
+                            onChange={e => setSelectedValueType(e.target.value as ValueType)}
+                        >
+                            {["string", "number", "object", "boolean"].map(t => (
+                                <MenuItem key={`value-type-${t}`} value={t}>
+                                    {t}
+                                </MenuItem>
+                            ))}
+                        </Select>
                         <Button
-                            value={"Set"}
                             onClick={() =>
                                 setGeneric(selectedType ?? SimType.PWM, selectedDevice, field, value, selectedValueType)
                             }
-                        />
+                        >
+                            Set
+                        </Button>
                     </Box>
                 ) : (
                     <></>
                 )}
             </Stack>
-        </Panel>
+        </Stack>
     )
 }
 

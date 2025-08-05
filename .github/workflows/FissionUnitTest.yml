@@ -3,73 +3,57 @@ name: Fission - Unit Test
 on:
   workflow_dispatch: {}
   push:
-    branches: [ prod, dev ]
+    branches: [prod, dev]
   pull_request:
-    branches: [ prod, dev ]
+    branches: [prod, dev]
 
 jobs:
   runUnitTests:
-    name: Unit Tests
+    name: Playwright Unit Tests
+    container:
+      image: mcr.microsoft.com/playwright:v1.54.0-noble
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "fission"
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: JavaScript Setup
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Cache downloaded assets
+      - name: Cache Unzipped Synthesis Assets
         id: cache-assets
         uses: actions/cache@v3
         with:
-          path: fission/public/
-          key: ${{ runner.os }}-assets-v1
-          restore-keys: |
-            ${{ runner.os }}-assets-
+          path: fission/public/Downloadables
+          key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
 
-      - name: Download assets if not cached
+      - name: Download Synthesis assetpack if not cached
         if: steps.cache-assets.outputs.cache-hit != 'true'
         run: |
+          cd ..
+          apt update
+          apt install git-lfs unzip
+          git config --global --add safe.directory `pwd`
+          git lfs pull
+
           cd fission
-          curl -o public/assetpack.zip https://synthesis.autodesk.com/downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
+          unzip -o public/assetpack.zip -d public/ || echo
 
-      - name: Get installed Playwright version
-        id: playwright-version
-        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
-
-      - name: Cache downloaded browsers
-        id: cache-browsers
+      - name: Cache Node Dependencies
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
+          path: "fission/node_modules"
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
 
       - name: Install Dependencies
-        run: |
-          cd fission
-          npm install
+        run: npm install
 
-      - name: Download playwright if not cached
-        if: steps.cache-browsers.outputs.cache-hit != 'true'
-        run: |
-          cd fission
-          npx playwright install --with-deps
-          npx playwright install-deps
-
-      - name: Unit Tests
-        id: unit-tests
-        run: |
-          cd fission
-          npm run test
-        continue-on-error: true
-
-      - name: Check Success
-        run: |
-          if [ ${{ steps.unit-tests.outcome }} == "success" ]; then
-            echo "Format Validation Passed"
-          else
-            echo "Format Validation Failed"
-            exit 1
-          fi
+      - name: Run Tests
+        run: HOME=/root npm run test
