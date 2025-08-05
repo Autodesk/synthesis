@@ -1,8 +1,8 @@
-import { Panel as FlowPanel, useReactFlow } from "@xyflow/react"
-import type { FlowControlsProps } from "@/systems/simulation/SimConfigShared"
-import { MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
-import { FaPlus } from "react-icons/fa6"
 import { Button } from "@mui/material"
+import { Panel as FlowPanel, useReactFlow } from "@xyflow/react"
+import { FaPlus } from "react-icons/fa6"
+import { MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
+import type { FlowControlsProps } from "@/systems/simulation/SimConfigShared"
 
 function FlowControls({ onCreateJunction }: FlowControlsProps) {
     const { zoomIn, zoomOut, fitView } = useReactFlow()

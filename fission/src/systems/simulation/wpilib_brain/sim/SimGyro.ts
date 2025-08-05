@@ -1,10 +1,10 @@
-import Mechanism from "@/systems/physics/Mechanism"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type Mechanism from "@/systems/physics/Mechanism"
+import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import { SimInput } from "../SimInput"
 import { SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
-import Jolt from "@azaleacolburn/jolt-physics"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import World from "@/systems/World"
 
 export default class SimGyro {
     private constructor() {}

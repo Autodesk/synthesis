@@ -1,7 +1,7 @@
-import { Typography, TypographyProps } from "@mui/material"
-import { Variant } from "@mui/material/styles/createTypography"
+import { Typography, type TypographyProps } from "@mui/material"
+import type { Variant } from "@mui/material/styles/createTypography"
 import type React from "react"
-import { PropsWithChildren } from "react"
+import type { PropsWithChildren } from "react"
 
 type LabelSize = "sm" | "md" | "lg" | "xl"
 

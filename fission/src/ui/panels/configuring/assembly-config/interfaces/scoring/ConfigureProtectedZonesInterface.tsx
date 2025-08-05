@@ -4,9 +4,9 @@ import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import Label from "@/ui/components/Label"
 import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
 import ZoneConfigInterface from "./ProtectedZoneConfigInterface"
-import Label from "@/ui/components/Label"
 
 const protectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return

@@ -3,13 +3,13 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import InputSystem from "@/systems/input/InputSystem"
 import { EMPTY_MODIFIER_STATE, type ModifierState } from "@/systems/input/InputTypes"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import AxisInput from "@/systems/input/inputs/AxisInput"
+import ButtonInput from "@/systems/input/inputs/ButtonInput"
+import type Input from "@/systems/input/inputs/Input"
 import type { KeyCode } from "@/systems/input/KeyboardTypes"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
-import ButtonInput from "@/systems/input/inputs/ButtonInput"
-import AxisInput from "@/systems/input/inputs/AxisInput"
-import Input from "@/systems/input/inputs/Input"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {

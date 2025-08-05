@@ -1,8 +1,8 @@
+import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import { FaHandPaper } from "react-icons/fa"
 import { globalAddToast } from "./GlobalUIControls"
 import Label from "./Label"
-import { Stack } from "@mui/material"
 
 const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)

@@ -1,4 +1,4 @@
-import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { convertFeetToMeters } from "@/util/UnitConversions"
 
 /** The purpose of this class is to store any defaults related to match mode configurations. */

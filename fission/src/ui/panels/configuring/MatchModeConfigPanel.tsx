@@ -1,23 +1,24 @@
-import { PanelImplProps } from "@/ui/components/Panel"
-import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
-import { SynthesisIcons, PositiveButton, NegativeButton } from "@/ui/components/StyledComponents"
 import { Box, Button, Divider } from "@mui/material"
+import { Stack } from "@mui/system"
+import type React from "react"
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import {
     DEFAULT_AUTONOMOUS_TIME,
-    DEFAULT_TELEOP_TIME,
     DEFAULT_ENDGAME_TIME,
     DEFAULT_IGNORE_ROTATION,
     DEFAULT_MAX_HEIGHT,
     DEFAULT_HEIGHT_LIMIT_PENALTY,
     DEFAULT_SIDE_EXTENSION_PENALTY,
     DEFAULT_SIDE_MAX_EXTENSION,
+    DEFAULT_TELEOP_TIME,
 } from "@/systems/match_mode/MatchModeTypes"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
-import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { Stack } from "@mui/system"
 import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import { NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { convertFeetToMeters } from "@/util/UnitConversions"
 
 /**
