@@ -5,6 +5,8 @@ import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type { ModalImplProps } from "../components/Modal"
 import { useStateContext } from "../helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
+import { spawnCachedMira } from "../panels/mirabuf/ImportMirabufPanel"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 
 interface MainMenuCustomProps {
     startSingleplayerCallback: () => void
