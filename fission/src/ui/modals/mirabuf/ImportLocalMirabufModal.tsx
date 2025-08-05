@@ -81,7 +81,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
                 value={miraType}
                 exclusive
                 onChange={(_, v) => v != null && setSelectedType(v)}
-                {...SoundPlayer.buttonSoundEffects()}
+                {...SoundPlayer.getInstance().buttonSoundEffects()}
                 sx={{
                     alignSelf: "center",
                 }}

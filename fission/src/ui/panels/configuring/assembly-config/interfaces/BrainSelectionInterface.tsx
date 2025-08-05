@@ -32,7 +32,7 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
                 }
                 setRobotBrainType(brainType)
             }}
-            {...SoundPlayer.buttonSoundEffects()}
+            {...SoundPlayer.getInstance().buttonSoundEffects()}
             sx={{
                 alignSelf: "center",
             }}

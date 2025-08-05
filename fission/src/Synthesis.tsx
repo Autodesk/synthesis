@@ -60,9 +60,12 @@ function Synthesis() {
                         }
                         PreferencesSystem.setGlobalPreference("MultiplayerUsername", name)
                         PreferencesSystem.savePreferences()
-                        const multiplayerSystem = await MultiplayerSystem.create(room, name, isHost)
-                        World.setMultiplayerSystem(multiplayerSystem)
-                        await startMainLoop()
+                        const success = await MultiplayerSystem.setup(room, name, isHost)
+                        if (success) {
+                            await startMainLoop()
+                            return true
+                        }
+                        return false
                     },
                 })
             },

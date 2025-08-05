@@ -1,7 +1,8 @@
 import { Stack } from "@mui/system"
-import React, { useEffect, useState } from "react"
+import type React from "react"
+import { useEffect, useState } from "react"
 import { MultiplayerStateEvent, MultiplayerStateEventType } from "@/systems/multiplayer/MultiplayerSystem.ts"
-import { ClientInfo } from "@/systems/multiplayer/types.ts"
+import type { ClientInfo } from "@/systems/multiplayer/types.ts"
 import World from "@/systems/World.ts"
 
 const MultiplayerHUD: React.FC = () => {

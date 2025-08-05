@@ -108,7 +108,7 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
                     setMode(v)
                     gizmo?.setMode(v)
                 }}
-                {...SoundPlayer.buttonSoundEffects()}
+                {...SoundPlayer.getInstance().buttonSoundEffects()}
                 sx={{
                     ...(sx ?? {}),
                     alignSelf: "center",

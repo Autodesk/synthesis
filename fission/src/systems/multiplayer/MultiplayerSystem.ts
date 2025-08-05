@@ -1,12 +1,13 @@
 /** biome-ignore-all lint/correctness/noUndeclaredVariables: In Progress */
-import Peer, { DataConnection } from "peerjs"
-import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
+import Peer, { type DataConnection } from "peerjs"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { ConfigurationSavedEvent } from "@/panels/configuring/assembly-config/ConfigurationSavedEvent.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import PhysicsSystem from "../physics/PhysicsSystem"
+import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
 import type {
     AssemblyRequestData,
@@ -19,7 +20,6 @@ import type {
     ObjectPreferences,
     UpdateObjectData,
 } from "./types"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 
 const COLLISION_TIMEOUT = 500
 
@@ -28,6 +28,7 @@ class MultiplayerSystem {
     private readonly _connections: Map<string, DataConnection> = new Map()
     readonly roomId: string
     readonly clientId: string
+    private readonly _initializationPromise: Promise<boolean>
 
     private readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
     // TODO Update this system to be one-to-many
@@ -36,9 +37,11 @@ class MultiplayerSystem {
     readonly info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
 
-    public static async create(roomId: string, displayName: string, isHost: boolean): Promise<MultiplayerSystem> {
+    public static async setup(roomId: string, displayName: string, isHost: boolean): Promise<boolean> {
         const clientId = await generateId(roomId)
-        return new MultiplayerSystem(roomId, clientId, displayName, isHost)
+        const system = new MultiplayerSystem(roomId, clientId, displayName, isHost)
+        World.setMultiplayerSystem(system)
+        return await system._initializationPromise
     }
 
     private constructor(roomId: string, clientId: string, displayName: string, isHost: boolean = false) {
@@ -51,22 +54,42 @@ class MultiplayerSystem {
             port: 9000,
             path: "/",
         })
-        this._client.on("error", console.log)
-        this._client.on("disconnected", console.log)
-        this._client.on("call", console.log)
-        this._client.on("close", console.log)
 
-        this._client.on("open", async (id: string) => {
-            console.log(`Broker connection opened: ID - ${id}`)
-            const peerCount = await this.connectToRoom()
+        this._client.on("call", e => console.log("peerjs call", e))
+        this._client.on("close", () => {
+            console.log("peerjs close")
+        })
 
-            if (peerCount == 0 && !isHost) {
-                globalAddToast("warning", `Could not find room`, this.roomId)
-                this.destroy()
-                World.setMultiplayerSystem(undefined)
-                MultiplayerStateEvent.dispatch(MultiplayerStateEventType.JOIN_ROOM)
-                globalOpenModal("multiplayer-lobby")
-            }
+        this._initializationPromise = new Promise<boolean>(resolve => {
+            this._client.on("open", async (id: string) => {
+                console.log(`Broker connection opened: ID - ${id}`)
+                const peerCount = await this.connectToRoom()
+                if (peerCount == 0 && !isHost) {
+                    globalAddToast("warning", `Could not find room`, this.roomId)
+                    this.destroy()
+                    World.setMultiplayerSystem(undefined)
+                    MultiplayerStateEvent.dispatch(MultiplayerStateEventType.JOIN_ROOM)
+                    resolve(false)
+                }
+                resolve(true)
+            })
+            this._client.on("error", e => {
+                console.error("PeerJS Error:", e)
+                switch (e.type) {
+                    case "unavailable-id":
+                        globalAddToast("warning", "Reused Client ID", "Try Joining Again")
+                        PreferencesSystem.setGlobalPreference("MultiplayerClientID", "")
+                        break
+                    default:
+                        console.warn("Unknown PeerJS Error Type", e.type)
+                        globalAddToast("warning", "Unknown PeerJS Error")
+                        break
+                }
+                resolve(false)
+            })
+            this._client.on("disconnected", peer => {
+                console.info("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
+            })
         })
 
         this._client.on("connection", async conn => {
@@ -235,6 +258,7 @@ class MultiplayerSystem {
         World.physicsSystem = data.physicsSystem
         World.sceneRenderer.sceneObjects = await this.encodedAssemblyToSceneObjectMap(data.objects)
     }
+
     async encodedAssemblyToSceneObjectMap(assemblies: EncodedAssembly[]): Promise<Map<number, MirabufSceneObject>> {
         return new Map(
             await Promise.all(
@@ -430,6 +454,7 @@ class MultiplayerSystem {
     getClientSceneObjectIds(): number[] {
         return this._clientToObjectMap.get(this.clientId) ?? []
     }
+
     newClientSceneObject(objectId: number) {
         const list = this._clientToObjectMap.get(this.clientId)
         if (list != null) {
@@ -446,6 +471,7 @@ class MultiplayerSystem {
     private get _peers() {
         return [...this._connections.values()]
     }
+
     private get _host() {
         return this._peers.find(conn => this._clientToInfoMap.get(conn.peer)?.isHost)
     }
@@ -492,6 +518,7 @@ interface HashableData {
     establishedClientId?: string
     newClientId?: string
 }
+
 async function createSha256Hash({ roomId, establishedClientId, newClientId }: HashableData) {
     const msgBuffer = new TextEncoder().encode(`${roomId}${establishedClientId}${newClientId}`)
     const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer)

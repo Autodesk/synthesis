@@ -1,5 +1,5 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import { JoltBodyIndexAndSequence } from "@/systems/physics/PhysicsSystem.ts"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { JoltBodyIndexAndSequence } from "@/systems/physics/PhysicsSystem.ts"
 
 /**
  * An interface to create an association between a body and anything.

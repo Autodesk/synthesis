@@ -36,7 +36,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={onClick}
-            {...SoundPlayer.buttonSoundEffects()}
+            {...SoundPlayer.getInstance().buttonSoundEffects()}
             className={`relative flex flex-row
                 cursor-pointer
                 w-full m-auto px-2 py-1 border-none rounded-md ${larger ? "justify-center" : ""}

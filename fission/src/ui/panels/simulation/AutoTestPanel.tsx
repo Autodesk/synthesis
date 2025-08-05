@@ -250,7 +250,7 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     value={countdown}
                     exclusive
                     onChange={(_, v) => setCountdown(v)}
-                    {...SoundPlayer.buttonSoundEffects()}
+                    {...SoundPlayer.getInstance().buttonSoundEffects()}
                     className="self-center"
                 >
                     <ToggleButton value={5}>5</ToggleButton>
@@ -271,7 +271,7 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     value={station}
                     exclusive
                     onChange={(_, v) => setStation(v)}
-                    {...SoundPlayer.buttonSoundEffects()}
+                    {...SoundPlayer.getInstance().buttonSoundEffects()}
                     className="self-center"
                 >
                     <RedAllianceToggleButton value="red1">1</RedAllianceToggleButton>

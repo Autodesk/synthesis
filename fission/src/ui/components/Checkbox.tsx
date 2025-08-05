@@ -45,7 +45,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabe
             )}
             <Switch
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
-                {...SoundPlayer.checkboxSoundEffects()}
+                {...SoundPlayer.getInstance().checkboxSoundEffects()}
                 checked={checked}
                 role="checkbox"
             />

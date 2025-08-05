@@ -83,24 +83,24 @@ class MatchMode {
     }
 
     autonomousModeStart() {
-        SoundPlayer.play(MatchStart)
+        void SoundPlayer.getInstance().play(MatchStart)
         this.setMatchModeType(MatchModeType.AUTONOMOUS)
         this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd())
     }
 
     autonomousModeEnd() {
-        SoundPlayer.play(MatchEnd)
+        void SoundPlayer.getInstance().play(MatchEnd)
         this.startTimer(3, () => this.teleopModeStart(), false) // Delay between autonomous and teleop modes
     }
 
     teleopModeStart() {
-        SoundPlayer.play(MatchResume)
+        void SoundPlayer.getInstance().play(MatchResume)
         this.setMatchModeType(MatchModeType.TELEOP)
         this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded())
     }
 
     endgameStart() {
-        SoundPlayer.play(beep)
+        void SoundPlayer.getInstance().play(beep)
         this._matchModeType = MatchModeType.ENDGAME
         this._endgame = true
     }
@@ -111,7 +111,7 @@ class MatchMode {
     }
 
     matchEnded() {
-        SoundPlayer.play(MatchEnd)
+        void SoundPlayer.getInstance().play(MatchEnd)
         clearInterval(this._intervalId as number)
         this.setMatchModeType(MatchModeType.MATCH_ENDED)
         globalOpenModal?.(MatchResultsModal, undefined, undefined, {

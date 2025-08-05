@@ -460,7 +460,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         setViewType(v)
                     }
                 }}
-                {...SoundPlayer.buttonSoundEffects()}
+                {...SoundPlayer.getInstance().buttonSoundEffects()}
                 sx={{
                     alignSelf: "center",
                 }}

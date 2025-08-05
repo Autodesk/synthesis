@@ -18,7 +18,7 @@ const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { closeModal, openPanel, configureScreen } = useUIContext()
     const [_, refresh] = useReducer(x => !x, false)
     const save = useCallback(() => {
-        SoundPlayer.changeVolume()
+        SoundPlayer.getInstance().changeVolume()
         PreferencesSystem.savePreferences()
         globalAddToast("info", "Settings Saved")
     }, [])
@@ -26,7 +26,7 @@ const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     useEffect(() => {
         const onCancel = () => {
             PreferencesSystem.revertPreferences()
-            SoundPlayer.changeVolume()
+            SoundPlayer.getInstance().changeVolume()
         }
 
         configureScreen(modal!, { title: "Settings", allowClickAway: false }, { onBeforeAccept: save, onCancel })
