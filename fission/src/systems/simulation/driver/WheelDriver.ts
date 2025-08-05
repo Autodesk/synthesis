@@ -2,7 +2,7 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { NoraNumber, NoraTypes } from "../Nora"
-import { SimType } from "../wpilib_brain/WPILibBrain"
+import { SimType } from "../wpilib_brain/WPILibTypes"
 import Driver, { DriverID } from "./Driver"
 
 const LATERIAL_FRICTION = 1.0

@@ -1,18 +1,16 @@
-import { Box } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
 import { useCallback, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
-import Driver from "@/systems/simulation/driver/Driver"
+import type { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import type Driver from "@/systems/simulation/driver/Driver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import World from "@/systems/World"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 import Checkbox from "@/ui/components/Checkbox"
-import Label, { LabelSize } from "@/ui/components/Label"
-import Slider from "@/ui/components/Slider"
-import Stack, { StackDirection } from "@/ui/components/Stack"
-import { SectionDivider } from "@/ui/components/StyledComponents"
+import Label from "@/ui/components/Label"
 
 type SubsystemRowProps = {
     robot: MirabufSceneObject
@@ -63,10 +61,10 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                 PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = force
             } else {
                 // Preferences
-                if (driver.info && driver.info.name) {
+                if (driver.info?.name) {
                     const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
                         ? PreferencesSystem.getRobotPreferences(robot.assemblyName).motors.filter(x => {
-                              if (x.name) return x.name != driver.info?.name
+                              if (x.name) return x.name !== driver.info?.name
                               return false
                           })
                         : []
@@ -79,7 +77,6 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
 
                     PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
                 }
-
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
             }
@@ -92,18 +89,19 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
 
     return (
         <>
-            <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-                <Stack direction={StackDirection.VERTICAL} spacing={8} justify="start">
-                    <Label size={LabelSize.MEDIUM}>
+            <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+                <Stack direction="row" gap={8}>
+                    <Label size="sm">
                         {driver instanceof WheelDriver ? "Drive" : (driver.info?.name ?? "UnnamedMotor")}
                     </Label>
-                    <Slider
+                    <StatefulSlider
+                        label="Max Velocity"
                         min={0.1}
                         max={driverSwitch(driver, 80, 40, 80) as number}
-                        value={velocity}
-                        label="Max Velocity"
-                        format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                        onChange={(_, velocity: number | number[]) => {
+                        defaultValue={velocity}
+                        // TODO:
+                        // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                        onChange={velocity => {
                             setVelocity(velocity as number)
                             onChange(velocity as number, force, unstickForce)
                         }}
@@ -111,13 +109,14 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                     />
                     {PreferencesSystem.getGlobalPreference("SubsystemGravity") ||
                         (driver instanceof WheelDriver && (
-                            <Slider
+                            <StatefulSlider
+                                label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
                                 min={driverSwitch(driver, 100, 20, 0.1) as number}
                                 max={driverSwitch(driver, 800, 150, 15) as number}
-                                value={force}
-                                label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
-                                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                                onChange={(_, force: number | number[]) => {
+                                defaultValue={force}
+                                // TODO:
+                                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                                onChange={force => {
                                     setForce(force as number)
                                     onChange(velocity, force as number, unstickForce)
                                 }}
@@ -126,10 +125,10 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         ))}
                     {sequentialBehavior && (
                         <Checkbox
-                            defaultState={sequentialBehavior.inverted}
-                            label={"Invert Motor"}
-                            onClick={val => {
-                                sequentialBehavior.inverted = val
+                            label="Invert Motor"
+                            checked={sequentialBehavior.inverted}
+                            onClick={checked => {
+                                sequentialBehavior.inverted = checked
                                 saveBehaviors?.()
                             }}
                         />
@@ -146,8 +145,8 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         step={100}
                     />
                 </Stack>
-            </Box>
-            <SectionDivider />
+            </Stack>
+            <Divider />
         </>
     )
 }

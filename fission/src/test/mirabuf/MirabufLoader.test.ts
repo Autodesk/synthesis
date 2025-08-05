@@ -157,7 +157,7 @@ describe("MirabufLoader", () => {
         localStorageMock["Synthesis Nonce Key"] = "4543246"
         const map = { [key]: { id, miraType, cacheKey: key } }
         localStorageMock["Robots"] = JSON.stringify(map)
-        backUpRobots[id] = { id, miraType, cacheKey: key, buffer: new ArrayBuffer(1) }
+        backUpRobots[id] = { id, miraType, cacheKey: key, buffer: new Uint8Array(new ArrayBuffer(1)) }
 
         const name = "Test Robot"
         const thumbnailStorageID = "thumb123"

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react"
 import * as THREE from "three"
 import InputSystem from "@/systems/input/InputSystem"
-import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import GizmoSceneObject, { type GizmoMode } from "@/systems/scene/GizmoSceneObject"
+import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import World from "@/systems/World"
-import Button, { ButtonSize } from "./Button"
-import { ToggleButton, ToggleButtonGroup } from "./ToggleButtonGroup"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import TransformGizmoControlProps from "./TransformGizmoControlProps"
 
 /**
@@ -97,15 +96,13 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
     }, [gizmo, onAccept, onCancel])
 
     // If there are no modes enabled, consider the UI pointless.
-    return disableOptions ? (
-        <></>
-    ) : (
+    return disableOptions ? undefined : (
         <>
             <ToggleButtonGroup
                 value={mode}
                 exclusive
                 onChange={(_, v) => {
-                    if (v == undefined) return
+                    if (v === undefined) return
 
                     setMode(v)
                     gizmo?.setMode(v)
@@ -116,22 +113,17 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
                     alignSelf: "center",
                 }}
             >
-                {/* { translateDisabled ? <></> : <ToggleButton value={"translate"}>Move</ToggleButton> }
-                { rotateDisabled ? <></> : <ToggleButton value={"rotate"}>Rotate</ToggleButton> }
-                { scaleDisabled ? <></> : <ToggleButton value={"scale"}>Scale</ToggleButton> } */}
                 {buttons}
             </ToggleButtonGroup>
-            {rotateDisabled ? (
-                <></>
-            ) : (
+            {!rotateDisabled && (
                 <Button
-                    value={"Reset Orientation"}
-                    size={ButtonSize.SMALL}
                     className="self-center"
                     onClick={() => {
                         gizmo?.setRotation(new THREE.Quaternion(0, 0, 0, 1))
                     }}
-                />
+                >
+                    Reset Orientation
+                </Button>
             )}
         </>
     )
