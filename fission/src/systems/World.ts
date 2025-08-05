@@ -7,6 +7,7 @@ import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
 import SimulationSystem from "./simulation/SimulationSystem"
 import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
+import RobotPositionTracker from "./simulation/RobotPositionTracker"
 
 class World {
     private static _isAlive: boolean = false
@@ -119,6 +120,7 @@ class World {
         World._performanceMonitorSystem?.update(this._currentDeltaT)
 
         RobotDimensionTracker.update(World._sceneRenderer)
+        RobotPositionTracker.update(World._sceneRenderer)
     }
 
     public static get currentDeltaT(): number {
