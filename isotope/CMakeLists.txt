@@ -8,9 +8,6 @@ if(NOT APPLE)
     message(FATAL_ERROR "This project is only supported on macOS.")
 endif()
 
-set(ABSL_RANDOM_HWAES_DISABLE_HW_FEATURES TRUE)
-set(ABSL_RANDOM_HWAES_DISABLE_AESNI TRUE)
-
 set(USER_APP_DATA_DIR "$ENV{HOME}/Library/Application Support")
 set(USER_APP_DATA_RELATIVE_PATH "Autodesk/Autodesk Fusion 360/API")
 set(FUSION_API_DIR "${USER_APP_DATA_DIR}/${USER_APP_DATA_RELATIVE_PATH}")
