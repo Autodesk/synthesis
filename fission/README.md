@@ -76,6 +76,8 @@ npm run test
 
 ## Packaging
 
+### Web Packaging
+
 We have two packaging commands: one for compiling dev for attachment to the in-development endpoint, and another for the release endpoint.
 
 Release:
@@ -93,6 +95,16 @@ You can alternatively run the default build command for your own hosting:
 ```bash
 npm run build
 ```
+
+### Electron Packaging
+
+We also give you the option to package Synthesis with electron. This will not give a performance boost, but it will allow Synthesis to work offline (make sure to also launch the app and download all the robot/field files you want to use).
+
+To package the app run:
+```bash
+npm run electron:publish
+```
+The packaged app will be located at synthesis/fission/out.
 
 ## Core Systems
 

@@ -2,6 +2,8 @@
 .vscode/
 build/
 dist/
+out/
+renderer/
 *.log
 .DS_Store
 *.pkg
