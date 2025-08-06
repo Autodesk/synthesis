@@ -1,5 +1,6 @@
-import { Handle, NodeProps, Position } from "@xyflow/react"
-import React, { ChangeEvent, useCallback } from "react"
+import { Handle, type NodeProps, Position } from "@xyflow/react"
+import type React from "react"
+import { type ChangeEvent, useCallback } from "react"
 
 const handleStyle = { left: 10 }
 

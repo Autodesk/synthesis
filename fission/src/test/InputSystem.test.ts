@@ -1,15 +1,16 @@
 import { assert, beforeEach, describe, expect, test, vi } from "vitest"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import InputSystem, {
-    AxisInput,
-    ButtonInput,
+import InputSystem from "@/systems/input/InputSystem"
+import {
     EMPTY_MODIFIER_STATE,
-    InputName,
-    KeyDescriptor,
-    ModifierState,
-} from "@/systems/input/InputSystem"
-import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
+    type InputName,
+    type KeyDescriptor,
+    type ModifierState,
+} from "@/systems/input/InputTypes"
+import AxisInput from "@/systems/input/inputs/AxisInput"
+import ButtonInput from "@/systems/input/inputs/ButtonInput"
+import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
@@ -111,7 +112,7 @@ describe("Input System Checks", () => {
     })
 
     test("Arcade Drive", () => {
-        InputSystem.brainIndexSchemeMap.set(0, DefaultInputs.ernie())
+        InputSystem.setBrainIndexSchemeMapping(0, DefaultInputs.ernie())
         inputSystem.update(-1) // Initialize the input system
 
         function testArcadeInput(inputMap: InputName, key: string, expectedValue: number) {
@@ -263,7 +264,7 @@ describe("Gamepad Input Check", () => {
         const scheme = DefaultInputs.newBlankScheme(DriveType.ARCADE)
         scheme.usesGamepad = true
         scheme.inputs = [new ButtonInput("joint 4", undefined, 0)]
-        InputSystem.brainIndexSchemeMap.set(42, scheme)
+        InputSystem.setBrainIndexSchemeMapping(42, scheme)
 
         vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(true)
         expect(InputSystem.getInput("joint 4", 42)).toBe(1)

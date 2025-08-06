@@ -1,9 +1,9 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { Button, Stack } from "@mui/material"
+import type React from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import World from "@/systems/World"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
-import Button, { ButtonSize } from "./Button"
-import Stack, { StackDirection } from "./Stack"
 import { LabelWithTooltip } from "./StyledComponents"
 
 // raycasting constants
@@ -23,15 +23,14 @@ function selectNode(e: MouseEvent) {
 }
 
 type SelectButtonProps = {
-    colorClass?: string
-    size?: ButtonSize
-    value?: string
+    color?: string
     placeholder?: string
     onSelect?: (value: Jolt.Body) => boolean
     className?: string
+    value?: string
 }
 
-const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, value, placeholder, onSelect, className }) => {
+const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, onSelect, className }) => {
     const [selecting, setSelecting] = useState<boolean>(false)
     const timeoutRef = useRef<NodeJS.Timeout>()
 
@@ -69,15 +68,13 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, value, pl
     // should send selecting state when clicked and then receive string value to set selecting to false
 
     return (
-        <Stack direction={StackDirection.VERTICAL}>
+        <Stack direction="row">
             {LabelWithTooltip(
                 "Select parent node",
                 "Select the parent node for this object to follow. Click the button below, then click a part of the robot or field."
             )}
             <Button
-                value={selecting ? "..." : value || placeholder || "Click to select"}
-                colorOverrideClass={selecting ? "bg-background-secondary" : colorClass}
-                size={size}
+                sx={{ bgcolor: color }}
                 onClick={() => {
                     // send selecting state
                     if (selecting) {
@@ -88,7 +85,9 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, value, pl
                     }
                 }}
                 className={className}
-            />
+            >
+                {selecting ? "..." : value || placeholder || "Click to select"}
+            </Button>
         </Stack>
     )
 }

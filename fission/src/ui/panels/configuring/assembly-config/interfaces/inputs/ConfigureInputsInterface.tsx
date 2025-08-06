@@ -1,27 +1,21 @@
+import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
+import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
-
-let selectedScheme: InputScheme | undefined = undefined
-
-export function setSelectedScheme(scheme: InputScheme | undefined) {
-    selectedScheme = scheme
-}
-
-function getSelectedScheme() {
-    return selectedScheme
-}
 
 /** If a scheme is assigned to a robot, find the name of that robot */
 const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
     for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
-        if (value == scheme) return SynthesisBrain.brainIndexMap.get(key)?.assemblyName
+        if (value === scheme) return SynthesisBrain.brainIndexMap.get(key)?.assemblyName
     }
 
     return undefined
@@ -32,16 +26,17 @@ class SchemeSelectionOption extends SelectMenuOption {
 
     constructor(scheme: InputScheme) {
         const robotName = findSchemeRobotName(scheme)
-        const schemeName = `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName} | ${scheme.supportedDrivetrains}`
+        const schemeName = `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName} | ${scheme.supportedDrivetrains.join(", ")}`
         super(schemeName, schemeName, robotName ? `Bound to: ${robotName}` : undefined)
         this.scheme = scheme
     }
 }
 
-const ConfigureInputsInterface = () => {
-    const { openModal } = useModalControlContext()
+const ConfigureInputsInterface: React.FC = () => {
+    const { openModal } = useUIContext()
+    const { selectedScheme: currentSelectedScheme } = useStateContext()
 
-    const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(getSelectedScheme())
+    const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(currentSelectedScheme)
     const [schemes, setSchemes] = useState<InputScheme[]>(InputSchemeManager.allInputSchemes)
 
     const saveEvent = useCallback(() => {
@@ -110,7 +105,7 @@ const ConfigureInputsInterface = () => {
                         return val.scheme.customized
                     }}
                     onAddClicked={() => {
-                        openModal("new-scheme")
+                        openModal(NewInputSchemeModal, undefined)
                     }}
                     defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
                 />

@@ -1,8 +1,8 @@
-import { Vector3Tuple } from "three"
-import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
-import { InputScheme } from "../input/InputSchemeManager"
-import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
-import { MatchModeType } from "@/systems/match_mode/MatchMode"
+import type { Vector3Tuple } from "three"
+import type { ContactType } from "@/mirabuf/ZoneTypes"
+import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import type { InputScheme } from "../input/InputTypes"
+import type { SimConfigData } from "../simulation/SimConfigShared"
 
 /** Names of all global preferences. */
 
@@ -30,17 +30,17 @@ export type GlobalPreferences = {
 
 export type GlobalPreference = keyof GlobalPreferences
 
+export const ROBOT_PREFERENCE_KEY = "Robots" as const
+export const FIELD_PREFERENCE_KEY = "Fields" as const
+export const MOTOR_PREFERENCES_KEY = "Motors" as const
+export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
+
 export type Preferences = GlobalPreferences & {
     [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
     [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
     [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>
     [GRAPHICS_PREFERENCE_KEY]: GraphicsPreferences
 }
-
-export const ROBOT_PREFERENCE_KEY = "Robots" as const
-export const FIELD_PREFERENCE_KEY = "Fields" as const
-export const MOTOR_PREFERENCES_KEY = "Motors" as const
-export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
@@ -132,6 +132,7 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
     driveVelocity: number
     driveAcceleration: number
+    unstickForce: number
     sequentialConfig?: SequentialBehaviorPreferences[]
     simConfig?: SimConfigData
 }
@@ -195,6 +196,7 @@ export function defaultRobotPreferences(): RobotPreferences {
         },
         driveVelocity: 0,
         driveAcceleration: 0,
+        unstickForce: 8000,
     }
 }
 

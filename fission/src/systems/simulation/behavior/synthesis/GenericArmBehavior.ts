@@ -1,6 +1,6 @@
-import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
-import HingeDriver from "../../driver/HingeDriver"
-import HingeStimulus from "../../stimulus/HingeStimulus"
+import type { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import type HingeDriver from "../../driver/HingeDriver"
+import type HingeStimulus from "../../stimulus/HingeStimulus"
 import SequenceableBehavior from "./SequenceableBehavior"
 
 class GenericArmBehavior extends SequenceableBehavior {

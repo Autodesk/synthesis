@@ -2,19 +2,14 @@ import beep from "@/assets/sound-files/beep.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
+import { globalOpenModal } from "@/components/GlobalUIControls.ts"
+import MatchResultsModal from "@/modals/MatchResultsModal.tsx"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
-import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
+import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
-
-export enum MatchModeType {
-    SANDBOX = "Sandbox",
-    AUTONOMOUS = "Autonomous",
-    TELEOP = "Teleop",
-    ENDGAME = "Endgame",
-    MATCH_ENDED = "Match Ended",
-}
 
 class MatchMode {
     private static _instance: MatchMode
@@ -25,6 +20,7 @@ class MatchMode {
         this._matchModeType = val
         new MatchStateChangeEvent(val).dispatch()
     }
+
     private _initialTime: number = 0
     private _timeLeft: number = 0
     private _intervalId: number | null = null
@@ -41,7 +37,13 @@ class MatchMode {
 
     setMatchModeConfig(config: MatchModeConfig) {
         this._matchModeConfig = config
-        RobotDimensionTracker.setConfigValues(config.ignoreRotation, config.maxHeight, config.heightPenalty)
+        RobotDimensionTracker.setConfigValues(
+            config.ignoreRotation,
+            config.maxHeight,
+            config.heightLimitPenalty,
+            config.sideMaxExtension,
+            config.sideExtensionPenalty
+        )
     }
 
     startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
@@ -70,21 +72,21 @@ class MatchMode {
         }, 1000)
     }
 
-    autonomousModeStart(openModal: (modalName: string) => void) {
+    autonomousModeStart() {
         SoundPlayer.play(MatchStart)
         this.setMatchModeType(MatchModeType.AUTONOMOUS)
-        this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd(openModal))
+        this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd())
     }
 
-    autonomousModeEnd(openModal: (modalName: string) => void) {
+    autonomousModeEnd() {
         SoundPlayer.play(MatchEnd)
-        this.startTimer(3, () => this.teleopModeStart(openModal), false) // Delay between autonomous and teleop modes
+        this.startTimer(3, () => this.teleopModeStart(), false) // Delay between autonomous and teleop modes
     }
 
-    teleopModeStart(openModal: (modalName: string) => void) {
+    teleopModeStart() {
         SoundPlayer.play(MatchResume)
         this.setMatchModeType(MatchModeType.TELEOP)
-        this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded(openModal))
+        this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded())
     }
 
     endgameStart() {
@@ -93,16 +95,21 @@ class MatchMode {
         this._endgame = true
     }
 
-    start(openModal: (modalName: string) => void) {
-        this.autonomousModeStart(openModal)
+    start() {
+        this.autonomousModeStart()
         SimulationSystem.resetScores()
+        RobotDimensionTracker.matchStart()
     }
 
-    matchEnded(openModal: (modalName: string) => void) {
+    matchEnded() {
         SoundPlayer.play(MatchEnd)
         clearInterval(this._intervalId as number)
         this.setMatchModeType(MatchModeType.MATCH_ENDED)
-        if (openModal) openModal("match-results")
+        globalOpenModal?.(MatchResultsModal, undefined, undefined, {
+            allowClickAway: false,
+            hideCancel: true,
+            hideAccept: true,
+        })
     }
 
     sandboxModeStart() {
@@ -132,11 +139,11 @@ export default MatchMode
 export class UpdateTimeLeft extends Event {
     public static readonly EVENT_KEY = "UpdateTimeLeft"
 
-    public readonly autonomousTime: string
+    public readonly time: string
 
-    constructor(autonomousTime: number) {
+    constructor(time: number) {
         super(UpdateTimeLeft.EVENT_KEY)
-        this.autonomousTime = autonomousTime.toFixed(0)
+        this.time = time.toFixed(0)
     }
 
     public dispatch(): void {
