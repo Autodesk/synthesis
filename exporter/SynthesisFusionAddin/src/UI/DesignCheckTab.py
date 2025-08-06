@@ -4,8 +4,8 @@ import adsk.core
 import adsk.fusion
 
 from src import Logging
-from src.UI import IconPaths
-from src.DesignRuleChecks import DesignRuleChecks
+from src.lib import IconPaths
+from src.lib.DesignRuleChecks import DesignRuleChecks
 
 logger = Logging.getLogger()
 
@@ -28,7 +28,7 @@ class DesignCheckTab:
         )
 
 
-        for i, rule in enumerate(self.designRuleChecks().getDesignRules()):
+        for i, rule in enumerate(DesignRuleChecks().getDesignRules()):
             calculation = rule["calculation"]
             max_value: float = rule["max_value"]
             value: float = calculation()
