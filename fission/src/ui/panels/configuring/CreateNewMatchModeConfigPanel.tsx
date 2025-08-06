@@ -260,6 +260,8 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                 borderRadius: "0.5rem",
                 minWidth: "350px",
                 maxWidth: "500px",
+                maxHeight: "70vh",
+                height: "fit-content",
             }}
         >
             <Stack spacing={3}>
