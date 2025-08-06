@@ -112,7 +112,7 @@ describe("Input System Checks", () => {
     })
 
     test("Arcade Drive", () => {
-        InputSystem.brainIndexSchemeMap.set(0, DefaultInputs.ernie())
+        InputSystem.setBrainIndexSchemeMapping(0, DefaultInputs.ernie())
         inputSystem.update(-1) // Initialize the input system
 
         function testArcadeInput(inputMap: InputName, key: string, expectedValue: number) {
@@ -264,7 +264,7 @@ describe("Gamepad Input Check", () => {
         const scheme = DefaultInputs.newBlankScheme(DriveType.ARCADE)
         scheme.usesGamepad = true
         scheme.inputs = [new ButtonInput("joint 4", undefined, 0)]
-        InputSystem.brainIndexSchemeMap.set(42, scheme)
+        InputSystem.setBrainIndexSchemeMapping(42, scheme)
 
         vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(true)
         expect(InputSystem.getInput("joint 4", 42)).toBe(1)
