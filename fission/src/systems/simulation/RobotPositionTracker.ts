@@ -2,7 +2,6 @@ import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
 import type SceneRenderer from "../scene/SceneRenderer"
 import World from "../World"
@@ -32,29 +31,12 @@ class RobotPositionTracker {
 
             if (rootPosition.y < this._mapBoundaryY) {
                 SimulationSystem.robotPenalty(robot, this._offMapPenalty, "Robot fell off the map")
-
-                // TODO: Once driver station is implemented, we should reset the robot to the driver station position
-                const resetPosition = new JOLT.RVec3(0, 0.2, 0)
-                const resetRotation = JOLT.Quat.prototype.sIdentity()
-                const zeroVelocity = new JOLT.Vec3(0, 0, 0)
-
                 robot.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
                     const bodyId = robot.mechanism.getBodyByNodeId(rigidNode.id)
                     if (bodyId) {
-                        World.physicsSystem.setBodyPositionRotationAndVelocity(
-                            bodyId,
-                            resetPosition,
-                            resetRotation,
-                            zeroVelocity,
-                            zeroVelocity,
-                            true
-                        )
+                        robot.moveToSpawnLocation()
                     }
                 })
-
-                JOLT.destroy(resetPosition)
-                JOLT.destroy(resetRotation)
-                JOLT.destroy(zeroVelocity)
             }
         })
     }
