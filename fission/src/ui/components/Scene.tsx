@@ -1,5 +1,6 @@
 import "./Scene.css"
-import React, { useEffect, useRef } from "react"
+import type React from "react"
+import { useEffect, useRef } from "react"
 import Stats from "stats.js"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"

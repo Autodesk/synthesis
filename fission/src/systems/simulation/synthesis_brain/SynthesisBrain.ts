@@ -1,5 +1,5 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
@@ -8,7 +8,8 @@ import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
 import Brain from "../Brain"
-import Behavior, { DriveType } from "../behavior/Behavior"
+import type Behavior from "../behavior/Behavior"
+import { DriveType } from "../behavior/Behavior"
 import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
 import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
 import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
@@ -17,7 +18,7 @@ import HingeDriver from "../driver/HingeDriver"
 import IntakeDriver from "../driver/IntakeDriver"
 import SliderDriver from "../driver/SliderDriver"
 import WheelDriver from "../driver/WheelDriver"
-import { SimulationLayer } from "../SimulationSystem"
+import type { SimulationLayer } from "../SimulationSystem"
 import HingeStimulus from "../stimulus/HingeStimulus"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import WheelRotationStimulus from "../stimulus/WheelStimulus"
@@ -34,6 +35,9 @@ class SynthesisBrain extends Brain {
 
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
+
+    // Track previous unstick button state to detect button press (not hold)
+    private _prevUnstickPressed = false
 
     public get assemblyName(): string {
         return this._assemblyName
@@ -112,6 +116,34 @@ class SynthesisBrain extends Brain {
 
         this._assembly.ejectorActive = InputSystem.getInput("eject", this._brainIndex) > 0.5
         this._assembly.intakeActive = InputSystem.getInput("intake", this._brainIndex) > 0.5
+
+        // Handle unstick
+        const unstickPressed = InputSystem.getInput("unstick", this._brainIndex) === 1
+        if (unstickPressed && !this._prevUnstickPressed) {
+            this.applyUnstickForce()
+        }
+
+        this._prevUnstickPressed = unstickPressed
+    }
+
+    /**
+     * Applies a small upward force to the robot's main body to help unstick it
+     */
+    private applyUnstickForce(): void {
+        const rootBodyId = this._mechanism.getBodyByNodeId(this._mechanism.rootBody)
+        if (!rootBodyId) {
+            console.warn("Could not find root body for unstick")
+            return
+        }
+
+        const body = World.physicsSystem.getBody(rootBodyId)
+        if (!body) {
+            console.warn("Could not get body for unstick")
+            return
+        }
+
+        const unstickForce = new JOLT.Vec3(0, PreferencesSystem.getRobotPreferences(this._assemblyName).unstickForce, 0)
+        body.AddForce(unstickForce)
     }
 
     public disable(): void {

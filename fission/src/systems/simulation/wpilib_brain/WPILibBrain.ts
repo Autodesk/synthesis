@@ -1,17 +1,18 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
 import { SimAccelInput, SimAnalogInput, SimCameraInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
-import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
 import Lazy from "@/util/Lazy.ts"
 import { random } from "@/util/Random"
 import Brain from "../Brain"
-import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
-import { SimulationLayer } from "../SimulationSystem"
+import type { SimulationLayer } from "../SimulationSystem"
 import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
 import WPILibWSWorker from "./WPILibWSWorker?worker"
+import { getSimBrain, setConnected } from "./WPILibState"
+import { SimMapUpdateEvent } from "./WPILibTypes"
+import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -576,11 +577,11 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     if (eventData.data.status) {
         switch (eventData.data.status) {
             case "open":
-                isConnected = true
+                setConnected(true)
                 break
             case "close":
             case "error":
-                isConnected = false
+                setConnected(false)
                 break
             default:
                 return
@@ -692,21 +693,21 @@ class WPILibBrain extends Brain {
         const configData = this._assembly.simConfigData
         if (!configData) return false
 
-        const flows = SimConfig.compile(configData, this._assembly)
-        if (!flows) {
-            console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
-            return false
-        }
+        // const flows = SimConfig.Compile(configData, this._assembly)
+        // if (!flows) {
+        //     console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
+        //     return false
+        // }
 
-        let counter = 0
-        flows.forEach(x => {
-            if (!this.addSimFlow(x)) {
-                console.debug("Failed to validate flow, skipping...")
-            } else {
-                counter++
-            }
-        })
-        console.debug(`${counter} Flows added!`)
+        // let counter = 0
+        // flows.forEach(x => {
+        //     if (!this.addSimFlow(x)) {
+        //         console.debug("Failed to validate flow, skipping...")
+        //     } else {
+        //         counter++
+        //     }
+        // })
+        // console.debug(`${counter} Flows added!`)
         return true
     }
 
@@ -732,26 +733,10 @@ class WPILibBrain extends Brain {
     }
 
     public disable(): void {
-        if (simBrain == this) {
+        if (getSimBrain() == this) {
             setSimBrain(undefined)
         }
         // worker.getValue().postMessage({ command: "disable" })
-    }
-}
-
-export class SimMapUpdateEvent extends Event {
-    public static readonly TYPE: string = "ws/sim-map-update"
-
-    private _internalUpdate: boolean
-
-    public get internalUpdate(): boolean {
-        return this._internalUpdate
-    }
-
-    public constructor(internalUpdate: boolean) {
-        super(SimMapUpdateEvent.TYPE)
-
-        this._internalUpdate = internalUpdate
     }
 }
 

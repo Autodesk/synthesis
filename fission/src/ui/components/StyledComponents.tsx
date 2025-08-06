@@ -1,5 +1,5 @@
 import InfoIcon from "@mui/icons-material/Info"
-import { Box, Divider, IconButton, styled, Tooltip } from "@mui/material"
+import { Box, Button, type ButtonProps, IconButton, type IconButtonProps, Stack, Tooltip } from "@mui/material"
 import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
 import { BsCodeSquare } from "react-icons/bs"
@@ -25,9 +25,7 @@ import { GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
 import { HiDownload } from "react-icons/hi"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
-import Button, { ButtonProps, ButtonSize } from "./Button"
-import Label, { LabelSize } from "./Label"
+import Label from "./Label"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
@@ -76,87 +74,93 @@ export class SynthesisIcons {
                 maxHeight: "50px",
                 maxWidth: "50px",
             }}
-            color={colorNameToVar("BackgroundSecondary")}
+            // color={colorNameToVar("BackgroundSecondary")}
         />
     )
 }
-
-export const SectionDivider = styled(Divider)({
-    borderColor: "grey",
-})
-
-export const SectionLabel = styled(Label)({
-    fontWeight: 700,
-    margin: "0pt",
-})
 
 export const Spacer = (heightPx?: number, widthPx?: number) => {
     return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
 }
 
-export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick, disabled }) => {
+export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => {
     return (
-        <Button
-            disabled={disabled}
-            size={ButtonSize.MEDIUM}
-            value={value}
-            onClick={onClick}
-            colorOverrideClass={disabled ? "bg-interactive-background" : "bg-accept-button hover:brightness-90"}
-        />
+        <Button onClick={onClick} {...props} color="success">
+            {children}
+        </Button>
     )
 }
 
-export const DownloadButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.DELETE_LARGE} onClick={onClick} />
-}
-
-export const AddButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.DELETE_LARGE} onClick={onClick} />
-}
-
-export const SelectButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.SELECT_LARGE} onClick={onClick} />
-}
-
-export const EditButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.EDIT_LARGE} onClick={onClick} />
-}
-
-export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick, id }) => {
+export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => {
     return (
-        <Button
-            size={ButtonSize.MEDIUM}
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-cancel-button hover:brightness-90"
-            id={id}
-        />
+        <IconButton onClick={onClick} {...props} color="success">
+            {children}
+        </IconButton>
     )
 }
 
-export const DeleteButton = (onClick: () => void, id?: string) => {
-    return <NegativeButton value={SynthesisIcons.DELETE_LARGE} onClick={onClick} id={id} />
-}
-
-export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick, id }) => {
+export const DownloadButton = (onClick: () => void, props: IconButtonProps = {}) => {
     return (
-        <Button
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-[#00000000] hover:brightness-90"
-            sizeOverrideClass="p-[0.25rem]"
-            id={id}
-            className="h-fit"
-        />
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.DELETE_LARGE}
+        </PositiveIconButton>
     )
 }
 
-export const RefreshButton = (onClick: () => void) => {
-    return <ButtonIcon value={SynthesisIcons.REFRESH_LARGE} onClick={onClick} />
+export const AddButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.ADD_LARGE}
+        </PositiveIconButton>
+    )
 }
 
-export const AddButtonInteractiveColor = (onClick: () => void, id?: string) => {
-    return <Button value={SynthesisIcons.ADD_LARGE} onClick={onClick} id={id} />
+export const SelectButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.SELECT_LARGE}
+        </PositiveIconButton>
+    )
+}
+
+export const EditButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.EDIT_LARGE}
+        </PositiveIconButton>
+    )
+}
+
+export const NegativeButton: React.FC<ButtonProps> = ({ children, onClick, id, ...props }) => {
+    return (
+        <Button onClick={onClick} {...props} id={id} color="error">
+            {children}
+        </Button>
+    )
+}
+
+export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => {
+    return (
+        <IconButton onClick={onClick} {...props} color="error">
+            {children}
+        </IconButton>
+    )
+}
+
+export const DeleteButton = (onClick: () => void, id?: string, props: IconButtonProps = {}) => {
+    return (
+        <NegativeIconButton onClick={onClick} id={id} {...props}>
+            {SynthesisIcons.DELETE_LARGE}
+        </NegativeIconButton>
+    )
+}
+
+export const RefreshButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <IconButton onClick={onClick} {...props}>
+            {SynthesisIcons.REFRESH_LARGE}
+        </IconButton>
+    )
 }
 
 export const CustomTooltip = (text: string) => {
@@ -166,7 +170,7 @@ export const CustomTooltip = (text: string) => {
                 size="small"
                 disableRipple
                 sx={{
-                    color: "#ffffff77",
+                    // "color": "#ffffff77",
                     "&:hover": {
                         borderStyle: "solid",
                         borderColor: "grey",
@@ -196,11 +200,11 @@ export const CustomTooltip = (text: string) => {
     )
 }
 
-export const LabelWithTooltip = (labelText: string, tooltipText: string, size?: LabelSize) => {
+export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
     return (
-        <Box display={"flex"} flexDirection={"row"} alignItems={"center"} textAlign={"center"}>
-            <Label size={size ?? LabelSize.SMALL}>{labelText}</Label>
+        <Stack direction="row" alignItems={"center"} textAlign={"center"}>
+            <Label size="sm">{labelText}</Label>
             {CustomTooltip(tooltipText)}
-        </Box>
+        </Stack>
     )
 }
