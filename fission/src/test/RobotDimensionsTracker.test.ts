@@ -52,6 +52,20 @@ vi.mock("@/systems/simulation/SimulationSystem", () => ({
     },
 }))
 
+type RecursivePartial<T> = {
+    [P in keyof T]?: RecursivePartial<T[P]>
+}
+
+vi.mock("@/systems/World", (): { default: RecursivePartial<typeof World> } => ({
+    default: {
+        sceneRenderer: {
+            mirabufSceneObjects: {
+                getRobots: vi.fn(),
+            },
+        },
+    },
+}))
+
 describe("RobotDimensionTracker", () => {
     let mockRobot1: MockRobotObject
     let mockRobot2: MockRobotObject
@@ -95,12 +109,10 @@ describe("RobotDimensionTracker", () => {
             miraType: MiraType.FIELD,
             getDimensions: vi.fn(() => ({ height: 5.0, width: 10.0, depth: 10.0 })),
         }
-
-        vi.spyOn(World.sceneRenderer.mirabufSceneObjects, "getAll").mockReturnValue([
+        ;(World.sceneRenderer.mirabufSceneObjects.getRobots as ReturnType<typeof vi.fn>).mockReturnValue([
             mockRobot1,
             mockRobot2,
-            mockNonRobot,
-        ] as MirabufSceneObject[])
+        ])
     })
 
     afterEach(() => {
