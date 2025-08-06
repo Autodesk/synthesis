@@ -445,7 +445,7 @@ interface SettingsModalCustomProps {
     initialTab?: string
 }
 
-const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps>> = ({ modal }) => {
+const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | undefined>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
     const [_, refresh] = useReducer(x => !x, false)
     const [activeTab, setActiveTab] = useState<string>(modal?.props.custom?.initialTab || "general")
