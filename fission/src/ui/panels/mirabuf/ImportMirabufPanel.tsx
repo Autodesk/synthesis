@@ -89,8 +89,10 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     return Object.values(canOPFS ? MirabufCachingService.getCacheMap(miraType) : backUpMap[miraType])
 }
 
-function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
-    if (type == MiraType.FIELD) {
+// TODO Move this function to lib file since we can't export non-components with components
+export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+    // If spawning a field, then remove all other fields
+    if (type === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
         World.sceneRenderer.removeAllGamePieces()
     }

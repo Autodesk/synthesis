@@ -38,45 +38,50 @@ if (useSsl) {
     plugins.push(basicSsl())
 }
 
-const localAssetsExist = await fs.access("./public/Downloadables/Mira",fs.constants.R_OK).then(() => true).catch(() => false)
+const localAssetsExist = await fs
+    .access("./public/Downloadables/Mira", fs.constants.R_OK)
+    .then(() => true)
+    .catch(() => false)
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
-    process.env = {...process.env, ...loadEnv(mode, process.cwd())};
+export default defineConfig(async ({ mode }) => {
+    process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
-    const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")
+    const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
 
-    if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")) {
+    if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")) {
         console.warn("Can't find local assets, do you need to run `npm run assetpack`?")
     }
-
-    console.log(`Using ${useLocalAssets?"local":"remote"} mirabuf assets`)
+    console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
     const proxies: Record<string, ProxyOptions> = {}
     proxies["/api/mira"] = useLocalAssets
         ? {
-            target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
-            changeOrigin: true,
-            secure: false,
-            rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira"),
-        }
+              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+              changeOrigin: true,
+              secure: false,
+              rewrite: path =>
+                  path
+                      .replace(/^\/api\/mira/, "/Downloadables/Mira")
+                      .replace("robots", "Robots")
+                      .replace("fields", "Fields"),
+          }
         : {
-            target: `https://synthesis.autodesk.com/`,
-            changeOrigin: true,
-            secure: true,
-        }
+              target: `https://synthesis.autodesk.com/`,
+              changeOrigin: true,
+              secure: true,
+          }
     proxies["/api/aps"] = useLocalAPS
         ? {
-            target: `http://localhost:${dockerServerPort}/`,
-            changeOrigin: true,
-            secure: false,
-        }
+              target: `http://localhost:${dockerServerPort}/`,
+              changeOrigin: true,
+              secure: false,
+          }
         : {
-            target: `https://synthesis.autodesk.com/`,
-            changeOrigin: true,
-            secure: true,
-        }
-
+              target: `https://synthesis.autodesk.com/`,
+              changeOrigin: true,
+              secure: true,
+          }
     return {
         plugins: plugins,
         publicDir: "./public",
@@ -88,7 +93,11 @@ export default defineConfig(({ mode }) => {
                 { find: "@", replacement: path.resolve(__dirname, "src") },
             ],
         },
+        define: {
+            GIT_COMMIT: JSON.stringify(await getCommitHash()),
+        },
         test: {
+            setupFiles: ["src/test/TestSetup.browser.ts"],
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
@@ -111,10 +120,9 @@ export default defineConfig(({ mode }) => {
             },
         },
         build: {
-            target: "esnext"
+            target: "esnext",
         },
         server: {
-
             // this ensures that the browser opens upon server start
             // open: true,
             // this sets a default port to 3000
@@ -128,3 +136,18 @@ export default defineConfig(({ mode }) => {
         },
     }
 })
+
+
+async function getCommitHash() {
+    try {
+        const rev = (await fs.readFile('../.git/HEAD')).toString().trim();
+        if (rev.indexOf(':') === -1) {
+            return rev;
+        } else {
+            return (await fs.readFile('../.git/' + rev.substring(5))).toString().trim();
+        }
+    } catch (e) {
+        console.warn("Could not get git hash", e)
+        return "unknown"
+    }
+}

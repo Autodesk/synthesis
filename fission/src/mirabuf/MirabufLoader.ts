@@ -37,7 +37,7 @@ const piecesDirName = "piece"
 const root = await navigator.storage.getDirectory()
 const getDirectoryHandle = (dirName: string) => root.getDirectoryHandle(dirName, { create: true })
 
-const dirNameMap: Record<MiraType, string> = {
+const dirNameMap: Record<MiraType, "robot" | "field" | "piece"> = {
     [MiraType.ROBOT]: robotsDirName,
     [MiraType.FIELD]: fieldsDirName,
     [MiraType.PIECE]: piecesDirName,
@@ -173,6 +173,7 @@ class MirabufCachingService {
 
             World.analyticsSystem?.event("Remote Download", {
                 type: dirNameMap[miraType],
+                assemblyName: name ?? fetchLocation,
                 fileSize: miraBuff.byteLength,
             })
 
@@ -314,6 +315,13 @@ class MirabufCachingService {
                 displayName = displayName ? `Edited ${displayName}` : "Edited Field"
             }
         }
+
+        World.analyticsSystem?.event("Local Upload", {
+            assemblyName: displayName,
+            fileSize: buffer.byteLength,
+            key,
+            type: miraType == MiraType.ROBOT ? "robot" : "field",
+        })
 
         if (!target) {
             const cacheInfo = await MirabufCachingService.storeInCache(key, buffer, miraType, displayName)
@@ -545,7 +553,7 @@ class MirabufCachingService {
             window.localStorage.setItem(dirNameMap[miraType], JSON.stringify(map))
 
             World.analyticsSystem?.event("Cache Store", {
-                name: name ?? "-",
+                assemblyName: name ?? "-",
                 key: key,
                 type: dirNameMap[miraType],
                 fileSize: miraBuff.byteLength,
