@@ -2,7 +2,7 @@ import { Button, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
@@ -11,15 +11,6 @@ import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
-
-function getCurrentFieldObj() {
-    for (const obj of World.sceneRenderer.sceneObjects.values()) {
-        if (obj instanceof MirabufSceneObject && obj.miraType === MiraType.FIELD) {
-            return obj
-        }
-    }
-    return undefined
-}
 
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
@@ -34,7 +25,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     // Effect: Watch for field changes and update editor/keys only if field changes
     useEffect(() => {
         const updateEditor = () => {
-            const currentField = getCurrentFieldObj()
+            const currentField = World.sceneRenderer.mirabufSceneObjects.getField()
             if (currentField !== prevFieldObj.current) {
                 prevFieldObj.current = currentField
                 if (currentField) {
@@ -71,7 +62,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
     // Load value when key changes
     useEffect(() => {
-        const field = getCurrentFieldObj()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!editor || !field || !selectedKey) return
 
         const val = devtoolHandlers[selectedKey].get(field)
@@ -94,7 +85,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             setKeys(editor.getAllDevtoolKeys())
 
             // Persist changes to cache
-            const field = getCurrentFieldObj()
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
             if (!field) {
                 globalAddToast?.("error", "Devtool Error", "No field loaded to apply changes.")
                 return
@@ -141,7 +132,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         setError("")
 
         // Persist removal to cache
-        const field = getCurrentFieldObj()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) return
 
         const assembly = field.mirabufInstance.parser.assembly
@@ -173,7 +164,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }
 
     const handleExport = () => {
-        const field = getCurrentFieldObj()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) {
             globalAddToast?.("error", "Export Error", "No field loaded to export.")
             return

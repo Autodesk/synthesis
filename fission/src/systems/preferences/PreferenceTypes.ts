@@ -218,14 +218,14 @@ export function defaultFieldPreferences(): FieldPreferences {
     return {
         spawnLocations: {
             red: {
-                1: defaultRobotSpawnLocation(),
-                2: defaultRobotSpawnLocation(),
-                3: defaultRobotSpawnLocation(),
+                1: { pos: [-1, 0.1, -1], yaw: Math.PI/2 },
+                2: { pos: [-1, 0.1, 0], yaw: Math.PI/2 },
+                3: { pos: [-1, 0.1, 1], yaw: Math.PI/2 },
             },
             blue: {
-                1: defaultRobotSpawnLocation(),
-                2: defaultRobotSpawnLocation(),
-                3: defaultRobotSpawnLocation(),
+                1: { pos: [1, 0.1, 1], yaw: -Math.PI/2 },
+                2: { pos: [1, 0.1, 0], yaw: -Math.PI/2 },
+                3: { pos: [1, 0.1, -1], yaw: -Math.PI/2 },
             },
             default: defaultRobotSpawnLocation(),
         },

@@ -329,9 +329,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType == MiraType.FIELD) {
             pos = defaultFieldSpawnLocation()
         } else {
-            const field = [...World.sceneRenderer.sceneObjects.values()].find(
-                (obj): obj is MirabufSceneObject => obj instanceof MirabufSceneObject && obj.miraType === MiraType.FIELD
-            )
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
             const fieldLocations = field?.fieldPreferences?.spawnLocations
             if (this._alliance != null && this._station != null && fieldLocations != null) {
                 pos = fieldLocations[this._alliance][this._station]

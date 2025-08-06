@@ -1,21 +1,14 @@
 import * as THREE from "three"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
-import type SceneRenderer from "../scene/SceneRenderer"
 import World from "../World"
 
 class RobotPositionTracker {
     private static _mapBoundaryY: number = -4
     private static _offMapPenalty: number = 0
 
-    public static update(sceneRenderer: SceneRenderer): void {
-        const robots = [...sceneRenderer.sceneObjects.values()].filter(
-            (obj): obj is MirabufSceneObject => obj instanceof MirabufSceneObject && obj.miraType === MiraType.ROBOT
-        )
-
-        robots.forEach(robot => {
+    public static update(): void {
+        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
             const rootNodeId = robot.getRootNodeId()
             if (!rootNodeId) {
                 return
