@@ -56,9 +56,9 @@ describe("Mirabuf Parser Tests", () => {
         expect(jointValidation.wheelJoints).toBe(4) // Should have 4 wheel joints
     })
 
-    test("Generate Rigid Nodes (FRC Field 2018_v14.mira)", async () => {
+    test("Generate Rigid Nodes (FRC Field 2018_v13.mira)", async () => {
         const field = await MirabufCachingService.cacheRemote(
-            "/api/mira/Fields/FRC Field 2018_v14.mira",
+            "/api/mira/Fields/FRC Field 2018_v13.mira",
             MiraType.FIELD
         ).then(x => MirabufCachingService.get(x!.id, MiraType.FIELD))
         const t = new MirabufParser(field!)
