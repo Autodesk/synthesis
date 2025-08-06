@@ -9,13 +9,13 @@ import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
 import {
     DEFAULT_AUTONOMOUS_TIME,
-    DEFAULT_TELEOP_TIME,
     DEFAULT_ENDGAME_TIME,
+    DEFAULT_HEIGHT_LIMIT_PENALTY,
     DEFAULT_IGNORE_ROTATION,
     DEFAULT_MAX_HEIGHT,
-    DEFAULT_HEIGHT_LIMIT_PENALTY,
-    DEFAULT_SIDE_MAX_EXTENSION,
     DEFAULT_SIDE_EXTENSION_PENALTY,
+    DEFAULT_SIDE_MAX_EXTENSION,
+    DEFAULT_TELEOP_TIME,
     MatchModeType,
 } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
