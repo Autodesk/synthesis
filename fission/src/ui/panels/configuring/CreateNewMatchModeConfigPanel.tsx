@@ -9,7 +9,9 @@ import {
     DEFAULT_ENDGAME_TIME,
     DEFAULT_IGNORE_ROTATION,
     DEFAULT_MAX_HEIGHT,
-    DEFAULT_HEIGHT_PENALTY,
+    DEFAULT_HEIGHT_LIMIT_PENALTY,
+    DEFAULT_SIDE_MAX_EXTENSION,
+    DEFAULT_SIDE_EXTENSION_PENALTY,
 } from "@/systems/match_mode/MatchModeTypes"
 import { matchConfigSelected, validateAndNormalizeMatchModeConfig } from "./MatchModeConfigPanel"
 
@@ -32,7 +34,9 @@ interface FormState {
     endgameTime: FormField<string>
     ignoreRotation: FormField<boolean>
     maxHeight: FormField<string>
-    heightPenalty: FormField<string>
+    heightLimitPenalty: FormField<string>
+    sideMaxExtension: FormField<string>
+    sideExtensionPenalty: FormField<string>
 }
 
 // Validation rules
@@ -54,12 +58,12 @@ const VALIDATION_RULES = {
         message,
     }),
 
-    numberOrInfinity: (message = "Must be a positive number or 'Infinity'"): ValidationRule => ({
+    numberOrInfinity: (message = "Must be a non-negative number or 'Infinity'"): ValidationRule => ({
         validate: (value: unknown) => {
             if (typeof value !== "string") return false
             if (value.toLowerCase() === "infinity") return true
             const num = parseFloat(value)
-            return !isNaN(num) && num > 0
+            return !isNaN(num) && num >= 0
         },
         message,
     }),
@@ -101,13 +105,25 @@ const createInitialFormState = (): FormState => ({
         value: DEFAULT_MAX_HEIGHT === Infinity ? "Infinity" : DEFAULT_MAX_HEIGHT.toString(),
         error: false,
         errorText: "",
-        rules: [VALIDATION_RULES.numberOrInfinity("Max height must be a positive number or 'Infinity'")],
+        rules: [VALIDATION_RULES.numberOrInfinity("Max height must be a non-negative number or 'Infinity'")],
     },
-    heightPenalty: {
-        value: DEFAULT_HEIGHT_PENALTY.toString(),
+    heightLimitPenalty: {
+        value: DEFAULT_HEIGHT_LIMIT_PENALTY.toString(),
         error: false,
         errorText: "",
         rules: [VALIDATION_RULES.nonNegativeInteger("Height penalty must be a non-negative whole number")],
+    },
+    sideMaxExtension: {
+        value: DEFAULT_SIDE_MAX_EXTENSION.toString(),
+        error: false,
+        errorText: "",
+        rules: [VALIDATION_RULES.numberOrInfinity("Side max extension must be a positive number or 'Infinity'")],
+    },
+    sideExtensionPenalty: {
+        value: DEFAULT_SIDE_EXTENSION_PENALTY.toString(),
+        error: false,
+        errorText: "",
+        rules: [VALIDATION_RULES.nonNegativeInteger("Side extension penalty must be a non-negative whole number")],
     },
 })
 
@@ -176,7 +192,9 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             endgameTime: parseInt(formState.endgameTime.value, 10),
             ignoreRotation: formState.ignoreRotation.value,
             maxHeight: parseHeight(formState.maxHeight.value),
-            heightPenalty: parseFloat(formState.heightPenalty.value),
+            heightLimitPenalty: parseFloat(formState.heightLimitPenalty.value),
+            sideMaxExtension: parseHeight(formState.sideMaxExtension.value),
+            sideExtensionPenalty: parseFloat(formState.sideExtensionPenalty.value),
         }
     }, [formState])
 
@@ -349,15 +367,45 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                             helperText={formState.maxHeight.errorText || "Enter 'Infinity' for unlimited height"}
                             placeholder="Enter number or 'Infinity'"
                         />
-
                         <TextField
                             fullWidth
                             label="Height Penalty (points)"
                             type="number"
-                            value={formState.heightPenalty.value}
-                            onChange={handleTextFieldChange("heightPenalty")}
-                            error={formState.heightPenalty.error}
-                            helperText={formState.heightPenalty.errorText}
+                            value={formState.heightLimitPenalty.value}
+                            onChange={handleTextFieldChange("heightLimitPenalty")}
+                            error={formState.heightLimitPenalty.error}
+                            helperText={formState.heightLimitPenalty.errorText}
+                            inputProps={{
+                                min: 0,
+                                step: 1,
+                                pattern: "[0-9]*",
+                            }}
+                            onKeyPress={e => {
+                                if (e.key === "." || e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+                                    e.preventDefault()
+                                }
+                            }}
+                        />
+
+                        <TextField
+                            fullWidth
+                            label="Side Max Extension (feet or 'Infinity')"
+                            value={formState.sideMaxExtension.value}
+                            onChange={handleTextFieldChange("sideMaxExtension")}
+                            error={formState.sideMaxExtension.error}
+                            helperText={
+                                formState.sideMaxExtension.errorText || "Enter 'Infinity' for unlimited side extension"
+                            }
+                            placeholder="Enter number or 'Infinity'"
+                        />
+                        <TextField
+                            fullWidth
+                            label="Side Extension Penalty (points)"
+                            type="number"
+                            value={formState.sideExtensionPenalty.value}
+                            onChange={handleTextFieldChange("sideExtensionPenalty")}
+                            error={formState.sideExtensionPenalty.error}
+                            helperText={formState.sideExtensionPenalty.errorText}
                             inputProps={{
                                 min: 0,
                                 step: 1,
