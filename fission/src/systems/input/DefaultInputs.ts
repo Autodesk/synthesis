@@ -27,17 +27,13 @@ class DefaultInputs {
 
                 ButtonInput.onKeyboard("intake", "KeyE"),
                 ButtonInput.onKeyboard("eject", "KeyQ"),
+                ButtonInput.onKeyboard("unstick", "Space"),
 
                 AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 3", "Digit3", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 4", "Digit4", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 5", "Digit5", negativeModifierKeys),
-                AxisInput.unbound("joint 6"),
-                AxisInput.unbound("joint 7"),
-                AxisInput.unbound("joint 8"),
-                AxisInput.unbound("joint 9"),
-                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -62,17 +58,13 @@ class DefaultInputs {
 
                 ButtonInput.onKeyboard("intake", "KeyE"),
                 ButtonInput.onKeyboard("eject", "KeyQ"),
+                ButtonInput.onKeyboard("unstick", "Space"),
 
                 AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 3", "Digit3", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 4", "Digit4", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 5", "Digit5", negativeModifierKeys),
-                AxisInput.unbound("joint 6"),
-                AxisInput.unbound("joint 7"),
-                AxisInput.unbound("joint 8"),
-                AxisInput.unbound("joint 9"),
-                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -97,17 +89,13 @@ class DefaultInputs {
 
                 ButtonInput.onKeyboard("intake", "Semicolon"),
                 ButtonInput.onKeyboard("eject", "KeyL"),
+                ButtonInput.onKeyboard("unstick", "KeyK"),
 
                 AxisInput.onKeyboardSingleKey("joint 1", "Slash", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 2", "Period", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 3", "Comma", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 4", "KeyM", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 5", "KeyN", negativeModifierKeys),
-                AxisInput.unbound("joint 6"),
-                AxisInput.unbound("joint 7"),
-                AxisInput.unbound("joint 8"),
-                AxisInput.unbound("joint 9"),
-                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -128,17 +116,12 @@ class DefaultInputs {
 
                 ButtonInput.onGamepad("intake", 4),
                 ButtonInput.onGamepad("eject", 5),
+                ButtonInput.onGamepad("unstick", 6),
 
                 AxisInput.onGamepadButtons("joint 1", 3, 0),
                 AxisInput.onGamepadButtons("joint 2", 1, 2),
                 AxisInput.onGamepadButtons("joint 3", 15, 14),
                 AxisInput.onGamepadButtons("joint 4", 12, 13),
-                AxisInput.unbound("joint 5"),
-                AxisInput.unbound("joint 6"),
-                AxisInput.unbound("joint 7"),
-                AxisInput.unbound("joint 8"),
-                AxisInput.unbound("joint 9"),
-                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -158,17 +141,10 @@ class DefaultInputs {
 
                 ButtonInput.onGamepad("intake", 4),
                 ButtonInput.onGamepad("eject", 5),
+                ButtonInput.onGamepad("unstick", 6),
 
                 AxisInput.onGamepadButtons("joint 1", 12, 13),
                 AxisInput.onGamepadButtons("joint 2", 15, 14),
-                AxisInput.unbound("joint 3"),
-                AxisInput.unbound("joint 4"),
-                AxisInput.unbound("joint 5"),
-                AxisInput.unbound("joint 6"),
-                AxisInput.unbound("joint 7"),
-                AxisInput.unbound("joint 8"),
-                AxisInput.unbound("joint 9"),
-                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -187,17 +163,10 @@ class DefaultInputs {
 
                 ButtonInput.onGamepad("intake", 4),
                 ButtonInput.onGamepad("eject", 5),
+                ButtonInput.onGamepad("unstick", 6),
 
                 AxisInput.onGamepadButtons("joint 1", 3, 0),
                 AxisInput.onGamepadButtons("joint 2", 1, 2),
-                AxisInput.unbound("joint 3"),
-                AxisInput.unbound("joint 4"),
-                AxisInput.unbound("joint 5"),
-                AxisInput.unbound("joint 6"),
-                AxisInput.unbound("joint 7"),
-                AxisInput.unbound("joint 8"),
-                AxisInput.unbound("joint 9"),
-                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -209,10 +178,22 @@ class DefaultInputs {
             customized: false,
             usesGamepad: false,
             usesTouchControls: true,
-            supportedDrivetrains: [DriveType.ARCADE, DriveType.TANK],
+            supportedDrivetrains: [DriveType.ARCADE],
             inputs: [
                 AxisInput.onTouchControl("arcadeDrive", TouchControlsAxes.LEFT_Y),
                 AxisInput.onTouchControl("arcadeTurn", TouchControlsAxes.RIGHT_X),
+            ],
+        }
+    }
+    public static julian: InputSupplier = () => {
+        return {
+            schemeName: "Julian",
+            descriptiveName: "Touch Controls",
+            customized: false,
+            usesGamepad: false,
+            usesTouchControls: true,
+            supportedDrivetrains: [DriveType.TANK],
+            inputs: [
                 AxisInput.onTouchControl("tankLeft", TouchControlsAxes.LEFT_Y),
                 AxisInput.onTouchControl("tankRight", TouchControlsAxes.RIGHT_Y),
             ],
@@ -229,6 +210,7 @@ class DefaultInputs {
             DefaultInputs.hunter(),
             DefaultInputs.carmela(),
             DefaultInputs.brandon(),
+            DefaultInputs.julian(),
         ]
     }
 
@@ -255,17 +237,7 @@ class DefaultInputs {
 
                 ButtonInput.unbound("intake"),
                 ButtonInput.unbound("eject"),
-
-                AxisInput.unbound("joint 1"),
-                AxisInput.unbound("joint 2"),
-                AxisInput.unbound("joint 3"),
-                AxisInput.unbound("joint 4"),
-                AxisInput.unbound("joint 5"),
-                AxisInput.unbound("joint 6"),
-                AxisInput.unbound("joint 7"),
-                AxisInput.unbound("joint 8"),
-                AxisInput.unbound("joint 9"),
-                AxisInput.unbound("joint 10"),
+                ButtonInput.unbound("unstick"),
             ],
         }
     }
@@ -371,6 +343,7 @@ class DefaultInputs {
         "Hank",
         "Alanna",
         "Marco",
+        "Drake",
     ]
 }
 

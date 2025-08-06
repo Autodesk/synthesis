@@ -132,6 +132,7 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
     driveVelocity: number
     driveAcceleration: number
+    unstickForce: number
     sequentialConfig?: SequentialBehaviorPreferences[]
     simConfig?: SimConfigData
 }
@@ -202,6 +203,7 @@ export function defaultRobotPreferences(): RobotPreferences {
         },
         driveVelocity: 0,
         driveAcceleration: 0,
+        unstickForce: 8000,
     }
 }
 
