@@ -4,16 +4,16 @@ import { useCallback, useEffect, useReducer, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
-import type { ModalImplProps } from "@/ui/components/Modal"
-import { Spacer } from "@/ui/components/StyledComponents"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
-import StatefulSlider from "@/ui/components/StatefulSlider"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
-import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
+import type { ModalImplProps } from "@/ui/components/Modal"
+import StatefulSlider from "@/ui/components/StatefulSlider"
+import { Spacer } from "@/ui/components/StyledComponents"
+import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
 
 // Graphics settings constants
@@ -25,12 +25,50 @@ const MIN_CASCADES = 3
 const MAX_CASCADES = 8
 const MIN_SHADOW_MAP_SIZE = 1024
 
-// Tab configuration for extensibility
-type TabConfig = {
+type GraphicsTabActions = {
+    save: () => void
+    reset: () => void
+    requiresReload: boolean
+}
+
+type ThemeEditorTabActions = {
+    save: () => void
+    reset: () => void
+}
+
+type GeneralTabProps = {
+    writePreference: <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => void
+}
+
+type GraphicsTabProps = {
+    onActionsChange?: (actions: GraphicsTabActions) => void
+}
+
+type ThemeEditorTabProps = {
+    onActionsChange?: (actions: ThemeEditorTabActions) => void
+}
+
+interface TabConfigBase {
     key: string
     label: string
-    component: React.ComponentType<any>
 }
+
+interface GeneralTabConfig extends TabConfigBase {
+    key: "general"
+    component: React.ComponentType<GeneralTabProps>
+}
+
+interface GraphicsTabConfig extends TabConfigBase {
+    key: "graphics"
+    component: React.ComponentType<GraphicsTabProps>
+}
+
+interface ThemeTabConfig extends TabConfigBase {
+    key: "theme"
+    component: React.ComponentType<ThemeEditorTabProps>
+}
+
+type TabConfig = GeneralTabConfig | GraphicsTabConfig | ThemeTabConfig
 
 const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: string) => void }> = ({
     label,
@@ -59,9 +97,7 @@ const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: strin
     )
 }
 
-const GeneralTab: React.FC<{
-    writePreference: <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => void
-}> = ({ writePreference }) => (
+const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
     <Stack direction="column" gap={2}>
         {Spacer(5)}
         <Label size="sm">Camera Settings</Label>
@@ -157,13 +193,7 @@ const GeneralTab: React.FC<{
     </Stack>
 )
 
-type GraphicsTabActions = {
-    save: () => void
-    reset: () => void
-    requiresReload: boolean
-}
-
-const GraphicsTab: React.FC<{ onActionsChange?: (actions: GraphicsTabActions) => void }> = ({ onActionsChange }) => {
+const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [reload, setReload] = useState<boolean>(false)
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
@@ -315,14 +345,7 @@ const GraphicsTab: React.FC<{ onActionsChange?: (actions: GraphicsTabActions) =>
     )
 }
 
-type ThemeEditorTabActions = {
-    save: () => void
-    reset: () => void
-}
-
-const ThemeEditorTab: React.FC<{ onActionsChange?: (actions: ThemeEditorTabActions) => void }> = ({
-    onActionsChange,
-}) => {
+const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
     const {
         mode,
         setMode,
@@ -368,6 +391,10 @@ const ThemeEditorTab: React.FC<{ onActionsChange?: (actions: ThemeEditorTabActio
         blueAllianceColor,
         redAllianceColor,
         onActionsChange,
+        setBlueAllianceColor,
+        setPrimaryColor,
+        setRedAllianceColor,
+        setSecondaryColor,
     ])
 
     return (
@@ -463,21 +490,25 @@ const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
 
     useEffect(() => {
         configureScreen(modal!, { title: "Settings", allowClickAway: false }, { onBeforeAccept: save, onCancel: reset })
-    }, [modal, save, reset])
+    }, [modal, save, reset, configureScreen])
 
     const renderTabContent = () => {
         const currentTab = tabs.find(tab => tab.key === activeTab)
         if (!currentTab) return null
 
-        const TabComponent = currentTab.component
-
-        switch (activeTab) {
-            case "general":
-                return <TabComponent writePreference={writePreference} />
-            case "graphics":
-                return <TabComponent onActionsChange={setGraphicsActions} />
-            case "theme":
-                return <TabComponent onActionsChange={setThemeActions} />
+        switch (currentTab.key) {
+            case "general": {
+                const GeneralComponent = currentTab.component
+                return <GeneralComponent writePreference={writePreference} />
+            }
+            case "graphics": {
+                const GraphicsComponent = currentTab.component
+                return <GraphicsComponent onActionsChange={setGraphicsActions} />
+            }
+            case "theme": {
+                const ThemeComponent = currentTab.component
+                return <ThemeComponent onActionsChange={setThemeActions} />
+            }
             default:
                 return null
         }
