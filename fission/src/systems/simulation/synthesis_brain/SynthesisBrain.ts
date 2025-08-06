@@ -36,6 +36,9 @@ class SynthesisBrain extends Brain {
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
 
+    // Track previous unstick button state to detect button press (not hold)
+    private _prevUnstickPressed = false
+
     public get assemblyName(): string {
         return this._assemblyName
     }
@@ -113,6 +116,34 @@ class SynthesisBrain extends Brain {
 
         this._assembly.ejectorActive = InputSystem.getInput("eject", this._brainIndex) > 0.5
         this._assembly.intakeActive = InputSystem.getInput("intake", this._brainIndex) > 0.5
+
+        // Handle unstick
+        const unstickPressed = InputSystem.getInput("unstick", this._brainIndex) === 1
+        if (unstickPressed && !this._prevUnstickPressed) {
+            this.applyUnstickForce()
+        }
+
+        this._prevUnstickPressed = unstickPressed
+    }
+
+    /**
+     * Applies a small upward force to the robot's main body to help unstick it
+     */
+    private applyUnstickForce(): void {
+        const rootBodyId = this._mechanism.getBodyByNodeId(this._mechanism.rootBody)
+        if (!rootBodyId) {
+            console.warn("Could not find root body for unstick")
+            return
+        }
+
+        const body = World.physicsSystem.getBody(rootBodyId)
+        if (!body) {
+            console.warn("Could not get body for unstick")
+            return
+        }
+
+        const unstickForce = new JOLT.Vec3(0, PreferencesSystem.getRobotPreferences(this._assemblyName).unstickForce, 0)
+        body.AddForce(unstickForce)
     }
 
     public disable(): void {

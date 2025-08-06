@@ -94,7 +94,7 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     )
 }
 
-function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
@@ -199,23 +199,27 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     useEffect(() => {
         // To remove the prettier warning
         const x = async () => {
-            fetch(`/api/mira/manifest.json`)
+            // Detect if we're running in electron and use direct remote URL
+            const isElectron = window.electronAPI != null
+            const baseUrl = isElectron ? "https://synthesis.autodesk.com" : ""
+
+            fetch(`${baseUrl}/api/mira/manifest.json`)
                 .then(x => x.json())
                 .then(x => {
                     const map = MirabufCachingService.getCacheMap(MiraType.ROBOT)
                     const robots: MirabufRemoteInfo[] = []
-                    for (const src of x.robots) {
-                        if (typeof src === "string") {
-                            const str = `/api/mira/robots/${src}`
+                    for (const src of x["robots"]) {
+                        if (typeof src == "string") {
+                            const str = `${baseUrl}/api/mira/robots/${src}`
                             if (!map[str]) robots.push({ displayName: src, src: str })
                         } else {
                             if (!map[src.src]) robots.push({ displayName: src.displayName, src: src.src })
                         }
                     }
                     const fields: MirabufRemoteInfo[] = []
-                    for (const src of x.fields) {
-                        if (typeof src === "string") {
-                            const str = `/api/mira/fields/${src}`
+                    for (const src of x["fields"]) {
+                        if (typeof src == "string") {
+                            const str = `${baseUrl}/api/mira/fields/${src}`
                             if (!map[str]) fields.push({ displayName: src, src: str })
                         } else {
                             if (!map[src.src]) fields.push({ displayName: src.displayName, src: src.src })
@@ -225,6 +229,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         robots,
                         fields,
                     })
+                })
+                .catch(error => {
+                    console.error("Failed to fetch manifest:", error)
                 })
         }
         x()
