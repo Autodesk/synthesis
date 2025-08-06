@@ -1,7 +1,7 @@
 import * as THREE from "three"
-import World from "@/systems/World"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SceneObject from "@/systems/scene/SceneObject"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import World from "@/systems/World"
 
 /**
  * Visual representation of the WPILib camera in the 3D scene

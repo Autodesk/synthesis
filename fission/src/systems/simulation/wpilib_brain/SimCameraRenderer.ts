@@ -1,6 +1,6 @@
 import * as THREE from "three"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 export class SimCameraRenderer {
     private _camera: THREE.PerspectiveCamera

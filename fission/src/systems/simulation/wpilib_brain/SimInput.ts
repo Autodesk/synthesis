@@ -1,14 +1,14 @@
-import World from "@/systems/World"
-import EncoderStimulus from "../stimulus/EncoderStimulus"
-import { SimCANEncoder, SimGyro, SimAccel, SimDIO, SimAI, SimCamera, SimGeneric } from "./WPILibBrain"
-import Mechanism from "@/systems/physics/Mechanism"
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type Mechanism from "@/systems/physics/Mechanism"
+import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
+import type EncoderStimulus from "../stimulus/EncoderStimulus"
 import { SimCameraRenderer } from "./SimCameraRenderer"
 import { SimCameraVisualization } from "./SimCameraVisualization"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { SimAccel, SimAI, SimCANEncoder, SimCamera, SimDIO, SimGeneric, SimGyro } from "./WPILibBrain"
 
 export abstract class SimInput {
     constructor(protected _device: string) {}

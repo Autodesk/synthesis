@@ -39,7 +39,9 @@ async function tryConnect(port?: number): Promise<void> {
 
             socket.addEventListener("message", onMessage)
         })
-        .then(() => { /* console.debug("Mutex released") */ })
+        .then(() => {
+            /* console.debug("Mutex released") */
+        })
 }
 
 async function tryDisconnect(): Promise<void> {
