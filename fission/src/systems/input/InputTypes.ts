@@ -37,7 +37,7 @@ export enum InputSchemeUseType {
 export type InputSchemeAvailability = {
     scheme: InputScheme
     status: InputSchemeUseType
-    conflicts_with_names?: string
+    conflictingSchemeNames?: string
 }
 
 export const EMPTY_MODIFIER_STATE: ModifierState = {
@@ -47,4 +47,5 @@ export const EMPTY_MODIFIER_STATE: ModifierState = {
     meta: false,
 }
 
-export type KeyDescriptor = (string & { __: "" }) | null // prevent strings from being assigned without explicit casting
+// biome-ignore lint/style/useNamingConvention: prevent strings from being assigned without explicit casting
+export type KeyDescriptor = (string & { __: "KeyDescriptor" }) | null

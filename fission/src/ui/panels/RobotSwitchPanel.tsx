@@ -3,8 +3,8 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
 import Label from "../components/Label"
+import type { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
-import { PanelImplProps } from "../components/Panel"
 
 const RobotSwitchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()

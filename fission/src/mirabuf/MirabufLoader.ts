@@ -1,5 +1,5 @@
 import Pako from "pako"
-import { Data, downloadData } from "@/aps/APSDataManagement"
+import { type Data, downloadData } from "@/aps/APSDataManagement"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
@@ -143,6 +143,7 @@ class MirabufCachingService {
             const miraBuff = await resp.arrayBuffer()
 
             World.analyticsSystem?.event("Remote Download", {
+                assemblyName: name ?? fetchLocation,
                 type: miraType === MiraType.ROBOT ? "robot" : "field",
                 fileSize: miraBuff.byteLength,
             })
@@ -282,6 +283,13 @@ class MirabufCachingService {
                 displayName = displayName ? `Edited ${displayName}` : "Edited Field"
             }
         }
+
+        World.analyticsSystem?.event("Local Upload", {
+            assemblyName: displayName,
+            fileSize: buffer.byteLength,
+            key,
+            type: miraType == MiraType.ROBOT ? "robot" : "field",
+        })
 
         if (!target) {
             const cacheInfo = await MirabufCachingService.storeInCache(key, buffer, miraType, displayName)
@@ -517,7 +525,7 @@ class MirabufCachingService {
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
 
             World.analyticsSystem?.event("Cache Store", {
-                name: name ?? "-",
+                assemblyName: name ?? "-",
                 key: key,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
                 fileSize: miraBuff.byteLength,

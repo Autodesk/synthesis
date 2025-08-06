@@ -8,9 +8,9 @@ import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import World from "@/systems/World"
-import StatefulSlider from "@/ui/components/StatefulSlider"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 
 type SubsystemRowProps = {
     robot: MirabufSceneObject

@@ -44,12 +44,12 @@ import {
     RefreshButton,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
+import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
-import { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 
 interface ItemCardProps {
     id: string
@@ -94,7 +94,7 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     )
 }
 
-function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()

@@ -1,8 +1,8 @@
-import { Switch, Stack } from "@mui/material"
-import React from "react"
+import { Stack, Switch } from "@mui/material"
+import type React from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import { LabelWithTooltip } from "./StyledComponents"
 import Label from "./Label"
+import { LabelWithTooltip } from "./StyledComponents"
 
 type CheckboxProps = {
     /**

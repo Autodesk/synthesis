@@ -1,14 +1,14 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
+import { Stack } from "@mui/system"
 import type React from "react"
 import { useEffect, useState } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import type { ModalImplProps } from "@/ui/components/Modal"
-import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { DriveType } from "@/systems/simulation/behavior/Behavior"
-import { Stack } from "@mui/system"
+import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openPanel, configureScreen } = useUIContext()

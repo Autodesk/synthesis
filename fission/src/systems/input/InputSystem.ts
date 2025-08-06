@@ -1,9 +1,10 @@
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
+import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { InputName, InputScheme, ModifierState } from "./InputTypes"
-import Input from "./inputs/Input"
+import type Input from "./inputs/Input"
 
 const LOG_GAMEPAD_EVENTS = false
 
@@ -25,6 +26,14 @@ class InputSystem extends WorldSystem {
 
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+
+    public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
+        InputSystem.brainIndexSchemeMap.set(index, scheme)
+        World.analyticsSystem?.event("Scheme Applied", {
+            isCustomized: scheme.customized,
+            schemeName: scheme.schemeName,
+        })
+    }
 
     constructor() {
         super()

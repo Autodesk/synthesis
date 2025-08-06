@@ -1,12 +1,12 @@
-import SimulationSystem from "../simulation/SimulationSystem"
-import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { SoundPlayer } from "../sound/SoundPlayer"
 import beep from "@/assets/sound-files/beep.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
-import MatchResultsModal from "@/ui/modals/MatchResultsModal"
-import RobotDimensionTracker from "./RobotDimensionTracker"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
+import { globalOpenModal } from "@/ui/components/GlobalUIControls"
+import MatchResultsModal from "@/ui/modals/MatchResultsModal"
+import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import SimulationSystem from "../simulation/SimulationSystem"
+import { SoundPlayer } from "../sound/SoundPlayer"
 import {
     DEFAULT_AUTONOMOUS_TIME,
     DEFAULT_ENDGAME_TIME,
@@ -16,7 +16,7 @@ import {
     DEFAULT_TELEOP_TIME,
     MatchModeType,
 } from "./MatchModeTypes"
-import { globalOpenModal } from "@/ui/components/GlobalUIControls"
+import RobotDimensionTracker from "./RobotDimensionTracker"
 
 class MatchMode {
     private static _instance: MatchMode
@@ -27,6 +27,7 @@ class MatchMode {
         this._matchModeType = val
         new MatchStateChangeEvent(val).dispatch()
     }
+
     private _initialTime: number = 0
     private _timeLeft: number = 0
     private _intervalId: number | null = null

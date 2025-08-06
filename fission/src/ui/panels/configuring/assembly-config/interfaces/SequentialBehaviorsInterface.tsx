@@ -1,14 +1,15 @@
-import React, { useCallback, useEffect, useReducer, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button, Stack } from "@mui/material"
-import { defaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import type React from "react"
+import { useCallback, useEffect, useReducer, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
+import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 interface BehaviorCardProps {
     elementKey: number

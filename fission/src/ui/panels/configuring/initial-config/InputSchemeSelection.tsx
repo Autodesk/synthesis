@@ -1,16 +1,16 @@
 import { Box, Button, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
-import { ReactElement, useEffect, useReducer, useState } from "react"
+import { type ReactElement, useEffect, useReducer, useState } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { DeleteButton, EditButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
-import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import { DeleteButton, EditButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
 interface InputSchemeSelectionProps {
     brainIndex: number
@@ -55,7 +55,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                             <PositiveButton
                                 disabled={disabled}
                                 onClick={() => {
-                                    InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                    InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                                     // TODO: if touch controls, then ensure that they are enabled.
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
@@ -70,7 +70,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                         </Box>
                         {/** Edit button - same as select but opens the inputs modal */}
                         {EditButton(() => {
-                            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                            InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
 
                             setSelectedScheme(scheme)
                             onEdit?.()
@@ -149,7 +149,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                 {SchemeSelector(
                                     scheme.scheme,
                                     { filter: "brightness(60%)" },
-                                    "Conflicts with " + scheme.conflicts_with_names,
+                                    "Conflicts with " + scheme.conflictingSchemeNames,
                                     false
                                 )}
                             </>
@@ -171,7 +171,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                 color="success"
                 variant="outlined"
                 onClick={() => {
-                    InputSystem.brainIndexSchemeMap.set(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
+                    InputSystem.setBrainIndexSchemeMapping(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
                     onCreateNew?.()
                 }}
             >
