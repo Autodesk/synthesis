@@ -1,5 +1,6 @@
 import { Box } from "@mui/material"
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import type React from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { CustomOrbitControls } from "@/systems/scene/CameraControls"

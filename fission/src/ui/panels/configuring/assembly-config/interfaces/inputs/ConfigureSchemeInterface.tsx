@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import { Button, Divider, Stack } from "@mui/material"
+import type React from "react"
+import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import { Divider, Stack } from "@mui/material"
-import EditInputInterface from "./EditInputInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import type Input from "@/systems/input/inputs/Input"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { InputScheme } from "@/systems/input/InputTypes"
+import AxisInput from "@/systems/input/inputs/AxisInput.ts"
+import type Input from "@/systems/input/inputs/Input"
+import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
@@ -15,7 +17,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
-
+    const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes()
     }, [])
@@ -94,6 +96,19 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                         />
                     )
                 })}
+                <Button
+                    onClick={() => {
+                        const existingJointIndexes = selectedScheme.inputs
+                            .map(input => parseInt(input.inputName.replace("joint ", "")))
+                            .filter(val => !isNaN(val))
+                        const newJointIndex = Math.max(0, ...existingJointIndexes) + 1
+                        selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
+                        selectedScheme.customized = true
+                        update()
+                    }}
+                >
+                    Add Joint Control
+                </Button>
             </Stack>
         </>
     )

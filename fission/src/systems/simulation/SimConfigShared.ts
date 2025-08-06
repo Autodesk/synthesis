@@ -1,26 +1,27 @@
+import type { XYPosition } from "@xyflow/react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import World from "@/systems/World"
-import { XYPosition } from "@xyflow/react"
-import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
+import type Driver from "@/systems/simulation/driver/Driver"
+import type { DriverType } from "@/systems/simulation/driver/Driver"
 import {
-    type NoraType,
-    NoraTypes,
     deconstructNoraType,
     hasNoraAverageFunc,
+    type NoraType,
+    NoraTypes,
     noraAverageFunc,
 } from "@/systems/simulation/Nora"
 import type { SimulationLayer } from "@/systems/simulation/SimulationSystem"
 import type Stimulus from "@/systems/simulation/stimulus/Stimulus"
 import type { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import type { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
-import { receiverTypeMap, supplierTypeMap, getSimMap } from "@/systems/simulation/wpilib_brain/WPILibState"
-import { random } from "@/util/Random"
+import { getSimMap, receiverTypeMap, supplierTypeMap } from "@/systems/simulation/wpilib_brain/WPILibState"
+import World from "@/systems/World"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
-import { SimType } from "./wpilib_brain/WPILibTypes"
+import { random } from "@/util/Random"
 import SimAccel from "./wpilib_brain/sim/SimAccel"
 import SimCANEncoder from "./wpilib_brain/sim/SimCANEncoder"
 import SimCANMotor from "./wpilib_brain/sim/SimCANMotor"
 import SimPWM from "./wpilib_brain/sim/SimPWM"
+import { SimType } from "./wpilib_brain/WPILibTypes"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
     [NoraTypes.NUMBER]: "#5f60ff",

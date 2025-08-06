@@ -1,13 +1,13 @@
-import { randomColor } from "@/util/Random"
-import { useThemeContext } from "../helpers/ThemeProviderHelpers"
 import { Box, Button, Stack, TextField } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
-import Label from "../components/Label"
-import { useUIContext } from "../helpers/UIProviderHelpers"
-import { PanelImplProps } from "../components/Panel"
+import { randomColor } from "@/util/Random"
 import Checkbox from "../components/Checkbox"
+import Label from "../components/Label"
+import type { PanelImplProps } from "../components/Panel"
+import { useThemeContext } from "../helpers/ThemeProviderHelpers"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: string) => void }> = ({
     label,

@@ -1,11 +1,11 @@
 import { act, fireEvent, getByText, render } from "@testing-library/react"
-import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
-import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { UIProvider } from "@/ui/UIProvider"
-import { Panel } from "@/ui/components/Panel"
-import { CloseType, PanelPosition, UIScreen } from "@/ui/helpers/UIProviderHelpers"
-import { UICallback } from "@/ui/UICallbacks"
 import React from "react"
+import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
+import { Panel } from "@/ui/components/Panel"
+import type { CloseType, PanelPosition, UIScreen } from "@/ui/helpers/UIProviderHelpers"
+import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
+import { UICallback } from "@/ui/UICallbacks"
+import { UIProvider } from "@/ui/UIProvider"
 
 describe("MatchModeConfigPanel", () => {
     // Mock console methods to suppress output during tests

@@ -1,13 +1,13 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
-import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
-import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import Jolt from "@azaleacolburn/jolt-physics"
-import { createBodyMock } from "../mocks/jolt"
-import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { ContactType } from "@/mirabuf/ZoneTypes"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
+import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
+import { createBodyMock } from "../mocks/jolt"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),

@@ -8,7 +8,9 @@ import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
+import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
+import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
@@ -16,8 +18,6 @@ import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
-import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
-import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 
 function Synthesis() {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)

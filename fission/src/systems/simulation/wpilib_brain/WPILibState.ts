@@ -1,7 +1,7 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { NoraTypes } from "../Nora"
 import type WPILibBrain from "./WPILibBrain"
 import { type SimMap, SimType, worker } from "./WPILibTypes"
-import { NoraTypes } from "../Nora"
 
 export const simMaps = new Map<string, SimMap>()
 

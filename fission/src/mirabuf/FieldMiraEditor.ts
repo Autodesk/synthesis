@@ -1,4 +1,4 @@
-import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { mirabuf } from "../proto/mirabuf"
 
 interface DevtoolMiraData {

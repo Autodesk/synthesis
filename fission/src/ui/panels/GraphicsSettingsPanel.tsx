@@ -1,13 +1,13 @@
-import World from "@/systems/World"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { Box, Button, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { PanelImplProps } from "../components/Panel"
-import { useUIContext } from "../helpers/UIProviderHelpers"
-import StatefulSlider from "../components/StatefulSlider"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import World from "@/systems/World"
 import Checkbox from "../components/Checkbox"
 import Label from "../components/Label"
+import type { PanelImplProps } from "../components/Panel"
+import StatefulSlider from "../components/StatefulSlider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10

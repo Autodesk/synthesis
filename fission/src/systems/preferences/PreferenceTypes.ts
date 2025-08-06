@@ -1,8 +1,8 @@
-import { SimConfigData } from "../simulation/SimConfigShared"
-import { Vector3Tuple } from "three"
-import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import { ContactType } from "@/mirabuf/ZoneTypes"
-import { type InputScheme } from "../input/InputTypes"
+import type { Vector3Tuple } from "three"
+import type { ContactType } from "@/mirabuf/ZoneTypes"
+import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import type { InputScheme } from "../input/InputTypes"
+import type { SimConfigData } from "../simulation/SimConfigShared"
 
 /** Names of all global preferences. */
 
@@ -132,6 +132,7 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
     driveVelocity: number
     driveAcceleration: number
+    unstickForce: number
     sequentialConfig?: SequentialBehaviorPreferences[]
     simConfig?: SimConfigData
 }
@@ -195,6 +196,7 @@ export function defaultRobotPreferences(): RobotPreferences {
         },
         driveVelocity: 0,
         driveAcceleration: 0,
+        unstickForce: 8000,
     }
 }
 

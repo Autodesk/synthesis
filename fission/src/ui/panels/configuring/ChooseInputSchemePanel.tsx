@@ -9,10 +9,10 @@ import { InputSchemeUseType } from "@/systems/input/InputTypes"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import { CloseType, useUIContext } from "../../helpers/UIProviderHelpers"
 import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
-import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { openModal, openPanel, closePanel, configureScreen } = useUIContext()
@@ -42,7 +42,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
             )?.scheme
 
             if (scheme) {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
             }
             if (scheme) setSelectedScheme(scheme)
         }

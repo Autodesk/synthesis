@@ -1,17 +1,17 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
-import { CustomOrbitControls, SphericalCoords } from "./CameraControls"
+import type { CustomOrbitControls, SphericalCoords } from "./CameraControls"
 import {
-    InteractionEnd,
-    InteractionMove,
-    InteractionStart,
+    type InteractionEnd,
+    type InteractionMove,
+    type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
 

@@ -8,6 +8,8 @@ const SAMPLE_INTERVAL = 60000 // 1 minute
 const BETA_CODE_COOKIE_REGEX = /access_code=.*(;|$)/
 const MOBILE_USER_AGENT_REGEX = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
 
+declare const GIT_COMMIT: string
+
 export interface AccumTimes {
     frames: number
     physicsTime: number
@@ -15,6 +17,42 @@ export interface AccumTimes {
     inputTime: number
     simulationTime: number
     totalTime: number
+}
+type MiraEvent = {
+    key?: string
+    type?: "robot" | "field"
+    assemblyName?: string
+    /**
+     * Size (in bytes) of the mirabuf file
+     */
+    fileSize?: number
+}
+export interface AnalyticsEvents {
+    "Performance Sample": {
+        frames: number
+        avgTotal: number
+        avgPhysics: number
+        avgScene: number
+        avgInput: number
+        avgSimulation: number
+    }
+    "APS Calls per Minute": unknown
+    "APS Login": unknown
+    "APS Download": MiraEvent
+
+    "Cache Get": MiraEvent
+    "Cache Store": MiraEvent
+    "Cache Remove": MiraEvent
+
+    "Remote Download": MiraEvent
+    "Local Upload": MiraEvent
+
+    "Devtool Cache Persist": MiraEvent
+
+    "Scheme Applied": {
+        isCustomized: boolean
+        schemeName: string
+    }
 }
 
 class AnalyticsSystem extends WorldSystem {
@@ -38,7 +76,7 @@ class AnalyticsSystem extends WorldSystem {
         this.sendMetaData()
     }
 
-    public event(name: string, params?: { [key: string]: string | number }) {
+    public event<K extends keyof AnalyticsEvents>(name: K, params?: AnalyticsEvents[K]) {
         event({ name: name, params: params ?? {} })
     }
 
@@ -50,7 +88,11 @@ class AnalyticsSystem extends WorldSystem {
         setUserId({ id: id })
     }
 
-    public setUserProperty(name: string, value: string) {
+    public setUserProperty(name: string, value: unknown) {
+        if (name.includes(" ")) {
+            console.warn("GA user property names must not contain spaces")
+            return
+        }
         setUserProperty({ name: name, value: value })
     }
 
@@ -62,9 +104,8 @@ class AnalyticsSystem extends WorldSystem {
     }
 
     private sendMetaData() {
-        if (import.meta.env.DEV) {
-            this.setUserProperty("Internal Traffic", "true")
-        }
+        this.setUserProperty("isInternal", import.meta.env.DEV)
+        this.setUserProperty("commit", GIT_COMMIT)
 
         if (!this._consent) {
             return
@@ -73,15 +114,9 @@ class AnalyticsSystem extends WorldSystem {
         let betaCode = document.cookie.match(BETA_CODE_COOKIE_REGEX)?.[0]
         if (betaCode) {
             betaCode = betaCode.substring(betaCode.indexOf("=") + 1, betaCode.indexOf(";"))
-
-            this.setUserProperty("Beta Code", betaCode)
+            this.setUserProperty("betaCode", betaCode)
         }
-
-        if (MOBILE_USER_AGENT_REGEX.test(navigator.userAgent)) {
-            this.setUserProperty("Is Mobile", "true")
-        } else {
-            this.setUserProperty("Is Mobile", "false")
-        }
+        this.setUserProperty("isMobile", MOBILE_USER_AGENT_REGEX.test(navigator.userAgent))
     }
 
     private currentSampleInterval() {
