@@ -10,9 +10,11 @@ import { SoundPlayer } from "../sound/SoundPlayer"
 import {
     DEFAULT_AUTONOMOUS_TIME,
     DEFAULT_ENDGAME_TIME,
-    DEFAULT_HEIGHT_PENALTY,
+    DEFAULT_HEIGHT_LIMIT_PENALTY,
     DEFAULT_IGNORE_ROTATION,
     DEFAULT_MAX_HEIGHT,
+    DEFAULT_SIDE_EXTENSION_PENALTY,
+    DEFAULT_SIDE_MAX_EXTENSION,
     DEFAULT_TELEOP_TIME,
     MatchModeType,
 } from "./MatchModeTypes"
@@ -27,6 +29,7 @@ class MatchMode {
         this._matchModeType = val
         new MatchStateChangeEvent(val).dispatch()
     }
+
     private _initialTime: number = 0
     private _timeLeft: number = 0
     private _intervalId: number | null = null
@@ -41,7 +44,9 @@ class MatchMode {
         endgameTime: DEFAULT_ENDGAME_TIME,
         ignoreRotation: DEFAULT_IGNORE_ROTATION,
         maxHeight: DEFAULT_MAX_HEIGHT,
-        heightPenalty: DEFAULT_HEIGHT_PENALTY,
+        heightLimitPenalty: DEFAULT_HEIGHT_LIMIT_PENALTY,
+        sideExtensionPenalty: DEFAULT_SIDE_EXTENSION_PENALTY,
+        sideMaxExtension: DEFAULT_SIDE_MAX_EXTENSION,
     }
 
     private constructor() {}
@@ -53,7 +58,13 @@ class MatchMode {
 
     setMatchModeConfig(config: MatchModeConfig) {
         this._matchModeConfig = config
-        RobotDimensionTracker.setConfigValues(config.ignoreRotation, config.maxHeight, config.heightPenalty)
+        RobotDimensionTracker.setConfigValues(
+            config.ignoreRotation,
+            config.maxHeight,
+            config.heightLimitPenalty,
+            config.sideMaxExtension,
+            config.sideExtensionPenalty
+        )
     }
 
     startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
@@ -108,6 +119,7 @@ class MatchMode {
     start() {
         this.autonomousModeStart()
         SimulationSystem.resetScores()
+        RobotDimensionTracker.matchStart()
     }
 
     matchEnded() {
