@@ -136,7 +136,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                     defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
                 />
             ) : (
-                <ConfigureSchemeInterface selectedScheme={selectedScheme} panelId={panel?.id} />
+                <ConfigureSchemeInterface selectedScheme={selectedScheme} panelId={panel?.id} onBack={() => setSelectedScheme(undefined)} />
             )}
         </>
     )
