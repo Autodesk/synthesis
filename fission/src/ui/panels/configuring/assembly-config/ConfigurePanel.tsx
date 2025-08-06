@@ -21,6 +21,7 @@ import AssemblySelection, { type AssemblySelectionOption } from "./configure/Ass
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
+import CenterOfGravityInterface from "./interfaces/CenterOfGravityInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
@@ -109,6 +110,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
             return <AllianceSelectionInterface selectedAssembly={assembly} />
         case ConfigMode.DRIVETRAIN:
             return <DrivetrainSelectionInterface selectedAssembly={assembly} />
+        case ConfigMode.CENTER_OF_GRAVITY:
+            return <CenterOfGravityInterface selectedRobot={assembly} />
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -220,9 +223,15 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     new ConfigModeSelectionOption("Drivetrain", ConfigMode.DRIVETRAIN, "Sets the drivetrain type."),
 
                     new ConfigModeSelectionOption(
+                        "Center of Gravity",
+                        ConfigMode.CENTER_OF_GRAVITY,
+                        "Adjust the robot's center of gravity to modify its balance and physics behavior."
+                    ),
+
+                    new ConfigModeSelectionOption(
                         "Intake",
                         ConfigMode.INTAKE,
-                        "Configure the robot’s intake position and parent node for picking up game pieces."
+                        "Configure the robot's intake position and parent node for picking up game pieces."
                     ),
 
                     new ConfigModeSelectionOption(

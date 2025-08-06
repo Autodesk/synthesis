@@ -14,4 +14,5 @@ export enum ConfigMode {
     BRAIN,
     DRIVETRAIN,
     ALLIANCE,
+    CENTER_OF_GRAVITY,
 }

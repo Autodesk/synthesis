@@ -88,6 +88,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _nameTag: SceneOverlayTag | undefined
     private _centerOfMassIndicator: THREE.Mesh | undefined
+    private _modifiedCenterOfGravity: THREE.Vector3 | undefined
+    private _cogEffectStrength: number = 1.0
+
     private _intakeActive = false
     private _ejectorActive = false
 
@@ -178,6 +181,47 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public set station(station: Station | undefined) {
         this._station = station
+    }
+
+    public get modifiedCenterOfGravity(): THREE.Vector3 | undefined {
+        return this._modifiedCenterOfGravity
+    }
+
+    public set modifiedCenterOfGravity(position: THREE.Vector3 | undefined) {
+        this._modifiedCenterOfGravity = position
+    }
+
+    public get cogEffectStrength(): number {
+        return this._cogEffectStrength
+    }
+
+    public set cogEffectStrength(strength: number) {
+        this._cogEffectStrength = Math.max(0, Math.min(2, strength))
+    }
+
+    public get currentCenterOfGravity(): THREE.Vector3 {
+        if (this._modifiedCenterOfGravity) {
+            const rootNodeId = this.getRootNodeId()
+            if (rootNodeId) {
+                const robotTransform = convertJoltMat44ToThreeMatrix4(
+                    World.physicsSystem.getBody(rootNodeId).GetWorldTransform()
+                )
+                const robotWorldPos = new THREE.Vector3()
+                const robotWorldQuat = new THREE.Quaternion()
+                const robotWorldScale = new THREE.Vector3()
+                robotTransform.decompose(robotWorldPos, robotWorldQuat, robotWorldScale)
+
+                const worldCoG = this._modifiedCenterOfGravity.clone()
+                worldCoG.applyQuaternion(robotWorldQuat)
+                worldCoG.add(robotWorldPos)
+                return worldCoG
+            }
+            return this._modifiedCenterOfGravity.clone()
+        }
+        if (this._centerOfMassIndicator) {
+            return this._centerOfMassIndicator.position.clone()
+        }
+        return new THREE.Vector3(0, 0, 0)
     }
 
     public get cacheId() {
@@ -323,6 +367,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this.eject()
         }
 
+        if (this._modifiedCenterOfGravity && this.miraType === MiraType.ROBOT) {
+            this.applyCenterOfGravityPhysics()
+        }
+
         this.updateMeshTransforms()
         this.updateBatches()
         this.updateNameTag()
@@ -458,8 +506,28 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             }
         })
         if (this._centerOfMassIndicator) {
-            const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
-            this._centerOfMassIndicator.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
+            if (this._modifiedCenterOfGravity) {
+                const rootNodeId = this.getRootNodeId()
+                if (rootNodeId) {
+                    const robotTransform = convertJoltMat44ToThreeMatrix4(
+                        World.physicsSystem.getBody(rootNodeId).GetWorldTransform()
+                    )
+                    const robotWorldPos = new THREE.Vector3()
+                    const robotWorldQuat = new THREE.Quaternion()
+                    const robotWorldScale = new THREE.Vector3()
+                    robotTransform.decompose(robotWorldPos, robotWorldQuat, robotWorldScale)
+
+                    const worldCoG = this._modifiedCenterOfGravity.clone()
+                    worldCoG.applyQuaternion(robotWorldQuat)
+                    worldCoG.add(robotWorldPos)
+                    this._centerOfMassIndicator.position.copy(worldCoG)
+                } else {
+                    this._centerOfMassIndicator.position.copy(this._modifiedCenterOfGravity)
+                }
+            } else {
+                const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
+                this._centerOfMassIndicator.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
+            }
             this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
         }
     }
@@ -650,7 +718,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      *
      * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
-    public getDimensionsWithoutRotation(): { width: number; height: number; depth: number } {
+    public getDimensionsWithoutRotation(): {
+        width: number
+        height: number
+        depth: number
+    } {
         const rootNodeId = this.getRootNodeId()
         if (!rootNodeId) {
             console.warn("No root node found for robot, using regular dimensions")
@@ -902,6 +974,107 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (objectCollidedWith && objectCollidedWith.isGamePiece) {
             objectCollidedWith.robotLastInContactWith = this
         }
+    }
+
+    /**
+     * Aries' CoG Simulation
+     * This method applies torque to the robot's root body to simulate the effect of a modified center of gravity.
+     */
+    private applyCenterOfGravityPhysics(): void {
+        if (!this._modifiedCenterOfGravity) return
+
+        const rootNodeId = this.getRootNodeId()
+        if (!rootNodeId) return
+
+        const rootBody = World.physicsSystem.getBody(rootNodeId)
+        if (!rootBody || rootBody.IsStatic()) return
+
+        const robotTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
+        const robotWorldPos = new THREE.Vector3()
+        const robotWorldQuat = new THREE.Quaternion()
+        const robotWorldScale = new THREE.Vector3()
+        robotTransform.decompose(robotWorldPos, robotWorldQuat, robotWorldScale)
+
+        const modifiedCoGWorld = this._modifiedCenterOfGravity.clone()
+        modifiedCoGWorld.applyQuaternion(robotWorldQuat)
+        modifiedCoGWorld.add(robotWorldPos)
+
+        let actualCoMWorld = new JOLT.RVec3(0, 0, 0)
+        let totalMass = 0
+
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            const bodyId = this._mechanism.getBodyByNodeId(rn.id)
+            if (!bodyId) return
+
+            const body = World.physicsSystem.getBody(bodyId)
+            const inverseMass = body.GetMotionProperties().GetInverseMass()
+
+            if (inverseMass > 0) {
+                const mass = 1 / inverseMass
+                actualCoMWorld = actualCoMWorld.AddRVec3(body.GetCenterOfMassPosition().Mul(mass))
+                totalMass += mass
+            }
+        })
+
+        if (totalMass === 0) return
+
+        const actualCoM = actualCoMWorld.Div(totalMass)
+        const actualCoMVec3 = new THREE.Vector3(actualCoM.GetX(), actualCoM.GetY(), actualCoM.GetZ())
+
+        const offset = modifiedCoGWorld.clone().sub(actualCoMVec3)
+
+        // The torque needed is: τ = r × F
+        // where r is the offset and F is the gravitational force
+        const gravityForce = new THREE.Vector3(0, -9.81 * totalMass, 0)
+        const torque = new THREE.Vector3().crossVectors(offset, gravityForce)
+
+        torque.multiplyScalar(this._cogEffectStrength)
+
+        const joltTorque = new JOLT.Vec3(torque.x, torque.y, torque.z)
+        rootBody.AddTorque(joltTorque)
+        JOLT.destroy(joltTorque)
+
+        const velocity = rootBody.GetLinearVelocity()
+        const speed = Math.sqrt(velocity.GetX() ** 2 + velocity.GetY() ** 2 + velocity.GetZ() ** 2)
+
+        if (speed > 0.1) {
+            const angularVel = rootBody.GetAngularVelocity()
+            const dampingFactor = 0.5 * this._cogEffectStrength
+            const dampingTorque = new JOLT.Vec3(
+                -angularVel.GetX() * dampingFactor * totalMass,
+                -angularVel.GetY() * dampingFactor * totalMass,
+                -angularVel.GetZ() * dampingFactor * totalMass
+            )
+            rootBody.AddTorque(dampingTorque)
+            JOLT.destroy(dampingTorque)
+        }
+
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            if (rn.id === this._mechanism.rootBody) return
+
+            const bodyId = this._mechanism.getBodyByNodeId(rn.id)
+            if (!bodyId) return
+
+            const body = World.physicsSystem.getBody(bodyId)
+            if (body.IsStatic()) return
+
+            const inverseMass = body.GetMotionProperties().GetInverseMass()
+            if (inverseMass <= 0) return
+
+            const mass = 1 / inverseMass
+
+            const correctionFactor = (mass / totalMass) * this._cogEffectStrength
+            const bodyTorque = new JOLT.Vec3(
+                torque.x * correctionFactor * 0.1,
+                torque.y * correctionFactor * 0.1,
+                torque.z * correctionFactor * 0.1
+            )
+            body.AddTorque(bodyTorque)
+            JOLT.destroy(bodyTorque)
+        })
+
+        JOLT.destroy(actualCoM)
+        JOLT.destroy(actualCoMWorld)
     }
 }
 
