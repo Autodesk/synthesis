@@ -1,6 +1,6 @@
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { Box, TextField, FormControlLabel, Checkbox, Stack, Divider } from "@mui/material"
+import { Box, TextField, FormControlLabel, Checkbox, Stack, Divider, Button } from "@mui/material"
 import { useEffect, useState, useCallback } from "react"
 import type { MatchModeConfig } from "./MatchModeConfigPanel"
 import {
@@ -180,6 +180,26 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
         }
     }, [formState])
 
+    const downloadConfig = useCallback(() => {
+        const config = createConfigFromForm()
+
+        // Create a blob with the JSON data
+        const jsonString = JSON.stringify(config, null, 2)
+        const blob = new Blob([jsonString], { type: "application/json" })
+
+        // Create a download link
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.href = url
+        link.download = `${config.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_match_mode_config.json`
+        document.body.appendChild(link)
+        link.click()
+
+        // Cleanup
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+    }, [createConfigFromForm])
+
     useEffect(() => {
         configureScreen(
             panel!,
@@ -350,6 +370,15 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                             }}
                         />
                     </Stack>
+                </Box>
+
+                <Divider />
+
+                {/* Download Button */}
+                <Box display="flex" justifyContent="center">
+                    <Button variant="outlined" onClick={downloadConfig} disabled={!isFormValid()}>
+                        Download as JSON
+                    </Button>
                 </Box>
             </Stack>
         </Box>
