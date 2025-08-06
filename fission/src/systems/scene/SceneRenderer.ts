@@ -55,21 +55,16 @@ class SceneRenderer extends WorldSystem {
         return this._sceneObjects
     }
 
+    public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
+        return [...this._sceneObjects.values()].filter(predicate)
+    }
+
     public readonly mirabufSceneObjects = {
-        getAll: (): MirabufSceneObject[] => {
-            return [...this._sceneObjects.values()].filter(obj => obj instanceof MirabufSceneObject)
-        },
-        findWhere: (
-            predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]
-        ): MirabufSceneObject | undefined => {
-            return this.mirabufSceneObjects.getAll().find(predicate)
-        },
-        getField: (): MirabufSceneObject | undefined => {
-            return this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD)
-        },
-        getRobots: (): MirabufSceneObject[] => {
-            return this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT)
-        },
+        getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
+        findWhere: (predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]) =>
+            this.mirabufSceneObjects.getAll().find(predicate),
+        getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD),
+        getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT),
     } as const
 
     public get mainCamera() {
