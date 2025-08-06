@@ -81,6 +81,78 @@ export function matchConfigSelected(config: MatchModeConfig) {
     MatchMode.getInstance().start()
 }
 
+export const validateAndNormalizeMatchModeConfig = (config: unknown): MatchModeConfig | null => {
+    let valid = true
+
+    // Type guard to check if config is an object
+    if (typeof config !== "object" || config === null) {
+        console.error("Match mode config validation failed: config must be an object")
+        globalAddToast("error", "Invalid Match Mode Config", "Configuration must be an object")
+        return null
+    }
+
+    const configObj = config as Record<string, unknown>
+
+    const props: { id: string; expectedType: string; required: boolean }[] = [
+        { id: "id", expectedType: "string", required: true },
+        { id: "name", expectedType: "string", required: true },
+        { id: "autonomousTime", expectedType: "number", required: false },
+        { id: "teleopTime", expectedType: "number", required: false },
+        { id: "endgameTime", expectedType: "number", required: false },
+        { id: "ignoreRotation", expectedType: "boolean", required: false },
+        { id: "maxHeight", expectedType: "number", required: false },
+        { id: "heightPenalty", expectedType: "number", required: false },
+    ]
+
+    const typeError = (id: string, expectedType?: string) => {
+        const errorMessage = expectedType ? `must be a ${expectedType}` : "is required"
+        console.error(`Match mode config validation failed: the '${id}' field ${errorMessage}`)
+        globalAddToast("error", "Invalid Match Mode Config", `The '${id}' field ${errorMessage}`)
+    }
+
+    for (const prop of props) {
+        if (configObj[prop.id] == undefined) {
+            if (prop.required) {
+                typeError(prop.id)
+                valid = false
+            }
+        } else if (typeof configObj[prop.id] != prop.expectedType) {
+            if (prop.required) {
+                typeError(prop.id, prop.expectedType)
+                valid = false
+            } else {
+                globalAddToast(
+                    "warning",
+                    "Invalid Match Mode Config",
+                    `The '${prop.id}' field must be a ${prop.expectedType}, ignoring ${prop.id} field`
+                )
+            }
+        }
+    }
+
+    if (!valid) {
+        return null
+    }
+
+    // If validation passes, normalize the config with defaults for missing fields
+    const normalizedConfig: MatchModeConfig = {
+        id: configObj.id as string,
+        name: configObj.name as string,
+        isDefault: false, // User-uploaded configs are not default configs
+        autonomousTime:
+            typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : DEFAULT_AUTONOMOUS_TIME,
+        teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : DEFAULT_TELEOP_TIME,
+        endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : DEFAULT_ENDGAME_TIME,
+        ignoreRotation:
+            typeof configObj.ignoreRotation === "boolean" ? configObj.ignoreRotation : DEFAULT_IGNORE_ROTATION,
+        maxHeight:
+            typeof configObj.maxHeight === "number" ? convertFeetToMeters(configObj.maxHeight) : DEFAULT_MAX_HEIGHT,
+        heightPenalty: typeof configObj.heightPenalty === "number" ? configObj.heightPenalty : DEFAULT_HEIGHT_PENALTY,
+    }
+
+    return normalizedConfig
+}
+
 interface ItemCardProps {
     id: string
     name: string
@@ -159,11 +231,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                                       // Only save custom configs to local storage
                                       const customConfigs = updatedConfigs.filter(c => !c.isDefault)
                                       window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
-                                      globalAddToast(
-                                          "info",
-                                          "Match Mode Config Deleted",
-                                          `Successfully deleted "${config.name}"`
-                                      )
                                   }
                                 : undefined
                         }
@@ -179,79 +246,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         if (fileUploadRef.current) {
             fileUploadRef.current.click()
         }
-    }
-
-    const validateAndNormalizeMatchModeConfig = (config: unknown): MatchModeConfig | null => {
-        let valid = true
-
-        // Type guard to check if config is an object
-        if (typeof config !== "object" || config === null) {
-            console.error("Match mode config validation failed: config must be an object")
-            globalAddToast("error", "Invalid Match Mode Config", "Configuration must be an object")
-            return null
-        }
-
-        const configObj = config as Record<string, unknown>
-
-        const props: { id: string; expectedType: string; required: boolean }[] = [
-            { id: "id", expectedType: "string", required: true },
-            { id: "name", expectedType: "string", required: true },
-            { id: "autonomousTime", expectedType: "number", required: false },
-            { id: "teleopTime", expectedType: "number", required: false },
-            { id: "endgameTime", expectedType: "number", required: false },
-            { id: "ignoreRotation", expectedType: "boolean", required: false },
-            { id: "maxHeight", expectedType: "number", required: false },
-            { id: "heightPenalty", expectedType: "number", required: false },
-        ]
-
-        const typeError = (id: string, expectedType?: string) => {
-            const errorMessage = expectedType ? `must be a ${expectedType}` : "is required"
-            console.error(`Match mode config validation failed: the '${id}' field ${errorMessage}`)
-            globalAddToast("error", "Invalid Match Mode Config", `The '${id}' field ${errorMessage}`)
-        }
-
-        for (const prop of props) {
-            if (configObj[prop.id] == undefined) {
-                if (prop.required) {
-                    typeError(prop.id)
-                    valid = false
-                }
-            } else if (typeof configObj[prop.id] != prop.expectedType) {
-                if (prop.required) {
-                    typeError(prop.id, prop.expectedType)
-                    valid = false
-                } else {
-                    globalAddToast(
-                        "warning",
-                        "Invalid Match Mode Config",
-                        `The '${prop.id}' field must be a ${prop.expectedType}, ignoring ${prop.id} field`
-                    )
-                }
-            }
-        }
-
-        if (!valid) {
-            return null
-        }
-
-        // If validation passes, normalize the config with defaults for missing fields
-        const normalizedConfig: MatchModeConfig = {
-            id: configObj.id as string,
-            name: configObj.name as string,
-            isDefault: false, // User-uploaded configs are not default configs
-            autonomousTime:
-                typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : DEFAULT_AUTONOMOUS_TIME,
-            teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : DEFAULT_TELEOP_TIME,
-            endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : DEFAULT_ENDGAME_TIME,
-            ignoreRotation:
-                typeof configObj.ignoreRotation === "boolean" ? configObj.ignoreRotation : DEFAULT_IGNORE_ROTATION,
-            maxHeight:
-                typeof configObj.maxHeight === "number" ? convertFeetToMeters(configObj.maxHeight) : DEFAULT_MAX_HEIGHT,
-            heightPenalty:
-                typeof configObj.heightPenalty === "number" ? configObj.heightPenalty : DEFAULT_HEIGHT_PENALTY,
-        }
-
-        return normalizedConfig
     }
 
     const handleFileUpload = async (file: File) => {

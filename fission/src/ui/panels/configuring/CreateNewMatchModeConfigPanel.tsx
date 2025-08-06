@@ -11,7 +11,7 @@ import {
     DEFAULT_MAX_HEIGHT,
     DEFAULT_HEIGHT_PENALTY,
 } from "@/systems/match_mode/MatchModeTypes"
-import { matchConfigSelected } from "./MatchModeConfigPanel"
+import { matchConfigSelected, validateAndNormalizeMatchModeConfig } from "./MatchModeConfigPanel"
 
 interface ValidationRule {
     validate: (value: unknown) => boolean
@@ -191,14 +191,20 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             {
                 onBeforeAccept: () => {
                     const config = createConfigFromForm()
-                    matchConfigSelected(config)
+                    const validatedConfig = validateAndNormalizeMatchModeConfig(config)
+
+                    if (!validatedConfig) {
+                        return "Validation failed"
+                    }
+
+                    matchConfigSelected(validatedConfig)
                     const customConfigs = window.localStorage.getItem("match-mode-configs")
                     if (customConfigs) {
                         const customConfigsArray = JSON.parse(customConfigs)
-                        customConfigsArray.push(config)
+                        customConfigsArray.push(validatedConfig)
                         window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigsArray))
                     } else {
-                        window.localStorage.setItem("match-mode-configs", JSON.stringify([config]))
+                        window.localStorage.setItem("match-mode-configs", JSON.stringify([validatedConfig]))
                     }
 
                     return undefined
@@ -316,7 +322,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
 
                         <TextField
                             fullWidth
-                            label="Maximum Height (meters or 'Infinity')"
+                            label="Maximum Height (feet or 'Infinity')"
                             value={formState.maxHeight.value}
                             onChange={handleTextFieldChange("maxHeight")}
                             error={formState.maxHeight.error}
