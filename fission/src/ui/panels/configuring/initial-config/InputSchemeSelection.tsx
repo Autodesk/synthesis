@@ -55,7 +55,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                             <PositiveButton
                                 disabled={disabled}
                                 onClick={() => {
-                                    InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                    InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                                     // TODO: if touch controls, then ensure that they are enabled.
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
@@ -70,7 +70,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                         </Box>
                         {/** Edit button - same as select but opens the inputs modal */}
                         {EditButton(() => {
-                            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                            InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
 
                             setSelectedScheme(scheme)
                             onEdit?.()
@@ -149,7 +149,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                                 {SchemeSelector(
                                     scheme.scheme,
                                     { filter: "brightness(60%)" },
-                                    "Conflicts with " + scheme.conflicts_with_names,
+                                    "Conflicts with " + scheme.conflictingSchemeNames,
                                     false
                                 )}
                             </>
@@ -171,7 +171,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                 color="success"
                 variant="outlined"
                 onClick={() => {
-                    InputSystem.brainIndexSchemeMap.set(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
+                    InputSystem.setBrainIndexSchemeMapping(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
                     onCreateNew?.()
                 }}
             >

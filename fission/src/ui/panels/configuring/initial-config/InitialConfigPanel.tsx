@@ -54,7 +54,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             )?.scheme
 
             if (scheme) {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                 setSelectedScheme(scheme)
             }
             World.multiplayerSystem?.broadcast({ type: "metadataUpdate", data: targetAssembly.multiplayerInfo })
