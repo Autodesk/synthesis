@@ -1,7 +1,7 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { mirabuf } from "@/proto/mirabuf"
-import { LayerReserve } from "./PhysicsSystem"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type { mirabuf } from "@/proto/mirabuf"
+import type { LayerReserve } from "./PhysicsSystem"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID

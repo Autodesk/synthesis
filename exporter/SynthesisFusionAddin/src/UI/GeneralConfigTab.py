@@ -1,6 +1,12 @@
 import adsk.core
 import adsk.fusion
 
+from src.lib.Util import (
+    convertMassUnitsFrom,
+    convertMassUnitsTo,
+    designMassCalculation,
+    getFusionUnitSystem,
+)
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Types import KG, ExportLocation, ExportMode, UnitSystem
@@ -9,12 +15,6 @@ from src.UI.DesignCheckTab import DesignCheckTab
 from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.JointConfigTab import JointConfigTab
 from src.UI.TaggingConfigTab import TaggingConfigTab
-from src.Util import (
-    convertMassUnitsFrom,
-    convertMassUnitsTo,
-    designMassCalculation,
-    getFusionUnitSystem,
-)
 
 
 class GeneralConfigTab:

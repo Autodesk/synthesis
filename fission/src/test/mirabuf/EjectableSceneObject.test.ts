@@ -1,7 +1,7 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import EjectableSceneObject from "../../mirabuf/EjectableSceneObject"
-import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock, createVec3Mock } from "../mocks/jolt"
 
 const mockPhysicsSystem = {
@@ -17,7 +17,7 @@ const mockPhysicsSystem = {
     setShape: vi.fn(),
 }
 const mockSceneRenderer = {
-    sceneObjects: new Map(),
+    filterSceneObjects: vi.fn().mockReturnValue([]),
     createBox: vi.fn(),
     scene: {
         remove: vi.fn(),

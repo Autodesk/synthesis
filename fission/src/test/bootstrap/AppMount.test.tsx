@@ -1,7 +1,7 @@
 import { server } from "@vitest/browser/context"
-import { ReactElement } from "react"
+import type { ReactElement } from "react"
 import { afterAll, assert, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest"
-import { cleanup, RenderResult, render } from "vitest-browser-react"
+import { cleanup, type RenderResult, render } from "vitest-browser-react"
 import World from "@/systems/World.ts"
 
 const { readFile } = server.commands
@@ -31,12 +31,7 @@ describe("React Mounting", async () => {
     })
 
     test("Static stylesheets load", async () => {
-        for (let i = 0; i < 50; i++) {
-            await wait(200)
-            if (document.styleSheets.length >= 2) {
-                break
-            }
-        }
+        await vi.waitUntil(() => document.styleSheets.length >= 2, { timeout: 10000, interval: 200 })
 
         expect(document.styleSheets.length).toBe(2)
         const iterable = document.fonts.values()
@@ -63,7 +58,7 @@ describe("React Mounting", async () => {
         expect(window.convertAuthToken).toBeDefined()
         expectTypeOf(window.convertAuthToken).toBeFunction()
         expect(window.gtag).toBeDefined()
-        expectTypeOf(window.gtag).toBeFunction()
+        expectTypeOf(window.gtag!).toBeFunction()
         await annotate("expected global functions mount")
 
         // assorted style rules from index.css
@@ -76,12 +71,18 @@ describe("React Mounting", async () => {
         expect(renderMock).toHaveBeenCalledOnce()
         assert(screen != null, "Screen was null")
 
+        await wait(50)
+
         const screenElement = screen.baseElement
         expect(screenElement.querySelector("canvas")).toBeInTheDocument()
         expect(screen.getByText("Singleplayer")).toBeInTheDocument()
         await annotate("DOM successfully updated to include Synthesis components")
         const initWorldSpy = vi.spyOn(World, "initWorld")
-        await screen.getByText("Singleplayer").click()
+        // for some reason threejs canvas intercepts .click()
+        screen
+            .getByText("Singleplayer")
+            .element()
+            .dispatchEvent(new PointerEvent("click", { bubbles: true }))
         expect(initWorldSpy).toHaveBeenCalledOnce()
         await annotate("Singleplayer Button calls initWorld")
 

@@ -1,12 +1,13 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
+import World from "@/systems/World.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import Mechanism from "../physics/Mechanism"
-import World from "../World"
+import type Mechanism from "../physics/Mechanism"
 import WorldSystem from "../WorldSystem"
-import Brain from "./Brain"
-import Driver, { DriverType, makeDriverID } from "./driver/Driver"
+import type Brain from "./Brain"
+import type Driver from "./driver/Driver"
+import { DriverType, makeDriverID } from "./driver/Driver"
 import EjectorDriver from "./driver/EjectorDriver"
 import HingeDriver from "./driver/HingeDriver"
 import IntakeDriver from "./driver/IntakeDriver"
@@ -15,7 +16,8 @@ import WheelDriver from "./driver/WheelDriver"
 import ChassisStimulus from "./stimulus/ChassisStimulus"
 import HingeStimulus from "./stimulus/HingeStimulus"
 import SliderStimulus from "./stimulus/SliderStimulus"
-import Stimulus, { makeStimulusID, StimulusType } from "./stimulus/Stimulus"
+import type Stimulus from "./stimulus/Stimulus"
+import { makeStimulusID, StimulusType } from "./stimulus/Stimulus"
 import WheelRotationStimulus from "./stimulus/WheelStimulus"
 
 class SimulationSystem extends WorldSystem {
@@ -111,9 +113,7 @@ class SimulationLayer {
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
 
-        const assembly = [...World.sceneRenderer.sceneObjects.values()].find(
-            x => (x as MirabufSceneObject).mechanism == mechanism
-        ) as MirabufSceneObject
+        const assembly = World.sceneRenderer.mirabufSceneObjects.findWhere(obj => obj.mechanism == mechanism)
 
         // Generate standard drivers and stimuli
         this._drivers = new Map()

@@ -1,7 +1,7 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import { RgbaColor } from "react-colorful"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { RgbaColor } from "react-colorful"
 import * as THREE from "three"
-import { mirabuf } from "../proto/mirabuf"
+import type { mirabuf } from "../proto/mirabuf"
 import JOLT from "./loading/JoltSyncLoader"
 
 export function convertThreeToJoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {

@@ -1,28 +1,20 @@
-import React, { useEffect, useRef, useState } from "react"
+import { Button, Stack } from "@mui/material"
+import type React from "react"
+import { useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import World from "@/systems/World"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import World from "@/systems/World.ts"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
-import Button, { ButtonSize } from "../components/Button"
 import { globalAddToast } from "../components/GlobalUIControls"
-import Panel, { PanelPropsImpl } from "../components/Panel"
-import { LabelWithTooltip, SynthesisIcons } from "../components/StyledComponents"
+import type { PanelImplProps } from "../components/Panel"
+import { LabelWithTooltip } from "../components/StyledComponents"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
-
-function getCurrentFieldObj() {
-    for (const obj of World.sceneRenderer.sceneObjects.values()) {
-        if (obj instanceof MirabufSceneObject && obj.miraType === MiraType.FIELD) {
-            return obj
-        }
-    }
-    return undefined
-}
 
 // Helper: type guard for ScoringZonePreferences[]
 function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferences[] {
@@ -41,8 +33,8 @@ function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferen
     )
 }
 
-const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { closePanel } = usePanelControlContext()
+const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [selectedKey, setSelectedKey] = useState<DevtoolKey | undefined>(undefined)
     const [jsonValue, setJsonValue] = useState<string>("")
     const [error, setError] = useState<string>("")
@@ -54,7 +46,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Effect: Watch for field changes and update editor/keys only if field changes
     useEffect(() => {
         const updateEditor = () => {
-            const currentField = getCurrentFieldObj()
+            const currentField = World.sceneRenderer.mirabufSceneObjects.getField()
             if (currentField !== prevFieldObj.current) {
                 prevFieldObj.current = currentField
                 if (currentField) {
@@ -92,7 +84,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Load value when key changes or when field scoring zones change
     useEffect(() => {
         if (editor && selectedKey === "devtool:scoring_zones") {
-            const field = getCurrentFieldObj()
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
             const zones = field?.fieldPreferences?.scoringZones ?? []
             const devtoolValue = editor.getUserData("devtool:scoring_zones")
             if (JSON.stringify(devtoolValue) !== JSON.stringify(zones)) {
@@ -118,7 +110,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             setKeys(editor.getAllDevtoolKeys())
 
             // Persist changes to cache
-            const field = getCurrentFieldObj()
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
             if (field) {
                 const assembly = field.mirabufInstance.parser.assembly
                 const cacheId = field.cacheId // add to MirabufSceneObject
@@ -146,7 +138,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }
 
             if (selectedKey === "devtool:scoring_zones") {
-                const field = getCurrentFieldObj()
+                const field = World.sceneRenderer.mirabufSceneObjects.getField()
                 if (!field) {
                     globalAddToast?.("error", "Devtool Error", "No field loaded to apply scoring zones.")
                     return
@@ -177,7 +169,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         setError("")
 
         // Persist removal to cache
-        const field = getCurrentFieldObj()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (field) {
             const assembly = field.mirabufInstance.parser.assembly
             const cacheId = field.cacheId
@@ -201,7 +193,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         if (selectedKey === "devtool:scoring_zones") {
-            const field = getCurrentFieldObj()
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
             if (field && field.fieldPreferences) {
                 field.fieldPreferences.scoringZones = []
                 PreferencesSystem.savePreferences?.()
@@ -217,7 +209,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }
 
     const handleExport = () => {
-        const field = getCurrentFieldObj()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) {
             globalAddToast?.("error", "Export Error", "No field loaded to export.")
             return
@@ -229,7 +221,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
         try {
             const encoded = mirabuf.Assembly.encode(assembly).finish()
-            const blob = new Blob([encoded], { type: "application/octet-stream" })
+            const blob = new Blob([encoded.buffer as ArrayBuffer], { type: "application/octet-stream" })
             const url = URL.createObjectURL(blob)
 
             // Check if assembly has devtool data to determine filename
@@ -257,38 +249,25 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }
 
-    const handleAccept = () => closePanel(panelId)
-    const handleCancel = () => closePanel(panelId)
-
-    const buttonSize = ButtonSize.SMALL
+    useEffect(() => {
+        configureScreen(panel!, { title: "Developer Tool", acceptText: "Save", cancelText: "Cancel" }, {})
+    }, [])
 
     return (
-        <Panel
-            name="Developer Tool"
-            icon={SynthesisIcons.CODE_SQUARE}
-            panelId={panelId}
-            acceptEnabled={true}
-            cancelEnabled={true}
-            onAccept={handleAccept}
-            onCancel={handleCancel}
-            acceptName="Save"
-            cancelName="Cancel"
-            openLocation="right"
-        >
-            <div className="flex flex-col gap-4 bg-background-secondary rounded-md p-4 max-h-[60vh] min-h-[350px] overflow-y-auto">
-                {!fieldLoaded && <div className="text-red-600 m-4">No mira field loaded.</div>}
-                {editor && (
-                    <div className="flex flex-col md:flex-row gap-6 items-start">
-                        {/* Key List */}
-                        <div className="min-w-[220px] bg-gray-700 dark:bg-gray-800 rounded-lg p-3 shadow-sm flex flex-col gap-2">
-                            <div className="font-bold text-base mb-1 text-gray-100">Devtool Data Keys</div>
-                            <ul className="list-none p-0 m-0 flex-1">
-                                {keys.length === 0 && <li className="text-gray-400 italic">No devtool data</li>}
-                                {keys.map(key => (
-                                    <li key={key} className="mb-1">
-                                        <button
-                                            onClick={() => setSelectedKey(key as DevtoolKey)}
-                                            className={`
+        <Stack gap={4} className="rounded-md p-4 max-h-[60vh] min-h-[350px] overflow-y-auto">
+            {!fieldLoaded && <div className="text-red-600 m-4">No mira field loaded.</div>}
+            {editor && (
+                <Stack gap={6} className="md:flex-row items-start">
+                    {/* Key List */}
+                    <Stack gap={2} className="min-w-[220px] bg-gray-700 dark:bg-gray-800 rounded-lg p-3 shadow-sm">
+                        <div className="font-bold text-base mb-1 text-gray-100">Devtool Data Keys</div>
+                        <ul className="list-none p-0 m-0 flex-1">
+                            {keys.length === 0 && <li className="text-gray-400 italic">No devtool data</li>}
+                            {keys.map(key => (
+                                <li key={key} className="mb-1">
+                                    <Button
+                                        onClick={() => setSelectedKey(key as DevtoolKey)}
+                                        className={`
                             w-full whitespace-normal break-words text-left
                             px-2 py-1 rounded
                             ${
@@ -297,46 +276,43 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     : "bg-gray-700 text-gray-100 hover:bg-gray-600"
                             }
                             `}
-                                        >
-                                            {key}
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="mt-2 border-t border-gray-600 pt-2">
-                                <div className="text-xs mb-1 text-gray-300">Add new:</div>
-                                {DEVTOOL_KEYS.filter(k => !keys.includes(k)).map(key => (
-                                    <Button
-                                        key={key}
-                                        onClick={() => handleAdd(key)}
-                                        className="w-full mb-1 whitespace-normal break-words"
-                                        size={buttonSize}
-                                        value={key}
-                                    />
-                                ))}
-                                {DEVTOOL_KEYS.filter(k => !keys.includes(k)).length === 0 && (
-                                    <div className="text-gray-400 italic text-xs">All keys added</div>
-                                )}
-                            </div>
+                                    >
+                                        {key}
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="mt-2 border-t border-gray-600 pt-2">
+                            <div className="text-xs mb-1 text-gray-300">Add new:</div>
+                            {DEVTOOL_KEYS.filter(k => !keys.includes(k)).map(key => (
+                                <Button
+                                    key={key}
+                                    onClick={() => handleAdd(key)}
+                                    className="w-full mb-1 whitespace-normal break-words"
+                                >
+                                    {key}
+                                </Button>
+                            ))}
+                            {DEVTOOL_KEYS.filter(k => !keys.includes(k)).length === 0 && (
+                                <div className="text-gray-400 italic text-xs">All keys added</div>
+                            )}
                         </div>
-                        {/* Editor */}
-                        <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-sm text-gray-100">
-                            {selectedKey ? (
-                                <>
-                                    {/* strip off the prefix here */}
-                                    {selectedKey === "devtool:scoring_zones" ? (
-                                        LabelWithTooltip(
-                                            "scoring_zones",
-                                            'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "persistentPoints": true,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]',
-                                            undefined
-                                        )
-                                    ) : (
-                                        <div className="font-bold text-sm mb-2">
-                                            {selectedKey.replace(/^devtool:/, "")}
-                                        </div>
-                                    )}
-                                    <textarea
-                                        className={`
+                    </Stack>
+                    {/* Editor */}
+                    <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-sm text-gray-100">
+                        {selectedKey ? (
+                            <>
+                                {/* strip off the prefix here */}
+                                {selectedKey === "devtool:scoring_zones" ? (
+                                    LabelWithTooltip(
+                                        "scoring_zones",
+                                        'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "persistentPoints": true,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]'
+                                    )
+                                ) : (
+                                    <div className="font-bold text-sm mb-2">{selectedKey.replace(/^devtool:/, "")}</div>
+                                )}
+                                <textarea
+                                    className={`
                             w-full h-48 font-mono text-sm
                             bg-gray-700 dark:bg-gray-800
                             border border-gray-600
@@ -345,27 +321,26 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             resize-vertical
                             focus:outline-none focus:ring-2 focus:ring-blue-500
                         `}
-                                        value={jsonValue}
-                                        onChange={e => setJsonValue(e.target.value)}
-                                        placeholder="Enter JSON data for this key"
-                                    />
-                                    {error && <div className="text-red-400 mt-1">{error}</div>}
-                                    <div className="mt-3 flex gap-2">
-                                        <Button onClick={handleSave} size={buttonSize} value="Save" />
-                                        <Button onClick={handleRemove} size={buttonSize} value="Remove" />
-                                        <Button onClick={handleExport} size={buttonSize} value="Export" />
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="text-gray-400 italic mt-10 text-center">
-                                    Select a key to edit or add a new one.
+                                    value={jsonValue}
+                                    onChange={e => setJsonValue(e.target.value)}
+                                    placeholder="Enter JSON data for this key"
+                                />
+                                {error && <div className="text-red-400 mt-1">{error}</div>}
+                                <div className="mt-3 flex gap-2">
+                                    <Button onClick={handleSave}>Save</Button>
+                                    <Button onClick={handleRemove}>Remove</Button>
+                                    <Button onClick={handleExport}>Export</Button>
                                 </div>
-                            )}
-                        </div>
+                            </>
+                        ) : (
+                            <div className="text-gray-400 italic mt-10 text-center">
+                                Select a key to edit or add a new one.
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-        </Panel>
+                </Stack>
+            )}
+        </Stack>
     )
 }
 

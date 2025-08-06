@@ -1,8 +1,10 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import MatchMode from "@/systems/match_mode/MatchMode"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { OnContactAddedEvent, OnContactPersistedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import World from "@/systems/World"
@@ -15,16 +17,9 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MiraType } from "./MirabufLoader"
-import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
-
-export enum ContactType {
-    ROBOT_ENTERS = "Opponent Robot Enters",
-    ANY_ROBOT_INSIDE = "Collision with Any Robot Inside",
-    BOTH_ROBOTS_INSIDE = "Collision with Both Robots Inside",
-    RED_ROBOT_INSIDE = "Collision with Red Robot Inside",
-    BLUE_ROBOT_INSIDE = "Collision with Blue Robot Inside",
-}
-import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
+import type MirabufSceneObject from "./MirabufSceneObject"
+import type { RigidNodeAssociate } from "./MirabufSceneObject"
+import { ContactType } from "./ZoneTypes"
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors

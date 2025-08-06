@@ -1,29 +1,27 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import { Switch } from "@mui/base/Switch"
-import { Box } from "@mui/material"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { Button, Stack } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
-import Button from "@/ui/components/Button"
-import Label, { LabelSize } from "@/ui/components/Label"
-import Slider from "@/ui/components/Slider"
+import Checkbox from "@/ui/components/Checkbox"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 import { Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -103,11 +101,6 @@ interface ConfigPickupProps {
 }
 
 const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ selectedRobot }) => {
-    const { currentTheme, themes } = useTheme()
-    const theme = useMemo(() => {
-        return themes[currentTheme]
-    }, [currentTheme, themes])
-
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
@@ -142,13 +135,14 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [zoneSize])
 
     const placeholderMesh = useMemo(() => {
+        // TODO: dynamic color?
         const material = World.sceneRenderer.createToonMaterial(
-            convertReactRgbaColorToThreeColor(theme.HighlightHover.color)
+            convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 })
         )
         material.transparent = true
         material.opacity = 0.6
         return new THREE.Mesh(new THREE.SphereGeometry(0.5), material)
-    }, [theme])
+    }, [])
 
     const gizmoComponent = useMemo(() => {
         if (selectedRobot?.intakePreferences) {
@@ -250,7 +244,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     )
 
     return (
-        <>
+        <Stack direction="column">
             {/* Button for user to select the parent node */}
             <SelectButton
                 placeholder="Select parent node"
@@ -259,99 +253,61 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             />
 
             {/* Slider for user to set velocity of ejector configuration */}
-            <Slider
+            <StatefulSlider
+                label="Intake Zone Diameter (m)"
                 min={MIN_ZONE_SIZE}
                 max={MAX_ZONE_SIZE}
-                value={zoneSize}
-                onChange={(_, v) => setZoneSize(typeof v === "number" ? v : v[0])}
+                defaultValue={zoneSize}
+                // TODO:
+                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={vel => {
+                    setZoneSize(vel as number)
+                }}
                 step={0.01}
-                label="Intake Zone Diameter (m)"
             />
-            <Slider
+            <StatefulSlider
                 min={MIN_ANIMATION_DURATION}
                 max={MAX_ANIMATION_DURATION}
-                value={animationDuration ?? 0.5}
-                onChange={(_, v) => {
+                defaultValue={animationDuration ?? 0.5}
+                onChange={v => {
+                    setAnimationDuration(v as number)
+                    EjectableSceneObject.setAnimationDuration(v as number)
+                }}
+                step={ANIMATION_DURATION_STEP}
+                label="Intake Animation Duration (s)"
+                // TODO:
+                // format={{ maximumFractionDigits: 2 }}
+            />
+            <StatefulSlider
+                label="Intake Animation Duration (s)"
+                min={MIN_ANIMATION_DURATION}
+                max={MAX_ANIMATION_DURATION}
+                defaultValue={animationDuration ?? 0.5}
+                onChange={v => {
                     const val = typeof v === "number" ? v : v[0]
                     setAnimationDuration(val)
                     EjectableSceneObject.setAnimationDuration(val)
                 }}
                 step={ANIMATION_DURATION_STEP}
-                label="Intake Animation Duration (s)"
-                format={{ maximumFractionDigits: 2 }}
+                // TODO:
+                // format={{ maximumFractionDigits: 2 }}
             />
 
             {/* Slider for adjusting max pieces the robot can intake */}
-            <Slider
+            <StatefulSlider
+                label="Max Pieces"
                 min={1}
                 max={10}
                 step={1}
-                value={maxPieces ?? 1}
-                label="Max Pieces"
-                onChange={(_, v) => setMaxPieces(v as number)}
+                defaultValue={maxPieces ?? 1}
+                onChange={v => setMaxPieces(v as number)}
             />
 
             {/* Checkbox for showing intake zone indicator at all times */}
-            <Box
-                display="flex"
-                flexDirection={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-                textAlign={"center"}
-            >
-                <Label size={LabelSize.SMALL} className="mr-12 whitespace-nowrap">
-                    Show intake zone indicator always
-                </Label>
-                <Switch
-                    checked={showZoneAlways}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setShowZoneAlways(e.target.checked)
-                    }}
-                    slotProps={{
-                        root: {
-                            className: `
-                                group relative inline-block 
-                                w-[24px] h-[24px] m-2.5 
-                                cursor-pointer transform transition-transform 
-                                hover:scale-[1.03] active:scale-[1.06]
-                            `,
-                        },
-                        input: {
-                            className: `
-                                cursor-inherit absolute 
-                                w-full h-full top-0 left-0 
-                                opacity-0 z-10 border-none
-                            `,
-                        },
-                        track: ownerState => {
-                            const baseClasses = `
-                                absolute block w-full h-full 
-                                transition rounded-full 
-                                border border-solid outline-none 
-                                border-interactive-element-right 
-                                dark:border-interactive-element-right 
-                                group-[.base--focusVisible]:shadow-outline-switch 
-                                transform transition-transform 
-                                group-hover:scale-[1.03] group-active:scale-[1.06]
-                            `
-                            const backgroundClasses = ownerState.checked
-                                ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right"
-                                : "bg-background-secondary"
-
-                            return {
-                                className: `${baseClasses} ${backgroundClasses}`,
-                            }
-                        },
-                        thumb: {
-                            className: "display-none",
-                        },
-                    }}
-                />
-            </Box>
+            <Checkbox label="Show intake zone indicator always" checked={showZoneAlways} onClick={setShowZoneAlways} />
             {gizmoComponent}
             {Spacer(10)}
             <Button
-                value="Reset"
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
@@ -365,8 +321,10 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     setMaxPieces(selectedRobot.intakePreferences?.maxPieces ?? 1)
                     setAnimationDuration(0.5)
                 }}
-            />
-        </>
+            >
+                Reset
+            </Button>
+        </Stack>
     )
 }
 
