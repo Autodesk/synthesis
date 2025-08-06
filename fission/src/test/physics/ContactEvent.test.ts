@@ -1,4 +1,7 @@
-import { test, expect, describe, beforeEach, afterEach } from "vitest"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
+import { afterEach, beforeEach, describe, expect, test } from "vitest"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     OnContactAddedEvent,
     OnContactPersistedEvent,
@@ -6,9 +9,6 @@ import {
     OnContactValidateEvent,
 } from "../../systems/physics/ContactEvents"
 import PhysicsSystem from "../../systems/physics/PhysicsSystem"
-import * as THREE from "three"
-import Jolt from "@azaleacolburn/jolt-physics"
-import JOLT from "@/util/loading/JoltSyncLoader"
 
 describe("Contact Event Integration Tests", () => {
     let physicsSystem: PhysicsSystem

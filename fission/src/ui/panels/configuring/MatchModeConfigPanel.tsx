@@ -1,31 +1,86 @@
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
-import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
+import { Box, Button, Divider } from "@mui/material"
+import { Stack } from "@mui/system"
+import type React from "react"
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import {
-    SectionLabel,
-    SynthesisIcons,
-    PositiveButton,
-    SectionDivider,
-    NegativeButton,
-} from "@/ui/components/StyledComponents"
-import { LabelSize } from "@/components/Label"
-import { Box } from "@mui/material"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAME_TIME } from "@/systems/MatchMode"
+    DEFAULT_AUTONOMOUS_TIME,
+    DEFAULT_ENDGAME_TIME,
+    DEFAULT_IGNORE_ROTATION,
+    DEFAULT_MAX_HEIGHT,
+    DEFAULT_HEIGHT_LIMIT_PENALTY,
+    DEFAULT_SIDE_EXTENSION_PENALTY,
+    DEFAULT_SIDE_MAX_EXTENSION,
+    DEFAULT_TELEOP_TIME,
+} from "@/systems/match_mode/MatchModeTypes"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import Button from "@/ui/components/Button"
-import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import { NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { convertFeetToMeters } from "@/util/UnitConversions"
 
+/**
+ * Configuration for match mode rules and timing.
+ *
+ * This interface defines the rules and timing for competitive matches,
+ * including autonomous/teleop periods, robot height restrictions, and penalties.
+ */
 export interface MatchModeConfig {
-    id: string // Required
-    name: string // Required
-    isDefault: boolean // Track if this is a default config (auto-filled)
-    autonomousTime: number // Optional, defaults to 15
-    teleopTime: number // Optional, defaults to 135
-    endgameTime: number // Optional, defaults to 20
+    /** Unique identifier for this match mode configuration */
+    id: string
+
+    /** Human-readable name for this match mode configuration */
+    name: string
+
+    /** Whether this is a built-in default configuration (cannot be deleted) */
+    isDefault: boolean
+
+    /** Duration of autonomous period in seconds (default: 15) */
+    autonomousTime: number
+
+    /** Duration of teleoperated period in seconds (default: 135) */
+    teleopTime: number
+
+    /** Duration of endgame period in seconds (default: 20) */
+    endgameTime: number
+
+    /**
+     * Whether to ignore robot rotation when calculating height violations.
+     * If true, the height limit will be calculated relative to the base of the robot, rather than the base of the field
+     * (default: true)
+     */
+    ignoreRotation: boolean
+
+    /**
+     * Maximum allowed robot height in meters (stored internally).
+     * User input is in feet but converted to meters during config processing.
+     * Set to Infinity for no height limit. (default: Infinity)
+     */
+    maxHeight: number
+
+    /**
+     * Points to penalize for height limit violations (default: 2).
+     * Applied each time a robot exceeds maxHeight after cooldown period.
+     */
+    heightLimitPenalty: number
+
+    /**
+     * Maximum allowed robot side extension in meters
+     * User input is in feet but converted to meters during config processing.
+     * Set to Infinity for no side extension limit. (default: Infinity)
+     */
+    sideMaxExtension: number
+
+    /**
+     * Points to penalize for side extension violations (default: 2).
+     * Applied each time a robot exceeds sideMaxExtension after cooldown period.
+     */
+    sideExtensionPenalty: number
 }
 
-function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
+function matchConfigSelected(config: MatchModeConfig) {
     if (MatchMode.getInstance().isMatchEnabled()) {
         globalAddToast(
             "error",
@@ -37,7 +92,7 @@ function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: str
 
     MatchMode.getInstance().setMatchModeConfig(config)
 
-    MatchMode.getInstance().start(openModal)
+    MatchMode.getInstance().start()
 }
 
 interface ItemCardProps {
@@ -49,36 +104,34 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
     return (
-        <Box
-            component={"div"}
-            display={"flex"}
-            key={id}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            gap={"1rem"}
-        >
-            <SectionLabel className="text-wrap break-all">{name.replace(/.mira$/, "")}</SectionLabel>
-            <Box
-                component={"div"}
-                display={"flex"}
+        <Stack direction="row" key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+            <Label size="sm" className="text-wrap break-all">
+                {name.replace(/.mira$/, "")}
+            </Label>
+            <Stack
                 key={`button-box-${id}`}
-                flexDirection={"row-reverse"}
+                direction="row-reverse"
                 gap={"0.25rem"}
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                {secondaryOnClick && <NegativeButton value={SynthesisIcons.DELETE_LARGE} onClick={secondaryOnClick} />}
-                <PositiveButton value={SynthesisIcons.SELECT_LARGE} onClick={primaryOnClick} />
-            </Box>
-        </Box>
+                {secondaryOnClick && (
+                    <NegativeButton onClick={secondaryOnClick}>{SynthesisIcons.DELETE_LARGE}</NegativeButton>
+                )}
+                <PositiveButton onClick={primaryOnClick}>{SynthesisIcons.SELECT_LARGE}</PositiveButton>
+            </Stack>
+        </Stack>
     )
 }
 
-const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { closePanel } = usePanelControlContext()
-    const { openModal } = useModalControlContext()
+const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { closePanel, openModal, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, {})
+    }, [])
 
     useEffect(() => {
         const loadConfigs = () => {
@@ -108,8 +161,8 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
                         primaryOnClick={() => {
-                            matchConfigSelected(config, openModal)
-                            closePanel("match-mode-config")
+                            matchConfigSelected(config)
+                            closePanel(panel!.id, CloseType.Accept)
                         }}
                         secondaryOnClick={
                             !config.isDefault
@@ -160,6 +213,11 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             { id: "autonomousTime", expectedType: "number", required: false },
             { id: "teleopTime", expectedType: "number", required: false },
             { id: "endgameTime", expectedType: "number", required: false },
+            { id: "ignoreRotation", expectedType: "boolean", required: false },
+            { id: "maxHeight", expectedType: "number", required: false },
+            { id: "heightLimitPenalty", expectedType: "number", required: false },
+            { id: "sideMaxExtension", expectedType: "number", required: false },
+            { id: "sideExtensionPenalty", expectedType: "number", required: false },
         ]
 
         const typeError = (id: string, expectedType?: string) => {
@@ -201,6 +259,22 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : DEFAULT_AUTONOMOUS_TIME,
             teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : DEFAULT_TELEOP_TIME,
             endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : DEFAULT_ENDGAME_TIME,
+            ignoreRotation:
+                typeof configObj.ignoreRotation === "boolean" ? configObj.ignoreRotation : DEFAULT_IGNORE_ROTATION,
+            maxHeight:
+                typeof configObj.maxHeight === "number" ? convertFeetToMeters(configObj.maxHeight) : DEFAULT_MAX_HEIGHT,
+            heightLimitPenalty:
+                typeof configObj.heightLimitPenalty === "number"
+                    ? configObj.heightLimitPenalty
+                    : DEFAULT_HEIGHT_LIMIT_PENALTY,
+            sideMaxExtension:
+                typeof configObj.sideMaxExtension === "number"
+                    ? convertFeetToMeters(configObj.sideMaxExtension)
+                    : DEFAULT_SIDE_MAX_EXTENSION,
+            sideExtensionPenalty:
+                typeof configObj.sideExtensionPenalty === "number"
+                    ? configObj.sideExtensionPenalty
+                    : DEFAULT_SIDE_EXTENSION_PENALTY,
         }
 
         return normalizedConfig
@@ -248,7 +322,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
 
             globalAddToast("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
-        } catch (error) {
+        } catch (_error) {
             globalAddToast("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
         }
     }
@@ -262,28 +336,19 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }
 
     return (
-        <Panel
-            name={"Match Mode Config"}
-            icon={SynthesisIcons.IMPORT}
-            panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Back"
-            openLocation="center"
-            onCancel={() => {
-                closePanel("match-mode-config")
-            }}
-        >
-            <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                {matchModeConfigs.length} Match Mode{matchModeConfigs.length === 1 ? "" : "s"}
-            </SectionLabel>
-            <SectionDivider />
+        <>
+            <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                {matchModeConfigs.length} Match Mode
+                {matchModeConfigs.length === 1 ? "" : "s"}
+            </Label>
+            <Divider />
             {matchModeConfigElements}
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
             <Box alignSelf={"center"}>
-                <Button value="Upload File" onClick={uploadClicked} />
+                <Button onClick={uploadClicked}>Upload File</Button>
             </Box>
-        </Panel>
+        </>
     )
 }
 

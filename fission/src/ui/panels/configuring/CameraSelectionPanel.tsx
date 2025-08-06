@@ -1,11 +1,13 @@
-import { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { ToggleButton, ToggleButtonGroup } from "@mui/material"
+import type React from "react"
+import { useCallback, useEffect, useState } from "react"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import type { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import React, { useCallback, useEffect, useState } from "react"
-import { AiOutlineCamera } from "react-icons/ai"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
@@ -18,10 +20,11 @@ const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
         controls.locked = locked
     }, [controls, locked])
 
-    return <Checkbox label={"Lock to Robot"} defaultState={locked} onClick={v => setLocked(v)} />
+    return <Checkbox label="Lock to Robot" checked={locked} onClick={setLocked} />
 }
 
-const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
         World.sceneRenderer.currentCameraControls.controlsType
     )
@@ -38,37 +41,29 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }, [])
 
+    useEffect(() => {
+        configureScreen(panel!, { title: "Choose a Camera", hideAccept: true, cancelText: "Close" }, {})
+    }, [])
+
     return (
-        <Panel
-            openLocation="right"
-            name={"Choose a Camera"}
-            icon={<AiOutlineCamera />}
-            panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Close"
-            contentClassName="items-center"
-        >
+        <>
             <ToggleButtonGroup
                 orientation="vertical"
                 value={cameraControlType}
                 exclusive
                 onChange={(_, v) => {
-                    if (v != null) {
-                        return
-                    }
+                    if (v !== null) return
 
                     setCameraControls(v)
                 }}
-                {...SoundPlayer.buttonSoundEffects()}
+                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
             >
-                <ToggleButton value={"Orbit"}>Orbit</ToggleButton>
+                <ToggleButton value="Orbit">Orbit</ToggleButton>
             </ToggleButtonGroup>
-            {cameraControlType == "Orbit" ? (
+            {cameraControlType === "Orbit" && (
                 <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
-            ) : (
-                <></>
             )}
-        </Panel>
+        </>
     )
 }
 

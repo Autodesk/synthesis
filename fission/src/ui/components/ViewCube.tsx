@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react"
-import * as THREE from "three"
 import { Box } from "@mui/material"
-import World from "@/systems/World"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import type React from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import World from "@/systems/World"
 
 interface ViewCubeProps {
     size?: number
@@ -105,6 +106,92 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             document.removeEventListener("visibilitychange", handleVisibilityChange)
         }
     }, [isDragging, lastMousePos])
+    const updateHighlights = useCallback((element: { type: string; index: number } | null) => {
+        if (!cubeRef.current) return
+
+        cubeRef.current.children
+            .filter(child => child instanceof THREE.Mesh)
+            .forEach(child => {
+                if (child.userData.type === "visual-face") {
+                    if (Array.isArray(child.material)) {
+                        child.material
+                            .filter(mat => mat instanceof THREE.MeshLambertMaterial)
+                            .forEach(mat => {
+                                mat.emissive.setHex(0x000000)
+                                mat.needsUpdate = true
+                            })
+                    }
+                } else if (child.userData.type === "corner-sphere") {
+                    if (child.material instanceof THREE.MeshBasicMaterial) {
+                        child.material.transparent = true
+                        child.material.opacity = 0
+                        child.material.needsUpdate = true
+                    }
+                } else if (child.userData.type === "edge-highlight") {
+                    if (child.material instanceof THREE.MeshBasicMaterial) {
+                        child.material.transparent = true
+                        child.material.opacity = 0
+                        child.material.needsUpdate = true
+                    }
+                } else if (child.userData.type === "wireframe") {
+                    if (child instanceof THREE.LineSegments && child.material instanceof THREE.LineBasicMaterial) {
+                        child.material.color.setHex(0x999999)
+                        child.material.opacity = 1.0
+                        child.material.needsUpdate = true
+                    }
+                } else if (child.userData.type === "face-highlight") {
+                    if (child.material instanceof THREE.MeshBasicMaterial) {
+                        child.material.opacity = 0
+                        child.material.needsUpdate = true
+                    }
+                } else if (child.userData.type === "edge-visual-highlight") {
+                    if (child.material instanceof THREE.MeshBasicMaterial) {
+                        child.material.opacity = 0
+                        child.material.needsUpdate = true
+                    }
+                } else if (child.userData.type === "corner-visual-highlight") {
+                    if (child.material instanceof THREE.MeshBasicMaterial) {
+                        child.material.opacity = 0
+                        child.material.needsUpdate = true
+                    }
+                }
+            })
+
+        if (!element) return
+
+        if (element.type === "face") {
+            const faceHighlights = cubeRef.current.children.filter(child => child.userData.type === "face-highlight")
+            const targetFace = faceHighlights[element.index]
+            if (
+                targetFace &&
+                targetFace instanceof THREE.Mesh &&
+                targetFace.material instanceof THREE.MeshBasicMaterial
+            ) {
+                targetFace.material.opacity = 0.4
+                targetFace.material.needsUpdate = true
+            }
+        } else if (element.type === "corner") {
+            const cornerHighlights = cubeRef.current.children.filter(
+                child => child.userData.type === "corner-visual-highlight" && child.userData.index === element.index
+            )
+            cornerHighlights.forEach(highlight => {
+                if (highlight instanceof THREE.Mesh && highlight.material instanceof THREE.MeshBasicMaterial) {
+                    highlight.material.opacity = 0.6
+                    highlight.material.needsUpdate = true
+                }
+            })
+        } else if (element.type === "edge") {
+            const edgeHighlights = cubeRef.current.children.filter(
+                child => child.userData.type === "edge-visual-highlight" && child.userData.index === element.index
+            )
+            edgeHighlights.forEach(highlight => {
+                if (highlight instanceof THREE.Mesh && highlight.material instanceof THREE.MeshBasicMaterial) {
+                    highlight.material.opacity = 0.6
+                    highlight.material.needsUpdate = true
+                }
+            })
+        }
+    }, [])
 
     useEffect(() => {
         const handleGlobalMouseMoveForHighlights = (event: MouseEvent) => {
@@ -128,7 +215,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         return () => {
             document.removeEventListener("mousemove", handleGlobalMouseMoveForHighlights)
         }
-    }, [hoveredElement, isDragging])
+    }, [hoveredElement, isDragging, updateHighlights])
 
     const getTopBottomOrientation = (isTop: boolean) => {
         if (World && World.sceneRenderer && World.sceneRenderer.currentCameraControls) {
@@ -170,6 +257,43 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         isometricBackLeftBottom: { theta: (-3 * Math.PI) / 4, phi: Math.PI / 6 },
     }
 
+    const createFaceMaterial = useCallback((text: string, color: number): THREE.MeshLambertMaterial => {
+        const canvas = document.createElement("canvas")
+        const context = canvas.getContext("2d")!
+        canvas.width = 256
+        canvas.height = 256
+
+        const baseColor = `#${color.toString(16).padStart(6, "0")}`
+        context.fillStyle = baseColor
+        context.fillRect(0, 0, 256, 256)
+
+        context.strokeStyle = "rgba(0, 0, 0, 0.15)"
+        context.lineWidth = 2
+        context.strokeRect(1, 1, 254, 254)
+
+        context.strokeStyle = "rgba(255, 255, 255, 0.4)"
+        context.lineWidth = 1
+        context.strokeRect(2, 2, 252, 252)
+
+        context.fillStyle = "#333333"
+
+        const fontSize = text === "BOTTOM" ? 52 : 58
+        context.font = `bold ${fontSize}px 'Segoe UI', Arial, sans-serif`
+        context.textAlign = "center"
+        context.textBaseline = "middle"
+
+        context.shadowColor = "rgba(255, 255, 255, 0.3)"
+        context.shadowBlur = 1
+        context.shadowOffsetX = 0
+        context.shadowOffsetY = 1
+
+        context.fillText(text, 128, 128)
+
+        const texture = new THREE.CanvasTexture(canvas)
+        texture.minFilter = THREE.LinearFilter
+        texture.magFilter = THREE.LinearFilter
+        return new THREE.MeshLambertMaterial({ map: texture, transparent: true, opacity: 0.7 })
+    }, [])
     useEffect(() => {
         if (!containerRef.current) return
 
@@ -593,45 +717,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             }
             renderer.dispose()
         }
-    }, [responsiveSize, containerSize])
-
-    const createFaceMaterial = (text: string, color: number): THREE.MeshLambertMaterial => {
-        const canvas = document.createElement("canvas")
-        const context = canvas.getContext("2d")!
-        canvas.width = 256
-        canvas.height = 256
-
-        const baseColor = `#${color.toString(16).padStart(6, "0")}`
-        context.fillStyle = baseColor
-        context.fillRect(0, 0, 256, 256)
-
-        context.strokeStyle = "rgba(0, 0, 0, 0.15)"
-        context.lineWidth = 2
-        context.strokeRect(1, 1, 254, 254)
-
-        context.strokeStyle = "rgba(255, 255, 255, 0.4)"
-        context.lineWidth = 1
-        context.strokeRect(2, 2, 252, 252)
-
-        context.fillStyle = "#333333"
-
-        const fontSize = text === "BOTTOM" ? 52 : 58
-        context.font = `bold ${fontSize}px 'Segoe UI', Arial, sans-serif`
-        context.textAlign = "center"
-        context.textBaseline = "middle"
-
-        context.shadowColor = "rgba(255, 255, 255, 0.3)"
-        context.shadowBlur = 1
-        context.shadowOffsetX = 0
-        context.shadowOffsetY = 1
-
-        context.fillText(text, 128, 128)
-
-        const texture = new THREE.CanvasTexture(canvas)
-        texture.minFilter = THREE.LinearFilter
-        texture.magFilter = THREE.LinearFilter
-        return new THREE.MeshLambertMaterial({ map: texture, transparent: true, opacity: 0.7 })
-    }
+    }, [responsiveSize, containerSize, createFaceMaterial])
 
     const getClickedElement = (event: React.MouseEvent) => {
         if (!rendererRef.current || !cameraRef.current || !sceneRef.current || !cubeRef.current) return null
@@ -677,93 +763,6 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         }
 
         return null
-    }
-
-    const updateHighlights = (element: { type: string; index: number } | null) => {
-        if (!cubeRef.current) return
-
-        cubeRef.current.children
-            .filter(child => child instanceof THREE.Mesh)
-            .forEach(child => {
-                if (child.userData.type === "visual-face") {
-                    if (Array.isArray(child.material)) {
-                        child.material
-                            .filter(mat => mat instanceof THREE.MeshLambertMaterial)
-                            .forEach(mat => {
-                                mat.emissive.setHex(0x000000)
-                                mat.needsUpdate = true
-                            })
-                    }
-                } else if (child.userData.type === "corner-sphere") {
-                    if (child.material instanceof THREE.MeshBasicMaterial) {
-                        child.material.transparent = true
-                        child.material.opacity = 0
-                        child.material.needsUpdate = true
-                    }
-                } else if (child.userData.type === "edge-highlight") {
-                    if (child.material instanceof THREE.MeshBasicMaterial) {
-                        child.material.transparent = true
-                        child.material.opacity = 0
-                        child.material.needsUpdate = true
-                    }
-                } else if (child.userData.type === "wireframe") {
-                    if (child instanceof THREE.LineSegments && child.material instanceof THREE.LineBasicMaterial) {
-                        child.material.color.setHex(0x999999)
-                        child.material.opacity = 1.0
-                        child.material.needsUpdate = true
-                    }
-                } else if (child.userData.type === "face-highlight") {
-                    if (child.material instanceof THREE.MeshBasicMaterial) {
-                        child.material.opacity = 0
-                        child.material.needsUpdate = true
-                    }
-                } else if (child.userData.type === "edge-visual-highlight") {
-                    if (child.material instanceof THREE.MeshBasicMaterial) {
-                        child.material.opacity = 0
-                        child.material.needsUpdate = true
-                    }
-                } else if (child.userData.type === "corner-visual-highlight") {
-                    if (child.material instanceof THREE.MeshBasicMaterial) {
-                        child.material.opacity = 0
-                        child.material.needsUpdate = true
-                    }
-                }
-            })
-
-        if (!element) return
-
-        if (element.type === "face") {
-            const faceHighlights = cubeRef.current.children.filter(child => child.userData.type === "face-highlight")
-            const targetFace = faceHighlights[element.index]
-            if (
-                targetFace &&
-                targetFace instanceof THREE.Mesh &&
-                targetFace.material instanceof THREE.MeshBasicMaterial
-            ) {
-                targetFace.material.opacity = 0.4
-                targetFace.material.needsUpdate = true
-            }
-        } else if (element.type === "corner") {
-            const cornerHighlights = cubeRef.current.children.filter(
-                child => child.userData.type === "corner-visual-highlight" && child.userData.index === element.index
-            )
-            cornerHighlights.forEach(highlight => {
-                if (highlight instanceof THREE.Mesh && highlight.material instanceof THREE.MeshBasicMaterial) {
-                    highlight.material.opacity = 0.6
-                    highlight.material.needsUpdate = true
-                }
-            })
-        } else if (element.type === "edge") {
-            const edgeHighlights = cubeRef.current.children.filter(
-                child => child.userData.type === "edge-visual-highlight" && child.userData.index === element.index
-            )
-            edgeHighlights.forEach(highlight => {
-                if (highlight instanceof THREE.Mesh && highlight.material instanceof THREE.MeshBasicMaterial) {
-                    highlight.material.opacity = 0.6
-                    highlight.material.needsUpdate = true
-                }
-            })
-        }
     }
 
     const updateHighlightsAtCurrentPosition = () => {

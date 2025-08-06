@@ -1,8 +1,8 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { mirabuf } from "@/proto/mirabuf"
+import { type NoraNumber2, NoraTypes } from "../Nora"
 import EncoderStimulus from "./EncoderStimulus"
-import { mirabuf } from "@/proto/mirabuf"
-import { StimulusID } from "./Stimulus"
-import { NoraTypes, NoraNumber2 } from "../Nora"
+import type { StimulusID } from "./Stimulus"
 
 class HingeStimulus extends EncoderStimulus {
     private _accum: boolean = false

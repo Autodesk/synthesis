@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from "react"
+import type React from "react"
+import { useEffect, useRef, useState } from "react"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const TouchControls: React.FC = () => {
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const [isPlaceButtonVisible, setIsPlaceButtonVisible] = useState(false)
+    const [_isPlaceButtonVisible, setIsPlaceButtonVisible] = useState(false)
     const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
 
     useEffect(() => {
@@ -27,7 +28,7 @@ const TouchControls: React.FC = () => {
             TouchControlsEvent.removeListener(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
             TouchControlsEvent.removeListener(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
         }
-    }, [isJoystickVisible, isPlaceButtonVisible])
+    }, [isJoystickVisible])
 
     return (
         <div className="select-none">

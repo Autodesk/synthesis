@@ -1,4 +1,4 @@
-import { NoraTypes, NoraType, NoraNumber } from "../Nora"
+import { type NoraNumber, type NoraType, NoraTypes } from "../Nora"
 
 export type SimSupplier = {
     getSupplierType(): NoraTypes
@@ -40,7 +40,7 @@ export class SimSupplierAverage implements SimSupplier {
         return NoraTypes.NUMBER
     }
     getSupplierValue(): NoraNumber {
-        return this._suppliers.reduce((prev, next) => (prev += next.getSupplierValue() as NoraNumber), 0)
+        return this._suppliers.reduce((prev, next) => prev + (next.getSupplierValue() as NoraNumber), 0)
     }
 }
 

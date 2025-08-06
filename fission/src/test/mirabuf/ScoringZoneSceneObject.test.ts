@@ -1,9 +1,9 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
-import ScoringZoneSceneObject, { OnScoreChangedEvent } from "../../mirabuf/ScoringZoneSceneObject"
-import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import Jolt from "@azaleacolburn/jolt-physics"
-import { createBodyMock } from "../mocks/jolt"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
+import ScoringZoneSceneObject, { OnScoreChangedEvent } from "../../mirabuf/ScoringZoneSceneObject"
+import { createBodyMock } from "../mocks/jolt"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),

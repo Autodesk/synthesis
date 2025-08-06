@@ -1,6 +1,6 @@
+import { Mutex } from "async-mutex"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import { Mutex } from "async-mutex"
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
@@ -17,6 +17,7 @@ const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.c
 const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = "https://developer.api.autodesk.com/authentication/v2/revoke"
 const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
 
+// biome-ignore-start lint/style/useNamingConvention: returned from api
 export interface APSAuth {
     access_token: string
     refresh_token: string
@@ -24,6 +25,7 @@ export interface APSAuth {
     expires_at: number
     token_type: number
 }
+// biome-ignore-end lint/style/useNamingConvention: returned from api
 
 export interface APSUserInfo {
     name: string
@@ -32,6 +34,7 @@ export interface APSUserInfo {
     email: string
 }
 
+// biome-ignore lint/style/useNamingConvention: this is pascal case
 class APS {
     static authCode: string | undefined = undefined
     static requestMutex: Mutex = new Mutex()
@@ -237,7 +240,7 @@ class APS {
                 const json = await res.json()
                 if (!res.ok) {
                     if (shouldRelog) {
-                        globalAddToast("warning", "Must Re-signin.", json.userMessage)
+                        globalAddToast("warning", "Must Re-signin.", `${json.userMessage}`)
                         this._auth = undefined
                         await this.requestAuthCode()
                         return false
@@ -254,7 +257,7 @@ class APS {
                     }
                 }
                 return true
-            } catch (e) {
+            } catch (_e) {
                 World.analyticsSystem?.exception("APS Login Failure")
                 globalAddToast("error", "Error signing in.", "Please try again.")
                 this._auth = undefined
@@ -282,7 +285,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Login Failure")
-                globalAddToast("error", "Error signing in.", json.userMessage)
+                globalAddToast("error", "Error signing in.", `${json.userMessage}`)
                 this._auth = undefined
                 return
             }
@@ -328,7 +331,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Failure: User Info")
-                globalAddToast("error", "Error fetching user data.", json.userMessage)
+                globalAddToast("error", "Error fetching user data.", `${json.userMessage}`)
                 this._auth = undefined
                 await this.requestAuthCode()
                 return

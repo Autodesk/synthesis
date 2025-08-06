@@ -1,6 +1,8 @@
-import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
-import { InputScheme } from "../input/InputSchemeManager"
-import { Vector3Tuple } from "three"
+import type { Vector3Tuple } from "three"
+import type { ContactType } from "@/mirabuf/ZoneTypes"
+import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import type { InputScheme } from "../input/InputTypes"
+import type { SimConfigData } from "../simulation/SimConfigShared"
 
 /** Names of all global preferences. */
 
@@ -28,17 +30,17 @@ export type GlobalPreferences = {
 
 export type GlobalPreference = keyof GlobalPreferences
 
+export const ROBOT_PREFERENCE_KEY = "Robots" as const
+export const FIELD_PREFERENCE_KEY = "Fields" as const
+export const MOTOR_PREFERENCES_KEY = "Motors" as const
+export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
+
 export type Preferences = GlobalPreferences & {
     [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
     [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
     [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>
     [GRAPHICS_PREFERENCE_KEY]: GraphicsPreferences
 }
-
-export const ROBOT_PREFERENCE_KEY = "Robots" as const
-export const FIELD_PREFERENCE_KEY = "Fields" as const
-export const MOTOR_PREFERENCES_KEY = "Motors" as const
-export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
@@ -92,6 +94,7 @@ export type IntakePreferences = {
     parentNode: string | undefined
     showZoneAlways: boolean
     maxPieces: number
+    animationDuration: number
 }
 
 export type EjectorPreferences = {
@@ -129,6 +132,7 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
     driveVelocity: number
     driveAcceleration: number
+    unstickForce: number
     sequentialConfig?: SequentialBehaviorPreferences[]
     simConfig?: SimConfigData
 }
@@ -159,7 +163,8 @@ export type ProtectedZonePreferences = {
     alliance: Alliance
     penaltyPoints: number
     parentNode: string | undefined
-    requireRobotContact: boolean
+    contactType: ContactType
+    activeDuring: MatchModeType[]
 
     deltaTransformation: number[]
 }
@@ -181,6 +186,7 @@ export function defaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
             showZoneAlways: false,
             maxPieces: 1,
+            animationDuration: 0.5,
         },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
@@ -190,11 +196,16 @@ export function defaultRobotPreferences(): RobotPreferences {
         },
         driveVelocity: 0,
         driveAcceleration: 0,
+        unstickForce: 8000,
     }
 }
 
 export function defaultFieldPreferences(): FieldPreferences {
-    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [], protectedZones: [] }
+    return {
+        defaultSpawnLocation: [0, 1, 0],
+        scoringZones: [],
+        protectedZones: [],
+    }
 }
 
 export function defaultMotorPreferences(name: string): MotorPreferences {

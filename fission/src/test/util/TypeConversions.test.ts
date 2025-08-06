@@ -1,5 +1,8 @@
-import { test, expect, describe } from "vitest"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import { describe, expect, test } from "vitest"
+import { mirabuf } from "../../proto/mirabuf"
+import JOLT from "../../util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
@@ -7,12 +10,9 @@ import {
     convertThreeMatrix4ToArray,
     convertThreeMatrix4ToJoltMat44,
     convertThreeQuaternionToJoltQuat,
-    convertThreeVector3ToJoltVec3,
     convertThreeToJoltQuat,
+    convertThreeVector3ToJoltVec3,
 } from "../../util/TypeConversions"
-import { mirabuf } from "../../proto/mirabuf"
-import JOLT from "../../util/loading/JoltSyncLoader"
-import Jolt from "@azaleacolburn/jolt-physics"
 
 describe("Three to Jolt Conversions", async () => {
     function compareMat(tM: THREE.Matrix4, jM: Jolt.Mat44) {

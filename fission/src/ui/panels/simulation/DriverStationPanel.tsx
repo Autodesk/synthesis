@@ -1,26 +1,26 @@
-import React, { useState } from "react"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import Stack, { StackDirection } from "@/components/Stack"
-import Button from "@/components/Button"
-import Dropdown from "@/components/Dropdown"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, MenuItem, Select, Stack } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
-const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+const DriverStationPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [enabled, setEnabled] = useState(false)
 
+    useEffect(() => {
+        // TODO: update Not Connected dynamically when implemented
+        configureScreen(panel!, { title: "Driver Station (Not Connected)" }, {})
+    }, [])
+
     return (
-        <Panel
-            name="Driver Station (Not Connected)"
-            icon={SynthesisIcons.STEERING_WHEEL}
-            panelId={panelId}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
-        >
-            <Stack direction={StackDirection.HORIZONTAL}>
-                <Button value={enabled ? "Enabled" : "Disabled"} onClick={() => setEnabled(!enabled)} />
-                <Dropdown options={["Auto", "Teleop"]} onSelect={() => {}} />
-            </Stack>
-        </Panel>
+        <Stack direction="row">
+            <Button onClick={() => setEnabled(!enabled)}>{enabled ? "Enabled" : "Disabled"}</Button>
+            <Select>
+                <MenuItem value="Auto">Auto</MenuItem>
+                <MenuItem value="Teleop">Teleop</MenuItem>
+            </Select>
+        </Stack>
     )
 }
 

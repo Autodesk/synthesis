@@ -1,7 +1,7 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
-import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import Jolt from "@azaleacolburn/jolt-physics"
+import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock } from "../mocks/jolt"
 
 const mockPhysicsSystem = {

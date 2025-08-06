@@ -136,7 +136,6 @@ def setupMarkingMenu(ui: adsk.core.UserInterface) -> None:
     onMarkingMenuDisplaying = MyMarkingMenuHandler()
     handlers.append(onMarkingMenuDisplaying)
     ui.markingMenuDisplaying.add(onMarkingMenuDisplaying)
-
     # Add customized handler for commands creating
     onCommandCreated = MyCommandCreatedEventHandler()
     handlers.append(onCommandCreated)

@@ -1,32 +1,34 @@
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { Button, Stack } from "@mui/material"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
-import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import SelectButton from "@/components/SelectButton"
-import World from "@/systems/World"
-import Slider from "@/ui/components/Slider"
-import Jolt from "@azaleacolburn/jolt-physics"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
+import StatefulSlider from "@/ui/components/StatefulSlider"
+import { Spacer } from "@/ui/components/StyledComponents"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/helpers/UseThemeHelpers"
-import Button from "@/ui/components/Button"
-import { Spacer } from "@/ui/components/StyledComponents"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import { Box } from "@mui/material"
-import { Switch } from "@mui/base/Switch"
-import Label, { LabelSize } from "@/ui/components/Label"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
 const MAX_ZONE_SIZE = 1.0
+const MIN_ANIMATION_DURATION = 0.1
+const MAX_ANIMATION_DURATION = 2.0
+const ANIMATION_DURATION_STEP = 0.05
 
 /**
  * Saves ejector configuration to selected robot.
@@ -57,7 +59,8 @@ function save(
     selectedRobot: MirabufSceneObject,
     selectedNode?: RigidNodeId,
     showZoneAlways?: boolean,
-    maxPieces?: number
+    maxPieces?: number,
+    animationDuration?: number
 ) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
@@ -88,6 +91,7 @@ function save(
     }
 
     selectedRobot.intakePreferences.maxPieces = maxPieces!
+    selectedRobot.intakePreferences.animationDuration = animationDuration!
 
     PreferencesSystem.savePreferences()
 }
@@ -97,24 +101,22 @@ interface ConfigPickupProps {
 }
 
 const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ selectedRobot }) => {
-    const { currentTheme, themes } = useTheme()
-    const theme = useMemo(() => {
-        return themes[currentTheme]
-    }, [currentTheme, themes])
-
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
     const [maxPieces, setMaxPieces] = useState<number>(selectedRobot.intakePreferences?.maxPieces || 1)
+    const [animationDuration, setAnimationDuration] = useState<number>(
+        selectedRobot.intakePreferences?.animationDuration || 0.5
+    )
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces)
+            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces, animationDuration)
             selectedRobot.updateIntakeSensor()
         }
-    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces])
+    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
@@ -133,13 +135,14 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [zoneSize])
 
     const placeholderMesh = useMemo(() => {
+        // TODO: dynamic color?
         const material = World.sceneRenderer.createToonMaterial(
-            convertReactRgbaColorToThreeColor(theme.HighlightHover.color)
+            convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 })
         )
         material.transparent = true
         material.opacity = 0.6
         return new THREE.Mesh(new THREE.SphereGeometry(0.5), material)
-    }, [theme])
+    }, [])
 
     const gizmoComponent = useMemo(() => {
         if (selectedRobot?.intakePreferences) {
@@ -184,8 +187,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             gizmoRef.current = undefined
             return <></>
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedRobot?.intakePreferences, placeholderMesh])
+    }, [
+        selectedRobot?.intakePreferences,
+        placeholderMesh,
+        selectedRobot.mechanism.nodeToBody.get,
+        selectedRobot.rootNodeId,
+    ])
 
     useEffect(() => {
         if (selectedRobot?.intakePreferences) {
@@ -193,9 +200,11 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             setSelectedNode(selectedRobot.intakePreferences.parentNode)
             setMaxPieces(selectedRobot.intakePreferences.maxPieces)
             setShowZoneAlways(selectedRobot.intakePreferences.showZoneAlways ?? false)
+            setAnimationDuration(selectedRobot.intakePreferences.animationDuration ?? 0.5)
         } else {
             setSelectedNode(undefined)
             setShowZoneAlways(false)
+            setAnimationDuration(0.5)
         }
     }, [selectedRobot])
 
@@ -235,7 +244,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     )
 
     return (
-        <>
+        <Stack direction="column">
             {/* Button for user to select the parent node */}
             <SelectButton
                 placeholder="Select parent node"
@@ -244,89 +253,61 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             />
 
             {/* Slider for user to set velocity of ejector configuration */}
-            <Slider
+            <StatefulSlider
+                label="Intake Zone Diameter (m)"
                 min={MIN_ZONE_SIZE}
                 max={MAX_ZONE_SIZE}
-                value={zoneSize}
-                label="Zone Size"
-                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                onChange={(_, vel: number | number[]) => {
+                defaultValue={zoneSize}
+                // TODO:
+                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={vel => {
                     setZoneSize(vel as number)
                 }}
                 step={0.01}
             />
+            <StatefulSlider
+                min={MIN_ANIMATION_DURATION}
+                max={MAX_ANIMATION_DURATION}
+                defaultValue={animationDuration ?? 0.5}
+                onChange={v => {
+                    setAnimationDuration(v as number)
+                    EjectableSceneObject.setAnimationDuration(v as number)
+                }}
+                step={ANIMATION_DURATION_STEP}
+                label="Intake Animation Duration (s)"
+                // TODO:
+                // format={{ maximumFractionDigits: 2 }}
+            />
+            <StatefulSlider
+                label="Intake Animation Duration (s)"
+                min={MIN_ANIMATION_DURATION}
+                max={MAX_ANIMATION_DURATION}
+                defaultValue={animationDuration ?? 0.5}
+                onChange={v => {
+                    const val = typeof v === "number" ? v : v[0]
+                    setAnimationDuration(val)
+                    EjectableSceneObject.setAnimationDuration(val)
+                }}
+                step={ANIMATION_DURATION_STEP}
+                // TODO:
+                // format={{ maximumFractionDigits: 2 }}
+            />
 
             {/* Slider for adjusting max pieces the robot can intake */}
-            <Slider
+            <StatefulSlider
+                label="Max Pieces"
                 min={1}
                 max={10}
                 step={1}
-                value={maxPieces ?? 1}
-                label="Max Pieces"
-                onChange={(_, v) => setMaxPieces(v as number)}
+                defaultValue={maxPieces ?? 1}
+                onChange={v => setMaxPieces(v as number)}
             />
 
             {/* Checkbox for showing intake zone indicator at all times */}
-            <Box
-                display="flex"
-                flexDirection={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-                textAlign={"center"}
-            >
-                <Label size={LabelSize.SMALL} className="mr-12 whitespace-nowrap">
-                    Show intake zone indicator always
-                </Label>
-                <Switch
-                    checked={showZoneAlways}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setShowZoneAlways(e.target.checked)
-                    }}
-                    slotProps={{
-                        root: {
-                            className: `
-                                group relative inline-block 
-                                w-[24px] h-[24px] m-2.5 
-                                cursor-pointer transform transition-transform 
-                                hover:scale-[1.03] active:scale-[1.06]
-                            `,
-                        },
-                        input: {
-                            className: `
-                                cursor-inherit absolute 
-                                w-full h-full top-0 left-0 
-                                opacity-0 z-10 border-none
-                            `,
-                        },
-                        track: ownerState => {
-                            const baseClasses = `
-                                absolute block w-full h-full 
-                                transition rounded-full 
-                                border border-solid outline-none 
-                                border-interactive-element-right 
-                                dark:border-interactive-element-right 
-                                group-[.base--focusVisible]:shadow-outline-switch 
-                                transform transition-transform 
-                                group-hover:scale-[1.03] group-active:scale-[1.06]
-                            `
-                            const backgroundClasses = ownerState.checked
-                                ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right"
-                                : "bg-background-secondary"
-
-                            return {
-                                className: `${baseClasses} ${backgroundClasses}`,
-                            }
-                        },
-                        thumb: {
-                            className: "display-none",
-                        },
-                    }}
-                />
-            </Box>
+            <Checkbox label="Show intake zone indicator always" checked={showZoneAlways} onClick={setShowZoneAlways} />
             {gizmoComponent}
             {Spacer(10)}
             <Button
-                value="Reset"
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
@@ -338,9 +319,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     setZoneSize(0.5)
                     setSelectedNode(selectedRobot?.rootNodeId)
                     setMaxPieces(selectedRobot.intakePreferences?.maxPieces ?? 1)
+                    setAnimationDuration(0.5)
                 }}
-            />
-        </>
+            >
+                Reset
+            </Button>
+        </Stack>
     )
 }
 

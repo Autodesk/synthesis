@@ -1,0 +1,73 @@
+name: Fusion - WebUI Build and Format
+
+on:
+  workflow_dispatch: {}
+
+  push: 
+    branches: [ prod, dev ]
+    paths:
+      - 'exporter/SynthesisFusionAddin/web/**'
+  pull_request:
+    branches: [ prod, dev ]
+    paths:
+      - 'exporter/SynthesisFusionAddin/web/**'
+
+
+jobs:
+  runFormatValidationScript:
+    defaults:
+      run:
+        working-directory: exporter/SynthesisFusionAddin/web
+    name: Biome Format Validation
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: Bun Runtime Setup
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+    - name: Cache Node Dependencies
+      uses: actions/cache@v3
+      with:
+        key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/bun.lock')}}"
+        path: 'exporter/SynthesisFusionAddin/web/node_modules'
+        restore-keys: |
+          ${{runner.os}}-npm-fusion-
+          ${{runner.os}}-npm
+
+    - name: Install Dependencies
+      run: bun install --frozen-lockfile
+
+    - name: Linter & Formatter
+      run: |
+        bunx biome --version
+        bunx biome ci --error-on-warnings
+
+  runBuildScript:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: exporter/SynthesisFusionAddin/web
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Bun Runtime Setup
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/bun.lock')}}"
+          path: 'exporter/SynthesisFusionAddin/web/node_modules'
+          restore-keys: |
+            ${{runner.os}}-npm-fusion-
+            ${{runner.os}}-npm
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run build

@@ -1,7 +1,7 @@
-import Behavior from "@/systems/simulation/behavior/Behavior"
 import InputSystem from "@/systems/input/InputSystem"
-import EjectorDriver from "../../driver/EjectorDriver"
-import IntakeDriver from "../../driver/IntakeDriver"
+import Behavior from "@/systems/simulation/behavior/Behavior"
+import type EjectorDriver from "../../driver/EjectorDriver"
+import type IntakeDriver from "../../driver/IntakeDriver"
 
 class GamepieceManipBehavior extends Behavior {
     private _brainIndex: number

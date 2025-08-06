@@ -1,20 +1,21 @@
-import React from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import LabeledButton, { LabelPlacement } from "@/components/LabeledButton"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, FormControlLabel } from "@mui/material"
+import type React from "react"
+import { useEffect } from "react"
+import type { ModalImplProps } from "@/ui/components/Modal"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import RCCreateDeviceModal from "./rio-config/RCCreateDeviceModal"
 
-const RoboRIOModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext()
+const RoboRIOModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { openModal, configureScreen } = useUIContext()
+    useEffect(() => {
+        configureScreen(modal!, { title: "RoboRIO Configuration" }, {})
+    }, [])
+
     return (
-        <Modal name="RoboRIO Configuration" icon={SynthesisIcons.CODE_SQUARE} modalId={modalId}>
-            <LabeledButton
-                label="cbdbcc,ds,vsdv"
-                value="Create Device"
-                placement={LabelPlacement.TOP}
-                onClick={() => openModal("create-device")}
-            />
-        </Modal>
+        <FormControlLabel
+            label="cbdbcc,ds,vsdv"
+            control={<Button value="Create Device" onClick={() => openModal(RCCreateDeviceModal, undefined)} />}
+        />
     )
 }
 

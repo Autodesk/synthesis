@@ -1,9 +1,9 @@
 import "./Scene.css"
+import type React from "react"
 import { useEffect, useRef } from "react"
 import Stats from "stats.js"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
-import React from "react"
 
 let stats: Stats | null
 

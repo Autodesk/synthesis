@@ -1,5 +1,5 @@
-import { describe, test, expect, vi, beforeEach, afterEach, type MockedFunction } from "vitest"
-import MirabufLoader, { MiraType, backUpRobots } from "../../mirabuf/MirabufLoader"
+import { afterEach, beforeEach, describe, expect, type MockedFunction, test, vi } from "vitest"
+import MirabufLoader, { backUpRobots, MiraType } from "../../mirabuf/MirabufLoader"
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -157,7 +157,7 @@ describe("MirabufLoader", () => {
         localStorageMock["Synthesis Nonce Key"] = "4543246"
         const map = { [key]: { id, miraType, cacheKey: key } }
         localStorageMock["Robots"] = JSON.stringify(map)
-        backUpRobots[id] = { id, miraType, cacheKey: key, buffer: new ArrayBuffer(1) }
+        backUpRobots[id] = { id, miraType, cacheKey: key, buffer: new Uint8Array(new ArrayBuffer(1)) }
 
         const name = "Test Robot"
         const thumbnailStorageID = "thumb123"

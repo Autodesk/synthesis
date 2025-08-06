@@ -1,8 +1,8 @@
-import { expect, test, vi, beforeEach, describe, afterEach } from "vitest"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import * as THREE from "three"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -24,7 +24,6 @@ vi.mock("@/systems/World", () => ({
         },
         physicsSystem: {
             getBody: vi.fn(() => ({
-                /* eslint-disable @typescript-eslint/naming-convention */
                 GetWorldTransform: vi.fn(() => ({
                     GetTranslation: vi.fn(() => ({
                         GetX: () => 0,
@@ -44,7 +43,6 @@ vi.mock("@/systems/World", () => ({
                         GetW: () => 1,
                     })),
                 })),
-                /* eslint-enable @typescript-eslint/naming-convention */
             })),
             setBodyPositionAndRotation: vi.fn(),
         },

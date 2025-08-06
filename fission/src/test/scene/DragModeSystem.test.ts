@@ -1,11 +1,11 @@
-import { expect, test, vi, beforeEach, describe, afterEach } from "vitest"
-import DragModeSystem from "@/systems/scene/DragModeSystem"
-import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import * as THREE from "three"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import { PRIMARY_MOUSE_INTERACTION, InteractionType } from "@/systems/scene/ScreenInteractionHandler"
-import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import DragModeSystem from "@/systems/scene/DragModeSystem"
+import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
+import World from "@/systems/World"
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -15,6 +15,7 @@ vi.mock("@/systems/World", () => ({
         set physicsSystem(value) {
             this._physicsSystem = value
         },
+        // biome-ignore lint/style/useNamingConvention: Mocking private class property
         _physicsSystem: null,
         sceneRenderer: {
             mainCamera: {
@@ -170,7 +171,6 @@ describe("DragModeSystem Integration Tests", () => {
             const originalRayCast = physicsSystem.rayCast
             const mockRaycastResult = {
                 data: { mBodyID: bodyId },
-                // eslint-disable-next-line
                 point: { GetX: () => 0, GetY: () => 0, GetZ: () => 0 },
             }
             physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)

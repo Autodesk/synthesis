@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeEach, afterEach, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 // Mock dependencies before importing APS
 vi.mock("@/systems/World", () => ({
@@ -45,7 +45,7 @@ const mockNow = 1700000000000 // Fixed timestamp
 vi.spyOn(Date, "now").mockReturnValue(mockNow)
 
 // Import APS after setting up mocks
-import APS, { APSAuth, APSUserInfo } from "@/aps/APS"
+import APS, { type APSAuth, type APSUserInfo } from "@/aps/APS"
 
 // Helper function to create proper fetch response mock
 const createMockResponse = (data: unknown, ok: boolean = true) => ({

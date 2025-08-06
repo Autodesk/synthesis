@@ -1,7 +1,8 @@
-import WorldSystem from "@/systems/WorldSystem.ts"
-import { globalAddToast, globalOpenPanel } from "@/components/GlobalUIControls.ts"
-import World from "@/systems/World.ts"
+import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
+import World from "@/systems/World.ts"
+import WorldSystem from "@/systems/WorldSystem.ts"
+import SettingsModal from "@/ui/modals/configuring/SettingsModal"
 
 export class PerformanceMonitoringSystem extends WorldSystem {
     isCritical: boolean = false
@@ -29,7 +30,7 @@ export class PerformanceMonitoringSystem extends WorldSystem {
                 if (this.isCritical) {
                     PreferencesSystem.resetGraphicsPreferences()
                     World.sceneRenderer.changeCSMSettings(PreferencesSystem.getGraphicsPreferences())
-                    globalOpenPanel("graphics-settings")
+                    globalOpenModal(SettingsModal, { initialTab: "graphics" })
                     globalAddToast("warning", "Performance Issues Detected", "Reverting to simple graphics")
                 }
             }

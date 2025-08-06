@@ -1,3 +1,9 @@
+import type Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import type MirabufParser from "../../mirabuf/MirabufParser"
+import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
+import { mirabuf } from "../../proto/mirabuf"
 import {
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToJoltRVec3,
@@ -6,33 +12,23 @@ import {
     convertMirabufVector3ToJoltRVec3,
     convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
+    convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
-    convertThreeToJoltQuat,
 } from "../../util/TypeConversions"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
-import { mirabuf } from "../../proto/mirabuf"
-import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
+import PreferencesSystem from "../preferences/PreferencesSystem"
 import WorldSystem from "../WorldSystem"
-import Mechanism from "./Mechanism"
 import {
+    type CurrentContactData,
     OnContactAddedEvent,
-    CurrentContactData,
     OnContactPersistedEvent,
     OnContactRemovedEvent,
+    type OnContactValidateData,
     OnContactValidateEvent,
-    OnContactValidateData,
-    PhysicsEvent,
+    type PhysicsEvent,
 } from "./ContactEvents"
-import PreferencesSystem from "../preferences/PreferencesSystem"
-
-export type JoltBodyIndexAndSequence = number
-
-export const PAUSE_REF_ASSEMBLY_SPAWNING = "assembly-spawning"
-export const PAUSE_REF_ASSEMBLY_CONFIG = "assembly-config"
-export const PAUSE_REF_ASSEMBLY_MOVE = "assembly-move"
+import Mechanism from "./Mechanism"
+import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -348,27 +344,31 @@ class PhysicsSystem extends WorldSystem {
     public createJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!
         const joints = Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][]
-        joints.forEach(([jGuid, jInst]) => {
-            if (jGuid == GROUNDED_JOINT_ID) return
+        joints.forEach(([jointGuid, jointInst]) => {
+            if (jointGuid == GROUNDED_JOINT_ID) return
 
-            const rnA = parser.partToNodeMap.get(jInst.parentPart!)
-            const rnB = parser.partToNodeMap.get(jInst.childPart!)
+            const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
+            const rnB = parser.partToNodeMap.get(jointInst.childPart!)
 
             if (!rnA || !rnB) {
-                console.warn(`Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`)
+                console.warn(`Skipping joint '${jointInst.info!.name!}'. Couldn't find associated rigid nodes.`)
                 return
             } else if (rnA.id == rnB.id) {
                 console.warn(
-                    `Skipping joint '${jInst.info!.name!}'. Jointing the same parts. Likely in issue with Fusion Design structure.`
+                    `Skipping joint '${jointInst.info!.name!}'. Jointing the same parts. Likely in issue with Fusion Design structure.`
                 )
                 return
             }
 
-            const jDef = parser.assembly.data!.joints!.jointDefinitions![jInst.jointReference!]! as mirabuf.joint.Joint
+            const jDef = parser.assembly.data!.joints!.jointDefinitions![
+                jointInst.jointReference!
+            ]! as mirabuf.joint.Joint
             const bodyIdA = mechanism.getBodyByNodeId(rnA.id)
             const bodyIdB = mechanism.getBodyByNodeId(rnB.id)
             if (!bodyIdA || !bodyIdB) {
-                console.warn(`Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`)
+                console.warn(
+                    `Skipping joint '${jointInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`
+                )
                 return
             }
             const bodyA = this.getBody(bodyIdA)
@@ -376,7 +376,7 @@ class PhysicsSystem extends WorldSystem {
 
             // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
             const prefMotors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
-            const prefMotor = prefMotors ? prefMotors.filter(x => x.name == jInst.info?.name) : undefined
+            const prefMotor = prefMotors ? prefMotors.filter(x => x.name == jointInst.info?.name) : undefined
             const miraMotor = jointData.motorDefinitions![jDef.motorReference]
 
             let maxVel = VELOCITY_DEFAULT
@@ -397,7 +397,7 @@ class PhysicsSystem extends WorldSystem {
                     childBody: bodyIdB,
                     primaryConstraint: c,
                     maxVelocity: maxVel ?? VELOCITY_DEFAULT,
-                    info: jInst.info ?? undefined, // remove possibility for null
+                    info: jointInst.info ?? undefined, // remove possibility for null
                     extraConstraints: [],
                     extraBodies: [],
                 })
@@ -415,7 +415,7 @@ class PhysicsSystem extends WorldSystem {
                             : [bodyB, bodyA]
 
                         const res = this.createWheelConstraint(
-                            jInst,
+                            jointInst,
                             jDef,
                             maxForce ?? 1.5,
                             bodyOne,
@@ -431,7 +431,7 @@ class PhysicsSystem extends WorldSystem {
 
                     addConstraint(
                         this.createHingeConstraint(
-                            jInst,
+                            jointInst,
                             jDef,
                             maxForce ?? 50,
                             bodyA,
@@ -443,10 +443,10 @@ class PhysicsSystem extends WorldSystem {
                     break
 
                 case mirabuf.joint.JointMotion.SLIDER:
-                    addConstraint(this.createSliderConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB))
+                    addConstraint(this.createSliderConstraint(jointInst, jDef, maxForce ?? 200, bodyA, bodyB))
                     break
                 case mirabuf.joint.JointMotion.BALL:
-                    this.createBallConstraint(jInst, jDef, bodyA, bodyB, mechanism)
+                    this.createBallConstraint(jointInst, jDef, bodyA, bodyB, mechanism)
                     break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")
@@ -704,15 +704,21 @@ class PhysicsSystem extends WorldSystem {
         const yawAxis = new JOLT.Vec3(yawDof?.axis?.x ?? 0, yawDof?.axis?.y ?? 0, yawDof?.axis?.z ?? 0)
         const rollAxis = new JOLT.Vec3(rollDof?.axis?.x ?? 0, rollDof?.axis?.y ?? 0, rollDof?.axis?.z ?? 0)
 
-        const constraints: { axis: Jolt.Vec3; friction: number; value: number; upper?: number; lower?: number }[] = []
+        const constraints: {
+            axis: Jolt.Vec3
+            friction: number
+            value: number
+            upper?: number
+            lower?: number
+        }[] = []
 
         if (!pitchDof?.limits || (pitchDof.limits.upper ?? 0) - (pitchDof.limits.lower ?? 0) > 0.001) {
             constraints.push({
                 axis: pitchAxis,
                 friction: 0.0,
                 value: pitchDof?.value ?? 0,
-                upper: pitchDof?.limits ? pitchDof.limits.upper ?? 0 : undefined,
-                lower: pitchDof?.limits ? pitchDof.limits.lower ?? 0 : undefined,
+                upper: pitchDof?.limits ? (pitchDof.limits.upper ?? 0) : undefined,
+                lower: pitchDof?.limits ? (pitchDof.limits.lower ?? 0) : undefined,
             })
         }
 
@@ -721,8 +727,8 @@ class PhysicsSystem extends WorldSystem {
                 axis: yawAxis,
                 friction: 0.0,
                 value: yawDof?.value ?? 0,
-                upper: yawDof?.limits ? yawDof.limits.upper ?? 0 : undefined,
-                lower: yawDof?.limits ? yawDof.limits.lower ?? 0 : undefined,
+                upper: yawDof?.limits ? (yawDof.limits.upper ?? 0) : undefined,
+                lower: yawDof?.limits ? (yawDof.limits.lower ?? 0) : undefined,
             })
         }
 
@@ -731,8 +737,8 @@ class PhysicsSystem extends WorldSystem {
                 axis: rollAxis,
                 friction: 0.0,
                 value: rollDof?.value ?? 0,
-                upper: rollDof?.limits ? rollDof.limits.upper ?? 0 : undefined,
-                lower: rollDof?.limits ? rollDof.limits.lower ?? 0 : undefined,
+                upper: rollDof?.limits ? (rollDof.limits.upper ?? 0) : undefined,
+                lower: rollDof?.limits ? (rollDof.limits.lower ?? 0) : undefined,
             })
         }
 
@@ -916,7 +922,9 @@ class PhysicsSystem extends WorldSystem {
 
         const massMod = (() => {
             let assemblyMass = 0
-            nonPhysicsNodes.forEach(x => (assemblyMass += x.mass))
+            nonPhysicsNodes.forEach(x => {
+                assemblyMass += x.mass
+            })
 
             return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
         })()

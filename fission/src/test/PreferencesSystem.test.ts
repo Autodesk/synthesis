@@ -1,11 +1,13 @@
+import { describe, expect, test } from "vitest"
+import { ContactType } from "@/mirabuf/ZoneTypes"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import {
-    MotorPreferences,
-    RobotPreferences,
+import type {
     FieldPreferences,
     GraphicsPreferences,
+    MotorPreferences,
+    RobotPreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import { test, describe, expect } from "vitest"
 
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
@@ -123,6 +125,7 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 showZoneAlways: true,
                 maxPieces: 3,
+                animationDuration: 0.5,
             },
             ejector: {
                 deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
@@ -132,6 +135,7 @@ describe("Preference System Robot/Field", () => {
             },
             driveVelocity: 3,
             driveAcceleration: 6,
+            unstickForce: 8000,
         }
         const robotPreferences2: RobotPreferences = {
             inputsSchemes: [],
@@ -142,6 +146,7 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 showZoneAlways: false,
                 maxPieces: 1,
+                animationDuration: 0.5,
             },
             ejector: {
                 deltaTransformation: [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
@@ -151,6 +156,7 @@ describe("Preference System Robot/Field", () => {
             },
             driveVelocity: 1.5,
             driveAcceleration: 8,
+            unstickForce: 10000,
         }
 
         PreferencesSystem.setRobotPreferences("RobotPreferences1", robotPreferences1)
@@ -200,7 +206,8 @@ describe("Preference System Robot/Field", () => {
                     parentNode: undefined,
                     deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                     penaltyPoints: 2,
-                    requireRobotContact: false,
+                    contactType: ContactType.ROBOT_ENTERS,
+                    activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP],
                 },
             ],
         }

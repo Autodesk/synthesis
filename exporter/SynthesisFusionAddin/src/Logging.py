@@ -12,7 +12,7 @@ from typing import Any, Callable, cast
 import adsk.core
 
 from src import INTERNAL_ID, IS_RELEASE, SUPPORT_PATH
-from src.Util import makeDirectories
+from src.lib.Util import makeDirectories
 
 MAX_LOG_FILES_TO_KEEP = 10
 TIMING_LEVEL = 25

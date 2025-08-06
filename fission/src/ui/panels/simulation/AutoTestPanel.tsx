@@ -1,25 +1,25 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { FaInfinity, FaRobot } from "react-icons/fa6"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { Button, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { Stack, styled } from "@mui/system"
+import type React from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { FaInfinity } from "react-icons/fa6"
+import * as THREE from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
+import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Label from "@/ui/components/Label"
-import Button from "@/ui/components/Button"
-import Jolt from "@azaleacolburn/jolt-physics"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import * as THREE from "three"
-import { AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { styled } from "@mui/system"
-import Input from "@/ui/components/Input"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 type StagingProps = {
     state: "Staging"
@@ -51,13 +51,13 @@ type BodyCapture = {
 const AUTO_TEST_PAUSE_REF = "auto-testing"
 
 export const BlueAllianceToggleButton = styled(ToggleButton)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": "#5f60ff",
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: "#5f60ff",
     "&.Mui-selected": {
         color: "black",
-        backgroundImage: `linear-gradient(to right, #5f60ff, #5f60ff)`,
+        backgroundImage: "linear-gradient(to right, #5f60ff, #5f60ff)",
         borderColor: "transparent",
     },
     ".MuiTouchRipple-ripple": {
@@ -91,13 +91,13 @@ export const BlueAllianceToggleButton = styled(ToggleButton)({
 })
 
 export const RedAllianceToggleButton = styled(ToggleButton)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": "#d74e26",
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: "#d74e26",
     "&.Mui-selected": {
         color: "black",
-        backgroundImage: `linear-gradient(to right, #d74e26, #d74e26)`,
+        backgroundImage: "linear-gradient(to right, #d74e26, #d74e26)",
         borderColor: "transparent",
     },
     ".MuiTouchRipple-ripple": {
@@ -166,13 +166,13 @@ const End: React.FC<EndProps> = ({ assembly, setStaging, captures }) => {
 
     const reset = useCallback(() => {
         resetBodies(captures)
-        setStaging?.({ state: "Staging", assembly: assembly })
+        setStaging?.({ state: "Staging", assembly })
     }, [assembly, captures, setStaging])
 
     return (
-        <>
-            <Button className="self-center" value="Reset" onClick={reset} />
-        </>
+        <Button className="self-center" onClick={reset}>
+            Reset
+        </Button>
     )
 }
 
@@ -191,10 +191,10 @@ const Playing: React.FC<PlayingProps> = ({ assembly, setEnd, countdown, captures
     }, [assembly, captures, setEnd])
 
     useEffect(() => {
-        let handle: number | undefined = undefined
+        let handle: number | undefined
         const endTime = Date.now() / 1000.0 + countdown
         const func = () => {
-            if (handle != undefined) cancelAnimationFrame(handle)
+            if (handle !== undefined) cancelAnimationFrame(handle)
 
             setRemaining(endTime - Date.now() / 1000.0)
 
@@ -205,7 +205,7 @@ const Playing: React.FC<PlayingProps> = ({ assembly, setEnd, countdown, captures
         }
 
         return () => {
-            if (handle != undefined) cancelAnimationFrame(handle)
+            if (handle !== undefined) cancelAnimationFrame(handle)
         }
     }, [countdown])
 
@@ -217,8 +217,12 @@ const Playing: React.FC<PlayingProps> = ({ assembly, setEnd, countdown, captures
 
     return (
         <>
-            <Label className="text-center">{Math.max(remaining, 0).toFixed(1)}s</Label>
-            <Button className="self-center" value="Stop" onClick={end} />
+            <Label size="md" className="text-center">
+                {Math.max(remaining, 0).toFixed(1)}s
+            </Label>
+            <Button className="self-center" onClick={end}>
+                Stop
+            </Button>
         </>
     )
 }
@@ -233,13 +237,15 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
         SimDriverStation.setStation(station)
 
         const captures = captureBodies()
-        setPlaying?.({ assembly: assembly, captures: captures, countdown: countdown, state: "Playing" })
+        setPlaying?.({ assembly, captures, countdown, state: "Playing" })
     }, [assembly, countdown, gameData, setPlaying, station])
 
     return (
         <>
-            <div className="flex flex-col gap-1">
-                <Label className="text-center">Countdown</Label>
+            <Stack>
+                <Label size="md" textAlign="center">
+                    Countdown
+                </Label>
                 <ToggleButtonGroup
                     value={countdown}
                     exclusive
@@ -256,9 +262,11 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                         <FaInfinity />
                     </ToggleButton>
                 </ToggleButtonGroup>
-            </div>
-            <div className="flex flex-col gap-1">
-                <Label className="text-center">Alliance Station</Label>
+            </Stack>
+            <Stack>
+                <Label size="md" textAlign="center">
+                    Alliance Station
+                </Label>
                 <ToggleButtonGroup
                     value={station}
                     exclusive
@@ -266,37 +274,50 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     {...SoundPlayer.buttonSoundEffects()}
                     className="self-center"
                 >
-                    <RedAllianceToggleButton value={"red1"}>1</RedAllianceToggleButton>
-                    <RedAllianceToggleButton value={"red2"}>2</RedAllianceToggleButton>
-                    <RedAllianceToggleButton value={"red3"}>3</RedAllianceToggleButton>
-                    <BlueAllianceToggleButton value={"blue1"}>1</BlueAllianceToggleButton>
-                    <BlueAllianceToggleButton value={"blue2"}>2</BlueAllianceToggleButton>
-                    <BlueAllianceToggleButton value={"blue3"}>3</BlueAllianceToggleButton>
+                    <RedAllianceToggleButton value="red1">1</RedAllianceToggleButton>
+                    <RedAllianceToggleButton value="red2">2</RedAllianceToggleButton>
+                    <RedAllianceToggleButton value="red3">3</RedAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue1">1</BlueAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue2">2</BlueAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue3">3</BlueAllianceToggleButton>
                 </ToggleButtonGroup>
-            </div>
-            <div className="flex flex-col gap-1">
-                <Input label="Game Data" placeholder="..." defaultValue={gameData} onInput={setGameData} />
-            </div>
-            <div className="flex flex-col gap-1">
-                <Label className="text-center">Placement</Label>
-                <TransformGizmoControl parent={assembly} size={3} defaultMode={"translate"} scaleDisabled />
-            </div>
-            <Button className="self-center" value="Test" onClick={next} />
+            </Stack>
+            <Stack>
+                <TextField
+                    label="Game Data"
+                    placeholder="..."
+                    defaultValue={gameData}
+                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => setGameData(e.target.value)}
+                />
+            </Stack>
+            <Stack>
+                <Label size="md" textAlign="center">
+                    Placement
+                </Label>
+                <TransformGizmoControl parent={assembly} size={3} defaultMode="translate" scaleDisabled />
+            </Stack>
+            <Button className="self-center" onClick={next}>
+                Test
+            </Button>
         </>
     )
 }
 
-const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
-    const { closePanel } = usePanelControlContext()
+const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
+    const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
         () =>
             [...World.sceneRenderer.sceneObjects.values()].find(
-                x => (x as MirabufSceneObject).brain?.brainType == "wpilib"
+                x => (x as MirabufSceneObject).brain?.brainType === "wpilib"
             ) as MirabufSceneObject,
         []
     )
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})
+    }, [])
 
     useEffect(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)
@@ -319,48 +340,30 @@ const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
         }
     }, [assembly])
 
-    useEffect(() => {
-        closePanel("configure")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
     return (
-        <Panel
-            name="Auto Testing"
-            icon={<FaRobot />}
-            panelId={panelId}
-            openLocation={"right"}
-            sidePadding={sidePadding}
-            cancelEnabled={false}
-            acceptName="Done"
-        >
-            <div className="flex flex-col bg-background-secondary rounded-md p-2 gap-4">
-                {activeProps != undefined ? (
-                    activeProps.state == "Staging" ? (
-                        <Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
-                    ) : activeProps.state == "Playing" ? (
-                        <Playing
-                            assembly={activeProps.assembly}
-                            captures={activeProps.captures}
-                            countdown={activeProps.countdown}
-                            setEnd={setActiveProps}
-                            state="Playing"
-                        />
-                    ) : activeProps.state == "End" ? (
-                        <End
-                            assembly={activeProps.assembly}
-                            setStaging={setActiveProps}
-                            captures={activeProps.captures}
-                            state="End"
-                        />
-                    ) : (
-                        <></>
-                    )
+        <Stack gap={4}>
+            {activeProps !== undefined &&
+                (activeProps.state === "Staging" ? (
+                    <Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
+                ) : activeProps.state === "Playing" ? (
+                    <Playing
+                        assembly={activeProps.assembly}
+                        captures={activeProps.captures}
+                        countdown={activeProps.countdown}
+                        setEnd={setActiveProps}
+                        state="Playing"
+                    />
+                ) : activeProps.state === "End" ? (
+                    <End
+                        assembly={activeProps.assembly}
+                        setStaging={setActiveProps}
+                        captures={activeProps.captures}
+                        state="End"
+                    />
                 ) : (
                     <></>
-                )}
-            </div>
-        </Panel>
+                ))}
+        </Stack>
     )
 }
 

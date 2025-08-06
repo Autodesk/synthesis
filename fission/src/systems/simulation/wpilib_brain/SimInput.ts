@@ -1,12 +1,3 @@
-import World from "@/systems/World"
-import EncoderStimulus from "../stimulus/EncoderStimulus"
-import { SimCANEncoder, SimGyro, SimAccel, SimDIO, SimAI } from "./WPILibBrain"
-import Mechanism from "@/systems/physics/Mechanism"
-import Jolt from "@azaleacolburn/jolt-physics"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
-import * as THREE from "three"
-
 export abstract class SimInput {
     constructor(protected _device: string) {}
 

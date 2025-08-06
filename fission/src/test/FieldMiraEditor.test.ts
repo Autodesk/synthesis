@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest"
+import type { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import FieldMiraEditor from "../mirabuf/FieldMiraEditor"
 import { mirabuf } from "../proto/mirabuf"
-import { ScoringZonePreferences, Alliance } from "@/systems/preferences/PreferenceTypes"
 
 function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }

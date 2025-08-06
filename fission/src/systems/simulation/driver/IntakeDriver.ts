@@ -1,7 +1,7 @@
-import { mirabuf } from "@/proto/mirabuf"
-import { NoraNumber, NoraTypes } from "../Nora"
-import Driver, { DriverID } from "./Driver"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { mirabuf } from "@/proto/mirabuf"
+import { type NoraNumber, NoraTypes } from "../Nora"
+import Driver, { type DriverID } from "./Driver"
 
 class IntakeDriver extends Driver {
     public value: number

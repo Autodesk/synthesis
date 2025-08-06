@@ -1,27 +1,47 @@
+import type Jolt from "@azaleacolburn/jolt-physics"
+import {
+    Button,
+    Checkbox,
+    FormControl,
+    InputLabel,
+    ListItemText,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    Stack,
+    TextField,
+} from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import Input from "@/components/Input"
-import Button from "@/components/Button"
-import Checkbox from "@/components/Checkbox"
-import NumberInput from "@/components/NumberInput"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SelectButton from "@/ui/components/SelectButton"
-import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
+import { ContactType } from "@/mirabuf/ZoneTypes"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import type { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+import SelectButton from "@/ui/components/SelectButton"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
+
+const MATCH_MODE_OPTIONS: MatchModeType[] = [
+    MatchModeType.SANDBOX,
+    MatchModeType.AUTONOMOUS,
+    MatchModeType.TELEOP,
+    MatchModeType.ENDGAME,
+]
+
+const CONTACT_TYPE_OPTIONS = Object.values(ContactType)
 
 /**
  * Saves ejector configuration to selected field.
@@ -45,6 +65,7 @@ import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
  * @param alliance protected zone alliance.
  * @param points Number of points to penalize.
  * @param requireRobotContact Do you need to contact a robot for the penalty to apply.
+ * @param activeDuring Array of match mode types during which the zone is active.
  * @param gizmo Reference to the transform gizmo object.
  * @param selectedNode Selected node that configuration is relative to.
  */
@@ -54,7 +75,8 @@ function save(
     name: string,
     alliance: Alliance,
     points: number,
-    requireRobotContact: boolean,
+    contactType: ContactType,
+    activeDuring: MatchModeType[],
     gizmo: GizmoSceneObject,
     selectedNode?: RigidNodeId
 ) {
@@ -89,7 +111,8 @@ function save(
     zone.alliance = alliance
     zone.parentNode = selectedNode
     zone.penaltyPoints = points
-    zone.requireRobotContact = requireRobotContact
+    zone.contactType = contactType
+    zone.activeDuring = activeDuring
 
     if (!field.fieldPreferences.protectedZones.includes(zone)) field.fieldPreferences.protectedZones.push(zone)
 
@@ -103,7 +126,6 @@ interface ZoneConfigProps {
 }
 
 const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
-    //Official FIRST hex
     // TODO: Do we want to eventually make these editable?
     const redMaterial = useMemo(() => {
         return ProtectedZoneSceneObject.redMaterial.clone() as THREE.MeshPhongMaterial
@@ -117,7 +139,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [alliance, setAlliance] = useState<Alliance>(selectedZone.alliance)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(selectedZone.parentNode)
     const [points, setPoints] = useState<number>(selectedZone.penaltyPoints)
-    const [requireRobotContact, setRequireRobotContact] = useState<boolean>(selectedZone.requireRobotContact)
+    const [contactType, setContactType] = useState<ContactType>(selectedZone.contactType || ContactType.ROBOT_ENTERS)
+    const [activeDuring, setActiveDuring] = useState<MatchModeType[]>(selectedZone.activeDuring)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
@@ -129,13 +152,14 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 name,
                 alliance,
                 points,
-                requireRobotContact,
+                contactType,
+                activeDuring,
                 gizmoRef.current,
                 selectedNode
             )
             saveAllZones()
         }
-    }, [selectedField, selectedZone, name, alliance, points, requireRobotContact, selectedNode, saveAllZones])
+    }, [selectedField, selectedZone, name, alliance, points, contactType, activeDuring, selectedNode, saveAllZones])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
@@ -165,9 +189,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
         return new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
-            selectedZone.alliance == "blue" ? blueMaterial : redMaterial
+            selectedZone.alliance === "blue" ? blueMaterial : redMaterial
         )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedZone, selectedZone.alliance, blueMaterial, redMaterial])
 
     /** Creates TransformGizmoControl component and sets up target mesh. */
@@ -223,7 +246,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             }
 
             const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
-            if (!assoc || assoc?.sceneObject != selectedField) {
+            if (!assoc || assoc?.sceneObject !== selectedField) {
                 return false
             }
 
@@ -234,20 +257,24 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     )
 
     return (
-        <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
+        <Stack gap={2} className="bg-background-secondary rounded-md p-2">
             {/** Set the zone name */}
-            <Input label="Name" placeholder="Enter zone name" defaultValue={selectedZone.name} onInput={setName} />
+            <TextField
+                label="Name"
+                placeholder="Enter zone name"
+                defaultValue={selectedZone.name}
+                onChange={e => setName(e.target.value)}
+            />
 
             {/** Set the alliance color */}
             <Button
-                value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
                 onClick={() => {
-                    setAlliance(alliance == "blue" ? "red" : "blue")
+                    setAlliance(alliance === "blue" ? "red" : "blue")
                     if (gizmoRef.current)
-                        (gizmoRef.current.obj as THREE.Mesh).material = alliance == "blue" ? redMaterial : blueMaterial
+                        (gizmoRef.current.obj as THREE.Mesh).material = alliance === "blue" ? redMaterial : blueMaterial
                 }}
-                colorOverrideClass={`bg-match-${alliance}-alliance`}
-            />
+                sx={{ bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }}
+            >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
 
             {/** Select a parent node */}
             <SelectButton
@@ -257,31 +284,62 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             />
 
             {/** Set the point value */}
-            <NumberInput
+            <TextField
+                inputProps={{ type: "number" }}
                 label="Penalty Points"
                 placeholder="Zone penalty points"
                 defaultValue={selectedZone.penaltyPoints}
-                onInput={v => setPoints(v || 1)}
+                onChange={v => setPoints(parseInt(v.target.value) || 1)}
             />
 
-            {/** When checked, the zone will destroy gamepieces it comes in contact with */}
-            {/** <Checkbox
-                    label="Destroy Gamepiece"
-                    defaultState={selectedZone.destroyGamepiece}
-                    onClick={setDestroy}
-                /> */}
+            {/** Determines during what game state the protected zone is active */}
+            <FormControl fullWidth>
+                <InputLabel id="active-during-label">Active During</InputLabel>
+                <Select
+                    labelId="active-during-label"
+                    label="Active During"
+                    onChange={e => {
+                        const {
+                            target: { value },
+                        } = e
+                        setActiveDuring(
+                            (typeof value === "string" ? (value as string).split(",") : value) as MatchModeType[]
+                        )
+                    }}
+                    value={activeDuring}
+                    input={<OutlinedInput label="Contact Type" />}
+                    renderValue={selected => selected.join(", ")}
+                    multiple
+                >
+                    {MATCH_MODE_OPTIONS.map(opt => (
+                        <MenuItem key={opt} value={opt}>
+                            <Checkbox checked={activeDuring.includes(opt)} />
+                            <ListItemText primary={opt} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
-            {/** When checked, points will stay even when a gamepiece leaves the zone */}
-            <Checkbox
-                label="Require Robot Contact"
-                defaultState={selectedZone.requireRobotContact}
-                onClick={setRequireRobotContact}
-            />
-
-            {/** Switch between transform control modes */}
+            {/** Determines what type of contact is required for the penalty to apply */}
+            <FormControl fullWidth>
+                <InputLabel id="contact-type-label">Contact Type</InputLabel>
+                <Select
+                    labelId="contact-type-label"
+                    onChange={e => {
+                        setContactType(e.target.value as ContactType)
+                    }}
+                    value={contactType}
+                >
+                    {CONTACT_TYPE_OPTIONS.map(opt => (
+                        <MenuItem key={opt} value={opt}>
+                            {opt}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
             {gizmoComponent}
-        </div>
+        </Stack>
     )
 }
 

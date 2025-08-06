@@ -4,17 +4,17 @@ import {
     defaultGraphicsPreferences,
     defaultMotorPreferences,
     defaultRobotPreferences,
-    FieldPreferences,
     FIELD_PREFERENCE_KEY,
-    GlobalPreference,
-    GlobalPreferences,
+    type FieldPreferences,
+    type GlobalPreference,
+    type GlobalPreferences,
     GRAPHICS_PREFERENCE_KEY,
-    GraphicsPreferences,
-    MotorPreferences,
+    type GraphicsPreferences,
     MOTOR_PREFERENCES_KEY,
-    Preferences,
-    RobotPreferences,
+    type MotorPreferences,
+    type Preferences,
     ROBOT_PREFERENCE_KEY,
+    type RobotPreferences,
 } from "./PreferenceTypes"
 
 /** An event that's triggered when a preference is changed. */
@@ -102,7 +102,11 @@ class PreferencesSystem {
             return defaultPrefs
         }
 
-        return allRoboPrefs[miraName]
+        const defaultPrefs = defaultRobotPreferences()
+        const mergedPrefs = { ...defaultPrefs, ...allRoboPrefs[miraName] }
+        allRoboPrefs[miraName] = mergedPrefs
+
+        return mergedPrefs
     }
 
     /** Sets the RobotPreferences object for the robot of a specific mira name */
@@ -148,7 +152,11 @@ class PreferencesSystem {
             return defaultPrefs
         }
 
-        return allFieldPrefs[miraName]
+        const defaultPrefs = defaultFieldPreferences()
+        const mergedPrefs = { ...defaultPrefs, ...allFieldPrefs[miraName] }
+        allFieldPrefs[miraName] = mergedPrefs
+
+        return mergedPrefs
     }
 
     /** @returns Preferences for every field that was found in local storage. */
@@ -170,7 +178,12 @@ class PreferencesSystem {
     public static getMotorPreferences(miraName: string): MotorPreferences {
         const allMotorPrefs = this.getAllMotorPreferences()
 
-        allMotorPrefs[miraName] ??= defaultMotorPreferences(miraName)
+        if (allMotorPrefs[miraName] == undefined) {
+            allMotorPrefs[miraName] = defaultMotorPreferences(miraName)
+        } else {
+            const defaultPrefs = defaultMotorPreferences(miraName)
+            allMotorPrefs[miraName] = { ...defaultPrefs, ...allMotorPrefs[miraName] }
+        }
 
         return allMotorPrefs[miraName]
     }
@@ -193,6 +206,10 @@ class PreferencesSystem {
 
         if (graphicsPrefs == undefined) {
             graphicsPrefs = defaultGraphicsPreferences()
+            this._preferences[GRAPHICS_PREFERENCE_KEY] = graphicsPrefs
+        } else {
+            const defaultPrefs = defaultGraphicsPreferences()
+            graphicsPrefs = { ...defaultPrefs, ...graphicsPrefs }
             this._preferences[GRAPHICS_PREFERENCE_KEY] = graphicsPrefs
         }
 

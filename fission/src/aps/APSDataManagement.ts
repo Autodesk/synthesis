@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import APS from "./APS"
-import TaskStatus from "@/util/TaskStatus"
 import { Mutex } from "async-mutex"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import type TaskStatus from "@/util/TaskStatus"
+import APS from "./APS"
 
 export const FOLDER_DATA_TYPE = "folders"
 export const ITEM_DATA_TYPE = "items"
@@ -58,15 +57,23 @@ export type DataAttributes = {
     fileType?: string
 }
 
+export type Relationships = {
+    storage: { meta: { link: { href?: string } } }
+    parent: { data: { id?: string } }
+    rootFolder: { data: RawData }
+}
+
+export type RawData = Omit<{ [key in keyof Data]: Data[key] }, "raw" | "href"> & { relationships: Relationships }
+
 export class Data {
     id: string
     type: string
     attributes: DataAttributes
     href: string | undefined
 
-    raw: any
+    raw: { [k: string]: unknown }
 
-    constructor(x: any) {
+    constructor(x: RawData) {
         this.id = x.id
         this.type = x.type
         this.attributes = x.attributes
@@ -81,7 +88,7 @@ export class Folder extends Data {
     displayName: string | undefined
     parentId: string | undefined
 
-    constructor(x: any) {
+    constructor(x: RawData) {
         super(x)
         if (x.attributes) {
             if (x.attributes.displayName) {
@@ -99,7 +106,7 @@ export class Folder extends Data {
 export class Item extends Data {
     displayName: string | undefined
 
-    constructor(x: any) {
+    constructor(x: RawData) {
         super(x)
 
         if (x.attributes) {
@@ -126,8 +133,8 @@ export async function getHubs(): Promise<Hub[] | undefined> {
         })
             .then(x => x.json())
             .then(x => {
-                if ((x.data as any[] | undefined)?.length ?? 0 > 0) {
-                    return (x.data as any[]).map<Hub>(y => {
+                if ((x.data as RawData[] | undefined)?.length ?? 0 > 0) {
+                    return (x.data as RawData[]).map<Hub>(y => {
                         return { id: y.id, name: y.attributes.name }
                     })
                 } else {
@@ -164,8 +171,8 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
         })
             .then(x => x.json())
             .then(x => {
-                if ((x.data as any[]).length > 0) {
-                    return (x.data as any[]).map<Project>(y => {
+                if ((x.data as RawData[]).length > 0) {
+                    return (x.data as RawData[]).map<Project>(y => {
                         return {
                             id: y.id,
                             name: y.attributes.name,
@@ -206,8 +213,8 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
             .then(x => {
                 console.log("Raw Folder Data")
                 console.log(x)
-                if ((x.data as any[]).length > 0) {
-                    return (x.data as any[]).map<Data>(y => {
+                if ((x.data as RawData[]).length > 0) {
+                    return (x.data as RawData[]).map<Data>(y => {
                         if (y.type == ITEM_DATA_TYPE) {
                             return new Item(y)
                         } else if (y.type == FOLDER_DATA_TYPE) {
@@ -254,7 +261,7 @@ export async function searchFolder(project: Project, folder: Folder, filters?: F
         return []
     }
     const json = await res.json()
-    return json.data.map((data: any) => new Data(data))
+    return json.data.map((data: RawData) => new Data(data))
 }
 
 export async function searchRootForMira(project: Project): Promise<Data[] | undefined> {
@@ -295,29 +302,43 @@ export async function requestMirabufFiles() {
             getHubs().then(async hubs => {
                 if (!hubs) {
                     window.dispatchEvent(
-                        new MirabufFilesStatusUpdateEvent({ isDone: true, message: "Failed to get Hubs" })
+                        new MirabufFilesStatusUpdateEvent({
+                            isDone: true,
+                            message: "Failed to get Hubs",
+                            progress: 1,
+                        })
                     )
                     return
                 }
                 const fileData: Data[] = []
-                for (const hub of hubs) {
-                    const projects = await getProjects(hub)
-                    if (!projects) continue
-                    for (const project of projects) {
-                        window.dispatchEvent(
-                            new MirabufFilesStatusUpdateEvent({
-                                isDone: false,
-                                message: `Searching Project '${project.name}'`,
-                            })
-                        )
-                        const data = await searchRootForMira(project)
-                        if (data) fileData.push(...data)
-                    }
+                let i = 0
+
+                const projects = (
+                    await Promise.all(
+                        hubs.map(async hub => {
+                            const projects = await getProjects(hub)
+                            return projects ?? []
+                        })
+                    )
+                ).flat()
+
+                if (!projects.length) return
+                for (const project of projects) {
+                    window.dispatchEvent(
+                        new MirabufFilesStatusUpdateEvent({
+                            isDone: false,
+                            message: `Searching Project '${project.name}'`,
+                            progress: i++ / projects.length,
+                        })
+                    )
+                    const data = await searchRootForMira(project)
+                    if (data) fileData.push(...data)
                 }
                 window.dispatchEvent(
                     new MirabufFilesStatusUpdateEvent({
                         isDone: true,
                         message: `Found ${fileData.length} file${fileData.length == 1 ? "" : "s"}`,
+                        progress: 1,
                     })
                 )
                 mirabufFiles = fileData

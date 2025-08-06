@@ -1,10 +1,10 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import Driver, { DriverControlMode, DriverID } from "./Driver"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { mirabuf } from "@/proto/mirabuf"
 import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { NoraNumber, NoraTypes } from "../Nora"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { type NoraNumber, NoraTypes } from "../Nora"
+import Driver, { DriverControlMode, type DriverID } from "./Driver"
 
 const MAX_FORCE_WITHOUT_GRAV = 500
 

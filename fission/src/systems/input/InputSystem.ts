@@ -1,165 +1,12 @@
+import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
+import World from "../World"
 import WorldSystem from "../WorldSystem"
-import { InputScheme } from "./InputSchemeManager"
-import MatchMode, { MatchModeType } from "@/systems/MatchMode"
-
-export type ModifierState = {
-    alt: boolean
-    ctrl: boolean
-    shift: boolean
-    meta: boolean
-}
-export const EMPTY_MODIFIER_STATE: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
+import type { InputName, InputScheme, ModifierState } from "./InputTypes"
+import type Input from "./inputs/Input"
 
 const LOG_GAMEPAD_EVENTS = false
-
-/** Represents any user input */
-abstract class Input {
-    public inputName: string
-
-    /** @param {string} inputName - The name given to this input to identify it's function. */
-    constructor(inputName: string) {
-        this.inputName = inputName
-    }
-
-    // Returns the current value of the input. Range depends on input type
-    abstract getValue(useGamepad: boolean, useTouchControls: boolean): number
-}
-
-/** Represents any user input that is a single true/false button. */
-class ButtonInput extends Input {
-    public keyCode: string
-    public keyModifiers: ModifierState
-
-    public gamepadButton: number
-
-    /**
-     * All optional params will remain unassigned if not value is given. This can be assigned later by the user through the configuration panel.
-     *
-     * @param {string} inputName - The name given to this input to identify it's function.
-     * @param {string} [keyCode] -  The keyboard button for this input if a gamepad is not used.
-     * @param {number} [gamepadButton] -  The gamepad button for this input if a gamepad is used.
-     * @param {ModifierState} [keyModifiers] -  The key modifier state for the keyboard input.
-     */
-    public constructor(inputName: string, keyCode?: string, gamepadButton?: number, keyModifiers?: ModifierState) {
-        super(inputName)
-        this.keyCode = keyCode ?? ""
-        this.keyModifiers = keyModifiers ?? EMPTY_MODIFIER_STATE
-        this.gamepadButton = gamepadButton ?? -1
-    }
-
-    /**
-     * @param useGamepad Looks at the gamepad if true and the keyboard if false.
-     * @returns 1 if pressed, 0 if not pressed or not found.
-     */
-    getValue(useGamepad: boolean): number {
-        const matchModeType = MatchMode.getInstance().getMatchModeType()
-        if (matchModeType === MatchModeType.MATCH_ENDED || matchModeType === MatchModeType.AUTONOMOUS) {
-            return 0
-        }
-
-        // Gamepad button input
-        if (useGamepad) {
-            return InputSystem.isGamepadButtonPressed(this.gamepadButton) ? 1 : 0
-        }
-
-        // Keyboard button input
-        return InputSystem.isKeyPressed(this.keyCode, this.keyModifiers) ? 1 : 0
-    }
-}
-
-/** Represents any user input that is an axis between -1 and 1. Can be a gamepad axis, two gamepad buttons, or two keyboard buttons. */
-class AxisInput extends Input {
-    public posKeyCode: string
-    public posKeyModifiers: ModifierState
-    public negKeyCode: string
-    public negKeyModifiers: ModifierState
-
-    public gamepadAxisNumber: number
-    public touchControlAxis: TouchControlsAxes
-    public joystickInverted: boolean
-    public useGamepadButtons: boolean
-    public posGamepadButton: number
-    public negGamepadButton: number
-
-    /**
-     * All optional params will remain unassigned if not value is given. This can be assigned later by the user through the configuration panel.
-     *
-     * @param {string} inputName - The name given to this input to identify it's function.
-     * @param {string} [posKeyCode] - The keyboard input that corresponds to a positive input value (1).
-     * @param {string} [negKeyCode] - The keyboard input that corresponds to a negative input value (-1).
-     * @param {number} [gamepadAxisNumber] - The gamepad axis that this input looks at if the scheme is set to use a gamepad.
-     * @param {boolean} [joystickInverted] - Inverts the input if a gamepad axis is used.
-     * @param {boolean} [useGamepadButtons] - If this is true and the scheme is set to use a gamepad, this axis will be between two buttons on the controller.
-     * @param {number} [posGamepadButton] - The gamepad button that corresponds to a positive input value (1).
-     * @param {number} [negGamepadButton] - The gamepad button that corresponds to a negative input value (-1).
-     * @param {ModifierState} [posKeyModifiers] - The key modifier state for the positive keyboard input.
-     * @param {ModifierState} [negKeyModifiers] - The key modifier state for the negative keyboard input.
-     */
-    public constructor(
-        inputName: string,
-        posKeyCode?: string,
-        negKeyCode?: string,
-        gamepadAxisNumber?: number,
-        joystickInverted?: boolean,
-        useGamepadButtons?: boolean,
-        posGamepadButton?: number,
-        negGamepadButton?: number,
-        touchControlAxis?: TouchControlsAxes,
-        posKeyModifiers?: ModifierState,
-        negKeyModifiers?: ModifierState
-    ) {
-        super(inputName)
-
-        this.posKeyCode = posKeyCode ?? ""
-        this.posKeyModifiers = posKeyModifiers ?? EMPTY_MODIFIER_STATE
-        this.negKeyCode = negKeyCode ?? ""
-        this.negKeyModifiers = negKeyModifiers ?? EMPTY_MODIFIER_STATE
-
-        this.gamepadAxisNumber = gamepadAxisNumber ?? -1
-        this.touchControlAxis = touchControlAxis ?? TouchControlsAxes.NONE
-        this.joystickInverted = joystickInverted ?? false
-
-        this.useGamepadButtons = useGamepadButtons ?? false
-        this.posGamepadButton = posGamepadButton ?? -1
-        this.negGamepadButton = negGamepadButton ?? -1
-    }
-
-    /**
-     * @param useGamepad Looks at the gamepad if true and the keyboard if false.
-     * @returns {number} KEYBOARD: 1 if positive pressed, -1 if negative pressed, or 0 if none or both are pressed.
-     * @returns {number} GAMEPAD: a number between -1 and 1 with a deadband in the middle.
-     */
-    getValue(useGamepad: boolean, useTouchControls: boolean): number {
-        const matchModeType = MatchMode.getInstance().getMatchModeType()
-        if (matchModeType === MatchModeType.MATCH_ENDED || matchModeType === MatchModeType.AUTONOMOUS) {
-            return 0
-        }
-
-        if (useGamepad) {
-            // Gamepad joystick axis
-            if (!this.useGamepadButtons)
-                return InputSystem.getGamepadAxis(this.gamepadAxisNumber) * (this.joystickInverted ? -1 : 1)
-
-            // Gamepad button axis
-            return (
-                (InputSystem.isGamepadButtonPressed(this.posGamepadButton) ? 1 : 0) -
-                (InputSystem.isGamepadButtonPressed(this.negGamepadButton) ? 1 : 0)
-            )
-        }
-
-        if (useTouchControls) {
-            return InputSystem.getTouchControlsAxis(this.touchControlAxis) * (this.joystickInverted ? -1 : 1)
-        }
-
-        // Keyboard button axis
-        return (
-            (InputSystem.isKeyPressed(this.posKeyCode, this.posKeyModifiers) ? 1 : 0) -
-            (InputSystem.isKeyPressed(this.negKeyCode, this.negKeyModifiers) ? 1 : 0)
-        )
-    }
-}
 
 /**
  *  The input system listens for and records key presses and joystick positions to be used by robots.
@@ -169,7 +16,7 @@ class InputSystem extends WorldSystem {
     public static currentModifierState: ModifierState
 
     /** The keys currently being pressed. */
-    private static _keysPressed: { [key: string]: boolean } = {}
+    private static _keysPressed: Partial<Record<KeyCode, boolean>> = {}
 
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
@@ -179,6 +26,14 @@ class InputSystem extends WorldSystem {
 
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+
+    public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
+        InputSystem.brainIndexSchemeMap.set(index, scheme)
+        World.analyticsSystem?.event("Scheme Applied", {
+            isCustomized: scheme.customized,
+            schemeName: scheme.schemeName,
+        })
+    }
 
     constructor() {
         super()
@@ -249,17 +104,17 @@ class InputSystem extends WorldSystem {
 
     /** Called when any key is first pressed */
     private handleKeyDown(event: KeyboardEvent) {
-        InputSystem._keysPressed[event.code] = true
+        InputSystem._keysPressed[event.code as KeyCode] = true
     }
 
     /* Called when any key is released */
     private handleKeyUp(event: KeyboardEvent) {
-        InputSystem._keysPressed[event.code] = false
+        InputSystem._keysPressed[event.code as KeyCode] = false
     }
 
     /** Clears all stored key data when the user leaves the page. */
     private clearKeyData() {
-        for (const keyCode in InputSystem._keysPressed) delete InputSystem._keysPressed[keyCode]
+        for (const keyCode in InputSystem._keysPressed) delete InputSystem._keysPressed[keyCode as KeyCode]
     }
 
     /* Called once when a gamepad is first connected */
@@ -291,11 +146,11 @@ class InputSystem extends WorldSystem {
      * @param {ModifierState} modifiers - The target modifier state. Assumed to be no modifiers if undefined.
      * @returns {boolean} True if the key is pressed or false otherwise.
      */
-    public static isKeyPressed(key: string, modifiers?: ModifierState): boolean {
+    public static isKeyPressed(key: KeyCode, modifiers?: ModifierState): boolean {
         if (modifiers != null && !InputSystem.compareModifiers(InputSystem.currentModifierState, modifiers))
             return false
 
-        return !!InputSystem._keysPressed[key]
+        return Boolean(InputSystem._keysPressed[key])
     }
 
     /**
@@ -303,7 +158,7 @@ class InputSystem extends WorldSystem {
      * @param {number} brainIndex The robot brain index for this input. Used to map to a control scheme.
      * @returns {number} A number between -1 and 1 based on the current state of the input.
      */
-    public static getInput(inputName: string, brainIndex: number): number {
+    public static getInput(inputName: InputName, brainIndex: number): number {
         const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
@@ -374,6 +229,3 @@ class InputSystem extends WorldSystem {
 }
 
 export default InputSystem
-export { Input }
-export { ButtonInput }
-export { AxisInput }
