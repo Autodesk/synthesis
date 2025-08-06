@@ -441,10 +441,14 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
         </Stack>
     )
 }
-const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+interface SettingsModalCustomProps {
+    initialTab?: string
+}
+
+const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
     const [_, refresh] = useReducer(x => !x, false)
-    const [activeTab, setActiveTab] = useState<string>("general")
+    const [activeTab, setActiveTab] = useState<string>(modal?.props.custom?.initialTab || "general")
 
     const [graphicsActions, setGraphicsActions] = useState<GraphicsTabActions | null>(null)
     const [themeActions, setThemeActions] = useState<ThemeEditorTabActions | null>(null)
