@@ -1,4 +1,4 @@
-import type http from "node:http"
+import http from "node:http"
 import path from "node:path"
 import express from "express"
 import { ExpressPeerServer } from "peer"
@@ -11,25 +11,24 @@ export async function setup() {
         return
     }
     console.log("Starting testing server...")
-    const expressServer = express()
+    const expressApp = express()
+    server = http.createServer(expressApp)
+    const peerjsServer = ExpressPeerServer(server, {
+        allow_discovery: true,
+        path: "/",
+    })
+    expressApp.use("/Downloadables/", express.static(serveDirectory))
+    expressApp.use("/", peerjsServer)
 
     await new Promise<void>((resolve, reject) => {
-        if (!expressServer) {
+        if (!server) {
             console.warn("no server")
             return
         }
-
-        server = expressServer.listen(ASSET_PORT, "127.0.0.1", () => {
+        server.listen(ASSET_PORT, "127.0.0.1", () => {
             console.log(`Started testing server on port ${ASSET_PORT}`)
             resolve()
         })
-        const peerjsServer = ExpressPeerServer(server, {
-            allow_discovery: true,
-            path: "/",
-        })
-        expressServer.use("/Downloadables/", express.static(serveDirectory))
-        expressServer.use("/", peerjsServer)
-
         server.once("error", err => {
             console.error("Failed to start testing server:", err)
             server = undefined
@@ -47,10 +46,10 @@ export async function teardown() {
                     reject(err)
                     return
                 }
-
                 console.log("testing server stopped.")
                 server = undefined
                 resolve()
+                process.exit(0)
             })
         })
     }

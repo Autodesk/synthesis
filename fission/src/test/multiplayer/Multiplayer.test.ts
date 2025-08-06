@@ -15,6 +15,10 @@ describe("Multiplayer Tests", () => {
         vi.spyOn(World, "setMultiplayerSystem").mockImplementation(system => {
             multiplayer = system
         })
+        vi.spyOn(console, "log").mockImplementation(() => {})
+        vi.spyOn(console, "warn").mockImplementation(() => {})
+        vi.spyOn(console, "info").mockImplementation(() => {})
+        vi.spyOn(console, "debug").mockImplementation(() => {})
     })
     beforeEach(() => {
         vi.clearAllMocks()

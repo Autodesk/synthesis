@@ -59,14 +59,14 @@ class MultiplayerSystem {
             path: "/",
         })
 
-        this._client.on("call", e => console.log("peerjs call", e))
+        this._client.on("call", e => console.debug("peerjs call", e))
         this._client.on("close", () => {
-            console.log("peerjs close")
+            console.debug("peerjs close")
         })
 
         this._initializationPromise = new Promise<boolean>(resolve => {
             this._client.on("open", async (id: string) => {
-                console.log(`Broker connection opened: ID - ${id}`)
+                console.debug(`Broker connection opened: ID - ${id}`)
                 const peerCount = await this.connectToRoom()
                 if (peerCount == 0 && !isHost) {
                     globalAddToast("warning", `Could not find room`, this.roomId)
@@ -92,12 +92,12 @@ class MultiplayerSystem {
                 resolve(false)
             })
             this._client.on("disconnected", peer => {
-                console.info("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
+                console.log("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
             })
         })
 
         this._client.on("connection", async conn => {
-            console.log("Receiving Connection: ", conn.peer)
+            console.debug("Receiving Connection: ", conn.peer)
             if (
                 conn.metadata.authHash !=
                 (await createSha256Hash({
@@ -128,7 +128,7 @@ class MultiplayerSystem {
         const peersPromise = new Promise<string[]>(resolve => this._client.listAllPeers(resolve))
         const peers = await peersPromise
 
-        console.log(`Peers: ${peers}`)
+        console.debug(`Peers: ${peers}`)
 
         const peerCount = await Promise.all(
             peers
@@ -152,7 +152,7 @@ class MultiplayerSystem {
                     })
                     this.setupConnectionHandlers(conn)
 
-                    console.log(`Initiating Connection: ${peer}`)
+                    console.debug(`Initiating Connection: ${peer}`)
                     return true
                 })
         ).then(res => res.filter(success => success).length)
@@ -180,7 +180,7 @@ class MultiplayerSystem {
             return
         }
         conn.on("open", async () => {
-            console.log("Connection opened", conn.peer)
+            console.debug("Connection opened", conn.peer)
             this._connections.set(conn.peer, conn)
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             await this.send(conn.peer, { type: "info", data: this.info })
@@ -203,9 +203,9 @@ class MultiplayerSystem {
             // TODO: handle host transition
 
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
-            console.log("Connection closed:", conn.peer)
+            console.debug("Connection closed:", conn.peer)
         })
-        conn.on("iceStateChanged", console.log)
+        conn.on("iceStateChanged", e => console.debug("ice change", e))
 
         conn.on("error", (err: Error) => {
             console.error("Connection error:", err)
@@ -445,7 +445,7 @@ class MultiplayerSystem {
     }
 
     async broadcast(message: Message) {
-        console.log(`Sending Message: ${message.type}`)
+        console.debug(`Sending Message: ${message.type}`)
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
