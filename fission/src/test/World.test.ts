@@ -62,7 +62,12 @@ vi.mock("three", async () => {
 
 // Import World after setting up mocks
 import World from "@/systems/World"
-
+import SceneRenderer from "@/systems/scene/SceneRenderer"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import InputSystem from "@/systems/input/InputSystem"
+import DragModeSystem from "@/systems/scene/DragModeSystem"
+import AnalyticsSystem from "@/systems/analytics/AnalyticsSystem"
 describe("World Tests", () => {
     beforeEach(() => {
         vi.clearAllMocks()
@@ -100,27 +105,16 @@ describe("World Tests", () => {
         })
     })
 
-    describe("Getters before initialization", () => {
-        test("system getters should return undefined before initialization", () => {
-            expect(World.sceneRenderer).toBeUndefined()
-            expect(World.physicsSystem).toBeUndefined()
-            expect(World.simulationSystem).toBeUndefined()
-            expect(World.inputSystem).toBeUndefined()
-            expect(World.analyticsSystem).toBeUndefined()
-            expect(World.dragModeSystem).toBeUndefined()
-        })
-    })
-
     describe("InitWorld", () => {
         test("InitWorld should initialize all systems and set isAlive to true", () => {
             World.initWorld()
 
             expect(World.isAlive).toBeTruthy()
-            expect(World.sceneRenderer).toBeDefined()
-            expect(World.physicsSystem).toBeDefined()
-            expect(World.simulationSystem).toBeDefined()
-            expect(World.inputSystem).toBeDefined()
-            expect(World.dragModeSystem).toBeDefined()
+            expect(SceneRenderer).toBeDefined()
+            expect(PhysicsSystem).toBeDefined()
+            expect(SimulationSystem).toBeDefined()
+            expect(InputSystem).toBeDefined()
+            expect(DragModeSystem).toBeDefined()
         })
 
         test("InitWorld should handle AnalyticsSystem initialization failure gracefully", async () => {
@@ -135,41 +129,35 @@ describe("World Tests", () => {
             World.initWorld()
 
             expect(World.isAlive).toBeTruthy()
-            expect(World.analyticsSystem).toBeUndefined()
+            expect(AnalyticsSystem).toBeUndefined()
         })
 
         test("InitWorld should not reinitialize if already alive", () => {
             World.initWorld()
-            const firstSceneRenderer = World.sceneRenderer
+            const firstSceneRenderer = SceneRenderer
 
             World.initWorld() // Call again
 
-            expect(World.sceneRenderer).toBe(firstSceneRenderer)
+            expect(SceneRenderer).toBe(firstSceneRenderer)
         })
     })
 
     describe("DestroyWorld", () => {
         test("DestroyWorld should destroy all systems and set isAlive to false", () => {
             World.initWorld()
-            const sceneRenderer = World.sceneRenderer
-            const physicsSystem = World.physicsSystem
-            const simulationSystem = World.simulationSystem
-            const inputSystem = World.inputSystem
-            const dragModeSystem = World.dragModeSystem
-
             World.destroyWorld()
 
             expect(World.isAlive).toBeFalsy()
-            expect(sceneRenderer.destroy).toHaveBeenCalled()
-            expect(physicsSystem.destroy).toHaveBeenCalled()
-            expect(simulationSystem.destroy).toHaveBeenCalled()
-            expect(inputSystem.destroy).toHaveBeenCalled()
-            expect(dragModeSystem.destroy).toHaveBeenCalled()
+            expect(SceneRenderer.destroy).toHaveBeenCalled()
+            expect(PhysicsSystem.destroy).toHaveBeenCalled()
+            expect(SimulationSystem.destroy).toHaveBeenCalled()
+            expect(InputSystem.destroy).toHaveBeenCalled()
+            expect(DragModeSystem.destroy).toHaveBeenCalled()
         })
 
         test("DestroyWorld should handle AnalyticsSystem destruction if it exists", () => {
             World.initWorld()
-            const analyticsSystem = World.analyticsSystem
+            const analyticsSystem = AnalyticsSystem
 
             World.destroyWorld()
 
@@ -212,23 +200,16 @@ describe("World Tests", () => {
         })
 
         test("UpdateWorld should update all systems", () => {
-            const sceneRenderer = World.sceneRenderer
-            const physicsSystem = World.physicsSystem
-            const simulationSystem = World.simulationSystem
-            const inputSystem = World.inputSystem
-            const dragModeSystem = World.dragModeSystem
-            const analyticsSystem = World.analyticsSystem
-
             World.updateWorld()
 
-            expect(sceneRenderer.update).toHaveBeenCalledWith(0.016)
-            expect(physicsSystem.update).toHaveBeenCalledWith(0.016)
-            expect(simulationSystem.update).toHaveBeenCalledWith(0.016)
-            expect(inputSystem.update).toHaveBeenCalledWith(0.016)
-            expect(dragModeSystem.update).toHaveBeenCalledWith(0.016)
+            expect(SceneRenderer.update).toHaveBeenCalledWith(0.016)
+            expect(PhysicsSystem.update).toHaveBeenCalledWith(0.016)
+            expect(SimulationSystem.update).toHaveBeenCalledWith(0.016)
+            expect(InputSystem.update).toHaveBeenCalledWith(0.016)
+            expect(DragModeSystem.update).toHaveBeenCalledWith(0.016)
 
-            if (analyticsSystem) {
-                expect(analyticsSystem.update).toHaveBeenCalledWith(0.016)
+            if (AnalyticsSystem) {
+                expect(AnalyticsSystem.update).toHaveBeenCalledWith(0.016)
             }
         })
 
@@ -262,13 +243,13 @@ describe("World Tests", () => {
         })
 
         test("all system getters should return valid instances after initialization", () => {
-            expect(World.sceneRenderer).toBeDefined()
-            expect(World.physicsSystem).toBeDefined()
-            expect(World.simulationSystem).toBeDefined()
-            expect(World.inputSystem).toBeDefined()
-            expect(World.dragModeSystem).toBeDefined()
+            expect(SceneRenderer).toBeDefined()
+            expect(PhysicsSystem).toBeDefined()
+            expect(SimulationSystem).toBeDefined()
+            expect(InputSystem).toBeDefined()
+            expect(DragModeSystem).toBeDefined()
             // AnalyticsSystem might be undefined if initialization fails, so we check if it exists
-            const analyticsSystem = World.analyticsSystem
+            const analyticsSystem = AnalyticsSystem
             if (analyticsSystem) {
                 expect(analyticsSystem).toBeDefined()
             }

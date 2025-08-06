@@ -14,7 +14,6 @@ import type Stimulus from "@/systems/simulation/stimulus/Stimulus"
 import type { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import type { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
 import { getSimMap, receiverTypeMap, supplierTypeMap } from "@/systems/simulation/wpilib_brain/WPILibState"
-import World from "@/systems/World"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
 import { random } from "@/util/Random"
 import SimAccel from "./wpilib_brain/sim/SimAccel"
@@ -22,6 +21,7 @@ import SimCANEncoder from "./wpilib_brain/sim/SimCANEncoder"
 import SimCANMotor from "./wpilib_brain/sim/SimCANMotor"
 import SimPWM from "./wpilib_brain/sim/SimPWM"
 import { SimType } from "./wpilib_brain/WPILibTypes"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
     [NoraTypes.NUMBER]: "#5f60ff",
@@ -92,12 +92,12 @@ export type FlowControlsProps = {
 }
 
 export function getDriverSignals(assembly: MirabufSceneObject): Driver[] {
-    const simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)
+    const simLayer = SimulationSystem.getSimulationLayer(assembly.mechanism)
     return simLayer?.drivers ?? []
 }
 
 export function getStimulusSignals(assembly: MirabufSceneObject): Stimulus[] {
-    const simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)
+    const simLayer = SimulationSystem.getSimulationLayer(assembly.mechanism)
     return simLayer?.stimuli ?? []
 }
 
@@ -634,7 +634,7 @@ export class SimConfig {
     }
 
     public static Compile(config: SimConfigData, assembly: MirabufSceneObject): SimFlow[] | undefined {
-        const simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)
+        const simLayer = SimulationSystem.getSimulationLayer(assembly.mechanism)
         if (!simLayer) {
             console.error("No sim layer found")
             return undefined

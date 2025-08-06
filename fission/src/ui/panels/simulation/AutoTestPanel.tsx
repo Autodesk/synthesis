@@ -6,10 +6,11 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
 import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -20,6 +21,7 @@ import {
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 
 type StagingProps = {
     state: "Staging"
@@ -132,9 +134,9 @@ export const RedAllianceToggleButton = styled(ToggleButton)({
 
 function captureBodies(): BodyCapture[] {
     const captures: BodyCapture[] = []
-    World.sceneRenderer.mirabufSceneObjects.getAll().forEach(sceneObj => {
+    SceneRenderer.mirabufSceneObjects.getAll().forEach(sceneObj => {
         sceneObj.mechanism.nodeToBody.forEach(bodyId => {
-            const body = World.physicsSystem.getBody(bodyId)
+            const body = PhysicsSystem.getBody(bodyId)
             const transform = body.GetWorldTransform()
             const translation = new THREE.Vector3(0, 0, 0)
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
@@ -152,7 +154,7 @@ function captureBodies(): BodyCapture[] {
 function resetBodies(captures: BodyCapture[]) {
     const zero = new JOLT.Vec3(0, 0, 0)
     captures.forEach(x => {
-        World.physicsSystem.setBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
+        PhysicsSystem.setBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
     })
     JOLT.destroy(zero)
 }
@@ -178,13 +180,13 @@ const Playing: React.FC<PlayingProps> = ({ assembly, setEnd, countdown, captures
     const [remaining, setRemaining] = useState<number>(countdown)
 
     useEffect(() => {
-        World.physicsSystem.releasePause(AUTO_TEST_PAUSE_REF)
+        PhysicsSystem.releasePause(AUTO_TEST_PAUSE_REF)
         SimDriverStation.setMode(RobotSimMode.AUTO)
     }, [])
 
     const end = useCallback(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)
-        World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
+        PhysicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
         setEnd?.({ assembly: assembly, captures: captures, state: "End" })
     }, [assembly, captures, setEnd])
 
@@ -306,7 +308,14 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
+<<<<<<< Updated upstream
         () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
+=======
+        () =>
+            [...SceneRenderer.sceneObjects.values()].find(
+                x => (x as MirabufSceneObject).brain?.brainType === "wpilib"
+            ) as MirabufSceneObject,
+>>>>>>> Stashed changes
         []
     )
 
@@ -322,11 +331,16 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     }, [])
 
     useEffect(() => {
+<<<<<<< Updated upstream
         World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
         if (assembly == null) {
             console.warn("Couldn't find assembly with wpilib brain")
             return
         }
+=======
+        PhysicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
+
+>>>>>>> Stashed changes
         setActiveProps({
             state: "Staging",
             assembly: assembly,
@@ -334,7 +348,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         })
 
         return () => {
-            World.physicsSystem.releasePause(AUTO_TEST_PAUSE_REF)
+            PhysicsSystem.releasePause(AUTO_TEST_PAUSE_REF)
         }
     }, [assembly])
 

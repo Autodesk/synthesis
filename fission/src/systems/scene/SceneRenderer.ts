@@ -15,10 +15,9 @@ import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/Touc
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
+import PhysicsSystem from "../physics/PhysicsSystem"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import type { GraphicsPreferences } from "../preferences/PreferenceTypes"
-import World from "../World"
-import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
@@ -34,32 +33,32 @@ const textureLoader = new THREE.TextureLoader()
 
 let nextSceneObjectId = 1
 
-class SceneRenderer extends WorldSystem {
-    private _mainCamera: THREE.PerspectiveCamera
-    private _scene: THREE.Scene
-    private _renderer: THREE.WebGLRenderer
-    private _skybox: THREE.Mesh
-    private _composer: EffectComposer
+class SceneRenderer {
+    private static _mainCamera: THREE.PerspectiveCamera
+    private static _scene: THREE.Scene
+    private static _renderer: THREE.WebGLRenderer
+    private static _skybox: THREE.Mesh
+    private static _composer: EffectComposer
 
-    private _sceneObjects: Map<number, SceneObject>
-    private _gizmosOnMirabuf: Map<number, GizmoSceneObject> // maps of all the gizmos that are attached to a mirabuf scene object
+    private static _sceneObjects: Map<number, SceneObject>
+    private static _gizmosOnMirabuf: Map<number, GizmoSceneObject> // maps of all the gizmos that are attached to a mirabuf scene object
 
-    private _cameraControls: CameraControls
+    private static _cameraControls: CameraControls
 
-    private _isPlacingAssembly: boolean = false
+    private static _isPlacingAssembly: boolean = false
 
-    private _light: THREE.DirectionalLight | CSM | undefined
-    private _screenInteractionHandler: ScreenInteractionHandler
+    private static _light: THREE.DirectionalLight | CSM | undefined
+    private static _screenInteractionHandler: ScreenInteractionHandler
 
-    public get sceneObjects() {
+    public static get sceneObjects() {
         return this._sceneObjects
     }
 
-    public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
+    public static filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
         return [...this._sceneObjects.values()].filter(predicate)
     }
 
-    public readonly mirabufSceneObjects = {
+    public static readonly mirabufSceneObjects = {
         getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
         findWhere: (predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]) =>
             this.mirabufSceneObjects.getAll().find(predicate),
@@ -67,45 +66,43 @@ class SceneRenderer extends WorldSystem {
         getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT),
     } as const
 
-    public get mainCamera() {
+    public static get mainCamera() {
         return this._mainCamera
     }
 
-    public get scene() {
+    public static get scene() {
         return this._scene
     }
 
-    public get renderer(): THREE.WebGLRenderer {
+    public static get renderer(): THREE.WebGLRenderer {
         return this._renderer
     }
 
-    public get isPlacingAssembly() {
+    public static get isPlacingAssembly() {
         return this._isPlacingAssembly
     }
 
-    public set isPlacingAssembly(value: boolean) {
+    public static set isPlacingAssembly(value: boolean) {
         new TouchControlsEvent(TouchControlsEventKeys.PLACE_BUTTON, value)
         this._isPlacingAssembly = value
     }
 
-    public get currentCameraControls(): CameraControls {
+    public static get currentCameraControls(): CameraControls {
         return this._cameraControls
     }
 
-    public get screenInteractionHandler(): ScreenInteractionHandler {
+    public static get screenInteractionHandler(): ScreenInteractionHandler {
         return this._screenInteractionHandler
     }
 
     /**
      * Collection that maps Mirabuf objects to active GizmoSceneObjects
      */
-    public get gizmosOnMirabuf() {
+    public static get gizmosOnMirabuf() {
         return this._gizmosOnMirabuf
     }
 
-    public constructor() {
-        super()
-
+    public static setup() {
         this._sceneObjects = new Map()
         this._gizmosOnMirabuf = new Map()
 
@@ -202,7 +199,7 @@ class SceneRenderer extends WorldSystem {
         this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
     }
 
-    public setCameraControls(controlsType: CameraControlsType) {
+    public static setCameraControls(controlsType: CameraControlsType) {
         this._cameraControls.dispose()
         switch (controlsType) {
             case "Orbit":
@@ -211,7 +208,7 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public updateCanvasSize() {
+    public static updateCanvasSize() {
         this._renderer.setSize(window.innerWidth, window.innerHeight, true)
 
         const vec = new THREE.Vector2(0, 0)
@@ -229,7 +226,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     /** Function to disable or enable the antiAliasingPass */
-    public update(deltaT: number): void {
+    public static update(deltaT: number): void {
         this._sceneObjects.forEach(obj => {
             obj.update()
         })
@@ -251,7 +248,7 @@ class SceneRenderer extends WorldSystem {
         // this._renderer.render(this._scene, this._mainCamera)
     }
 
-    public destroy(): void {
+    public static destroy(): void {
         this.removeAllSceneObjects()
         this._screenInteractionHandler.dispose()
     }
@@ -261,7 +258,7 @@ class SceneRenderer extends WorldSystem {
      *
      * @param quality: string representing the quality of lighting - "Low", "Medium", "High"
      */
-    public changeLighting(fancyShadows: boolean): void {
+    public static changeLighting(fancyShadows: boolean): void {
         // removing the previous lighting method
         if (this._light instanceof THREE.DirectionalLight) {
             this._scene.remove(this._light)
@@ -300,7 +297,7 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public createCSM(settings: GraphicsPreferences) {
+    public static createCSM(settings: GraphicsPreferences) {
         this._light = new CSM({
             parent: this._scene,
             camera: this._mainCamera,
@@ -327,7 +324,7 @@ class SceneRenderer extends WorldSystem {
         this._light.fade = true
     }
 
-    private setupCSMMaterials() {
+    private static setupCSMMaterials() {
         this._scene.children.forEach(child => {
             if (child instanceof THREE.Mesh) {
                 if (this._light instanceof CSM) this._light.setupMaterial(child.material)
@@ -336,7 +333,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     /** Sets the light intensity for both directional light and csm */
-    public setLightIntensity(intensity: number) {
+    public static setLightIntensity(intensity: number) {
         if (this._light instanceof THREE.DirectionalLight) {
             this._light.intensity = intensity
         } else if (this._light instanceof CSM) {
@@ -352,7 +349,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     /** Changes the settings of the cascading shadows from the Quality Settings Panel */
-    public changeCSMSettings(settings: GraphicsPreferences) {
+    public static changeCSMSettings(settings: GraphicsPreferences) {
         if (!(this._light instanceof CSM)) return
 
         this._light.dispose()
@@ -362,7 +359,7 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(obj: T): number {
+    public static registerSceneObject<T extends SceneObject>(obj: T): number {
         const id = nextSceneObjectId++
         obj.id = id
         this._sceneObjects.set(id, obj)
@@ -371,18 +368,18 @@ class SceneRenderer extends WorldSystem {
     }
 
     /** Registers gizmos that are attached to a parent mirabufsceneobject  */
-    public registerGizmoSceneObject(obj: GizmoSceneObject): number {
+    public static registerGizmoSceneObject(obj: GizmoSceneObject): number {
         if (obj.hasParent()) this._gizmosOnMirabuf.set(obj.parentObjectId!, obj)
         return this.registerSceneObject(obj)
     }
 
-    public removeAllSceneObjects() {
+    public static removeAllSceneObjects() {
         this._sceneObjects.forEach(obj => obj.dispose())
         this._gizmosOnMirabuf.clear()
         this._sceneObjects.clear()
     }
 
-    public removeSceneObject(id: number) {
+    public static removeSceneObject(id: number) {
         const obj = this._sceneObjects.get(id)
 
         // If the object is a mirabuf object, remove the gizmo as well
@@ -398,7 +395,7 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public removeAllFields() {
+    public static removeAllFields() {
         for (const [id, obj] of this._sceneObjects) {
             if (obj instanceof MirabufSceneObject && obj.miraType == MiraType.FIELD) {
                 this.removeSceneObject(id)
@@ -406,7 +403,7 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public createSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
+    public static createSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
             if (this._light instanceof CSM) this._light.setupMaterial(material)
@@ -416,7 +413,7 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public createBox(halfExtent: Jolt.Vec3, material?: THREE.Material | undefined): THREE.Mesh {
+    public static createBox(halfExtent: Jolt.Vec3, material?: THREE.Material | undefined): THREE.Mesh {
         const geo = new THREE.BoxGeometry(halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ())
         if (material) {
             return new THREE.Mesh(geo, material)
@@ -425,7 +422,10 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public createToonMaterial(color: THREE.ColorRepresentation = 0xff00aa, steps: number = 5): THREE.MeshToonMaterial {
+    public static createToonMaterial(
+        color: THREE.ColorRepresentation = 0xff00aa,
+        steps: number = 5
+    ): THREE.MeshToonMaterial {
         const format = THREE.RedFormat
         const colors = new Uint8Array(steps)
         for (let c = 0; c < colors.length; c++) {
@@ -450,7 +450,7 @@ class SceneRenderer extends WorldSystem {
      * @param z Travel from the near to far plane of the camera frustum. Default is 0.5, range is [0.0, 1.0]
      * @returns World space point within the frustum given the parameters.
      */
-    public pixelToWorldSpace(mouseX: number, mouseY: number, z: number = 0.5): THREE.Vector3 {
+    public static pixelToWorldSpace(mouseX: number, mouseY: number, z: number = 0.5): THREE.Vector3 {
         const screenSpace = new THREE.Vector3(
             (mouseX / window.innerWidth) * 2 - 1,
             ((window.innerHeight - mouseY) / window.innerHeight) * 2 - 1,
@@ -466,7 +466,7 @@ class SceneRenderer extends WorldSystem {
      * @param world World space coordinates
      * @returns Pixel space coordinates
      */
-    public worldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
+    public static worldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
         this._mainCamera.updateMatrixWorld()
         const screenSpace = world.project(this._mainCamera)
         return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
@@ -478,7 +478,7 @@ class SceneRenderer extends WorldSystem {
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
      */
-    // public updateSkyboxColors(currentTheme: Theme) {
+    // public static updateSkyboxColors(currentTheme: Theme) {
     //     if (!this._skybox) return
     //     if (this._skybox.material instanceof THREE.ShaderMaterial) {
     //         this._skybox.material.uniforms.rColor.value = currentTheme["Background"]["color"]["r"]
@@ -488,7 +488,7 @@ class SceneRenderer extends WorldSystem {
     // }
 
     /** returns whether any gizmos are being currently dragged */
-    public isAnyGizmoDragging(): boolean {
+    public static isAnyGizmoDragging(): boolean {
         return [...this._gizmosOnMirabuf.values()].some(obj => obj.gizmo.dragging)
     }
 
@@ -497,7 +497,7 @@ class SceneRenderer extends WorldSystem {
      *
      * @param obj Object to add
      */
-    public addObject(obj: THREE.Object3D) {
+    public static addObject(obj: THREE.Object3D) {
         this._scene.add(obj)
     }
 
@@ -506,7 +506,7 @@ class SceneRenderer extends WorldSystem {
      *
      * @param obj Object to remove
      */
-    public removeObject(obj: THREE.Object3D) {
+    public static removeObject(obj: THREE.Object3D) {
         this._scene.remove(obj)
     }
 
@@ -515,7 +515,7 @@ class SceneRenderer extends WorldSystem {
      *
      * @param material
      */
-    public setupMaterial(material: THREE.Material) {
+    public static setupMaterial(material: THREE.Material) {
         if (this._light instanceof CSM) this._light.setupMaterial(material)
     }
 
@@ -524,22 +524,19 @@ class SceneRenderer extends WorldSystem {
      *
      * @param e Mouse event data.
      */
-    public onContextMenu(e: InteractionEnd) {
+    public static onContextMenu(e: InteractionEnd) {
         // Cast ray into physics scene.
         const origin = this.mainCamera.position
 
         const worldSpace = this.pixelToWorldSpace(e.position[0], e.position[1])
         const dir = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
 
-        const res = World.physicsSystem.rayCast(
-            convertThreeVector3ToJoltVec3(origin),
-            convertThreeVector3ToJoltVec3(dir)
-        )
+        const res = PhysicsSystem.rayCast(convertThreeVector3ToJoltVec3(origin), convertThreeVector3ToJoltVec3(dir))
 
         // Use any associations to determine ContextData.
         let miraSupplierData: ContextData | undefined = undefined
         if (res) {
-            const assoc = World.physicsSystem.getBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
+            const assoc = PhysicsSystem.getBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
             if (assoc?.sceneObject) {
                 miraSupplierData = assoc.sceneObject.getSupplierData()
             }

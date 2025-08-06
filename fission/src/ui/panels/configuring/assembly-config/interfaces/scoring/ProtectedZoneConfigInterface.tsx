@@ -24,7 +24,6 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import World from "@/systems/World"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
@@ -33,6 +32,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 
 const MATCH_MODE_OPTIONS: MatchModeType[] = [
     MatchModeType.SANDBOX,
@@ -101,9 +101,7 @@ function save(
     scale.z = Math.abs(scale.z)
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
-    const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
-    )
+    const fieldTransformation = convertJoltMat44ToThreeMatrix4(PhysicsSystem.getBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(fieldTransformation.invert())
 
     zone.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
@@ -171,10 +169,10 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
     /** Holds a pause for the duration of the interface component */
     useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        PhysicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            PhysicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 
@@ -212,7 +210,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
                 /** W = L x R. See save() for math details */
                 const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+                    PhysicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
                 const props = deltaFieldTransformsPhysicalProp(deltaTransformation, fieldTransformation)
 
@@ -245,7 +243,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 return false
             }
 
-            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
+            const assoc = PhysicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || assoc?.sceneObject !== selectedField) {
                 return false
             }

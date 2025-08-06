@@ -1,7 +1,7 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import * as THREE from "three"
 import type Mechanism from "@/systems/physics/Mechanism"
-import World from "@/systems/World"
 import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import type { NoraNumber3 } from "../../Nora"
 import type { SimReceiver } from "../SimDataFlow"
@@ -51,7 +51,7 @@ export class SimAccelInput extends SimInput {
 
     public update(deltaT: number) {
         if (!this._joltID) return
-        const body = World.physicsSystem.getBody(this._joltID)
+        const body = PhysicsSystem.getBody(this._joltID)
 
         const rot = convertJoltQuatToThreeQuaternion(body.GetRotation())
         const mat = new THREE.Matrix4().makeRotationFromQuaternion(rot).transpose()

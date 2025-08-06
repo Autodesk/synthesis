@@ -1,7 +1,8 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import SceneObject from "@/systems/scene/SceneObject"
-import World from "@/systems/World"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
@@ -65,7 +66,7 @@ class EjectableSceneObject extends SceneObject {
             this._ejectVelocity = this._parentAssembly.ejectorPreferences.ejectorVelocity
 
             // Record start transform at the game piece center of mass
-            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            const gpBody = PhysicsSystem.getBody(this._gamePieceBodyId)
             this._startTranslation = new THREE.Vector3(0, 0, 0)
             this._startRotation = new THREE.Quaternion(0, 0, 0, 1)
             convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).decompose(
@@ -77,10 +78,10 @@ class EjectableSceneObject extends SceneObject {
             this._animationDuration = EjectableSceneObject._defaultAnimationDuration
             this._animationStartTime = performance.now()
 
-            World.physicsSystem.disablePhysicsForBody(this._gamePieceBodyId)
+            PhysicsSystem.disablePhysicsForBody(this._gamePieceBodyId)
 
             // Remove from any scoring zones
-            const zones = World.sceneRenderer.filterSceneObjects(x => x instanceof ScoringZoneSceneObject)
+            const zones = SceneRenderer.filterSceneObjects(x => x instanceof ScoringZoneSceneObject)
             zones.forEach(x => {
                 if (this._gamePieceBodyId) ScoringZoneSceneObject.removeGamepiece(x, this._gamePieceBodyId)
             })
@@ -99,17 +100,17 @@ class EjectableSceneObject extends SceneObject {
         const easedT = t * t
 
         if (this._parentBodyId && this._deltaTransformation && this._gamePieceBodyId) {
-            if (!World.physicsSystem.isBodyAdded(this._gamePieceBodyId)) {
+            if (!PhysicsSystem.isBodyAdded(this._gamePieceBodyId)) {
                 this._gamePieceBodyId = undefined
                 return
             }
 
-            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            const gpBody = PhysicsSystem.getBody(this._gamePieceBodyId)
             const posToCOM = convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).premultiply(
                 convertJoltMat44ToThreeMatrix4(gpBody.GetWorldTransform()).invert()
             )
 
-            const body = World.physicsSystem.getBody(this._parentBodyId)
+            const body = PhysicsSystem.getBody(this._parentBodyId)
             let desiredPosition = new THREE.Vector3(0, 0, 0)
             let desiredRotation = new THREE.Quaternion(0, 0, 0, 1)
 
@@ -127,7 +128,7 @@ class EjectableSceneObject extends SceneObject {
             }
             // } else if (t >= 1) {
             //     // snap instantly and re-enable physics
-            //     World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
+            //     PhysicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
             // }
 
             // apply the transform
@@ -139,12 +140,8 @@ class EjectableSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-            World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position), false)
-            World.physicsSystem.setBodyRotation(
-                this._gamePieceBodyId,
-                convertThreeQuaternionToJoltQuat(rotation),
-                false
-            )
+            PhysicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position), false)
+            PhysicsSystem.setBodyRotation(this._gamePieceBodyId, convertThreeQuaternionToJoltQuat(rotation), false)
         }
     }
 
@@ -153,18 +150,18 @@ class EjectableSceneObject extends SceneObject {
             return
         }
 
-        if (!World.physicsSystem.isBodyAdded(this._gamePieceBodyId)) {
+        if (!PhysicsSystem.isBodyAdded(this._gamePieceBodyId)) {
             this._gamePieceBodyId = undefined
             return
         }
 
-        const parentBody = World.physicsSystem.getBody(this._parentBodyId)
-        const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+        const parentBody = PhysicsSystem.getBody(this._parentBodyId)
+        const gpBody = PhysicsSystem.getBody(this._gamePieceBodyId)
         const ejectDir = new THREE.Vector3(0, 0, 1)
             .applyQuaternion(convertJoltQuatToThreeQuaternion(gpBody.GetRotation()))
             .normalize()
 
-        World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
+        PhysicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
         gpBody.SetLinearVelocity(
             parentBody
                 .GetLinearVelocity()
@@ -179,7 +176,7 @@ class EjectableSceneObject extends SceneObject {
         console.debug("Destroying ejectable")
 
         if (this._gamePieceBodyId) {
-            World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
+            PhysicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
         }
     }
 }

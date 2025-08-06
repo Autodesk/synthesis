@@ -2,7 +2,6 @@ import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import World from "../World"
 import type ScreenInteractionHandler from "./ScreenInteractionHandler"
 import {
     type InteractionEnd,
@@ -11,6 +10,8 @@ import {
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import SceneRenderer from "./SceneRenderer"
+import DragModeSystem from "./DragModeSystem"
 
 export type CameraControlsType = "Orbit"
 
@@ -171,7 +172,7 @@ export class CustomOrbitControls extends CameraControls {
      * Prioritizes robots first, then fields, then any other MirabufSceneObject.
      */
     private findFallbackFocus(mirabufObjects?: MirabufSceneObject[]): MirabufSceneObject | undefined {
-        mirabufObjects ??= World.sceneRenderer.mirabufSceneObjects.getAll()
+        mirabufObjects ??= SceneRenderer.mirabufSceneObjects.getAll()
 
         const robots = mirabufObjects.filter(obj => obj.miraType === MiraType.ROBOT)
         const fields = mirabufObjects.filter(obj => obj.miraType === MiraType.FIELD)
@@ -184,10 +185,10 @@ export class CustomOrbitControls extends CameraControls {
      * If not, automatically finds a suitable replacement.
      */
     private validateFocusProvider(): void {
-        if (!World.sceneRenderer?.sceneObjects || World.dragModeSystem.isTransitioning) {
+        if (!SceneRenderer?.sceneObjects || DragModeSystem.isTransitioning) {
             return
         }
-        const mirabufObjects = World.sceneRenderer.mirabufSceneObjects.getAll()
+        const mirabufObjects = SceneRenderer.mirabufSceneObjects.getAll()
 
         if (this._focusProvider) {
             if (!mirabufObjects.includes(this._focusProvider)) {

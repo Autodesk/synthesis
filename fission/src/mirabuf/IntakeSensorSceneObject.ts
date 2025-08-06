@@ -2,7 +2,6 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
 import SceneObject from "@/systems/scene/SceneObject"
-import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
@@ -12,6 +11,8 @@ import {
 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -37,7 +38,7 @@ class IntakeSensorSceneObject extends SceneObject {
                 this._parentAssembly.intakePreferences.deltaTransformation
             )
 
-            this._joltBodyId = World.physicsSystem.createSensor(
+            this._joltBodyId = PhysicsSystem.createSensor(
                 new JOLT.SphereShapeSettings(this._parentAssembly.intakePreferences.zoneDiameter / 2.0)
             )
             if (!this._joltBodyId) {
@@ -47,7 +48,7 @@ class IntakeSensorSceneObject extends SceneObject {
 
             this._collision = (event: OnContactPersistedEvent) => {
                 if (this._parentAssembly.intakeActive) {
-                    if (this._joltBodyId && !World.physicsSystem.isPaused) {
+                    if (this._joltBodyId && !PhysicsSystem.isPaused) {
                         const body1 = event.message.body1
                         const body2 = event.message.body2
 
@@ -70,7 +71,7 @@ class IntakeSensorSceneObject extends SceneObject {
     public updateVisualIndicator(): void {
         // Remove existing visual indicator
         if (this._visualIndicator) {
-            World.sceneRenderer.scene.remove(this._visualIndicator)
+            SceneRenderer.scene.remove(this._visualIndicator)
             this._visualIndicator = undefined
         }
 
@@ -84,7 +85,7 @@ class IntakeSensorSceneObject extends SceneObject {
                 wireframe: true,
             })
             this._visualIndicator = new THREE.Mesh(geometry, material)
-            World.sceneRenderer.scene.add(this._visualIndicator)
+            SceneRenderer.scene.add(this._visualIndicator)
         }
     }
 
@@ -96,7 +97,7 @@ class IntakeSensorSceneObject extends SceneObject {
 
     public update(): void {
         if (this._joltBodyId && this._parentBodyId && this._deltaTransformation) {
-            const parentBody = World.physicsSystem.getBody(this._parentBodyId)
+            const parentBody = PhysicsSystem.getBody(this._parentBodyId)
             const bodyTransform = this._deltaTransformation
                 .clone()
                 .premultiply(convertJoltMat44ToThreeMatrix4(parentBody.GetWorldTransform()))
@@ -104,8 +105,8 @@ class IntakeSensorSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-            World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(position))
-            World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(rotation))
+            PhysicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(position))
+            PhysicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(rotation))
 
             // Update visual indicator position if it exists
             if (this._visualIndicator) {
@@ -117,20 +118,20 @@ class IntakeSensorSceneObject extends SceneObject {
 
     public dispose(): void {
         if (this._joltBodyId) {
-            World.physicsSystem.destroyBodyIds(this._joltBodyId)
+            PhysicsSystem.destroyBodyIds(this._joltBodyId)
         }
 
         if (this._collision) OnContactPersistedEvent.removeListener(this._collision)
 
         // Clean up visual indicator
         if (this._visualIndicator) {
-            World.sceneRenderer.scene.remove(this._visualIndicator)
+            SceneRenderer.scene.remove(this._visualIndicator)
             this._visualIndicator = undefined
         }
     }
 
     private intakeCollision(gpID: Jolt.BodyID) {
-        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
+        const associate = <RigidNodeAssociate>PhysicsSystem.getBodyAssociation(gpID)
         if (associate?.isGamePiece) {
             associate.robotLastInContactWith = this._parentAssembly
             this._parentAssembly.setEjectable(gpID)

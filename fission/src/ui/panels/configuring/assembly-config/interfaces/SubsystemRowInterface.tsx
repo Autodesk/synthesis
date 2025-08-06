@@ -7,10 +7,10 @@ import type Driver from "@/systems/simulation/driver/Driver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
-import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import StatefulSlider from "@/ui/components/StatefulSlider"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 type SubsystemRowProps = {
     robot: MirabufSceneObject
@@ -47,9 +47,9 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
         (vel: number, force: number, unstick: number) => {
             if (driver instanceof WheelDriver) {
                 const wheelDrivers = robot?.mechanism
-                    ? World.simulationSystem
-                          .getSimulationLayer(robot.mechanism)
-                          ?.drivers.filter(x => x instanceof WheelDriver)
+                    ? SimulationSystem.getSimulationLayer(robot.mechanism)?.drivers.filter(
+                          x => x instanceof WheelDriver
+                      )
                     : undefined
                 wheelDrivers?.forEach(x => {
                     x.maxVelocity = vel

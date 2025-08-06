@@ -2,20 +2,21 @@ import * as THREE from "three"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
-import World from "../World"
+import SceneRenderer from "../scene/SceneRenderer"
+import PhysicsSystem from "../physics/PhysicsSystem"
 
 class RobotPositionTracker {
     private static _mapBoundaryY: number = -4
     private static _offMapPenalty: number = 0
 
     public static update(): void {
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
+        SceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
             const rootNodeId = robot.getRootNodeId()
             if (!rootNodeId) {
                 return
             }
 
-            const rootBody = World.physicsSystem.getBody(rootNodeId)
+            const rootBody = PhysicsSystem.getBody(rootNodeId)
             const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
 
             const rootPosition = new THREE.Vector3()
@@ -34,7 +35,7 @@ class RobotPositionTracker {
                 robot.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
                     const bodyId = robot.mechanism.getBodyByNodeId(rigidNode.id)
                     if (bodyId) {
-                        World.physicsSystem.setBodyPositionRotationAndVelocity(
+                        PhysicsSystem.setBodyPositionRotationAndVelocity(
                             bodyId,
                             resetPosition,
                             resetRotation,

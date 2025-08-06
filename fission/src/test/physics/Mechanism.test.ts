@@ -282,10 +282,8 @@ describe("Mechanism Integration Tests", () => {
 })
 
 describe("Mirabuf Mechanism Creation", () => {
-    let physSystem: PhysicsSystem
-
     beforeEach(() => {
-        physSystem = new PhysicsSystem()
+        PhysicsSystem.setup()
     })
 
     test("Body Loading (Dozer)", async () => {
@@ -294,7 +292,7 @@ describe("Mirabuf Mechanism Creation", () => {
         )
         const parser = new MirabufParser(assembly!)
 
-        const mechanism = physSystem.createMechanismFromParser(parser)
+        const mechanism = PhysicsSystem.createMechanismFromParser(parser)
 
         expect(mechanism).toBeDefined()
         expect(mechanism.controllable).toBe(true)
@@ -308,7 +306,7 @@ describe("Mirabuf Mechanism Creation", () => {
         ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
         const parser = new MirabufParser(assembly!)
 
-        const mechanism = physSystem.createMechanismFromParser(parser)
+        const mechanism = PhysicsSystem.createMechanismFromParser(parser)
 
         expect(mechanism).toBeDefined()
         expect(mechanism.controllable).toBe(true)

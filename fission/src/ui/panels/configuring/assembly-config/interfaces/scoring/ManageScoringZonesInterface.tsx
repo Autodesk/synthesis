@@ -5,10 +5,10 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -82,10 +82,10 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
     useEffect(() => {
         saveZones(zones, selectedField)
 
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        PhysicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            PhysicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [selectedField, zones])
 

@@ -5,7 +5,6 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
@@ -17,6 +16,8 @@ import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { findListDifference } from "@/util/Utility"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
@@ -73,7 +74,7 @@ class ScoringZoneSceneObject extends SceneObject {
 
             if (this._parentBodyId) {
                 // Create a default sensor
-                this._joltBodyId = World.physicsSystem.createSensor(new JOLT.BoxShapeSettings(new JOLT.Vec3(1, 1, 1)))
+                this._joltBodyId = PhysicsSystem.createSensor(new JOLT.BoxShapeSettings(new JOLT.Vec3(1, 1, 1)))
                 if (!this._joltBodyId) {
                     console.log("Failed to create scoring zone. No Jolt Body")
                     return
@@ -82,24 +83,21 @@ class ScoringZoneSceneObject extends SceneObject {
                 // Position/rotate/scale sensor to settings
                 this._deltaTransformation = convertArrayToThreeMatrix4(this._prefs.deltaTransformation)
                 const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(this._parentBodyId).GetWorldTransform()
+                    PhysicsSystem.getBody(this._parentBodyId).GetWorldTransform()
                 )
                 const props = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
 
-                World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(props.translation))
-                World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(props.rotation))
+                PhysicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(props.translation))
+                PhysicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(props.rotation))
                 const shapeSettings = new JOLT.BoxShapeSettings(
                     new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
                 )
                 const shape = shapeSettings.Create()
-                World.physicsSystem.setShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
+                PhysicsSystem.setShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
 
                 // Mesh for the user to visualize sensor
-                this._mesh = World.sceneRenderer.createBox(
-                    new JOLT.Vec3(1, 1, 1),
-                    ScoringZoneSceneObject.transparentMaterial
-                )
-                World.sceneRenderer.scene.add(this._mesh)
+                this._mesh = SceneRenderer.createBox(new JOLT.Vec3(1, 1, 1), ScoringZoneSceneObject.transparentMaterial)
+                SceneRenderer.scene.add(this._mesh)
 
                 if (this._toRender) {
                     this._mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
@@ -146,17 +144,17 @@ class ScoringZoneSceneObject extends SceneObject {
         if (this._parentBodyId && this._deltaTransformation && this._joltBodyId && this._prefs) {
             // Update translation, rotation, and scale
             const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-                World.physicsSystem.getBody(this._parentBodyId).GetWorldTransform()
+                PhysicsSystem.getBody(this._parentBodyId).GetWorldTransform()
             )
             const props = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
 
-            World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(props.translation))
-            World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(props.rotation))
+            PhysicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(props.translation))
+            PhysicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(props.rotation))
             const shapeSettings = new JOLT.BoxShapeSettings(
                 new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
             )
             const shape = shapeSettings.Create()
-            World.physicsSystem.setShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
+            PhysicsSystem.setShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
 
             // Mesh for visualization
             this._toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")
@@ -189,14 +187,14 @@ class ScoringZoneSceneObject extends SceneObject {
 
                     // Per robot score calculations
                     gpAdded.forEach(gpID => {
-                        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
+                        const associate = <RigidNodeAssociate>PhysicsSystem.getBodyAssociation(gpID)
                         const robotAlliancePoints =
                             associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
                             SimulationSystem.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
                     })
                     gpRemoved.forEach(gpID => {
-                        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
+                        const associate = <RigidNodeAssociate>PhysicsSystem.getBodyAssociation(gpID)
                         const robotAlliancePoints =
                             associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
@@ -212,11 +210,11 @@ class ScoringZoneSceneObject extends SceneObject {
 
     public dispose(): void {
         if (this._joltBodyId) {
-            World.physicsSystem.destroyBodyIds(this._joltBodyId)
+            PhysicsSystem.destroyBodyIds(this._joltBodyId)
             if (this._mesh) {
                 this._mesh.geometry.dispose()
                 ;(this._mesh.material as THREE.Material).dispose()
-                World.sceneRenderer.scene.remove(this._mesh)
+                SceneRenderer.scene.remove(this._mesh)
             }
         }
 
@@ -225,7 +223,7 @@ class ScoringZoneSceneObject extends SceneObject {
     }
 
     private zoneCollision(gpID: Jolt.BodyID) {
-        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
+        const associate = <RigidNodeAssociate>PhysicsSystem.getBodyAssociation(gpID)
         if (associate?.isGamePiece && this._prefs) {
             // If persistent, Update() will handle points
             if (this._prefs.persistentPoints) {
@@ -252,7 +250,7 @@ class ScoringZoneSceneObject extends SceneObject {
     // Private gamepiece removal called anytime collision removed from zone. Score update in Update()
     private zoneCollisionRemoved(gpID: Jolt.BodyID) {
         if (this._prefs?.persistentPoints) {
-            const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
+            const associate = <RigidNodeAssociate>PhysicsSystem.getBodyAssociation(gpID)
             if (associate?.isGamePiece) {
                 const temp = this._gpContacted.filter(x => {
                     return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()

@@ -67,7 +67,7 @@ describe("Analytics", () => {
             const initialParams = mockRequestParametersHandle()
 
             const gtagSpy: Mock<NonNullable<typeof window.gtag>> = vi.spyOn(window, "gtag")
-            const system = new AnalyticsSystem()
+            AnalyticsSystem.setup()
             expect(gtagSpy).toHaveBeenCalled()
             await initialParams.then(params => {
                 expect(params.get("tid")).toBe(tagID)
@@ -75,7 +75,7 @@ describe("Analytics", () => {
             gtagSpy.mockClear()
 
             const eventParams = mockRequestParametersHandle()
-            system.event("APS Calls per Minute", {})
+            AnalyticsSystem.event("APS Calls per Minute", {})
 
             expect(gtagSpy).toHaveBeenCalled()
             await eventParams.then(params => {

@@ -32,7 +32,6 @@ import MirabufCachingService, {
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -50,6 +49,8 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 
 interface ItemCardProps {
     id: string
@@ -97,20 +98,20 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
 export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type === MiraType.FIELD) {
-        World.sceneRenderer.removeAllFields()
+        SceneRenderer.removeAllFields()
     }
 
     if (!progressHandle) {
         progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
     }
 
-    World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
+    PhysicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
                 createMirabuf(assembly, progressHandle, info.id).then(x => {
                     if (x) {
-                        World.sceneRenderer.registerSceneObject(x)
+                        SceneRenderer.registerSceneObject(x)
                         progressHandle.done()
 
                         globalOpenPanel(InitialConfigPanel, undefined)
@@ -127,7 +128,7 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
         })
         .catch(() => progressHandle.fail())
         .finally(() => {
-            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+            setTimeout(() => PhysicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
         })
 }
 

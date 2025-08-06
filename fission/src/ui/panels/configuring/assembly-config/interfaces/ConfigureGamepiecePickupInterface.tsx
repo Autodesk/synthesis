@@ -11,7 +11,6 @@ import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import { Spacer } from "@/ui/components/StyledComponents"
@@ -22,6 +21,8 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -78,9 +79,7 @@ function save(
     gizmo.obj.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(1, 1, 1))
-    const robotTransformation = convertJoltMat44ToThreeMatrix4(
-        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
-    )
+    const robotTransformation = convertJoltMat44ToThreeMatrix4(PhysicsSystem.getBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
     selectedRobot.intakePreferences.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
@@ -136,7 +135,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
     const placeholderMesh = useMemo(() => {
         // TODO: dynamic color?
-        const material = World.sceneRenderer.createToonMaterial(
+        const material = SceneRenderer.createToonMaterial(
             convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 })
         )
         material.transparent = true
@@ -164,7 +163,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
                 /** W = L x R. See save() for math details */
                 const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+                    PhysicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
@@ -209,7 +208,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [selectedRobot])
 
     useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        PhysicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         // Hide the visual indicator when entering configuration mode
         if (selectedRobot) {
@@ -217,7 +216,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         }
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            PhysicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
 
             // Show the visual indicator when exiting configuration mode
             if (selectedRobot) {
@@ -232,7 +231,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 return false
             }
 
-            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
+            const assoc = PhysicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || !assoc.sceneObject || assoc.sceneObject != selectedRobot) {
                 return false
             }
@@ -311,7 +310,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
+                            PhysicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)

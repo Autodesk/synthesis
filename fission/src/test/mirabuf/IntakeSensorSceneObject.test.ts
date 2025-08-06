@@ -3,35 +3,31 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
-const mockPhysicsSystem = {
-    createSensor: vi.fn(),
-    destroyBodyIds: vi.fn(),
-    setBodyPosition: vi.fn(),
-    setBodyRotation: vi.fn(),
-    getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
-    getBodyAssociation: vi.fn(),
-    disablePhysicsForBody: vi.fn(),
-    enablePhysicsForBody: vi.fn(),
-    isBodyAdded: vi.fn(),
-    setShape: vi.fn(),
-    setBodyAssociation: vi.fn(),
-}
-const mockSceneRenderer = {
-    sceneObjects: new Map(),
-    createBox: vi.fn(),
-    scene: {
-        remove: vi.fn(),
-    },
-}
-
-vi.mock("@/systems/World", () => ({
+vi.mock("@/systems/physics/PhysicsSystem", () => ({
     default: {
-        get physicsSystem() {
-            return mockPhysicsSystem
-        },
-        get sceneRenderer() {
-            return mockSceneRenderer
+        createSensor: vi.fn(),
+        destroyBodyIds: vi.fn(),
+        setBodyPosition: vi.fn(),
+        setBodyRotation: vi.fn(),
+        getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
+        getBodyAssociation: vi.fn(),
+        disablePhysicsForBody: vi.fn(),
+        enablePhysicsForBody: vi.fn(),
+        isBodyAdded: vi.fn(),
+        setShape: vi.fn(),
+        setBodyAssociation: vi.fn(),
+    },
+}))
+
+vi.mock("@/systems/physics/PhysicsSystem", () => ({
+    default: {
+        sceneObjects: new Map(),
+        createBox: vi.fn(),
+        scene: {
+            remove: vi.fn(),
         },
     },
 }))
@@ -70,8 +66,8 @@ describe("IntakeSensorSceneObject", () => {
         const instance = new IntakeSensorSceneObject(parent)
         instance.setup()
         expect(instance["_parentBodyId"]).toBe(mockBodyId)
-        expect(mockPhysicsSystem.createSensor).toHaveBeenCalled()
-        expect(mockPhysicsSystem.setBodyAssociation).toBeDefined()
+        expect(PhysicsSystem.createSensor).toHaveBeenCalled()
+        expect(PhysicsSystem.setBodyAssociation).toBeDefined()
     })
 
     test("Update sets body position/rotation", () => {
@@ -84,7 +80,7 @@ describe("IntakeSensorSceneObject", () => {
         })
         Reflect.set(instance, "_visualIndicator", { position: { copy: vi.fn() }, quaternion: { copy: vi.fn() } })
         instance.update()
-        expect(mockPhysicsSystem.setBodyPosition).toHaveBeenCalled()
+        expect(PhysicsSystem.setBodyPosition).toHaveBeenCalled()
     })
 
     test("Dispose destroys sensor", () => {
@@ -93,7 +89,7 @@ describe("IntakeSensorSceneObject", () => {
         Reflect.set(instance, "_joltBodyId", mockBodyId)
         Reflect.set(instance, "_collision", vi.fn())
         instance.dispose()
-        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
-        expect(mockSceneRenderer.scene.remove).toBeDefined()
+        expect(PhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
+        expect(SceneRenderer.scene.remove).toBeDefined()
     })
 })

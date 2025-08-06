@@ -1,10 +1,10 @@
 import { ToggleButton, ToggleButtonGroup } from "@mui/material"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import type { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -26,13 +26,13 @@ const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
-        World.sceneRenderer.currentCameraControls.controlsType
+        SceneRenderer.currentCameraControls.controlsType
     )
 
     const setCameraControls = useCallback((t: CameraControlsType) => {
         switch (t) {
             case "Orbit":
-                World.sceneRenderer.setCameraControls(t)
+                SceneRenderer.setCameraControls(t)
                 setCameraControlType(t)
                 break
             default:
@@ -61,7 +61,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                 <ToggleButton value="Orbit">Orbit</ToggleButton>
             </ToggleButtonGroup>
             {cameraControlType === "Orbit" && (
-                <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
+                <OrbitSettings controls={SceneRenderer.currentCameraControls as CustomOrbitControls} />
             )}
         </>
     )

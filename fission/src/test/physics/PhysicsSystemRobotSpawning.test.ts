@@ -2,15 +2,19 @@ import { describe, expect, test } from "vitest"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import PhysicsSystem, { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { beforeEach } from "node:test"
 
 describe("Mirabuf Physics Loading", () => {
+    beforeEach(() => {
+        PhysicsSystem.setup()
+    })
+
     test("Body Loading (Dozer)", async () => {
         const assembly = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
             x => MirabufCachingService.get(x!.id, MiraType.ROBOT)
         )
         const parser = new MirabufParser(assembly!)
-        const physSystem = new PhysicsSystem()
-        const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())
+        const mapping = PhysicsSystem.createBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(7)
     })
@@ -28,8 +32,7 @@ describe("Mirabuf Physics Loading", () => {
             MiraType.ROBOT
         ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
         const parser = new MirabufParser(assembly!)
-        const physSystem = new PhysicsSystem()
-        const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())
+        const mapping = PhysicsSystem.createBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(9)
     })

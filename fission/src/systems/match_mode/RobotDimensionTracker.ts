@@ -1,5 +1,5 @@
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import World from "@/systems/World.ts"
+import SceneRenderer from "../scene/SceneRenderer"
 import MatchMode from "./MatchMode"
 
 const BUFFER_HEIGHT = 0.1
@@ -31,7 +31,7 @@ class RobotDimensionTracker {
     public static update(): void {
         if (!MatchMode.getInstance().isMatchEnabled()) return
 
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
+        SceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
             const dimensions = this._ignoreRotation ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
 
             if (dimensions.height > this._maxHeight + BUFFER_HEIGHT) {

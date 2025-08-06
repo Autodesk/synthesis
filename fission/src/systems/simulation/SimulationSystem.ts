@@ -1,10 +1,9 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
-import World from "@/systems/World.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type Mechanism from "../physics/Mechanism"
-import WorldSystem from "../WorldSystem"
+import SceneRenderer from "../scene/SceneRenderer"
 import type Brain from "./Brain"
 import type Driver from "./driver/Driver"
 import { DriverType, makeDriverID } from "./driver/Driver"
@@ -20,39 +19,33 @@ import type Stimulus from "./stimulus/Stimulus"
 import { makeStimulusID, StimulusType } from "./stimulus/Stimulus"
 import WheelRotationStimulus from "./stimulus/WheelStimulus"
 
-class SimulationSystem extends WorldSystem {
-    private _simMechanisms: Map<Mechanism, SimulationLayer>
+class SimulationSystem {
+    private static _simMechanisms: Map<Mechanism, SimulationLayer> = new Map()
     public static perRobotScore: Map<MirabufSceneObject, number> = new Map()
 
     public static redScore = 0
     public static blueScore = 0
 
-    constructor() {
-        super()
-
-        this._simMechanisms = new Map()
-    }
-
-    public registerMechanism(mechanism: Mechanism) {
+    public static registerMechanism(mechanism: Mechanism) {
         if (this._simMechanisms.has(mechanism)) return
 
         this._simMechanisms.set(mechanism, new SimulationLayer(mechanism))
     }
 
-    public getSimulationLayer(mechanism: Mechanism): SimulationLayer | undefined {
+    public static getSimulationLayer(mechanism: Mechanism): SimulationLayer | undefined {
         return this._simMechanisms.get(mechanism)
     }
 
-    public update(deltaT: number): void {
+    public static update(deltaT: number): void {
         this._simMechanisms.forEach(simLayer => simLayer.update(deltaT))
     }
 
-    public destroy(): void {
+    public static destroy(): void {
         this._simMechanisms.forEach(simLayer => simLayer.setBrain(undefined))
         this._simMechanisms.clear()
     }
 
-    public unregisterMechanism(mech: Mechanism): boolean {
+    public static unregisterMechanism(mech: Mechanism): boolean {
         const layer = this._simMechanisms.get(mech)
         if (this._simMechanisms.delete(mech)) {
             layer?.setBrain(undefined)
@@ -113,7 +106,7 @@ class SimulationLayer {
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
 
-        const assembly = World.sceneRenderer.mirabufSceneObjects.findWhere(obj => obj.mechanism == mechanism)
+        const assembly = SceneRenderer.mirabufSceneObjects.findWhere(obj => obj.mechanism == mechanism)
 
         // Generate standard drivers and stimuli
         this._drivers = new Map()

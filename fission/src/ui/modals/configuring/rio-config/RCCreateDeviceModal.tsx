@@ -2,13 +2,14 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import World from "@/systems/World"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import RoboRIOModal from "../RoboRIOModal"
 import RCConfigCANGroupModal from "./RCConfigCANGroupModal"
 import RCConfigEncoderModal from "./RCConfigEncoderModal"
 import RCConfigPWMGroupModal from "./RCConfigPWMGroupModal"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 type DeviceType = "PWM" | "CAN" | "Encoder"
 
@@ -19,10 +20,10 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
     useEffect(() => {
         const onBeforeAccept = () => {
             console.log(type)
-            const miraObj = World.sceneRenderer.mirabufSceneObjects.getRobots()[0]
+            const miraObj = SceneRenderer.mirabufSceneObjects.getRobots()[0]
             if (miraObj != null) {
                 const mechanism = miraObj.mechanism
-                const simLayer = World.simulationSystem.getSimulationLayer(mechanism)
+                const simLayer = SimulationSystem.getSimulationLayer(mechanism)
                 console.log("simlayer", simLayer)
                 if (!(simLayer?.brain instanceof WPILibBrain)) simLayer?.setBrain(new WPILibBrain(miraObj))
             }

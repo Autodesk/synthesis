@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import World from "@/systems/World.ts"
+import SceneRenderer from "@/systems/scene/SceneRenderer.ts"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
 import type { mirabuf } from "../proto/mirabuf"
 import type MirabufParser from "./MirabufParser.ts"
@@ -148,9 +148,9 @@ class MirabufInstance {
                           })
                         : materialStyle === MaterialStyle.NORMAL
                           ? new THREE.MeshNormalMaterial()
-                          : World.sceneRenderer.createToonMaterial(hex, 5)
+                          : SceneRenderer.createToonMaterial(hex, 5)
 
-                World.sceneRenderer.setupMaterial(material)
+                SceneRenderer.setupMaterial(material)
                 this._materials.set(appearanceId, material)
             }
         )

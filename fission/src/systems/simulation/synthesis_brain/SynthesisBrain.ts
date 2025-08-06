@@ -1,10 +1,10 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
-import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
 import Brain from "../Brain"
@@ -22,6 +22,7 @@ import type { SimulationLayer } from "../SimulationSystem"
 import HingeStimulus from "../stimulus/HingeStimulus"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import WheelRotationStimulus from "../stimulus/WheelStimulus"
+import SimulationSystem from "../SimulationSystem"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -94,7 +95,7 @@ class SynthesisBrain extends Brain {
     public constructor(assembly: MirabufSceneObject, assemblyName: string) {
         super(assembly.mechanism, "synthesis")
         this._assembly = assembly
-        this._simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)!
+        this._simLayer = SimulationSystem.getSimulationLayer(assembly.mechanism)!
         this._assemblyName = assemblyName
 
         // I'm not fixing this right now, but this is going to become an issue...
@@ -180,9 +181,7 @@ class SynthesisBrain extends Brain {
                 fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
             )
 
-            const robotCOM = World.physicsSystem
-                .getBody(this._mechanism.constraints[0].childBody)
-                .GetCenterOfMassPosition()
+            const robotCOM = PhysicsSystem.getBody(this._mechanism.constraints[0].childBody).GetCenterOfMassPosition()
             const rightVector = new JOLT.RVec3(1, 0, 0)
 
             const dotProduct = rightVector.Dot(wheelPos.SubRVec3(robotCOM))

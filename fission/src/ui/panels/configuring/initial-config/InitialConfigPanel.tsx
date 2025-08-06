@@ -1,4 +1,6 @@
 import { Box, Button, Stack } from "@mui/material"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
@@ -10,7 +12,6 @@ import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -30,10 +31,10 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
     useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
+        PhysicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            PhysicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 
@@ -61,7 +62,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }, [closePanel, panel, targetAssembly])
 
     const closeDelete = useCallback(() => {
-        if (targetAssembly) World.sceneRenderer.removeSceneObject(targetAssembly.id)
+        if (targetAssembly) SceneRenderer.removeSceneObject(targetAssembly.id)
     }, [closePanel, panel, targetAssembly])
 
     const brainIndex = useMemo(() => {

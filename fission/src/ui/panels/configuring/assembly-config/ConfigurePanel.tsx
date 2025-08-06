@@ -10,7 +10,6 @@ import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -31,6 +30,7 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 interface ConfigInterfaceProps<T, P> {
     panel: UIScreen<T, P>
@@ -158,7 +158,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
     useEffect(() => {
         const onBeforeAccept = () => {
-            pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
+            pendingDeletes.forEach(id => SceneRenderer.removeSceneObject(id))
             setPendingDeletes([])
 
             InputSchemeManager.saveSchemes()

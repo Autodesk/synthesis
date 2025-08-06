@@ -11,9 +11,9 @@ import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import World from "@/systems/World"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import SubsystemRowInterface from "./SubsystemRowInterface"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 class ConfigModeSelectionOption extends SelectMenuOption {
     driver: Driver
@@ -60,7 +60,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
     )
 
     const drivers = useMemo(() => {
-        return World.simulationSystem.getSimulationLayer(selectedRobot.mechanism)?.drivers
+        return SimulationSystem.getSimulationLayer(selectedRobot.mechanism)?.drivers
     }, [selectedRobot])
 
     const getSubsystemOptions = () => {

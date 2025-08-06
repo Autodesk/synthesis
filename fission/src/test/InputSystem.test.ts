@@ -71,7 +71,7 @@ describe("Input Scheme Manager Checks", () => {
 })
 
 describe("Input System Checks", () => {
-    const inputSystem = new InputSystem()
+    InputSystem.setup()
 
     test("Brain Map Exists?", () => {
         assert(InputSystem.brainIndexSchemeMap != undefined)
@@ -113,7 +113,7 @@ describe("Input System Checks", () => {
 
     test("Arcade Drive", () => {
         InputSystem.setBrainIndexSchemeMapping(0, DefaultInputs.ernie())
-        inputSystem.update(-1) // Initialize the input system
+        InputSystem.update(-1) // Initialize the input system
 
         function testArcadeInput(inputMap: InputName, key: string, expectedValue: number) {
             document.dispatchEvent(new KeyboardEvent("keydown", { code: key }))
@@ -143,7 +143,7 @@ describe("Input System Checks", () => {
             meta: true,
         }
 
-        inputSystem.update(-1)
+        InputSystem.update(-1)
 
         expect(InputSystem.compareModifiers(allFalse, EMPTY_MODIFIER_STATE)).toBe(true)
         expect(InputSystem.compareModifiers(allFalse, InputSystem.currentModifierState)).toBe(true)
@@ -182,8 +182,8 @@ describe("Gamepad Input Check", () => {
     })
 
     test("Reads axes correctly", () => {
-        const sys = new InputSystem()
-        sys.update(0)
+        InputSystem.setup()
+        InputSystem.update(0)
 
         expect(InputSystem.getGamepadAxis(0)).toBe(0.5)
         expect(InputSystem.getGamepadAxis(1)).toBe(-0.5)
@@ -196,8 +196,8 @@ describe("Gamepad Input Check", () => {
         } as unknown as Gamepad
 
         vi.spyOn(navigator, "getGamepads").mockReturnValue([updatedGamepad, null, null, null])
-        const sys = new InputSystem()
-        sys.update(0)
+        InputSystem.setup()
+        InputSystem.update(0)
 
         expect(InputSystem.getGamepadAxis(0)).toBe(0)
         expect(InputSystem.getGamepadAxis(1)).toBe(0)
@@ -209,8 +209,8 @@ describe("Gamepad Input Check", () => {
             axes: [0.9],
         } as unknown as Gamepad
         vi.spyOn(navigator, "getGamepads").mockReturnValue([updatedGamepad, null, null, null])
-        const sys = new InputSystem()
-        sys.update(0)
+        InputSystem.setup()
+        InputSystem.update(0)
 
         expect(InputSystem.getGamepadAxis(-1)).toBe(0)
         expect(InputSystem.getGamepadAxis(0)).toBe(0.9)
@@ -218,8 +218,8 @@ describe("Gamepad Input Check", () => {
     })
 
     test("Gamepad button pressed", () => {
-        const sys = new InputSystem()
-        sys.update(0)
+        InputSystem.setup()
+        InputSystem.update(0)
 
         expect(InputSystem.isGamepadButtonPressed(0)).toBe(true)
         expect(InputSystem.isGamepadButtonPressed(1)).toBe(false)

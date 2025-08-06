@@ -1,11 +1,11 @@
 import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 import type React from "react"
 import { useEffect, useState } from "react"
 import * as THREE from "three"
 import InputSystem from "@/systems/input/InputSystem"
 import GizmoSceneObject, { type GizmoMode } from "@/systems/scene/GizmoSceneObject"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import World from "@/systems/World"
 import type TransformGizmoControlProps from "./TransformGizmoControlProps"
 
 /**
@@ -45,7 +45,7 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
         setGizmo(gizmo)
 
         return () => {
-            World.sceneRenderer.removeSceneObject(gizmo.id)
+            SceneRenderer.removeSceneObject(gizmo.id)
         }
     }, [gizmoRef, defaultMesh, size, parent, postGizmoCreation])
 

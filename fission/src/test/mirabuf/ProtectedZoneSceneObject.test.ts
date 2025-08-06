@@ -8,34 +8,29 @@ import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 
-const mockPhysicsSystem = {
-    createSensor: vi.fn(),
-    destroyBodyIds: vi.fn(),
-    setBodyPosition: vi.fn(),
-    setBodyRotation: vi.fn(),
-    getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
-    getBodyAssociation: vi.fn(),
-    disablePhysicsForBody: vi.fn(),
-    enablePhysicsForBody: vi.fn(),
-    isBodyAdded: vi.fn(),
-    setShape: vi.fn(),
-}
-const mockSceneRenderer = {
-    sceneObjects: new Map(),
-    createBox: vi.fn(),
-    scene: {
-        remove: vi.fn(),
-    },
-}
-
-vi.mock("@/systems/World", () => ({
+vi.mock("@/systems/physics/PhysicsSystem", () => ({
     default: {
-        get physicsSystem() {
-            return mockPhysicsSystem
-        },
-        get sceneRenderer() {
-            return mockSceneRenderer
+        createSensor: vi.fn(),
+        destroyBodyIds: vi.fn(),
+        setBodyPosition: vi.fn(),
+        setBodyRotation: vi.fn(),
+        getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
+        getBodyAssociation: vi.fn(),
+        disablePhysicsForBody: vi.fn(),
+        enablePhysicsForBody: vi.fn(),
+        isBodyAdded: vi.fn(),
+        setShape: vi.fn(),
+    },
+}))
+
+vi.mock("@/systems/scene/SceneRenderer", () => ({
+    default: {
+        sceneObjects: new Map(),
+        createBox: vi.fn(),
+        scene: {
+            remove: vi.fn(),
         },
     },
 }))
@@ -91,7 +86,7 @@ describe("ProtectedZoneSceneObject", () => {
     }
 
     const setupMultipleAssociations = (associations: Map<number, MirabufSceneObject>) => {
-        mockPhysicsSystem.getBodyAssociation = vi.fn((bodyId: Jolt.BodyID) => {
+        PhysicsSystem.getBodyAssociation = vi.fn((bodyId: Jolt.BodyID) => {
             const id = bodyId.GetIndexAndSequenceNumber()
             const robot = associations.get(id)
             return robot ? { sceneObject: robot } : undefined

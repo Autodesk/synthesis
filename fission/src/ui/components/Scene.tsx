@@ -1,4 +1,5 @@
 import "./Scene.css"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 import type React from "react"
 import { useEffect, useRef } from "react"
 import Stats from "stats.js"
@@ -18,7 +19,7 @@ const Scene: React.FC<SceneProps> = ({ useStats }) => {
         World.initWorld()
 
         if (refContainer.current) {
-            const sr = World.sceneRenderer
+            const sr = SceneRenderer
             sr.renderer.domElement.style.width = "100%"
             sr.renderer.domElement.style.height = "100%"
 

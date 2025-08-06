@@ -37,19 +37,17 @@ vi.mock("three", async () => {
     }
 })
 
-vi.mock("@/systems/World", () => ({
+vi.mock("@/systems/scene/SceneRenderer", () => ({
     default: {
-        sceneRenderer: {
-            mainCamera: {
-                position: { x: 0, y: 0, z: 5 },
-                updateMatrixWorld: vi.fn(),
-            },
-            pixelToWorldSpace: vi.fn(() => new THREE.Vector3(0, 0, 0)),
-        },
-        physicsSystem: {
-            rayCast: vi.fn(() => null),
-            getBodyAssociation: vi.fn(() => null),
-        },
+        position: { x: 0, y: 0, z: 5 },
+        updateMatrixWorld: vi.fn(),
+    },
+}))
+
+vi.mock("@/systems/physics/PhysicsSystem", () => ({
+    default: {
+        rayCast: vi.fn(() => null),
+        getBodyAssociation: vi.fn(() => null),
     },
 }))
 
@@ -117,16 +115,14 @@ Object.defineProperty(window, "devicePixelRatio", {
 })
 
 describe("SceneRenderer", () => {
-    let sceneRenderer: SceneRenderer
-
     beforeEach(() => {
         vi.clearAllMocks()
-        sceneRenderer = new SceneRenderer()
+        SceneRenderer.setup()
     })
 
     afterEach(() => {
-        if (sceneRenderer) {
-            sceneRenderer.destroy()
+        if (SceneRenderer) {
+            SceneRenderer.destroy()
         }
     })
 
@@ -139,10 +135,10 @@ describe("SceneRenderer", () => {
                 id: 0,
             }
 
-            const id = sceneRenderer.registerSceneObject(mockSceneObject as unknown as SceneObject)
+            const id = SceneRenderer.registerSceneObject(mockSceneObject as unknown as SceneObject)
 
-            sceneRenderer.removeSceneObject(id)
-            expect(sceneRenderer.sceneObjects.has(id)).toBe(false)
+            SceneRenderer.removeSceneObject(id)
+            expect(SceneRenderer.sceneObjects.has(id)).toBe(false)
             expect(mockSceneObject.setup).toHaveBeenCalled()
             expect(mockSceneObject.dispose).toHaveBeenCalled()
         })
@@ -161,12 +157,12 @@ describe("SceneRenderer", () => {
                 id: 0,
             }
 
-            sceneRenderer.registerSceneObject(mockSceneObject1 as unknown as SceneObject)
-            sceneRenderer.registerSceneObject(mockSceneObject2 as unknown as SceneObject)
-            expect(sceneRenderer.sceneObjects.size).toBe(2)
+            SceneRenderer.registerSceneObject(mockSceneObject1 as unknown as SceneObject)
+            SceneRenderer.registerSceneObject(mockSceneObject2 as unknown as SceneObject)
+            expect(SceneRenderer.sceneObjects.size).toBe(2)
 
-            sceneRenderer.removeAllSceneObjects()
-            expect(sceneRenderer.sceneObjects.size).toBe(0)
+            SceneRenderer.removeAllSceneObjects()
+            expect(SceneRenderer.sceneObjects.size).toBe(0)
             expect(mockSceneObject1.dispose).toHaveBeenCalled()
             expect(mockSceneObject2.dispose).toHaveBeenCalled()
         })
@@ -175,19 +171,19 @@ describe("SceneRenderer", () => {
     describe("Geometry Creation", () => {
         test("should create sphere with custom material", () => {
             const customMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
-            const sphere = sceneRenderer.createSphere(1.0, customMaterial)
+            const sphere = SceneRenderer.createSphere(1.0, customMaterial)
             expect(sphere.material).toBe(customMaterial)
         })
 
         test("should create sphere with default material", () => {
-            const sphere = sceneRenderer.createSphere(1.0)
+            const sphere = SceneRenderer.createSphere(1.0)
             expect(sphere.material).toBeInstanceOf(THREE.MeshToonMaterial)
         })
 
         test("should create box with default material and correct position", () => {
             const vec3 = new JOLT.Vec3(2, 3, 4)
 
-            const box = sceneRenderer.createBox(vec3)
+            const box = SceneRenderer.createBox(vec3)
             expect(box.material).toBeInstanceOf(THREE.MeshToonMaterial)
             expect(box.geometry.attributes.position.array[0]).toBe(1)
             expect(box.geometry.attributes.position.array[1]).toBe(1.5)
@@ -195,7 +191,7 @@ describe("SceneRenderer", () => {
         })
 
         test("should create toon material", () => {
-            const material = sceneRenderer.createToonMaterial(0xff0000, 3)
+            const material = SceneRenderer.createToonMaterial(0xff0000, 3)
             expect(material).toBeInstanceOf(THREE.MeshToonMaterial)
             expect(material.color.getHex()).toBe(0xff0000)
         })
@@ -205,7 +201,7 @@ describe("SceneRenderer", () => {
         test("should convert center screen to world space", () => {
             const centerX = window.innerWidth / 2
             const centerY = window.innerHeight / 2
-            const worldPos = sceneRenderer.pixelToWorldSpace(centerX, centerY)
+            const worldPos = SceneRenderer.pixelToWorldSpace(centerX, centerY)
 
             expect(worldPos.x).toBe(0)
             expect(worldPos.y).toBe(0)
@@ -214,79 +210,79 @@ describe("SceneRenderer", () => {
         test("should convert world to pixel space", () => {
             const worldPos = new THREE.Vector3(0, 0, 0)
 
-            sceneRenderer.updateCanvasSize()
-            const pixelPos1920 = sceneRenderer.worldToPixelSpace(worldPos)
+            SceneRenderer.updateCanvasSize()
+            const pixelPos1920 = SceneRenderer.worldToPixelSpace(worldPos)
 
             Object.defineProperty(window, "innerWidth", { value: 800 })
             Object.defineProperty(window, "innerHeight", { value: 600 })
-            sceneRenderer.updateCanvasSize()
+            SceneRenderer.updateCanvasSize()
 
-            const pixelPos800 = sceneRenderer.worldToPixelSpace(worldPos)
+            const pixelPos800 = SceneRenderer.worldToPixelSpace(worldPos)
             expect(pixelPos800[0]).not.toBe(pixelPos1920[0])
             expect(pixelPos800[1]).not.toBe(pixelPos1920[1])
 
             Object.defineProperty(window, "innerWidth", { value: 1920 })
             Object.defineProperty(window, "innerHeight", { value: 1080 })
-            sceneRenderer.updateCanvasSize()
+            SceneRenderer.updateCanvasSize()
         })
     })
 
     describe("Canvas Management", () => {
         test("should update camera aspect ratio based on window size", () => {
             // Windows size is already set to 1920x1080
-            sceneRenderer.updateCanvasSize()
+            SceneRenderer.updateCanvasSize()
 
             const aspectRatio = 1920 / 1080
-            expect(sceneRenderer.mainCamera.aspect).toBeCloseTo(aspectRatio)
-            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_X / aspectRatio)
+            expect(SceneRenderer.mainCamera.aspect).toBeCloseTo(aspectRatio)
+            expect(SceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_X / aspectRatio)
         })
 
         test("should handle wide aspect ratios correctly", () => {
             Object.defineProperty(window, "innerWidth", { value: 3840 })
             Object.defineProperty(window, "innerHeight", { value: 1080 })
 
-            sceneRenderer.updateCanvasSize()
+            SceneRenderer.updateCanvasSize()
 
             const aspectRatio = 3840 / 1080
-            expect(sceneRenderer.mainCamera.aspect).toBeCloseTo(aspectRatio)
+            expect(SceneRenderer.mainCamera.aspect).toBeCloseTo(aspectRatio)
 
-            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_X / aspectRatio)
+            expect(SceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_X / aspectRatio)
         })
 
         test("should handle tall aspect ratios correctly", () => {
             Object.defineProperty(window, "innerWidth", { value: 800 })
             Object.defineProperty(window, "innerHeight", { value: 1200 })
 
-            sceneRenderer.updateCanvasSize()
+            SceneRenderer.updateCanvasSize()
 
-            expect(sceneRenderer.mainCamera.aspect).toBeCloseTo(800 / 1200)
-            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_Y)
+            expect(SceneRenderer.mainCamera.aspect).toBeCloseTo(800 / 1200)
+            expect(SceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_Y)
         })
     })
 
     describe("Lighting", () => {
         test("should switch between directional and CSM lighting modes", () => {
-            sceneRenderer.changeLighting(false)
-            const directionalLight = sceneRenderer.scene.children.find(child => child instanceof THREE.DirectionalLight)
+            SceneRenderer.changeLighting(false)
+            const directionalLight = SceneRenderer.scene.children.find(child => child instanceof THREE.DirectionalLight)
             expect(directionalLight).toBeInstanceOf(THREE.DirectionalLight)
 
-            sceneRenderer.changeLighting(true)
-            const noDirectionalLight = sceneRenderer.scene.children.find(
+            SceneRenderer.changeLighting(true)
+            const noDirectionalLight = SceneRenderer.scene.children.find(
                 child => child instanceof THREE.DirectionalLight
             )
             expect(noDirectionalLight).toBeUndefined()
 
-            sceneRenderer.changeLighting(false)
-            const newDirectionalLight = sceneRenderer.scene.children.find(
+            SceneRenderer.changeLighting(false)
+            const newDirectionalLight = SceneRenderer.scene.children.find(
                 child => child instanceof THREE.DirectionalLight
             )
             expect(newDirectionalLight).toBeInstanceOf(THREE.DirectionalLight)
         })
 
         test("should handle null material gracefully", () => {
-            sceneRenderer.changeLighting(true)
+            SceneRenderer.changeLighting(true)
 
-            expect(() => sceneRenderer.setupMaterial(null as unknown as THREE.Material)).not.toThrow()
+            expect(() => SceneRenderer.setupMaterial(null as unknown as THREE.Material)).not.toThrow()
         })
     })
 
@@ -305,10 +301,10 @@ describe("SceneRenderer", () => {
     //         },
     //     }
     //
-    //     sceneRenderer.updateSkyboxColors(mockTheme as unknown as Theme)
+    //     SceneRenderer.updateSkyboxColors(mockTheme as unknown as Theme)
     //
     //     // Find the skybox in the scene
-    //     const skybox = sceneRenderer.scene.children.find(
+    //     const skybox = SceneRenderer.scene.children.find(
     //         child =>
     //             child instanceof THREE.Mesh &&
     //             child.material instanceof THREE.ShaderMaterial &&
@@ -332,10 +328,10 @@ describe("SceneRenderer", () => {
                 gizmo: { dragging: false },
             }
 
-            sceneRenderer.registerGizmoSceneObject(mockGizmo as unknown as GizmoSceneObject)
+            SceneRenderer.registerGizmoSceneObject(mockGizmo as unknown as GizmoSceneObject)
 
-            expect(sceneRenderer.gizmosOnMirabuf.has(123)).toBe(true)
-            expect(sceneRenderer.gizmosOnMirabuf.get(123)).toBe(mockGizmo)
+            expect(SceneRenderer.gizmosOnMirabuf.has(123)).toBe(true)
+            expect(SceneRenderer.gizmosOnMirabuf.get(123)).toBe(mockGizmo)
         })
 
         test("should not register gizmos without parents", () => {
@@ -348,11 +344,11 @@ describe("SceneRenderer", () => {
                 gizmo: { dragging: false },
             }
 
-            const initialMapSize = sceneRenderer.gizmosOnMirabuf.size
+            const initialMapSize = SceneRenderer.gizmosOnMirabuf.size
 
-            sceneRenderer.registerGizmoSceneObject(mockGizmo as unknown as GizmoSceneObject)
+            SceneRenderer.registerGizmoSceneObject(mockGizmo as unknown as GizmoSceneObject)
 
-            expect(sceneRenderer.gizmosOnMirabuf.size).toBe(initialMapSize)
+            expect(SceneRenderer.gizmosOnMirabuf.size).toBe(initialMapSize)
         })
     })
 
@@ -371,28 +367,28 @@ describe("SceneRenderer", () => {
                 id: 0,
             }
 
-            sceneRenderer.registerSceneObject(mockSceneObject1 as unknown as SceneObject)
-            sceneRenderer.registerSceneObject(mockSceneObject2 as unknown as SceneObject)
-            expect(sceneRenderer.sceneObjects.size).toBe(2)
+            SceneRenderer.registerSceneObject(mockSceneObject1 as unknown as SceneObject)
+            SceneRenderer.registerSceneObject(mockSceneObject2 as unknown as SceneObject)
+            expect(SceneRenderer.sceneObjects.size).toBe(2)
 
-            sceneRenderer.update(0.016)
+            SceneRenderer.update(0.016)
 
             expect(mockSceneObject1.update).toHaveBeenCalledTimes(1)
             expect(mockSceneObject2.update).toHaveBeenCalledTimes(1)
-            expect(sceneRenderer.currentCameraControls.update).toHaveBeenCalledWith(0.016)
-            expect(sceneRenderer.screenInteractionHandler.update).toHaveBeenCalledWith(0.016)
+            expect(SceneRenderer.currentCameraControls.update).toHaveBeenCalledWith(0.016)
+            expect(SceneRenderer.screenInteractionHandler.update).toHaveBeenCalledWith(0.016)
         })
     })
 
     describe("Camera Controls", () => {
         test("should set camera controls", () => {
-            const initialControls = sceneRenderer.currentCameraControls
+            const initialControls = SceneRenderer.currentCameraControls
 
-            sceneRenderer.setCameraControls("Orbit")
+            SceneRenderer.setCameraControls("Orbit")
 
             expect(initialControls.dispose).toHaveBeenCalled()
-            expect(sceneRenderer.currentCameraControls).toBeDefined()
-            expect(sceneRenderer.currentCameraControls).not.toBe(initialControls)
+            expect(SceneRenderer.currentCameraControls).toBeDefined()
+            expect(SceneRenderer.currentCameraControls).not.toBe(initialControls)
         })
     })
 
@@ -415,17 +411,17 @@ describe("SceneRenderer", () => {
                 miraType: MiraType.ROBOT,
             }
 
-            const sceneObjectId = sceneRenderer.registerSceneObject(mockSceneObject as unknown as SceneObject)
-            const robotObjectId = sceneRenderer.registerSceneObject(mockRobotObject as unknown as MirabufSceneObject)
+            const sceneObjectId = SceneRenderer.registerSceneObject(mockSceneObject as unknown as SceneObject)
+            const robotObjectId = SceneRenderer.registerSceneObject(mockRobotObject as unknown as MirabufSceneObject)
 
-            expect(sceneRenderer.sceneObjects.size).toBe(2)
+            expect(SceneRenderer.sceneObjects.size).toBe(2)
 
-            sceneRenderer.removeAllFields()
+            SceneRenderer.removeAllFields()
 
             // Both objects should still be there - neither should be disposed
-            expect(sceneRenderer.sceneObjects.size).toBe(2)
-            expect(sceneRenderer.sceneObjects.has(sceneObjectId)).toBe(true)
-            expect(sceneRenderer.sceneObjects.has(robotObjectId)).toBe(true)
+            expect(SceneRenderer.sceneObjects.size).toBe(2)
+            expect(SceneRenderer.sceneObjects.has(sceneObjectId)).toBe(true)
+            expect(SceneRenderer.sceneObjects.has(robotObjectId)).toBe(true)
 
             expect(mockSceneObject.dispose).not.toHaveBeenCalled()
             expect(mockRobotObject.dispose).not.toHaveBeenCalled()

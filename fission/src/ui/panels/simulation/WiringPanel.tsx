@@ -27,7 +27,6 @@ import {
     type SimConfigData,
 } from "@/systems/simulation/SimConfigShared"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
-import World from "@/systems/World.ts"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -36,6 +35,7 @@ import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
 import WiringNode from "./WiringNode"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -354,7 +354,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo reset={reset ?? (() => {})} />
+            <FlowInfo reset={reset ?? (() => { })} />
         </ReactFlow>
     )
 }
@@ -365,7 +365,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
-        const miraObj = World.sceneRenderer.mirabufSceneObjects.getRobots()[0]
+        const miraObj = SceneRenderer.mirabufSceneObjects.getRobots()[0]
         if (miraObj != null) {
             return miraObj
         }

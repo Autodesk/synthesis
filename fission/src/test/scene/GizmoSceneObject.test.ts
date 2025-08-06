@@ -4,48 +4,48 @@ import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 
-vi.mock("@/systems/World", () => ({
+vi.mock("@/systems/physics/PhysicsSystem", () => ({
     default: {
-        sceneRenderer: {
-            mainCamera: {
-                fov: 75,
-                aspect: 1,
-                near: 0.1,
-                far: 1000,
-                position: { x: 0, y: 0, z: 5, distanceTo: vi.fn(() => 5) },
-            },
-            renderer: { domElement: {} },
-            registerGizmoSceneObject: vi.fn(),
-            addObject: vi.fn(),
-            removeObject: vi.fn(),
-            isAnyGizmoDragging: vi.fn(() => false),
-            currentCameraControls: { enabled: true },
-            gizmosOnMirabuf: new Map(),
-        },
-        physicsSystem: {
-            getBody: vi.fn(() => ({
-                GetWorldTransform: vi.fn(() => ({
-                    GetTranslation: vi.fn(() => ({
-                        GetX: () => 0,
-                        GetY: () => 0,
-                        GetZ: () => 0,
-                    })),
-                    GetRotation: vi.fn(() => ({
-                        GetX: () => 0,
-                        GetY: () => 0,
-                        GetZ: () => 0,
-                        GetW: () => 1,
-                    })),
-                    GetQuaternion: vi.fn(() => ({
-                        GetX: () => 0,
-                        GetY: () => 0,
-                        GetZ: () => 0,
-                        GetW: () => 1,
-                    })),
+        getBody: vi.fn(() => ({
+            GetWorldTransform: vi.fn(() => ({
+                GetTranslation: vi.fn(() => ({
+                    GetX: () => 0,
+                    GetY: () => 0,
+                    GetZ: () => 0,
+                })),
+                GetRotation: vi.fn(() => ({
+                    GetX: () => 0,
+                    GetY: () => 0,
+                    GetZ: () => 0,
+                    GetW: () => 1,
+                })),
+                GetQuaternion: vi.fn(() => ({
+                    GetX: () => 0,
+                    GetY: () => 0,
+                    GetZ: () => 0,
+                    GetW: () => 1,
                 })),
             })),
-            setBodyPositionAndRotation: vi.fn(),
+        })),
+        setBodyPositionAndRotation: vi.fn(),
+    },
+}))
+vi.mock("@/systems/scene/SceneRenderer", () => ({
+    default: {
+        mainCamera: {
+            fov: 75,
+            aspect: 1,
+            near: 0.1,
+            far: 1000,
+            position: { x: 0, y: 0, z: 5, distanceTo: vi.fn(() => 5) },
         },
+        renderer: { domElement: {} },
+        registerGizmoSceneObject: vi.fn(),
+        addObject: vi.fn(),
+        removeObject: vi.fn(),
+        isAnyGizmoDragging: vi.fn(() => false),
+        currentCameraControls: { enabled: true },
+        gizmosOnMirabuf: new Map(),
     },
 }))
 

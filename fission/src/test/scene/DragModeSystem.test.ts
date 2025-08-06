@@ -5,99 +5,80 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
 import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
-import World from "@/systems/World"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
-vi.mock("@/systems/World", () => ({
-    default: {
-        get physicsSystem() {
-            return this._physicsSystem
+vi.mock("@/systems/scene/SceneRenderer", () => ({
+    sceneRenderer: {
+        mainCamera: {
+            position: { x: 0, y: 0, z: 5 },
+            quaternion: { x: 0, y: 0, z: 0, w: 1 },
+            fov: 75,
+            aspect: 1,
+            near: 0.1,
+            far: 1000,
         },
-        set physicsSystem(value) {
-            this._physicsSystem = value
+        scene: {
+            add: vi.fn(),
+            remove: vi.fn(),
         },
-        // biome-ignore lint/style/useNamingConvention: Mocking private class property
-        _physicsSystem: null,
-        sceneRenderer: {
-            mainCamera: {
-                position: { x: 0, y: 0, z: 5 },
-                quaternion: { x: 0, y: 0, z: 0, w: 1 },
-                fov: 75,
-                aspect: 1,
-                near: 0.1,
-                far: 1000,
+        currentCameraControls: {
+            enabled: true,
+            coords: { theta: 0, phi: 0, r: 5 },
+            focus: {
+                elements: new Array(16).fill(0),
+                makeTranslation: vi.fn(),
+                copy: vi.fn(),
             },
-            scene: {
-                add: vi.fn(),
-                remove: vi.fn(),
-            },
-            currentCameraControls: {
-                enabled: true,
-                coords: { theta: 0, phi: 0, r: 5 },
-                focus: {
-                    elements: new Array(16).fill(0),
-                    makeTranslation: vi.fn(),
-                    copy: vi.fn(),
-                },
-                focusProvider: undefined,
-            },
-            pixelToWorldSpace: (x: number, y: number) => ({
-                x: x / 100,
-                y: y / 100,
-                z: 0,
-                sub: vi.fn().mockReturnThis(),
-                normalize: vi.fn().mockReturnThis(),
-                multiplyScalar: vi.fn().mockReturnThis(),
-            }),
-            screenInteractionHandler: {
-                interactionStart: vi.fn(),
-                interactionMove: vi.fn(),
-                interactionEnd: vi.fn(),
-            },
-            renderer: {
-                domElement: {
-                    parentElement: {
-                        querySelector: vi.fn().mockReturnValue({
-                            addEventListener: vi.fn(),
-                            removeEventListener: vi.fn(),
-                        }),
-                    },
+            focusProvider: undefined,
+        },
+        pixelToWorldSpace: (x: number, y: number) => ({
+            x: x / 100,
+            y: y / 100,
+            z: 0,
+            sub: vi.fn().mockReturnThis(),
+            normalize: vi.fn().mockReturnThis(),
+            multiplyScalar: vi.fn().mockReturnThis(),
+        }),
+        screenInteractionHandler: {
+            interactionStart: vi.fn(),
+            interactionMove: vi.fn(),
+            interactionEnd: vi.fn(),
+        },
+        renderer: {
+            domElement: {
+                parentElement: {
+                    querySelector: vi.fn().mockReturnValue({
+                        addEventListener: vi.fn(),
+                        removeEventListener: vi.fn(),
+                    }),
                 },
             },
         },
     },
 }))
 
-type WorldWithPhysicsSystem = typeof World & {
-    physicsSystem: PhysicsSystem | null | undefined
-}
-
 describe("DragModeSystem Integration Tests", () => {
-    let dragModeSystem: DragModeSystem
-    let physicsSystem: PhysicsSystem
-
     beforeEach(() => {
-        physicsSystem = new PhysicsSystem()
-        const mockWorld = World as unknown as WorldWithPhysicsSystem
-        mockWorld.physicsSystem = physicsSystem
+        PhysicsSystem.setup()
 
         const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
         camera.position.set(0, 0, 5)
-        const sceneRenderer = mockWorld.sceneRenderer as { mainCamera: THREE.PerspectiveCamera }
+        const sceneRenderer = { mainCamera: camera }
         sceneRenderer.mainCamera = camera
 
-        dragModeSystem = new DragModeSystem()
+        DragModeSystem.setup()
     })
 
     afterEach(() => {
-        dragModeSystem.destroy()
-        physicsSystem.destroy()
+        DragModeSystem.destroy()
+        PhysicsSystem.destroy()
     })
 
     describe("Event Handling", () => {
         test("calls dispatchEvent when toggling drag mode", () => {
             const dispatchEventSpy = vi.spyOn(window, "dispatchEvent")
 
-            dragModeSystem.enabled = true
+            DragModeSystem.enabled = true
             expect(dispatchEventSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: "dragModeToggled",
@@ -105,7 +86,7 @@ describe("DragModeSystem Integration Tests", () => {
                 })
             )
 
-            dragModeSystem.enabled = false
+            DragModeSystem.enabled = false
             expect(dispatchEventSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: "dragModeToggled",
@@ -117,11 +98,11 @@ describe("DragModeSystem Integration Tests", () => {
         })
 
         test("should handle disable drag mode event", () => {
-            dragModeSystem.enabled = true
+            DragModeSystem.enabled = true
 
             window.dispatchEvent(new CustomEvent("disableDragMode"))
 
-            expect(dragModeSystem.enabled).toBe(false)
+            expect(DragModeSystem.enabled).toBe(false)
         })
     })
 
@@ -129,10 +110,10 @@ describe("DragModeSystem Integration Tests", () => {
         test("should cleanup properly on destroy", () => {
             const removeEventListenerSpy = vi.spyOn(window, "removeEventListener")
 
-            dragModeSystem.enabled = true
-            dragModeSystem.destroy()
+            DragModeSystem.enabled = true
+            DragModeSystem.destroy()
 
-            expect(dragModeSystem.enabled).toBe(false)
+            expect(DragModeSystem.enabled).toBe(false)
             expect(removeEventListenerSpy).toHaveBeenCalledWith("disableDragMode", expect.any(Function))
 
             removeEventListenerSpy.mockRestore()
@@ -147,13 +128,13 @@ describe("DragModeSystem Integration Tests", () => {
                 0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
             ])
 
-            const shapeResult = physicsSystem.createConvexHull(vertices)
+            const shapeResult = PhysicsSystem.createConvexHull(vertices)
             expect(shapeResult.HasError()).toBe(false)
 
             const shape = shapeResult.Get()
-            const body = physicsSystem.createBody(shape, 1.0, new THREE.Vector3(0, 0, 0), new THREE.Quaternion())
+            const body = PhysicsSystem.createBody(shape, 1.0, new THREE.Vector3(0, 0, 0), new THREE.Quaternion())
             const bodyId = body.GetID()
-            physicsSystem.addBodyToSystem(bodyId, true)
+            PhysicsSystem.addBodyToSystem(bodyId, true)
 
             // Create a mock MirabufSceneObject that properly passes instanceof checks
             const mockSceneObject = Object.create(MirabufSceneObject.prototype)
@@ -165,25 +146,25 @@ describe("DragModeSystem Integration Tests", () => {
                 isGamePiece: true,
             }
 
-            const originalGetBodyAssociation = physicsSystem.getBodyAssociation
-            physicsSystem.getBodyAssociation = vi.fn().mockReturnValue(mockAssociation)
+            const originalGetBodyAssociation = PhysicsSystem.getBodyAssociation
+            PhysicsSystem.getBodyAssociation = vi.fn().mockReturnValue(mockAssociation)
 
-            const originalRayCast = physicsSystem.rayCast
+            const originalRayCast = PhysicsSystem.rayCast
             const mockRaycastResult = {
                 data: { mBodyID: bodyId },
                 point: { GetX: () => 0, GetY: () => 0, GetZ: () => 0 },
             }
-            physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
+            PhysicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
 
-            const physicsBody = physicsSystem.getBody(bodyId)
-            dragModeSystem.enabled = true
+            const physicsBody = PhysicsSystem.getBody(bodyId)
+            DragModeSystem.enabled = true
 
             return {
                 physicsBody,
                 cleanup: () => {
-                    physicsSystem.getBodyAssociation = originalGetBodyAssociation
-                    physicsSystem.rayCast = originalRayCast
-                    physicsSystem.destroyBodyIds(bodyId)
+                    PhysicsSystem.getBodyAssociation = originalGetBodyAssociation
+                    PhysicsSystem.rayCast = originalRayCast
+                    PhysicsSystem.destroyBodyIds(bodyId)
                     shape.Release()
                 },
             }
@@ -201,7 +182,7 @@ describe("DragModeSystem Integration Tests", () => {
                 position: [400, 300] as [number, number],
             }
 
-            const screenHandler = World.sceneRenderer.screenInteractionHandler
+            const screenHandler = SceneRenderer.screenInteractionHandler
             screenHandler?.interactionStart?.(startInteraction)
 
             // Simulate mouse movement to drag the cube
@@ -216,8 +197,8 @@ describe("DragModeSystem Integration Tests", () => {
 
             // Update the drag system and physics system to apply forces
             for (let i = 0; i < 10; i++) {
-                dragModeSystem.update(0.016)
-                physicsSystem.update(0.016)
+                DragModeSystem.update(0.016)
+                PhysicsSystem.update(0.016)
             }
 
             // Check that the cube has moved from its initial position
@@ -242,7 +223,7 @@ describe("DragModeSystem Integration Tests", () => {
         test("should move cube away from camera when wheel scrolled during drag", () => {
             const { physicsBody, cleanup } = setupDraggableCube()
 
-            const camera = World.sceneRenderer.mainCamera
+            const camera = SceneRenderer.mainCamera
             const cameraPosition = camera.position.clone()
 
             // Start dragging first
@@ -251,13 +232,13 @@ describe("DragModeSystem Integration Tests", () => {
                 position: [400, 300] as [number, number],
             }
 
-            const screenHandler = World.sceneRenderer.screenInteractionHandler
+            const screenHandler = SceneRenderer.screenInteractionHandler
             screenHandler?.interactionStart?.(startInteraction)
 
             // Update to establish drag state
             for (let i = 0; i < 5; i++) {
-                dragModeSystem.update(0.016)
-                physicsSystem.update(0.016)
+                DragModeSystem.update(0.016)
+                PhysicsSystem.update(0.016)
             }
 
             const beforeScrollPos = physicsBody.GetPosition()
@@ -274,12 +255,12 @@ describe("DragModeSystem Integration Tests", () => {
                 bubbles: true,
                 cancelable: true,
             })
-            const wheelEventHandler = dragModeSystem["_wheelEventHandler"]
+            const wheelEventHandler = DragModeSystem["_wheelEventHandler"]
             wheelEventHandler?.(wheelEvent)
 
             for (let i = 0; i < 10; i++) {
-                dragModeSystem.update(0.016)
-                physicsSystem.update(0.016)
+                DragModeSystem.update(0.016)
+                PhysicsSystem.update(0.016)
             }
 
             const afterWheelPos = physicsBody.GetPosition()

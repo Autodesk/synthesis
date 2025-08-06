@@ -1,11 +1,10 @@
 import { afterEach, beforeEach, describe, expect, type MockedFunction, test, vi } from "vitest"
 import MirabufLoader, { backUpRobots, MiraType } from "../../mirabuf/MirabufLoader"
 
-vi.mock("@/systems/World", () => ({
+vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
     default: {
-        get analyticsSystem() {
-            return { event: vi.fn(), exception: vi.fn() }
-        },
+        event: vi.fn(),
+        exception: vi.fn(),
     },
 }))
 

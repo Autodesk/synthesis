@@ -1,9 +1,9 @@
 import { Stack } from "@mui/material"
 import type React from "react"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import { useEffect, useMemo } from "react"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
-import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -13,10 +13,10 @@ const TransformAssemblyPanel: React.FC<PanelImplProps<void, void>> = ({ panel })
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
     useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
+        PhysicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            PhysicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 

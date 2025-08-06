@@ -11,7 +11,6 @@ import {
 import PhysicsSystem from "../../systems/physics/PhysicsSystem"
 
 describe("Contact Event Integration Tests", () => {
-    let physicsSystem: PhysicsSystem
     let groundBody: Jolt.Body
     let fallingBody: Jolt.Body
 
@@ -46,25 +45,25 @@ describe("Contact Event Integration Tests", () => {
         contactValidateEvents = []
 
         // Set up physics system
-        physicsSystem = new PhysicsSystem()
+        PhysicsSystem.setup()
 
         // Create a static ground body
-        groundBody = physicsSystem.createBox(
+        groundBody = PhysicsSystem.createBox(
             new THREE.Vector3(10, 0.5, 10), // Large flat ground
             undefined, // No mass (static)
             new THREE.Vector3(0, -1, 0), // Position below origin
             undefined // No rotation
         )
-        physicsSystem.addBodyToSystem(groundBody.GetID(), false)
+        PhysicsSystem.addBodyToSystem(groundBody.GetID(), false)
 
         // Create a dynamic falling body
-        fallingBody = physicsSystem.createBox(
+        fallingBody = PhysicsSystem.createBox(
             new THREE.Vector3(1, 1, 1), // 1x1x1 cube
             1.0, // 1kg mass
             new THREE.Vector3(0, 10, 0), // Start 10 units above ground
             undefined // No rotation
         )
-        physicsSystem.addBodyToSystem(fallingBody.GetID(), true)
+        PhysicsSystem.addBodyToSystem(fallingBody.GetID(), true)
 
         // Add event listeners
         OnContactAddedEvent.addListener(onContactAdded)
@@ -81,7 +80,7 @@ describe("Contact Event Integration Tests", () => {
         OnContactValidateEvent.removeListener(onContactValidate)
 
         // Clean up physics system
-        physicsSystem.destroy()
+        PhysicsSystem.destroy()
     })
 
     test("Falling body actually moves downward", async () => {
@@ -91,7 +90,7 @@ describe("Contact Event Integration Tests", () => {
         // Run simulation for a bit
         for (let i = 0; i < 60; i++) {
             // 1 second at 60 FPS
-            physicsSystem.update(1 / 60)
+            PhysicsSystem.update(1 / 60)
         }
 
         const finalPosition = fallingBody.GetPosition()
@@ -113,7 +112,7 @@ describe("Contact Event Integration Tests", () => {
         const deltaTime = 1 / 60 // 60 FPS
 
         while (simulationSteps < maxSteps && contactAddedEvents.length === 0) {
-            physicsSystem.update(deltaTime)
+            PhysicsSystem.update(deltaTime)
             simulationSteps++
         }
 
@@ -140,7 +139,7 @@ describe("Contact Event Integration Tests", () => {
 
         // Wait for initial contact (Usually around 82 steps)
         while (simulationSteps < maxSteps && contactAddedEvents.length === 0) {
-            physicsSystem.update(deltaTime)
+            PhysicsSystem.update(deltaTime)
             simulationSteps++
         }
 
@@ -149,7 +148,7 @@ describe("Contact Event Integration Tests", () => {
         // Continue simulation to get persisted events
         const additionalSteps = 30 // Run for 0.5 seconds after contact
         for (let i = 0; i < additionalSteps; i++) {
-            physicsSystem.update(deltaTime)
+            PhysicsSystem.update(deltaTime)
         }
 
         // Should have persisted contact events since the box is resting on ground
@@ -165,13 +164,13 @@ describe("Contact Event Integration Tests", () => {
 
     test("Multiple collisions generate multiple contact events", async () => {
         // Create a second falling body
-        const secondFallingBody = physicsSystem.createBox(
+        const secondFallingBody = PhysicsSystem.createBox(
             new THREE.Vector3(1, 1, 1),
             1.0,
             new THREE.Vector3(5, 15, 0), // Different X position, higher up
             undefined
         )
-        physicsSystem.addBodyToSystem(secondFallingBody.GetID(), true)
+        PhysicsSystem.addBodyToSystem(secondFallingBody.GetID(), true)
 
         // Run simulation until both bodies collide with ground
         let simulationSteps = 0
@@ -179,7 +178,7 @@ describe("Contact Event Integration Tests", () => {
         const deltaTime = 1 / 60
 
         while (simulationSteps < maxSteps) {
-            physicsSystem.update(deltaTime)
+            PhysicsSystem.update(deltaTime)
             simulationSteps++
 
             // Wait until we have at least 2 contact events (both bodies hit ground)
@@ -191,7 +190,7 @@ describe("Contact Event Integration Tests", () => {
         expect(contactAddedEvents.length).toBeGreaterThanOrEqual(2)
 
         // Clean up the additional body
-        physicsSystem.destroyBodies(secondFallingBody)
+        PhysicsSystem.destroyBodies(secondFallingBody)
     })
 
     test("Contact removed events are fired when objects stop colliding", async () => {
@@ -201,7 +200,7 @@ describe("Contact Event Integration Tests", () => {
         const deltaTime = 1 / 60
 
         while (simulationSteps < maxSteps && contactAddedEvents.length === 0) {
-            physicsSystem.update(deltaTime)
+            PhysicsSystem.update(deltaTime)
             simulationSteps++
         }
 
@@ -212,7 +211,7 @@ describe("Contact Event Integration Tests", () => {
         // Run simulation for a bit longer
         const additionalSteps = 30
         for (let i = 0; i < additionalSteps; i++) {
-            physicsSystem.update(deltaTime)
+            PhysicsSystem.update(deltaTime)
         }
 
         expect(contactRemovedEvents.length).toBeGreaterThan(0)
@@ -225,7 +224,7 @@ describe("Contact Event Integration Tests", () => {
         const deltaTime = 1 / 60 // 60 FPS
 
         while (simulationSteps < maxSteps && contactValidateEvents.length === 0) {
-            physicsSystem.update(deltaTime)
+            PhysicsSystem.update(deltaTime)
             simulationSteps++
         }
 

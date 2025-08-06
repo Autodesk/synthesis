@@ -2,7 +2,7 @@ import Pako from "pako"
 import { type Data, downloadData } from "@/aps/APSDataManagement"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
-import World from "@/systems/World"
+import AnalyticsSystem from "@/systems/analytics/AnalyticsSystem"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "4543246"
@@ -142,7 +142,7 @@ class MirabufCachingService {
 
             const miraBuff = await resp.arrayBuffer()
 
-            World.analyticsSystem?.event("Remote Download", {
+            AnalyticsSystem?.event("Remote Download", {
                 assemblyName: name ?? fetchLocation,
                 type: miraType === MiraType.ROBOT ? "robot" : "field",
                 fileSize: miraBuff.byteLength,
@@ -187,7 +187,7 @@ class MirabufCachingService {
             return undefined
         }
 
-        World.analyticsSystem?.event("APS Download", {
+        AnalyticsSystem?.event("APS Download", {
             type: miraType == MiraType.ROBOT ? "robot" : "field",
             fileSize: miraBuff.byteLength,
         })
@@ -284,7 +284,7 @@ class MirabufCachingService {
             }
         }
 
-        World.analyticsSystem?.event("Local Upload", {
+        AnalyticsSystem?.event("Local Upload", {
             assemblyName: displayName,
             fileSize: buffer.byteLength,
             key,
@@ -371,7 +371,7 @@ class MirabufCachingService {
             // If we have buffer, get assembly
             if (buff) {
                 const assembly = this.assemblyFromBuffer(buff.buffer as ArrayBuffer)
-                World.analyticsSystem?.event("Cache Get", {
+                AnalyticsSystem?.event("Cache Get", {
                     key: id,
                     type: miraType == MiraType.ROBOT ? "robot" : "field",
                     assemblyName: assembly.info!.name!,
@@ -417,14 +417,14 @@ class MirabufCachingService {
                 delete backUpCache[id]
             }
 
-            World.analyticsSystem?.event("Cache Remove", {
+            AnalyticsSystem?.event("Cache Remove", {
                 key: key,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
             })
             return true
         } catch (e) {
             console.error(`Failed to remove\n${e}`)
-            World.analyticsSystem?.exception("Failed to remove mirabuf from cache")
+            AnalyticsSystem?.exception("Failed to remove mirabuf from cache")
             return false
         }
     }
@@ -484,7 +484,7 @@ class MirabufCachingService {
                 await writable.close()
             }
 
-            World.analyticsSystem?.event("Devtool Cache Persist", {
+            AnalyticsSystem?.event("Devtool Cache Persist", {
                 key: id,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
                 assemblyName: assembly.info?.name ?? "unknown",
@@ -494,7 +494,7 @@ class MirabufCachingService {
             return true
         } catch (e) {
             console.error("Failed to persist devtool changes", e)
-            World.analyticsSystem?.exception("Failed to persist devtool changes to cache")
+            AnalyticsSystem?.exception("Failed to persist devtool changes to cache")
             return false
         }
     }
@@ -524,7 +524,7 @@ class MirabufCachingService {
             map[key] = info
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
 
-            World.analyticsSystem?.event("Cache Store", {
+            AnalyticsSystem?.event("Cache Store", {
                 assemblyName: name ?? "-",
                 key: key,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
@@ -557,7 +557,7 @@ class MirabufCachingService {
             return info
         } catch (e) {
             console.error("Failed to cache mira " + e)
-            World.analyticsSystem?.exception("Failed to store in cache")
+            AnalyticsSystem?.exception("Failed to store in cache")
             return undefined
         }
     }

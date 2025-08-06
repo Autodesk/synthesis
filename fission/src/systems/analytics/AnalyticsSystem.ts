@@ -2,7 +2,6 @@ import { consent, event, exception, init, setUserId, setUserProperty } from "@ha
 import APS from "@/aps/APS"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
-import WorldSystem from "../WorldSystem"
 
 const SAMPLE_INTERVAL = 60000 // 1 minute
 const BETA_CODE_COOKIE_REGEX = /access_code=.*(;|$)/
@@ -55,13 +54,11 @@ export interface AnalyticsEvents {
     }
 }
 
-class AnalyticsSystem extends WorldSystem {
-    private _lastSampleTime = Date.now()
-    private _consent: boolean
+class AnalyticsSystem {
+    private static _lastSampleTime = Date.now()
+    private static _consent: boolean
 
-    public constructor() {
-        super()
-
+    public static setup() {
         this._consent = PreferencesSystem.getGlobalPreference("ReportAnalytics")
         init({
             measurementId: "G-6XNCRD7QNC",
@@ -76,19 +73,19 @@ class AnalyticsSystem extends WorldSystem {
         this.sendMetaData()
     }
 
-    public event<K extends keyof AnalyticsEvents>(name: K, params?: AnalyticsEvents[K]) {
+    public static event<K extends keyof AnalyticsEvents>(name: K, params?: AnalyticsEvents[K]) {
         event({ name: name, params: params ?? {} })
     }
 
-    public exception(description: string, fatal?: boolean) {
+    public static exception(description: string, fatal?: boolean) {
         exception({ description: description, fatal: fatal ?? false })
     }
 
-    public setUserId(id: string) {
+    public static setUserId(id: string) {
         setUserId({ id: id })
     }
 
-    public setUserProperty(name: string, value: unknown) {
+    public static setUserProperty(name: string, value: unknown) {
         if (name.includes(" ")) {
             console.warn("GA user property names must not contain spaces")
             return
@@ -96,14 +93,14 @@ class AnalyticsSystem extends WorldSystem {
         setUserProperty({ name: name, value: value })
     }
 
-    private consentUpdate(granted: boolean) {
+    private static consentUpdate(granted: boolean) {
         this._consent = granted
         consent(granted)
 
         this.sendMetaData()
     }
 
-    private sendMetaData() {
+    private static sendMetaData() {
         this.setUserProperty("isInternal", import.meta.env.DEV)
         this.setUserProperty("commit", GIT_COMMIT)
 
@@ -119,11 +116,11 @@ class AnalyticsSystem extends WorldSystem {
         this.setUserProperty("isMobile", MOBILE_USER_AGENT_REGEX.test(navigator.userAgent))
     }
 
-    private currentSampleInterval() {
+    private static currentSampleInterval() {
         return 0.001 * (Date.now() - this._lastSampleTime)
     }
 
-    public update(_: number): void {
+    public static update(_: number): void {
         if (Date.now() - this._lastSampleTime > SAMPLE_INTERVAL) {
             const interval = this.currentSampleInterval()
             const times = World.accumTimes
@@ -138,7 +135,7 @@ class AnalyticsSystem extends WorldSystem {
         }
     }
 
-    public destroy(): void {
+    public static destroy(): void {
         const interval = this.currentSampleInterval()
         const times = World.accumTimes
         this.pushPerformanceSample(interval, times)
@@ -146,7 +143,7 @@ class AnalyticsSystem extends WorldSystem {
         this.pushAPSCounts(interval, apsCalls)
     }
 
-    private pushPerformanceSample(interval: number, times: AccumTimes) {
+    private static pushPerformanceSample(interval: number, times: AccumTimes) {
         if (times.frames > 0 && interval > 1.0) {
             this.event("Performance Sample", {
                 frames: times.frames,
@@ -159,7 +156,7 @@ class AnalyticsSystem extends WorldSystem {
         }
     }
 
-    private pushAPSCounts(interval: number, calls: Map<string, number>) {
+    private static pushAPSCounts(interval: number, calls: Map<string, number>) {
         if (interval > 1.0) {
             const entries = Object.fromEntries([...calls.entries()].map(v => [v[0], v[1] / interval]))
             this.event("APS Calls per Minute", entries)

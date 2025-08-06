@@ -1,10 +1,9 @@
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
-import World from "../World"
-import WorldSystem from "../WorldSystem"
 import type { InputName, InputScheme, ModifierState } from "./InputTypes"
 import type Input from "./inputs/Input"
+import AnalyticsSystem from "../analytics/AnalyticsSystem"
 
 const LOG_GAMEPAD_EVENTS = false
 
@@ -12,7 +11,7 @@ const LOG_GAMEPAD_EVENTS = false
  *  The input system listens for and records key presses and joystick positions to be used by robots.
  *  It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.
  */
-class InputSystem extends WorldSystem {
+class InputSystem {
     public static currentModifierState: ModifierState
 
     /** The keys currently being pressed. */
@@ -29,15 +28,13 @@ class InputSystem extends WorldSystem {
 
     public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
         InputSystem.brainIndexSchemeMap.set(index, scheme)
-        World.analyticsSystem?.event("Scheme Applied", {
+        AnalyticsSystem?.event("Scheme Applied", {
             isCustomized: scheme.customized,
             schemeName: scheme.schemeName,
         })
     }
 
-    constructor() {
-        super()
-
+    public static setup() {
         // Initialize input events
         this.handleKeyDown = this.handleKeyDown.bind(this)
         document.addEventListener("keydown", this.handleKeyDown)
@@ -79,7 +76,7 @@ class InputSystem extends WorldSystem {
         )
     }
 
-    public update(_: number): void {
+    public static update(_: number): void {
         // Fetch current gamepad information
         if (InputSystem._gpIndex == null) InputSystem.gamepad = null
         else InputSystem.gamepad = navigator.getGamepads()[InputSystem._gpIndex]
@@ -95,7 +92,7 @@ class InputSystem extends WorldSystem {
         }
     }
 
-    public destroy(): void {
+    public static destroy(): void {
         document.removeEventListener("keydown", this.handleKeyDown)
         document.removeEventListener("keyup", this.handleKeyUp)
         window.removeEventListener("gamepadconnected", this.gamepadConnected)
@@ -103,22 +100,22 @@ class InputSystem extends WorldSystem {
     }
 
     /** Called when any key is first pressed */
-    private handleKeyDown(event: KeyboardEvent) {
+    private static handleKeyDown(event: KeyboardEvent) {
         InputSystem._keysPressed[event.code as KeyCode] = true
     }
 
     /* Called when any key is released */
-    private handleKeyUp(event: KeyboardEvent) {
+    private static handleKeyUp(event: KeyboardEvent) {
         InputSystem._keysPressed[event.code as KeyCode] = false
     }
 
     /** Clears all stored key data when the user leaves the page. */
-    private clearKeyData() {
+    private static clearKeyData() {
         for (const keyCode in InputSystem._keysPressed) delete InputSystem._keysPressed[keyCode as KeyCode]
     }
 
     /* Called once when a gamepad is first connected */
-    private gamepadConnected(event: GamepadEvent) {
+    private static gamepadConnected(event: GamepadEvent) {
         if (LOG_GAMEPAD_EVENTS) {
             console.log(
                 "Gamepad connected at index %d: %s. %d buttons, %d axes.",
@@ -133,7 +130,7 @@ class InputSystem extends WorldSystem {
     }
 
     /* Called once when a gamepad is first disconnected */
-    private gamepadDisconnected(event: GamepadEvent) {
+    private static gamepadDisconnected(event: GamepadEvent) {
         if (LOG_GAMEPAD_EVENTS) {
             console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
         }

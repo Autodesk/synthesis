@@ -1,5 +1,5 @@
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 import { random } from "@/util/Random"
 import Brain from "../Brain"
 import type { SimulationLayer } from "../SimulationSystem"
@@ -13,6 +13,7 @@ import { SimDigitalInput } from "./sim/SimDIO"
 import { SimGyroInput } from "./sim/SimGyro"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
 import { type DeviceData, SimMapUpdateEvent, SimType, type WSMessage, worker } from "./WPILibTypes"
+import SimulationSystem from "../SimulationSystem"
 
 worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     let data: WSMessage | undefined
@@ -85,7 +86,7 @@ class WPILibBrain extends Brain {
 
         this._assembly = assembly
 
-        this._simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
+        this._simLayer = SimulationSystem.getSimulationLayer(this._mechanism)!
 
         if (!this._simLayer) {
             console.warn("SimulationLayer is undefined")
@@ -101,7 +102,7 @@ class WPILibBrain extends Brain {
 
         this.loadSimConfig()
 
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
+        SceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
             if (v.brain?.brainType == "wpilib") {
                 v.brain = new SynthesisBrain(v, v.assemblyName)
             }

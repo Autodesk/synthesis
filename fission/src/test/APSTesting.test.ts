@@ -1,12 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
-// Mock dependencies before importing APS
-vi.mock("@/systems/World", () => ({
+vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
     default: {
-        AnalyticsSystem: {
-            Event: vi.fn(),
-            Exception: vi.fn(),
-        },
+        Event: vi.fn(),
+        Exception: vi.fn(),
     },
 }))
 

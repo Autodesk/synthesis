@@ -1,4 +1,5 @@
 import type { Object3D, PerspectiveCamera } from "three"
+import SceneRenderer from "./SceneRenderer"
 import * as THREE from "three"
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
@@ -9,8 +10,8 @@ import {
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
 import InputSystem from "../input/InputSystem"
-import World from "../World"
 import SceneObject from "./SceneObject"
+import PhysicsSystem from "../physics/PhysicsSystem"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
 
@@ -57,14 +58,14 @@ class GizmoSceneObject extends SceneObject {
 
         this._obj = obj ?? new THREE.Mesh()
         this._parentObject = parentObject
-        this._mainCamera = World.sceneRenderer.mainCamera
+        this._mainCamera = SceneRenderer.mainCamera
 
         this._size = size
 
-        this._gizmo = new TransformControls(World.sceneRenderer.mainCamera, World.sceneRenderer.renderer.domElement)
+        this._gizmo = new TransformControls(SceneRenderer.mainCamera, SceneRenderer.renderer.domElement)
         this._gizmo.setMode(mode)
 
-        World.sceneRenderer.registerGizmoSceneObject(this)
+        SceneRenderer.registerGizmoSceneObject(this)
 
         postGizmoCreation?.(this)
 
@@ -78,7 +79,7 @@ class GizmoSceneObject extends SceneObject {
                 if (!jBodyId) return
 
                 const worldTransform = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(jBodyId).GetWorldTransform()
+                    PhysicsSystem.getBody(jBodyId).GetWorldTransform()
                 )
                 const relativeTransform = worldTransform.premultiply(gizmoTransformInv)
                 this._relativeTransformations!.set(rn.id, relativeTransform)
@@ -88,8 +89,8 @@ class GizmoSceneObject extends SceneObject {
 
     public setup(): void {
         // adding the mesh and gizmo to the scene
-        World.sceneRenderer.addObject(this._obj)
-        World.sceneRenderer.addObject(this._gizmo.getHelper())
+        SceneRenderer.addObject(this._obj)
+        SceneRenderer.addObject(this._gizmo.getHelper())
 
         // forcing the gizmo to rotate and transform with the object
         this._gizmo.setSpace("local")
@@ -97,8 +98,8 @@ class GizmoSceneObject extends SceneObject {
 
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
             // disable orbit controls when dragging the transform gizmo
-            const gizmoDragging = World.sceneRenderer.isAnyGizmoDragging()
-            World.sceneRenderer.currentCameraControls.enabled = !event.value && !gizmoDragging
+            const gizmoDragging = SceneRenderer.isAnyGizmoDragging()
+            SceneRenderer.currentCameraControls.enabled = !event.value && !gizmoDragging
 
             const isShift = InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft")
             const isAlt = InputSystem.isKeyPressed("AltRight") || InputSystem.isKeyPressed("AltLeft")
@@ -109,7 +110,7 @@ class GizmoSceneObject extends SceneObject {
                     event.target.translationSnap = isAlt ? 0.1 : null
 
                     // disable other gizmos when translating
-                    const gizmos = [...World.sceneRenderer.gizmosOnMirabuf.values()]
+                    const gizmos = [...SceneRenderer.gizmosOnMirabuf.values()]
                     gizmos.forEach(obj => {
                         if (obj.gizmo.object === event.target.object && obj.gizmo.mode !== "translate") {
                             obj.gizmo.dragging = false
@@ -124,7 +125,7 @@ class GizmoSceneObject extends SceneObject {
                     event.target.rotationSnap = isAlt ? Math.PI * (1.0 / 12.0) : null
 
                     // disable scale gizmos added to the same object
-                    const gizmos = [...World.sceneRenderer.gizmosOnMirabuf.values()]
+                    const gizmos = [...SceneRenderer.gizmosOnMirabuf.values()]
                     gizmos.forEach(obj => {
                         if (
                             obj.gizmo.mode === "scale" &&
@@ -189,8 +190,8 @@ class GizmoSceneObject extends SceneObject {
     public dispose(): void {
         this._gizmo.detach()
         this._parentObject?.enablePhysics()
-        World.sceneRenderer.removeObject(this._obj)
-        World.sceneRenderer.removeObject(this._gizmo.getHelper())
+        SceneRenderer.removeObject(this._obj)
+        SceneRenderer.removeObject(this._gizmo.getHelper())
 
         this._relativeTransformations?.clear()
     }
@@ -217,7 +218,7 @@ class GizmoSceneObject extends SceneObject {
         const rotation = new THREE.Quaternion(0, 0, 0, 1)
         worldTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-        World.physicsSystem.setBodyPositionAndRotation(
+        PhysicsSystem.setBodyPositionAndRotation(
             jBodyId,
             convertThreeVector3ToJoltRVec3(position),
             convertThreeQuaternionToJoltQuat(rotation)

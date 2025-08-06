@@ -3,13 +3,13 @@ import { useMemo, useReducer } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import World from "@/systems/World.ts"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import type { ConfigurationType } from "../ConfigTypes"
 import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 interface AssemblySelectionProps {
     configurationType: ConfigurationType
@@ -48,11 +48,11 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     const { openPanel, closePanel } = useUIContext()
 
     const robots = useMemo(() => {
-        return World.sceneRenderer.mirabufSceneObjects.getRobots().filter(x => !pendingDeletes.includes(x.id))
+        return SceneRenderer.mirabufSceneObjects.getRobots().filter(x => !pendingDeletes.includes(x.id))
     }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        const field = SceneRenderer.mirabufSceneObjects.getField()
         return !field || pendingDeletes.includes(field.id) ? [] : [field]
     }, [u, pendingDeletes])
 

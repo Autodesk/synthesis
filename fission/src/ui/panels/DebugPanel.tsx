@@ -8,7 +8,6 @@ import MirabufCachingService, {
     MiraType,
 } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import World from "@/systems/World"
 import { random } from "@/util/Random"
 import { globalAddToast } from "../components/GlobalUIControls"
 import Label from "../components/Label"
@@ -16,12 +15,12 @@ import type { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
+import DragModeSystem from "@/systems/scene/DragModeSystem"
 
 function toggleDragMode() {
-    const dragSystem = World.dragModeSystem
-    if (dragSystem) {
-        dragSystem.enabled = !dragSystem.enabled
-        const status = dragSystem.enabled ? "enabled" : "disabled"
+    if (DragModeSystem) {
+        DragModeSystem.enabled = !DragModeSystem.enabled
+        const status = DragModeSystem.enabled ? "enabled" : "disabled"
         globalAddToast("info", "Drag Mode", `Drag mode has been ${status}`)
     }
 }

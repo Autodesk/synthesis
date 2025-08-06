@@ -1,8 +1,8 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
-import World from "@/systems/World"
 import { type NoraNumber3, NoraTypes } from "../Nora"
 import Stimulus, { type StimulusID } from "./Stimulus"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 
 class ChassisStimulus extends Stimulus {
     private _body: Jolt.Body
@@ -24,7 +24,7 @@ class ChassisStimulus extends Stimulus {
     public constructor(id: StimulusID, bodyId: Jolt.BodyID, info?: mirabuf.IInfo) {
         super(id, info)
 
-        this._body = World.physicsSystem.getBody(bodyId)
+        this._body = PhysicsSystem.getBody(bodyId)
         this._mass = this._body.GetShape().GetMassProperties().mMass
     }
 

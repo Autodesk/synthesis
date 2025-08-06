@@ -1,48 +1,47 @@
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
-import World from "@/systems/World.ts"
-import WorldSystem from "@/systems/WorldSystem.ts"
+import SceneRenderer from "./scene/SceneRenderer"
 import SettingsModal from "@/ui/modals/configuring/SettingsModal"
 
-export class PerformanceMonitoringSystem extends WorldSystem {
-    isCritical: boolean = false
-    activeCount: number = 0
-    antiCount: number = 0
-    lastTime = performance.now()
-    constructor() {
-        super()
+export class PerformanceMonitoringSystem {
+    private static _isCritical: boolean = false
+    private static _activeCount: number = 0
+    private static _antiCount: number = 0
+    private static _lastTime = performance.now()
+
+    public static start() {
         setInterval(() => {
             this.reset()
         }, 15000)
     }
-    public update(_: number) {
-        const time = performance.now() - this.lastTime
+    public static update(_: number) {
+        const time = performance.now() - this._lastTime
         const newIsCritical = time > 150
-        if (newIsCritical == this.isCritical) {
-            this.activeCount++
+        if (newIsCritical == this._isCritical) {
+            this._activeCount++
         } else {
-            this.antiCount++
-            if (this.antiCount > 10 && this.antiCount > 0.5 * this.activeCount) {
-                this.isCritical = newIsCritical
-                const oldActive = this.activeCount
-                this.activeCount = this.antiCount
-                this.antiCount = oldActive
-                if (this.isCritical) {
+            this._antiCount++
+            if (this._antiCount > 10 && this._antiCount > 0.5 * this._activeCount) {
+                this._isCritical = newIsCritical
+                const oldActive = this._activeCount
+                this._activeCount = this._antiCount
+                this._antiCount = oldActive
+                if (this._isCritical) {
                     PreferencesSystem.resetGraphicsPreferences()
-                    World.sceneRenderer.changeCSMSettings(PreferencesSystem.getGraphicsPreferences())
+                    SceneRenderer.changeCSMSettings(PreferencesSystem.getGraphicsPreferences())
                     globalOpenModal(SettingsModal, { initialTab: "graphics" })
                     globalAddToast("warning", "Performance Issues Detected", "Reverting to simple graphics")
                 }
             }
         }
 
-        this.lastTime = performance.now()
+        this._lastTime = performance.now()
     }
 
-    public reset() {
-        this.activeCount = 0
-        this.antiCount = 0
+    public static reset() {
+        this._activeCount = 0
+        this._antiCount = 0
     }
 
-    public destroy() {}
+    public static destroy() {}
 }

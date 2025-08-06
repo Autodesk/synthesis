@@ -1,4 +1,5 @@
 import { Box } from "@mui/material"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import * as THREE from "three"
@@ -71,7 +72,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
                 const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
-                const controls = World.sceneRenderer.currentCameraControls
+                const controls = SceneRenderer.currentCameraControls
                 if (controls instanceof CustomOrbitControls) {
                     const currentCoords = controls.getCurrentCoordinates()
 
@@ -218,8 +219,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     }, [hoveredElement, isDragging, updateHighlights])
 
     const getTopBottomOrientation = (isTop: boolean) => {
-        if (World && World.sceneRenderer && World.sceneRenderer.currentCameraControls) {
-            const controls = World.sceneRenderer.currentCameraControls
+        if (World && SceneRenderer && SceneRenderer.currentCameraControls) {
+            const controls = SceneRenderer.currentCameraControls
             if (controls instanceof CustomOrbitControls) {
                 const currentCoords = controls.getCurrentCoordinates()
 
@@ -683,8 +684,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
         const animate = () => {
             if (rendererRef.current && sceneRef.current && cameraRef.current) {
-                const mainCamera = World.sceneRenderer.mainCamera
-                const controls = World.sceneRenderer.currentCameraControls
+                const mainCamera = SceneRenderer.mainCamera
+                const controls = SceneRenderer.currentCameraControls
 
                 if (mainCamera && cubeRef.current && controls instanceof CustomOrbitControls) {
                     const coords = controls.getCurrentCoordinates()
@@ -790,7 +791,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     }
 
     const snapToOrientation = (orientation: { theta: number; phi: number }) => {
-        const controls = World.sceneRenderer.currentCameraControls
+        const controls = SceneRenderer.currentCameraControls
         if (controls instanceof CustomOrbitControls) {
             const currentCoords = controls.getCurrentCoordinates()
 
@@ -823,7 +824,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
             const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
-            const controls = World.sceneRenderer.currentCameraControls
+            const controls = SceneRenderer.currentCameraControls
             if (controls instanceof CustomOrbitControls) {
                 const currentCoords = controls.getCurrentCoordinates()
 

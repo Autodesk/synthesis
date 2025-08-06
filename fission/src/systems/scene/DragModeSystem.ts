@@ -6,15 +6,15 @@ import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
-import World from "../World"
-import WorldSystem from "../WorldSystem"
 import type { CustomOrbitControls, SphericalCoords } from "./CameraControls"
+import SceneRenderer from "./SceneRenderer"
 import {
     type InteractionEnd,
     type InteractionMove,
     type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import PhysicsSystem from "../physics/PhysicsSystem"
 
 interface DragTarget {
     bodyId: Jolt.BodyID
@@ -35,7 +35,7 @@ interface CameraTransition {
     targetSceneObject: MirabufSceneObject | undefined
 }
 
-class DragModeSystem extends WorldSystem {
+class DragModeSystem {
     // Drag force constants - tune these to reduce wobble and improve stability
     private static readonly DRAG_FORCE_CONSTANTS = {
         // Linear motion control
@@ -64,22 +64,22 @@ class DragModeSystem extends WorldSystem {
         ROTATION_SPEED: 1500.0, // speed of arrow key rotation. lower = more precise, higher = more
     } as const
 
-    private _enabled: boolean = false
-    private _dragTarget: DragTarget | undefined
-    private _isDragging: boolean = false
-    private _lastMousePosition: [number, number] = [0, 0]
+    private static _enabled: boolean = false
+    private static _dragTarget: DragTarget | undefined
+    private static _isDragging: boolean = false
+    private static _lastMousePosition: [number, number] = [0, 0]
 
     // Debug visualization
-    private _debugSphere: THREE.Mesh | undefined
+    private static _debugSphere: THREE.Mesh | undefined
 
     // Wheel event handling for Z-axis dragging
-    private _wheelEventHandler: ((event: WheelEvent) => void) | undefined
+    private static _wheelEventHandler: ((event: WheelEvent) => void) | undefined
 
-    private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
-    private _originalInteractionMove: ((i: InteractionMove) => void) | undefined
-    private _originalInteractionEnd: ((i: InteractionEnd) => void) | undefined
+    private static _originalInteractionStart: ((i: InteractionStart) => void) | undefined
+    private static _originalInteractionMove: ((i: InteractionMove) => void) | undefined
+    private static _originalInteractionEnd: ((i: InteractionEnd) => void) | undefined
 
-    private _cameraTransition: CameraTransition = {
+    private static _cameraTransition: CameraTransition = {
         isTransitioning: false,
         transitionProgress: 0,
         transitionDuration: 1.0,
@@ -89,11 +89,37 @@ class DragModeSystem extends WorldSystem {
         targetSceneObject: undefined,
     }
 
-    private _handleDisableDragMode: () => void
+    private static _handleDisableDragMode: () => void
 
-    public constructor() {
-        super()
+    public static get enabled(): boolean {
+        return this._enabled
+    }
 
+    public static get isTransitioning(): boolean {
+        return this._cameraTransition.isTransitioning
+    }
+
+    public static set enabled(enabled: boolean) {
+        if (this._enabled === enabled) return
+
+        this._enabled = enabled
+
+        if (enabled) {
+            this.hookInteractionHandlers()
+        } else {
+            this.unhookInteractionHandlers()
+            this.stopDragging()
+
+            if (this._cameraTransition.isTransitioning) {
+                this._cameraTransition.isTransitioning = false
+                SceneRenderer.currentCameraControls.enabled = true
+            }
+        }
+
+        window.dispatchEvent(new CustomEvent("dragModeToggled", { detail: { enabled } }))
+    }
+
+    public static setup() {
         this._handleDisableDragMode = () => {
             this.enabled = false
         }
@@ -109,35 +135,7 @@ class DragModeSystem extends WorldSystem {
         window.addEventListener("disableDragMode", this._handleDisableDragMode)
     }
 
-    public get enabled(): boolean {
-        return this._enabled
-    }
-
-    public get isTransitioning(): boolean {
-        return this._cameraTransition.isTransitioning
-    }
-
-    public set enabled(enabled: boolean) {
-        if (this._enabled === enabled) return
-
-        this._enabled = enabled
-
-        if (enabled) {
-            this.hookInteractionHandlers()
-        } else {
-            this.unhookInteractionHandlers()
-            this.stopDragging()
-
-            if (this._cameraTransition.isTransitioning) {
-                this._cameraTransition.isTransitioning = false
-                World.sceneRenderer.currentCameraControls.enabled = true
-            }
-        }
-
-        window.dispatchEvent(new CustomEvent("dragModeToggled", { detail: { enabled } }))
-    }
-
-    public update(deltaT: number): void {
+    public static update(deltaT: number): void {
         if (!this._enabled) return
 
         if (this._isDragging && this._dragTarget) {
@@ -149,12 +147,12 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    public destroy(): void {
+    public static destroy(): void {
         this.enabled = false
 
         if (this._cameraTransition.isTransitioning) {
             this._cameraTransition.isTransitioning = false
-            World.sceneRenderer.currentCameraControls.enabled = true
+            SceneRenderer.currentCameraControls.enabled = true
         }
 
         // Clean up debug sphere
@@ -163,7 +161,7 @@ class DragModeSystem extends WorldSystem {
         window.removeEventListener("disableDragMode", this._handleDisableDragMode)
     }
 
-    private createDebugSphere(position: THREE.Vector3): void {
+    private static createDebugSphere(position: THREE.Vector3): void {
         // Remove existing debug sphere if any
         this.removeDebugSphere()
 
@@ -178,18 +176,18 @@ class DragModeSystem extends WorldSystem {
         this._debugSphere.position.copy(position)
 
         // Add to the scene
-        World.sceneRenderer.scene.add(this._debugSphere)
+        SceneRenderer.scene.add(this._debugSphere)
     }
 
-    private updateDebugSphere(position: THREE.Vector3): void {
+    private static updateDebugSphere(position: THREE.Vector3): void {
         if (this._debugSphere) {
             this._debugSphere.position.copy(position)
         }
     }
 
-    private removeDebugSphere(): void {
+    private static removeDebugSphere(): void {
         if (this._debugSphere) {
-            World.sceneRenderer.scene.remove(this._debugSphere)
+            SceneRenderer.scene.remove(this._debugSphere)
             this._debugSphere.geometry.dispose()
             if (this._debugSphere.material instanceof THREE.Material) {
                 this._debugSphere.material.dispose()
@@ -198,11 +196,11 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    private hookInteractionHandlers(): void {
-        const handler = World.sceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
+    private static hookInteractionHandlers(): void {
+        const handler = SceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
         if (!handler) return
 
-        const screenHandler = World.sceneRenderer.screenInteractionHandler
+        const screenHandler = SceneRenderer.screenInteractionHandler
         this._originalInteractionStart = screenHandler.interactionStart
         this._originalInteractionMove = screenHandler.interactionMove
         this._originalInteractionEnd = screenHandler.interactionEnd
@@ -217,9 +215,9 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    private unhookInteractionHandlers(): void {
-        const handler = World.sceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
-        const screenHandler = World.sceneRenderer.screenInteractionHandler
+    private static unhookInteractionHandlers(): void {
+        const handler = SceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
+        const screenHandler = SceneRenderer.screenInteractionHandler
         if (!screenHandler) return
 
         if (this._originalInteractionStart) screenHandler.interactionStart = this._originalInteractionStart
@@ -232,7 +230,7 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    private onInteractionStart(interaction: InteractionStart): void {
+    private static onInteractionStart(interaction: InteractionStart): void {
         if (interaction.interactionType !== PRIMARY_MOUSE_INTERACTION) {
             this._originalInteractionStart?.(interaction)
             return
@@ -242,9 +240,9 @@ class DragModeSystem extends WorldSystem {
 
         const hitResult = this.raycastFromMouse(interaction.position)
         if (hitResult) {
-            const association = World.physicsSystem.getBodyAssociation(hitResult.data.mBodyID) as RigidNodeAssociate
+            const association = PhysicsSystem.getBodyAssociation(hitResult.data.mBodyID) as RigidNodeAssociate
             if (association?.sceneObject) {
-                const body = World.physicsSystem.getBody(hitResult.data.mBodyID)
+                const body = PhysicsSystem.getBody(hitResult.data.mBodyID)
                 if (body) {
                     const isStatic = body.GetMotionType() === JOLT.EMotionType_Static
                     const isFieldStructure =
@@ -262,7 +260,7 @@ class DragModeSystem extends WorldSystem {
         this._originalInteractionStart?.(interaction)
     }
 
-    private onInteractionMove(interaction: InteractionMove): void {
+    private static onInteractionMove(interaction: InteractionMove): void {
         if (this._isDragging && interaction.movement) {
             // Use absolute position instead of accumulating movement to prevent drift
             this._lastMousePosition[0] += interaction.movement[0]
@@ -276,7 +274,7 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    private onInteractionEnd(interaction: InteractionEnd): void {
+    private static onInteractionEnd(interaction: InteractionEnd): void {
         if (interaction.interactionType === PRIMARY_MOUSE_INTERACTION && this._isDragging) {
             this.stopDragging()
         } else {
@@ -284,20 +282,17 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    private raycastFromMouse(mousePos: [number, number]) {
-        const camera = World.sceneRenderer.mainCamera
+    private static raycastFromMouse(mousePos: [number, number]) {
+        const camera = SceneRenderer.mainCamera
         const origin = camera.position
-        const worldSpace = World.sceneRenderer.pixelToWorldSpace(mousePos[0], mousePos[1])
+        const worldSpace = SceneRenderer.pixelToWorldSpace(mousePos[0], mousePos[1])
         const direction = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
 
-        return World.physicsSystem.rayCast(
-            convertThreeVector3ToJoltVec3(origin),
-            convertThreeVector3ToJoltVec3(direction)
-        )
+        return PhysicsSystem.rayCast(convertThreeVector3ToJoltVec3(origin), convertThreeVector3ToJoltVec3(direction))
     }
 
-    private startDragging(bodyId: Jolt.BodyID, mousePos: [number, number], hitPoint: THREE.Vector3): void {
-        const body = World.physicsSystem.getBody(bodyId)
+    private static startDragging(bodyId: Jolt.BodyID, mousePos: [number, number], hitPoint: THREE.Vector3): void {
+        const body = PhysicsSystem.getBody(bodyId)
         if (!body) return
 
         const bodyPos = body.GetPosition()
@@ -313,7 +308,7 @@ class DragModeSystem extends WorldSystem {
         const motionProperties = body.GetMotionProperties()
         const mass = 1.0 / motionProperties.GetInverseMass()
 
-        const camera = World.sceneRenderer.mainCamera
+        const camera = SceneRenderer.mainCamera
         const cameraToHit = hitPoint.clone().sub(camera.position)
         const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
         const dragDepth = cameraToHit.dot(cameraDirection)
@@ -322,7 +317,7 @@ class DragModeSystem extends WorldSystem {
         const worldOffset = hitPoint.clone().sub(bodyPosition)
         const localOffset = worldOffset.clone().applyQuaternion(bodyQuaternion.clone().invert())
 
-        const association = World.physicsSystem.getBodyAssociation(bodyId) as RigidNodeAssociate
+        const association = PhysicsSystem.getBodyAssociation(bodyId) as RigidNodeAssociate
         const isRobot = association?.sceneObject?.miraType === MiraType.ROBOT
 
         this._dragTarget = {
@@ -341,19 +336,19 @@ class DragModeSystem extends WorldSystem {
         this.createDebugSphere(hitPoint)
 
         if (isRobot) {
-            World.physicsSystem.disablePhysicsForBody(bodyId)
+            PhysicsSystem.disablePhysicsForBody(bodyId)
         }
 
-        World.sceneRenderer.currentCameraControls.enabled = false
+        SceneRenderer.currentCameraControls.enabled = false
     }
 
-    private stopDragging(): void {
+    private static stopDragging(): void {
         if (!this._isDragging) return
 
         if (this._dragTarget?.physicsDisabled) {
-            World.physicsSystem.enablePhysicsForBody(this._dragTarget.bodyId)
+            PhysicsSystem.enablePhysicsForBody(this._dragTarget.bodyId)
         } else if (this._dragTarget) {
-            const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
+            const body = PhysicsSystem.getBody(this._dragTarget.bodyId)
             if (body) {
                 const currentVel = body.GetLinearVelocity()
                 const mass = this._dragTarget.mass
@@ -380,7 +375,7 @@ class DragModeSystem extends WorldSystem {
         let shouldTransition = true
 
         if (this._dragTarget) {
-            const association = World.physicsSystem.getBodyAssociation(this._dragTarget.bodyId) as RigidNodeAssociate
+            const association = PhysicsSystem.getBodyAssociation(this._dragTarget.bodyId) as RigidNodeAssociate
             targetSceneObject = association?.sceneObject
             if (association?.isGamePiece) {
                 shouldTransition = false
@@ -396,12 +391,12 @@ class DragModeSystem extends WorldSystem {
         if (shouldTransition) {
             this.startCameraTransition(targetSceneObject)
         } else {
-            World.sceneRenderer.currentCameraControls.enabled = true
+            SceneRenderer.currentCameraControls.enabled = true
         }
     }
 
-    private startCameraTransition(targetSceneObject: MirabufSceneObject | undefined): void {
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+    private static startCameraTransition(targetSceneObject: MirabufSceneObject | undefined): void {
+        const cameraControls = SceneRenderer.currentCameraControls as CustomOrbitControls
 
         this._cameraTransition.startCoords = {
             theta: cameraControls.coords.theta,
@@ -425,7 +420,7 @@ class DragModeSystem extends WorldSystem {
         cameraControls.focusProvider = undefined
     }
 
-    private updateCameraTransition(deltaT: number): void {
+    private static updateCameraTransition(deltaT: number): void {
         if (!this._cameraTransition.isTransitioning) return
 
         this._cameraTransition.transitionProgress += deltaT / this._cameraTransition.transitionDuration
@@ -434,7 +429,7 @@ class DragModeSystem extends WorldSystem {
             this._cameraTransition.isTransitioning = false
             this._cameraTransition.transitionProgress = 1.0
 
-            const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+            const cameraControls = SceneRenderer.currentCameraControls as CustomOrbitControls
 
             if (this._cameraTransition.targetSceneObject) {
                 cameraControls.focusProvider = this._cameraTransition.targetSceneObject
@@ -444,7 +439,7 @@ class DragModeSystem extends WorldSystem {
 
         const t = this.easeInOutCubic(this._cameraTransition.transitionProgress)
 
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+        const cameraControls = SceneRenderer.currentCameraControls as CustomOrbitControls
 
         const currentFocus = new THREE.Matrix4()
         if (this._cameraTransition.targetSceneObject) {
@@ -463,14 +458,14 @@ class DragModeSystem extends WorldSystem {
         cameraControls.focus = currentFocus
     }
 
-    private easeInOutCubic(t: number): number {
+    private static easeInOutCubic(t: number): number {
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
     }
 
-    private updateDragForce(): void {
+    private static updateDragForce(): void {
         if (!this._dragTarget) return
 
-        const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
+        const body = PhysicsSystem.getBody(this._dragTarget.bodyId)
         if (!body) {
             this.stopDragging()
             return
@@ -490,7 +485,7 @@ class DragModeSystem extends WorldSystem {
         const currentWorldOffset = this._dragTarget.localOffset.clone().applyQuaternion(currentQuaternion)
         const currentDragPointWorld = currentPosition.clone().add(currentWorldOffset)
 
-        const camera = World.sceneRenderer.mainCamera
+        const camera = SceneRenderer.mainCamera
 
         // Create a ray from the camera through the current mouse position
         const mouseNDC = new THREE.Vector2(
@@ -580,7 +575,7 @@ class DragModeSystem extends WorldSystem {
                     (InputSystem.isKeyPressed("ArrowRight") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowLeft") ? 1 : 0)),
                 0
             )
-            const cameraVector = World.sceneRenderer.mainCamera.getWorldDirection(new THREE.Vector3(0, 0, 0))
+            const cameraVector = SceneRenderer.mainCamera.getWorldDirection(new THREE.Vector3(0, 0, 0))
             const pitchRotation = new JOLT.Vec3(cameraVector.z, 0, -cameraVector.x).Mul(
                 moi *
                     DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
@@ -613,7 +608,7 @@ class DragModeSystem extends WorldSystem {
         body.SetAngularVelocity(new JOLT.Vec3())
     }
 
-    private handleWheelDuringDrag(event: WheelEvent): void {
+    private static handleWheelDuringDrag(event: WheelEvent): void {
         if (!this._dragTarget || !this._isDragging) return
 
         // Adjust drag depth based on wheel delta

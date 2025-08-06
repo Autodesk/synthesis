@@ -1,4 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import { Button, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
@@ -10,7 +11,6 @@ import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -20,6 +20,7 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -67,9 +68,7 @@ function save(
     }
 
     const gizmoTransformation = gizmo.obj.matrixWorld
-    const robotTransformation = convertJoltMat44ToThreeMatrix4(
-        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
-    )
+    const robotTransformation = convertJoltMat44ToThreeMatrix4(PhysicsSystem.getBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
     selectedRobot.ejectorPreferences.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
@@ -115,9 +114,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
         return new THREE.Mesh(
             new THREE.ConeGeometry(0.1, 0.4, 4).rotateX(Math.PI / 2.0).translate(0, 0, 0.2),
             // TODO: dynamic color
-            World.sceneRenderer.createToonMaterial(
-                convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 })
-            )
+            SceneRenderer.createToonMaterial(convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 }))
         )
     }, [])
 
@@ -141,7 +138,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
 
                 /** W = L x R. See save() for math details */
                 const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+                    PhysicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
@@ -182,10 +179,10 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     }, [selectedRobot])
 
     useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        PhysicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            PhysicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 
@@ -195,7 +192,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 return false
             }
 
-            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
+            const assoc = PhysicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || !assoc.sceneObject || assoc.sceneObject !== selectedRobot) {
                 return false
             }
@@ -252,7 +249,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
+                            PhysicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)

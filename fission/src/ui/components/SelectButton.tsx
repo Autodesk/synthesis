@@ -2,22 +2,23 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { Button, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
-import World from "@/systems/World"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import { LabelWithTooltip } from "./StyledComponents"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 
 // raycasting constants
 const RAY_MAX_LENGTH = 20.0
 
 function selectNode(e: MouseEvent) {
-    const origin = World.sceneRenderer.mainCamera.position
+    const origin = SceneRenderer.mainCamera.position
 
-    const worldSpace = World.sceneRenderer.pixelToWorldSpace(e.clientX, e.clientY)
+    const worldSpace = SceneRenderer.pixelToWorldSpace(e.clientX, e.clientY)
     const dir = worldSpace.sub(origin).normalize().multiplyScalar(RAY_MAX_LENGTH)
 
-    const res = World.physicsSystem.rayCast(convertThreeVector3ToJoltVec3(origin), convertThreeVector3ToJoltVec3(dir))
+    const res = PhysicsSystem.rayCast(convertThreeVector3ToJoltVec3(origin), convertThreeVector3ToJoltVec3(dir))
 
-    if (res) return World.physicsSystem.getBody(res.data.mBodyID)
+    if (res) return PhysicsSystem.getBody(res.data.mBodyID)
 
     return null
 }
@@ -58,10 +59,10 @@ const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, 
             }
         }
 
-        World.sceneRenderer.renderer.domElement.addEventListener("click", onClick)
+        SceneRenderer.renderer.domElement.addEventListener("click", onClick)
 
         return () => {
-            World.sceneRenderer.renderer.domElement.removeEventListener("click", onClick)
+            SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
         }
     }, [selecting, onReceiveSelection])
 
