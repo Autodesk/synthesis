@@ -42,7 +42,7 @@ import {
 import { createMeshForShape } from "@/util/threejs/MeshCreation.ts"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
-import FieldMiraEditor from "./FieldMiraEditor"
+import FieldMiraEditor, { devtoolHandlers, devtoolKeys } from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
 import { MiraType } from "./MirabufLoader"
@@ -804,13 +804,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const parts = this._mirabufInstance.parser.assembly.data?.parts
             if (parts) {
                 const editor = new FieldMiraEditor(parts)
-                const devtoolScoringZones = editor.getUserData("devtool:scoring_zones")
-
-                if (devtoolScoringZones && Array.isArray(devtoolScoringZones)) {
-                    this._fieldPreferences.scoringZones = devtoolScoringZones
-                    PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
-                    PreferencesSystem.savePreferences()
-                }
+                devtoolKeys.forEach(key => {
+                    devtoolHandlers[key].set(this, editor.getUserData(key))
+                })
+                PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
+                PreferencesSystem.savePreferences()
             }
         }
     }
