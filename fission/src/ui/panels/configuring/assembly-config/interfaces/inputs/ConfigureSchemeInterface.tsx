@@ -60,10 +60,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                 <>
                     <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
                         {/** Back arrow button when an option is selected */}
-                        <IconButton
-                            onClick={onBack}
-                            id="select-menu-back-button"
-                            >
+                        <IconButton onClick={onBack} id="select-menu-back-button">
                             {SynthesisIcons.LEFT_ARROW_LARGE}
                         </IconButton>
 
@@ -76,7 +73,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                     <Divider />
                 </>
             )}
-            
+
             {/** Toggle the input scheme between controller and keyboard mode */}
             <Checkbox
                 label="Use Controller"
