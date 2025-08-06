@@ -169,10 +169,10 @@ export type ProtectedZonePreferences = {
     deltaTransformation: number[]
 }
 
-export interface SpawnLocation {
-    pos: Vector3Tuple
+export type SpawnLocation = Readonly<{
+    pos: Readonly<Vector3Tuple>
     yaw: number
-}
+}>
 export type FieldPreferences = {
     spawnLocations: {
         [A in Alliance]: {

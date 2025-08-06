@@ -304,10 +304,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.updateBatches()
 
-        const box = this.computeBoundingBox()
-        // Centered in xz plane, bottom surface of object
-        this._basePositionTransform = box.getCenter(new THREE.Vector3())
-        this._basePositionTransform.setY(box.min.y)
+        this._basePositionTransform = this.getPositionTransform(new THREE.Vector3())
 
         this.moveToSpawnLocation()
 
@@ -318,8 +315,17 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    // Centered in xz plane, bottom surface of object
+    private getPositionTransform(vec: THREE.Vector3) {
+        const box = this.computeBoundingBox()
+        const transform = box.getCenter(vec)
+        transform.setY(box.min.y)
+        return transform
+    }
+
     public moveToSpawnLocation() {
         let pos: SpawnLocation = defaultRobotSpawnLocation()
+        const referencePos = new THREE.Vector3()
         if (this.miraType == MiraType.FIELD) {
             pos = defaultFieldSpawnLocation()
         } else {
@@ -332,11 +338,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             } else {
                 pos = fieldLocations?.default ?? pos
             }
+            field?.getPositionTransform(referencePos)
         }
-        this.setObjectPosition(pos)
+        this.setObjectPosition(pos, referencePos)
     }
 
-    private setObjectPosition(initialPos: SpawnLocation) {
+    private setObjectPosition(initialPos: SpawnLocation, referencePosition: THREE.Vector3) {
         const bounds = this.computeBoundingBox()
         if (!Number.isFinite(bounds.min.y)) return
 
@@ -349,9 +356,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             initialPos.yaw
         )
         const initialTranslation = new JOLT.Vec3(
-            initialPos.pos[0] - rotatedBasePositionTransform.x,
-            initialPos.pos[1] - rotatedBasePositionTransform.y,
-            initialPos.pos[2] - rotatedBasePositionTransform.z
+            initialPos.pos[0] - rotatedBasePositionTransform.x + referencePosition.x,
+            initialPos.pos[1] - rotatedBasePositionTransform.y + referencePosition.y,
+            initialPos.pos[2] - rotatedBasePositionTransform.z + referencePosition.z
         )
         const initialRotation = JOLT.Quat.prototype.sRotation(new JOLT.Vec3(0, 1, 0), initialPos.yaw)
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
@@ -371,7 +378,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
             JOLT.destroy(offset)
             JOLT.destroy(newPos)
-            // JOLT.destroy(newRot)
         })
         JOLT.destroy(initialTranslation)
         JOLT.destroy(initialRotation)
