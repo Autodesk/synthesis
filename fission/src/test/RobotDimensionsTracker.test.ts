@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import RobotDimensionTracker from "@/systems/match_mode/RobotDimensionTracker"
-import type SceneObject from "@/systems/scene/SceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import World from "@/systems/World"
 
@@ -35,12 +34,6 @@ interface MockNonRobotObject {
     dispose: () => void
 }
 
-interface MockSceneRenderer {
-    sceneObjects: Map<number, MockRobotObject | MockNonRobotObject>
-}
-
-type TrackerUpdateParam = Parameters<typeof RobotDimensionTracker.update>[0]
-
 const mockMatchModeInstance = {
     isMatchEnabled: vi.fn(() => true),
 }
@@ -63,16 +56,21 @@ vi.mock("@/systems/simulation/SimulationSystem", () => ({
     },
 }))
 
-vi.mock("@/systems/World", () => ({
+type RecursivePartial<T> = {
+    [P in keyof T]?: RecursivePartial<T[P]>
+}
+
+vi.mock("@/systems/World", (): { default: RecursivePartial<typeof World> } => ({
     default: {
         sceneRenderer: {
-            sceneObjects: new Map(),
+            mirabufSceneObjects: {
+                getRobots: vi.fn(),
+            },
         },
     },
 }))
 
 describe("RobotDimensionTracker", () => {
-    let mockSceneRenderer: MockSceneRenderer
     let mockRobot1: MockRobotObject
     let mockRobot2: MockRobotObject
     let mockNonRobot: MockNonRobotObject
@@ -124,18 +122,10 @@ describe("RobotDimensionTracker", () => {
             update: vi.fn(),
             dispose: vi.fn(),
         }
-
-        mockSceneRenderer = {
-            sceneObjects: new Map([
-                [1, mockRobot1],
-                [2, mockRobot2],
-                [3, mockNonRobot],
-            ]),
-        }
-
-        World.sceneRenderer.sceneObjects.set(1, mockRobot1 as unknown as SceneObject)
-        World.sceneRenderer.sceneObjects.set(2, mockRobot2 as unknown as SceneObject)
-        World.sceneRenderer.sceneObjects.set(3, mockNonRobot as unknown as SceneObject)
+        ;(World.sceneRenderer.mirabufSceneObjects.getRobots as ReturnType<typeof vi.fn>).mockReturnValue([
+            mockRobot1,
+            mockRobot2,
+        ])
     })
 
     afterEach(() => {
@@ -144,7 +134,7 @@ describe("RobotDimensionTracker", () => {
 
     test("config values determine which dimension method is used", () => {
         RobotDimensionTracker.setConfigValues(false, 2, 15, 1.5, 15)
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+        RobotDimensionTracker.update()
 
         expect(mockRobot1.getDimensions).toHaveBeenCalled()
         expect(mockRobot1.getDimensionsWithoutRotation).not.toHaveBeenCalled()
@@ -156,7 +146,7 @@ describe("RobotDimensionTracker", () => {
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 3.5, width: 1.0, depth: 1.0 })
 
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+        RobotDimensionTracker.update()
 
         expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, expect.any(String))
         expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
@@ -179,7 +169,7 @@ describe("RobotDimensionTracker", () => {
 
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.7, depth: 1.0 })
 
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+        RobotDimensionTracker.update()
 
         expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 2, expect.any(String))
         expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
@@ -202,7 +192,7 @@ describe("RobotDimensionTracker", () => {
 
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.7 })
 
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+        RobotDimensionTracker.update()
 
         expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 3, expect.any(String))
         expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
@@ -218,7 +208,7 @@ describe("RobotDimensionTracker", () => {
         mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
         mockRobot2.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
 
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+        RobotDimensionTracker.update()
 
         expect(SimulationSystem.robotPenalty).not.toHaveBeenCalled()
     })
@@ -228,8 +218,8 @@ describe("RobotDimensionTracker", () => {
 
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 12, width: 1.0, depth: 1.0 })
 
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+        RobotDimensionTracker.update()
+        RobotDimensionTracker.update()
 
         expect(SimulationSystem.robotPenalty).toHaveBeenCalledTimes(1)
     })
@@ -240,7 +230,7 @@ describe("RobotDimensionTracker", () => {
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 12, width: 1.0, depth: 1.0 })
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 12, width: 1.0, depth: 1.0 })
 
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+        RobotDimensionTracker.update()
 
         expect(SimulationSystem.robotPenalty).toHaveBeenCalledTimes(2)
     })
@@ -250,7 +240,7 @@ describe("RobotDimensionTracker", () => {
 
         mockNonRobot.getDimensions = vi.fn().mockReturnValue({ height: 12, width: 1.0, depth: 1.0 })
 
-        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+        RobotDimensionTracker.update()
 
         expect(SimulationSystem.robotPenalty).not.toHaveBeenCalled()
     })

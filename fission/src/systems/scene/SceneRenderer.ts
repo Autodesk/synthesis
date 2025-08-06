@@ -55,6 +55,18 @@ class SceneRenderer extends WorldSystem {
         return this._sceneObjects
     }
 
+    public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
+        return [...this._sceneObjects.values()].filter(predicate)
+    }
+
+    public readonly mirabufSceneObjects = {
+        getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
+        findWhere: (predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]) =>
+            this.mirabufSceneObjects.getAll().find(predicate),
+        getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD),
+        getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT),
+    } as const
+
     public get mainCamera() {
         return this._mainCamera
     }
@@ -514,9 +526,9 @@ class SceneRenderer extends WorldSystem {
      */
     public onContextMenu(e: InteractionEnd) {
         // Cast ray into physics scene.
-        const origin = World.sceneRenderer.mainCamera.position
+        const origin = this.mainCamera.position
 
-        const worldSpace = World.sceneRenderer.pixelToWorldSpace(e.position[0], e.position[1])
+        const worldSpace = this.pixelToWorldSpace(e.position[0], e.position[1])
         const dir = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
 
         const res = World.physicsSystem.rayCast(
