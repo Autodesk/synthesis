@@ -1,6 +1,7 @@
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { Box, TextField, FormControlLabel, Checkbox, Stack, Divider, Button } from "@mui/material"
+import { Box, TextField, FormControlLabel, Stack, Divider, Button } from "@mui/material"
+import Checkbox from "@/ui/components/Checkbox"
 import { useEffect, useState, useCallback } from "react"
 import type { MatchModeConfig } from "./MatchModeConfigPanel"
 import {
@@ -119,8 +120,16 @@ const createInitialFormState = (): FormState => {
     const formState: FormState = {}
 
     Object.entries(FIELD_CONFIGS).forEach(([fieldName, config]) => {
+        // Preserve boolean values for checkbox fields, convert others to strings
+        let value: unknown
+        if (config.type === "checkbox") {
+            value = config.defaultValue
+        } else {
+            value = typeof config.defaultValue === "string" ? config.defaultValue : config.defaultValue.toString()
+        }
+
         formState[fieldName] = {
-            value: typeof config.defaultValue === "string" ? config.defaultValue : config.defaultValue.toString(),
+            value,
             error: false,
             errorText: "",
             rules: config.rules,
@@ -193,7 +202,11 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                     <FormControlLabel
                         key={fieldName}
                         control={
-                            <Checkbox checked={field.value as boolean} onChange={handleFieldChange(fieldName, true)} />
+                            <Checkbox
+                                checked={field.value as boolean}
+                                onClick={value => updateField(fieldName, value)}
+                                label={""}
+                            />
                         }
                         label={label}
                     />
@@ -227,7 +240,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                 />
             )
         },
-        [formState, handleFieldChange, preventNonIntegerKeys]
+        [formState, handleFieldChange, preventNonIntegerKeys, updateField]
     )
 
     const createConfigFromForm = useCallback((): MatchModeConfig => {
