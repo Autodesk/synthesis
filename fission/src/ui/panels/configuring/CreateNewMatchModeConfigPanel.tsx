@@ -27,16 +27,12 @@ interface FormField<T = unknown> {
     rules: ValidationRule[]
 }
 
-interface FormState {
-    name: FormField<string>
-    autonomousTime: FormField<string>
-    teleopTime: FormField<string>
-    endgameTime: FormField<string>
-    ignoreRotation: FormField<boolean>
-    maxHeight: FormField<string>
-    heightLimitPenalty: FormField<string>
-    sideMaxExtension: FormField<string>
-    sideExtensionPenalty: FormField<string>
+type FormState = Record<string, FormField>
+
+type FieldConfig = {
+    defaultValue: string | number | boolean
+    rules: ValidationRule[]
+    type?: "text" | "number" | "checkbox" | "numberOrInfinity"
 }
 
 // Validation rules
@@ -69,63 +65,70 @@ const VALIDATION_RULES = {
     }),
 }
 
-// Initial form state
-const createInitialFormState = (): FormState => ({
+// Field configurations
+const FIELD_CONFIGS: Record<string, FieldConfig> = {
     name: {
-        value: "Input Config Name",
-        error: false,
-        errorText: "",
+        defaultValue: "Input Config Name",
         rules: [VALIDATION_RULES.required("Name is required")],
+        type: "text",
     },
     autonomousTime: {
-        value: DEFAULT_AUTONOMOUS_TIME.toString(),
-        error: false,
-        errorText: "",
+        defaultValue: DEFAULT_AUTONOMOUS_TIME,
         rules: [VALIDATION_RULES.nonNegativeInteger("Autonomous time must be a non-negative whole number")],
+        type: "number",
     },
     teleopTime: {
-        value: DEFAULT_TELEOP_TIME.toString(),
-        error: false,
-        errorText: "",
+        defaultValue: DEFAULT_TELEOP_TIME,
         rules: [VALIDATION_RULES.nonNegativeInteger("Teleop time must be a non-negative whole number")],
+        type: "number",
     },
     endgameTime: {
-        value: DEFAULT_ENDGAME_TIME.toString(),
-        error: false,
-        errorText: "",
+        defaultValue: DEFAULT_ENDGAME_TIME,
         rules: [VALIDATION_RULES.nonNegativeInteger("Endgame time must be a non-negative whole number")],
+        type: "number",
     },
     ignoreRotation: {
-        value: DEFAULT_IGNORE_ROTATION,
-        error: false,
-        errorText: "",
+        defaultValue: DEFAULT_IGNORE_ROTATION,
         rules: [],
+        type: "checkbox",
     },
     maxHeight: {
-        value: DEFAULT_MAX_HEIGHT === Infinity ? "Infinity" : DEFAULT_MAX_HEIGHT.toString(),
-        error: false,
-        errorText: "",
+        defaultValue: DEFAULT_MAX_HEIGHT === Infinity ? "Infinity" : DEFAULT_MAX_HEIGHT,
         rules: [VALIDATION_RULES.numberOrInfinity("Max height must be a non-negative number or 'Infinity'")],
+        type: "numberOrInfinity",
     },
     heightLimitPenalty: {
-        value: DEFAULT_HEIGHT_LIMIT_PENALTY.toString(),
-        error: false,
-        errorText: "",
+        defaultValue: DEFAULT_HEIGHT_LIMIT_PENALTY,
         rules: [VALIDATION_RULES.nonNegativeInteger("Height penalty must be a non-negative whole number")],
+        type: "number",
     },
     sideMaxExtension: {
-        value: DEFAULT_SIDE_MAX_EXTENSION.toString(),
-        error: false,
-        errorText: "",
+        defaultValue: DEFAULT_SIDE_MAX_EXTENSION,
         rules: [VALIDATION_RULES.numberOrInfinity("Side max extension must be a positive number or 'Infinity'")],
+        type: "numberOrInfinity",
     },
     sideExtensionPenalty: {
-        value: DEFAULT_SIDE_EXTENSION_PENALTY.toString(),
-        error: false,
-        errorText: "",
+        defaultValue: DEFAULT_SIDE_EXTENSION_PENALTY,
         rules: [VALIDATION_RULES.nonNegativeInteger("Side extension penalty must be a non-negative whole number")],
+        type: "number",
     },
-})
+}
+
+// Initial form state factory
+const createInitialFormState = (): FormState => {
+    const formState: FormState = {}
+
+    Object.entries(FIELD_CONFIGS).forEach(([fieldName, config]) => {
+        formState[fieldName] = {
+            value: typeof config.defaultValue === "string" ? config.defaultValue : config.defaultValue.toString(),
+            error: false,
+            errorText: "",
+            rules: config.rules,
+        }
+    })
+
+    return formState
+}
 
 const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
@@ -141,7 +144,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
     }, [])
 
     const updateField = useCallback(
-        <K extends keyof FormState>(fieldName: K, value: FormState[K]["value"]) => {
+        (fieldName: string, value: unknown) => {
             setFormState(prev => {
                 const field = prev[fieldName]
                 const validation = validateField(field, value)
@@ -160,23 +163,72 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
         [validateField]
     )
 
-    const handleTextFieldChange = useCallback(
-        (fieldName: keyof FormState) => (event: React.ChangeEvent<HTMLInputElement>) => {
-            updateField(fieldName, event.target.value)
-        },
+    const handleFieldChange = useCallback(
+        (fieldName: string, isCheckbox = false) =>
+            (event: React.ChangeEvent<HTMLInputElement>) => {
+                const value = isCheckbox ? event.target.checked : event.target.value
+                updateField(fieldName, value)
+            },
         [updateField]
     )
 
-    const handleCheckboxChange = useCallback(
-        (fieldName: keyof FormState) => (event: React.ChangeEvent<HTMLInputElement>) => {
-            updateField(fieldName, event.target.checked)
-        },
-        [updateField]
-    )
+    // Prevent non-integer input for number fields
+    const preventNonIntegerKeys = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === "." || e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+            e.preventDefault()
+        }
+    }, [])
 
     const isFormValid = useCallback(() => {
         return Object.values(formState).every(field => !field.error)
     }, [formState])
+
+    const renderField = useCallback(
+        (fieldName: string, label: string, helperText?: string) => {
+            const field = formState[fieldName]
+            const config = FIELD_CONFIGS[fieldName]
+
+            if (config.type === "checkbox") {
+                return (
+                    <FormControlLabel
+                        key={fieldName}
+                        control={
+                            <Checkbox checked={field.value as boolean} onChange={handleFieldChange(fieldName, true)} />
+                        }
+                        label={label}
+                    />
+                )
+            }
+
+            const isNumber = config.type === "number"
+            const isNumberOrInfinity = config.type === "numberOrInfinity"
+
+            return (
+                <TextField
+                    key={fieldName}
+                    fullWidth
+                    label={label}
+                    type={isNumber ? "number" : "text"}
+                    value={field.value}
+                    onChange={handleFieldChange(fieldName)}
+                    error={field.error}
+                    helperText={field.errorText || helperText}
+                    placeholder={isNumberOrInfinity ? "Enter number or 'Infinity'" : undefined}
+                    inputProps={
+                        isNumber
+                            ? {
+                                  min: 0,
+                                  step: 1,
+                                  pattern: "[0-9]*",
+                              }
+                            : undefined
+                    }
+                    onKeyPress={isNumber ? preventNonIntegerKeys : undefined}
+                />
+            )
+        },
+        [formState, handleFieldChange, preventNonIntegerKeys]
+    )
 
     const createConfigFromForm = useCallback((): MatchModeConfig => {
         const parseHeight = (value: string): number => {
@@ -185,16 +237,16 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
 
         return {
             id: crypto.randomUUID(),
-            name: formState.name.value.trim(),
+            name: (formState.name.value as string).trim(),
             isDefault: false,
-            autonomousTime: parseInt(formState.autonomousTime.value, 10),
-            teleopTime: parseInt(formState.teleopTime.value, 10),
-            endgameTime: parseInt(formState.endgameTime.value, 10),
-            ignoreRotation: formState.ignoreRotation.value,
-            maxHeight: parseHeight(formState.maxHeight.value),
-            heightLimitPenalty: parseFloat(formState.heightLimitPenalty.value),
-            sideMaxExtension: parseHeight(formState.sideMaxExtension.value),
-            sideExtensionPenalty: parseFloat(formState.sideExtensionPenalty.value),
+            autonomousTime: parseInt(formState.autonomousTime.value as string, 10),
+            teleopTime: parseInt(formState.teleopTime.value as string, 10),
+            endgameTime: parseInt(formState.endgameTime.value as string, 10),
+            ignoreRotation: formState.ignoreRotation.value as boolean,
+            maxHeight: parseHeight(formState.maxHeight.value as string),
+            heightLimitPenalty: parseFloat(formState.heightLimitPenalty.value as string),
+            sideMaxExtension: parseHeight(formState.sideMaxExtension.value as string),
+            sideExtensionPenalty: parseFloat(formState.sideExtensionPenalty.value as string),
         }
     }, [formState])
 
@@ -251,6 +303,40 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
         )
     }, [isFormValid, createConfigFromForm, configureScreen, panel])
 
+    // Field groups for organized rendering
+    const fieldGroups = [
+        {
+            title: "Basic Configuration",
+            fields: [{ name: "name", label: "Configuration Name" }],
+        },
+        {
+            title: "Timing Configuration",
+            fields: [
+                { name: "autonomousTime", label: "Autonomous Time (seconds)" },
+                { name: "teleopTime", label: "Teleop Time (seconds)" },
+                { name: "endgameTime", label: "Endgame Time (seconds)" },
+            ],
+        },
+        {
+            title: "Robot Constraints",
+            fields: [
+                { name: "ignoreRotation", label: "Ignore Robot Rotation for Height Calculations" },
+                {
+                    name: "maxHeight",
+                    label: "Maximum Height (feet or 'Infinity')",
+                    helperText: "Enter 'Infinity' for unlimited height",
+                },
+                { name: "heightLimitPenalty", label: "Height Penalty (points)" },
+                {
+                    name: "sideMaxExtension",
+                    label: "Side Max Extension (feet or 'Infinity')",
+                    helperText: "Enter 'Infinity' for unlimited side extension",
+                },
+                { name: "sideExtensionPenalty", label: "Side Extension Penalty (points)" },
+            ],
+        },
+    ]
+
     return (
         <Box
             component="div"
@@ -265,162 +351,14 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             }}
         >
             <Stack spacing={3}>
-                {/* Basic Configuration Section */}
-                <Box>
-                    <TextField
-                        fullWidth
-                        label="Configuration Name"
-                        placeholder="Enter a descriptive name"
-                        value={formState.name.value}
-                        onChange={handleTextFieldChange("name")}
-                        error={formState.name.error}
-                        helperText={formState.name.errorText}
-                    />
-                </Box>
-
-                <Divider />
-
-                {/* Timing Configuration Section */}
-                <Box>
-                    <Stack spacing={2}>
-                        <TextField
-                            fullWidth
-                            label="Autonomous Time (seconds)"
-                            type="number"
-                            value={formState.autonomousTime.value}
-                            onChange={handleTextFieldChange("autonomousTime")}
-                            error={formState.autonomousTime.error}
-                            helperText={formState.autonomousTime.errorText}
-                            inputProps={{
-                                min: 0,
-                                step: 1,
-                                pattern: "[0-9]*",
-                            }}
-                            onKeyPress={e => {
-                                if (e.key === "." || e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
-                                    e.preventDefault()
-                                }
-                            }}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="Teleop Time (seconds)"
-                            type="number"
-                            value={formState.teleopTime.value}
-                            onChange={handleTextFieldChange("teleopTime")}
-                            error={formState.teleopTime.error}
-                            helperText={formState.teleopTime.errorText}
-                            inputProps={{
-                                min: 0,
-                                step: 1,
-                                pattern: "[0-9]*",
-                            }}
-                            onKeyPress={e => {
-                                if (e.key === "." || e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
-                                    e.preventDefault()
-                                }
-                            }}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="Endgame Time (seconds)"
-                            type="number"
-                            value={formState.endgameTime.value}
-                            onChange={handleTextFieldChange("endgameTime")}
-                            error={formState.endgameTime.error}
-                            helperText={formState.endgameTime.errorText}
-                            inputProps={{
-                                min: 0,
-                                step: 1,
-                                pattern: "[0-9]*",
-                            }}
-                            onKeyPress={e => {
-                                if (e.key === "." || e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
-                                    e.preventDefault()
-                                }
-                            }}
-                        />
-                    </Stack>
-                </Box>
-
-                <Divider />
-
-                {/* Robot Constraints Section */}
-                <Box>
-                    <Stack spacing={2}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={formState.ignoreRotation.value}
-                                    onChange={handleCheckboxChange("ignoreRotation")}
-                                />
-                            }
-                            label="Ignore Robot Rotation for Height Calculations"
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="Maximum Height (feet or 'Infinity')"
-                            value={formState.maxHeight.value}
-                            onChange={handleTextFieldChange("maxHeight")}
-                            error={formState.maxHeight.error}
-                            helperText={formState.maxHeight.errorText || "Enter 'Infinity' for unlimited height"}
-                            placeholder="Enter number or 'Infinity'"
-                        />
-                        <TextField
-                            fullWidth
-                            label="Height Penalty (points)"
-                            type="number"
-                            value={formState.heightLimitPenalty.value}
-                            onChange={handleTextFieldChange("heightLimitPenalty")}
-                            error={formState.heightLimitPenalty.error}
-                            helperText={formState.heightLimitPenalty.errorText}
-                            inputProps={{
-                                min: 0,
-                                step: 1,
-                                pattern: "[0-9]*",
-                            }}
-                            onKeyPress={e => {
-                                if (e.key === "." || e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
-                                    e.preventDefault()
-                                }
-                            }}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="Side Max Extension (feet or 'Infinity')"
-                            value={formState.sideMaxExtension.value}
-                            onChange={handleTextFieldChange("sideMaxExtension")}
-                            error={formState.sideMaxExtension.error}
-                            helperText={
-                                formState.sideMaxExtension.errorText || "Enter 'Infinity' for unlimited side extension"
-                            }
-                            placeholder="Enter number or 'Infinity'"
-                        />
-                        <TextField
-                            fullWidth
-                            label="Side Extension Penalty (points)"
-                            type="number"
-                            value={formState.sideExtensionPenalty.value}
-                            onChange={handleTextFieldChange("sideExtensionPenalty")}
-                            error={formState.sideExtensionPenalty.error}
-                            helperText={formState.sideExtensionPenalty.errorText}
-                            inputProps={{
-                                min: 0,
-                                step: 1,
-                                pattern: "[0-9]*",
-                            }}
-                            onKeyPress={e => {
-                                if (e.key === "." || e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
-                                    e.preventDefault()
-                                }
-                            }}
-                        />
-                    </Stack>
-                </Box>
+                {fieldGroups.map((group, groupIndex) => (
+                    <Box key={group.title}>
+                        <Stack spacing={2}>
+                            {group.fields.map(field => renderField(field.name, field.label, field.helperText))}
+                        </Stack>
+                        {groupIndex < fieldGroups.length - 1 && <Divider />}
+                    </Box>
+                ))}
 
                 <Divider />
 
