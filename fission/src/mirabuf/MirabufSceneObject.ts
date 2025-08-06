@@ -903,21 +903,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             objectCollidedWith.robotLastInContactWith = this
         }
     }
-
-    public static getAll(): MirabufSceneObject[] {
-        return [...World.sceneRenderer.sceneObjects.values()].filter(obj => obj instanceof MirabufSceneObject)
-    }
-    public static findWhere(
-        predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]
-    ): MirabufSceneObject | undefined {
-        return MirabufSceneObject.getAll().find(predicate)
-    }
-    public static getField(): MirabufSceneObject | undefined {
-        return MirabufSceneObject.findWhere(obj => obj.miraType == MiraType.FIELD)
-    }
-    public static getRobots(): MirabufSceneObject[] {
-        return MirabufSceneObject.getAll().filter(obj => obj.miraType == MiraType.ROBOT)
-    }
 }
 
 export async function createMirabuf(

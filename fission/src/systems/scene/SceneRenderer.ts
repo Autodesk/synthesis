@@ -55,6 +55,23 @@ class SceneRenderer extends WorldSystem {
         return this._sceneObjects
     }
 
+    public readonly mirabufSceneObjects = {
+        getAll(): MirabufSceneObject[] {
+            return [...World.sceneRenderer.sceneObjects.values()].filter(obj => obj instanceof MirabufSceneObject)
+        },
+        findWhere(
+            predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]
+        ): MirabufSceneObject | undefined {
+            return this.getAll().find(predicate)
+        },
+        getField(): MirabufSceneObject | undefined {
+            return this.findWhere(obj => obj.miraType == MiraType.FIELD)
+        },
+        getRobots(): MirabufSceneObject[] {
+            return this.getAll().filter(obj => obj.miraType == MiraType.ROBOT)
+        },
+    } as const
+
     public get mainCamera() {
         return this._mainCamera
     }

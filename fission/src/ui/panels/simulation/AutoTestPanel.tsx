@@ -5,7 +5,7 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
 import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
@@ -132,7 +132,7 @@ export const RedAllianceToggleButton = styled(ToggleButton)({
 
 function captureBodies(): BodyCapture[] {
     const captures: BodyCapture[] = []
-    MirabufSceneObject.getAll().forEach(sceneObj => {
+    World.sceneRenderer.mirabufSceneObjects.getAll().forEach(sceneObj => {
         sceneObj.mechanism.nodeToBody.forEach(bodyId => {
             const body = World.physicsSystem.getBody(bodyId)
             const transform = body.GetWorldTransform()
@@ -305,7 +305,10 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
     const { configureScreen } = useUIContext()
 
-    const assembly = useMemo(() => MirabufSceneObject.findWhere(x => x.brain?.brainType === "wpilib"), [])
+    const assembly = useMemo(
+        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
+        []
+    )
 
     useEffect(() => {
         configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})

@@ -1,8 +1,9 @@
 import type React from "react"
 import { useMemo, useReducer } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import World from "@/systems/World.ts"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -47,11 +48,11 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     const { openPanel, closePanel } = useUIContext()
 
     const robots = useMemo(() => {
-        return MirabufSceneObject.getRobots().filter(x => !pendingDeletes.includes(x.id))
+        return World.sceneRenderer.mirabufSceneObjects.getRobots().filter(x => !pendingDeletes.includes(x.id))
     }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
-        const field = MirabufSceneObject.getField()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
         return !field || pendingDeletes.includes(field.id) ? [] : [field]
     }, [u, pendingDeletes])
 

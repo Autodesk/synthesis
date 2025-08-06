@@ -1,5 +1,6 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
+import World from "@/systems/World.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type Mechanism from "../physics/Mechanism"
@@ -112,7 +113,7 @@ class SimulationLayer {
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
 
-        const assembly = MirabufSceneObject.findWhere(obj => obj.mechanism == mechanism)
+        const assembly = World.sceneRenderer.mirabufSceneObjects.findWhere(obj => obj.mechanism == mechanism)
 
         // Generate standard drivers and stimuli
         this._drivers = new Map()

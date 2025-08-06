@@ -1,5 +1,4 @@
 import * as THREE from "three"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
@@ -10,7 +9,7 @@ class RobotPositionTracker {
     private static _offMapPenalty: number = 0
 
     public static update(): void {
-        MirabufSceneObject.getRobots().forEach(robot => {
+        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
             const rootNodeId = robot.getRootNodeId()
             if (!rootNodeId) {
                 return

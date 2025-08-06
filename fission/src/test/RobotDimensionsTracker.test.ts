@@ -3,6 +3,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import RobotDimensionTracker from "@/systems/match_mode/RobotDimensionTracker"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import World from "@/systems/World.ts"
 
 interface MockDimensions {
     width: number
@@ -95,7 +96,7 @@ describe("RobotDimensionTracker", () => {
             getDimensions: vi.fn(() => ({ height: 5.0, width: 10.0, depth: 10.0 })),
         }
 
-        vi.spyOn(MirabufSceneObject, "getAll").mockReturnValue([
+        vi.spyOn(World.sceneRenderer.mirabufSceneObjects, "getAll").mockReturnValue([
             mockRobot1,
             mockRobot2,
             mockNonRobot,

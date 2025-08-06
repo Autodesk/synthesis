@@ -2,7 +2,6 @@ import { Stack, TextField } from "@mui/material"
 import { Box } from "@mui/system"
 import type React from "react"
 import { useEffect, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type Driver from "@/systems/simulation/driver/Driver"
 import { PWMOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
@@ -26,9 +25,9 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) 
     let simLayer
     let brain: WPILibBrain | undefined
 
-    const miraObjs = MirabufSceneObject.getRobots()
-    if (miraObjs.length > 0) {
-        const mechanism = miraObjs[0].mechanism
+    const miraObj = World.sceneRenderer.mirabufSceneObjects.getRobots()[0]
+    if (miraObj != null) {
+        const mechanism = miraObj.mechanism
         simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
         brain = simLayer?.brain as WPILibBrain
