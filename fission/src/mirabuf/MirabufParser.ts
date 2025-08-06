@@ -391,8 +391,8 @@ class MirabufParser {
         const parts = this._assembly.data?.parts
         if (!parts) return // TODO not sure if we should return or provide a default value
 
-        const partInstances = new Map<string, mirabuf.IPartInstance>(Object.entries(parts!.partInstances!))
-        const partDefinitions = parts!.partDefinitions!
+        const partInstances = new Map<string, mirabuf.IPartInstance>(Object.entries(parts.partInstances!))
+        const partDefinitions = parts.partDefinitions!
 
         this._globalTransforms.clear()
 
@@ -505,7 +505,12 @@ class MirabufParser {
         this._designHierarchyRoot = new mirabuf.Node()
         this._designHierarchyRoot.value = "Importer Generated Root"
         this._designHierarchyRoot.children = []
-        this._designHierarchyRoot.children.push(...this._assembly.designHierarchy!.nodes!)
+        if (this._assembly.designHierarchy == null) {
+            console.error(this._assembly)
+            this.NewError(ParseErrorSeverity.LIKELY_ISSUES, "Design hierarchy is null")
+            return
+        }
+        this._designHierarchyRoot.children.push(...this._assembly.designHierarchy.nodes!)
 
         recursive(this._designHierarchyRoot)
         this._partTreeValues = partTreeValues

@@ -2,8 +2,8 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufParser from "@/mirabuf/MirabufParser"
-import type { RigidNodeId } from "../../mirabuf/MirabufParser"
-import type { mirabuf } from "../../proto/mirabuf"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser.ts"
+import type { mirabuf } from "@/proto/mirabuf"
 import Mechanism, { type MechanismConstraint } from "../../systems/physics/Mechanism"
 import PhysicsSystem, { type LayerReserve } from "../../systems/physics/PhysicsSystem"
 
@@ -290,7 +290,10 @@ describe("Mirabuf Mechanism Creation", () => {
 
     test("Body Loading (Dozer)", async () => {
         const assembly = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
-            x => MirabufCachingService.get(x!.id, MiraType.ROBOT)
+            x => {
+                expect(x).toBeDefined()
+                return MirabufCachingService.get(x!.id, MiraType.ROBOT)
+            }
         )
         const parser = new MirabufParser(assembly!)
 
@@ -301,11 +304,14 @@ describe("Mirabuf Mechanism Creation", () => {
         expect(mechanism.constraints.length).toBe(12)
     })
 
-    test("Body Loading (Mutli-Joint Robot)", async () => {
+    test("Body Loading (Multi-Joint Robot)", async () => {
         const assembly = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
+        ).then(x => {
+            expect(x).toBeDefined()
+            return MirabufCachingService.get(x!.id, MiraType.ROBOT)
+        })
         const parser = new MirabufParser(assembly!)
 
         const mechanism = physSystem.createMechanismFromParser(parser)

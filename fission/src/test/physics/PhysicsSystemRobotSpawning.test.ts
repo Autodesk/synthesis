@@ -6,7 +6,10 @@ import PhysicsSystem, { LayerReserve } from "@/systems/physics/PhysicsSystem"
 describe("Mirabuf Physics Loading", () => {
     test("Body Loading (Dozer)", async () => {
         const assembly = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
-            x => MirabufCachingService.get(x!.id, MiraType.ROBOT)
+            x => {
+                expect(x).toBeDefined()
+                return MirabufCachingService.get(x!.id, MiraType.ROBOT)
+            }
         )
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
@@ -26,7 +29,10 @@ describe("Mirabuf Physics Loading", () => {
         const assembly = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
+        ).then(x => {
+            expect(x).toBeDefined()
+            return MirabufCachingService.get(x!.id, MiraType.ROBOT)
+        })
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())
