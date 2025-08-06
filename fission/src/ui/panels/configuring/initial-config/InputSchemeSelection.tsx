@@ -76,7 +76,7 @@ export default function InputSchemeSelection({
                             <PositiveButton
                                 disabled={disabled}
                                 onClick={() => {
-                                    InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                    InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                                     // TODO: if touch controls, then ensure that they are enabled.
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
@@ -95,7 +95,7 @@ export default function InputSchemeSelection({
                         </Box>
                         {/** Edit button - same as select but opens the inputs modal */}
                         {EditButton(() => {
-                            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                            InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
 
                             setSelectedScheme(scheme)
                             onEdit?.()
@@ -180,9 +180,8 @@ export default function InputSchemeSelection({
                                 {SchemeSelector(
                                     scheme.scheme,
                                     { filter: "brightness(60%)" },
-                                    "Conflicts with " + scheme.conflicts_with_names,
-                                    false,
-                                    scheme.status
+                                    "Conflicts with " + scheme.conflictingSchemeNames,
+                                    false
                                 )}
                             </div>
                         )

@@ -141,7 +141,7 @@ class InputSchemeManager {
                 result[scheme.schemeName] ??= {
                     scheme,
                     status: InputSchemeUseType.CONFLICT,
-                    conflicts_with_names: [...new Set(conflictingSchemes)].join(", "),
+                    conflictingSchemeNames: [...new Set(conflictingSchemes)].join(", "),
                 }
             } else {
                 result[scheme.schemeName] ??= {
