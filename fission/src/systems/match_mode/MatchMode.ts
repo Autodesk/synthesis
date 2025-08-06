@@ -29,6 +29,7 @@ class MatchMode {
         this._matchModeType = val
         new MatchStateChangeEvent(val).dispatch()
     }
+
     private _initialTime: number = 0
     private _timeLeft: number = 0
     private _intervalId: number | null = null
