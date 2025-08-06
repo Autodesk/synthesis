@@ -94,7 +94,7 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     )
 }
 
-function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
