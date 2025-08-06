@@ -66,7 +66,7 @@ export interface MatchModeConfig {
     heightPenalty: number
 }
 
-function matchConfigSelected(config: MatchModeConfig) {
+export function matchConfigSelected(config: MatchModeConfig) {
     if (MatchMode.getInstance().isMatchEnabled()) {
         globalAddToast(
             "error",
