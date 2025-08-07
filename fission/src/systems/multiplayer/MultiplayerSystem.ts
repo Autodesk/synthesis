@@ -5,6 +5,7 @@ import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
+import MatchMode from "@/systems/match_mode/MatchMode.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type PhysicsSystem from "../physics/PhysicsSystem"
@@ -15,7 +16,9 @@ import type {
     EncodedAssembly,
     InitData,
     InitObjectData,
+    MatchModeStateData,
     Message,
+    MessageType,
     MetadataUpdateData,
     ObjectPreferences,
     UpdateObjectData,
@@ -212,34 +215,45 @@ class MultiplayerSystem {
         })
     }
 
+    peerMessageHandlers = {
+        info: this.handlePeerInfo,
+        init: this.handleWorldInitialization,
+        update: this.handlePeerUpdate,
+        collision: this.handleCollision,
+        newObject: this.handleNewObject,
+        needAssembly: this.handleAssemblyRequest,
+        deleteObject: this.handleDeleteObject,
+        configureObject: this.handleObjectConfiguration,
+        metadataUpdate: this.handleMetadataUpdate,
+        matchModeState: this.handleMatchModeState,
+        robotLeft: () => {
+            console.warn("unhandled event")
+        },
+        ping: () => {
+            console.warn("unhandled event")
+        },
+        pong: () => {
+            console.warn("unhandled event")
+        },
+    } as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
+
     async handlePeerMessage(message: Message, peerId: string) {
-        switch (message.type) {
-            case "info":
-                this.handlePeerInfo(message.data)
-                break
-            case "init":
-                await this.handleWorldInitialization(message.data)
-                break
-            case "update":
-                this.handlePeerUpdate(message.data)
-                break
-            case "collision":
-                this.handleCollision(message.data)
-                break
-            case "newObject":
-                await this.handleNewObject(message.data, peerId)
-                break
-            case "needAssembly":
-                await this.handleAssemblyRequest(message.data, peerId)
-                break
-            case "deleteObject":
-                this.handleDeleteObject(message.data, peerId)
-                break
-            case "configureObject":
-                this.handleObjectConfiguration(message.data)
-                break
-            case "metadataUpdate":
-                this.handleMetadataUpdate(message.data)
+        const handler = this.peerMessageHandlers[message.type].bind(this) as (
+            data: MessageType[typeof message.type],
+            peerId: string
+        ) => Promise<void> | void
+        await handler(message.data, peerId)
+    }
+
+    async handleMatchModeState(data: MatchModeStateData) {
+        console.log(data)
+        if (data.event == "start") {
+            MatchMode.getInstance().setMatchModeConfig(data.config)
+            await MatchMode.getInstance().start(false)
+        }
+        if (data.event == "cancel") {
+            MatchMode.getInstance().sandboxModeStart()
+            globalAddToast("info", "Match Mode Cancelled")
         }
     }
 
