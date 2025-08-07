@@ -4,16 +4,7 @@ import { Box, TextField, FormControlLabel, Stack, Divider, Button } from "@mui/m
 import Checkbox from "@/ui/components/Checkbox"
 import { useEffect, useState, useCallback } from "react"
 import type { MatchModeConfig } from "./MatchModeConfigPanel"
-import {
-    DEFAULT_AUTONOMOUS_TIME,
-    DEFAULT_TELEOP_TIME,
-    DEFAULT_ENDGAME_TIME,
-    DEFAULT_IGNORE_ROTATION,
-    DEFAULT_MAX_HEIGHT,
-    DEFAULT_HEIGHT_LIMIT_PENALTY,
-    DEFAULT_SIDE_MAX_EXTENSION,
-    DEFAULT_SIDE_EXTENSION_PENALTY,
-} from "@/systems/match_mode/MatchModeTypes"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { matchConfigSelected, validateAndNormalizeMatchModeConfig } from "./MatchModeConfigPanel"
 
 interface ValidationRule {
@@ -66,6 +57,8 @@ const VALIDATION_RULES = {
     }),
 }
 
+const fallbackConfig = DefaultMatchModeConfigs.fallbackValues()
+
 // Field configurations
 const FIELD_CONFIGS: Record<string, FieldConfig> = {
     name: {
@@ -74,42 +67,42 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "text",
     },
     autonomousTime: {
-        defaultValue: DEFAULT_AUTONOMOUS_TIME,
+        defaultValue: fallbackConfig.autonomousTime,
         rules: [VALIDATION_RULES.nonNegativeInteger("Autonomous time must be a non-negative whole number")],
         type: "number",
     },
     teleopTime: {
-        defaultValue: DEFAULT_TELEOP_TIME,
+        defaultValue: fallbackConfig.teleopTime,
         rules: [VALIDATION_RULES.nonNegativeInteger("Teleop time must be a non-negative whole number")],
         type: "number",
     },
     endgameTime: {
-        defaultValue: DEFAULT_ENDGAME_TIME,
+        defaultValue: fallbackConfig.endgameTime,
         rules: [VALIDATION_RULES.nonNegativeInteger("Endgame time must be a non-negative whole number")],
         type: "number",
     },
     ignoreRotation: {
-        defaultValue: DEFAULT_IGNORE_ROTATION,
+        defaultValue: fallbackConfig.ignoreRotation,
         rules: [],
         type: "checkbox",
     },
     maxHeight: {
-        defaultValue: DEFAULT_MAX_HEIGHT === Infinity ? "Infinity" : DEFAULT_MAX_HEIGHT,
+        defaultValue: fallbackConfig.maxHeight === Infinity ? "Infinity" : fallbackConfig.maxHeight,
         rules: [VALIDATION_RULES.numberOrInfinity("Max height must be a non-negative number or 'Infinity'")],
         type: "numberOrInfinity",
     },
     heightLimitPenalty: {
-        defaultValue: DEFAULT_HEIGHT_LIMIT_PENALTY,
+        defaultValue: fallbackConfig.heightLimitPenalty,
         rules: [VALIDATION_RULES.nonNegativeInteger("Height penalty must be a non-negative whole number")],
         type: "number",
     },
     sideMaxExtension: {
-        defaultValue: DEFAULT_SIDE_MAX_EXTENSION,
+        defaultValue: fallbackConfig.sideMaxExtension === Infinity ? "Infinity" : fallbackConfig.sideMaxExtension,
         rules: [VALIDATION_RULES.numberOrInfinity("Side max extension must be a positive number or 'Infinity'")],
         type: "numberOrInfinity",
     },
     sideExtensionPenalty: {
-        defaultValue: DEFAULT_SIDE_EXTENSION_PENALTY,
+        defaultValue: fallbackConfig.sideExtensionPenalty,
         rules: [VALIDATION_RULES.nonNegativeInteger("Side extension penalty must be a non-negative whole number")],
         type: "number",
     },
@@ -336,13 +329,13 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                 { name: "ignoreRotation", label: "Ignore Robot Rotation for Height Calculations" },
                 {
                     name: "maxHeight",
-                    label: "Maximum Height (feet or 'Infinity')",
+                    label: "Maximum Height (meters or 'Infinity')",
                     helperText: "Enter 'Infinity' for unlimited height",
                 },
                 { name: "heightLimitPenalty", label: "Height Penalty (points)" },
                 {
                     name: "sideMaxExtension",
-                    label: "Side Max Extension (feet or 'Infinity')",
+                    label: "Side Max Extension (meters or 'Infinity')",
                     helperText: "Enter 'Infinity' for unlimited side extension",
                 },
                 { name: "sideExtensionPenalty", label: "Side Extension Penalty (points)" },

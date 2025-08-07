@@ -83,7 +83,7 @@ const props: Readonly<{ id: keyof MatchModeConfig; expectedType: string; require
     { id: "sideExtensionPenalty", expectedType: "number", required: false },
 ]
 
-function matchConfigSelected(config: MatchModeConfig) {
+export function matchConfigSelected(config: MatchModeConfig) {
     if (MatchMode.getInstance().isMatchEnabled()) {
         globalAddToast(
             "error",
