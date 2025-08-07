@@ -2,11 +2,11 @@ import { Button, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import World from "@/systems/World"
+import World from "@/systems/World.ts"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
 import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
@@ -15,15 +15,6 @@ import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
-
-function getCurrentFieldObj() {
-    for (const obj of World.sceneRenderer.sceneObjects.values()) {
-        if (obj instanceof MirabufSceneObject && obj.miraType === MiraType.FIELD) {
-            return obj
-        }
-    }
-    return undefined
-}
 
 // Helper: type guard for ScoringZonePreferences[]
 function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferences[] {
@@ -55,7 +46,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     // Effect: Watch for field changes and update editor/keys only if field changes
     useEffect(() => {
         const updateEditor = () => {
-            const currentField = getCurrentFieldObj()
+            const currentField = World.sceneRenderer.mirabufSceneObjects.getField()
             if (currentField !== prevFieldObj.current) {
                 prevFieldObj.current = currentField
                 if (currentField) {
@@ -93,7 +84,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     // Load value when key changes or when field scoring zones change
     useEffect(() => {
         if (editor && selectedKey === "devtool:scoring_zones") {
-            const field = getCurrentFieldObj()
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
             const zones = field?.fieldPreferences?.scoringZones ?? []
             const devtoolValue = editor.getUserData("devtool:scoring_zones")
             if (JSON.stringify(devtoolValue) !== JSON.stringify(zones)) {
@@ -119,7 +110,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             setKeys(editor.getAllDevtoolKeys())
 
             // Persist changes to cache
-            const field = getCurrentFieldObj()
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
             if (field) {
                 const assembly = field.mirabufInstance.parser.assembly
                 const cacheId = field.cacheId // add to MirabufSceneObject
@@ -147,7 +138,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             }
 
             if (selectedKey === "devtool:scoring_zones") {
-                const field = getCurrentFieldObj()
+                const field = World.sceneRenderer.mirabufSceneObjects.getField()
                 if (!field) {
                     globalAddToast?.("error", "Devtool Error", "No field loaded to apply scoring zones.")
                     return
@@ -178,7 +169,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         setError("")
 
         // Persist removal to cache
-        const field = getCurrentFieldObj()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (field) {
             const assembly = field.mirabufInstance.parser.assembly
             const cacheId = field.cacheId
@@ -202,7 +193,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
 
         if (selectedKey === "devtool:scoring_zones") {
-            const field = getCurrentFieldObj()
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
             if (field && field.fieldPreferences) {
                 field.fieldPreferences.scoringZones = []
                 PreferencesSystem.savePreferences?.()
@@ -218,7 +209,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }
 
     const handleExport = () => {
-        const field = getCurrentFieldObj()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) {
             globalAddToast?.("error", "Export Error", "No field loaded to export.")
             return

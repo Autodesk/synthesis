@@ -1,7 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
 import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/sim/SimCANEncoder"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
@@ -21,10 +20,10 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =
     let simLayer
     let brain: WPILibBrain | undefined
 
-    const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-    if (miraObjs.length > 0) {
+    const miraObj = World.sceneRenderer.mirabufSceneObjects.getRobots()[0]
+    if (miraObj != null) {
         // TODO: make the object selectable
-        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+        const mechanism = miraObj.mechanism
         simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         stimuli = simLayer?.stimuli.filter(s => s instanceof EncoderStimulus) ?? []
         brain = simLayer?.brain as WPILibBrain

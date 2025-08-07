@@ -1,4 +1,4 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import { random } from "@/util/Random"
 import Brain from "../Brain"
@@ -101,8 +101,8 @@ class WPILibBrain extends Brain {
 
         this.loadSimConfig()
 
-        World.sceneRenderer.sceneObjects.forEach(v => {
-            if (v instanceof MirabufSceneObject && v.brain?.brainType == "wpilib") {
+        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
+            if (v.brain?.brainType == "wpilib") {
                 v.brain = new SynthesisBrain(v, v.assemblyName)
             }
         })

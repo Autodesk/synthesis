@@ -16,6 +16,9 @@ vi.mock("@/systems/scene/SceneRenderer", () => ({
         update: vi.fn(),
         destroy: vi.fn(),
         sceneObjects: new Map(),
+        mirabufSceneObjects: {
+            getRobots: vi.fn().mockReturnValue([]),
+        },
     })),
 }))
 
