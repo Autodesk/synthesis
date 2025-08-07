@@ -49,10 +49,37 @@ class MultiplayerSystem {
         this.clientId = clientId
         this.info = { clientId: this.clientId, displayName: displayName, isHost, creationTime: Date.now() }
 
-        this._client = new Peer(this.clientId, {
-            host: window.location.hostname,
-            port: 9000,
+        this._client = this._client = new Peer(this.clientId, {
+            host: "team1540.catlin.edu",
+            port: 9002,
             path: "/",
+            config: {
+                iceServers: [
+                    {
+                        urls: "stun:stun.relay.metered.ca:80",
+                    },
+                    {
+                        urls: "turn:global.relay.metered.ca:80",
+                        username: "1642f6277349b8d0b42fae1a",
+                        credential: "ybDZ2nNR+tvNw2+J",
+                    },
+                    {
+                        urls: "turn:global.relay.metered.ca:80?transport=tcp",
+                        username: "1642f6277349b8d0b42fae1a",
+                        credential: "ybDZ2nNR+tvNw2+J",
+                    },
+                    {
+                        urls: "turn:global.relay.metered.ca:443",
+                        username: "1642f6277349b8d0b42fae1a",
+                        credential: "ybDZ2nNR+tvNw2+J",
+                    },
+                    {
+                        urls: "turns:global.relay.metered.ca:443?transport=tcp",
+                        username: "1642f6277349b8d0b42fae1a",
+                        credential: "ybDZ2nNR+tvNw2+J",
+                    },
+                ],
+            },
         })
 
         this._client.on("call", e => console.log("peerjs call", e))

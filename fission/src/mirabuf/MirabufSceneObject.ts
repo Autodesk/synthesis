@@ -815,8 +815,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this.miraType == MiraType.FIELD
             ? {
                   fieldPreferences: JSON.stringify(this._fieldPreferences),
-                  protectedZones: JSON.stringify(this._protectedZones),
-                  scoringZones: JSON.stringify(this._scoringZones),
               }
             : {
                   intakePreferences: JSON.stringify(this._intakePreferences),
@@ -828,8 +826,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType == MiraType.FIELD) {
             const config = preferences as FieldConfiguration
             this._fieldPreferences = JSON.parse(config.fieldPreferences)
-            this._protectedZones = JSON.parse(config.protectedZones)
-            this._scoringZones = JSON.parse(config.scoringZones)
+            this.updateScoringZones()
+            this.updateProtectedZones()
         } else {
             const config = preferences as RobotConfiguration
             this._intakePreferences = JSON.parse(config.intakePreferences)

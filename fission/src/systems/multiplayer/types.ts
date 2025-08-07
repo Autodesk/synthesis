@@ -60,8 +60,6 @@ export type RobotConfiguration = {
 }
 export type FieldConfiguration = {
     fieldPreferences: string // FieldPreferences
-    scoringZones: string // ScoringZoneSceneObject[]
-    protectedZones: string // ProtectedZoneSceneObject[]
 }
 export type ObjectPreferences = {
     sceneObjectKey: number
