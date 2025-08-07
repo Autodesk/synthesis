@@ -1,52 +1,66 @@
+import World from "@/systems/World"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import InputSystem from "@/systems/input/InputSystem"
+import DragModeSystem from "@/systems/scene/DragModeSystem"
+import AnalyticsSystem from "@/systems/analytics/AnalyticsSystem"
+
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 // Mock all the system dependencies before importing World
 vi.mock("@/systems/physics/PhysicsSystem", () => ({
-    default: vi.fn(() => ({
+    default: {
+        setup: vi.fn(),
         update: vi.fn(),
         destroy: vi.fn(),
-    })),
+    },
     getLastDeltaT: vi.fn(() => 0.016),
     BodyAssociate: vi.fn(),
 }))
 
 vi.mock("@/systems/scene/SceneRenderer", () => ({
-    default: vi.fn(() => ({
+    default: {
+        setup: vi.fn(),
         update: vi.fn(),
         destroy: vi.fn(),
         sceneObjects: new Map(),
         mirabufSceneObjects: {
             getRobots: vi.fn().mockReturnValue([]),
         },
-    })),
+    },
 }))
 
 vi.mock("@/systems/simulation/SimulationSystem", () => ({
-    default: vi.fn(() => ({
+    default: {
+        setup: vi.fn(),
         update: vi.fn(),
         destroy: vi.fn(),
-    })),
+    },
 }))
 
 vi.mock("@/systems/input/InputSystem", () => ({
-    default: vi.fn(() => ({
+    default: {
+        setup: vi.fn(),
         update: vi.fn(),
         destroy: vi.fn(),
-    })),
+    },
 }))
 
 vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
-    default: vi.fn(() => ({
+    default: {
+        setup: vi.fn(),
         update: vi.fn(),
         destroy: vi.fn(),
-    })),
+    },
 }))
 
 vi.mock("@/systems/scene/DragModeSystem", () => ({
-    default: vi.fn(() => ({
+    default: {
+        setup: vi.fn(),
         update: vi.fn(),
         destroy: vi.fn(),
-    })),
+    },
 }))
 
 // Mock THREE.Clock
@@ -61,13 +75,6 @@ vi.mock("three", async () => {
 })
 
 // Import World after setting up mocks
-import World from "@/systems/World"
-import SceneRenderer from "@/systems/scene/SceneRenderer"
-import PhysicsSystem from "@/systems/physics/PhysicsSystem"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import InputSystem from "@/systems/input/InputSystem"
-import DragModeSystem from "@/systems/scene/DragModeSystem"
-import AnalyticsSystem from "@/systems/analytics/AnalyticsSystem"
 describe("World Tests", () => {
     beforeEach(() => {
         vi.clearAllMocks()
@@ -118,18 +125,15 @@ describe("World Tests", () => {
         })
 
         test("InitWorld should handle AnalyticsSystem initialization failure gracefully", async () => {
-            // Import the mocked modules to access the mock functions
-            const AnalyticsSystemMock = (await import("@/systems/analytics/AnalyticsSystem")).default
-
             // Mock AnalyticsSystem to throw an error for this test
-            vi.mocked(AnalyticsSystemMock).mockImplementationOnce(() => {
+            vi.mocked(AnalyticsSystem).mockImplementationOnce(() => {
                 throw new Error("Analytics initialization failed")
             })
 
             World.initWorld()
 
             expect(World.isAlive).toBeTruthy()
-            expect(AnalyticsSystem).toBeUndefined()
+            expect(AnalyticsSystem.consent).toBeUndefined()
         })
 
         test("InitWorld should not reinitialize if already alive", () => {

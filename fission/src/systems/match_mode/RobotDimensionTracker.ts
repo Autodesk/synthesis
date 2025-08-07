@@ -62,7 +62,7 @@ class RobotDimensionTracker {
         this._robotSize.clear()
         this._robotLastFramePenalty.clear()
 
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
+        SceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
             this._robotSize.set(robot.id, robot.getDimensions())
         })
     }

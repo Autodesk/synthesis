@@ -8,48 +8,44 @@ import type MirabufInstance from "../../mirabuf/MirabufInstance"
 import MirabufInstanceClass from "../../mirabuf/MirabufInstance"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 
-const mockPhysicsSystem = {
-    createMechanismFromParser: vi.fn(() => mockMechanism()),
-    setBodyAssociation: vi.fn(),
-    getBody: vi.fn(() => createBodyMock() as unknown),
-    enablePhysicsForBody: vi.fn(),
-    disablePhysicsForBody: vi.fn(),
-    removeBodyAssociation: vi.fn(),
-    destroyMechanism: vi.fn(),
-    setBodyPosition: vi.fn(),
-    setBodyRotation: vi.fn(),
-    setShape: vi.fn(),
-    createSensor: vi.fn(),
-}
-const mockSceneRenderer = {
-    sceneObjects: new Map(),
-    scene: { add: vi.fn(), remove: vi.fn() },
-    registerSceneObject: vi.fn(),
-    removeSceneObject: vi.fn(),
-    createSphere: vi.fn(() => ({ material: {}, geometry: {}, position: {}, rotation: {} })),
-    currentCameraControls: { focusProvider: undefined, controlsType: "Orbit", locked: false },
-    worldToPixelSpace: vi.fn(() => [0, 0]),
-    createToonMaterial: vi.fn(() => ({ color: 0x123456 })),
-    setupMaterial: vi.fn(),
-}
-const mockSimulationSystem = {
-    registerMechanism: vi.fn(),
-    getSimulationLayer: vi.fn(() => ({ setBrain: vi.fn() })),
-    unregisterMechanism: vi.fn(),
-}
-
-vi.mock("@/systems/World", () => ({
+vi.mock("@/systems/scene/SceneRenderer", () => ({
     default: {
-        get physicsSystem() {
-            return mockPhysicsSystem
-        },
-        get sceneRenderer() {
-            return mockSceneRenderer
-        },
-        get simulationSystem() {
-            return mockSimulationSystem
-        },
+        sceneObjects: new Map(),
+        scene: { add: vi.fn(), remove: vi.fn() },
+        registerSceneObject: vi.fn(),
+        removeSceneObject: vi.fn(),
+        createSphere: vi.fn(() => ({ material: {}, geometry: {}, position: {}, rotation: {} })),
+        currentCameraControls: { focusProvider: undefined, controlsType: "Orbit", locked: false },
+        worldToPixelSpace: vi.fn(() => [0, 0]),
+        createToonMaterial: vi.fn(() => ({ color: 0x123456 })),
+        setupMaterial: vi.fn(),
+    },
+}))
+
+vi.mock("@/systems/physics/PhysicsSystem", () => ({
+    default: {
+        createMechanismFromParser: vi.fn(() => mockMechanism()),
+        setBodyAssociation: vi.fn(),
+        getBody: vi.fn(() => createBodyMock() as unknown),
+        enablePhysicsForBody: vi.fn(),
+        disablePhysicsForBody: vi.fn(),
+        removeBodyAssociation: vi.fn(),
+        destroyMechanism: vi.fn(),
+        setBodyPosition: vi.fn(),
+        setBodyRotation: vi.fn(),
+        setShape: vi.fn(),
+        createSensor: vi.fn(),
+    },
+}))
+
+vi.mock("@/systems/simulation/SimulationSystem", () => ({
+    default: {
+        registerMechanism: vi.fn(),
+        getSimulationLayer: vi.fn(() => ({ setBrain: vi.fn() })),
+        unregisterMechanism: vi.fn(),
     },
 }))
 
@@ -169,8 +165,8 @@ describe("MirabufSceneObject", () => {
         setPrivate(instance, "_scoringZones", [{ id: 2 }])
         setPrivate(instance, "_intakeSensor", { id: 3 } as unknown as IntakeSensorSceneObject)
         instance.dispose()
-        expect(mockSceneRenderer.removeSceneObject).toHaveBeenCalled()
-        expect(mockPhysicsSystem.destroyMechanism).toHaveBeenCalled()
+        expect(SceneRenderer.removeSceneObject).toHaveBeenCalled()
+        expect(PhysicsSystem.destroyMechanism).toHaveBeenCalled()
     })
 
     test("activeEjectables returns correct body IDs", () => {

@@ -134,6 +134,7 @@ class PhysicsSystem {
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
 
         this._bodyAssociations = new Map()
+        this._physicsEventQueue = []
     }
 
     /**

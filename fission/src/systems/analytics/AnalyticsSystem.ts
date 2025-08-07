@@ -56,9 +56,10 @@ export interface AnalyticsEvents {
 
 class AnalyticsSystem {
     private static _lastSampleTime = Date.now()
-    private static _consent: boolean
+    private static _consent?: boolean
 
     public static setup() {
+        this._lastSampleTime = Date.now()
         this._consent = PreferencesSystem.getGlobalPreference("ReportAnalytics")
         init({
             measurementId: "G-6XNCRD7QNC",
@@ -71,6 +72,10 @@ class AnalyticsSystem {
         PreferencesSystem.addPreferenceEventListener("ReportAnalytics", e => this.consentUpdate(e.prefValue))
 
         this.sendMetaData()
+    }
+
+    public static get consent(): boolean | undefined {
+        return this._consent
     }
 
     public static event<K extends keyof AnalyticsEvents>(name: K, params?: AnalyticsEvents[K]) {

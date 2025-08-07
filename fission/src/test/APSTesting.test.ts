@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
     default: {
-        Event: vi.fn(),
-        Exception: vi.fn(),
+        event: vi.fn(),
+        exception: vi.fn(),
     },
 }))
 

@@ -6,7 +6,6 @@ import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
@@ -15,6 +14,7 @@ import { Spacer } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
+import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 // Graphics settings constants
 const MIN_LIGHT_INTENSITY = 1
@@ -225,7 +225,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 setShadowMapSize(g.shadowMapSize)
                 setAntiAliasing(g.antiAliasing)
                 setReload(false)
-                World.sceneRenderer.changeLighting(g.fancyShadows)
+                SceneRenderer.changeLighting(g.fancyShadows)
             },
             requiresReload: reload,
         }
@@ -242,7 +242,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 valueLabelFormat={(val, _idx) => val.toFixed(2)}
                 onChange={value => {
                     setLightIntensity(value as number)
-                    World.sceneRenderer.setLightIntensity(value as number)
+                    SceneRenderer.setLightIntensity(value as number)
                 }}
                 step={0.25}
             />
@@ -251,7 +251,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 checked={fancyShadows}
                 onClick={checked => {
                     setFancyShadows(checked)
-                    World.sceneRenderer.changeLighting(checked)
+                    SceneRenderer.changeLighting(checked)
                 }}
             />
             {fancyShadows && (
@@ -263,7 +263,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                         defaultValue={maxFar}
                         onChange={value => {
                             setMaxFar(value as number)
-                            World.sceneRenderer.changeCSMSettings({
+                            SceneRenderer.changeCSMSettings({
                                 maxFar: value as number,
                                 lightIntensity,
                                 fancyShadows,
@@ -281,7 +281,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                         defaultValue={cascades}
                         onChange={value => {
                             setCascades(value as number)
-                            World.sceneRenderer.changeCSMSettings({
+                            SceneRenderer.changeCSMSettings({
                                 cascades: value as number,
                                 maxFar,
                                 lightIntensity,
@@ -295,11 +295,11 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                     <StatefulSlider
                         label="Shadow Map Size"
                         min={MIN_SHADOW_MAP_SIZE}
-                        max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
+                        max={SceneRenderer.renderer.capabilities.maxTextureSize}
                         defaultValue={shadowMapSize}
                         onChange={value => {
                             setShadowMapSize(value as number)
-                            World.sceneRenderer.changeCSMSettings({
+                            SceneRenderer.changeCSMSettings({
                                 shadowMapSize: value as number,
                                 maxFar,
                                 lightIntensity,
@@ -317,7 +317,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                                 setMaxFar(30)
                                 setLightIntensity(5)
                                 setCascades(4)
-                                World.sceneRenderer.changeCSMSettings({
+                                SceneRenderer.changeCSMSettings({
                                     shadowMapSize: 4096,
                                     maxFar: 30,
                                     lightIntensity: 5,

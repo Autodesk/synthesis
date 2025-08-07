@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SceneRenderer from "@/systems/scene/SceneRenderer"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
 import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
@@ -308,14 +307,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
-<<<<<<< Updated upstream
-        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
-=======
-        () =>
-            [...SceneRenderer.sceneObjects.values()].find(
-                x => (x as MirabufSceneObject).brain?.brainType === "wpilib"
-            ) as MirabufSceneObject,
->>>>>>> Stashed changes
+        () => SceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
         []
     )
 
@@ -331,16 +323,11 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     }, [])
 
     useEffect(() => {
-<<<<<<< Updated upstream
-        World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
+        PhysicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
         if (assembly == null) {
             console.warn("Couldn't find assembly with wpilib brain")
             return
         }
-=======
-        PhysicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
-
->>>>>>> Stashed changes
         setActiveProps({
             state: "Staging",
             assembly: assembly,

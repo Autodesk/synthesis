@@ -137,7 +137,7 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        const body = World.physicsSystem.getBody(rootBodyId)
+        const body = PhysicsSystem.getBody(rootBodyId)
         if (!body) {
             console.warn("Could not get body for unstick")
             return

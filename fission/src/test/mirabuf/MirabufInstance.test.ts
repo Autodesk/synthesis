@@ -4,16 +4,10 @@ import MirabufInstance from "../../mirabuf/MirabufInstance"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { ParseErrorSeverity } from "../../mirabuf/MirabufParser"
 
-const mockSceneRenderer = {
-    createToonMaterial: vi.fn(() => new THREE.MeshStandardMaterial({ color: 0x123456 })),
-    setupMaterial: vi.fn(),
-}
-
-vi.mock("@/systems/World", () => ({
+vi.mock("@/systems/scene/SceneRenderer", () => ({
     default: {
-        get sceneRenderer() {
-            return mockSceneRenderer
-        },
+        createToonMaterial: vi.fn(() => new THREE.MeshStandardMaterial({ color: 0x123456 })),
+        setupMaterial: vi.fn(),
     },
 }))
 

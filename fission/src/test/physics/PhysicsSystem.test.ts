@@ -621,6 +621,7 @@ describe("Update Loop", () => {
     let body: Jolt.Body
 
     beforeEach(() => {
+        PhysicsSystem.destroy()
         PhysicsSystem.setup()
         body = PhysicsSystem.createBox(new THREE.Vector3(1, 1, 1), 1.0, new THREE.Vector3(0, 10, 0), undefined)
         PhysicsSystem.addBodyToSystem(body.GetID(), true)
@@ -633,7 +634,6 @@ describe("Update Loop", () => {
     test("Update with Normal Delta Time", () => {
         const initialPos = body.GetPosition()
         const initialPosition = new JOLT.RVec3(initialPos.GetX(), initialPos.GetY(), initialPos.GetZ())
-
         // Run several update steps
         for (let i = 0; i < 10; i++) {
             PhysicsSystem.update(1 / 60) // 60 FPS
@@ -668,7 +668,7 @@ describe("Update Loop", () => {
 
     test("Update with Large Delta Time", () => {
         // Should not crash or cause issues
-        PhysicsSystem.update(10.0) // Very large delta time
+        PhysicsSystem.update(10) // Very large delta time
 
         expect(body.GetPosition().GetY()).toBeLessThan(10)
     })
