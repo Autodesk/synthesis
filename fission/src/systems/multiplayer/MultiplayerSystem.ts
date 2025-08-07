@@ -117,11 +117,9 @@ class MultiplayerSystem {
         })
 
         ConfigurationSavedEvent.listen(() => {
-            ;[...World.sceneRenderer.sceneObjects.values()]
-                .filter(obj => obj instanceof MirabufSceneObject)
-                .forEach(obj => {
-                    this.broadcast({ type: "metadataUpdate", data: obj.multiplayerInfo }).catch(console.error)
-                })
+            World.sceneRenderer.mirabufSceneObjects.getAll().forEach(obj => {
+                this.broadcast({ type: "metadataUpdate", data: obj.multiplayerInfo }).catch(console.error)
+            })
         })
     }
 
@@ -166,11 +164,12 @@ class MultiplayerSystem {
 
     // Called by the host, initializes the world with some defined set of objects, robots can be spawned in later
     async initWorld(physicsSystem: PhysicsSystem) {
-        const sceneObjects = [...World.sceneRenderer.sceneObjects.values()]
-            .filter((sceneObject): sceneObject is MirabufSceneObject => sceneObject instanceof MirabufSceneObject)
+        const sceneObjects = World.sceneRenderer.mirabufSceneObjects
+            .getAll()
             .map(sceneObject =>
                 mirabuf.Assembly.encode(sceneObject.mirabufInstance.parser.assembly).finish()
             ) as EncodedAssembly[]
+
         await this.broadcast({
             type: "init",
             data: { physicsSystem, objects: sceneObjects },

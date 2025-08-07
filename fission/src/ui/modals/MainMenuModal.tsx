@@ -32,21 +32,13 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                 onClick={() => {
                     closeModal(CloseType.Accept)
                     startSingleplayerCallback()
-
-                    Promise.all([
-                        MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD),
-                        MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT),
-                    ]).then(([cachedField, cachedRobot]) => {
-                        if (cachedField && cachedRobot) {
-                            spawnCachedMira(cachedField, MiraType.FIELD)
-                            spawnCachedMira(cachedRobot, MiraType.ROBOT)
-                        }
-                    })
                 }}
-                className="my-1"
+                fullWidth={true}
+                className="mt-1 mb-3"
             >
-                Load Default
+                Singleplayer
             </Button>
+
             <Button
                 onClick={() => {
                     closeModal(CloseType.Accept)
@@ -56,6 +48,24 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                 className="mt-1 mb-3"
             >
                 Multiplayer
+            </Button>
+
+            <Button
+                onClick={async () => {
+                    closeModal(CloseType.Accept)
+                    startSingleplayerCallback()
+
+                    const [field, robot] = await Promise.all([
+                        MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD),
+                        MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT),
+                    ])
+
+                    if (field) await spawnCachedMira(field, MiraType.FIELD)
+                    if (robot) await spawnCachedMira(robot, MiraType.ROBOT)
+                }}
+                className="my-1"
+            >
+                Load Default Scene
             </Button>
         </Stack>
     )

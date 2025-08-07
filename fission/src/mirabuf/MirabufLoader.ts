@@ -508,9 +508,10 @@ class MirabufCachingService {
     ): Promise<MirabufCacheInfo | undefined> {
         try {
             const backupID = Date.now().toString()
-            if (!miraType) {
-                console.debug("Double loading")
-                miraType = this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
+            if (miraType == null || name == null) {
+                const assembly = this.assemblyFromBuffer(miraBuff)
+                miraType ??= assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD
+                name ??= assembly.info?.name ?? undefined
             }
 
             // Local cache map

@@ -96,7 +96,7 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     )
 }
 
-export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
@@ -107,7 +107,7 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
     }
 
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    MirabufCachingService.get(info.id, type)
+    await MirabufCachingService.get(info.id, type)
         .then(async assembly => {
             if (assembly) {
                 createMirabuf(assembly, progressHandle, info.id).then(x => {
@@ -263,8 +263,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     // Select a mirabuf assembly from the cache.
     const selectCache = useCallback(
-        (info: MirabufCacheInfo, type: MiraType) => {
-            spawnCachedMira(info, type)
+        async (info: MirabufCacheInfo, type: MiraType) => {
+            await spawnCachedMira(info, type)
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
         },
@@ -278,9 +278,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             status.update("Downloading from Synthesis...", 0.05)
 
             MirabufCachingService.cacheRemote(info.src, type, info.displayName)
-                .then(cacheInfo => {
+                .then(async cacheInfo => {
                     if (cacheInfo) {
-                        spawnCachedMira(cacheInfo, type, status)
+                        await spawnCachedMira(cacheInfo, type, status)
                     } else {
                         status.fail("Failed to cache")
                     }
@@ -314,9 +314,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             status.update("Downloading from APS...", 0.05)
 
             MirabufCachingService.cacheAPS(data, type)
-                .then(cacheInfo => {
+                .then(async cacheInfo => {
                     if (cacheInfo) {
-                        spawnCachedMira(cacheInfo, type, status)
+                        await spawnCachedMira(cacheInfo, type, status)
                     } else {
                         status.fail("Failed to cache")
                     }
@@ -338,13 +338,13 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         name: info.name || info.cacheKey || "Unnamed Robot",
                         id: info.id,
                         primaryButtonNode: SynthesisIcons.ADD_LARGE,
-                        primaryOnClick: () => {
+                        primaryOnClick: async () => {
                             console.log(`Selecting cached robot: ${info.cacheKey}`)
-                            selectCache(info, MiraType.ROBOT)
+                            await selectCache(info, MiraType.ROBOT)
                         },
-                        secondaryOnClick: () => {
+                        secondaryOnClick: async () => {
                             console.log(`Deleting cache of: ${info.cacheKey}`)
-                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.ROBOT)
+                            await MirabufCachingService.remove(info.cacheKey, info.id, MiraType.ROBOT)
 
                             setCachedRobots(getCacheInfo(MiraType.ROBOT))
                         },
