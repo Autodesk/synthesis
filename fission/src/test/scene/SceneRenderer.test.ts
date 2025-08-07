@@ -49,6 +49,7 @@ vi.mock("@/systems/physics/PhysicsSystem", () => ({
         rayCast: vi.fn(() => null),
         getBodyAssociation: vi.fn(() => null),
     },
+    getLastDeltaT: vi.fn(() => 0.1),
 }))
 
 vi.mock("@/systems/scene/CameraControls", () => ({

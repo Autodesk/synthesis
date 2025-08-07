@@ -14,7 +14,12 @@ import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
-vi.mock("@/systems/analytics/AnalyticsSystem", () => ({}))
+vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
+    default: {
+        event: vi.fn(),
+        exception: vi.fn(),
+    },
+}))
 
 describe("Input Scheme Manager Checks", () => {
     test("Available Schemes", () => {

@@ -29,6 +29,7 @@ vi.mock("@/systems/physics/PhysicsSystem", () => ({
         })),
         setBodyPositionAndRotation: vi.fn(),
     },
+    getLastDeltaT: vi.fn(() => 0.1),
 }))
 vi.mock("@/systems/scene/SceneRenderer", () => ({
     default: {

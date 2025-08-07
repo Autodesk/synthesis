@@ -7,7 +7,12 @@ import type { mirabuf } from "../../proto/mirabuf"
 import Mechanism, { type MechanismConstraint } from "../../systems/physics/Mechanism"
 import PhysicsSystem, { type LayerReserve } from "../../systems/physics/PhysicsSystem"
 
-vi.mock("@/systems/analytics/AnalyticsSystem", () => ({}))
+vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
+    default: {
+        event: vi.fn(),
+        exception: vi.fn(),
+    },
+}))
 
 // Mock Jolt types
 const createMockBodyID = (index: number = 123): Jolt.BodyID =>

@@ -20,6 +20,7 @@ vi.mock("@/systems/physics/PhysicsSystem", () => ({
         setShape: vi.fn(),
         setBodyAssociation: vi.fn(),
     },
+    getLastDeltaT: vi.fn(() => 0.1),
 }))
 
 vi.mock("@/systems/physics/PhysicsSystem", () => ({
