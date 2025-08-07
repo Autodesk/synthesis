@@ -471,7 +471,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 .clone()
                 .premultiply(transform)
             const meshes = this._mirabufInstance.meshes.get(part) ?? []
-            meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
+            meshes.forEach(([instancedMesh, instanceIndex]) => {
+                instancedMesh.setMatrixAt(instanceIndex, partTransform)
+                instancedMesh.instanceMatrix.needsUpdate = true
+            })
         })
     }
 
