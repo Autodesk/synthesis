@@ -1,10 +1,11 @@
-import { Divider, IconButton, Stack } from "@mui/material"
+import { Button, Divider, IconButton, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { InputScheme } from "@/systems/input/InputTypes"
+import AxisInput from "@/systems/input/inputs/AxisInput.ts"
 import type Input from "@/systems/input/inputs/Input"
 import Label from "@/ui/components/Label"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -20,7 +21,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
-
+    const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes(panelId)
     }, [panelId])
@@ -118,6 +119,19 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                         />
                     )
                 })}
+                <Button
+                    onClick={() => {
+                        const existingJointIndexes = selectedScheme.inputs
+                            .map(input => parseInt(input.inputName.replace("joint ", "")))
+                            .filter(val => !isNaN(val))
+                        const newJointIndex = Math.max(0, ...existingJointIndexes) + 1
+                        selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
+                        selectedScheme.customized = true
+                        update()
+                    }}
+                >
+                    Add Joint Control
+                </Button>
             </Stack>
         </>
     )
