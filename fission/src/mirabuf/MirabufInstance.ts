@@ -202,10 +202,6 @@ class MirabufInstance {
         })
     }
 
-    private getPartBodyGuid(partDef: mirabuf.IPartDefinition, body: mirabuf.IPartDefinition) {
-        return `${partDef.info!.GUID!}_BODY_${body.info!.GUID!}`
-    }
-
     /**
      * Adds all the meshes to the ThreeJs scene.
      *
