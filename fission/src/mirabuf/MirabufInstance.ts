@@ -13,13 +13,15 @@ const CHROME_VERSION_FOR_INSTANCED_MESH = 139
 const detectInstancedMeshSupport = (): boolean => {
     const userAgent = navigator.userAgent
     const chromeMatch = userAgent.match(/Chrome\/(\d+)/)
-    
+
     if (chromeMatch) {
         const chromeVersion = parseInt(chromeMatch[1], 10)
-        console.log(`Detected Chrome ${chromeVersion}, using ${chromeVersion >= CHROME_VERSION_FOR_INSTANCED_MESH ? 'InstancedMesh' : 'BatchedMesh'}`)
+        console.log(
+            `Detected Chrome ${chromeVersion}, using ${chromeVersion >= CHROME_VERSION_FOR_INSTANCED_MESH ? "InstancedMesh" : "BatchedMesh"}`
+        )
         return chromeVersion >= CHROME_VERSION_FOR_INSTANCED_MESH
     }
-    
+
     console.log(`Non-Chrome browser detected (${userAgent}), using BatchedMesh`)
     return false
 }
@@ -194,7 +196,7 @@ class MirabufInstance {
         Object.values(instances).forEach(instance => {
             const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]
             const bodies = definition?.bodies ?? []
-            
+
             bodies.forEach(body => {
                 const mesh = body?.triangleMesh?.mesh
                 if (!mesh?.verts || !mesh.normals || !mesh.uv || !mesh.indices) return
@@ -208,7 +210,7 @@ class MirabufInstance {
 
                 const geometry = new THREE.BufferGeometry()
                 transformGeometry(geometry, mesh)
-                
+
                 // Create InstancedMesh with count of 1 for this body
                 const instancedMesh = new THREE.InstancedMesh(geometry, material, 1)
                 instancedMesh.castShadow = true
@@ -245,7 +247,7 @@ class MirabufInstance {
 
         const batchMap = new Map<THREE.Material, Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>>()
         const countMap = new Map<THREE.Material, BatchCounts>()
-        
+
         // Filter all instances by first material, then body
         Object.values(instances).forEach(instance => {
             const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]
