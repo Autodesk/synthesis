@@ -1,7 +1,9 @@
-import { describe, expect, test } from "vitest"
+import { describe, expect, test, vi } from "vitest"
 import MirabufCachingService, { MiraType } from "../mirabuf/MirabufLoader"
 import MirabufParser, { type RigidNodeReadOnly } from "../mirabuf/MirabufParser"
 import { mirabuf } from "../proto/mirabuf"
+
+vi.mock("@/systems/analytics/AnalyticsSystem", () => ({}))
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {

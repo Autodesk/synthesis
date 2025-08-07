@@ -6,16 +6,18 @@ import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
 import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
 import SceneRenderer from "@/systems/scene/SceneRenderer"
+import Jolt from "node_modules/@azaleacolburn/jolt-physics/dist/types"
 
 vi.mock("@/systems/scene/SceneRenderer", () => ({
-    sceneRenderer: {
+    default: {
         mainCamera: {
-            position: { x: 0, y: 0, z: 5 },
-            quaternion: { x: 0, y: 0, z: 0, w: 1 },
+            position: new THREE.Vector3(0, 0, 5),
+            quaternion: new THREE.Quaternion(0, 0, 0, 1),
             fov: 75,
             aspect: 1,
             near: 0.1,
             far: 1000,
+            getWorldDirection: vi.fn(vec => vec),
         },
         scene: {
             add: vi.fn(),
@@ -121,7 +123,7 @@ describe("DragModeSystem Integration Tests", () => {
     })
 
     describe("Physics Integration", () => {
-        function setupDraggableCube() {
+        function setupDraggableCube(): { physicsBody: Jolt.Body; cleanup: () => void } {
             // Create a physics cube which will then be a draggable game piece
             const vertices = new Float32Array([
                 -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
@@ -174,6 +176,7 @@ describe("DragModeSystem Integration Tests", () => {
             const { physicsBody, cleanup } = setupDraggableCube()
 
             const initialPos = physicsBody.GetPosition()
+            expect(initialPos).toBeDefined()
             const initialPosition = { x: initialPos.GetX(), y: initialPos.GetY(), z: initialPos.GetZ() }
 
             // Simulate mouse click to start dragging

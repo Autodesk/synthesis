@@ -14,6 +14,8 @@ import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
+vi.mock("@/systems/analytics/AnalyticsSystem", () => ({}))
+
 describe("Input Scheme Manager Checks", () => {
     test("Available Schemes", () => {
         assert(InputSchemeManager.allInputSchemes[0].schemeName == DefaultInputs.ernie().schemeName)

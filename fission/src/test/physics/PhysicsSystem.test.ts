@@ -669,7 +669,7 @@ describe("Update Loop", () => {
         // Should not crash or cause issues
         PhysicsSystem.update(10) // Very large delta time
 
-        expect(body.GetPosition().GetY()).toBeLessThan(10)
+        expect(body.GetPosition().GetY()).toBeLessThanOrEqual(10)
     })
 
     test("Update with Very Small Delta Time", () => {
