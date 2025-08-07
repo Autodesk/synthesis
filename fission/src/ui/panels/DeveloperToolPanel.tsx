@@ -1,4 +1,5 @@
-import { Button, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
+import { Button } from "../components/StyledComponents"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"

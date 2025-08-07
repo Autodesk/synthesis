@@ -1,4 +1,5 @@
-import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material"
+import { Card, CardActions, CardContent, CardHeader } from "@mui/material"
+import { Button } from "./StyledComponents"
 import React, { type ReactElement } from "react"
 import Draggable from "react-draggable"
 import {

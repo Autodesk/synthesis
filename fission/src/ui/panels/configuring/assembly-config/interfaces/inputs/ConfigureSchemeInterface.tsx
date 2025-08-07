@@ -1,4 +1,5 @@
-import { Button, Divider, Stack } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"

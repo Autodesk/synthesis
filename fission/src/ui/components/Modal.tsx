@@ -1,4 +1,5 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
+import { Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
+import { Button } from "./StyledComponents"
 import React, { type ReactElement } from "react"
 import type { Modal as ModalType, Panel as PanelType } from "../helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
