@@ -386,7 +386,7 @@ class MirabufCachingService {
 
         try {
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
-            const getOPFSBuffer = async () => {
+            const getOPFSBuffer = async (): Promise<ArrayBuffer | undefined> => {
                 const dirHandle = dirHandleMap[miraType]
                 if (!canOPFS) return
 
@@ -396,7 +396,7 @@ class MirabufCachingService {
                 return await fileHandle.getFile().then(x => x.arrayBuffer())
             }
 
-            const buff = ((cache[id]?.buffer ?? new Uint8Array()).buffer as ArrayBuffer) ?? (await getOPFSBuffer())
+            const buff = (cache[id]?.buffer?.buffer as ArrayBuffer | undefined) ?? (await getOPFSBuffer())
             if (!buff) {
                 console.error(`Failed to find arrayBuffer for id: ${id}`)
                 return undefined

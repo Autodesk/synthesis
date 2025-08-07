@@ -93,7 +93,7 @@ class MirabufParser {
         this._globalTransforms = new Map()
         this._gamePieces = undefined
         this._isGamePiece = isGamePiece
-        if (assembly.transform && isGamePiece)
+        if (isGamePiece && assembly.transform)
             this._gamePieceTransform = convertMirabufTransformToThreeMatrix(assembly.transform)
 
         progressHandle?.update("Parsing assembly...", 0.3)

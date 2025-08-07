@@ -11,6 +11,7 @@ describe("Mirabuf Physics Loading", () => {
                 return MirabufCachingService.get(x!.id, MiraType.ROBOT)
             }
         )
+
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())

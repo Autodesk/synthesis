@@ -8,7 +8,10 @@ describe("Mirabuf Parser Tests", () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/robots/Dozer_v9.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
+        ).then(x => {
+            expect(x).toBeDefined()
+            return MirabufCachingService.get(x!.id, MiraType.ROBOT)
+        })
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
