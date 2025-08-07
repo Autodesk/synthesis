@@ -1,18 +1,8 @@
-import {
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-} from "@mui/material"
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import { useEffect, useState } from "react"
 import { type DesignRule, getDesignRules } from "../lib"
 
-interface DesignCheckTabProps {}
-
-function DesignCheckTab({}: DesignCheckTabProps) {
+function DesignCheckTab() {
     const [rules, setRules] = useState<DesignRule[]>([])
 
     useEffect(() => {
@@ -38,9 +28,7 @@ function DesignCheckTab({}: DesignCheckTabProps) {
 
     return (
         <>
-            <h4>
-                Checks Passing: {isDesignValid()}
-            </h4>
+            <h4>Checks Passing: {isDesignValid()}</h4>
             <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table" size={"small"}>
                     <TableHead>

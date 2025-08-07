@@ -1,14 +1,16 @@
-from typing import List, TypedDict, Callable
+from typing import Callable, List, TypedDict
 
 import adsk.core
 import adsk.fusion
 
 from src import Logging, gm
 
+
 class DesignRule(TypedDict):
     name: str
     calculation: Callable[[], float]
     max_value: float
+
 
 class DesignRuleChecks:
     designRules: List[DesignRule]
@@ -27,7 +29,6 @@ class DesignRuleChecks:
                 "max_value": 304.0,  # cm
             },
         ]
-
 
     def getDesignRules(self) -> List[DesignRule]:
         return self.designRules

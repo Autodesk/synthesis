@@ -22,6 +22,7 @@ import src.UI.JointConfigTab as JointConfigTab
 import src.UI.TaggingConfigTab as TaggingConfigTab
 from src import APP_WEBSITE_URL, Logging, gm
 from src.APS.APS import getAuth, getUserInfo
+from src.lib.DesignRuleChecks import DesignRuleChecks
 from src.lib.Handlers import PersistentEventHandler
 from src.lib.Util import convertMassUnitsTo, designMassCalculation
 from src.Logging import getLogger, logFailure
@@ -29,7 +30,6 @@ from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
-from src.lib.DesignRuleChecks import DesignRuleChecks
 
 generalConfigTab: GeneralConfigTab.GeneralConfigTab
 jointConfigTab: JointConfigTab.JointConfigTab

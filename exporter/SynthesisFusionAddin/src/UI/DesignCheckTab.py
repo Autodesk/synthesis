@@ -27,7 +27,6 @@ class DesignCheckTab:
             adsk.core.TablePresentationStyles.itemBorderTablePresentationStyle
         )
 
-
         for i, rule in enumerate(DesignRuleChecks().getDesignRules()):
             calculation = rule["calculation"]
             max_value: float = rule["max_value"]

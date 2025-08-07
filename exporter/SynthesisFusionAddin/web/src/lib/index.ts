@@ -149,8 +149,8 @@ window.fusionJavaScriptHandler = {
 }
 
 export interface DesignRule {
-    name: string,
-    calculation: number,
+    name: string
+    calculation: number
     max_value: number
 }
 export async function getDesignRules(): Promise<DesignRule[] | undefined> {
@@ -167,4 +167,3 @@ export async function getDesignRules(): Promise<DesignRule[] | undefined> {
     }
     return await sendData("designRules", {})
 }
-

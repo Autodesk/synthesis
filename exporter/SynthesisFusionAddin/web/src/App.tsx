@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 
 import "./App.css"
-import { RestartAlt, Settings, SportsFootball, Texture, CheckBox } from "@mui/icons-material"
+import { CheckBox, RestartAlt, Settings, SportsFootball, Texture } from "@mui/icons-material"
 import DownloadIcon from "@mui/icons-material/Download"
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import SaveIcon from "@mui/icons-material/Save"
@@ -32,12 +32,12 @@ import {
     type Joint,
     WheelType,
 } from "./lib/types.ts"
+import DesignCheckTab from "./ui/DesignCheckTab.tsx"
 import GamepiecesConfigTab from "./ui/GamepiecesConfigTab.tsx"
 import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
 import GlobalAlert from "./ui/GlobalAlert.tsx"
 import JointsConfigTab from "./ui/JointsConfigTab.tsx"
 import MaterialTaggingTab, { type TaggedBody } from "./ui/MaterialTaggingTab.tsx"
-import DesignCheckTab from "./ui/DesignCheckTab.tsx"
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
