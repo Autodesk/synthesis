@@ -51,11 +51,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
                 World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
                 await MirabufCachingService.cacheAndGetLocalWithInfo(hashBuffer, miraType)
                     .then(x => {
-                        if (x) {
-                            // TODO This function shouldn't cache game pieces when imported locally!!!
-                            return createMirabuf(x.assembly, x.cacheInfo.id, miraType)
-                        }
-                        return undefined
+                        if (!x) return undefined
+
+                        return createMirabuf(x.assembly, x.cacheInfo.id, miraType)
                     })
                     .then(x => {
                         if (x) {
@@ -66,7 +64,6 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
                                 const assembly = instance.parser.assembly
                                 const buffer = mirabuf.Assembly.encode(assembly).finish().buffer as ArrayBuffer
 
-                                // TOOD Fix
                                 const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
                                 if (!cacheInfo) return
 
@@ -84,7 +81,6 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
 
                             console.log(`Loaded ${mainSceneObject.miraType.toString()} Locally`)
                             if (mainSceneObject.miraType === MiraType.ROBOT) {
-                                // TOOD See if passing undefined is ok
                                 globalOpenPanel(InitialConfigPanel, undefined)
                             }
                         }

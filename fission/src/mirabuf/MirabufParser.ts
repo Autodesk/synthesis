@@ -213,11 +213,6 @@ class MirabufParser {
                     .filter(([_key, subInst]) => inst === subInst)
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
-                // Delete partDefinitions
-                // Object.entries(this._assembly.data?.parts?.partDefinitions ?? {})
-                //     .filter(([_key, subInst]) => inst === subInst)
-                //     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
-
                 return this.convertPartInstanceToAssembly(inst, instNode)
             })
             .filter(asm => asm != undefined)
@@ -389,7 +384,7 @@ class MirabufParser {
     private loadGlobalTransforms() {
         const root = this._designHierarchyRoot
         const parts = this._assembly.data?.parts
-        if (!parts) return // TODO not sure if we should return or provide a default value
+        if (!parts) return
 
         const partInstances = new Map<string, mirabuf.IPartInstance>(Object.entries(parts.partInstances!))
         const partDefinitions = parts.partDefinitions!
