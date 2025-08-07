@@ -29,7 +29,7 @@ from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
-from src.DesignRuleChecks import DesignRuleChecks
+from src.lib.DesignRuleChecks import DesignRuleChecks
 
 generalConfigTab: GeneralConfigTab.GeneralConfigTab
 jointConfigTab: JointConfigTab.JointConfigTab
@@ -302,7 +302,7 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
             html_args.returnData = "{}"
 
         elif html_args.action == "designRules":
-            html_args.returnData = json.dumps(DesignRuleChecks().getDesignRules)
+            html_args.returnData = json.dumps(DesignRuleChecks().getDesignRules())
         else:
             gm.ui.messageBox(f"Event {html_args.action} arrived<span>{json.dumps(data, indent=2)}</span>")
 
