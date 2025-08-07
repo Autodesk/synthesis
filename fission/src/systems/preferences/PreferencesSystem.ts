@@ -1,5 +1,4 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "../World"
 import {
     defaultFieldPreferences,
@@ -112,22 +111,20 @@ class PreferencesSystem {
         return mergedPrefs
     }
 
-    private static sendPreferences(miraName: string, miraType: MiraType) {
+    private static async sendPreferences(miraName: string, miraType: MiraType) {
         if (!World.multiplayerSystem) return
 
-        const sceneObjectPair = [...World.sceneRenderer.sceneObjects]
-            .filter(
-                (objectPair): objectPair is [number, MirabufSceneObject] =>
-                    objectPair[1] instanceof MirabufSceneObject && objectPair[1].miraType === miraType
-            )
-            .find(([_id, o]) => o.assemblyName === miraName)
-        if (!sceneObjectPair) return
+        const sceneObject = World.sceneRenderer.mirabufSceneObjects.findWhere(
+            obj => obj.miraType == miraType && obj.assemblyName == miraName
+        )
 
-        World.multiplayerSystem.broadcast({
+        if (!sceneObject) return
+
+        await World.multiplayerSystem.broadcast({
             type: "configureObject",
             data: {
-                sceneObjectKey: sceneObjectPair[0],
-                objectConfigurationData: sceneObjectPair[1].getPreferenceData(),
+                sceneObjectKey: sceneObject.id,
+                objectConfigurationData: sceneObject.getPreferenceData(),
             },
         })
     }
@@ -137,7 +134,7 @@ class PreferencesSystem {
         const allRoboPrefs = this.getAllRobotPreferences()
         allRoboPrefs[miraName] = value
 
-        this.sendPreferences(miraName, MiraType.ROBOT)
+        this.sendPreferences(miraName, MiraType.ROBOT).catch(console.error)
     }
 
     /** Sets the FieldPreferences object for the field of a specific mira name */
@@ -145,7 +142,7 @@ class PreferencesSystem {
         const allFieldPrefs = this.getAllFieldPreferences()
         allFieldPrefs[miraName] = value
 
-        this.sendPreferences(miraName, MiraType.FIELD)
+        this.sendPreferences(miraName, MiraType.FIELD).catch(console.error)
     }
 
     /** Sets the MotorPreferences object for the motor of a specific mira name */

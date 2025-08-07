@@ -1,6 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type MirabufParser from "../../mirabuf/MirabufParser"
@@ -1306,10 +1306,9 @@ class PhysicsSystem extends WorldSystem {
                     interObjectCollisions.length > 0
                         ? {
                               type: "collision",
-                              data: [...World.sceneRenderer.sceneObjects.values()]
-                                  .map(object => {
-                                      if (object instanceof MirabufSceneObject) return object.getUpdateData()
-                                  })
+                              data: World.sceneRenderer.mirabufSceneObjects
+                                  .getAll()
+                                  .map(object => object.getUpdateData())
                                   .filter(n => n != null),
                           }
                         : {
@@ -1486,12 +1485,9 @@ class PhysicsSystem extends WorldSystem {
     private bodyToMiraSceneObject(body: Jolt.Body): MirabufSceneObject | null {
         const id = body.GetID()
         return (
-            [...World.sceneRenderer.sceneObjects]
-                .map(x => x[1])
-                .find(
-                    (x): x is MirabufSceneObject =>
-                        x instanceof MirabufSceneObject && [...x.mechanism.nodeToBody].map(n => n[1]).includes(id)
-                ) ?? null
+            World.sceneRenderer.mirabufSceneObjects.findWhere(obj =>
+                [...obj.mechanism.nodeToBody].some(n => n[1] == id)
+            ) ?? null
         )
     }
 
