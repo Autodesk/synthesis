@@ -13,7 +13,7 @@ import {
 } from "@xyflow/react"
 import type React from "react"
 import { type ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import { isNoraDeconstructable } from "@/systems/simulation/Nora"
 import {
@@ -27,7 +27,7 @@ import {
     type SimConfigData,
 } from "@/systems/simulation/SimConfigShared"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
-import World from "@/systems/World"
+import World from "@/systems/World.ts"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -365,9 +365,9 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
-        const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-        if (miraObjs.length > 0) {
-            return miraObjs[0][1] as MirabufSceneObject
+        const miraObj = World.sceneRenderer.mirabufSceneObjects.getRobots()[0]
+        if (miraObj != null) {
+            return miraObj
         }
         addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
         // closePanel(panel!.id, CloseType.Cancel)

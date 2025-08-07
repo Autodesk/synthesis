@@ -1,7 +1,6 @@
 import { Box, Stack, TextField } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type Driver from "@/systems/simulation/driver/Driver"
 import { CANOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
@@ -25,9 +24,9 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) 
     let simLayer
     let brain: WPILibBrain | undefined
 
-    const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-    if (miraObjs.length > 0) {
-        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+    const miraObj = World.sceneRenderer.mirabufSceneObjects.getRobots()[0]
+    if (miraObj != null) {
+        const mechanism = miraObj.mechanism
         simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
         brain = simLayer?.brain as WPILibBrain
