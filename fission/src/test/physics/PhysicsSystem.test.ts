@@ -621,7 +621,6 @@ describe("Update Loop", () => {
     let body: Jolt.Body
 
     beforeEach(() => {
-        PhysicsSystem.destroy()
         PhysicsSystem.setup()
         body = PhysicsSystem.createBox(new THREE.Vector3(1, 1, 1), 1.0, new THREE.Vector3(0, 10, 0), undefined)
         PhysicsSystem.addBodyToSystem(body.GetID(), true)

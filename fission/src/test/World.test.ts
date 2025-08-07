@@ -126,7 +126,7 @@ describe("World Tests", () => {
 
         test("InitWorld should handle AnalyticsSystem initialization failure gracefully", async () => {
             // Mock AnalyticsSystem to throw an error for this test
-            vi.mocked(AnalyticsSystem).mockImplementationOnce(() => {
+            vi.mocked(AnalyticsSystem.setup).mockImplementationOnce(() => {
                 throw new Error("Analytics initialization failed")
             })
 
@@ -161,12 +161,11 @@ describe("World Tests", () => {
 
         test("DestroyWorld should handle AnalyticsSystem destruction if it exists", () => {
             World.initWorld()
-            const analyticsSystem = AnalyticsSystem
 
             World.destroyWorld()
 
-            if (analyticsSystem) {
-                expect(analyticsSystem.destroy).toHaveBeenCalled()
+            if (AnalyticsSystem) {
+                expect(AnalyticsSystem.destroy).toHaveBeenCalled()
             }
         })
 
@@ -253,9 +252,8 @@ describe("World Tests", () => {
             expect(InputSystem).toBeDefined()
             expect(DragModeSystem).toBeDefined()
             // AnalyticsSystem might be undefined if initialization fails, so we check if it exists
-            const analyticsSystem = AnalyticsSystem
-            if (analyticsSystem) {
-                expect(analyticsSystem).toBeDefined()
+            if (AnalyticsSystem) {
+                expect(AnalyticsSystem).toBeDefined()
             }
         })
 
