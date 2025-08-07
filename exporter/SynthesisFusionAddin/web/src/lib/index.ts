@@ -154,6 +154,17 @@ export interface DesignRule {
     max_value: number
 }
 export async function getDesignRules(): Promise<DesignRule[] | undefined> {
+    if (import.meta.env.DEV && typeof window.adsk === "undefined") {
+        return new Promise<DesignRule[]>(resolve => {
+            setTimeout(() => {
+                resolve([
+                    { name: "Rule 1", calculation: 10, max_value: 20 },
+                    { name: "Rule 2", calculation: 25, max_value: 20 },
+                    { name: "Rule 3", calculation: 5, max_value: 15 },
+                ])
+            }, 1000)
+        })
+    }
     return await sendData("designRules", {})
 }
 

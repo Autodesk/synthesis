@@ -261,7 +261,7 @@ function App() {
                     selection={{ isSelecting, setIsSelecting }}
                 />
             </TabPanel>
-            <TabPanel value={activeTab} index={2}>
+            <TabPanel value={activeTab} index={4}>
                 <DesignCheckTab />
             </TabPanel>
             <Container

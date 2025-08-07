@@ -16,15 +16,31 @@ function DesignCheckTab({}: DesignCheckTabProps) {
     const [rules, setRules] = useState<DesignRule[]>([])
 
     useEffect(() => {
-        getDesignRules().then(data => {
+        const fetchRules = async () => {
+            const data = await getDesignRules()
             if (data) {
                 setRules(data)
             }
-        })
+        }
+
+        fetchRules()
     }, [])
+
+    function isDesignValid(): string {
+        rules.forEach(rule => {
+            if (rule.calculation > rule.max_value) {
+                return "Invalid"
+            }
+        })
+
+        return "Valid"
+    }
 
     return (
         <>
+            <h4>
+                Checks Passing: {isDesignValid()}
+            </h4>
             <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table" size={"small"}>
                     <TableHead>
