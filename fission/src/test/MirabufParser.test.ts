@@ -8,7 +8,7 @@ describe("Mirabuf Parser Tests", () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/robots/Dozer_v9.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
+        ).then(x => MirabufCachingService.get(x!.hash))
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
@@ -35,7 +35,7 @@ describe("Mirabuf Parser Tests", () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
+        ).then(x => MirabufCachingService.get(x!.hash))
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
@@ -60,7 +60,7 @@ describe("Mirabuf Parser Tests", () => {
         const field = await MirabufCachingService.cacheRemote(
             "/api/mira/Fields/FRC Field 2018_v13.mira",
             MiraType.FIELD
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.FIELD))
+        ).then(x => MirabufCachingService.get(x!.hash))
         const t = new MirabufParser(field!)
 
         expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(34)

@@ -67,6 +67,7 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _assemblyName: string
     private _mirabufInstance: MirabufInstance
+
     private _mechanism: Mechanism
     private _brain: Brain | undefined
     private _alliance: Alliance | undefined
@@ -95,7 +96,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
     private _collision?: (event: OnContactAddedEvent) => void
-    private _cacheId?: string
 
     public get intakeActive() {
         return this._intakeActive
@@ -180,21 +180,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._station = station
     }
 
-    public get cacheId() {
-        return this._cacheId
-    }
-
-    public constructor(
-        mirabufInstance: MirabufInstance,
-        assemblyName: string,
-        progressHandle?: ProgressHandle,
-        cacheId?: string
-    ) {
+    public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
         super()
 
         this._mirabufInstance = mirabufInstance
         this._assemblyName = assemblyName
-        this._cacheId = cacheId
 
         progressHandle?.update("Creating mechanism...", 0.9)
 
@@ -913,8 +903,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
 export async function createMirabuf(
     assembly: mirabuf.Assembly,
-    progressHandle?: ProgressHandle,
-    cacheId?: string
+    progressHandle?: ProgressHandle
 ): Promise<MirabufSceneObject | null | undefined> {
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
@@ -922,7 +911,7 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle, cacheId)
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle)
 }
 
 /**

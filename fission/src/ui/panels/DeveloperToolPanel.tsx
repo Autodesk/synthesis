@@ -33,6 +33,29 @@ function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferen
     )
 }
 
+async function saveToCache() {
+    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+    if (field) {
+        const assembly = field.mirabufInstance.parser.assembly
+        const newName = assembly.info?.name != null ? `Edited ${assembly.info.name}` : undefined
+        const existing = MirabufCachingService.getAll().find(info => info.name == newName)
+        const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
+            miraType: MiraType.FIELD,
+            name: newName,
+        })
+
+        if (cacheInfo != null) {
+            globalAddToast("info", "Devtool Saved", "Changes have been persisted to cache.")
+        } else {
+            globalAddToast("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+        }
+
+        if (existing) {
+            await MirabufCachingService.remove(existing.hash)
+        }
+    }
+}
+
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [selectedKey, setSelectedKey] = useState<DevtoolKey | undefined>(undefined)
@@ -101,7 +124,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
     }, [selectedKey, editor])
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!editor || !selectedKey) return
         try {
             const parsed = JSON.parse(jsonValue)
@@ -110,32 +133,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             setKeys(editor.getAllDevtoolKeys())
 
             // Persist changes to cache
-            const field = World.sceneRenderer.mirabufSceneObjects.getField()
-            if (field) {
-                const assembly = field.mirabufInstance.parser.assembly
-                const cacheId = field.cacheId // add to MirabufSceneObject
-                if (cacheId) {
-                    MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-                        .then(success => {
-                            if (success) {
-                                globalAddToast?.("info", "Devtool Saved", "Changes have been persisted to cache.")
-                            } else {
-                                globalAddToast?.(
-                                    "warning",
-                                    "Devtool Warning",
-                                    "Changes saved but failed to persist to cache."
-                                )
-                            }
-                        })
-                        .catch(() => {
-                            globalAddToast?.(
-                                "warning",
-                                "Devtool Warning",
-                                "Changes saved but failed to persist to cache."
-                            )
-                        })
-                }
-            }
+            await saveToCache()
 
             if (selectedKey === "devtool:scoring_zones") {
                 const field = World.sceneRenderer.mirabufSceneObjects.getField()
@@ -160,7 +158,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
     }
 
-    const handleRemove = () => {
+    const handleRemove = async () => {
         if (!editor || !selectedKey) return
         editor.removeUserData(selectedKey)
         setKeys(editor.getAllDevtoolKeys())
@@ -169,28 +167,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         setError("")
 
         // Persist removal to cache
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (field) {
-            const assembly = field.mirabufInstance.parser.assembly
-            const cacheId = field.cacheId
-            if (cacheId) {
-                MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-                    .then(success => {
-                        if (success) {
-                            globalAddToast?.("info", "Devtool Removed", "Removal has been persisted to cache.")
-                        } else {
-                            globalAddToast?.(
-                                "warning",
-                                "Devtool Warning",
-                                "Removal saved but failed to persist to cache."
-                            )
-                        }
-                    })
-                    .catch(() => {
-                        globalAddToast?.("warning", "Devtool Warning", "Removal saved but failed to persist to cache.")
-                    })
-            }
-        }
+        await saveToCache()
 
         if (selectedKey === "devtool:scoring_zones") {
             const field = World.sceneRenderer.mirabufSceneObjects.getField()

@@ -21,14 +21,7 @@ import {
     MirabufFilesUpdateEvent,
     requestMirabufFiles,
 } from "@/aps/APSDataManagement"
-import MirabufCachingService, {
-    backUpFields,
-    backUpRobots,
-    canOPFS,
-    type MirabufCacheInfo,
-    type MirabufRemoteInfo,
-    MiraType,
-} from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { type MirabufCacheInfo, type MirabufRemoteInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
@@ -84,31 +77,21 @@ export type MiraManifest = {
     fields: MirabufRemoteInfo[]
 }
 
-function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
-    return Object.values(
-        canOPFS
-            ? MirabufCachingService.getCacheMap(miraType)
-            : miraType === MiraType.ROBOT
-              ? backUpRobots
-              : backUpFields
-    )
-}
-
-export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
     }
 
     if (!progressHandle) {
-        progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
+        progressHandle = new ProgressHandle(info.name)
     }
 
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    MirabufCachingService.get(info.id, type)
-        .then(assembly => {
+    await MirabufCachingService.get(info.hash)
+        .then(async assembly => {
             if (assembly) {
-                createMirabuf(assembly, progressHandle, info.id).then(mirabufSceneObject => {
+                await createMirabuf(assembly, progressHandle).then(mirabufSceneObject => {
                     if (mirabufSceneObject) {
                         World.sceneRenderer.registerSceneObject(mirabufSceneObject)
                         progressHandle.done()
@@ -143,8 +126,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     const { configurationType } = panel!.props.custom
 
-    const [cachedRobots, setCachedRobots] = useState(getCacheInfo(MiraType.ROBOT))
-    const [cachedFields, setCachedFields] = useState(getCacheInfo(MiraType.FIELD))
+    const [cachedRobots, setCachedRobots] = useState(MirabufCachingService.getAll(MiraType.ROBOT))
+    const [cachedFields, setCachedFields] = useState(MirabufCachingService.getAll(MiraType.FIELD))
 
     const [manifest, setManifest] = useState<MiraManifest | undefined>()
     const [viewType, setViewType] = useState<MiraType>(MiraType.ROBOT)
@@ -208,25 +191,24 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             fetch(`${baseUrl}/api/mira/manifest.json`)
                 .then(x => x.json())
                 .then(x => {
-                    const map = MirabufCachingService.getCacheMap(MiraType.ROBOT)
                     const robots: MirabufRemoteInfo[] = []
                     for (const src of x["robots"]) {
-                        if (typeof src == "string") {
-                            const str = `${baseUrl}/api/mira/robots/${src}`
-                            if (!map[str]) robots.push({ displayName: src, src: str })
-                        } else {
-                            if (!map[src.src]) robots.push({ displayName: src.displayName, src: src.src })
-                        }
+                        const obj =
+                            typeof src == "string"
+                                ? { displayName: src, src: `${baseUrl}/api/mira/robots/${src}` }
+                                : { displayName: src.displayName, src: src.src }
+                        robots.push(obj)
                     }
+
                     const fields: MirabufRemoteInfo[] = []
                     for (const src of x["fields"]) {
-                        if (typeof src == "string") {
-                            const str = `${baseUrl}/api/mira/fields/${src}`
-                            if (!map[str]) fields.push({ displayName: src, src: str })
-                        } else {
-                            if (!map[src.src]) fields.push({ displayName: src.displayName, src: src.src })
-                        }
+                        const obj =
+                            typeof src == "string"
+                                ? { displayName: src, src: `${baseUrl}/api/mira/fields/${src}` }
+                                : { displayName: src.displayName, src: src.src }
+                        fields.push(obj)
                     }
+
                     setManifest({
                         robots,
                         fields,
@@ -241,8 +223,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     // Select a mirabuf assembly from the cache.
     const selectCache = useCallback(
-        (info: MirabufCacheInfo, type: MiraType) => {
-            spawnCachedMira(info, type)
+        async (info: MirabufCacheInfo, type: MiraType) => {
+            await spawnCachedMira(info, type)
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
         },
@@ -256,9 +238,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             status.update("Downloading from Synthesis...", 0.05)
 
             MirabufCachingService.cacheRemote(info.src, type, info.displayName)
-                .then(cacheInfo => {
+                .then(async cacheInfo => {
                     if (cacheInfo) {
-                        spawnCachedMira(cacheInfo, type, status)
+                        await spawnCachedMira(cacheInfo, type, status)
                     } else {
                         status.fail("Failed to cache")
                     }
@@ -292,9 +274,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             status.update("Downloading from APS...", 0.05)
 
             MirabufCachingService.cacheAPS(data, type)
-                .then(cacheInfo => {
+                .then(async cacheInfo => {
                     if (cacheInfo) {
-                        spawnCachedMira(cacheInfo, type, status)
+                        await spawnCachedMira(cacheInfo, type, status)
                     } else {
                         status.fail("Failed to cache")
                     }
@@ -313,18 +295,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
                 .map(info =>
                     ItemCard({
-                        name: info.name || info.cacheKey || "Unnamed Robot",
-                        id: info.id,
+                        name: info.name || "Unnamed Robot",
+                        id: info.hash,
                         primaryButtonNode: SynthesisIcons.ADD_LARGE,
-                        primaryOnClick: () => {
-                            console.log(`Selecting cached robot: ${info.cacheKey}`)
-                            selectCache(info, MiraType.ROBOT)
+                        primaryOnClick: async () => {
+                            console.log(`Selecting cached robot: ${info.name}`)
+                            await selectCache(info, MiraType.ROBOT)
                         },
-                        secondaryOnClick: () => {
-                            console.log(`Deleting cache of: ${info.cacheKey}`)
-                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.ROBOT)
-
-                            setCachedRobots(getCacheInfo(MiraType.ROBOT))
+                        secondaryOnClick: async () => {
+                            console.log(`Deleting cache of: ${info.name}`)
+                            await MirabufCachingService.remove(info.hash)
+                            setCachedRobots(MirabufCachingService.getAll(MiraType.ROBOT))
                         },
                     })
                 ),
@@ -338,18 +319,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
                 .map(info =>
                     ItemCard({
-                        name: info.name || info.cacheKey || "Unnamed Field",
-                        id: info.id,
+                        name: info.name || "Unnamed Field",
+                        id: info.hash,
                         primaryButtonNode: SynthesisIcons.ADD_LARGE,
                         primaryOnClick: () => {
-                            console.log(`Selecting cached field: ${info.cacheKey}`)
+                            console.log(`Selecting cached field: ${info.hash}`)
                             selectCache(info, MiraType.FIELD)
                         },
-                        secondaryOnClick: () => {
-                            console.log(`Deleting cache of: ${info.cacheKey}`)
-                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.FIELD)
-
-                            setCachedFields(getCacheInfo(MiraType.FIELD))
+                        secondaryOnClick: async () => {
+                            console.log(`Deleting cache of: ${info.hash}`)
+                            await MirabufCachingService.remove(info.hash)
+                            setCachedFields(MirabufCachingService.getAll(MiraType.FIELD))
                         },
                     })
                 ),
@@ -358,9 +338,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     // Generate Item cards for remote robots.
     const remoteRobotElements = useMemo(() => {
-        const remoteRobots = manifest?.robots.filter(
-            path => !cachedRobots.some(info => info.cacheKey.includes(path.src))
-        )
+        const remoteRobots = manifest?.robots.filter(path => !cachedRobots.some(info => info.remotePath == path.src))
         return remoteRobots
             ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
             .map(path =>
@@ -378,9 +356,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     // Generate Item cards for remote fields.
     const remoteFieldElements = useMemo(() => {
-        const remoteFields = manifest?.fields.filter(
-            path => !cachedFields.some(info => info.cacheKey.includes(path.src))
-        )
+        const remoteFields = manifest?.fields.filter(path => !cachedFields.some(info => info.remotePath == path.src))
         return remoteFields
             ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
             .map(path =>
@@ -404,7 +380,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             const remotes = manifest ? manifest[property] : []
 
             remotes
-                .filter(path => !cached.some(info => info.cacheKey.includes(path.src)))
+                .filter(path => !cached.some(info => info.remotePath?.includes(path.src)))
                 .forEach(path => cacheRemoteOnly(path, miraType))
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
