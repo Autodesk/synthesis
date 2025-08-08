@@ -523,12 +523,9 @@ def buildJointPartHierarchy(
 
         return Ok(None)
 
-    # I'm fairly certain bubbling this back up is the way to go <- Actually it's ugly but doesn't really matter and there isn't a better option
     except:
         progressDialog.progressDialog.hide()
-        # We don't want two errors to pop up, we exit to prevent dealing with two error messages for the same issue and with re-exporting an empty file
         raise RuntimeError()
-        # sys.exit(1)
 
 
 def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog: PDMessage) -> Result[None]:
