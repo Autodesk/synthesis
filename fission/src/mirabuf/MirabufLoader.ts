@@ -370,6 +370,9 @@ class MirabufCachingService {
             root.removeEntry("Robots", { recursive: true }).catch(() => {})
             root.removeEntry("Fields", { recursive: true }).catch(() => {})
             root.removeEntry("Pieces", { recursive: true }).catch(() => {})
+            localStorage.removeItem("Robots")
+            localStorage.removeItem("Fields")
+            localStorage.removeItem("Pieces")
             for await (const key of fsHandle.keys()) {
                 await fsHandle.removeEntry(key).catch(e => console.warn("could not remove file", key, e))
             }
