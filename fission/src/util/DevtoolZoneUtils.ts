@@ -20,16 +20,17 @@ export function isZoneFromDevtools(
     if (!parts) return false
 
     const editor = new FieldMiraEditor(parts)
-    
+
     if (zoneType === "scoring") {
         const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
         if (!devtoolZones) return false
 
-        return devtoolZones.some(devZone => 
-            devZone.name === zone.name &&
-            devZone.alliance === zone.alliance &&
-            devZone.parentNode === zone.parentNode &&
-            JSON.stringify(devZone.deltaTransformation) === JSON.stringify(zone.deltaTransformation)
+        return devtoolZones.some(
+            devZone =>
+                devZone.name === zone.name &&
+                devZone.alliance === zone.alliance &&
+                devZone.parentNode === zone.parentNode &&
+                JSON.stringify(devZone.deltaTransformation) === JSON.stringify(zone.deltaTransformation)
         )
     } else {
         // For protected zones, we'd need to add dev tool support first
@@ -52,17 +53,20 @@ export async function removeZoneFromDevtools(
     if (!parts) throw new Error("No field parts found")
 
     const editor = new FieldMiraEditor(parts)
-    
+
     if (zoneType === "scoring") {
         const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
         if (!devtoolZones) return
 
         // Remove the zone from dev tool data
-        const filteredZones = devtoolZones.filter(devZone =>
-            !(devZone.name === zone.name &&
-              devZone.alliance === zone.alliance &&
-              devZone.parentNode === zone.parentNode &&
-              JSON.stringify(devZone.deltaTransformation) === JSON.stringify(zone.deltaTransformation))
+        const filteredZones = devtoolZones.filter(
+            devZone =>
+                !(
+                    devZone.name === zone.name &&
+                    devZone.alliance === zone.alliance &&
+                    devZone.parentNode === zone.parentNode &&
+                    JSON.stringify(devZone.deltaTransformation) === JSON.stringify(zone.deltaTransformation)
+                )
         )
 
         // Update the dev tool data
@@ -104,7 +108,7 @@ export function getDevtoolZones(zoneType: ZoneType): ScoringZonePreferences[] | 
     if (!parts) return undefined
 
     const editor = new FieldMiraEditor(parts)
-    
+
     if (zoneType === "scoring") {
         return editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
     } else {

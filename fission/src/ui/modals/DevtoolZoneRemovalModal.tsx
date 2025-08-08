@@ -58,8 +58,8 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
                             reappear when you refresh or reload the field.
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Permanent removal:</strong> Remove zone from dev tools cache. This will prevent
-                            it from reappearing on future loads.
+                            <strong>Permanent removal:</strong> Remove zone from dev tools cache. This will prevent it
+                            from reappearing on future loads.
                         </Typography>
                     </Stack>
                 </Stack>
@@ -68,20 +68,10 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
                 <Button onClick={onClose} disabled={isRemoving}>
                     Cancel
                 </Button>
-                <Button
-                    onClick={handleTemporaryRemoval}
-                    disabled={isRemoving}
-                    variant="outlined"
-                    color="warning"
-                >
+                <Button onClick={handleTemporaryRemoval} disabled={isRemoving} variant="outlined" color="warning">
                     Temporary Removal
                 </Button>
-                <Button
-                    onClick={handlePermanentRemoval}
-                    disabled={isRemoving}
-                    variant="contained"
-                    color="error"
-                >
+                <Button onClick={handlePermanentRemoval} disabled={isRemoving} variant="contained" color="error">
                     {isRemoving ? "Removing..." : "Permanent Removal"}
                 </Button>
             </DialogActions>

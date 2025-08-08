@@ -175,7 +175,7 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
 
                 selectZone(newZone)
             })}
-            
+
             <DevtoolZoneRemovalModal
                 isOpen={confirmationModal.isOpen}
                 onClose={handleCloseConfirmation}
