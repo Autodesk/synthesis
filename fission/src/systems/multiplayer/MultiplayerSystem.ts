@@ -345,7 +345,7 @@ class MultiplayerSystem {
         let assembly: mirabuf.Assembly
         if (data.assembly) {
             assembly = mirabuf.Assembly.decode(data.assembly)
-            await MirabufCachingService.cacheLocal(data.assembly.buffer, MiraType.FIELD)
+            await MirabufCachingService.cacheLocal(data.assembly.buffer as ArrayBuffer, MiraType.FIELD)
         } else {
             const fieldInfo = await MirabufCachingService.findByBufferHash(data.assemblyHash, MiraType.FIELD)
             if (fieldInfo) {

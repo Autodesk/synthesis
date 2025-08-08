@@ -243,7 +243,7 @@ class MirabufCachingService {
                 cacheKey: key,
                 miraType: miraType,
                 buffer: buffer,
-                bufferHash: buffer != null ? await this.hashBuffer(buffer) : undefined,
+                bufferHash: buffer != null ? await this.hashBuffer(buffer.buffer as ArrayBuffer) : undefined,
                 name: name ?? defaultName,
                 thumbnailStorageID: thumbnailStorageID ?? defaultStorageID,
             }
@@ -381,7 +381,7 @@ class MirabufCachingService {
                 const opfsBuffer = await fileHandle.getFile().then(x => x.arrayBuffer())
                 buff = new Uint8Array(opfsBuffer)
                 cache[id].buffer = buff
-                cache[id].bufferHash = await this.hashBuffer(buff)
+                cache[id].bufferHash = await this.hashBuffer(buff.buffer as ArrayBuffer)
             }
             // If we have buffer, get assembly
             if (buff) {
