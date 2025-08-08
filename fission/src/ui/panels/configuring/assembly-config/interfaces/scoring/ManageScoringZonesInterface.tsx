@@ -9,6 +9,8 @@ import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import DevtoolZoneRemovalModal from "@/ui/modals/DevtoolZoneRemovalModal"
+import { isZoneFromDevtools, removeZoneFromDevtools } from "@/util/DevtoolZoneUtils"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -25,9 +27,18 @@ type ScoringZoneRowProps = {
     save: () => void
     deleteZone: () => void
     selectZone: (zone: ScoringZonePreferences) => void
+    onShowConfirmation: (zone: ScoringZonePreferences) => void
 }
 
-const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone, selectZone }) => {
+const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone, selectZone, onShowConfirmation }) => {
+    const handleDeleteClick = () => {
+        if (isZoneFromDevtools(zone, "scoring")) {
+            onShowConfirmation(zone)
+        } else {
+            deleteZone()
+        }
+    }
+
     return (
         <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
             <Stack direction="row" gap={8}>
@@ -51,7 +62,7 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone,
                 })}
 
                 {DeleteButton(() => {
-                    deleteZone()
+                    handleDeleteClick()
                 })}
             </Stack>
         </Stack>
@@ -66,6 +77,11 @@ interface ScoringZonesProps {
 
 const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, initialZones, selectZone }) => {
     const [zones, setZones] = useState<ScoringZonePreferences[]>(initialZones)
+    const [confirmationModal, setConfirmationModal] = useState<{
+        isOpen: boolean
+        zone: ScoringZonePreferences | null
+        zoneIndex: number
+    }>({ isOpen: false, zone: null, zoneIndex: -1 })
 
     const saveEvent = useCallback(() => {
         saveZones(zones, selectedField)
@@ -89,6 +105,31 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
         }
     }, [selectedField, zones])
 
+    const handleShowConfirmation = (zone: ScoringZonePreferences) => {
+        const zoneIndex = zones.indexOf(zone)
+        setConfirmationModal({ isOpen: true, zone, zoneIndex })
+    }
+
+    const handleTemporaryRemoval = () => {
+        if (confirmationModal.zoneIndex >= 0) {
+            const newZones = zones.filter((_, idx) => idx !== confirmationModal.zoneIndex)
+            setZones(newZones)
+            saveZones(newZones, selectedField)
+        }
+    }
+
+    const handlePermanentRemoval = async () => {
+        if (confirmationModal.zone) {
+            await removeZoneFromDevtools(confirmationModal.zone, "scoring")
+            const updatedZones = selectedField.fieldPreferences?.scoringZones ?? []
+            setZones(updatedZones)
+        }
+    }
+
+    const handleCloseConfirmation = () => {
+        setConfirmationModal({ isOpen: false, zone: null, zoneIndex: -1 })
+    }
+
     return (
         <>
             {zones?.length > 0 ? (
@@ -109,6 +150,7 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
                                     )
                                 }}
                                 selectZone={selectZone}
+                                onShowConfirmation={handleShowConfirmation}
                             />
                         ))}
                     </Stack>
@@ -133,6 +175,15 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
 
                 selectZone(newZone)
             })}
+            
+            <DevtoolZoneRemovalModal
+                isOpen={confirmationModal.isOpen}
+                onClose={handleCloseConfirmation}
+                zoneType="scoring"
+                zoneName={confirmationModal.zone?.name ?? ""}
+                onTemporaryRemoval={handleTemporaryRemoval}
+                onPermanentRemoval={handlePermanentRemoval}
+            />
         </>
     )
 }
