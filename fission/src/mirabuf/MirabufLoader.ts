@@ -383,7 +383,7 @@ class MirabufCachingService {
     ) {
         const buffer = mirabuf.Assembly.encode(assembly).finish()
 
-        return await this.storeInCache(buffer.buffer, {
+        return await this.storeInCache(buffer.buffer as ArrayBuffer, {
             ...extra,
             name: extra.name ?? assembly.info?.name ?? "Unknown",
         })

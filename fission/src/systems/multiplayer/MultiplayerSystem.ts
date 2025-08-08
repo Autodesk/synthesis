@@ -343,7 +343,10 @@ class MultiplayerSystem {
     async handleNewObject(data: InitObjectData, peerId: string) {
         let assembly: mirabuf.Assembly
         if (data.assembly) {
-            const returnedInfo = await MirabufCachingService.cacheLocalAndReturn(data.assembly.buffer, data.miraType)
+            const returnedInfo = await MirabufCachingService.cacheLocalAndReturn(
+                data.assembly.buffer as ArrayBuffer,
+                data.miraType
+            )
             if (!returnedInfo) {
                 console.warn("nothing returned from caching function")
                 return
