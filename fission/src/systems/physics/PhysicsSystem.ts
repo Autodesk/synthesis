@@ -1290,8 +1290,6 @@ class PhysicsSystem extends WorldSystem {
             )
 
             World.multiplayerSystem.getClientSceneObjectIds().forEach(clientSceneObjectId => {
-                // console.error("Client Scene Object not found")
-
                 const clientSceneObject = World.sceneRenderer.sceneObjects.get(
                     clientSceneObjectId
                 ) as MirabufSceneObject

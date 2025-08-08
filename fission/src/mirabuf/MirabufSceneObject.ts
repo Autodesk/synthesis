@@ -31,7 +31,12 @@ import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePan
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
-import type { FieldConfiguration, MetadataUpdateData, RobotConfiguration } from "../systems/multiplayer/types"
+import type {
+    FieldConfiguration,
+    MetadataUpdateData,
+    RobotConfiguration,
+    UpdateObjectData,
+} from "../systems/multiplayer/types"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import FieldMiraEditor from "./FieldMiraEditor"
@@ -955,27 +960,34 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         return data
     }
-    public getUpdateData() {
-        const rootBodyId = this.getRootNodeId()
-        if (!rootBodyId) return
-        const rootBody = World.physicsSystem.getBody(rootBodyId)
 
-        const sceneObject = World.sceneRenderer.sceneObjects.get(this.id) as MirabufSceneObject
-        const gamePiecesControlled: number[] = sceneObject.activeEjectables.map(bodyId =>
-            bodyId.GetIndexAndSequenceNumber()
-        )
-        const linearVelocity = rootBody.GetLinearVelocity()
-        const angularVelocity = rootBody.GetAngularVelocity()
-        const position = rootBody.GetPosition()
-        const rotation = rootBody.GetRotation()
+    public getUpdateData(): UpdateObjectData | undefined {
+        const gamePiecesControlled: number[] = this.activeEjectables.map(bodyId => bodyId.GetIndexAndSequenceNumber())
+
+        const bodies = [...this.mechanism.nodeToBody.values()]
+            .map(bodyId => {
+                const body = World.physicsSystem.getBody(bodyId)
+                if (body == null) return
+
+                const linearVelocity = body.GetLinearVelocity()
+                const angularVelocity = body.GetAngularVelocity()
+                const position = body.GetPosition()
+                const rotation = body.GetRotation()
+
+                return {
+                    bodyId: bodyId.GetIndexAndSequenceNumber(),
+                    linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+                    angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+                    positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+                    rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+                }
+            })
+            .filter(n => n != null)
 
         return {
             sceneObjectKey: this.id,
             gamePiecesControlled,
-            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
-            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
-            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
-            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+            bodies,
         }
     }
 

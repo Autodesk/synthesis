@@ -53,33 +53,6 @@ class MultiplayerSystem {
             host: "localhost",
             port: 9002,
             path: "/",
-            config: {
-                iceServers: [
-                    {
-                        urls: "stun:stun.relay.metered.ca:80",
-                    },
-                    {
-                        urls: "turn:global.relay.metered.ca:80",
-                        username: "1642f6277349b8d0b42fae1a",
-                        credential: "ybDZ2nNR+tvNw2+J",
-                    },
-                    {
-                        urls: "turn:global.relay.metered.ca:80?transport=tcp",
-                        username: "1642f6277349b8d0b42fae1a",
-                        credential: "ybDZ2nNR+tvNw2+J",
-                    },
-                    {
-                        urls: "turn:global.relay.metered.ca:443",
-                        username: "1642f6277349b8d0b42fae1a",
-                        credential: "ybDZ2nNR+tvNw2+J",
-                    },
-                    {
-                        urls: "turns:global.relay.metered.ca:443?transport=tcp",
-                        username: "1642f6277349b8d0b42fae1a",
-                        credential: "ybDZ2nNR+tvNw2+J",
-                    },
-                ],
-            },
         })
 
         this._client.on("call", e => console.log("peerjs call", e))
@@ -305,15 +278,35 @@ class MultiplayerSystem {
     }
 
     handlePeerUpdate(data: UpdateObjectData[]) {
-        data.forEach(
-            ({
-                sceneObjectKey,
-                gamePiecesControlled,
-                linearVelocityStr,
-                angularVelocityStr,
-                positionStr,
-                rotationStr,
-            }) => {
+        data.forEach(({ sceneObjectKey, gamePiecesControlled, bodies }) => {
+            const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
+            if (sceneObject == null) {
+                console.error(
+                    `Multiplayer SceneObject: ${sceneObjectKey} not found in sceneObjects map. Multiplayer SceneObjects must be initialized before being updated.`
+                )
+                return
+            } else if (!(sceneObject instanceof MirabufSceneObject)) {
+                console.error(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
+                console.log(sceneObject)
+                return
+            }
+
+            // Set all the ejectables that are in activeEjectables but not gamePiecesControlled
+            sceneObject.activeEjectables
+                .filter(id => !gamePiecesControlled.includes(id.GetIndexAndSequenceNumber()))
+                // We're not ejecting the actual game piece here, but the robots should be configured to eject in the same order so it's fine
+                .forEach(_ => sceneObject.eject())
+
+            // Set all the ejectables that are in gamePiecesControlled but not activeEjectables
+            gamePiecesControlled
+                .filter(id => !sceneObject.activeEjectables.map(n => n.GetIndexAndSequenceNumber()).includes(id))
+                .forEach(id => {
+                    const bodyId = new JOLT.BodyID(id)
+                    return sceneObject.setEjectable(bodyId)
+                })
+
+            // Sets the physics data for each body in the assembly
+            bodies.forEach(({ bodyId, linearVelocityStr, angularVelocityStr, positionStr, rotationStr }) => {
                 const lin: { x: number; y: number; z: number } = JSON.parse(linearVelocityStr)
                 const ang: { x: number; y: number; z: number } = JSON.parse(angularVelocityStr)
                 const pos: { x: number; y: number; z: number } = JSON.parse(positionStr)
@@ -324,46 +317,21 @@ class MultiplayerSystem {
                 const position = new JOLT.RVec3(pos.x, pos.y, pos.z)
                 const rotation = new JOLT.Quat(rot.x, rot.y, rot.z, rot.w)
 
-                const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
-                if (sceneObject == null) {
-                    console.error(
-                        `Multiplayer SceneObject: ${sceneObjectKey} not found in sceneObjects map. Multiplayer SceneObjects must be initialized before being updated.`
-                    )
-                    return
-                } else if (!(sceneObject instanceof MirabufSceneObject)) {
-                    console.error(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
-                    console.log(sceneObject)
+                const joltBodyId = new JOLT.BodyID(bodyId)
+
+                const clientBody = World.physicsSystem.getBody(joltBodyId)
+                if (!clientBody) {
+                    console.error(`Body ${bodyId} on Scene Object ${sceneObject.assemblyName} not found`)
                     return
                 }
+                console.log(`${clientBody != null} ${clientBody.GetID().GetIndex()}`)
 
-                // Set all the ejectables that are in activeEjectables but not gamePiecesControlled
-                sceneObject.activeEjectables
-                    .filter(id => !gamePiecesControlled.includes(id.GetIndexAndSequenceNumber()))
-                    // We're not ejecting the actual game piece here, but the robots should be configured to eject in the same order so it's fine
-                    .forEach(_ => sceneObject.eject())
-
-                // Set all the ejectables that are in gamePiecesControlled but not activeEjectables
-                gamePiecesControlled
-                    .filter(id => !sceneObject.activeEjectables.map(n => n.GetIndexAndSequenceNumber()).includes(id))
-                    .forEach(id => {
-                        const bodyId = new JOLT.BodyID(id)
-                        return sceneObject.setEjectable(bodyId)
-                    })
-
-                const clientMechanism = sceneObject.mechanism
-                const clientBodyId = clientMechanism.nodeToBody.get(clientMechanism.rootBody)
-                if (!clientBodyId) {
-                    console.error(`Body not found`)
-                    return
-                }
-
-                const clientBody = World.physicsSystem.getBody(clientBodyId)!
                 clientBody.SetLinearVelocity(linearVelocity)
                 clientBody.SetAngularVelocity(angularVelocity)
-                World.physicsSystem.setBodyPosition(clientBodyId, position)
-                World.physicsSystem.setBodyRotation(clientBodyId, rotation)
-            }
-        )
+                World.physicsSystem.setBodyPosition(joltBodyId, position)
+                World.physicsSystem.setBodyRotation(joltBodyId, rotation)
+            })
+        })
     }
 
     handleCollision(data: UpdateObjectData[]) {

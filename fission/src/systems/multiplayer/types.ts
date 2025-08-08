@@ -87,10 +87,13 @@ export type UpdateObjectData = {
     sceneObjectKey: number
     gamePiecesControlled: number[] // BodyID
     // {x, y, z, w?}
-    linearVelocityStr: string
-    angularVelocityStr: string
-    positionStr: string
-    rotationStr: string
+    bodies: {
+        bodyId: number // BodyID
+        linearVelocityStr: string
+        angularVelocityStr: string
+        positionStr: string
+        rotationStr: string
+    }[]
 }
 
 export type CollisionData = {
