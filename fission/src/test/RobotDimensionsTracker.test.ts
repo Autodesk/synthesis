@@ -3,7 +3,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import RobotDimensionTracker from "@/systems/match_mode/RobotDimensionTracker"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import World from "@/systems/World.ts"
+import World from "@/systems/World"
 
 interface MockDimensions {
     width: number
@@ -48,14 +48,6 @@ vi.mock("@/systems/match_mode/MatchMode", () => ({
         TELEOP: 2,
         MATCH_ENDED: 3,
     },
-    DEFAULT_AUTONOMOUS_TIME: 15,
-    DEFAULT_TELEOP_TIME: 135,
-    DEFAULT_ENDGAME_TIME: 20,
-    DEFAULT_IGNORE_ROTATION: true,
-    DEFAULT_MAX_HEIGHT: Infinity,
-    DEFAULT_HEIGHT_LIMIT_PENALTY: 2,
-    DEFAULT_SIDE_MAX_EXTENSION: 1.5,
-    DEFAULT_SIDE_EXTENSION_PENALTY: 2,
 }))
 
 vi.mock("@/systems/simulation/SimulationSystem", () => ({
