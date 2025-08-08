@@ -76,9 +76,9 @@ class DefaultMatchModeConfigs {
             teleopTime: 135,
             endgameTime: 20,
             ignoreRotation: true,
-            maxHeight: Infinity,
+            maxHeight: Number.MAX_SAFE_INTEGER,
             heightLimitPenalty: 2,
-            sideMaxExtension: Infinity,
+            sideMaxExtension: Number.MAX_SAFE_INTEGER,
             sideExtensionPenalty: 2,
         }
     }
