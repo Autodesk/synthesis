@@ -238,7 +238,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
 
     const createConfigFromForm = useCallback((): MatchModeConfig => {
         const parseHeight = (value: string): number => {
-            return value.toLowerCase() === "infinity" ? Infinity : parseFloat(value)
+            return value.toLowerCase() === "infinity" ? Number.MAX_SAFE_INTEGER : parseFloat(value)
         }
 
         return {
