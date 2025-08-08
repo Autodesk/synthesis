@@ -110,7 +110,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, pr
     await MirabufCachingService.get(info.id, type)
         .then(async assembly => {
             if (assembly) {
-                createMirabuf(assembly, progressHandle, info.id).then(x => {
+                createMirabuf(assembly, progressHandle, info.id).then(async x => {
                     if (x) {
                         World.sceneRenderer.registerSceneObject(x)
 
@@ -119,18 +119,24 @@ export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, pr
                                 x.miraType !== MiraType.FIELD
                                     ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
                                     : undefined
+                            const hash =
+                                info.bufferHash ?? (await MirabufCachingService.getBufferHash(info.id, info.miraType))
+                            if (hash == null) {
+                                console.error("couldn't send mira message")
+                                console.error(info)
+                                return
+                            }
 
                             const message: Message = {
                                 type: "newObject",
                                 data: {
                                     sceneObjectKey: x.id,
                                     assembly: encodedAssembly,
-                                    assemblyName: assembly.info?.name ?? "",
+                                    assemblyHash: hash,
                                     initialPreferences: x.getPreferenceData(),
                                 },
                             }
-                            World.multiplayerSystem?.broadcast(message)
-
+                            await World.multiplayerSystem?.broadcast(message)
                             World.multiplayerSystem.newClientSceneObject(x.id)
                         }
 

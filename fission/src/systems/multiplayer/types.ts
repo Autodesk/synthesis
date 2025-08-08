@@ -50,7 +50,7 @@ export type ClientInfo = {
 export type InitObjectData = {
     sceneObjectKey: number
     assembly?: EncodedAssembly
-    assemblyName: string
+    assemblyHash: string
     initialPreferences: RobotConfiguration | FieldConfiguration
 }
 
@@ -68,7 +68,7 @@ export type ObjectPreferences = {
 
 export type AssemblyRequestData = {
     sceneObjectKey: number
-    assemblyName: string
+    assemblyHash: string
 }
 
 export type MetadataUpdateData = {

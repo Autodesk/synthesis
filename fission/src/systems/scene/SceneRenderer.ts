@@ -370,6 +370,10 @@ class SceneRenderer extends WorldSystem {
         if (nextSceneObjectId <= id) {
             nextSceneObjectId = id + 1
         }
+        if (this._sceneObjects.has(id)) {
+            console.error("Trying to add with existing ID!", obj, idOverride)
+            return -1
+        }
         obj.id = id
         this._sceneObjects.set(id, obj)
         obj.setup()

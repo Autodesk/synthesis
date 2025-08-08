@@ -50,7 +50,7 @@ class MultiplayerSystem {
         this.info = { clientId: this.clientId, displayName: displayName, isHost, creationTime: Date.now() }
 
         this._client = this._client = new Peer(this.clientId, {
-            host: "team1540.catlin.edu",
+            host: "localhost",
             port: 9002,
             path: "/",
             config: {
@@ -106,6 +106,9 @@ class MultiplayerSystem {
                     case "unavailable-id":
                         globalAddToast("warning", "Reused Client ID", "Try Joining Again")
                         PreferencesSystem.setGlobalPreference("MultiplayerClientID", "")
+                        break
+                    case "network":
+                        globalAddToast("error", "Network Issue", "Could not connect to server")
                         break
                     default:
                         console.warn("Unknown PeerJS Error Type", e.type)
@@ -244,6 +247,7 @@ class MultiplayerSystem {
     }
 
     async handlePeerMessage(message: Message, peerId: string) {
+        console.log("Receiving message", message.type)
         switch (message.type) {
             case "info":
                 this.handlePeerInfo(message.data)
@@ -370,26 +374,30 @@ class MultiplayerSystem {
     }
 
     async handleNewObject(data: InitObjectData, peerId: string) {
-        const assemblyName = data.assemblyName
         let assembly: mirabuf.Assembly
         if (data.assembly) {
             assembly = mirabuf.Assembly.decode(data.assembly)
+            await MirabufCachingService.cacheLocal(data.assembly.buffer, MiraType.FIELD)
         } else {
-            const cachedFields = Object.values(MirabufCachingService.getCacheMap(MiraType.FIELD))
-            const fieldInfo = cachedFields.find(f => f.name === assemblyName)
+            const fieldInfo = await MirabufCachingService.findByBufferHash(data.assemblyHash, MiraType.FIELD)
             if (fieldInfo) {
                 const fieldAssembly = await MirabufCachingService.get(fieldInfo.id, MiraType.FIELD)
                 if (fieldAssembly) {
                     assembly = fieldAssembly
                 } else {
-                    this.send(peerId, {
+                    console.log("needAssembly")
+                    await this.send(peerId, {
                         type: "needAssembly",
-                        data: { assemblyName, sceneObjectKey: data.sceneObjectKey },
+                        data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
                     })
                     return
                 }
             } else {
-                this.send(peerId, { type: "needAssembly", data: { assemblyName, sceneObjectKey: data.sceneObjectKey } })
+                console.log("needAssembly")
+                await this.send(peerId, {
+                    type: "needAssembly",
+                    data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
+                })
                 return
             }
         }
@@ -402,25 +410,23 @@ class MultiplayerSystem {
             (this._clientToInfoMap.get(peerId)?.displayName ?? peerId) +
             " " +
             (this._clientToObjectMap.get(peerId)?.length ?? "0")
-
+        console.log("Registering object", object, data)
         World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
 
         this._clientToObjectMap.get(peerId)?.push(object.id) || this._clientToObjectMap.set(peerId, [object.id])
     }
 
     async handleAssemblyRequest(data: AssemblyRequestData, peerId: string) {
-        const assemblyName = data.assemblyName
         const sceneObjectKey = data.sceneObjectKey
 
-        const cachedFields = Object.values(MirabufCachingService.getCacheMap(MiraType.FIELD))
-        const assemblyInfo = cachedFields.find(n => n.name === assemblyName)
+        const assemblyInfo = await MirabufCachingService.findByBufferHash(data.assemblyHash, MiraType.FIELD)
         if (!assemblyInfo) {
-            console.error(`Cannot find requested assembly in cache: ${assemblyName}`)
+            console.error(`Cannot find requested assembly in cache: ${data.assemblyHash}`)
             return
         }
         const assembly = await MirabufCachingService.get(assemblyInfo.id, MiraType.FIELD)
         if (!assembly) {
-            console.error(`Failed to get assembly: ${assemblyName} from cache`)
+            console.error(`Failed to get assembly: ${data.assemblyHash} from cache`)
             return
         }
 
@@ -431,14 +437,14 @@ class MultiplayerSystem {
             data: {
                 sceneObjectKey,
                 assembly: encodedAssembly,
-                assemblyName,
+                assemblyHash: data.assemblyHash,
                 initialPreferences: (
                     World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
                 ).getPreferenceData(),
             },
         }
 
-        this.send(peerId, message)
+        await this.send(peerId, message)
     }
 
     handleDeleteObject(sceneObjectKey: number, peerId: string) {

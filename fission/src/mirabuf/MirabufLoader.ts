@@ -13,6 +13,7 @@ export interface MirabufCacheInfo {
     id: MirabufCacheID
     miraType: MiraType
     cacheKey: string
+    bufferHash?: string
     buffer?: Uint8Array<ArrayBufferLike>
     name?: string
     thumbnailStorageID?: string
@@ -160,6 +161,7 @@ class MirabufCachingService {
                 miraType: miraType ?? (this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
                 cacheKey: fetchLocation,
                 buffer: new Uint8Array(miraBuff),
+                bufferHash: await this.hashBuffer(miraBuff),
                 name: name,
             }
         } catch (e) {
@@ -241,6 +243,7 @@ class MirabufCachingService {
                 cacheKey: key,
                 miraType: miraType,
                 buffer: buffer,
+                bufferHash: buffer != null ? await this.hashBuffer(buffer) : undefined,
                 name: name ?? defaultName,
                 thumbnailStorageID: thumbnailStorageID ?? defaultStorageID,
             }
@@ -340,7 +343,15 @@ class MirabufCachingService {
 
         return assembly
     }
+    public static async getBufferHash(id: MirabufCacheID, miraType: MiraType) {
+        const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+        return cache[id]?.bufferHash
+    }
 
+    public static async findByBufferHash(hash: string, miraType: MiraType) {
+        const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+        return Object.values(cache).find(v => v.bufferHash == hash)
+    }
     /**
      * Gets a given Mirabuf file from the cache
      *
@@ -353,24 +364,30 @@ class MirabufCachingService {
         try {
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
             const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
-            const buff =
-                cache[id]?.buffer ??
-                (await (async () => {
-                    const fileHandle = canOPFS
-                        ? await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(id, {
-                              create: false,
-                          })
-                        : undefined
-                    return fileHandle
-                        ? new Uint8Array(
-                              (await fileHandle.getFile().then(async x => await x.arrayBuffer())) as ArrayBuffer
-                          )
-                        : undefined
-                })())
-
+            cache[id] ??= {
+                id,
+                name: "",
+                miraType: miraType,
+                cacheKey: "",
+            }
+            let buff: Uint8Array | undefined = cache[id].buffer
+            if (buff == null && canOPFS) {
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : fieldFolderHandle
+                ).getFileHandle(id, {
+                    create: false,
+                })
+                const opfsBuffer = await fileHandle.getFile().then(x => x.arrayBuffer())
+                buff = new Uint8Array(opfsBuffer)
+                cache[id].buffer = buff
+                cache[id].bufferHash = await this.hashBuffer(buff)
+            }
             // If we have buffer, get assembly
             if (buff) {
                 const assembly = this.assemblyFromBuffer(buff.buffer as ArrayBuffer)
+                cache[id].name ||= assembly.info?.name ?? ""
+                cache[id].cacheKey ||= cache[id].bufferHash ?? ""
                 World.analyticsSystem?.event("Cache Get", {
                     key: id,
                     type: miraType == MiraType.ROBOT ? "robot" : "field",
@@ -551,6 +568,7 @@ class MirabufCachingService {
                 miraType: miraType,
                 cacheKey: key,
                 buffer: new Uint8Array(miraBuff),
+                bufferHash: await this.hashBuffer(miraBuff),
                 name: name,
             }
             cache[backupID] = mapInfo
@@ -563,7 +581,7 @@ class MirabufCachingService {
         }
     }
 
-    private static async hashBuffer(buffer: ArrayBuffer): Promise<string> {
+    public static async hashBuffer(buffer: ArrayBuffer): Promise<string> {
         const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
         let hash = ""
         new Uint8Array(hashBuffer).forEach(x => {
