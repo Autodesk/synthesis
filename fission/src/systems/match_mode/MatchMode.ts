@@ -2,22 +2,13 @@ import beep from "@/assets/sound-files/beep.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
-import { globalOpenModal } from "@/ui/components/GlobalUIControls"
-import MatchResultsModal from "@/ui/modals/MatchResultsModal"
+import { globalOpenModal } from "@/components/GlobalUIControls.ts"
+import MatchResultsModal from "@/modals/MatchResultsModal.tsx"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
-import {
-    DEFAULT_AUTONOMOUS_TIME,
-    DEFAULT_ENDGAME_TIME,
-    DEFAULT_HEIGHT_LIMIT_PENALTY,
-    DEFAULT_IGNORE_ROTATION,
-    DEFAULT_MAX_HEIGHT,
-    DEFAULT_SIDE_EXTENSION_PENALTY,
-    DEFAULT_SIDE_MAX_EXTENSION,
-    DEFAULT_TELEOP_TIME,
-    MatchModeType,
-} from "./MatchModeTypes"
+import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
 
 class MatchMode {
@@ -35,19 +26,7 @@ class MatchMode {
     private _intervalId: number | null = null
 
     // Match Mode Config
-    private _matchModeConfig: MatchModeConfig = {
-        id: "default",
-        name: "Default",
-        isDefault: true,
-        autonomousTime: DEFAULT_AUTONOMOUS_TIME,
-        teleopTime: DEFAULT_TELEOP_TIME,
-        endgameTime: DEFAULT_ENDGAME_TIME,
-        ignoreRotation: DEFAULT_IGNORE_ROTATION,
-        maxHeight: DEFAULT_MAX_HEIGHT,
-        heightLimitPenalty: DEFAULT_HEIGHT_LIMIT_PENALTY,
-        sideExtensionPenalty: DEFAULT_SIDE_EXTENSION_PENALTY,
-        sideMaxExtension: DEFAULT_SIDE_MAX_EXTENSION,
-    }
+    private _matchModeConfig: MatchModeConfig = DefaultMatchModeConfigs.fallbackValues()
 
     private constructor() {}
 
