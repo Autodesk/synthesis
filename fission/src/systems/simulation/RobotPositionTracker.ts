@@ -23,7 +23,7 @@ class RobotPositionTracker {
             const rootScale = new THREE.Vector3()
             rootTransform.decompose(rootPosition, rootRotation, rootScale)
 
-            if (rootPosition.y < this._mapBoundaryY) {
+            if (robot.hasPhysics() && rootPosition.y < this._mapBoundaryY) {
                 SimulationSystem.robotPenalty(robot, this._offMapPenalty, "Robot fell off the map")
 
                 // TODO: Once driver station is implemented, we should reset the robot to the driver station position

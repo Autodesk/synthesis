@@ -847,6 +847,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public enablePhysics() {
+        if (World.multiplayerSystem?.getClientSceneObjectIds().includes(this.id)) {
+            World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id })
+        }
+
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.physicsSystem.enablePhysicsForBody(this._mechanism.getBodyByNodeId(rn.id)!)
         })
@@ -854,10 +858,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public disablePhysics() {
+        if (World.multiplayerSystem?.getClientSceneObjectIds().includes(this.id)) {
+            World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id })
+        }
+
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.physicsSystem.disablePhysicsForBody(this._mechanism.getBodyByNodeId(rn.id)!)
         })
         this._mechanism.ghostBodies.forEach(x => World.physicsSystem.disablePhysicsForBody(x))
+    }
+
+    public hasPhysics(): boolean {
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)
+        return rootBody.IsActive() && !rootBody.IsSensor()
     }
 
     public getRootNodeId(): Jolt.BodyID | undefined {

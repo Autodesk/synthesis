@@ -225,6 +225,8 @@ class MultiplayerSystem {
         needAssembly: this.handleAssemblyRequest,
         deleteObject: this.handleDeleteObject,
         configureObject: this.handleObjectConfiguration,
+        disableObjectPhysics: this.disableObjectPhysics,
+        enableObjectPhysics: this.enableObjectPhysics,
         metadataUpdate: this.handleMetadataUpdate,
         matchModeState: this.handleMatchModeState,
         robotLeft: () => {
@@ -293,8 +295,7 @@ class MultiplayerSystem {
                 )
                 return
             } else if (!(sceneObject instanceof MirabufSceneObject)) {
-                console.warn(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
-                // console.log(sceneObject)
+                console.error(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
                 return
             }
 
@@ -331,7 +332,6 @@ class MultiplayerSystem {
                     console.error(`Body ${bodyId} on Scene Object ${sceneObject.assemblyName} not found`)
                     return
                 }
-                console.log(`${clientBody != null} ${clientBody.GetID().GetIndex()}`)
 
                 clientBody.SetLinearVelocity(linearVelocity)
                 clientBody.SetAngularVelocity(angularVelocity)
@@ -380,6 +380,7 @@ class MultiplayerSystem {
             (this._clientToInfoMap.get(peerId)?.displayName ?? peerId) +
             " " +
             (this._clientToObjectMap.get(peerId)?.length ?? "0")
+
         console.log("Registering object", object, data)
         World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
 
@@ -427,6 +428,16 @@ class MultiplayerSystem {
     handleObjectConfiguration(data: ObjectPreferences) {
         const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey) as MirabufSceneObject
         sceneObject.setPreferenceData(data.objectConfigurationData)
+    }
+
+    disableObjectPhysics(sceneObjectKey: number) {
+        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey) as MirabufSceneObject
+        sceneObject.disablePhysics()
+    }
+
+    enableObjectPhysics(sceneObjectKey: number) {
+        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey) as MirabufSceneObject
+        sceneObject.enablePhysics()
     }
 
     handleMetadataUpdate(data: MetadataUpdateData) {

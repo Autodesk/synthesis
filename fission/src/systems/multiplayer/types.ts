@@ -14,6 +14,8 @@ export interface MessageType {
     needAssembly: AssemblyRequestData
     deleteObject: number // sceneObjectKey
     configureObject: ObjectPreferences // sceneObjectKey
+    disableObjectPhysics: number // sceneObjectKey
+    enableObjectPhysics: number // sceneObjectKey
     robotLeft: RobotLeftData
     ping: PingData
     pong: PingData
