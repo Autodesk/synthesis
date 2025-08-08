@@ -81,9 +81,14 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                                     "Are you sure you want to clear all preferences and cached data? This cannot be undone.",
                                 acceptText: "Clear & Reload",
                                 cancelText: "Cancel",
-                                onConfirm: () => {
+                                onConfirm: async () => {
                                     window.localStorage.clear()
                                     sessionStorage.clear()
+                                    await navigator.storage.getDirectory().then(async (root) => {
+                                        for await (const key of root.keys()) {
+                                            await root.removeEntry(key, {recursive:true})
+                                        }
+                                    }).catch(() => {console.warn("couldn't empty opfs")})
                                     window.location.reload()
                                     console.log("All data cleared")
                                 },
