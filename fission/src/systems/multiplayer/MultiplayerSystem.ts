@@ -5,6 +5,7 @@ import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
 import MirabufCachingService from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
+import MatchMode from "@/systems/match_mode/MatchMode.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type PhysicsSystem from "../physics/PhysicsSystem"
@@ -15,7 +16,9 @@ import type {
     EncodedAssembly,
     InitData,
     InitObjectData,
+    MatchModeStateData,
     Message,
+    MessageType,
     MetadataUpdateData,
     ObjectPreferences,
     UpdateObjectData,
@@ -43,25 +46,29 @@ class MultiplayerSystem {
         return await system._initializationPromise
     }
 
+    getClient() {
+        return this._client
+    }
+
     private constructor(roomId: string, clientId: string, displayName: string, isHost: boolean = false) {
         this.roomId = roomId
         this.clientId = clientId
         this.info = { clientId: this.clientId, displayName: displayName, isHost, creationTime: Date.now() }
 
-        this._client = this._client = new Peer(this.clientId, {
-            host: "localhost",
-            port: 9002,
+        this._client = new Peer(this.clientId, {
+            host: window.location.hostname,
+            port: parseInt(import.meta.env.VITE_MULTIPLAYER_PORT) ?? 9002,
             path: "/",
         })
 
-        this._client.on("call", e => console.log("peerjs call", e))
+        this._client.on("call", e => console.debug("peerjs call", e))
         this._client.on("close", () => {
-            console.log("peerjs close")
+            console.debug("peerjs close")
         })
 
         this._initializationPromise = new Promise<boolean>(resolve => {
             this._client.on("open", async (id: string) => {
-                console.log(`Broker connection opened: ID - ${id}`)
+                console.debug(`Broker connection opened: ID - ${id}`)
                 const peerCount = await this.connectToRoom()
                 if (peerCount == 0 && !isHost) {
                     globalAddToast("warning", `Could not find room`, this.roomId)
@@ -90,12 +97,12 @@ class MultiplayerSystem {
                 resolve(false)
             })
             this._client.on("disconnected", peer => {
-                console.info("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
+                console.log("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
             })
         })
 
         this._client.on("connection", async conn => {
-            console.log("Receiving Connection: ", conn.peer)
+            console.debug("Receiving Connection: ", conn.peer)
             if (
                 conn.metadata.authHash !=
                 (await createSha256Hash({
@@ -124,7 +131,7 @@ class MultiplayerSystem {
         const peersPromise = new Promise<string[]>(resolve => this._client.listAllPeers(resolve))
         const peers = await peersPromise
 
-        console.log(`Peers: ${peers}`)
+        console.debug(`Peers: ${peers}`)
 
         const peerCount = await Promise.all(
             peers
@@ -148,7 +155,7 @@ class MultiplayerSystem {
                     })
                     this.setupConnectionHandlers(conn)
 
-                    console.log(`Initiating Connection: ${peer}`)
+                    console.debug(`Initiating Connection: ${peer}`)
                     return true
                 })
         ).then(res => res.filter(success => success).length)
@@ -177,7 +184,7 @@ class MultiplayerSystem {
             return
         }
         conn.on("open", async () => {
-            console.log("Connection opened", conn.peer)
+            console.debug("Connection opened", conn.peer)
             this._connections.set(conn.peer, conn)
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             await this.send(conn.peer, { type: "info", data: this.info })
@@ -197,56 +204,57 @@ class MultiplayerSystem {
             ).catch(console.error) // TODO Get actual sceneObjectKey
 
             this._connections.delete(conn.peer)
-
-            if (this._host == null) {
-                const newHost = this._peers.reduce((prev, current) =>
-                    (this._clientToInfoMap.get(prev.peer)?.creationTime ?? Infinity) <
-                    (this._clientToInfoMap.get(current.peer)?.creationTime ?? Infinity)
-                        ? prev
-                        : current
-                )
-                this._clientToInfoMap.get(newHost.peer)!.isHost = true // TODO: enforce that everybody agrees
-            }
+            // TODO: handle host transition
 
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
-            console.log("Connection closed:", conn.peer)
+            console.debug("Connection closed:", conn.peer)
         })
-        conn.on("iceStateChanged", console.log)
+        conn.on("iceStateChanged", e => console.debug("ice change", e))
 
         conn.on("error", (err: Error) => {
             console.error("Connection error:", err)
         })
     }
 
+    peerMessageHandlers = {
+        info: this.handlePeerInfo,
+        init: this.handleWorldInitialization,
+        update: this.handlePeerUpdate,
+        collision: this.handleCollision,
+        newObject: this.handleNewObject,
+        needAssembly: this.handleAssemblyRequest,
+        deleteObject: this.handleDeleteObject,
+        configureObject: this.handleObjectConfiguration,
+        metadataUpdate: this.handleMetadataUpdate,
+        matchModeState: this.handleMatchModeState,
+        robotLeft: () => {
+            console.warn("unhandled event")
+        },
+        ping: () => {
+            console.warn("unhandled event")
+        },
+        pong: () => {
+            console.warn("unhandled event")
+        },
+    } as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
+
     async handlePeerMessage(message: Message, peerId: string) {
-        console.log("Receiving message", message.type)
-        switch (message.type) {
-            case "info":
-                this.handlePeerInfo(message.data)
-                break
-            case "init":
-                await this.handleWorldInitialization(message.data)
-                break
-            case "update":
-                this.handlePeerUpdate(message.data)
-                break
-            case "collision":
-                this.handleCollision(message.data)
-                break
-            case "newObject":
-                await this.handleNewObject(message.data, peerId)
-                break
-            case "needAssembly":
-                await this.handleAssemblyRequest(message.data, peerId)
-                break
-            case "deleteObject":
-                this.handleDeleteObject(message.data, peerId)
-                break
-            case "configureObject":
-                this.handleObjectConfiguration(message.data)
-                break
-            case "metadataUpdate":
-                this.handleMetadataUpdate(message.data)
+        const handler = this.peerMessageHandlers[message.type].bind(this) as (
+            data: MessageType[typeof message.type],
+            peerId: string
+        ) => Promise<void> | void
+        await handler(message.data, peerId)
+    }
+
+    async handleMatchModeState(data: MatchModeStateData) {
+        console.log(data)
+        if (data.event == "start") {
+            MatchMode.getInstance().setMatchModeConfig(data.config)
+            await MatchMode.getInstance().start(false)
+        }
+        if (data.event == "cancel") {
+            MatchMode.getInstance().sandboxModeStart()
+            globalAddToast("info", "Match Mode Cancelled")
         }
     }
 
@@ -440,7 +448,7 @@ class MultiplayerSystem {
     }
 
     async broadcast(message: Message) {
-        console.log(`Sending Message: ${message.type}`)
+        console.debug(`Sending Message: ${message.type}`)
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
@@ -463,10 +471,6 @@ class MultiplayerSystem {
 
     private get _peers() {
         return [...this._connections.values()]
-    }
-
-    private get _host() {
-        return this._peers.find(conn => this._clientToInfoMap.get(conn.peer)?.isHost)
     }
 
     get peerInfo(): ClientInfo[] {

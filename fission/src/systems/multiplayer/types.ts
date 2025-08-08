@@ -1,26 +1,10 @@
 import type { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { MatchModeConfig } from "@/panels/configuring/MatchModeConfigPanel.tsx"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes.ts"
 import type PhysicsSystem from "../physics/PhysicsSystem"
 
-export type Metrics = {
-    startTime: number
-    totalFrames: number
-    frameTimes: number[]
-    inputsSent: number
-    messagesReceived: number
-    bytesReceived: number
-    bytesSent: number
-    connectionTime: number
-    averageFPS: number
-    networkStats: {
-        packetsLost: number
-        roundTripTimes: number[]
-        jitter: number
-    }
-}
-
-interface MessageType {
+export interface MessageType {
     info: ClientInfo
     init: InitData
     update: UpdateObjectData[]
@@ -33,7 +17,16 @@ interface MessageType {
     robotLeft: RobotLeftData
     ping: PingData
     pong: PingData
+    matchModeState: MatchModeStateData
 }
+
+export type MatchModeStateData =
+    | {
+          event: "start"
+          config: MatchModeConfig
+          moveRobots: boolean
+      }
+    | { event: "cancel" }
 
 export type Message = { [K in keyof MessageType]: { type: K; data: MessageType[K] } }[keyof MessageType]
 
