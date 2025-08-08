@@ -288,13 +288,13 @@ class MultiplayerSystem {
         data.forEach(({ sceneObjectKey, gamePiecesControlled, bodies }) => {
             const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
             if (sceneObject == null) {
-                console.error(
+                console.warn(
                     `Multiplayer SceneObject: ${sceneObjectKey} not found in sceneObjects map. Multiplayer SceneObjects must be initialized before being updated.`
                 )
                 return
             } else if (!(sceneObject instanceof MirabufSceneObject)) {
-                console.error(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
-                console.log(sceneObject)
+                console.warn(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
+                // console.log(sceneObject)
                 return
             }
 
@@ -349,7 +349,7 @@ class MultiplayerSystem {
     }
 
     async handleNewObject(data: InitObjectData, peerId: string) {
-        let assembly: mirabuf.Assembly
+        let assembly: mirabuf.Assembly | undefined
         if (data.assembly) {
             const returnedInfo = await MirabufCachingService.cacheLocalAndReturn(
                 data.assembly.buffer as ArrayBuffer,
@@ -361,17 +361,15 @@ class MultiplayerSystem {
             }
             assembly = returnedInfo?.assembly
         } else {
-            const fieldAssembly = await MirabufCachingService.get(data.assemblyHash)
-            if (fieldAssembly) {
-                assembly = fieldAssembly
-            } else {
-                console.log("needAssembly")
-                await this.send(peerId, {
-                    type: "needAssembly",
-                    data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
-                })
-                return
-            }
+            assembly = await MirabufCachingService.get(data.assemblyHash)
+        }
+        if (!assembly) {
+            console.log("needAssembly")
+            await this.send(peerId, {
+                type: "needAssembly",
+                data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
+            })
+            return
         }
 
         const object = await createMirabuf(assembly)

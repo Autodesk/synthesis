@@ -827,6 +827,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType == MiraType.FIELD) {
             const config = preferences as FieldConfiguration
             this._fieldPreferences = JSON.parse(config.fieldPreferences)
+            // this.updateScoringZones()
+            // this.updateProtectedZones()
         } else {
             const config = preferences as RobotConfiguration
             this._intakePreferences = JSON.parse(config.intakePreferences)
