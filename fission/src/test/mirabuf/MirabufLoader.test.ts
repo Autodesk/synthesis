@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, type MockedFunction, test, vi } from "vitest"
-import MirabufLoader, { backUpRobots, MiraType } from "../../mirabuf/MirabufLoader"
+import MirabufLoader, { MiraType } from "../../mirabuf/MirabufLoader"
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -124,12 +124,6 @@ describe("MirabufLoader", () => {
         }
     })
 
-    test("GetCacheMap initializes and retrieves cache", () => {
-        const map = MirabufLoader.getCacheMap(MiraType.ROBOT)
-        expect(map).toEqual({})
-        expect(globalThis.localStorage.setItem).toHaveBeenCalled()
-    })
-
     test("CacheRemote returns fallback on cache failure (GH-1141)", async () => {
         const buffer = new ArrayBuffer(8)
         fetchMock.mockResolvedValue(new Response(buffer, { status: 200 }))
@@ -149,31 +143,7 @@ describe("MirabufLoader", () => {
         expect(result).toBeDefined()
     })
 
-    test("CacheInfo updates cache info, returns true, and updated map", async () => {
-        const key = "key"
-        const id = "id"
-        const miraType = MiraType.ROBOT
-
-        localStorageMock["Synthesis Nonce Key"] = "4543246"
-        const map = { [key]: { id, miraType, cacheKey: key } }
-        localStorageMock["Robots"] = JSON.stringify(map)
-        backUpRobots[id] = { id, miraType, cacheKey: key, buffer: new Uint8Array(new ArrayBuffer(1)) }
-
-        const name = "Test Robot"
-        const thumbnailStorageID = "thumb123"
-        const result = await MirabufLoader.cacheInfo(key, miraType, name, thumbnailStorageID)
-
-        expect(result).toBe(true)
-
-        const updatedMap = JSON.parse(localStorageMock["Robots"])
-        expect(updatedMap[key].name).toBe(name)
-        expect(updatedMap[key].thumbnailStorageID).toBe(thumbnailStorageID)
-        expect(updatedMap[key].id).toBe(id)
-        expect(updatedMap[key].miraType).toBe(miraType)
-        expect(updatedMap[key].cacheKey).toBe(key)
-    })
-
-    test("HashBuffer returns a base64 string", async () => {
+    test("HashBuffer returns a string", async () => {
         const buffer = new ArrayBuffer(8)
         const hash = await MirabufLoader["hashBuffer"](buffer)
         expect(typeof hash).toBe("string")

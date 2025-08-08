@@ -2,7 +2,7 @@
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
@@ -344,22 +344,16 @@ class MultiplayerSystem {
     async handleNewObject(data: InitObjectData, peerId: string) {
         let assembly: mirabuf.Assembly
         if (data.assembly) {
-            assembly = mirabuf.Assembly.decode(data.assembly)
-            await MirabufCachingService.cacheLocal(data.assembly.buffer as ArrayBuffer, MiraType.FIELD)
+            const returnedInfo = await MirabufCachingService.cacheLocalAndReturn(data.assembly.buffer, data.miraType)
+            if (!returnedInfo) {
+                console.warn("nothing returned from caching function")
+                return
+            }
+            assembly = returnedInfo?.assembly
         } else {
-            const fieldInfo = await MirabufCachingService.findByBufferHash(data.assemblyHash, MiraType.FIELD)
-            if (fieldInfo) {
-                const fieldAssembly = await MirabufCachingService.get(fieldInfo.id, MiraType.FIELD)
-                if (fieldAssembly) {
-                    assembly = fieldAssembly
-                } else {
-                    console.log("needAssembly")
-                    await this.send(peerId, {
-                        type: "needAssembly",
-                        data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
-                    })
-                    return
-                }
+            const fieldAssembly = await MirabufCachingService.get(data.assemblyHash)
+            if (fieldAssembly) {
+                assembly = fieldAssembly
             } else {
                 console.log("needAssembly")
                 await this.send(peerId, {
@@ -387,25 +381,22 @@ class MultiplayerSystem {
     async handleAssemblyRequest(data: AssemblyRequestData, peerId: string) {
         const sceneObjectKey = data.sceneObjectKey
 
-        const assemblyInfo = await MirabufCachingService.findByBufferHash(data.assemblyHash, MiraType.FIELD)
-        if (!assemblyInfo) {
-            console.error(`Cannot find requested assembly in cache: ${data.assemblyHash}`)
-            return
-        }
-        const assembly = await MirabufCachingService.get(assemblyInfo.id, MiraType.FIELD)
+        const assembly = await MirabufCachingService.getEncoded(data.assemblyHash)
         if (!assembly) {
             console.error(`Failed to get assembly: ${data.assemblyHash} from cache`)
             return
         }
+        const { buffer, info } = assembly
 
-        const encodedAssembly = mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly
+        const encodedAssembly = new Uint8Array(buffer) as EncodedAssembly
 
         const message: Message = {
             type: "newObject",
             data: {
                 sceneObjectKey,
                 assembly: encodedAssembly,
-                assemblyHash: data.assemblyHash,
+                assemblyHash: info.hash,
+                miraType: info.miraType,
                 initialPreferences: (
                     World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
                 ).getPreferenceData(),

@@ -1,3 +1,4 @@
+import type { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes.ts"
 import type PhysicsSystem from "../physics/PhysicsSystem"
@@ -51,6 +52,7 @@ export type InitObjectData = {
     sceneObjectKey: number
     assembly?: EncodedAssembly
     assemblyHash: string
+    miraType: MiraType
     initialPreferences: RobotConfiguration | FieldConfiguration
 }
 
