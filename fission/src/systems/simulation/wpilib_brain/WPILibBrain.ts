@@ -663,8 +663,8 @@ class WPILibBrain extends Brain {
 
         this.loadSimConfig()
 
-        World.sceneRenderer.sceneObjects.forEach(v => {
-            if (v instanceof MirabufSceneObject && v.brain?.brainType == "wpilib") {
+        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
+            if (v.brain?.brainType == "wpilib") {
                 v.brain = new SynthesisBrain(v, v.assemblyName)
             }
         })
