@@ -365,7 +365,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     id: path.src,
                     primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                     primaryOnClick: () => {
-                        console.log(`Selecting remote: ${path}`)
+                        console.log(`Selecting remote: ${path.src}`)
                         selectRemote(path, MiraType.ROBOT)
                     },
                 })
@@ -383,7 +383,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     id: path.src,
                     primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                     primaryOnClick: () => {
-                        console.log(`Selecting remote: ${path}`)
+                        console.log(`Selecting remote: ${path.src}`)
                         selectRemote(path, MiraType.FIELD)
                     },
                 })
