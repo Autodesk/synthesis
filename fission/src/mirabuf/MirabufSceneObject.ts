@@ -954,18 +954,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public getUpdateData(): UpdateObjectData | undefined {
         const gamePiecesControlled: number[] = this.activeEjectables.map(bodyId => bodyId.GetIndexAndSequenceNumber())
 
-        const bodies = [...this.mechanism.nodeToBody.values()]
-            .map(bodyId => {
-                const body = World.physicsSystem.getBody(bodyId)
-                if (body == null) return
-
+        const bodies = this.getAllBodies()
+            .map(body => {
                 const linearVelocity = body.GetLinearVelocity()
                 const angularVelocity = body.GetAngularVelocity()
                 const position = body.GetPosition()
                 const rotation = body.GetRotation()
 
                 return {
-                    bodyId: bodyId.GetIndexAndSequenceNumber(),
+                    bodyId: body.GetID().GetIndexAndSequenceNumber(),
                     linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
                     angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
                     positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
@@ -979,6 +976,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             gamePiecesControlled,
             bodies,
         }
+    }
+    public getAllBodyIds(): Jolt.BodyID[] {
+        return [...this.mechanism.nodeToBody.values()]
+    }
+
+    public getAllBodies(): Jolt.Body[] {
+        return [...this.mechanism.nodeToBody.values()]
+            .map(bodyId => World.physicsSystem.getBody(bodyId))
+            .filter(body => body != null)
     }
 
     private recordRobotCollision(collision: Jolt.BodyID) {

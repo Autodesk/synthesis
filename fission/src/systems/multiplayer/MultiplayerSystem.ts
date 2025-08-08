@@ -31,8 +31,7 @@ class MultiplayerSystem {
     private readonly _initializationPromise: Promise<boolean>
 
     private readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
-    // TODO Update this system to be one-to-many
-    private readonly _clientToObjectMap: Map<string, number[]> = new Map() // clientId -> sceneObjectKey[]
+    private readonly _clientToObjectMap: Map<string, number[]> = new Map() // sceneObjectKey -> Jolt.BodyId.GetIndexAndSequenceNumber()
 
     readonly info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
