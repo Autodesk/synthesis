@@ -8,6 +8,25 @@ import { ParseErrorSeverity } from "./MirabufParser.ts"
 type MirabufPartInstanceGUID = string
 
 const WIREFRAME = false
+const CHROME_VERSION_FOR_INSTANCED_MESH = 139
+
+const detectInstancedMeshSupport = (): boolean => {
+    const userAgent = navigator.userAgent
+    const chromeMatch = userAgent.match(/Chrome\/(\d+)/)
+
+    if (chromeMatch) {
+        const chromeVersion = parseInt(chromeMatch[1], 10)
+        console.log(
+            `Detected Chrome ${chromeVersion}, using ${chromeVersion >= CHROME_VERSION_FOR_INSTANCED_MESH ? "InstancedMesh" : "BatchedMesh"}`
+        )
+        return chromeVersion >= CHROME_VERSION_FOR_INSTANCED_MESH
+    }
+
+    console.log(`Non-Chrome browser detected (${userAgent}), using BatchedMesh`)
+    return false
+}
+
+const USE_INSTANCED_MESH = detectInstancedMeshSupport()
 
 export enum MaterialStyle {
     REGULAR = 0,
@@ -93,8 +112,8 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
 class MirabufInstance {
     private _mirabufParser: MirabufParser
     private _materials: Map<string, THREE.Material>
-    private _meshes: Map<MirabufPartInstanceGUID, Array<[THREE.BatchedMesh, number]>>
-    private _batches: Array<THREE.BatchedMesh>
+    private _meshes: Map<MirabufPartInstanceGUID, Array<[THREE.InstancedMesh | THREE.BatchedMesh, number]>>
+    private _batches: Array<THREE.InstancedMesh | THREE.BatchedMesh>
 
     public get parser() {
         return this._mirabufParser
@@ -160,6 +179,63 @@ class MirabufInstance {
      * Creates ThreeJS meshes from the parsed mirabuf file.
      */
     private createMeshes() {
+        if (USE_INSTANCED_MESH) {
+            this.createInstancedMeshes()
+        } else {
+            this.createBatchedMeshes()
+        }
+    }
+
+    /**
+     * Creates InstancedMesh objects, as newer version of Chrome break with BatchedMesh
+     */
+    private createInstancedMeshes() {
+        const assembly = this._mirabufParser.assembly
+        const instances = assembly.data!.parts!.partInstances!
+
+        Object.values(instances).forEach(instance => {
+            const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]
+            const bodies = definition?.bodies ?? []
+
+            bodies.forEach(body => {
+                const mesh = body?.triangleMesh?.mesh
+                if (!mesh?.verts || !mesh.normals || !mesh.uv || !mesh.indices) return
+
+                const appearanceOverride = body.appearanceOverride
+                const material = WIREFRAME
+                    ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
+                    : appearanceOverride && this._materials.has(appearanceOverride)
+                      ? this._materials.get(appearanceOverride)!
+                      : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
+
+                const geometry = new THREE.BufferGeometry()
+                transformGeometry(geometry, mesh)
+
+                // Create InstancedMesh with count of 1 for this body
+                const instancedMesh = new THREE.InstancedMesh(geometry, material, 1)
+                instancedMesh.castShadow = true
+                instancedMesh.receiveShadow = true
+
+                const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!
+                instancedMesh.setMatrixAt(0, mat)
+                instancedMesh.instanceMatrix.needsUpdate = true
+
+                this._batches.push(instancedMesh)
+
+                let bodies = this._meshes.get(instance.info!.GUID!)
+                if (!bodies) {
+                    bodies = []
+                    this._meshes.set(instance.info!.GUID!, bodies)
+                }
+                bodies.push([instancedMesh, 0])
+            })
+        })
+    }
+
+    /**
+     * Creates BatchedMesh, more efficient, but broken in newer versions of Chrome
+     */
+    private createBatchedMeshes() {
         const assembly = this._mirabufParser.assembly
         const instances = assembly.data!.parts!.partInstances!
 
@@ -171,6 +247,7 @@ class MirabufInstance {
 
         const batchMap = new Map<THREE.Material, Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>>()
         const countMap = new Map<THREE.Material, BatchCounts>()
+
         // Filter all instances by first material, then body
         Object.values(instances).forEach(instance => {
             const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]
@@ -180,7 +257,6 @@ class MirabufInstance {
                 if (!mesh?.verts || !mesh.normals || !mesh.uv || !mesh.indices) return
 
                 const appearanceOverride = body.appearanceOverride
-
                 const material = WIREFRAME
                     ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
                     : appearanceOverride && this._materials.has(appearanceOverride)

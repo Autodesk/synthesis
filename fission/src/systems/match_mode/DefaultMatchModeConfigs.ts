@@ -67,6 +67,22 @@ class DefaultMatchModeConfigs {
         }
     }
 
+    static fallbackValues = (): MatchModeConfig => {
+        return {
+            id: "default",
+            name: "Default",
+            isDefault: true,
+            autonomousTime: 15,
+            teleopTime: 135,
+            endgameTime: 20,
+            ignoreRotation: true,
+            maxHeight: Infinity,
+            heightLimitPenalty: 2,
+            sideMaxExtension: Infinity,
+            sideExtensionPenalty: 2,
+        }
+    }
+
     /** @returns {MatchModeConfig[]} New copies of the default match mode configs without reference to any others. */
     public static get defaultMatchModeConfigCopies(): MatchModeConfig[] {
         return [
