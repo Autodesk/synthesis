@@ -73,19 +73,23 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                 </Button>
                 <Button
                     onClick={() => {
-                        openModal(ConfirmModal, {
-                            title: "Clear All Data",
-                            message:
-                                "Are you sure you want to clear all preferences and cached data? This cannot be undone.",
-                            acceptText: "Clear & Reload",
-                            cancelText: "Cancel",
-                            onConfirm: () => {
-                                window.localStorage.clear()
-                                sessionStorage.clear()
-                                window.location.reload()
-                                console.log("All data cleared")
+                        openModal(
+                            ConfirmModal,
+                            {
+                                title: "Clear All Data",
+                                message:
+                                    "Are you sure you want to clear all preferences and cached data? This cannot be undone.",
+                                acceptText: "Clear & Reload",
+                                cancelText: "Cancel",
+                                onConfirm: () => {
+                                    window.localStorage.clear()
+                                    sessionStorage.clear()
+                                    window.location.reload()
+                                    console.log("All data cleared")
+                                },
                             },
-                        }, panel)
+                            panel
+                        )
                     }}
                     className="w-full"
                 >
