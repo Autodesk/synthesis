@@ -5,7 +5,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
-const MIRABUF_LOCALSTORAGE_GENERATION = "4543246"
+const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
 
 export interface MirabufCacheInfo {
     hash: string
