@@ -6,13 +6,13 @@
   "scripts": {
     "dev": "NODE_ENV=dev vite build --watch",
     "dev:ui": "vite --open",
-    "build": "tsc && vite build",
+    "build": "tsc -p tsconfig.app.json && vite build",
     "lint": "biome lint",
     "lint:fix": "biome lint --fix",
     "style": "biome format",
     "style:fix": "biome format --fix",
     "preview": "vite preview",
-    "format": "biome check --fix",
+    "format": "biome check --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
