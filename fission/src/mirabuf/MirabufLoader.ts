@@ -283,18 +283,20 @@ class MirabufCachingService {
             const { buffer, info } = encodedData
             // If we have buffer, get assembly
             const assembly = this.assemblyFromBuffer(buffer)
-            if (!info.name) {
-                this._cacheMap.update(hash, v => {
-                    v.name = assembly?.info?.name ?? ""
+            if (info != null) {
+                if (!info.name) {
+                    this._cacheMap.update(hash, v => {
+                        v.name = assembly?.info?.name ?? ""
+                    })
+                }
+
+                World.analyticsSystem?.event("Cache Get", {
+                    key: info.hash,
+                    type: info.miraType == MiraType.ROBOT ? "robot" : "field",
+                    assemblyName: info.name,
+                    fileSize: buffer.byteLength,
                 })
             }
-
-            World.analyticsSystem?.event("Cache Get", {
-                key: info.hash,
-                type: info.miraType == MiraType.ROBOT ? "robot" : "field",
-                assemblyName: info.name,
-                fileSize: buffer.byteLength,
-            })
             return assembly
         } catch (e) {
             console.error(`Failed to find file\n${e}`)
@@ -302,13 +304,11 @@ class MirabufCachingService {
         }
     }
 
-    public static async getEncoded(hash: string): Promise<{ buffer: ArrayBuffer; info: MirabufCacheInfo } | undefined> {
+    public static async getEncoded(
+        hash: string
+    ): Promise<{ buffer: ArrayBuffer; info?: MirabufCacheInfo } | undefined> {
         try {
             const info = this._cacheMap.get(hash)
-            if (!info) {
-                console.warn("Could not find buffer")
-                return
-            }
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
 
             const memCache = memoryBuffer[hash]
@@ -321,6 +321,8 @@ class MirabufCachingService {
                 })
                 return { buffer: await fileHandle.getFile().then(x => x.arrayBuffer()), info }
             }
+            console.warn("Could not find assembly for hash", hash, info)
+            return
         } catch (e) {
             console.error("could not get encoded assembly", e)
             return undefined
