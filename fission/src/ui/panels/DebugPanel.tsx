@@ -84,11 +84,16 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                                 onConfirm: async () => {
                                     window.localStorage.clear()
                                     sessionStorage.clear()
-                                    await navigator.storage.getDirectory().then(async (root) => {
-                                        for await (const key of root.keys()) {
-                                            await root.removeEntry(key, {recursive:true})
-                                        }
-                                    }).catch(() => {console.warn("couldn't empty opfs")})
+                                    await navigator.storage
+                                        .getDirectory()
+                                        .then(async root => {
+                                            for await (const key of root.keys()) {
+                                                await root.removeEntry(key, { recursive: true })
+                                            }
+                                        })
+                                        .catch(() => {
+                                            console.warn("couldn't empty opfs")
+                                        })
                                     window.location.reload()
                                     console.log("All data cleared")
                                 },
