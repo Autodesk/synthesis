@@ -7,7 +7,7 @@ import World from "@/systems/World"
 export type ZoneType = "scoring" | "protected"
 
 /**
- * Checks if a zone was originally placed by dev tools by comparing it with the cached dev tool data.
+ * Checks if a zone was originally defined in the field file by comparing it with the cached field data.
  */
 export function isZoneFromDevtools(
     zone: ScoringZonePreferences | ProtectedZonePreferences,
@@ -33,14 +33,14 @@ export function isZoneFromDevtools(
                 JSON.stringify(devZone.deltaTransformation) === JSON.stringify(zone.deltaTransformation)
         )
     } else {
-        // For protected zones, we'd need to add dev tool support first
-        // For now, return false as protected zones don't have dev tool support yet
+        // For protected zones, we'd need to add field file support first
+        // For now, return false as protected zones don't have field file support yet
         return false
     }
 }
 
 /**
- * Removes a zone from dev tools cache permanently.
+ * Removes a zone from the field file cache permanently.
  */
 export async function removeZoneFromDevtools(
     zone: ScoringZonePreferences | ProtectedZonePreferences,
@@ -58,7 +58,7 @@ export async function removeZoneFromDevtools(
         const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
         if (!devtoolZones) return
 
-        // Remove the zone from dev tool data
+        // Remove the zone from field file data
         const filteredZones = devtoolZones.filter(
             devZone =>
                 !(
@@ -69,14 +69,14 @@ export async function removeZoneFromDevtools(
                 )
         )
 
-        // Update the dev tool data
+        // Update the field file data
         if (filteredZones.length === 0) {
             editor.removeUserData("devtool:scoring_zones")
         } else {
             editor.setUserData("devtool:scoring_zones", filteredZones)
         }
 
-        // Update field preferences to match the filtered dev tool data
+        // Update field preferences to match the filtered field file data
         if (field.fieldPreferences) {
             field.fieldPreferences.scoringZones = filteredZones
             PreferencesSystem.savePreferences?.()
@@ -93,12 +93,12 @@ export async function removeZoneFromDevtools(
             }
         }
     } else {
-        throw new Error("Protected zone dev tool removal not yet implemented")
+        throw new Error("Protected zone field file removal not yet implemented")
     }
 }
 
 /**
- * Gets all zones that exist in dev tools for a given type.
+ * Gets all zones that exist in the field file for a given type.
  */
 export function getDevtoolZones(zoneType: ZoneType): ScoringZonePreferences[] | ProtectedZonePreferences[] | undefined {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()

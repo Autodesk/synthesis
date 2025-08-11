@@ -31,10 +31,10 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
         setIsRemoving(true)
         try {
             await onPermanentRemoval()
-            globalAddToast?.("info", "Zone Removed", `${zoneName} has been permanently removed from dev tools.`)
+            globalAddToast?.("info", "Zone Removed", `${zoneName} has been permanently removed from the field file.`)
         } catch (error) {
-            globalAddToast?.("error", "Removal Failed", "Failed to permanently remove zone from dev tools cache.")
-            console.error("Failed to remove zone from dev tools:", error)
+            globalAddToast?.("error", "Removal Failed", "Failed to permanently remove zone from the field file cache.")
+            console.error("Failed to remove zone from field file:", error)
         } finally {
             setIsRemoving(false)
             onClose()
@@ -47,7 +47,7 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
             <DialogContent>
                 <Stack spacing={2}>
                     <Typography variant="body1">
-                        The {zoneType} zone "{zoneName}" was placed using dev tools and is cached.
+                        The {zoneType} zone "{zoneName}" was defined in the field file and is cached.
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                         Choose how you'd like to remove it:
@@ -58,7 +58,7 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
                             reappear when you refresh or reload the field.
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Permanent removal:</strong> Remove zone from dev tools cache. This will prevent it
+                            <strong>Permanent removal:</strong> Remove zone from the field file cache. This will prevent it
                             from reappearing on future loads.
                         </Typography>
                     </Stack>
