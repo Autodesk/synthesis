@@ -184,18 +184,25 @@ class MultiplayerSystem {
         })
 
         conn.on("close", () => {
-            this.handlePeerMessage(
-                {
-                    type: "robotLeft",
-                    data: { sceneObjectKey: 0 },
-                },
-                conn.peer
-            ).catch(console.error) // TODO Get actual sceneObjectKey
+            this._clientToObjectMap.get(conn.peer)?.forEach(obj => {
+                this.handlePeerMessage(
+                    {
+                        type: "robotLeft",
+                        data: { sceneObjectKey: obj },
+                    },
+                    conn.peer
+                ).catch(console.error) // TODO Get actual sceneObjectKey
+            })
 
             this._connections.delete(conn.peer)
             // TODO: handle host transition
 
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
+            globalAddToast(
+                "warning",
+                "Multiplayer Peer Disconnected",
+                this._clientToInfoMap.get(conn.peer)?.displayName ?? "Unknown"
+            )
             console.debug("Connection closed:", conn.peer)
         })
         conn.on("iceStateChanged", e => console.debug("ice change", e))
@@ -275,6 +282,7 @@ class MultiplayerSystem {
         this._connections.forEach(conn => conn.close())
         this._connections.clear()
         this._client.destroy()
+        World.setMultiplayerSystem(undefined)
     }
 }
 

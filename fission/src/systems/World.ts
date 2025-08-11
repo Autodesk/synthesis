@@ -64,7 +64,7 @@ class World {
     }
 
     public static getOwnRobots() {
-        return (World.multiplayerSystem?.getOwnRobots ?? World.sceneRenderer.mirabufSceneObjects.getRobots)()
+        return World.multiplayerSystem?.getOwnRobots() ?? World.sceneRenderer.mirabufSceneObjects.getRobots()
     }
 
     public static set physicsSystem(system: PhysicsSystem) {

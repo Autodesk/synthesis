@@ -404,6 +404,12 @@ class SceneRenderer extends WorldSystem {
         }
 
         if (this._sceneObjects.delete(id)) {
+            World?.multiplayerSystem?.broadcast({
+                type: "robotLeft",
+                data: {
+                    sceneObjectKey: id,
+                },
+            })
             obj!.dispose()
         }
     }

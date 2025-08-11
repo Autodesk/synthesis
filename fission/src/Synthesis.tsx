@@ -56,12 +56,14 @@ function Synthesis() {
                         const isHost = room == null
                         if (room == null) {
                             room = Math.random().toString(10).substring(2, 8)
-                            globalAddToast("info", "Room code", room)
                         }
                         PreferencesSystem.setGlobalPreference("MultiplayerUsername", name)
                         PreferencesSystem.savePreferences()
                         const success = await MultiplayerSystem.setup(room, name, isHost)
                         if (success) {
+                            if (isHost) {
+                                globalAddToast("info", "Room Code", room)
+                            }
                             await startMainLoop()
                             return true
                         }

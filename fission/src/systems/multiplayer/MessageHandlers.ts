@@ -1,6 +1,7 @@
 import MirabufCachingService from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
@@ -11,15 +12,16 @@ import type {
     ClientInfo,
     EncodedAssembly,
     InitData,
-    InitObjectData, MatchModePenalty,
+    InitObjectData,
+    MatchModePenalty,
     MatchModeStateData,
     Message,
     MessageType,
     MetadataUpdateData,
     ObjectPreferences,
+    RobotLeftData,
     UpdateObjectData,
 } from "./types"
-import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 export const peerMessageHandlers = {
     info: handlePeerInfo,
@@ -35,9 +37,7 @@ export const peerMessageHandlers = {
     metadataUpdate: handleMetadataUpdate,
     matchModeState: handleMatchModeState,
     matchModePenalty: handleMatchModePenalty,
-    robotLeft: () => {
-        console.warn("unhandled event")
-    },
+    robotLeft: handleRobotLeft,
     ping: () => {
         console.warn("unhandled event")
     },
@@ -45,6 +45,10 @@ export const peerMessageHandlers = {
         console.warn("unhandled event")
     },
 } as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
+
+async function handleRobotLeft(data: RobotLeftData) {
+    World.sceneRenderer.removeSceneObject(data.sceneObjectKey)
+}
 
 async function handleMatchModeState(data: MatchModeStateData) {
     console.log(data)
@@ -61,6 +65,7 @@ async function handleMatchModeState(data: MatchModeStateData) {
 function handlePeerInfo(data: ClientInfo) {
     World.multiplayerSystem?._clientToObjectMap.set(data.clientId, [])
     World.multiplayerSystem?._clientToInfoMap.set(data.clientId, data)
+    globalAddToast("success", "Multiplayer Peer Connected", data.displayName)
     MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
 }
 
@@ -262,7 +267,7 @@ function handleMetadataUpdate(data: MetadataUpdateData) {
     sceneObject.multiplayerInfo = data
 }
 
-function handleMatchModePenalty(data:MatchModePenalty) {
+function handleMatchModePenalty(data: MatchModePenalty) {
     const obj = World.sceneRenderer.sceneObjects.get(data.objectId)
     if (!(obj instanceof MirabufSceneObject)) {
         console.warn("can't handle penalty for object", data.objectId, obj)
