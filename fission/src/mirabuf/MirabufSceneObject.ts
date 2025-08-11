@@ -118,6 +118,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._station = info.station
     }
 
+    public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
+        return this._scoringZones
+    }
+
     public set nameOverride(name: string | undefined) {
         this._nameOverride = name
     }

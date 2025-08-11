@@ -2,15 +2,12 @@ import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject.ts"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes.ts"
+import World from "@/systems/World.ts"
 
 export class ScoreTracker {
-    private static _redScore: number
-    private static _blueScore: number
+    private static _redScore: number = 0
+    private static _blueScore: number = 0
     private static _perRobotScore: Map<MirabufSceneObject, number>
-
-    static {
-        this.resetScores()
-    }
 
     public static get redScore() {
         return this._redScore
@@ -27,6 +24,7 @@ export class ScoreTracker {
         this._redScore = 0
         this._blueScore = 0
         this._perRobotScore = new Map()
+        World.sceneRenderer.mirabufSceneObjects.getField()?.scoringZones?.forEach(zone => zone.reset())
         this.notifyChange()
     }
 

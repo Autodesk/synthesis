@@ -61,9 +61,9 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         configureScreen(
             modal!,
             { title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false },
-            {}
+            { onClose: () => MatchMode.getInstance().sandboxModeStart() }
         )
-    }, [])
+    }, [configureScreen, modal])
 
     return (
         <>
@@ -90,7 +90,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                     </LabelStyled>
                     <div className="flex flex-col">
                         {redRobotScores.map(e => (
-                            <Stack key={e.name} direction="row">
+                            <Stack key={e.name} direction="row" justifyContent={"space-between"}>
                                 <Label size="md">{e.name}</Label>
                                 <Label size="md">{e.value}</Label>
                             </Stack>
@@ -103,7 +103,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                     </LabelStyled>
                     <div className="flex flex-col">
                         {blueRobotScores.map(e => (
-                            <Stack key={e.name} direction="row">
+                            <Stack key={e.name} direction="row" justifyContent={"space-between"}>
                                 <Label size="md">{e.name}</Label>
                                 <Label size="md">{e.value}</Label>
                             </Stack>
@@ -114,7 +114,6 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             <Button
                 onClick={() => {
                     closeModal(CloseType.Accept)
-                    MatchMode.getInstance().sandboxModeStart()
                 }}
                 className="w-full"
                 sx={{ my: "1rem" }}

@@ -204,6 +204,10 @@ class ScoringZoneSceneObject extends SceneObject {
         }
     }
 
+    public reset() {
+        this._prevGP = []
+    }
+
     public dispose(): void {
         if (this._joltBodyId) {
             World.physicsSystem.destroyBodyIds(this._joltBodyId)

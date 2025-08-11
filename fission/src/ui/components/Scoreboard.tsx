@@ -16,7 +16,7 @@ const HALF_W = "calc(50vw - 50%)"
 
 const Scoreboard: React.FC = () => {
     const [redScore, setRedScore] = useState(ScoreTracker.redScore)
-    const [blueScore, setBlueScore] = useState(ScoreTracker.redScore)
+    const [blueScore, setBlueScore] = useState(ScoreTracker.blueScore)
     const [time, setTime] = useState("0")
 
     const onScoreChange = useCallback((e: OnScoreChangedEvent) => {

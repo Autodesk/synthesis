@@ -1,4 +1,5 @@
 import * as THREE from "three"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
 import AnalyticsSystem, { type AccumTimes } from "./analytics/AnalyticsSystem"
 import InputSystem from "./input/InputSystem"
@@ -108,6 +109,9 @@ class World {
         } catch (_) {
             World._analyticsSystem = undefined
         }
+
+        ScoreTracker.resetScores()
+
         if (import.meta.env.DEV) {
             window.world = World
         }
