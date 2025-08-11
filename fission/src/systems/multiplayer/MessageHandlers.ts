@@ -1,6 +1,12 @@
+import MirabufCachingService from "@/mirabuf/MirabufLoader"
+import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { mirabuf } from "@/proto/mirabuf"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
-import {
+import World from "../World"
+import { COLLISION_TIMEOUT, MultiplayerStateEvent, MultiplayerStateEventType } from "./MultiplayerSystem"
+import type {
     AssemblyRequestData,
     ClientInfo,
     EncodedAssembly,
@@ -8,18 +14,37 @@ import {
     InitObjectData,
     MatchModeStateData,
     Message,
+    MessageType,
     MetadataUpdateData,
     ObjectPreferences,
     UpdateObjectData,
 } from "./types"
-import World from "../World"
-import { COLLISION_TIMEOUT, MultiplayerStateEvent, MultiplayerStateEventType } from "./MultiplayerSystem"
-import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { mirabuf } from "@/proto/mirabuf"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import MirabufCachingService from "@/mirabuf/MirabufLoader"
 
-export async function handleMatchModeState(data: MatchModeStateData) {
+export const peerMessageHandlers = {
+    info: handlePeerInfo,
+    init: handleWorldInitialization,
+    update: handlePeerUpdate,
+    collision: handleCollision,
+    newObject: handleNewObject,
+    needAssembly: handleAssemblyRequest,
+    deleteObject: handleDeleteObject,
+    configureObject: handleObjectConfiguration,
+    disableObjectPhysics: disableObjectPhysics,
+    enableObjectPhysics: enableObjectPhysics,
+    metadataUpdate: handleMetadataUpdate,
+    matchModeState: handleMatchModeState,
+    robotLeft: () => {
+        console.warn("unhandled event")
+    },
+    ping: () => {
+        console.warn("unhandled event")
+    },
+    pong: () => {
+        console.warn("unhandled event")
+    },
+} as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
+
+async function handleMatchModeState(data: MatchModeStateData) {
     console.log(data)
     if (data.event == "start") {
         MatchMode.getInstance().setMatchModeConfig(data.config)
@@ -31,13 +56,13 @@ export async function handleMatchModeState(data: MatchModeStateData) {
     }
 }
 
-export function handlePeerInfo(data: ClientInfo) {
+function handlePeerInfo(data: ClientInfo) {
     World.multiplayerSystem?._clientToObjectMap.set(data.clientId, [])
     World.multiplayerSystem?._clientToInfoMap.set(data.clientId, data)
     MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
 }
 
-export async function handleWorldInitialization(data: InitData) {
+async function handleWorldInitialization(data: InitData) {
     World.physicsSystem = data.physicsSystem
     World.sceneRenderer.sceneObjects = await encodedAssemblyToSceneObjectMap(data.objects)
 }
@@ -59,7 +84,7 @@ async function encodedAssemblyToSceneObjectMap(
     )
 }
 
-export function handlePeerUpdate(data: UpdateObjectData[]) {
+function handlePeerUpdate(data: UpdateObjectData[]) {
     data.forEach(({ sceneObjectKey, gamePiecesControlled, bodies }) => {
         const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
         if (sceneObject == null) {
@@ -114,14 +139,14 @@ export function handlePeerUpdate(data: UpdateObjectData[]) {
     })
 }
 
-export function handleCollision(data: UpdateObjectData[]) {
+function handleCollision(data: UpdateObjectData[]) {
     // TODO Expand on this logic
     if (World.multiplayerSystem?.lastSentCollisionTimestamp ?? 0 < COLLISION_TIMEOUT) return
 
     handlePeerUpdate(data)
 }
 
-export async function handleNewObject(data: InitObjectData, peerId: string) {
+async function handleNewObject(data: InitObjectData, peerId: string) {
     let assembly: mirabuf.Assembly | undefined
     if (data.assembly) {
         const returnedInfo = await MirabufCachingService.cacheLocalAndReturn(
@@ -162,7 +187,7 @@ export async function handleNewObject(data: InitObjectData, peerId: string) {
     clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
 }
 
-export async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) {
+async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) {
     const sceneObjectKey = data.sceneObjectKey
 
     const assembly = await MirabufCachingService.getEncoded(data.assemblyHash)
@@ -190,7 +215,7 @@ export async function handleAssemblyRequest(data: AssemblyRequestData, peerId: s
     await World.multiplayerSystem?.send(peerId, message)
 }
 
-export function handleDeleteObject(sceneObjectKey: number, _peerId: string) {
+function handleDeleteObject(sceneObjectKey: number, _peerId: string) {
     const clientToObjectMap = World.multiplayerSystem?._clientToObjectMap
     if (clientToObjectMap == null) return
 
@@ -213,22 +238,22 @@ export function handleDeleteObject(sceneObjectKey: number, _peerId: string) {
     World.sceneRenderer.removeSceneObject(sceneObjectKey)
 }
 
-export function handleObjectConfiguration(data: ObjectPreferences) {
+function handleObjectConfiguration(data: ObjectPreferences) {
     const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey) as MirabufSceneObject
     sceneObject.setPreferenceData(data.objectConfigurationData)
 }
 
-export function disableObjectPhysics(sceneObjectKey: number) {
+function disableObjectPhysics(sceneObjectKey: number) {
     const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey) as MirabufSceneObject
     sceneObject.disablePhysics()
 }
 
-export function enableObjectPhysics(sceneObjectKey: number) {
+function enableObjectPhysics(sceneObjectKey: number) {
     const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey) as MirabufSceneObject
     sceneObject.enablePhysics()
 }
 
-export function handleMetadataUpdate(data: MetadataUpdateData) {
+function handleMetadataUpdate(data: MetadataUpdateData) {
     const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
     if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
 

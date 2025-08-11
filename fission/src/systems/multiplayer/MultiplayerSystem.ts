@@ -2,27 +2,14 @@
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
+import { peerMessageHandlers } from "./MessageHandlers"
 import type { ClientInfo, EncodedAssembly, Message, MessageType } from "./types"
-import {
-    disableObjectPhysics,
-    enableObjectPhysics,
-    handleAssemblyRequest,
-    handleCollision,
-    handleDeleteObject,
-    handleMatchModeState,
-    handleMetadataUpdate,
-    handleNewObject,
-    handleObjectConfiguration,
-    handlePeerInfo,
-    handlePeerUpdate,
-    handleWorldInitialization,
-} from "./MessageHandlers"
-import { MiraType } from "@/mirabuf/MirabufLoader"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -218,32 +205,8 @@ class MultiplayerSystem {
         })
     }
 
-    peerMessageHandlers = {
-        info: handlePeerInfo,
-        init: handleWorldInitialization,
-        update: handlePeerUpdate,
-        collision: handleCollision,
-        newObject: handleNewObject,
-        needAssembly: handleAssemblyRequest,
-        deleteObject: handleDeleteObject,
-        configureObject: handleObjectConfiguration,
-        disableObjectPhysics: disableObjectPhysics,
-        enableObjectPhysics: enableObjectPhysics,
-        metadataUpdate: handleMetadataUpdate,
-        matchModeState: handleMatchModeState,
-        robotLeft: () => {
-            console.warn("unhandled event")
-        },
-        ping: () => {
-            console.warn("unhandled event")
-        },
-        pong: () => {
-            console.warn("unhandled event")
-        },
-    } as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
-
     async handlePeerMessage(message: Message, peerId: string) {
-        const handler = this.peerMessageHandlers[message.type].bind(this) as (
+        const handler = peerMessageHandlers[message.type].bind(this) as (
             data: MessageType[typeof message.type],
             peerId: string
         ) => Promise<void> | void
