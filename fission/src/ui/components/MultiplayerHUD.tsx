@@ -1,3 +1,4 @@
+import { Tooltip, Typography } from "@mui/material"
 import { Stack } from "@mui/system"
 import type React from "react"
 import { useEffect, useState } from "react"
@@ -5,7 +6,6 @@ import Label from "@/components/Label.tsx"
 import { MultiplayerStateEvent, MultiplayerStateEventType } from "@/systems/multiplayer/MultiplayerSystem.ts"
 import type { ClientInfo } from "@/systems/multiplayer/types.ts"
 import World from "@/systems/World.ts"
-import {Tooltip, Typography} from "@mui/material";
 
 const MultiplayerHUD: React.FC = () => {
     const [roomCode, setRoomCode] = useState("")
@@ -49,14 +49,16 @@ const MultiplayerHUD: React.FC = () => {
                 <Label fontWeight={"700"} size={"sm"}>
                     Room {roomCode}
                 </Label>
-            {peers.map(peer => (
+                {peers.map(peer => (
                     <Tooltip placement="right" key={peer.clientId} title={peer.clientId.split("-")[0]}>
                         <Typography variant={"body1"} key={peer.clientId}>
-                            {peer.displayName}{peer.clientId == World.multiplayerSystem?.clientId && " (you)"}
+                            {peer.displayName}
+                            {peer.clientId == World.multiplayerSystem?.clientId && " (you)"}
                         </Typography>
                     </Tooltip>
-            ))}
-        </Stack>
+                ))}
+            </Stack>
+        )
     )
 }
 
