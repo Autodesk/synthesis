@@ -7,10 +7,10 @@ import World from "@/systems/World.ts"
 import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
-import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
+import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 class MatchMode {
     private static _instance: MatchMode
@@ -116,7 +116,7 @@ class MatchMode {
             console.log("sent multiplayer")
         }
         this.autonomousModeStart()
-        SimulationSystem.resetScores()
+        ScoreTracker.resetScores()
         RobotDimensionTracker.matchStart()
     }
 
@@ -133,7 +133,7 @@ class MatchMode {
         this._initialTime = 0
         this._timeLeft = 0
         new UpdateTimeLeft(this._timeLeft).dispatch()
-        SimulationSystem.resetScores()
+        ScoreTracker.resetScores()
     }
 
     isMatchEnabled(): boolean {

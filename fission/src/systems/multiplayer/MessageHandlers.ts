@@ -11,7 +11,7 @@ import type {
     ClientInfo,
     EncodedAssembly,
     InitData,
-    InitObjectData,
+    InitObjectData, MatchModePenalty,
     MatchModeStateData,
     Message,
     MessageType,
@@ -19,6 +19,7 @@ import type {
     ObjectPreferences,
     UpdateObjectData,
 } from "./types"
+import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 export const peerMessageHandlers = {
     info: handlePeerInfo,
@@ -33,6 +34,7 @@ export const peerMessageHandlers = {
     enableObjectPhysics: enableObjectPhysics,
     metadataUpdate: handleMetadataUpdate,
     matchModeState: handleMatchModeState,
+    matchModePenalty: handleMatchModePenalty,
     robotLeft: () => {
         console.warn("unhandled event")
     },
@@ -258,4 +260,13 @@ function handleMetadataUpdate(data: MetadataUpdateData) {
     if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
 
     sceneObject.multiplayerInfo = data
+}
+
+function handleMatchModePenalty(data:MatchModePenalty) {
+    const obj = World.sceneRenderer.sceneObjects.get(data.objectId)
+    if (!(obj instanceof MirabufSceneObject)) {
+        console.warn("can't handle penalty for object", data.objectId, obj)
+        return
+    }
+    ScoreTracker.robotPenalty(obj, data.points, data.description, false)
 }

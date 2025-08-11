@@ -20,8 +20,14 @@ export interface MessageType {
     ping: PingData
     pong: PingData
     matchModeState: MatchModeStateData
+    matchModePenalty: MatchModePenalty
 }
 
+export interface MatchModePenalty {
+    objectId:number
+    points:number
+    description:string
+}
 export type MatchModeStateData =
     | {
           event: "start"

@@ -6,7 +6,6 @@ import { OnContactAddedEvent, OnContactPersistedEvent, OnContactRemovedEvent } f
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
@@ -20,6 +19,7 @@ import { MiraType } from "./MirabufLoader"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
+import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors
@@ -217,7 +217,7 @@ class ProtectedZoneSceneObject extends SceneObject {
             collisionObject.alliance !== this._prefs?.alliance &&
             !this.isRobotInside(collisionObject)
         ) {
-            SimulationSystem.robotPenalty(collisionObject, this._prefs?.penaltyPoints ?? 0, `Entered protected zone`)
+            ScoreTracker.robotPenalty(collisionObject, this._prefs?.penaltyPoints ?? 0, `Entered protected zone`)
         }
 
         this._robotsInside.set(collisionObject, Date.now())
@@ -287,7 +287,7 @@ class ProtectedZoneSceneObject extends SceneObject {
 
         if (shouldPenalize) {
             this._lastRobotCollisionTime = Date.now()
-            SimulationSystem.robotPenalty(
+            ScoreTracker.robotPenalty(
                 opposingRobot,
                 this._prefs?.penaltyPoints ?? 0,
                 `Contact penalty in protected zone`

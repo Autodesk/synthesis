@@ -4,10 +4,10 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import { ContactType } from "@/mirabuf/ZoneTypes"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -40,7 +40,7 @@ vi.mock("@/systems/World", () => ({
     },
 }))
 
-vi.mock("@/systems/simulation/SimulationSystem", () => ({
+vi.mock("@/systems/match_mode/ScoreTracker", () => ({
     default: {
         robotPenalty: vi.fn(),
     },
@@ -123,7 +123,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["zoneCollision"](blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
             expect.any(String)
@@ -137,7 +137,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["zoneCollision"](redRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("ZoneCollision does not penalize when zone is inactive", () => {
@@ -147,7 +147,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["zoneCollision"](blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("ZoneCollision does not penalize when both robots must be inside but only one robot is in the zone", () => {
@@ -157,7 +157,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["zoneCollision"](blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("ZoneCollision doesn't penalize if robot robot is already inside", () => {
@@ -166,7 +166,7 @@ describe("ProtectedZoneSceneObject", () => {
         instance["zoneCollision"](blueRobotBodyId)
         instance["zoneCollision"](blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledTimes(1)
     })
 
     test("ZoneCollision doesn't penalize if robot is not a robot", () => {
@@ -179,7 +179,7 @@ describe("ProtectedZoneSceneObject", () => {
         const instance = createProtectedZoneInstance({})
         instance["zoneCollision"](fieldBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("HandleContactPenalty both robots inside", () => {
@@ -192,7 +192,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
             expect.any(String)
@@ -208,7 +208,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
             expect.any(String)
@@ -224,7 +224,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
             expect.any(String)
@@ -240,7 +240,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
             expect.any(String)
@@ -256,7 +256,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("HandleContactPenalty doesn't penalize if contact type is any and no robots are inside", () => {
@@ -266,7 +266,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("HandleContactPenalty doesn't penalize if contact type is red and red is not inside", () => {
@@ -278,7 +278,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("HandleContactPenalty doesn't penalize if contact type is blue and blue is not inside", () => {
@@ -290,7 +290,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("HandleContactPenalty doesn't penalize if robots are from same alliance", () => {
@@ -310,7 +310,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, redRobot2BodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("HandleContactPenalty doesn't penalize if collision occurs too quickly", () => {
@@ -322,6 +322,6 @@ describe("ProtectedZoneSceneObject", () => {
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledTimes(1)
     })
 })

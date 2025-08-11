@@ -1,12 +1,11 @@
 import * as THREE from "three"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
 import World from "../World"
+import {globalAddToast} from "@/components/GlobalUIControls.ts";
 
 class RobotPositionTracker {
     private static _mapBoundaryY: number = -4
-    private static _offMapPenalty: number = 0
 
     public static update(): void {
         World.getOwnRobots().forEach(robot => {
@@ -24,7 +23,7 @@ class RobotPositionTracker {
             rootTransform.decompose(rootPosition, rootRotation, rootScale)
 
             if (robot.hasPhysics() && rootPosition.y < this._mapBoundaryY) {
-                SimulationSystem.robotPenalty(robot, this._offMapPenalty, "Robot fell off the map")
+                globalAddToast("warning", "Robot fell off the map", `${robot.nameTag?.text()} - ${robot.assemblyName}`)
 
                 // TODO: Once driver station is implemented, we should reset the robot to the driver station position
                 const resetPosition = new JOLT.RVec3(0, 0.2, 0)

@@ -8,7 +8,6 @@ import InputSystem from "@/systems/input/InputSystem"
 import { InputSchemeUseType } from "@/systems/input/InputTypes"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
@@ -19,6 +18,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
+import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
@@ -41,7 +41,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             targetAssembly.alliance = alliance
             targetAssembly.station = station
-            SimulationSystem.addPerRobotScore(targetAssembly, 0)
+            ScoreTracker.addPerRobotScore(targetAssembly, 0)
 
             const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
