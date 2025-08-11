@@ -44,6 +44,8 @@ export const peerMessageHandlers = {
     },
 } as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
 
+const pendingOperations: (() => void)[] = []
+
 async function handleMatchModeState(data: MatchModeStateData) {
     console.log(data)
     if (data.event == "start") {
@@ -179,13 +181,19 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     if (clientToInfoMap == null || clientToObjectMap == null) return
 
     object.setPreferenceData(data.initialPreferences)
-    object.nameOverride =
-        (clientToInfoMap.get(peerId)?.displayName ?? peerId) + " " + (clientToObjectMap.get(peerId)?.length ?? "0")
+    object.nameOverride = clientToInfoMap.get(peerId)?.displayName ?? peerId
 
     console.log("Registering object", object, data)
     World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
 
     clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
+
+    // Run all messages that arrived before the assembly fully spawned
+    const len = pendingOperations.length
+    pendingOperations.forEach(op => {
+        op()
+    })
+    pendingOperations.splice(0, len)
 }
 
 async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) {
@@ -233,23 +241,38 @@ function handleDeleteObject(sceneObjectKey: number) {
 }
 
 function handleObjectConfiguration(data: ObjectPreferences) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey) as MirabufSceneObject
-    sceneObject.setPreferenceData(data.objectConfigurationData)
+    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
+    if (sceneObject instanceof MirabufSceneObject) {
+        sceneObject.setPreferenceData(data.objectConfigurationData)
+    } else {
+        pendingOperations.push(() => handleObjectConfiguration(data))
+    }
 }
 
 function disableObjectPhysics(sceneObjectKey: number) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey) as MirabufSceneObject
-    sceneObject.disablePhysics()
+    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
+    if (sceneObject instanceof MirabufSceneObject) {
+        sceneObject.disablePhysics()
+    } else {
+        pendingOperations.push(() => disableObjectPhysics(sceneObjectKey))
+    }
 }
 
 function enableObjectPhysics(sceneObjectKey: number) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey) as MirabufSceneObject
-    sceneObject.enablePhysics()
+    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
+    if (sceneObject instanceof MirabufSceneObject) {
+        sceneObject.enablePhysics()
+    } else {
+        pendingOperations.push(() => enableObjectPhysics(sceneObjectKey))
+    }
 }
 
 function handleMetadataUpdate(data: MetadataUpdateData) {
     const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
-    if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
+    if (!(sceneObject instanceof MirabufSceneObject)) {
+        pendingOperations.push(() => handleMetadataUpdate(data))
+        return
+    }
 
     sceneObject.multiplayerInfo = data
 }
@@ -258,6 +281,7 @@ function handleMatchModePenalty(data: MatchModePenalty) {
     const obj = World.sceneRenderer.sceneObjects.get(data.objectId)
     if (!(obj instanceof MirabufSceneObject)) {
         console.warn("can't handle penalty for object", data.objectId, obj)
+        pendingOperations.push(() => handleMatchModePenalty(data))
         return
     }
     ScoreTracker.robotPenalty(obj, data.points, data.description, false)

@@ -228,15 +228,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         if (this.miraType === MiraType.ROBOT) {
             // creating nametag for robots
-            this._nameTag = new SceneOverlayTag(
-                () =>
+            this._nameTag = new SceneOverlayTag(() => {
+                const name =
                     this._nameOverride ??
                     (this._brain instanceof SynthesisBrain
                         ? this._brain.inputSchemeName
                         : this._brain instanceof WPILibBrain
                           ? "Magic"
                           : "Not Configured")
-            )
+                if (World.multiplayerSystem != null) {
+                    return `${name} (${this.alliance === "red" ? "R" : this.alliance === "blue" ? "B" : "..."}${this.station ?? ""})`
+                }
+                return name
+            })
 
             // Detects when something collides with the robot
             this._collision = (event: OnContactAddedEvent) => {
