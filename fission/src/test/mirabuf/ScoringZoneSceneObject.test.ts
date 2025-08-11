@@ -1,9 +1,9 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ScoringZoneSceneObject, { OnScoreChangedEvent } from "../../mirabuf/ScoringZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
-import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),

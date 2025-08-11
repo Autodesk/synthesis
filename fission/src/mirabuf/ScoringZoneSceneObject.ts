@@ -1,5 +1,6 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import { OnContactAddedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -16,7 +17,6 @@ import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { findListDifference } from "@/util/Utility"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
-import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
@@ -194,7 +194,7 @@ class ScoringZoneSceneObject extends SceneObject {
                         const robotAlliancePoints =
                             associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
-                        ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
+                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
                     })
 
                     this._prevGP = Object.assign([], this._gpContacted)
@@ -231,7 +231,7 @@ class ScoringZoneSceneObject extends SceneObject {
                         ? -this._prefs.points
                         : this._prefs.points
                 associate.robotLastInContactWith &&
-                ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
+                    ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
             }
         }
     }

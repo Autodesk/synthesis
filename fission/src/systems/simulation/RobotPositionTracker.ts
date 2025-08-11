@@ -1,8 +1,8 @@
 import * as THREE from "three"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
 import World from "../World"
-import {globalAddToast} from "@/components/GlobalUIControls.ts";
 
 class RobotPositionTracker {
     private static _mapBoundaryY: number = -4

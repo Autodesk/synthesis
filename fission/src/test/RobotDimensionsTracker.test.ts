@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import RobotDimensionTracker from "@/systems/match_mode/RobotDimensionTracker"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import World from "@/systems/World"
-import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 interface MockDimensions {
     width: number
@@ -149,11 +149,7 @@ describe("RobotDimensionTracker", () => {
         RobotDimensionTracker.update()
 
         expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, expect.any(String))
-        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(
-            mockRobot1,
-            expect.any(Number),
-            expect.any(String)
-        )
+        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should penalize robot if it exceeds side max extension (width)", () => {
@@ -172,11 +168,7 @@ describe("RobotDimensionTracker", () => {
         RobotDimensionTracker.update()
 
         expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 2, expect.any(String))
-        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(
-            mockRobot1,
-            expect.any(Number),
-            expect.any(String)
-        )
+        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should penalize robot if it exceeds side max extension (depth)", () => {
@@ -195,11 +187,7 @@ describe("RobotDimensionTracker", () => {
         RobotDimensionTracker.update()
 
         expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 3, expect.any(String))
-        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(
-            mockRobot1,
-            expect.any(Number),
-            expect.any(String)
-        )
+        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should not penalize a robot for side extension if initial dimensions were not recorded", () => {

@@ -2,6 +2,7 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import { OnContactAddedEvent, OnContactPersistedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -19,7 +20,6 @@ import { MiraType } from "./MirabufLoader"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
-import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors

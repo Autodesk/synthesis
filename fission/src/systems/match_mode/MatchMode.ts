@@ -3,6 +3,7 @@ import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import World from "@/systems/World.ts"
 import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
@@ -10,7 +11,6 @@ import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPan
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
-import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
 
 class MatchMode {
     private static _instance: MatchMode

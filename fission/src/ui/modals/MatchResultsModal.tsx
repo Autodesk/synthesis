@@ -1,12 +1,12 @@
-import {Button, Divider, Stack, styled, Typography} from "@mui/material"
+import { Button, Divider, Stack, styled, Typography } from "@mui/material"
 import type React from "react"
-import {useEffect} from "react"
+import { useEffect } from "react"
 import MatchMode from "@/systems/match_mode/MatchMode"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
+import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers.ts"
 import Label from "../components/Label"
-import type {ModalImplProps} from "../components/Modal"
-import {CloseType, useUIContext} from "../helpers/UIProviderHelpers"
-import {ScoreTracker} from "@/systems/match_mode/ScoreTracker.ts";
-import {useThemeContext} from "@/ui/helpers/ThemeProviderHelpers.ts";
+import type { ModalImplProps } from "../components/Modal"
+import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 
 type Entry = {
     name: string
@@ -14,13 +14,13 @@ type Entry = {
 }
 
 const getMatchWinner = (): { message: string; color: string } => {
-    const {redAllianceColor, blueAllianceColor, secondaryColor} = useThemeContext()
+    const { redAllianceColor, blueAllianceColor, secondaryColor } = useThemeContext()
     if (ScoreTracker.redScore > ScoreTracker.blueScore) {
-        return {message: "Red Team Wins!", color: redAllianceColor}
+        return { message: "Red Team Wins!", color: redAllianceColor }
     } else if (ScoreTracker.blueScore > ScoreTracker.redScore) {
-        return {message: "Blue Team Wins!", color: blueAllianceColor}
+        return { message: "Blue Team Wins!", color: blueAllianceColor }
     } else {
-        return {message: "It's a Tie!", color: secondaryColor}
+        return { message: "It's a Tie!", color: secondaryColor }
     }
 }
 
@@ -29,15 +29,15 @@ const getPerRobotScores = (): { redRobotScores: Entry[]; blueRobotScores: Entry[
     const blueRobotScores: Entry[] = []
     ScoreTracker.perRobotScore.forEach((score, robot) => {
         if (robot.alliance === "red") {
-            redRobotScores.push({name: `${robot.nameTag?.text()}`, value: score})
+            redRobotScores.push({ name: `${robot.nameTag?.text()}`, value: score })
         } else {
-            blueRobotScores.push({name: `${robot.nameTag?.text()}`, value: score})
+            blueRobotScores.push({ name: `${robot.nameTag?.text()}`, value: score })
         }
     })
-    return {redRobotScores, blueRobotScores}
+    return { redRobotScores, blueRobotScores }
 }
 
-const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }>(({winnerColor, fontSize}) => ({
+const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }>(({ winnerColor, fontSize }) => ({
     fontWeight: 700,
     fontSize: fontSize,
     margin: "0pt",
@@ -45,22 +45,22 @@ const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }
     color: winnerColor,
 }))
 
-const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({modal}) => {
-    const {configureScreen, closeModal} = useUIContext()
+const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { configureScreen, closeModal } = useUIContext()
 
-    const {message, color} = getMatchWinner()
-    const {redAllianceColor, blueAllianceColor, primaryColor} = useThemeContext()
+    const { message, color } = getMatchWinner()
+    const { redAllianceColor, blueAllianceColor, primaryColor } = useThemeContext()
     const entries: Entry[] = [
-        {name: "Red Score", value: ScoreTracker.redScore},
-        {name: "Blue Score", value: ScoreTracker.blueScore},
+        { name: "Red Score", value: ScoreTracker.redScore },
+        { name: "Blue Score", value: ScoreTracker.blueScore },
     ]
 
-    const {redRobotScores, blueRobotScores} = getPerRobotScores()
+    const { redRobotScores, blueRobotScores } = getPerRobotScores()
 
     useEffect(() => {
         configureScreen(
             modal!,
-            {title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false},
+            { title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false },
             {}
         )
     }, [])
@@ -70,7 +70,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({modal}) => {
             <LabelStyled winnerColor={color} fontSize="1.5rem">
                 {message}
             </LabelStyled>
-            <Divider sx={{my:"1rem"}}/>
+            <Divider sx={{ my: "1rem" }} />
             <Stack>
                 {entries.map(e => (
                     <Stack key={e.name} direction="row" justifyContent={"space-between"}>
@@ -79,7 +79,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({modal}) => {
                     </Stack>
                 ))}
             </Stack>
-            <Divider sx={{my:"0.5rem"}}/>
+            <Divider sx={{ my: "0.5rem" }} />
             <LabelStyled winnerColor={primaryColor} fontSize="1.25rem">
                 Robot Score Contributions
             </LabelStyled>
@@ -117,7 +117,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({modal}) => {
                     MatchMode.getInstance().sandboxModeStart()
                 }}
                 className="w-full"
-                sx={{my:"1rem"}}
+                sx={{ my: "1rem" }}
             >
                 Back to Sandbox Mode
             </Button>
