@@ -847,7 +847,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public enablePhysics() {
-        if (World.multiplayerSystem?.getClientSceneObjectIds().includes(this.id)) {
+        if (World.multiplayerSystem?.getOwnSceneObjects().includes(this.id)) {
             World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id })
         }
 
@@ -858,7 +858,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public disablePhysics() {
-        if (World.multiplayerSystem?.getClientSceneObjectIds().includes(this.id)) {
+        if (World.multiplayerSystem?.getOwnSceneObjects().includes(this.id)) {
             World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id })
         }
 

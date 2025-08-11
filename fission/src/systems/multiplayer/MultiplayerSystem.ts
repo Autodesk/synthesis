@@ -2,7 +2,7 @@
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
-import MirabufCachingService from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import MatchMode from "@/systems/match_mode/MatchMode.ts"
@@ -391,7 +391,7 @@ class MultiplayerSystem {
         const sceneObjectKey = data.sceneObjectKey
 
         const assembly = await MirabufCachingService.getEncoded(data.assemblyHash)
-        if (!assembly) {
+        if (!assembly || !assembly.info) {
             console.error(`Failed to get assembly: ${data.assemblyHash} from cache`)
             return
         }
@@ -461,11 +461,18 @@ class MultiplayerSystem {
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
-    getClientSceneObjectIds(): number[] {
+    getOwnSceneObjects(): number[] {
         return this._clientToObjectMap.get(this.clientId) ?? []
     }
 
-    newClientSceneObject(objectId: number) {
+    getOwnRobots(): MirabufSceneObject[] {
+        return (this._clientToObjectMap.get(this.clientId) ?? [])
+            .map(id => World.sceneRenderer.sceneObjects.get(id))
+            .filter(obj => obj instanceof MirabufSceneObject)
+            .filter(obj => obj.miraType == MiraType.ROBOT)
+    }
+
+    registerOwnSceneObject(objectId: number) {
         const list = this._clientToObjectMap.get(this.clientId)
         if (list != null) {
             list.push(objectId)

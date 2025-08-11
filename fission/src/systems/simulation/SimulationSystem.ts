@@ -74,7 +74,14 @@ class SimulationSystem extends WorldSystem {
         this.perRobotScore.set(robot, currentRobotScore + scoreToAdd)
     }
 
-    public static robotPenalty(robot: MirabufSceneObject, penaltyPoints: number, penaltyInfo: string): void {
+    public static robotPenalty(
+        robot: MirabufSceneObject,
+        penaltyPoints: number,
+        penaltyInfo: string,
+        broadcastPenalty: boolean = true
+    ): void {
+        if (broadcastPenalty) {
+        }
         // Display a toast showing that a penalty was committed
         globalAddToast(
             "warning",

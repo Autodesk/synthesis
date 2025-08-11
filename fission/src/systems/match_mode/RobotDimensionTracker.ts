@@ -31,7 +31,7 @@ class RobotDimensionTracker {
     public static update(): void {
         if (!MatchMode.getInstance().isMatchEnabled()) return
 
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
+        World.getOwnRobots().forEach(robot => {
             const dimensions = this._ignoreRotation ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
 
             if (dimensions.height > this._maxHeight + BUFFER_HEIGHT) {
@@ -62,7 +62,7 @@ class RobotDimensionTracker {
         this._robotSize.clear()
         this._robotLastFramePenalty.clear()
 
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
+        World.getOwnRobots().forEach(robot => {
             this._robotSize.set(robot.id, robot.getDimensions())
         })
     }
