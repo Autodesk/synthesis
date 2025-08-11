@@ -22,7 +22,6 @@ import type {
     ObjectPreferences,
     UpdateObjectData,
 } from "./types"
-import { assert } from "node:console"
 
 export const peerMessageHandlers = {
     info: handlePeerInfo,
@@ -207,7 +206,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
 
     // Sets bodyMap
     const clientBodyIds = object.getAllBodyIds()
-    assert(data.bodyIds.length === clientBodyIds.length)
+    console.assert(data.bodyIds.length === clientBodyIds.length)
     data.bodyIds.forEach((id, i) => bodyMap.set(id, clientBodyIds[i]))
 
     handle.done("Loaded")
