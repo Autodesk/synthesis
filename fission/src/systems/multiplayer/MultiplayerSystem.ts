@@ -2,7 +2,7 @@
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
-import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
@@ -108,7 +108,7 @@ class MultiplayerSystem {
         })
 
         ConfigurationSavedEvent.listen(() => {
-            World.sceneRenderer.mirabufSceneObjects.getAll().forEach(obj => {
+            World.getOwnObjects().forEach(obj => {
                 this.broadcast({ type: "metadataUpdate", data: obj.multiplayerInfo }).catch(console.error)
             })
         })
@@ -177,6 +177,23 @@ class MultiplayerSystem {
             this._connections.set(conn.peer, conn)
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             await this.send(conn.peer, { type: "info", data: this.info })
+            for (const objectId of this.getOwnSceneObjectIDs()) {
+                const obj = World.sceneRenderer.sceneObjects.get(objectId)
+                if (!(obj instanceof MirabufSceneObject)) return
+                const hash = await MirabufCachingService.hashBuffer(
+                    mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish()
+                )
+                await this.send(conn.peer, {
+                    type: "newObject",
+                    data: {
+                        sceneObjectKey: objectId,
+                        assemblyHash: hash,
+                        miraType: obj.miraType,
+                        initialPreferences: obj.getPreferenceData(),
+                    },
+                })
+                await this.send(conn.peer, { type: "metadataUpdate", data: obj.multiplayerInfo })
+            }
         })
 
         conn.on("data", async (data: unknown) => {
@@ -234,15 +251,18 @@ class MultiplayerSystem {
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
-    getOwnSceneObjects(): number[] {
+    getOwnSceneObjectIDs(): number[] {
         return this._clientToObjectMap.get(this.clientId) ?? []
     }
 
     getOwnRobots(): MirabufSceneObject[] {
+        return this.getOwnObjects().filter(obj => obj.miraType == MiraType.ROBOT)
+    }
+
+    getOwnObjects(): MirabufSceneObject[] {
         return (this._clientToObjectMap.get(this.clientId) ?? [])
             .map(id => World.sceneRenderer.sceneObjects.get(id))
             .filter(obj => obj instanceof MirabufSceneObject)
-            .filter(obj => obj.miraType == MiraType.ROBOT)
     }
 
     registerOwnSceneObject(objectId: number) {

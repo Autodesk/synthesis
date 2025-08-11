@@ -316,7 +316,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             const id = (opt as AssemblySelectionOption).assemblyObject.id
                             if (
                                 World.multiplayerSystem != null &&
-                                !World.multiplayerSystem.getOwnSceneObjects().includes(id)
+                                !World.multiplayerSystem.getOwnSceneObjectIDs().includes(id)
                             )
                                 return
                             setPendingDeletes(prev => [...prev, id])

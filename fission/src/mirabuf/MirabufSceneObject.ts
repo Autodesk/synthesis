@@ -116,7 +116,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public set multiplayerInfo(info: MetadataUpdateData) {
         this._alliance = info.alliance
         this._station = info.station
-        console.log({ info })
     }
 
     public set nameOverride(name: string | undefined) {
@@ -213,7 +212,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
         super()
-
         this._mirabufInstance = mirabufInstance
         this._assemblyName = assemblyName
 
@@ -851,7 +849,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public enablePhysics() {
-        if (World.multiplayerSystem?.getOwnSceneObjects().includes(this.id)) {
+        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
             World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id })
         }
 
@@ -862,7 +860,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public disablePhysics() {
-        if (World.multiplayerSystem?.getOwnSceneObjects().includes(this.id)) {
+        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
             World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id })
         }
 

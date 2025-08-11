@@ -1289,7 +1289,7 @@ class PhysicsSystem extends WorldSystem {
                 x => x instanceof OnContactAddedEvent && this.onSameLayer(x.message.body1, x.message.body2)
             )
 
-            World.multiplayerSystem.getOwnSceneObjects().forEach(clientSceneObjectId => {
+            World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
                 const clientSceneObject = World.sceneRenderer.sceneObjects.get(
                     clientSceneObjectId
                 ) as MirabufSceneObject
@@ -1498,7 +1498,7 @@ class PhysicsSystem extends WorldSystem {
         return (
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
                 World.multiplayerSystem
-                    ?.getOwnSceneObjects()
+                    ?.getOwnSceneObjectIDs()
                     .includes(this.bodyToMiraSceneObject(body)?.id as number)) ??
             false
         )
