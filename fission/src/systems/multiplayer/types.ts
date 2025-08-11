@@ -54,6 +54,7 @@ export type InitObjectData = {
     assemblyHash: string
     miraType: MiraType
     initialPreferences: RobotConfiguration | FieldConfiguration
+    bodyIds: number[] // Jolt.BodyID.GetSequenceAndIndexNumber() (used for creating the bodyMap)
 }
 
 export type RobotConfiguration = {
@@ -82,7 +83,7 @@ export type MetadataUpdateData = {
 // TODO: Figure out if InitMultiplayerObjectData is still necessary
 export type InitData = {
     physicsSystem: PhysicsSystem
-    objects: EncodedAssembly[] // We need to send the entire scene object with rendering data and configuration (for fields and such)
+    objects: InitObjectData[] // We need to send the entire scene object with rendering data and configuration (for fields and such)
 }
 
 export type UpdateObjectData = {

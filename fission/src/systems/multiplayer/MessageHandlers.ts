@@ -22,6 +22,7 @@ import type {
     ObjectPreferences,
     UpdateObjectData,
 } from "./types"
+import { assert } from "node:console"
 
 export const peerMessageHandlers = {
     info: handlePeerInfo,
@@ -67,29 +68,14 @@ function handlePeerInfo(data: ClientInfo) {
     MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
 }
 
-async function handleWorldInitialization(data: InitData) {
+async function handleWorldInitialization(data: InitData, peerId: string) {
     World.physicsSystem = data.physicsSystem
-    World.sceneRenderer.sceneObjects = await encodedAssemblyToSceneObjectMap(data.objects)
+    data.objects.forEach(async objectData => await handleNewObject(objectData, peerId))
 }
 
-async function encodedAssemblyToSceneObjectMap(
-    assemblies: EncodedAssembly[]
-): Promise<Map<number, MirabufSceneObject>> {
-    return new Map(
-        await Promise.all(
-            assemblies.map(async assembly => {
-                const object = await createMirabuf(mirabuf.Assembly.decode(assembly))
-                if (object == null) return
+function handlePeerUpdate(data: UpdateObjectData[], peerId: string) {
+    const bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)!
 
-                World.sceneRenderer.registerSceneObject(object)
-
-                return [object.id, object] as [number, MirabufSceneObject]
-            })
-        ).then(objects => objects.filter(n => n != null))
-    )
-}
-
-function handlePeerUpdate(data: UpdateObjectData[]) {
     data.forEach(({ sceneObjectKey, gamePiecesControlled, bodies }) => {
         const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
         if (sceneObject == null) {
@@ -117,38 +103,52 @@ function handlePeerUpdate(data: UpdateObjectData[]) {
             })
 
         // Sets the physics data for each body in the assembly
-        bodies.forEach(({ bodyId, linearVelocityStr, angularVelocityStr, positionStr, rotationStr }) => {
-            const lin: { x: number; y: number; z: number } = JSON.parse(linearVelocityStr)
-            const ang: { x: number; y: number; z: number } = JSON.parse(angularVelocityStr)
-            const pos: { x: number; y: number; z: number } = JSON.parse(positionStr)
-            const rot: { x: number; y: number; z: number; w: number } = JSON.parse(rotationStr)
+        bodies
+            .map(({ bodyId, linearVelocityStr, angularVelocityStr, positionStr, rotationStr }) => {
+                const newBodyId = bodyMap.get(bodyId)
+                if (newBodyId == null) {
+                    console.error(`BodyId: ${bodyId} sent by ${peerId} does not exist in bodyMap`)
+                    return
+                }
+                return {
+                    bodyId: newBodyId,
+                    linearVelocityStr,
+                    angularVelocityStr,
+                    positionStr,
+                    rotationStr,
+                }
+            })
+            .filter(data => data != null)
+            .forEach(({ bodyId, linearVelocityStr, angularVelocityStr, positionStr, rotationStr }) => {
+                const lin: { x: number; y: number; z: number } = JSON.parse(linearVelocityStr)
+                const ang: { x: number; y: number; z: number } = JSON.parse(angularVelocityStr)
+                const pos: { x: number; y: number; z: number } = JSON.parse(positionStr)
+                const rot: { x: number; y: number; z: number; w: number } = JSON.parse(rotationStr)
 
-            const linearVelocity = new JOLT.Vec3(lin.x, lin.y, lin.z)
-            const angularVelocity = new JOLT.Vec3(ang.x, ang.y, ang.z)
-            const position = new JOLT.RVec3(pos.x, pos.y, pos.z)
-            const rotation = new JOLT.Quat(rot.x, rot.y, rot.z, rot.w)
+                const linearVelocity = new JOLT.Vec3(lin.x, lin.y, lin.z)
+                const angularVelocity = new JOLT.Vec3(ang.x, ang.y, ang.z)
+                const position = new JOLT.RVec3(pos.x, pos.y, pos.z)
+                const rotation = new JOLT.Quat(rot.x, rot.y, rot.z, rot.w)
 
-            const joltBodyId = new JOLT.BodyID(bodyId)
+                const clientBody = World.physicsSystem.getBody(bodyId)
+                if (!clientBody) {
+                    console.error(`Body ${bodyId} on Scene Object ${sceneObject.assemblyName} not found`)
+                    return
+                }
 
-            const clientBody = World.physicsSystem.getBody(joltBodyId)
-            if (!clientBody) {
-                console.error(`Body ${bodyId} on Scene Object ${sceneObject.assemblyName} not found`)
-                return
-            }
-
-            clientBody.SetLinearVelocity(linearVelocity)
-            clientBody.SetAngularVelocity(angularVelocity)
-            World.physicsSystem.setBodyPosition(joltBodyId, position)
-            World.physicsSystem.setBodyRotation(joltBodyId, rotation)
-        })
+                clientBody.SetLinearVelocity(linearVelocity)
+                clientBody.SetAngularVelocity(angularVelocity)
+                World.physicsSystem.setBodyPosition(bodyId, position)
+                World.physicsSystem.setBodyRotation(bodyId, rotation)
+            })
     })
 }
 
-function handleCollision(data: UpdateObjectData[]) {
+function handleCollision(data: UpdateObjectData[], peerId: string) {
     // TODO Expand on this logic
     if (World.multiplayerSystem?.lastSentCollisionTimestamp ?? 0 < COLLISION_TIMEOUT) return
 
-    handlePeerUpdate(data)
+    handlePeerUpdate(data, peerId)
 }
 
 async function handleNewObject(data: InitObjectData, peerId: string) {
@@ -189,7 +189,13 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
 
     const clientToObjectMap = World.multiplayerSystem?._clientToObjectMap
     const clientToInfoMap = World.multiplayerSystem?._clientToInfoMap
+    let bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)
     if (clientToInfoMap == null || clientToObjectMap == null) return
+    // Initialize bodyMap for this peer if it doesn't exist
+    if (bodyMap == null) {
+        World.multiplayerSystem?._clientToBodyMap.set(peerId, new Map())
+        bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)!
+    }
 
     object.setPreferenceData(data.initialPreferences)
     object.nameOverride = clientToInfoMap.get(peerId)?.displayName ?? peerId
@@ -198,7 +204,14 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
 
     clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
+
+    // Sets bodyMap
+    const clientBodyIds = object.getAllBodyIds()
+    assert(data.bodyIds.length === clientBodyIds.length)
+    data.bodyIds.forEach((id, i) => bodyMap.set(id, clientBodyIds[i]))
+
     handle.done("Loaded")
+
     // Run all messages that arrived before the assembly fully spawned
     const len = pendingOperations.length
     pendingOperations.forEach(op => {
@@ -219,6 +232,7 @@ async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) 
 
     const encodedAssembly = new Uint8Array(buffer) as EncodedAssembly
 
+    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
     const message: Message = {
         type: "newObject",
         data: {
@@ -226,9 +240,8 @@ async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) 
             assembly: encodedAssembly,
             assemblyHash: info!.hash,
             miraType: info!.miraType,
-            initialPreferences: (
-                World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
-            ).getPreferenceData(),
+            initialPreferences: sceneObject.getPreferenceData(),
+            bodyIds: sceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
         },
     }
 

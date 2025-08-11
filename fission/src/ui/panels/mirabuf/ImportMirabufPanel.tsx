@@ -110,6 +110,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, pr
                                     assemblyHash: info.hash,
                                     miraType: info.miraType,
                                     initialPreferences: x.getPreferenceData(),
+                                    bodyIds: x.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
                                 },
                             }
                             await World.multiplayerSystem?.broadcast(message)

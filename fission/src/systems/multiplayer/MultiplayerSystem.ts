@@ -10,6 +10,7 @@ import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
 import type { ClientInfo, EncodedAssembly, Message, MessageType } from "./types"
+import Jolt from "@azaleacolburn/jolt-physics"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -22,6 +23,7 @@ class MultiplayerSystem {
 
     public readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
     public readonly _clientToObjectMap: Map<string, number[]> = new Map() // sceneObjectKey -> Jolt.BodyId.GetIndexAndSequenceNumber()
+    public readonly _clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map() // Each Map is: peerBodyId -> clientBodyId
 
     readonly info: ClientInfo
     public lastSentCollisionTimestamp: number = Date.now()
