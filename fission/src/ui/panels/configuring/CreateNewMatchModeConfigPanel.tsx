@@ -1,6 +1,6 @@
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { Box, TextField, FormControlLabel, Stack, Divider, Button } from "@mui/material"
+import { Box, TextField, FormControlLabel, Stack, Divider, Button, Typography } from "@mui/material"
 import Checkbox from "@/ui/components/Checkbox"
 import { useEffect, useState, useCallback } from "react"
 import type { MatchModeConfig } from "./MatchModeConfigPanel"
@@ -360,6 +360,9 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                 {fieldGroups.map((group, groupIndex) => (
                     <Box key={group.title}>
                         <Stack spacing={2}>
+                            <Typography variant="h6" gutterBottom>
+                                {group.title}
+                            </Typography>
                             {group.fields.map(field => renderField(field.name, field.label, field.helperText))}
                         </Stack>
                         {groupIndex < fieldGroups.length - 1 && <Divider />}
