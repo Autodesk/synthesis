@@ -1,5 +1,6 @@
 import { AnimatePresence } from "framer-motion"
 import { SnackbarProvider } from "notistack"
+import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
 import MainHUD from "@/components/MainHUD"
 import Scene from "@/components/Scene.tsx"
@@ -68,7 +69,11 @@ function Synthesis() {
     return (
         <AnimatePresence key={"animate-presence"}>
             <ThemeProvider>
-                <SnackbarProvider maxSnack={5} anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
+                <SnackbarProvider
+                    maxSnack={5}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                    TransitionComponent={Slide}
+                >
                     <StateProvider>
                         <UIProvider>
                             <GlobalUIComponent />

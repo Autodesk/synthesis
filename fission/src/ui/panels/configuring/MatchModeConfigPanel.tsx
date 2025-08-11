@@ -69,7 +69,11 @@ export interface MatchModeConfig {
     sideExtensionPenalty: number
 }
 
-const props: Readonly<{ id: keyof MatchModeConfig; expectedType: string; required: boolean }>[] = [
+const props: Readonly<{
+    id: keyof MatchModeConfig
+    expectedType: string
+    required: boolean
+}>[] = [
     { id: "id", expectedType: "string", required: true },
     { id: "name", expectedType: "string", required: true },
     { id: "autonomousTime", expectedType: "number", required: false },
@@ -113,7 +117,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
             <Stack
                 key={`button-box-${id}`}
                 direction="row-reverse"
-                gap={"0.25rem"}
+                gap={"0.5rem"}
                 justifyContent={"center"}
                 alignItems={"center"}
             >

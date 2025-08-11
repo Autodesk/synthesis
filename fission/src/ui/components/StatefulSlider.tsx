@@ -1,4 +1,4 @@
-import { FormControlLabel, Slider, Tooltip } from "@mui/material"
+import { FormControlLabel, Slider, Stack, Tooltip, Typography } from "@mui/material"
 import { useState } from "react"
 
 const StatefulSlider: React.FC<
@@ -12,20 +12,20 @@ const StatefulSlider: React.FC<
     const [value, setValue] = useState(props.defaultValue)
     return (
         <Tooltip title={props.tooltip ?? ""}>
-            <FormControlLabel
-                label={props.label}
-                labelPlacement="top"
-                control={
-                    <Slider
-                        {...props}
-                        value={value}
-                        onChange={(_, value) => {
-                            setValue(value as number)
-                            props.onChange?.(value as number)
-                        }}
-                    ></Slider>
-                }
-            />
+            <Stack direction="column" gap={0.5} className="no-drag">
+                <Stack direction="row" justifyContent="space-between" alignItems="baseline">
+                    <Typography variant="body2">{props.label}</Typography>
+                    <Typography variant="caption">{value.toFixed(2)}</Typography>
+                </Stack>
+                <Slider
+                    {...props}
+                    value={value}
+                    onChange={(_, value) => {
+                        setValue(value as number)
+                        props.onChange?.(value as number)
+                    }}
+                />
+            </Stack>
         </Tooltip>
     )
 }

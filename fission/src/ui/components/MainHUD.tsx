@@ -183,7 +183,9 @@ const MainHUD: React.FC = () => {
                             msUserSelect: "none",
                             WebkitUserSelect: "none",
                             filter: mode === "dark" ? "invert(1)" : "none",
+                            WebkitUserDrag: "none",
                         }}
+                        draggable={false}
                     />
                     <IconButton
                         sx={{
@@ -206,7 +208,11 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={SynthesisIcons.ADD}
                     larger={true}
-                    onClick={() => openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })}
+                    onClick={() =>
+                        openPanel(ImportMirabufPanel, {
+                            configurationType: "ROBOTS" as ConfigurationType,
+                        })
+                    }
                 />
                 <Stack direction="column" sx={{ borderRadius: "7px", padding: "4px" }} bgcolor="primary.main" gap={0.5}>
                     <MainHUDButton
@@ -217,7 +223,11 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"General Settings"}
                         icon={SynthesisIcons.GEAR}
-                        onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
+                        onClick={() =>
+                            openModal(SettingsModal, undefined, undefined, {
+                                allowClickAway: false,
+                            })
+                        }
                     />
                     <MainHUDButton
                         value={"Developer Tool"}

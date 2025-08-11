@@ -43,12 +43,14 @@ const Scoreboard: React.FC = () => {
         <Draggable positionOffset={{ x: HALF_W, y: 0 }}>
             <Stack
                 direction="column"
-                sx={{ bgcolor: "background.default", position: "absolute" }}
+                sx={{ bgcolor: "background.paper", position: "absolute", boxShadow: 6 }}
                 className="w-min p-2 justify-center align-middle rounded-3xl select-none"
             >
                 {showTime() && (
                     <Stack direction="row" className="w-full justify-center">
-                        <Label size="lg">{time}</Label>
+                        <Label size="lg" color="text.primary">
+                            {time}
+                        </Label>
                     </Stack>
                 )}
                 <Stack direction="row" className={`px-4 ${showTime() ? "pt-1 pb-4" : "py-4"}`} gap={1}>

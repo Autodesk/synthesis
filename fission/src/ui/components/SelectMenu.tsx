@@ -144,7 +144,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     return (
         <>
             {/** Box containing the menu header */}
-            <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
+            <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item" gap={1}>
                 {/** Back arrow button when an option is selected */}
                 {selectedOption !== undefined && (
                     <IconButton
@@ -153,6 +153,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                             onOptionSelected(undefined)
                         }}
                         id="select-menu-back-button"
+                        sx={{ mr: 1 }}
                     >
                         {SynthesisIcons.LEFT_ARROW_LARGE}
                     </IconButton>
@@ -166,7 +167,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 </Stack>
             </Stack>
             <Divider />
-            {Spacer(10)}
+            {Spacer(12)}
 
             {selectedOption === undefined && (
                 <>

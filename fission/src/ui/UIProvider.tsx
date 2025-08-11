@@ -102,6 +102,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             props: Omit<PanelProps<P>, "type" | "configured" | "custom"> &
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PANEL_PROPS
         ) => {
+            // Dupe check
+            const isDuplicate = panels.some(p => p.content === content)
+            if (isDuplicate) {
+                return panels.find(p => p.content === content)!.id
+            }
             const id = uuidv4()
             const panel = {
                 id,
@@ -128,7 +133,16 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             panel.onCancel = new UICallback()
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
-            setPanels([...panels, panel as Panel<any, any>])
+            const contentName = (content as unknown as { name?: string })?.name ?? ""
+            const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel"]
+            let nextPanels = panels
+            if (mutuallyExclusive.includes(contentName)) {
+                nextPanels = panels.filter(
+                    p => !mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
+                )
+            }
+
+            setPanels([...nextPanels, panel as Panel<any, any>])
             return id
         },
         [panels]

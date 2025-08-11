@@ -60,17 +60,30 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
     // FIXME: sliders show up as <span> so want to cancel drag on those
     // however still can drag on dropdown but menu elements are left behind
     return (
-        <Draggable cancel="span, input" positionOffset={getPositionOffset(props.position)}>
+        <Draggable
+            handle=".panel-drag-handle"
+            cancel={"input, textarea, select, .MuiSlider-root, .MuiMenuItem-root, .no-drag"}
+            positionOffset={getPositionOffset(props.position)}
+        >
             <Card
+                elevation={8}
                 sx={{
                     display: panel.props.configured ? "" : "none",
                     position: "absolute",
                     pointerEvents: "auto",
-                    p: 4,
+                    p: 2,
+                    boxShadow: 6,
                 }}
             >
-                {props.title && <CardHeader title={props.title} className="select-none" />}
-                <CardContent>
+                {props.title && (
+                    <CardHeader
+                        title={props.title}
+                        className="panel-drag-handle select-none"
+                        sx={{ cursor: "move", py: 1, px: 2 }}
+                        titleTypographyProps={{ variant: "subtitle1" }}
+                    />
+                )}
+                <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
                     <div className="panel-contents">
                         {React.Children.map(children, child => {
                             if (React.isValidElement(child)) return React.cloneElement(child, { panel, parent })
