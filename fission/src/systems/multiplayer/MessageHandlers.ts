@@ -1,3 +1,4 @@
+import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import MirabufCachingService from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
@@ -45,6 +46,7 @@ export const peerMessageHandlers = {
 } as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
 
 const pendingOperations: (() => void)[] = []
+const progressHandles: Map<number, ProgressHandle> = new Map()
 
 async function handleMatchModeState(data: MatchModeStateData) {
     console.log(data)
@@ -150,8 +152,16 @@ function handleCollision(data: UpdateObjectData[]) {
 }
 
 async function handleNewObject(data: InitObjectData, peerId: string) {
+    const handle =
+        progressHandles.get(data.sceneObjectKey) ??
+        new ProgressHandle(
+            "Asset from " + (World.multiplayerSystem?._clientToInfoMap.get(peerId)?.displayName ?? peerId)
+        )
+    handle.update("Finding Assembly", 0.05)
+    progressHandles.set(data.sceneObjectKey, handle)
     let assembly: mirabuf.Assembly | undefined
     if (data.assembly) {
+        handle.update("Loading Assembly", 0.2)
         const returnedInfo = await MirabufCachingService.cacheLocalAndReturn(
             data.assembly.buffer as ArrayBuffer,
             data.miraType
@@ -166,6 +176,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     }
     if (!assembly) {
         console.log("needAssembly")
+        handle.update("Requesting Assembly", 0.05)
         await World.multiplayerSystem?.send(peerId, {
             type: "needAssembly",
             data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
@@ -173,7 +184,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
         return
     }
 
-    const object = await createMirabuf(assembly)
+    const object = await createMirabuf(assembly, handle)
     if (object == null) return
 
     const clientToObjectMap = World.multiplayerSystem?._clientToObjectMap
@@ -187,7 +198,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
 
     clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
-
+    handle.done("Loaded")
     // Run all messages that arrived before the assembly fully spawned
     const len = pendingOperations.length
     pendingOperations.forEach(op => {
