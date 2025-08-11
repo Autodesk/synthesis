@@ -1,6 +1,6 @@
 import { PeerServer } from "peer";
 
-export const PORT = 9000;
+export const PORT = 9002;
 
 const peerServer = PeerServer({
 	path: "/",
@@ -26,4 +26,3 @@ setInterval(() => {
 	console.log(string);
 }, 15000);
 // peerServer.on("")
-

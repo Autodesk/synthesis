@@ -2,29 +2,25 @@
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
-import MirabufCachingService from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
-import MatchMode from "@/systems/match_mode/MatchMode.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
-import JOLT from "@/util/loading/JoltSyncLoader"
 import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
-import type {
-    AssemblyRequestData,
-    ClientInfo,
-    EncodedAssembly,
-    InitData,
-    InitObjectData,
-    MatchModeStateData,
-    Message,
-    MessageType,
-    MetadataUpdateData,
-    ObjectPreferences,
-    UpdateObjectData,
-} from "./types"
+import type { ClientInfo, EncodedAssembly, Message, MessageType } from "./types"
+import {
+    disableObjectPhysics,
+    enableObjectPhysics,
+    handleAssemblyRequest,
+    handleCollision,
+    handleDeleteObject,
+    handleNewObject,
+    handleObjectConfiguration,
+    handlePeerInfo,
+    handlePeerUpdate,
+    handleWorldInitialization,
+} from "./MessageHandlers"
 
-const COLLISION_TIMEOUT = 500
+export const COLLISION_TIMEOUT = 500
 
 class MultiplayerSystem {
     private readonly _client: Peer
@@ -33,11 +29,11 @@ class MultiplayerSystem {
     readonly clientId: string
     private readonly _initializationPromise: Promise<boolean>
 
-    private readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
-    private readonly _clientToObjectMap: Map<string, number[]> = new Map() // sceneObjectKey -> Jolt.BodyId.GetIndexAndSequenceNumber()
+    public readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
+    public readonly _clientToObjectMap: Map<string, number[]> = new Map() // sceneObjectKey -> Jolt.BodyId.GetIndexAndSequenceNumber()
 
     readonly info: ClientInfo
-    lastSentCollisionTimestamp: number = Date.now()
+    public lastSentCollisionTimestamp: number = Date.now()
 
     public static async setup(roomId: string, displayName: string, isHost: boolean): Promise<boolean> {
         const clientId = await generateId(roomId)
@@ -79,6 +75,7 @@ class MultiplayerSystem {
                 }
                 resolve(true)
             })
+
             this._client.on("error", e => {
                 console.error("PeerJS Error:", e)
                 switch (e.type) {
@@ -96,6 +93,7 @@ class MultiplayerSystem {
                 }
                 resolve(false)
             })
+
             this._client.on("disconnected", peer => {
                 console.log("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
             })
@@ -217,18 +215,18 @@ class MultiplayerSystem {
     }
 
     peerMessageHandlers = {
-        info: this.handlePeerInfo,
-        init: this.handleWorldInitialization,
-        update: this.handlePeerUpdate,
-        collision: this.handleCollision,
-        newObject: this.handleNewObject,
-        needAssembly: this.handleAssemblyRequest,
-        deleteObject: this.handleDeleteObject,
-        configureObject: this.handleObjectConfiguration,
-        disableObjectPhysics: this.disableObjectPhysics,
-        enableObjectPhysics: this.enableObjectPhysics,
-        metadataUpdate: this.handleMetadataUpdate,
-        matchModeState: this.handleMatchModeState,
+        info: handlePeerInfo,
+        init: handleWorldInitialization,
+        update: handlePeerUpdate,
+        collision: handleCollision,
+        newObject: handleNewObject,
+        needAssembly: handleAssemblyRequest,
+        deleteObject: handleDeleteObject,
+        configureObject: handleObjectConfiguration,
+        disableObjectPhysics: disableObjectPhysics,
+        enableObjectPhysics: enableObjectPhysics,
+        metadataUpdate: handleMetadataUpdate,
+        matchModeState: handleMatchModeState,
         robotLeft: () => {
             console.warn("unhandled event")
         },
@@ -246,205 +244,6 @@ class MultiplayerSystem {
             peerId: string
         ) => Promise<void> | void
         await handler(message.data, peerId)
-    }
-
-    async handleMatchModeState(data: MatchModeStateData) {
-        console.log(data)
-        if (data.event == "start") {
-            MatchMode.getInstance().setMatchModeConfig(data.config)
-            await MatchMode.getInstance().start(false)
-        }
-        if (data.event == "cancel") {
-            MatchMode.getInstance().sandboxModeStart()
-            globalAddToast("info", "Match Mode Cancelled")
-        }
-    }
-
-    handlePeerInfo(data: ClientInfo) {
-        this._clientToObjectMap.set(data.clientId, [])
-        this._clientToInfoMap.set(data.clientId, data)
-        MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
-    }
-
-    async handleWorldInitialization(data: InitData) {
-        World.physicsSystem = data.physicsSystem
-        World.sceneRenderer.sceneObjects = await this.encodedAssemblyToSceneObjectMap(data.objects)
-    }
-
-    async encodedAssemblyToSceneObjectMap(assemblies: EncodedAssembly[]): Promise<Map<number, MirabufSceneObject>> {
-        return new Map(
-            await Promise.all(
-                assemblies.map(async assembly => {
-                    const object = await createMirabuf(mirabuf.Assembly.decode(assembly))
-                    if (object == null) return
-
-                    World.sceneRenderer.registerSceneObject(object)
-
-                    return [object.id, object] as [number, MirabufSceneObject]
-                })
-            ).then(objects => objects.filter(n => n != null))
-        )
-    }
-
-    handlePeerUpdate(data: UpdateObjectData[]) {
-        data.forEach(({ sceneObjectKey, gamePiecesControlled, bodies }) => {
-            const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
-            if (sceneObject == null) {
-                console.warn(
-                    `Multiplayer SceneObject: ${sceneObjectKey} not found in sceneObjects map. Multiplayer SceneObjects must be initialized before being updated.`
-                )
-                return
-            } else if (!(sceneObject instanceof MirabufSceneObject)) {
-                console.error(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
-                return
-            }
-
-            // Set all the ejectables that are in activeEjectables but not gamePiecesControlled
-            sceneObject.activeEjectables
-                .filter(id => !gamePiecesControlled.includes(id.GetIndexAndSequenceNumber()))
-                // We're not ejecting the actual game piece here, but the robots should be configured to eject in the same order so it's fine
-                .forEach(_ => sceneObject.eject())
-
-            // Set all the ejectables that are in gamePiecesControlled but not activeEjectables
-            gamePiecesControlled
-                .filter(id => !sceneObject.activeEjectables.map(n => n.GetIndexAndSequenceNumber()).includes(id))
-                .forEach(id => {
-                    const bodyId = new JOLT.BodyID(id)
-                    return sceneObject.setEjectable(bodyId)
-                })
-
-            // Sets the physics data for each body in the assembly
-            bodies.forEach(({ bodyId, linearVelocityStr, angularVelocityStr, positionStr, rotationStr }) => {
-                const lin: { x: number; y: number; z: number } = JSON.parse(linearVelocityStr)
-                const ang: { x: number; y: number; z: number } = JSON.parse(angularVelocityStr)
-                const pos: { x: number; y: number; z: number } = JSON.parse(positionStr)
-                const rot: { x: number; y: number; z: number; w: number } = JSON.parse(rotationStr)
-
-                const linearVelocity = new JOLT.Vec3(lin.x, lin.y, lin.z)
-                const angularVelocity = new JOLT.Vec3(ang.x, ang.y, ang.z)
-                const position = new JOLT.RVec3(pos.x, pos.y, pos.z)
-                const rotation = new JOLT.Quat(rot.x, rot.y, rot.z, rot.w)
-
-                const joltBodyId = new JOLT.BodyID(bodyId)
-
-                const clientBody = World.physicsSystem.getBody(joltBodyId)
-                if (!clientBody) {
-                    console.error(`Body ${bodyId} on Scene Object ${sceneObject.assemblyName} not found`)
-                    return
-                }
-
-                clientBody.SetLinearVelocity(linearVelocity)
-                clientBody.SetAngularVelocity(angularVelocity)
-                World.physicsSystem.setBodyPosition(joltBodyId, position)
-                World.physicsSystem.setBodyRotation(joltBodyId, rotation)
-            })
-        })
-    }
-
-    handleCollision(data: UpdateObjectData[]) {
-        // TODO Expand on this logic
-        if (this.lastSentCollisionTimestamp < COLLISION_TIMEOUT) return
-
-        this.handlePeerUpdate(data)
-    }
-
-    async handleNewObject(data: InitObjectData, peerId: string) {
-        let assembly: mirabuf.Assembly | undefined
-        if (data.assembly) {
-            const returnedInfo = await MirabufCachingService.cacheLocalAndReturn(
-                data.assembly.buffer as ArrayBuffer,
-                data.miraType
-            )
-            if (!returnedInfo) {
-                console.warn("nothing returned from caching function")
-                return
-            }
-            assembly = returnedInfo?.assembly
-        } else {
-            assembly = await MirabufCachingService.get(data.assemblyHash)
-        }
-        if (!assembly) {
-            console.log("needAssembly")
-            await this.send(peerId, {
-                type: "needAssembly",
-                data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
-            })
-            return
-        }
-
-        const object = await createMirabuf(assembly)
-        if (object == null) return
-
-        object.setPreferenceData(data.initialPreferences)
-        object.nameOverride =
-            (this._clientToInfoMap.get(peerId)?.displayName ?? peerId) +
-            " " +
-            (this._clientToObjectMap.get(peerId)?.length ?? "0")
-
-        console.log("Registering object", object, data)
-        World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
-
-        this._clientToObjectMap.get(peerId)?.push(object.id) || this._clientToObjectMap.set(peerId, [object.id])
-    }
-
-    async handleAssemblyRequest(data: AssemblyRequestData, peerId: string) {
-        const sceneObjectKey = data.sceneObjectKey
-
-        const assembly = await MirabufCachingService.getEncoded(data.assemblyHash)
-        if (!assembly) {
-            console.error(`Failed to get assembly: ${data.assemblyHash} from cache`)
-            return
-        }
-        const { buffer, info } = assembly
-
-        const encodedAssembly = new Uint8Array(buffer) as EncodedAssembly
-
-        const message: Message = {
-            type: "newObject",
-            data: {
-                sceneObjectKey,
-                assembly: encodedAssembly,
-                assemblyHash: info.hash,
-                miraType: info.miraType,
-                initialPreferences: (
-                    World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
-                ).getPreferenceData(),
-            },
-        }
-
-        await this.send(peerId, message)
-    }
-
-    handleDeleteObject(sceneObjectKey: number, peerId: string) {
-        this._clientToObjectMap.delete(peerId)
-
-        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
-        if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
-
-        sceneObject.dispose()
-        World.sceneRenderer.removeSceneObject(sceneObjectKey)
-    }
-
-    handleObjectConfiguration(data: ObjectPreferences) {
-        const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey) as MirabufSceneObject
-        sceneObject.setPreferenceData(data.objectConfigurationData)
-    }
-
-    disableObjectPhysics(sceneObjectKey: number) {
-        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey) as MirabufSceneObject
-        sceneObject.disablePhysics()
-    }
-
-    enableObjectPhysics(sceneObjectKey: number) {
-        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey) as MirabufSceneObject
-        sceneObject.enablePhysics()
-    }
-
-    handleMetadataUpdate(data: MetadataUpdateData) {
-        const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
-        if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
-
-        sceneObject.multiplayerInfo = data
     }
 
     async send(peer: string, message: Message) {
@@ -560,3 +359,9 @@ export class MultiplayerStateEvent extends Event {
 }
 
 export default MultiplayerSystem
+function handleMetadataUpdate(data: MetadataUpdateData, peerId: string): void | Promise<void> {
+    throw new Error("Function not implemented.")
+}
+function handleMatchModeState(data: MatchModeStateData, peerId: string): void | Promise<void> {
+    throw new Error("Function not implemented.")
+}
