@@ -16,7 +16,6 @@ export interface MessageType {
     configureObject: ObjectPreferences // sceneObjectKey
     disableObjectPhysics: number // sceneObjectKey
     enableObjectPhysics: number // sceneObjectKey
-    robotLeft: RobotLeftData
     ping: PingData
     pong: PingData
     matchModeState: MatchModeStateData
@@ -24,9 +23,9 @@ export interface MessageType {
 }
 
 export interface MatchModePenalty {
-    objectId:number
-    points:number
-    description:string
+    objectId: number
+    points: number
+    description: string
 }
 export type MatchModeStateData =
     | {
@@ -102,10 +101,6 @@ export type UpdateObjectData = {
 export type CollisionData = {
     physicsSystem: PhysicsSystem
     sceneObjects: Map<number, MirabufSceneObject>
-}
-
-export type RobotLeftData = {
-    sceneObjectKey: number
 }
 
 export type PingData = { timestamp: number }

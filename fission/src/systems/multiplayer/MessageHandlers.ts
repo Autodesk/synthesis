@@ -19,7 +19,6 @@ import type {
     MessageType,
     MetadataUpdateData,
     ObjectPreferences,
-    RobotLeftData,
     UpdateObjectData,
 } from "./types"
 
@@ -37,7 +36,6 @@ export const peerMessageHandlers = {
     metadataUpdate: handleMetadataUpdate,
     matchModeState: handleMatchModeState,
     matchModePenalty: handleMatchModePenalty,
-    robotLeft: handleRobotLeft,
     ping: () => {
         console.warn("unhandled event")
     },
@@ -45,10 +43,6 @@ export const peerMessageHandlers = {
         console.warn("unhandled event")
     },
 } as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
-
-async function handleRobotLeft(data: RobotLeftData) {
-    World.sceneRenderer.removeSceneObject(data.sceneObjectKey)
-}
 
 async function handleMatchModeState(data: MatchModeStateData) {
     console.log(data)
@@ -222,26 +216,19 @@ async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) 
     await World.multiplayerSystem?.send(peerId, message)
 }
 
-function handleDeleteObject(sceneObjectKey: number, _peerId: string) {
-    const clientToObjectMap = World.multiplayerSystem?._clientToObjectMap
-    if (clientToObjectMap == null) return
+function handleDeleteObject(sceneObjectKey: number) {
+    if (!World.multiplayerSystem) return
+    const clientToObjectMap = World.multiplayerSystem._clientToObjectMap
 
-    const [peerId, _keys] = [...clientToObjectMap.entries()].find(([_id, keys]) => keys.includes(sceneObjectKey)) ?? [
-        undefined,
-        undefined,
-    ]
-    if (peerId) {
-        const keys = clientToObjectMap.get(peerId)
+    const peerClient = [...clientToObjectMap.entries()].find(([_id, keys]) => keys.includes(sceneObjectKey))
+    if (peerClient != null) {
+        const keys = clientToObjectMap.get(peerClient[0])
         const index = keys?.indexOf(sceneObjectKey) ?? -1
         if (index != -1) {
             keys?.splice(index)
         }
     }
 
-    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
-    if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
-
-    sceneObject.dispose()
     World.sceneRenderer.removeSceneObject(sceneObjectKey)
 }
 

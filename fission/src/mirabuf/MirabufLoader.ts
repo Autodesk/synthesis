@@ -324,6 +324,8 @@ class MirabufCachingService {
             console.warn("Could not find assembly for hash", hash, info)
             return
         } catch (e) {
+            console.log(typeof e === "object" && e != null && "name" in e ? e["name"] : "")
+            console.log(typeof e === "object" && e != null && "type" in e ? e["type"] : "")
             console.error("could not get encoded assembly", e)
             return undefined
         }

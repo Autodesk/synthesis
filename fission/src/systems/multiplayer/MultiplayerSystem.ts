@@ -187,8 +187,8 @@ class MultiplayerSystem {
             this._clientToObjectMap.get(conn.peer)?.forEach(obj => {
                 this.handlePeerMessage(
                     {
-                        type: "robotLeft",
-                        data: { sceneObjectKey: obj },
+                        type: "deleteObject",
+                        data: obj,
                     },
                     conn.peer
                 ).catch(console.error) // TODO Get actual sceneObjectKey
