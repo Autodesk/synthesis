@@ -7,13 +7,15 @@ import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
-import type { ClientInfo, EncodedAssembly, MatchModeStateData, Message, MessageType, MetadataUpdateData } from "./types"
+import type { ClientInfo, EncodedAssembly, Message, MessageType } from "./types"
 import {
     disableObjectPhysics,
     enableObjectPhysics,
     handleAssemblyRequest,
     handleCollision,
     handleDeleteObject,
+    handleMatchModeState,
+    handleMetadataUpdate,
     handleNewObject,
     handleObjectConfiguration,
     handlePeerInfo,
@@ -368,9 +370,3 @@ export class MultiplayerStateEvent extends Event {
 }
 
 export default MultiplayerSystem
-function handleMetadataUpdate(data: MetadataUpdateData, peerId: string): void | Promise<void> {
-    throw new Error("Function not implemented.")
-}
-function handleMatchModeState(data: MatchModeStateData, peerId: string): void | Promise<void> {
-    throw new Error("Function not implemented.")
-}
