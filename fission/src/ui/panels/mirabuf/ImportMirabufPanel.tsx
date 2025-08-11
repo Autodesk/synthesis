@@ -113,7 +113,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, pr
                                 },
                             }
                             await World.multiplayerSystem?.broadcast(message)
-                            World.multiplayerSystem.newClientSceneObject(x.id)
+                            World.multiplayerSystem.registerOwnSceneObject(x.id)
                         }
 
                         progressHandle.done()

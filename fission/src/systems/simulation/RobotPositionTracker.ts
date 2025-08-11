@@ -9,7 +9,7 @@ class RobotPositionTracker {
     private static _offMapPenalty: number = 0
 
     public static update(): void {
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
+        World.getOwnRobots().forEach(robot => {
             const rootNodeId = robot.getRootNodeId()
             if (!rootNodeId) {
                 return

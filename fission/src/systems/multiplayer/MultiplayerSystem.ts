@@ -2,11 +2,12 @@
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
-import type { ClientInfo, EncodedAssembly, Message, MessageType } from "./types"
+import type { ClientInfo, EncodedAssembly, MatchModeStateData, Message, MessageType, MetadataUpdateData } from "./types"
 import {
     disableObjectPhysics,
     enableObjectPhysics,
@@ -19,6 +20,7 @@ import {
     handlePeerUpdate,
     handleWorldInitialization,
 } from "./MessageHandlers"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -260,11 +262,18 @@ class MultiplayerSystem {
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
-    getClientSceneObjectIds(): number[] {
+    getOwnSceneObjects(): number[] {
         return this._clientToObjectMap.get(this.clientId) ?? []
     }
 
-    newClientSceneObject(objectId: number) {
+    getOwnRobots(): MirabufSceneObject[] {
+        return (this._clientToObjectMap.get(this.clientId) ?? [])
+            .map(id => World.sceneRenderer.sceneObjects.get(id))
+            .filter(obj => obj instanceof MirabufSceneObject)
+            .filter(obj => obj.miraType == MiraType.ROBOT)
+    }
+
+    registerOwnSceneObject(objectId: number) {
         const list = this._clientToObjectMap.get(this.clientId)
         if (list != null) {
             list.push(objectId)

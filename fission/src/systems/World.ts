@@ -63,6 +63,10 @@ class World {
         return World._dragModeSystem
     }
 
+    public static getOwnRobots() {
+        return (World.multiplayerSystem?.getOwnRobots ?? World.sceneRenderer.mirabufSceneObjects.getRobots)()
+    }
+
     public static set physicsSystem(system: PhysicsSystem) {
         World.physicsSystem = system
     }

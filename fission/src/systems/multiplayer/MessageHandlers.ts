@@ -116,7 +116,7 @@ export function handlePeerUpdate(data: UpdateObjectData[]) {
 
 export function handleCollision(data: UpdateObjectData[]) {
     // TODO Expand on this logic
-    if (World.multiplayerSystem?.lastSentCollisionTimestamp < COLLISION_TIMEOUT) return
+    if (World.multiplayerSystem?.lastSentCollisionTimestamp ?? 0 < COLLISION_TIMEOUT) return
 
     handlePeerUpdate(data)
 }
@@ -179,8 +179,8 @@ export async function handleAssemblyRequest(data: AssemblyRequestData, peerId: s
         data: {
             sceneObjectKey,
             assembly: encodedAssembly,
-            assemblyHash: info.hash,
-            miraType: info.miraType,
+            assemblyHash: info!.hash,
+            miraType: info!.miraType,
             initialPreferences: (
                 World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
             ).getPreferenceData(),
