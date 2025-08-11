@@ -5,22 +5,24 @@ import Label from "@/components/Label.tsx"
 import { MultiplayerStateEvent, MultiplayerStateEventType } from "@/systems/multiplayer/MultiplayerSystem.ts"
 import type { ClientInfo } from "@/systems/multiplayer/types.ts"
 import World from "@/systems/World.ts"
+import {Tooltip, Typography} from "@mui/material";
 
 const MultiplayerHUD: React.FC = () => {
     const [roomCode, setRoomCode] = useState("")
-    const [name, setName] = useState("")
     const [peers, setPeers] = useState<ClientInfo[]>([])
     useEffect(() => {
         const unsubscribers: (() => void)[] = []
         unsubscribers.push(
             MultiplayerStateEvent.addEventListener(MultiplayerStateEventType.JOIN_ROOM, () => {
-                setRoomCode(World.multiplayerSystem?.roomId ?? "")
-                setName(World.multiplayerSystem?.displayName ?? "")
+                if (!World.multiplayerSystem) return
+                setRoomCode(World.multiplayerSystem.roomId)
+                setPeers([World.multiplayerSystem.info])
             })
         )
         unsubscribers.push(
             MultiplayerStateEvent.addEventListener(MultiplayerStateEventType.PEER_CHANGE, () => {
-                setPeers(World.multiplayerSystem?.peerInfo ?? [])
+                if (!World.multiplayerSystem) return
+                setPeers([World.multiplayerSystem.info, ...World.multiplayerSystem.peerInfo])
             })
         )
         return () => {
@@ -47,14 +49,14 @@ const MultiplayerHUD: React.FC = () => {
                 <Label fontWeight={"700"} size={"sm"}>
                     Room {roomCode}
                 </Label>
-                <Label size={"sm"}>{name} (you)</Label>
-                {peers.map(peer => (
-                    <Label size={"sm"} key={peer.clientId}>
-                        {peer.displayName}
-                    </Label>
-                ))}
-            </Stack>
-        )
+            {peers.map(peer => (
+                    <Tooltip placement="right" key={peer.clientId} title={peer.clientId.split("-")[0]}>
+                        <Typography variant={"body1"} key={peer.clientId}>
+                            {peer.displayName}{peer.clientId == World.multiplayerSystem?.clientId && " (you)"}
+                        </Typography>
+                    </Tooltip>
+            ))}
+        </Stack>
     )
 }
 

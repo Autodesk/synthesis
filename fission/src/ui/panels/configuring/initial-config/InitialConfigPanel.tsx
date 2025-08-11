@@ -23,7 +23,7 @@ import InputSchemeSelection from "./InputSchemeSelection"
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
     const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
-    const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
+    const { openModal, openPanel, configureScreen } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -37,8 +37,14 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
     }, [])
 
+    useEffect(() => {
+        const interval = setInterval(() => console.log({ alliance, station }), 1000)
+        return () => clearInterval(interval)
+    }, [alliance, station])
+
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
+            console.log({ alliance, station })
             targetAssembly.alliance = alliance
             targetAssembly.station = station
             ScoreTracker.addPerRobotScore(targetAssembly, 0)
@@ -59,11 +65,11 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             }
             World.multiplayerSystem?.broadcast({ type: "metadataUpdate", data: targetAssembly.multiplayerInfo })
         }
-    }, [closePanel, panel, targetAssembly])
+    }, [alliance, targetAssembly, station, setSelectedScheme])
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) World.sceneRenderer.removeSceneObject(targetAssembly.id)
-    }, [closePanel, panel, targetAssembly])
+    }, [targetAssembly])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)
@@ -76,14 +82,16 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             panel!,
             { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
             {
-                onBeforeAccept: closeFinish,
-                onCancel: closeDelete,
+                onBeforeAccept: () => {
+                    closeFinish()
+                },
+                onCancel: () => closeDelete(),
                 onClose: () => {
                     setUnconfirmedImport(false)
                 },
             }
         )
-    }, [])
+    }, [closeFinish, closeDelete, configureScreen, panel, setUnconfirmedImport])
 
     return (
         <Stack gap={2}>
@@ -140,7 +148,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     scaleDisabled={true}
                     size={3.0}
                     parent={targetAssembly}
-                    onAccept={closeFinish}
+                    onAccept={() => closeFinish()}
                     onCancel={closeDelete}
                 />
             )}
