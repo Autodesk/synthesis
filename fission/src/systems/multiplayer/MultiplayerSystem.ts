@@ -9,7 +9,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
-import type { ClientInfo, EncodedAssembly, Message, MessageType } from "./types"
+import type { ClientInfo, InitObjectData, Message, MessageType } from "./types"
 import Jolt from "@azaleacolburn/jolt-physics"
 
 export const COLLISION_TIMEOUT = 500
@@ -157,11 +157,17 @@ class MultiplayerSystem {
 
     // Called by the host, initializes the world with some defined set of objects, robots can be spawned in later
     async initWorld(physicsSystem: PhysicsSystem) {
-        const sceneObjects = World.sceneRenderer.mirabufSceneObjects
-            .getAll()
-            .map(sceneObject =>
-                mirabuf.Assembly.encode(sceneObject.mirabufInstance.parser.assembly).finish()
-            ) as EncodedAssembly[]
+        const sceneObjects: InitObjectData[] = await Promise.all(
+            World.sceneRenderer.mirabufSceneObjects.getAll().map(async sceneObject => ({
+                sceneObjectKey: sceneObject.id,
+                assemblyHash: await MirabufCachingService.hashBuffer(
+                    mirabuf.Assembly.encode(sceneObject.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
+                ),
+                miraType: sceneObject.miraType,
+                initialPreferences: sceneObject.getPreferenceData(),
+                bodyIds: sceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+            }))
+        )
 
         await this.broadcast({
             type: "init",
@@ -179,23 +185,25 @@ class MultiplayerSystem {
             this._connections.set(conn.peer, conn)
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             await this.send(conn.peer, { type: "info", data: this.info })
-            for (const objectId of this.getOwnSceneObjectIDs()) {
-                const obj = World.sceneRenderer.sceneObjects.get(objectId)
-                if (!(obj instanceof MirabufSceneObject)) return
-                const hash = await MirabufCachingService.hashBuffer(
-                    mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish()
-                )
-                await this.send(conn.peer, {
-                    type: "newObject",
-                    data: {
-                        sceneObjectKey: objectId,
-                        assemblyHash: hash,
-                        miraType: obj.miraType,
-                        initialPreferences: obj.getPreferenceData(),
-                    },
-                })
-                await this.send(conn.peer, { type: "metadataUpdate", data: obj.multiplayerInfo })
-            }
+            // I don't think this is necessary if we just move the call to initWorld
+            // for (const objectId of this.getOwnSceneObjectIDs()) {
+            //     const obj = World.sceneRenderer.sceneObjects.get(objectId)
+            //     if (!(obj instanceof MirabufSceneObject)) return
+            //     const hash = await MirabufCachingService.hashBuffer(
+            //         mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
+            //     )
+            //     await this.send(conn.peer, {
+            //         type: "newObject",
+            //         data: {
+            //             sceneObjectKey: objectId,
+            //             assemblyHash: hash,
+            //             miraType: obj.miraType,
+            //             initialPreferences: obj.getPreferenceData(),
+            //             bodyIds: obj.getAllBodies(),
+            //         },
+            //     })
+            //     await this.send(conn.peer, { type: "metadataUpdate", data: obj.multiplayerInfo })
+            // }
         })
 
         conn.on("data", async (data: unknown) => {
