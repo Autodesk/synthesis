@@ -237,7 +237,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
     )
 
     const createConfigFromForm = useCallback((): MatchModeConfig => {
-        const parseHeight = (value: string): number => {
+        const parseInfinity = (value: string): number => {
             return value.toLowerCase() === "infinity" ? Number.MAX_SAFE_INTEGER : parseFloat(value)
         }
 
@@ -249,9 +249,9 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             teleopTime: parseInt(formState.teleopTime.value as string, 10),
             endgameTime: parseInt(formState.endgameTime.value as string, 10),
             ignoreRotation: formState.ignoreRotation.value as boolean,
-            maxHeight: parseHeight(formState.maxHeight.value as string),
+            maxHeight: parseInfinity(formState.maxHeight.value as string),
             heightLimitPenalty: parseFloat(formState.heightLimitPenalty.value as string),
-            sideMaxExtension: parseHeight(formState.sideMaxExtension.value as string),
+            sideMaxExtension: parseInfinity(formState.sideMaxExtension.value as string),
             sideExtensionPenalty: parseFloat(formState.sideExtensionPenalty.value as string),
         }
     }, [formState])
