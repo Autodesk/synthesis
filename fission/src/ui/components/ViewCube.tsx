@@ -116,7 +116,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         }
 
         const handlePointerLockChange = () => {
-            setIsPointerLocked(!!document.pointerLockElement)
+            setIsPointerLocked(document.pointerLockElement != null)
         }
 
         const handlePointerLockError = () => {
