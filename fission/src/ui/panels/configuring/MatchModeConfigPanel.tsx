@@ -110,7 +110,14 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
     return (
-        <Stack direction="row" key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+        <Stack
+            direction="row"
+            key={id}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            gap={"1rem"}
+            sx={{ px: 1, py: 0.5 }}
+        >
             <Label size="sm" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
             </Label>

@@ -72,7 +72,10 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primar
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                {PositiveIconButton({ children: primaryButtonNode, onClick: primaryOnClick })}
+                {PositiveIconButton({
+                    children: primaryButtonNode,
+                    onClick: primaryOnClick,
+                })}
                 {secondaryOnClick && DeleteButton(secondaryOnClick)}
             </Stack>
         </Stack>
@@ -468,7 +471,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     )}
                 </AccordionSummary>
                 <AccordionDetails>
-                    {viewType === MiraType.ROBOT ? cachedRobotElements : cachedFieldElements}
+                    {viewType === MiraType.ROBOT ? (
+                        cachedRobotElements && cachedRobotElements.length > 0 ? (
+                            cachedRobotElements
+                        ) : (
+                            <Label size="sm">No Saved Assets</Label>
+                        )
+                    ) : cachedFieldElements && cachedFieldElements.length > 0 ? (
+                        cachedFieldElements
+                    ) : (
+                        <Label size="sm">No Saved Assets</Label>
+                    )}
                 </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -498,7 +511,13 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         {hubElements && filesStatus.isDone && RefreshButton(() => requestMirabufFiles())}
                     </Stack>
                 </AccordionSummary>
-                <AccordionDetails>{hubElements}</AccordionDetails>
+                <AccordionDetails>
+                    {hubElements && hubElements.length > 0 ? (
+                        hubElements
+                    ) : filesStatus.isDone ? (
+                        <Label size="sm">No Assets Found</Label>
+                    ) : null}
+                </AccordionDetails>
             </Accordion>
             <Accordion>
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
@@ -517,7 +536,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     )}
                 </AccordionSummary>
                 <AccordionDetails>
-                    {viewType === MiraType.ROBOT ? remoteRobotElements : remoteFieldElements}
+                    {viewType === MiraType.ROBOT ? (
+                        remoteRobotElements && remoteRobotElements.length > 0 ? (
+                            remoteRobotElements
+                        ) : (
+                            <Label size="sm">No Assets Found</Label>
+                        )
+                    ) : remoteFieldElements && remoteFieldElements.length > 0 ? (
+                        remoteFieldElements
+                    ) : (
+                        <Label size="sm">No Assets Found</Label>
+                    )}
                     <Stack justifyContent="center" mt={1}>
                         <PositiveButton
                             onClick={viewType === MiraType.ROBOT ? downloadAllRemoteRobots : downloadAllRemoteFields}

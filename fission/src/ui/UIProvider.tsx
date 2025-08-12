@@ -105,7 +105,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             // Dupe check
             const isDuplicate = panels.some(p => p.content === content)
             if (isDuplicate) {
-                return panels.find(p => p.content === content)!.id
+                const existing = panels.find(p => p.content === content)!
+                setPanels(p => [...p.filter(x => x !== existing), existing])
+                return existing.id
             }
             const id = uuidv4()
             const panel = {
@@ -135,11 +137,16 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
             const contentName = (content as unknown as { name?: string })?.name ?? ""
             const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel"]
-            let nextPanels = panels
+            const nextPanels = panels
             if (mutuallyExclusive.includes(contentName)) {
-                nextPanels = panels.filter(
-                    p => !mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
+                const existing = panels.find(p =>
+                    mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
                 )
+                if (existing) {
+                    // Bring it to front
+                    setPanels(p => [...p.filter(x => x !== existing), existing])
+                    return existing.id
+                }
             }
 
             setPanels([...nextPanels, panel as Panel<any, any>])

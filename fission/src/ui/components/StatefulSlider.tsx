@@ -12,7 +12,7 @@ const StatefulSlider: React.FC<
     const [value, setValue] = useState(props.defaultValue)
     return (
         <Tooltip title={props.tooltip ?? ""}>
-            <Stack direction="column" gap={0.5} className="no-drag">
+            <Stack direction="column" gap={0.5} className="no-drag" sx={{ px: 1 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="baseline">
                     <Typography variant="body2">{props.label}</Typography>
                     <Typography variant="caption">{value.toFixed(2)}</Typography>
@@ -23,6 +23,15 @@ const StatefulSlider: React.FC<
                     onChange={(_, value) => {
                         setValue(value as number)
                         props.onChange?.(value as number)
+                    }}
+                    sx={{
+                        mx: 0,
+                        "& .MuiSlider-thumb": {
+                            boxShadow: 2,
+                        },
+                        "& .MuiSlider-rail": {
+                            overflow: "visible",
+                        },
                     }}
                 />
             </Stack>
