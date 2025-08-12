@@ -10,7 +10,7 @@ import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
 import type { ClientInfo, InitObjectData, Message, MessageType } from "./types"
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -185,25 +185,14 @@ class MultiplayerSystem {
             this._connections.set(conn.peer, conn)
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             await this.send(conn.peer, { type: "info", data: this.info })
-            // I don't think this is necessary if we just move the call to initWorld
-            // for (const objectId of this.getOwnSceneObjectIDs()) {
-            //     const obj = World.sceneRenderer.sceneObjects.get(objectId)
-            //     if (!(obj instanceof MirabufSceneObject)) return
-            //     const hash = await MirabufCachingService.hashBuffer(
-            //         mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
-            //     )
-            //     await this.send(conn.peer, {
-            //         type: "newObject",
-            //         data: {
-            //             sceneObjectKey: objectId,
-            //             assemblyHash: hash,
-            //             miraType: obj.miraType,
-            //             initialPreferences: obj.getPreferenceData(),
-            //             bodyIds: obj.getAllBodies(),
-            //         },
-            //     })
-            //     await this.send(conn.peer, { type: "metadataUpdate", data: obj.multiplayerInfo })
-            // }
+
+            const ownSceneObjects = this.getOwnSceneObjectIDs()
+            World.sceneRenderer.mirabufSceneObjects
+                .getAll()
+                .filter(obj => ownSceneObjects.includes(obj.id))
+                .forEach(async obj => {
+                    await this.send(conn.peer, { type: "metadataUpdate", data: obj.multiplayerInfo })
+                })
         })
 
         conn.on("data", async (data: unknown) => {

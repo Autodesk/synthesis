@@ -1,7 +1,7 @@
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import MirabufCachingService from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { mirabuf } from "@/proto/mirabuf"
+import type { mirabuf } from "@/proto/mirabuf"
 import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
