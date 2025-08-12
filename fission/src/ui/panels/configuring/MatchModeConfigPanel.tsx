@@ -145,7 +145,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     useEffect(() => {
         setSpawnPositionsConfigured(
-            World.sceneRenderer.mirabufSceneObjects.getField()?.fieldPreferences?.spawnLocations
+            World?.sceneRenderer?.mirabufSceneObjects?.getField()?.fieldPreferences?.spawnLocations
                 ?.hasConfiguredLocations === true
         )
     })
