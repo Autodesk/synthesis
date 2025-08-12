@@ -319,6 +319,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const position = convertThreeVector3ToJoltRVec3(
                 new THREE.Vector3().setFromMatrixPosition(this.mirabufInstance.parser.gamePieceTransform!)
             )
+            // position.SetZ(position.GetZ() - 0.25)
             World.physicsSystem.setBodyPosition(jBodyId, position)
             this.updateMeshTransforms()
         }

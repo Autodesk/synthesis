@@ -57,8 +57,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     }, [u, pendingDeletes])
 
     const pieces = useMemo(() => {
-        const piece = World.sceneRenderer.mirabufSceneObjects.getField()
-        return !piece || pendingDeletes.includes(piece.id) ? [] : [piece]
+        return World.sceneRenderer.mirabufSceneObjects.getPieces()
     }, [u, pendingDeletes])
 
     const options = useMemo(() => {
@@ -72,7 +71,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
         <SelectMenu
             options={options}
             onOptionSelected={val => onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)}
-            defaultHeaderText={`Select a ${configurationType === "ROBOTS" ? "Robot" : "Field"}`}
+            defaultHeaderText={`Select a ${configurationType.slice(0, configurationType.length - 1).toLowerCase()}`}
             onDelete={val => {
                 onStageDelete(val)
                 update()
@@ -81,7 +80,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
                 openPanel(ImportMirabufPanel, { configurationType })
                 closePanel(panel!.id, CloseType.Overwrite)
             }}
-            noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
+            noOptionsText={`No ${configurationType.slice(0, configurationType.length - 1).toLowerCase()} spawned!`}
             defaultSelectedOption={
                 selectedAssembly ? makeSelectionOption(configurationType, selectedAssembly) : undefined
             }

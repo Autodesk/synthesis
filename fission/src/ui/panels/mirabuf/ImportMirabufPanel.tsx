@@ -647,7 +647,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     ) : (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteGamePieces
-                                ? `${remoteGamePieces.length} Default Robot${remoteGamePieces.length === 1 ? "" : "s"}`
+                                ? `${remoteGamePieces.length} Default Piece${remoteGamePieces.length === 1 ? "" : "s"}`
                                 : "Loading Default Game Pieces"}
                         </Label>
                     )}
