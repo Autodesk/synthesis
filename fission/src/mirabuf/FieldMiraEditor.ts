@@ -1,10 +1,10 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import { mirabuf } from "@/proto/mirabuf"
 import {
     defaultFieldPreferences,
     type FieldPreferences,
     type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import { mirabuf } from "../proto/mirabuf"
 
 export interface DevtoolMiraData {
     "devtool:scoring_zones": ScoringZonePreferences[]
