@@ -26,7 +26,7 @@ const fsHandle = await root.getDirectoryHandle(localStorageEntryName, {
     create: true,
 })
 
-export const memoryBuffer: Record<string, ArrayBuffer> = {}
+export const inMemoryCache: Record<string, ArrayBuffer | undefined> = {}
 
 export const canOPFS = await (async () => {
     try {
@@ -311,15 +311,29 @@ class MirabufCachingService {
             const info = this._cacheMap.get(hash)
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
 
-            const memCache = memoryBuffer[hash]
+            const memCache = inMemoryCache[hash]
             if (memCache) {
+                console.log(`Retrieved ${info?.name ?? hash} from memory`)
                 return { buffer: memCache, info }
             }
             if (canOPFS) {
                 const fileHandle = await fsHandle.getFileHandle(hash, {
                     create: false,
                 })
-                return { buffer: await fileHandle.getFile().then(x => x.arrayBuffer()), info }
+                const buffer = await fileHandle
+                    .getFile()
+                    .then(x => x.arrayBuffer())
+                    .catch((e: DOMException) => {
+                        if (e.name != "FileNotFound") console.error("Error accessing OPFS", { error: e, hash })
+                        return undefined
+                    })
+                if (!buffer) {
+                    console.warn(`Could not find ${hash} in OPFS`)
+                    return undefined
+                }
+                inMemoryCache[hash] = buffer
+                console.log(`Retrieved ${info?.name ?? hash} from OPFS`)
+                return { buffer: buffer, info }
             }
             console.warn("Could not find assembly for hash", hash, info)
             return
@@ -341,7 +355,7 @@ class MirabufCachingService {
             const info = this._cacheMap.get(hash)
 
             this._cacheMap.remove(hash)
-
+            delete inMemoryCache[hash]
             if (canOPFS) {
                 await fsHandle.removeEntry(hash)
             }
@@ -401,7 +415,7 @@ class MirabufCachingService {
     ): Promise<MirabufCacheInfo | undefined> {
         try {
             const hash = await this.hashBuffer(buffer)
-            memoryBuffer[hash] = buffer
+            inMemoryCache[hash] = buffer
             const existing = this._cacheMap.get(hash)
             extra = { ...extra, ...existing }
 
