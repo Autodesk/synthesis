@@ -37,11 +37,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
     }, [])
 
-    useEffect(() => {
-        const interval = setInterval(() => console.log({ alliance, station }), 1000)
-        return () => clearInterval(interval)
-    }, [alliance, station])
-
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             console.log({ alliance, station })

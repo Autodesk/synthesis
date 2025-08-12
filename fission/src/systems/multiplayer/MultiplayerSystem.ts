@@ -246,7 +246,9 @@ class MultiplayerSystem {
     }
 
     async broadcast(message: Message) {
-        console.debug(`Sending Message: ${message.type}`)
+        if (message.type != "update") {
+            console.debug(`Sending Message: ${message.type}`)
+        }
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
