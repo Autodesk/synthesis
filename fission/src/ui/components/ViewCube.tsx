@@ -63,7 +63,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 setLastMousePos(null)
                 setDragStartPos(null)
                 setDragStartElement(null)
-                
+
                 if (document.pointerLockElement) {
                     document.exitPointerLock()
                 }
@@ -72,7 +72,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
         const handleGlobalMouseMove = (event: MouseEvent) => {
             if (!isDragging) return
-            
+
             let deltaX = 0
             let deltaY = 0
 
@@ -108,7 +108,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 setLastMousePos(null)
                 setDragStartPos(null)
                 setDragStartElement(null)
-                
+
                 if (document.pointerLockElement) {
                     document.exitPointerLock()
                 }
@@ -126,7 +126,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
         const handleKeyDown = (event: KeyboardEvent) => {
             // Allow escape key to exit pointer lock
-            if (event.key === 'Escape' && isDragging) {
+            if (event.key === "Escape" && isDragging) {
                 setIsDragging(false)
                 setLastMousePos(null)
                 setDragStartPos(null)
@@ -878,12 +878,12 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             setLastMousePos(mousePos)
             setDragStartPos(mousePos)
             setDragStartElement(getClickedElement(event))
-            
+
             // Request pointer lock for better cursor control
-            if (pointerLock && containerRef.current) {
+            if (pointerLock.current && containerRef.current) {
                 containerRef.current.requestPointerLock()
             }
-            
+
             event.preventDefault()
         }
     }
