@@ -788,6 +788,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    private async sendPreferences() {
+        if (!World.multiplayerSystem) return
+
+        await World.multiplayerSystem.broadcast({
+            type: "configureObject",
+            data: {
+                sceneObjectKey: this.id,
+                objectConfigurationData: this.getPreferenceData(),
+            },
+        })
+    }
+
     public getPreferences(): void {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
@@ -798,6 +810,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             }
             this._ejectorPreferences = robotPrefs.ejector
             this._simConfigData = robotPrefs.simConfig
+
+            this.sendPreferences()
         }
 
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
@@ -830,7 +844,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public setPreferenceData(preferences: FieldConfiguration | RobotConfiguration) {
-        if (this.miraType == MiraType.FIELD) {
+        if (this.miraType === MiraType.FIELD) {
             const config = preferences as FieldConfiguration
             this._fieldPreferences = JSON.parse(config.fieldPreferences)
             // this.updateScoringZones()

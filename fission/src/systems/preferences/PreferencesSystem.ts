@@ -18,6 +18,7 @@ import {
     ROBOT_PREFERENCE_KEY,
     type RobotPreferences,
 } from "./PreferenceTypes"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 /** An event that's triggered when a preference is changed. */
 export class PreferenceEvent<K extends GlobalPreference> extends Event {
@@ -111,38 +112,16 @@ class PreferencesSystem {
         return mergedPrefs
     }
 
-    private static async sendPreferences(miraName: string, miraType: MiraType) {
-        if (!World.multiplayerSystem) return
-
-        const sceneObject = World.sceneRenderer.mirabufSceneObjects.findWhere(
-            obj => obj.miraType == miraType && obj.assemblyName == miraName
-        )
-
-        if (!sceneObject) return
-
-        await World.multiplayerSystem.broadcast({
-            type: "configureObject",
-            data: {
-                sceneObjectKey: sceneObject.id,
-                objectConfigurationData: sceneObject.getPreferenceData(),
-            },
-        })
-    }
-
     /** Sets the RobotPreferences object for the robot of a specific mira name */
     public static setRobotPreferences(miraName: string, value: RobotPreferences) {
         const allRoboPrefs = this.getAllRobotPreferences()
         allRoboPrefs[miraName] = value
-
-        this.sendPreferences(miraName, MiraType.ROBOT).catch(console.error)
     }
 
     /** Sets the FieldPreferences object for the field of a specific mira name */
     public static setFieldPreferences(miraName: string, value: FieldPreferences) {
         const allFieldPrefs = this.getAllFieldPreferences()
         allFieldPrefs[miraName] = value
-
-        this.sendPreferences(miraName, MiraType.FIELD).catch(console.error)
     }
 
     /** Sets the MotorPreferences object for the motor of a specific mira name */
