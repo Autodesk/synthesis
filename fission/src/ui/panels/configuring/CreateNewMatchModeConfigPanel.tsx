@@ -300,6 +300,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             {
                 title: "Create New Match Mode Config",
                 cancelText: "Cancel",
+                acceptText: "Save",
                 hideAccept: !isFormValid(),
             },
             {
