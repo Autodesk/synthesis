@@ -70,11 +70,11 @@ interface ThemeTabConfig extends TabConfigBase {
 
 type TabConfig = GeneralTabConfig | GraphicsTabConfig | ThemeTabConfig
 
-const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: string) => void }> = ({
-    label,
-    color,
-    setColor,
-}) => {
+const ColorEditor: React.FC<{
+    label: string
+    color: string
+    setColor: (_c: string) => void
+}> = ({ label, color, setColor }) => {
     return (
         <Stack direction="row" gap={2}>
             <TextField
