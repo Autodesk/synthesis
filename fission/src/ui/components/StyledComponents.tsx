@@ -15,6 +15,7 @@ import {
     FaGear,
     FaMagnifyingGlass,
     FaMinus,
+    FaPlay,
     FaPlus,
     FaQuestion,
     FaScrewdriverWrench,
@@ -50,6 +51,7 @@ export class SynthesisIcons {
     public static readonly CONNECT = <GrConnect />
     public static readonly INFO = <AiOutlineInfoCircle />
     public static readonly BUG = <FaBug />
+    public static readonly PLAY = <FaPlay />
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />
@@ -62,6 +64,7 @@ export class SynthesisIcons {
     public static readonly LEFT_ARROW_LARGE = <FaArrowLeft size={"1.25rem"} />
     public static readonly BUG_LARGE = <FaBug size={"1.25rem"} />
     public static readonly XMARK_LARGE = <FaXmark size={"1.25rem"} />
+    public static readonly PLAY_LARGE = <FaPlay size={"1.25rem"} />
 
     public static readonly OPEN_HUD_ICON = (
         <FaAngleRight
