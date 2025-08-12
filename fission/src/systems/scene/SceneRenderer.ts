@@ -554,11 +554,20 @@ class SceneRenderer extends WorldSystem {
         let miraSupplierData: ContextData | undefined = undefined
         if (res) {
             const assoc = World.physicsSystem.getBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
-            if (assoc?.sceneObject) {
-                miraSupplierData = assoc.sceneObject.getSupplierData()
+            const sceneObject = assoc?.sceneObject
+            if (sceneObject) {
+                if (
+                    !World.multiplayerSystem ||
+                    (sceneObject.miraType === MiraType.ROBOT &&
+                        World.multiplayerSystem
+                            ?.getOwnRobots()
+                            .map(obj => obj.id)
+                            .includes(sceneObject.id))
+                ) {
+                    miraSupplierData = assoc.sceneObject.getSupplierData()
+                }
             }
         }
-
         // All else fails, present default options.
         if (!miraSupplierData) {
             miraSupplierData = { title: "The Scene", items: [] }
