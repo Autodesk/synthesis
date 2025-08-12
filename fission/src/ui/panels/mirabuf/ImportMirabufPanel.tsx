@@ -111,12 +111,14 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                createMirabuf(assembly, progressHandle, info.id).then(x => {
-                    if (x) {
-                        World.sceneRenderer.registerSceneObject(x)
+                createMirabuf(assembly, progressHandle, info.id).then(mirabufSceneObject => {
+                    if (mirabufSceneObject) {
+                        World.sceneRenderer.registerSceneObject(mirabufSceneObject)
                         progressHandle.done()
 
-                        globalOpenPanel(InitialConfigPanel, undefined)
+                        if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                            globalOpenPanel(InitialConfigPanel, undefined)
+                        }
                     } else {
                         progressHandle.fail()
                     }
