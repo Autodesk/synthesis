@@ -1,7 +1,6 @@
-import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import * as THREE from "three"
 import InputSystem from "@/systems/input/InputSystem"
 import GizmoSceneObject, { type GizmoMode } from "@/systems/scene/GizmoSceneObject"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
