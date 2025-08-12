@@ -91,7 +91,7 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     maxHeight: {
-        defaultValue: fallbackConfig.maxHeight === Infinity ? 1.2 : fallbackConfig.maxHeight,
+        defaultValue: fallbackConfig.maxHeight === Number.MAX_SAFE_INTEGER ? 1.2 : fallbackConfig.maxHeight,
         rules: [VALIDATION_RULES.nonNegativeNumber("Max height must be a non-negative number")],
         type: "decimal",
     },
@@ -106,7 +106,7 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     sideMaxExtension: {
-        defaultValue: fallbackConfig.sideMaxExtension === Infinity ? 0.5 : fallbackConfig.sideMaxExtension,
+        defaultValue: fallbackConfig.sideMaxExtension === Number.MAX_SAFE_INTEGER ? 0.5 : fallbackConfig.sideMaxExtension,
         rules: [VALIDATION_RULES.nonNegativeNumber("Side max extension must be a non-negative number")],
         type: "decimal",
     },
