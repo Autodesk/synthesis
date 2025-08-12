@@ -27,7 +27,10 @@ export const devtoolHandlers = {
         },
         set(field, val) {
             val ??= defaultFieldPreferences().scoringZones
-            if (!field.fieldPreferences || !this.validate(val)) return
+            if (!field.fieldPreferences || !this.validate(val)) {
+                console.warn("validation failed", val, field.fieldPreferences)
+                return
+            }
             field.fieldPreferences.scoringZones = val
             field.updateScoringZones()
         },
@@ -53,12 +56,20 @@ export const devtoolHandlers = {
         },
         set(field, val) {
             val ??= defaultFieldPreferences().spawnLocations
-            if (!field.fieldPreferences || !this.validate(val)) return
+            if (!field.fieldPreferences || !this.validate(val)) {
+                console.warn("validation failed", val, field.fieldPreferences)
+                return
+            }
             field.fieldPreferences.spawnLocations = val
         },
         validate(val: unknown): val is FieldPreferences["spawnLocations"] {
             const isStructureCorrect =
-                typeof val === "object" && val != null && "red" in val && "blue" in val && "default" in val
+                typeof val === "object" &&
+                val != null &&
+                "red" in val &&
+                "blue" in val &&
+                "default" in val &&
+                "hasConfiguredLocations" in val
 
             if (!isStructureCorrect) return false
             return (["red", "blue"] as const).every(v => {

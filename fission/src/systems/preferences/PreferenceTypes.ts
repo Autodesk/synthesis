@@ -178,7 +178,7 @@ export type FieldPreferences = {
         [A in Alliance]: {
             [S in Station]: SpawnLocation
         }
-    } & { default: SpawnLocation }
+    } & { default: SpawnLocation; hasConfiguredLocations: boolean }
     scoringZones: ScoringZonePreferences[]
     protectedZones: ProtectedZonePreferences[]
 }
@@ -228,6 +228,7 @@ export function defaultFieldPreferences(): FieldPreferences {
                 3: { pos: [1, 0.1, -1], yaw: -Math.PI / 2 },
             },
             default: defaultRobotSpawnLocation(),
+            hasConfiguredLocations: false,
         },
         scoringZones: [],
         protectedZones: [],

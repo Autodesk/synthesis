@@ -118,10 +118,11 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
     const [useSpawnPositions, setUseSpawnPositions] = useState(false)
+    const [spawnPositionsConfigured, setSpawnPositionsConfigured] = useState(false)
 
     useEffect(() => {
         configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         const loadConfigs = () => {
@@ -141,6 +142,13 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
         loadConfigs()
     }, [])
+
+    useEffect(() => {
+        setSpawnPositionsConfigured(
+            World.sceneRenderer.mirabufSceneObjects.getField()?.fieldPreferences?.spawnLocations
+                ?.hasConfiguredLocations === true
+        )
+    })
 
     const matchModeConfigElements = useMemo(
         () =>
@@ -305,7 +313,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         // Reset the input value so the same file can be selected again
         e.target.value = ""
     }
-
     return (
         <>
             <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
@@ -316,6 +323,12 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             {matchModeConfigElements}
             <Divider />
             <Checkbox
+                disabled={!spawnPositionsConfigured}
+                tooltip={
+                    spawnPositionsConfigured
+                        ? "Should robots move to starting positions based on their alliance station"
+                        : "Spawn positions are not configured for this field"
+                }
                 checked={useSpawnPositions}
                 label={"Move Robots to Starting Positions"}
                 onClick={v => setUseSpawnPositions(v)}
