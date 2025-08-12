@@ -106,7 +106,8 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     sideMaxExtension: {
-        defaultValue: fallbackConfig.sideMaxExtension === Number.MAX_SAFE_INTEGER ? 0.5 : fallbackConfig.sideMaxExtension,
+        defaultValue:
+            fallbackConfig.sideMaxExtension === Number.MAX_SAFE_INTEGER ? 0.5 : fallbackConfig.sideMaxExtension,
         rules: [VALIDATION_RULES.nonNegativeNumber("Side max extension must be a non-negative number")],
         type: "decimal",
     },
