@@ -109,6 +109,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             onChange={value => writePreference("SceneRotationSensitivity", value)}
             step={0.1}
             tooltip="Controls how fast the scene rotates when dragging with the mouse."
+            showValue={false}
         />
         {Spacer(5)}
         <StatefulSlider
@@ -119,6 +120,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
             step={0.06}
             tooltip="Controls how fast the view changes when dragging on the view cube."
+            showValue={false}
         />
         <Checkbox
             label="Show View Cube"
@@ -127,7 +129,9 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
         />
         {Spacer(10)}
-        <Label size="sm">Preferences</Label>
+        <Label size="md" sx={{ fontWeight: 600 }}>
+            Preferences
+        </Label>
         <Stack direction="column">
             <Checkbox
                 label="Report Analytics"

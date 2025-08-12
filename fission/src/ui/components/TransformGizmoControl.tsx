@@ -116,16 +116,6 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
             >
                 {buttons}
             </ToggleButtonGroup>
-            {!rotateDisabled && (
-                <Button
-                    className="self-center"
-                    onClick={() => {
-                        gizmo?.setRotation(new THREE.Quaternion(0, 0, 0, 1))
-                    }}
-                >
-                    Reset Orientation
-                </Button>
-            )}
         </>
     )
 }

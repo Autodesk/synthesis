@@ -7,6 +7,7 @@ const StatefulSlider: React.FC<
         defaultValue: number
         onChange: (val: number) => void
         tooltip?: string
+        showValue?: boolean
     }
 > = props => {
     const [value, setValue] = useState(props.defaultValue)
@@ -26,7 +27,7 @@ const StatefulSlider: React.FC<
             >
                 <Stack direction="row" justifyContent="space-between" alignItems="baseline">
                     <Typography variant="body2">{props.label}</Typography>
-                    <Typography variant="caption">{value.toFixed(2)}</Typography>
+                    {props.showValue !== false && <Typography variant="caption">{value.toFixed(2)}</Typography>}
                 </Stack>
                 <Slider
                     {...props}
