@@ -1,11 +1,11 @@
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { Box, TextField, FormControlLabel, Stack, Divider, Button, Typography } from "@mui/material"
 import Checkbox from "@/ui/components/Checkbox"
 import { useEffect, useState, useCallback } from "react"
 import type { MatchModeConfig } from "./MatchModeConfigPanel"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
-import { matchConfigSelected, validateAndNormalizeMatchModeConfig } from "./MatchModeConfigPanel"
+import { validateAndNormalizeMatchModeConfig } from "./MatchModeConfigPanel"
 
 interface ValidationRule {
     validate: (value: unknown) => boolean
@@ -133,7 +133,7 @@ const createInitialFormState = (): FormState => {
 }
 
 const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { configureScreen } = useUIContext()
+    const { configureScreen, openPanel, closePanel } = useUIContext()
     const [formState, setFormState] = useState<FormState>(createInitialFormState)
 
     const validateField = useCallback((field: FormField, value: unknown): { error: boolean; errorText: string } => {
@@ -293,7 +293,6 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                         return "Validation failed"
                     }
 
-                    matchConfigSelected(validatedConfig)
                     const customConfigs = window.localStorage.getItem("match-mode-configs")
                     if (customConfigs) {
                         const customConfigsArray = JSON.parse(customConfigs)
@@ -303,11 +302,18 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                         window.localStorage.setItem("match-mode-configs", JSON.stringify([validatedConfig]))
                     }
 
-                    return undefined
+
+                    setTimeout(async () => {
+                        const { default: MatchModeConfigPanelComponent } = await import("./MatchModeConfigPanel")
+                        openPanel(MatchModeConfigPanelComponent, undefined)
+                        closePanel(panel!.id, CloseType.Overwrite)
+                    }, 0)
+                    
+                    return validatedConfig
                 },
             }
         )
-    }, [isFormValid, createConfigFromForm, configureScreen, panel])
+    }, [isFormValid, createConfigFromForm, configureScreen, panel, openPanel, closePanel])
 
     // Field groups for organized rendering
     const fieldGroups = [
