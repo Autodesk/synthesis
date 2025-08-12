@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material"
-import React, { type ReactElement } from "react"
+import React, { type ReactElement, useRef } from "react"
 import Draggable from "react-draggable"
 import {
     CloseType,
@@ -56,6 +56,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
     const { closePanel } = useUIContext()
 
     const props = panel.props
+    const nodeRef = useRef<HTMLDivElement | null>(null)
 
     // FIXME: sliders show up as <span> so want to cancel drag on those
     // however still can drag on dropdown but menu elements are left behind
@@ -64,6 +65,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
             handle=".panel-drag-handle"
             cancel={"input, textarea, select, .MuiSlider-root, .MuiMenuItem-root, .no-drag"}
             positionOffset={getPositionOffset(props.position)}
+            nodeRef={nodeRef}
         >
             <Card
                 elevation={8}
@@ -74,6 +76,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     p: 2,
                     boxShadow: 6,
                 }}
+                ref={nodeRef}
             >
                 {props.title && (
                     <CardHeader

@@ -1,4 +1,4 @@
-import { FormControlLabel, Slider, Stack, Tooltip, Typography } from "@mui/material"
+import { Slider, Stack, Tooltip, Typography } from "@mui/material"
 import { useState } from "react"
 
 const StatefulSlider: React.FC<

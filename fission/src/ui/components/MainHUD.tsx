@@ -183,9 +183,9 @@ const MainHUD: React.FC = () => {
                             msUserSelect: "none",
                             WebkitUserSelect: "none",
                             filter: mode === "dark" ? "invert(1)" : "none",
-                            WebkitUserDrag: "none",
                         }}
                         draggable={false}
+                        onDragStart={e => e.preventDefault()}
                     />
                     <IconButton
                         sx={{
