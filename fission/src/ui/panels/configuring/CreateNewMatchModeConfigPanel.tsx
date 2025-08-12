@@ -24,7 +24,7 @@ type FormState = Record<string, FormField>
 type FieldConfig = {
     defaultValue: string | number | boolean
     rules: ValidationRule[]
-    type?: "text" | "number" | "checkbox" | "numberOrInfinity"
+    type?: "text" | "number" | "decimal" | "checkbox"
 }
 
 // Validation rules
@@ -46,10 +46,9 @@ const VALIDATION_RULES = {
         message,
     }),
 
-    numberOrInfinity: (message = "Must be a non-negative number or 'Infinity'"): ValidationRule => ({
+    nonNegativeNumber: (message = "Must be a non-negative number"): ValidationRule => ({
         validate: (value: unknown) => {
             if (typeof value !== "string") return false
-            if (value.toLowerCase() === "infinity") return true
             const num = parseFloat(value)
             return !isNaN(num) && num >= 0
         },
@@ -86,23 +85,33 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         rules: [],
         type: "checkbox",
     },
+    enableHeightPenalty: {
+        defaultValue: false,
+        rules: [],
+        type: "checkbox",
+    },
     maxHeight: {
-        defaultValue: fallbackConfig.maxHeight === Infinity ? "Infinity" : fallbackConfig.maxHeight,
-        rules: [VALIDATION_RULES.numberOrInfinity("Max height must be a non-negative number or 'Infinity'")],
-        type: "numberOrInfinity",
+        defaultValue: fallbackConfig.maxHeight === Infinity ? 1.2 : fallbackConfig.maxHeight,
+        rules: [VALIDATION_RULES.nonNegativeNumber("Max height must be a non-negative number")],
+        type: "decimal",
     },
     heightLimitPenalty: {
-        defaultValue: fallbackConfig.heightLimitPenalty,
+        defaultValue: fallbackConfig.heightLimitPenalty === 0 ? 2 : fallbackConfig.heightLimitPenalty,
         rules: [VALIDATION_RULES.nonNegativeInteger("Height penalty must be a non-negative whole number")],
         type: "number",
     },
+    enableSideExtensionPenalty: {
+        defaultValue: false,
+        rules: [],
+        type: "checkbox",
+    },
     sideMaxExtension: {
-        defaultValue: fallbackConfig.sideMaxExtension === Infinity ? "Infinity" : fallbackConfig.sideMaxExtension,
-        rules: [VALIDATION_RULES.numberOrInfinity("Side max extension must be a positive number or 'Infinity'")],
-        type: "numberOrInfinity",
+        defaultValue: fallbackConfig.sideMaxExtension === Infinity ? 0.5 : fallbackConfig.sideMaxExtension,
+        rules: [VALIDATION_RULES.nonNegativeNumber("Side max extension must be a non-negative number")],
+        type: "decimal",
     },
     sideExtensionPenalty: {
-        defaultValue: fallbackConfig.sideExtensionPenalty,
+        defaultValue: fallbackConfig.sideExtensionPenalty === 0 ? 2 : fallbackConfig.sideExtensionPenalty,
         rules: [VALIDATION_RULES.nonNegativeInteger("Side extension penalty must be a non-negative whole number")],
         type: "number",
     },
@@ -186,9 +195,14 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
     }, [formState])
 
     const renderField = useCallback(
-        (fieldName: string, label: string, helperText?: string) => {
+        (fieldName: string, label: string, helperText?: string, conditionalOn?: string) => {
             const field = formState[fieldName]
             const config = FIELD_CONFIGS[fieldName]
+
+            // Check if this field should be conditionally rendered
+            if (conditionalOn && !formState[conditionalOn]?.value) {
+                return null
+            }
 
             if (config.type === "checkbox") {
                 return (
@@ -207,25 +221,25 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             }
 
             const isNumber = config.type === "number"
-            const isNumberOrInfinity = config.type === "numberOrInfinity"
+            const isDecimal = config.type === "decimal"
+            const isNumericInput = isNumber || isDecimal
 
             return (
                 <TextField
                     key={fieldName}
                     fullWidth
                     label={label}
-                    type={isNumber ? "number" : "text"}
+                    type={isNumericInput ? "number" : "text"}
                     value={field.value}
                     onChange={handleFieldChange(fieldName)}
                     error={field.error}
                     helperText={field.errorText || helperText}
-                    placeholder={isNumberOrInfinity ? "Enter number or 'Infinity'" : undefined}
                     inputProps={
-                        isNumber
+                        isNumericInput
                             ? {
                                   min: 0,
-                                  step: 1,
-                                  pattern: "[0-9]*",
+                                  step: isDecimal ? 0.1 : 1,
+                                  ...(isNumber ? { pattern: "[0-9]*" } : {}),
                               }
                             : undefined
                     }
@@ -237,10 +251,6 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
     )
 
     const createConfigFromForm = useCallback((): MatchModeConfig => {
-        const parseInfinity = (value: string): number => {
-            return value.toLowerCase() === "infinity" ? Number.MAX_SAFE_INTEGER : parseFloat(value)
-        }
-
         return {
             id: crypto.randomUUID(),
             name: (formState.name.value as string).trim(),
@@ -249,10 +259,18 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             teleopTime: parseInt(formState.teleopTime.value as string, 10),
             endgameTime: parseInt(formState.endgameTime.value as string, 10),
             ignoreRotation: formState.ignoreRotation.value as boolean,
-            maxHeight: parseInfinity(formState.maxHeight.value as string),
-            heightLimitPenalty: parseFloat(formState.heightLimitPenalty.value as string),
-            sideMaxExtension: parseInfinity(formState.sideMaxExtension.value as string),
-            sideExtensionPenalty: parseFloat(formState.sideExtensionPenalty.value as string),
+            maxHeight: formState.enableHeightPenalty.value
+                ? parseFloat(formState.maxHeight.value as string)
+                : Number.MAX_SAFE_INTEGER,
+            heightLimitPenalty: formState.enableHeightPenalty.value
+                ? parseFloat(formState.heightLimitPenalty.value as string)
+                : 0,
+            sideMaxExtension: formState.enableSideExtensionPenalty.value
+                ? parseFloat(formState.sideMaxExtension.value as string)
+                : Number.MAX_SAFE_INTEGER,
+            sideExtensionPenalty: formState.enableSideExtensionPenalty.value
+                ? parseFloat(formState.sideExtensionPenalty.value as string)
+                : 0,
         }
     }, [formState])
 
@@ -302,13 +320,12 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                         window.localStorage.setItem("match-mode-configs", JSON.stringify([validatedConfig]))
                     }
 
-
                     setTimeout(async () => {
                         const { default: MatchModeConfigPanelComponent } = await import("./MatchModeConfigPanel")
                         openPanel(MatchModeConfigPanelComponent, undefined)
                         closePanel(panel!.id, CloseType.Overwrite)
                     }, 0)
-                    
+
                     return validatedConfig
                 },
             }
@@ -316,7 +333,15 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
     }, [isFormValid, createConfigFromForm, configureScreen, panel, openPanel, closePanel])
 
     // Field groups for organized rendering
-    const fieldGroups = [
+    const fieldGroups: Array<{
+        title: string
+        fields: Array<{
+            name: string
+            label: string
+            helperText?: string
+            conditionalOn?: string
+        }>
+    }> = [
         {
             title: "Basic Configuration",
             fields: [{ name: "name", label: "Configuration Name" }],
@@ -333,18 +358,30 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             title: "Robot Constraints",
             fields: [
                 { name: "ignoreRotation", label: "Ignore Robot Rotation for Height Calculations" },
+                { name: "enableHeightPenalty", label: "Enable Height Penalty" },
                 {
                     name: "maxHeight",
-                    label: "Maximum Height (meters or 'Infinity')",
-                    helperText: "Enter 'Infinity' for unlimited height",
+                    label: "Maximum Height (meters)",
+                    helperText: "Height limit for the robot",
+                    conditionalOn: "enableHeightPenalty",
                 },
-                { name: "heightLimitPenalty", label: "Height Penalty (points)" },
+                {
+                    name: "heightLimitPenalty",
+                    label: "Height Penalty (points)",
+                    conditionalOn: "enableHeightPenalty",
+                },
+                { name: "enableSideExtensionPenalty", label: "Enable Side Extension Penalty" },
                 {
                     name: "sideMaxExtension",
-                    label: "Side Max Extension (meters or 'Infinity')",
-                    helperText: "Enter 'Infinity' for unlimited side extension",
+                    label: "Side Max Extension (meters)",
+                    helperText: "Maximum side extension limit for the robot",
+                    conditionalOn: "enableSideExtensionPenalty",
                 },
-                { name: "sideExtensionPenalty", label: "Side Extension Penalty (points)" },
+                {
+                    name: "sideExtensionPenalty",
+                    label: "Side Extension Penalty (points)",
+                    conditionalOn: "enableSideExtensionPenalty",
+                },
             ],
         },
     ]
@@ -369,7 +406,9 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                             <Typography variant="h6" gutterBottom>
                                 {group.title}
                             </Typography>
-                            {group.fields.map(field => renderField(field.name, field.label, field.helperText))}
+                            {group.fields.map(field =>
+                                renderField(field.name, field.label, field.helperText, field.conditionalOn)
+                            )}
                         </Stack>
                         {groupIndex < fieldGroups.length - 1 && <Divider />}
                     </Box>
