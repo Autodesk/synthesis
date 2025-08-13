@@ -99,8 +99,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         min={0.1}
                         max={driverSwitch(driver, 80, 40, 80) as number}
                         defaultValue={velocity}
-                        // TODO:
-                        // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                        format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                         onChange={velocity => {
                             setVelocity(velocity as number)
                             onChange(velocity as number, force, unstickForce)
@@ -114,8 +113,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                                 min={driverSwitch(driver, 100, 20, 0.1) as number}
                                 max={driverSwitch(driver, 800, 150, 15) as number}
                                 defaultValue={force}
-                                // TODO:
-                                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                                 onChange={force => {
                                     setForce(force as number)
                                     onChange(velocity, force as number, unstickForce)
@@ -138,6 +136,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         max={15000}
                         defaultValue={unstickForce}
                         label="Unstick Force"
+                        format={{ minimumFractionDigits: 0, maximumFractionDigits: 0 }}
                         onChange={(value: number | number[]) => {
                             setUnstickForce(value as number)
                             onChange(velocity, force, value as number)

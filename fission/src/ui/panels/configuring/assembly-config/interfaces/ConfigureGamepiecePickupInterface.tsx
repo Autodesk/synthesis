@@ -254,12 +254,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
             {/* Slider for user to set velocity of ejector configuration */}
             <StatefulSlider
-                label="Intake Zone Diameter (m)"
+                label="Intake Zone Diameter"
                 min={MIN_ZONE_SIZE}
                 max={MAX_ZONE_SIZE}
                 defaultValue={zoneSize}
-                // TODO:
-                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                unit="m"
                 onChange={vel => {
                     setZoneSize(vel as number)
                 }}
@@ -274,12 +274,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     EjectableSceneObject.setAnimationDuration(v as number)
                 }}
                 step={ANIMATION_DURATION_STEP}
-                label="Intake Animation Duration (s)"
-                // TODO:
-                // format={{ maximumFractionDigits: 2 }}
+                label="Intake Animation Duration"
+                format={{ maximumFractionDigits: 2 }}
+                unit="s"
             />
             <StatefulSlider
-                label="Intake Animation Duration (s)"
+                label="Intake Animation Duration"
                 min={MIN_ANIMATION_DURATION}
                 max={MAX_ANIMATION_DURATION}
                 defaultValue={animationDuration ?? 0.5}
@@ -289,8 +289,8 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     EjectableSceneObject.setAnimationDuration(val)
                 }}
                 step={ANIMATION_DURATION_STEP}
-                // TODO:
-                // format={{ maximumFractionDigits: 2 }}
+                format={{ maximumFractionDigits: 2 }}
+                unit="s"
             />
 
             {/* Slider for adjusting max pieces the robot can intake */}
@@ -299,6 +299,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 min={1}
                 max={10}
                 step={1}
+                format={{ minimumFractionDigits: 0, maximumFractionDigits: 0 }}
                 defaultValue={maxPieces ?? 1}
                 onChange={v => setMaxPieces(v as number)}
             />

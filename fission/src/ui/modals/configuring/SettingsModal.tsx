@@ -106,6 +106,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             max={2.0}
             defaultValue={PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")}
             label={"Scene Rotation Sensitivity"}
+            format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }}
             onChange={value => writePreference("SceneRotationSensitivity", value)}
             step={0.1}
             tooltip="Controls how fast the scene rotates when dragging with the mouse."
@@ -116,6 +117,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             max={6.0}
             defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
             label={"ViewCube Rotation Sensitivity"}
+            format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
             onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
             step={0.06}
             tooltip="Controls how fast the view changes when dragging on the view cube."
@@ -181,14 +183,16 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
                 checked={PreferencesSystem.getGlobalPreference("MuteAllSound")}
                 onClick={checked => writePreference("MuteAllSound", checked)}
             />
-            <StatefulSlider
-                min={0}
-                max={100}
-                defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
-                label={"SFX Volume"}
-                onChange={value => writePreference("SFXVolume", value)}
-                tooltip="Volume of sound effects (%)."
-            />
+                    <StatefulSlider
+            min={0}
+            max={100}
+            defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
+            label={"SFX Volume"}
+            format={{ minimumFractionDigits: 0, maximumFractionDigits: 0 }}
+            unit="%"
+            onChange={value => writePreference("SFXVolume", value)}
+            tooltip="Volume of sound effects (%)."
+        />
         </Stack>
     </Stack>
 )

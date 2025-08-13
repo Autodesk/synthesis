@@ -237,8 +237,8 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 min={MIN_VELOCITY}
                 max={MAX_VELOCITY}
                 defaultValue={ejectorVelocity}
-                // TODO:
-                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                unit="m/s"
                 onChange={vel => {
                     setEjectorVelocity(vel as number)
                 }}
