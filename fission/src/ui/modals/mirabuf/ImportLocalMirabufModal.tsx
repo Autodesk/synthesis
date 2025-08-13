@@ -6,10 +6,9 @@ import { mirabuf } from "@/proto/mirabuf"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
-import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
@@ -28,7 +27,7 @@ const VisuallyHiddenInput = styled("input")({
 
 const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
-    const { openPanel, configureScreen } = useUIContext()
+    const { openPanel, closeModal, configureScreen } = useUIContext()
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
     const [miraType, setSelectedType] = useState<MiraType | undefined>(MiraType.ROBOT)
@@ -55,9 +54,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
 
                         return createMirabuf(x.assembly, x.cacheInfo.id, miraType)
                     })
-                    .then(x => {
-                        if (x) {
-                            const { mainSceneObject, gamePieces } = x
+                    .then(mirabufSceneObject => {
+                        if (mirabufSceneObject) {
+                            const { mainSceneObject, gamePieces } = mirabufSceneObject
 
                             World.sceneRenderer.registerSceneObject(mainSceneObject)
                             gamePieces?.forEach(async instance => {
@@ -79,10 +78,10 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
                                 World.sceneRenderer.registerSceneObject(sceneObject)
                             })
 
-                            console.log(`Loaded ${mainSceneObject.miraType.toString()} Locally`)
-                            if (mainSceneObject.miraType === MiraType.ROBOT) {
-                                globalOpenPanel(InitialConfigPanel, undefined)
+                            if (mirabufSceneObject.mainSceneObject.miraType == MiraType.ROBOT) {
+                                openPanel(InitialConfigPanel, undefined, modal)
                             }
+                            closeModal(CloseType.Overwrite)
                         }
                     })
                     .finally(() => setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500))
