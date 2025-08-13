@@ -31,9 +31,13 @@ type CheckboxProps = {
      * Text to show as a tooltip next to the label.
      */
     tooltip?: string
+    /**
+     * Whether to disable the checkbox
+     */
+    disabled?: boolean
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabel, onClick, tooltip }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabel, onClick, tooltip, disabled }) => {
     return (
         <Stack direction="row" justifyContent="space-between" alignItems="center" textAlign="center">
             {hideLabel ? null : tooltip ? (
@@ -47,6 +51,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabe
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
                 {...SoundPlayer.checkboxSoundEffects()}
                 checked={checked}
+                disabled={disabled}
                 role="checkbox"
             />
         </Stack>
