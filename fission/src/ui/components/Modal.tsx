@@ -52,7 +52,12 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                             </Button>
                         )}
                         {!props.hideAccept && (
-                            <Button onClick={() => closeModal(CloseType.Accept)} variant="contained" color="primary">
+                            <Button
+                                onClick={() => closeModal(CloseType.Accept)}
+                                variant="contained"
+                                color="primary"
+                                disabled={props.disableAccept}
+                            >
                                 {props.acceptText ?? "Accept"}
                             </Button>
                         )}
