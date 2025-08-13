@@ -25,8 +25,13 @@ class InputSchemeManager {
     }
 
     /** Registers a new custom scheme */
-    public static addCustomScheme(scheme: InputScheme) {
+    public static addCustomScheme(scheme: InputScheme, panelId?: string) {
         this.customInputSchemes.push(scheme)
+        window.dispatchEvent(
+            new CustomEvent("inputSchemeChanged", {
+                detail: panelId ? { panelId } : { source: "InputSchemeManager" },
+            })
+        )
     }
 
     /** Parses a schemes inputs into working Input instances */
@@ -75,9 +80,14 @@ class InputSchemeManager {
         return this._defaultInputSchemes
     }
 
-    public static resetDefaultSchemes() {
+    public static resetDefaultSchemes(panelId?: string) {
         this._defaultInputSchemes = DefaultInputs.defaultInputCopies
         this._customSchemes = undefined
+        window.dispatchEvent(
+            new CustomEvent("inputSchemeChanged", {
+                detail: panelId ? { panelId } : { source: "InputSchemeManager" },
+            })
+        )
     }
 
     /** Creates an array of every input scheme that is either a default or customized by the user. Custom themes will appear on top. */
@@ -126,7 +136,6 @@ class InputSchemeManager {
             const conflictingSchemes = scheme.inputs.flatMap(input =>
                 input.keysUsed.flatMap(key => usedKeyMap.get(key) ?? [])
             )
-            // console.log(conflictingSchemes)
             if (conflictingSchemes.length > 0) {
                 result[scheme.schemeName] ??= {
                     scheme,
@@ -134,7 +143,7 @@ class InputSchemeManager {
                     conflictingSchemeNames: [...new Set(conflictingSchemes)].join(", "),
                 }
             } else {
-                result[scheme.schemeName] = {
+                result[scheme.schemeName] ??= {
                     scheme,
                     status: InputSchemeUseType.AVAILABLE,
                 }
@@ -174,13 +183,18 @@ class InputSchemeManager {
     }
 
     /** Save all schemes that have been customized to local storage via preferences */
-    public static saveSchemes() {
+    public static saveSchemes(panelId?: string) {
         const customizedSchemes = this.allInputSchemes.filter(s => {
             return s.customized
         })
 
         PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)
         PreferencesSystem.savePreferences()
+        window.dispatchEvent(
+            new CustomEvent("inputSchemeChanged", {
+                detail: panelId ? { panelId } : { source: "InputSchemeManager" },
+            })
+        )
     }
 }
 

@@ -5,14 +5,17 @@ import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import type Mechanism from "@/systems/physics/Mechanism"
 import { BodyAssociate, type LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type {
-    Alliance,
-    EjectorPreferences,
-    FieldPreferences,
-    IntakePreferences,
-    ProtectedZonePreferences,
-    ScoringZonePreferences,
-    Station,
+import {
+    type Alliance,
+    defaultFieldSpawnLocation,
+    defaultRobotSpawnLocation,
+    type EjectorPreferences,
+    type FieldPreferences,
+    type IntakePreferences,
+    type ProtectedZonePreferences,
+    type ScoringZonePreferences,
+    type SpawnLocation,
+    type Station,
 } from "@/systems/preferences/PreferenceTypes"
 import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
@@ -29,10 +32,17 @@ import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
+import {
+    convertJoltMat44ToThreeMatrix4,
+    convertJoltRVec3ToJoltVec3,
+    convertJoltVec3ToJoltRVec3,
+    convertJoltVec3ToThreeVector3,
+    convertThreeVector3ToJoltVec3,
+} from "@/util/TypeConversions"
+import { createMeshForShape } from "@/util/threejs/MeshCreation.ts"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
-import FieldMiraEditor from "./FieldMiraEditor"
+import FieldMiraEditor, { devtoolHandlers, devtoolKeys } from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
 import { MiraType } from "./MirabufLoader"
@@ -65,9 +75,9 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
 }
 
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
-    private _assemblyName: string
-    private _mirabufInstance: MirabufInstance
-    private _mechanism: Mechanism
+    private readonly _assemblyName: string
+    private readonly _mirabufInstance: MirabufInstance
+    private readonly _mechanism: Mechanism
     private _brain: Brain | undefined
     private _alliance: Alliance | undefined
     private _station: Station | undefined
@@ -88,6 +98,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _nameTag: SceneOverlayTag | undefined
     private _centerOfMassIndicator: THREE.Mesh | undefined
+    private _basePositionTransform: THREE.Vector3 | undefined
     private _intakeActive = false
     private _ejectorActive = false
 
@@ -100,12 +111,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public get intakeActive() {
         return this._intakeActive
     }
+
     public get ejectorActive() {
         return this._ejectorActive
     }
+
     public set intakeActive(a: boolean) {
         this._intakeActive = a
     }
+
     public set ejectorActive(a: boolean) {
         this._ejectorActive = a
     }
@@ -290,32 +304,82 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.updateBatches()
 
-        const bounds = this.computeBoundingBox()
-        if (!Number.isFinite(bounds.min.y)) return
+        this._basePositionTransform = this.getPositionTransform(new THREE.Vector3())
 
-        const offset = new JOLT.Vec3(
-            -(bounds.min.x + bounds.max.x) / 2.0,
-            0.1 + (bounds.max.y - bounds.min.y) / 2.0 - (bounds.min.y + bounds.max.y) / 2.0,
-            -(bounds.min.z + bounds.max.z) / 2.0
-        )
-
-        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-            const jBodyId = this._mechanism.getBodyByNodeId(rn.id)
-            if (!jBodyId) return
-
-            const newPos = World.physicsSystem.getBody(jBodyId).GetPosition().Add(offset)
-            World.physicsSystem.setBodyPosition(jBodyId, newPos)
-
-            JOLT.destroy(newPos)
-        })
-
-        this.updateMeshTransforms()
+        this.moveToSpawnLocation()
 
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
 
         if (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
             cameraControls.focusProvider = this
         }
+    }
+
+    // Centered in xz plane, bottom surface of object
+    private getPositionTransform(vec: THREE.Vector3) {
+        const box = this.computeBoundingBox()
+        const transform = box.getCenter(vec)
+        transform.setY(box.min.y)
+        return transform
+    }
+
+    public moveToSpawnLocation() {
+        let pos: SpawnLocation = defaultRobotSpawnLocation()
+        const referencePos = new THREE.Vector3()
+        if (this.miraType == MiraType.FIELD) {
+            pos = defaultFieldSpawnLocation()
+        } else {
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
+            const fieldLocations = field?.fieldPreferences?.spawnLocations
+            if (this._alliance != null && this._station != null && fieldLocations != null) {
+                pos = fieldLocations[this._alliance][this._station]
+            } else {
+                pos = fieldLocations?.default ?? pos
+            }
+            field?.getPositionTransform(referencePos)
+        }
+        this.setObjectPosition(pos, referencePos)
+    }
+
+    private setObjectPosition(initialPos: SpawnLocation, referencePosition: THREE.Vector3) {
+        const bounds = this.computeBoundingBox()
+        if (!Number.isFinite(bounds.min.y)) return
+
+        // If anyone has ideas on how to make this more concise I would appreciate.
+        // It took much longer than expected to deal with this
+        // (set position seems to use some arbitrary part of the robot, Dozer's is like half a meter in front to the left and 2471's is in the center)
+        const bodyCenter = convertThreeVector3ToJoltVec3(bounds.getCenter(new THREE.Vector3()))
+        const rotatedBasePositionTransform = this._basePositionTransform!.clone().applyAxisAngle(
+            new THREE.Vector3(0, 1, 0),
+            initialPos.yaw
+        )
+        const initialTranslation = new JOLT.Vec3(
+            initialPos.pos[0] - rotatedBasePositionTransform.x + referencePosition.x,
+            initialPos.pos[1] - rotatedBasePositionTransform.y + referencePosition.y,
+            initialPos.pos[2] - rotatedBasePositionTransform.z + referencePosition.z
+        )
+        const initialRotation = JOLT.Quat.prototype.sRotation(new JOLT.Vec3(0, 1, 0), initialPos.yaw)
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            const jBodyId = this._mechanism.getBodyByNodeId(rn.id)
+            if (!jBodyId) return
+            const offset = convertJoltRVec3ToJoltVec3(
+                World.physicsSystem.getBody(jBodyId).GetPosition().Sub(bodyCenter)
+            )
+            const newPos = convertJoltVec3ToJoltRVec3(initialTranslation)
+            World.physicsSystem.setBodyPositionRotationAndVelocity(
+                jBodyId,
+                newPos,
+                initialRotation,
+                new JOLT.Vec3(),
+                new JOLT.Vec3()
+            )
+
+            JOLT.destroy(offset)
+            JOLT.destroy(newPos)
+        })
+        JOLT.destroy(initialTranslation)
+        JOLT.destroy(initialRotation)
+        this.updateMeshTransforms()
     }
 
     public update(): void {
@@ -385,27 +449,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     private createMeshForShape(shape: Jolt.Shape): THREE.Mesh {
-        const scale = new JOLT.Vec3(1, 1, 1)
-        const triangleContext = new JOLT.ShapeGetTriangles(
-            shape,
-            JOLT.AABox.prototype.sBiggest(),
-            shape.GetCenterOfMass(),
-            JOLT.Quat.prototype.sIdentity(),
-            scale
-        )
-        JOLT.destroy(scale)
-
-        const vertices = new Float32Array(
-            JOLT.HEAP32.buffer,
-            triangleContext.GetVerticesData(),
-            triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
-        )
-        const buffer = new THREE.BufferAttribute(vertices, 3).clone()
-        JOLT.destroy(triangleContext)
-
-        const geometry = new THREE.BufferGeometry()
-        geometry.setAttribute("position", buffer)
-        geometry.computeVertexNormals()
+        const geometry = createMeshForShape(shape)
 
         const material = new THREE.MeshStandardMaterial({
             color: 0x33ff33,
@@ -514,12 +558,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this._intakePreferences && this._intakePreferences.parentNode) {
             this._intakeSensor = new IntakeSensorSceneObject(this)
             World.sceneRenderer.registerSceneObject(this._intakeSensor)
-        }
-    }
-
-    public updateIntakeVisualIndicator() {
-        if (this._intakeSensor) {
-            this._intakeSensor.updateVisualIndicator()
         }
     }
 
@@ -776,13 +814,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const parts = this._mirabufInstance.parser.assembly.data?.parts
             if (parts) {
                 const editor = new FieldMiraEditor(parts)
-                const devtoolScoringZones = editor.getUserData("devtool:scoring_zones")
-
-                if (devtoolScoringZones && Array.isArray(devtoolScoringZones)) {
-                    this._fieldPreferences.scoringZones = devtoolScoringZones
-                    PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
-                    PreferencesSystem.savePreferences()
-                }
+                devtoolKeys.forEach(key => {
+                    devtoolHandlers[key].set(this, editor.getUserData(key))
+                })
+                PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
+                PreferencesSystem.savePreferences()
             }
         }
     }
@@ -933,6 +969,7 @@ export class RigidNodeAssociate extends BodyAssociate {
     public robotLastInContactWith: MirabufSceneObject | null = null
 
     public readonly rigidNode: RigidNodeReadOnly
+
     public get rigidNodeId(): RigidNodeId {
         return this.rigidNode.id
     }

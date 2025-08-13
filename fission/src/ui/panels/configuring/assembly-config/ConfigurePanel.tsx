@@ -67,7 +67,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                     >
                         Set Scheme
                     </Button>
-                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} />}
+                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} panelId={panel?.id} />}
                 </>
             )
         }
@@ -154,6 +154,22 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
             if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
         }
+
+        // Listen for input scheme changes from other panels
+        const handleExternalSchemeChange = (event: Event) => {
+            const customEvent = event as CustomEvent
+
+            if (customEvent.detail?.panelId === panel?.id) return
+
+            const currentSchemes: InputScheme[] = InputSchemeManager.allInputSchemes
+            originalInputSchemes.current = structuredClone(currentSchemes)
+        }
+
+        window.addEventListener("inputSchemeChanged", handleExternalSchemeChange)
+
+        return () => {
+            window.removeEventListener("inputSchemeChanged", handleExternalSchemeChange)
+        }
     }, [])
 
     useEffect(() => {
@@ -161,7 +177,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
             setPendingDeletes([])
 
-            InputSchemeManager.saveSchemes()
+            InputSchemeManager.saveSchemes(panel?.id)
 
             originalRobotPrefs.current = null
             originalFieldPrefs.current = null
@@ -185,7 +201,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             if (originalInputSchemes.current) {
                 PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
                 PreferencesSystem.savePreferences()
-                InputSchemeManager.resetDefaultSchemes()
+                InputSchemeManager.resetDefaultSchemes(panel?.id)
             }
 
             originalRobotPrefs.current = null
@@ -300,7 +316,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     </ToggleButton>
                 ))}
             </ToggleButtonGroup>
-            {configurationType === "INPUTS" && <ConfigureInputsInterface />}
+            {configurationType === "INPUTS" && <ConfigureInputsInterface panel={panel!} />}
             {configurationType !== "INPUTS" && (
                 <>
                     <AssemblySelection
