@@ -1,5 +1,3 @@
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import World from "../World"
 import {
     defaultFieldPreferences,
     defaultGlobalPreferences,
@@ -18,7 +16,6 @@ import {
     ROBOT_PREFERENCE_KEY,
     type RobotPreferences,
 } from "./PreferenceTypes"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 /** An event that's triggered when a preference is changed. */
 export class PreferenceEvent<K extends GlobalPreference> extends Event {

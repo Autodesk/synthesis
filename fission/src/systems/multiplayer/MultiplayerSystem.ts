@@ -171,7 +171,7 @@ class MultiplayerSystem {
                     data: {
                         sceneObjectKey: obj.id,
                         assemblyHash: await MirabufCachingService.hashBuffer(
-                            mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish()
+                            mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
                         ),
                         miraType: obj.miraType,
                         initialPreferences: obj.getPreferenceData(),
