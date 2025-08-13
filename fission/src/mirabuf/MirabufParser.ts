@@ -41,7 +41,7 @@ class MirabufParser {
 
     private _gamePieces?: MirabufParser[]
     private _isGamePiece: boolean
-    private _gamePieceTransform?: THREE.Matrix4
+    private _gamePieceTransform?: mirabuf.ITransform
 
     public get errors() {
         return this._errors
@@ -83,7 +83,7 @@ class MirabufParser {
     public get isGamePiece(): boolean {
         return this._isGamePiece
     }
-    public get gamePieceTransform(): THREE.Matrix4 | undefined {
+    public get gamePieceTransform(): mirabuf.ITransform | undefined {
         return this._gamePieceTransform
     }
 
@@ -93,8 +93,7 @@ class MirabufParser {
         this._globalTransforms = new Map()
         this._gamePieces = undefined
         this._isGamePiece = isGamePiece
-        if (isGamePiece && assembly.transform)
-            this._gamePieceTransform = convertMirabufTransformToThreeMatrix(assembly.transform)
+        if (isGamePiece && assembly.transform) this._gamePieceTransform = assembly.transform
 
         progressHandle?.update("Parsing assembly...", 0.3)
 
@@ -106,7 +105,7 @@ class MirabufParser {
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
             progressHandle?.update("Wrangling Gamepieces...", 0.4)
-            this._gamePieces = this.pruneGamePieceNodes().map(assembly => new MirabufParser(assembly, true))
+            this._gamePieces = this.pruneGamePieceNodes().map(gp => new MirabufParser(gp, true))
         }
 
         // 2: Grounded joint
@@ -213,6 +212,7 @@ class MirabufParser {
                     .filter(([_key, subInst]) => inst === subInst)
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
+                // Assumes that the game piece is composed of one instance
                 return this.convertPartInstanceToAssembly(inst, instNode)
             })
             .filter(asm => asm != undefined)
@@ -222,6 +222,10 @@ class MirabufParser {
 
     /*
      * Converts specfic part instances to entire assemblies. Designed and tested for gamePiece instances, but theoretically should generalize
+     *
+     * Assumptions:
+     * - The part is a single dynamic rigid body
+     * - One joint and one part exist on the instance
      */
     private convertPartInstanceToAssembly(
         inst: mirabuf.IPartInstance,
@@ -432,30 +436,28 @@ class MirabufParser {
         const valueA = ptv.get(partA)!
         const valueB = ptv.get(partB)!
 
-        while (pathA.value! == pathB.value! && pathA.value! != partA && pathB.value! != partB) {
-            const ancestorIndexA = this.binarySearchIndex(valueA, pathA.children!)
-            const ancestorValueA = ptv.get(pathA.children![ancestorIndexA].value!)!
-            pathA = pathA.children![ancestorIndexA + (ancestorValueA < valueA ? 1 : 0)]
+        const getNextChild = (value: number, children: mirabuf.INode[]) => {
+            const ancestorIndex = this.binarySearchIndex(value, children!)
+            const ancestorValue = ptv.get(children![ancestorIndex].value!)!
 
-            const ancestorIndexB = this.binarySearchIndex(valueB, pathB.children!)
-            const ancestorValueB = ptv.get(pathB.children![ancestorIndexB].value!)!
-            pathB = pathB.children![ancestorIndexB + (ancestorValueB < valueB ? 1 : 0)]
+            return children![ancestorIndex + (ancestorValue < value ? 1 : 0)]
+        }
+
+        while (pathA.value! == pathB.value! && pathA.value! != partA && pathB.value! != partB) {
+            pathA = getNextChild(valueA, pathA.children!)
+            pathB = getNextChild(valueB, pathB.children!)
         }
 
         if (pathA.value! == partA && pathA.value! == pathB.value!) {
-            const ancestorIndexB = this.binarySearchIndex(valueB, pathB.children!)
-            const ancestorValueB = ptv.get(pathB.children![ancestorIndexB].value!)!
-            pathB = pathB.children![ancestorIndexB + (ancestorValueB < valueB ? 1 : 0)]
+            pathB = getNextChild(valueB, pathB.children!)
         } else if (pathB.value! == partB && pathA.value! == pathB.value!) {
-            const ancestorIndexA = this.binarySearchIndex(valueA, pathA.children!)
-            const ancestorValueA = ptv.get(pathA.children![ancestorIndexA].value!)!
-            pathA = pathA.children![ancestorIndexA + (ancestorValueA < valueA ? 1 : 0)]
+            pathA = getNextChild(valueA, pathA.children!)
         }
 
         return [pathA.value!, pathB.value!]
     }
 
-    private binarySearchIndex(target: number, children: mirabuf.INode[]): number {
+    public binarySearchIndex(target: number, children: mirabuf.INode[]): number {
         let l = 0
         let h = children.length
 

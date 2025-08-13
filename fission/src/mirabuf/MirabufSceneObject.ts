@@ -32,6 +32,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltVec3ToThreeVector3,
+    convertMirabufTransformToJoltPositionRVec3,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
 import SceneObject from "../systems/scene/SceneObject"
@@ -316,9 +317,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 )
                 return
             }
-            const position = convertThreeVector3ToJoltRVec3(
-                new THREE.Vector3().setFromMatrixPosition(this.mirabufInstance.parser.gamePieceTransform!)
-            )
+            const position = convertMirabufTransformToJoltPositionRVec3(this.mirabufInstance.parser.gamePieceTransform!)
             // position.SetZ(position.GetZ() - 0.25)
             World.physicsSystem.setBodyPosition(jBodyId, position)
             this.updateMeshTransforms()

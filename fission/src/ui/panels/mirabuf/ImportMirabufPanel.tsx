@@ -103,15 +103,15 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                const mirabufSceneObject = createMirabuf(assembly, info.id, type, progressHandle)
-                if (mirabufSceneObject) {
+                const mirabufSceneObjects = createMirabuf(assembly, info.id, type, progressHandle)
+                if (mirabufSceneObjects) {
                     if (type === MiraType.PIECE) {
                         assembly.transform = new mirabuf.Transform({
                             // Transform matrix for the position (0, 200, 0)
                             spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 200, 0, 0, 1, 0, 0, 0, 0, 1],
                         })
                     }
-                    const { mainSceneObject, gamePieces } = createMirabuf(assembly, info.id, type, progressHandle) ?? {}
+                    const { mainSceneObject, gamePieces } = mirabufSceneObjects
 
                     if (mainSceneObject) {
                         // The point of this code is to prevent the caching of game pieces of the same type
@@ -169,10 +169,10 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
                             }
                         })
 
-                        World.sceneRenderer.registerSceneObject(mirabufSceneObject.mainSceneObject)
+                        World.sceneRenderer.registerSceneObject(mainSceneObject)
                         progressHandle.done()
 
-                        if (mirabufSceneObject.mainSceneObject.miraType == MiraType.ROBOT) {
+                        if (mainSceneObject.miraType == MiraType.ROBOT) {
                             globalOpenPanel(InitialConfigPanel, undefined)
                         }
                     } else {
