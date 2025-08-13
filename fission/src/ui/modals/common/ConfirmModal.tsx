@@ -5,13 +5,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type { ModalImplProps } from "@/ui/components/Modal"
 
 export type ConfirmModalCustomProps = {
-    title?: string
     message: string
-    acceptText?: string
-    cancelText?: string
-    allowClickAway?: boolean
-    onConfirm?: () => void
-    onCancel?: () => void
 }
 
 const ConfirmModal: React.FC<ModalImplProps<void, ConfirmModalCustomProps>> = ({ modal }) => {
@@ -19,23 +13,17 @@ const ConfirmModal: React.FC<ModalImplProps<void, ConfirmModalCustomProps>> = ({
 
     useEffect(() => {
         if (!modal) return
-        const custom = modal.props.custom
         configureScreen(
             modal,
             {
-                title: custom.title ?? "Confirm",
-                acceptText: custom.acceptText ?? "Confirm",
-                cancelText: custom.cancelText ?? "Cancel",
+                title: modal.props.title ?? "Confirm",
+                acceptText: modal.props.acceptText ?? "Confirm",
+                cancelText: modal.props.cancelText ?? "Cancel",
                 hideAccept: false,
                 hideCancel: false,
-                allowClickAway: custom.allowClickAway ?? true,
+                allowClickAway: modal.props.allowClickAway ?? true,
             },
-            {
-                onBeforeAccept: () => {
-                    custom.onConfirm?.()
-                },
-                onCancel: () => custom.onCancel?.(),
-            }
+            {}
         )
     }, [modal, configureScreen])
 

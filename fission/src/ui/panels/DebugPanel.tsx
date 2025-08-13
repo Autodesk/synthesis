@@ -32,7 +32,7 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "Debug Tools", hideAccept: true, cancelText: "Close" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     return (
         <Box
@@ -76,12 +76,15 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         openModal(
                             ConfirmModal,
                             {
-                                title: "Clear All Data",
                                 message:
                                     "Are you sure you want to clear all preferences and cached data? This cannot be undone.",
+                            },
+                            panel,
+                            {
+                                title: "Clear All Data",
                                 acceptText: "Clear & Reload",
                                 cancelText: "Cancel",
-                                onConfirm: async () => {
+                                onAccept: async () => {
                                     window.localStorage.clear()
                                     sessionStorage.clear()
                                     await navigator.storage
@@ -97,8 +100,7 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                                     window.location.reload()
                                     console.log("All data cleared")
                                 },
-                            },
-                            panel
+                            }
                         )
                     }}
                     className="w-full"
