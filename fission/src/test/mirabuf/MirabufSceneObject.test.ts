@@ -41,6 +41,9 @@ const mockSceneRenderer = {
     worldToPixelSpace: vi.fn(() => [0, 0]),
     createToonMaterial: vi.fn(() => ({ color: 0x123456 })),
     setupMaterial: vi.fn(),
+    mirabufSceneObjects: {
+        getField: vi.fn(),
+    },
 }
 const mockSimulationSystem = {
     registerMechanism: vi.fn(),

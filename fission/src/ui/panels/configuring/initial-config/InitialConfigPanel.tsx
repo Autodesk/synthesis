@@ -149,6 +149,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     onSelect={() => {}}
                     onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
                     onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
+                    panelId={panel?.id}
                 />
             )}
         </Stack>
