@@ -314,11 +314,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         selectedAssembly={selectedAssembly}
                         onStageDelete={opt => {
                             const id = (opt as AssemblySelectionOption).assemblyObject.id
-                            if (
-                                World.multiplayerSystem != null &&
-                                !World.multiplayerSystem.getOwnSceneObjectIDs().includes(id)
-                            )
-                                return
                             setPendingDeletes(prev => [...prev, id])
                         }}
                         pendingDeletes={pendingDeletes}

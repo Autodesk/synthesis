@@ -202,6 +202,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     console.assert(data.bodyIds.length === clientBodyIds.length)
     data.bodyIds.forEach((id, i) => bodyMap.set(id, clientBodyIds[i]))
 
+    object.multiplayerOwningClientId = peerId
     handle.done("Loaded")
 
     // Run all messages that arrived before the assembly fully spawned

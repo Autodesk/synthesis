@@ -23,15 +23,20 @@ export class AssemblySelectionOption extends SelectMenuOption {
     assemblyObject: MirabufSceneObject
 
     constructor(name: string, assemblyObject: MirabufSceneObject) {
-        super(assemblyObject.id.toString(), name)
+        const isDisabled = !assemblyObject.isOwnObject
+        super(
+            assemblyObject.id.toString(),
+            name,
+            isDisabled ? `Object belongs to ${assemblyObject.multiplayerOwnerName}` : undefined,
+            isDisabled
+        )
         this.assemblyObject = assemblyObject
     }
 }
 
 function makeSelectionOption(configurationType: ConfigurationType, assembly: MirabufSceneObject) {
-    console.log("MAKING SELECTION OPTION FOR", configurationType)
     return new AssemblySelectionOption(
-        `${configurationType === "ROBOTS" ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
+        `${configurationType === "ROBOTS" ? `[${assembly.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
         assembly
     )
 }
@@ -52,17 +57,16 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        return !field || pendingDeletes.includes(field.id) ? [] : [field]
+        return [World.sceneRenderer.mirabufSceneObjects.getField()]
+            .filter(x => x != null)
+            .filter(x => !pendingDeletes.includes(x.id))
     }, [u, pendingDeletes])
 
     console.log(robots[0], fields[0])
 
     const options = useMemo(() => {
         const list = configurationType === "ROBOTS" ? robots : fields
-        return list
-            .filter((assembly): assembly is MirabufSceneObject => assembly != null)
-            .map(assembly => makeSelectionOption(configurationType, assembly))
+        return list.map(assembly => makeSelectionOption(configurationType, assembly))
     }, [configurationType, robots, fields])
 
     return (

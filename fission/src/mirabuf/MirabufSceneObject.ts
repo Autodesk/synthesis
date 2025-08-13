@@ -100,6 +100,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _intakeActive = false
     private _ejectorActive = false
 
+    private _multiplayerOwningClientId?: string
+
     private _lastEjectableToastTime = 0
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
@@ -125,6 +127,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public set nameOverride(name: string | undefined) {
         this._nameOverride = name
     }
+
+    public set multiplayerOwningClientId(id: string | undefined) {
+        this._multiplayerOwningClientId = id
+    }
+
+    public get multiplayerOwnerName(): string | undefined {
+        if (this._multiplayerOwningClientId == null) return undefined
+        return World.multiplayerSystem?._clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
+    }
+
     public get intakeActive() {
         return this._intakeActive
     }
@@ -174,6 +186,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     get nameTag() {
         return this._nameTag
+    }
+
+    get isOwnObject() {
+        return this._multiplayerOwningClientId == undefined
     }
 
     public get activeEjectables(): Jolt.BodyID[] {
