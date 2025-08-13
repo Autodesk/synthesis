@@ -16,6 +16,7 @@ import type { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
+import ConfirmModal from "@/ui/modals/common/ConfirmModal"
 
 function toggleDragMode() {
     const dragSystem = World.dragModeSystem
@@ -27,11 +28,11 @@ function toggleDragMode() {
 }
 
 const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { openPanel, configureScreen } = useUIContext()
+    const { openPanel, openModal, configureScreen } = useUIContext()
 
     useEffect(() => {
         configureScreen(panel!, { title: "Debug Tools", hideAccept: true, cancelText: "Close" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     return (
         <Box
@@ -69,6 +70,42 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                 </Button>
                 <Button onClick={() => PreferencesSystem.clearPreferences()} className="w-full">
                     Clear Preferences
+                </Button>
+                <Button
+                    onClick={() => {
+                        openModal(
+                            ConfirmModal,
+                            {
+                                message:
+                                    "Are you sure you want to clear all preferences and cached data? This cannot be undone.",
+                            },
+                            panel,
+                            {
+                                title: "Clear All Data",
+                                acceptText: "Clear & Reload",
+                                cancelText: "Cancel",
+                                onAccept: async () => {
+                                    window.localStorage.clear()
+                                    sessionStorage.clear()
+                                    await navigator.storage
+                                        .getDirectory()
+                                        .then(async root => {
+                                            for await (const key of root.keys()) {
+                                                await root.removeEntry(key, { recursive: true })
+                                            }
+                                        })
+                                        .catch(() => {
+                                            console.warn("couldn't empty opfs")
+                                        })
+                                    window.location.reload()
+                                    console.log("All data cleared")
+                                },
+                            }
+                        )
+                    }}
+                    className="w-full"
+                >
+                    Clear All Data
                 </Button>
 
                 <Label size="sm">Autodesk Platform Services</Label>
