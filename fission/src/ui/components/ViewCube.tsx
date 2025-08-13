@@ -23,7 +23,6 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     const cameraRef = useRef<THREE.OrthographicCamera>()
     const cubeRef = useRef<THREE.Group>()
     const axisRef = useRef<THREE.Group>()
-    const pointerLock = useRef(true)
     const [hoveredElement, setHoveredElement] = useState<{ type: string; index: number } | null>(null)
     const [isDragging, setIsDragging] = useState(false)
     const [lastMousePos, setLastMousePos] = useState<{ x: number; y: number } | null>(null)
@@ -880,7 +879,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             setDragStartElement(getClickedElement(event))
 
             // Request pointer lock for better cursor control
-            if (pointerLock.current && containerRef.current) {
+            if (containerRef.current) {
                 containerRef.current.requestPointerLock()
             }
 
