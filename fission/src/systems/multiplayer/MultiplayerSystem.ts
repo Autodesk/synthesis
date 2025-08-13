@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/correctness/noUndeclaredVariables: In Progress */
+import type Jolt from "@azaleacolburn/jolt-physics"
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
@@ -6,11 +6,9 @@ import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
-import type PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
-import type { ClientInfo, InitObjectData, Message, MessageType } from "./types"
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type { ClientInfo, Message, MessageType } from "./types"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -155,26 +153,6 @@ class MultiplayerSystem {
         return peerCount
     }
 
-    // Called by the host, initializes the world with some defined set of objects, robots can be spawned in later
-    async initWorld(physicsSystem: PhysicsSystem) {
-        const sceneObjects: InitObjectData[] = await Promise.all(
-            World.sceneRenderer.mirabufSceneObjects.getAll().map(async sceneObject => ({
-                sceneObjectKey: sceneObject.id,
-                assemblyHash: await MirabufCachingService.hashBuffer(
-                    mirabuf.Assembly.encode(sceneObject.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
-                ),
-                miraType: sceneObject.miraType,
-                initialPreferences: sceneObject.getPreferenceData(),
-                bodyIds: sceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
-            }))
-        )
-
-        await this.broadcast({
-            type: "init",
-            data: { physicsSystem, objects: sceneObjects },
-        })
-    }
-
     setupConnectionHandlers(conn: DataConnection) {
         if (this._connections.has(conn.peer)) {
             console.warn("Setting up connection for", conn.peer, "again")
@@ -186,13 +164,21 @@ class MultiplayerSystem {
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             await this.send(conn.peer, { type: "info", data: this.info })
 
-            const ownSceneObjects = this.getOwnSceneObjectIDs()
-            World.sceneRenderer.mirabufSceneObjects
-                .getAll()
-                .filter(obj => ownSceneObjects.includes(obj.id))
-                .forEach(async obj => {
-                    await this.send(conn.peer, { type: "metadataUpdate", data: obj.multiplayerInfo })
+            for (const obj of this.getOwnObjects()) {
+                await this.send(conn.peer, { type: "metadataUpdate", data: obj.multiplayerInfo })
+                await this.send(conn.peer, {
+                    type: "newObject",
+                    data: {
+                        sceneObjectKey: obj.id,
+                        assemblyHash: await MirabufCachingService.hashBuffer(
+                            mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish()
+                        ),
+                        miraType: obj.miraType,
+                        initialPreferences: obj.getPreferenceData(),
+                        bodyIds: obj.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+                    },
                 })
+            }
         })
 
         conn.on("data", async (data: unknown) => {

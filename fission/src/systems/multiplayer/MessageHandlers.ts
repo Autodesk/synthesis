@@ -12,7 +12,6 @@ import type {
     AssemblyRequestData,
     ClientInfo,
     EncodedAssembly,
-    InitData,
     InitObjectData,
     MatchModePenalty,
     MatchModeStateData,
@@ -25,7 +24,6 @@ import type {
 
 export const peerMessageHandlers = {
     info: handlePeerInfo,
-    init: handleWorldInitialization,
     update: handlePeerUpdate,
     collision: handleCollision,
     newObject: handleNewObject,
@@ -65,11 +63,6 @@ function handlePeerInfo(data: ClientInfo) {
     World.multiplayerSystem?._clientToInfoMap.set(data.clientId, data)
     globalAddToast("success", "Multiplayer Peer Connected", data.displayName)
     MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
-}
-
-async function handleWorldInitialization(data: InitData, peerId: string) {
-    World.physicsSystem = data.physicsSystem
-    data.objects.forEach(async objectData => await handleNewObject(objectData, peerId))
 }
 
 function handlePeerUpdate(data: UpdateObjectData[], peerId: string) {

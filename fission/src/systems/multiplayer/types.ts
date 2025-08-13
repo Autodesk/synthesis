@@ -6,7 +6,6 @@ import type PhysicsSystem from "../physics/PhysicsSystem"
 
 export interface MessageType {
     info: ClientInfo
-    init: InitData
     update: UpdateObjectData[]
     metadataUpdate: MetadataUpdateData
     collision: UpdateObjectData[] // just a comprehensive list instead
@@ -78,12 +77,6 @@ export type MetadataUpdateData = {
     sceneObjectKey: number
     alliance?: Alliance
     station?: Station
-}
-
-// TODO: Figure out if InitMultiplayerObjectData is still necessary
-export type InitData = {
-    physicsSystem: PhysicsSystem
-    objects: InitObjectData[] // We need to send the entire scene object with rendering data and configuration (for fields and such)
 }
 
 export type UpdateObjectData = {
