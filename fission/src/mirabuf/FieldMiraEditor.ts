@@ -1,10 +1,15 @@
-import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import { mirabuf } from "../proto/mirabuf"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import { mirabuf } from "@/proto/mirabuf"
+import {
+    defaultFieldPreferences,
+    type FieldPreferences,
+    type ScoringZonePreferences,
+} from "@/systems/preferences/PreferenceTypes"
 
-interface DevtoolMiraData {
+export interface DevtoolMiraData {
     "devtool:scoring_zones": ScoringZonePreferences[]
     "devtool:camera_locations": unknown
-    "devtool:spawn_points": unknown
+    "devtool:spawn_locations": FieldPreferences["spawnLocations"]
     "devtool:a": unknown
     "devtool:b": unknown
     "devtool:test": unknown
@@ -14,6 +19,87 @@ interface DevtoolMiraData {
     "devtool:foo": unknown
     // additional devtool keys to be added in future
 }
+
+export const devtoolHandlers = {
+    "devtool:scoring_zones": {
+        get(field) {
+            return field.fieldPreferences?.scoringZones ?? defaultFieldPreferences().scoringZones
+        },
+        set(field, val) {
+            val ??= defaultFieldPreferences().scoringZones
+            if (!field.fieldPreferences || !this.validate(val)) {
+                console.warn("validation failed", val, field.fieldPreferences)
+                return
+            }
+            field.fieldPreferences.scoringZones = val
+            field.updateScoringZones()
+        },
+        validate(val): val is ScoringZonePreferences[] {
+            if (!Array.isArray(val)) return false
+            return val.every(
+                z =>
+                    typeof z === "object" &&
+                    z !== null &&
+                    typeof z.name === "string" &&
+                    (z.alliance === "red" || z.alliance === "blue") &&
+                    (typeof z.parentNode === "string" || z.parentNode === undefined) &&
+                    typeof z.points === "number" &&
+                    typeof z.destroyGamepiece === "boolean" &&
+                    typeof z.persistentPoints === "boolean" &&
+                    Array.isArray(z.deltaTransformation)
+            )
+        },
+    },
+    "devtool:spawn_locations": {
+        get(field) {
+            return field.fieldPreferences?.spawnLocations ?? defaultFieldPreferences().spawnLocations
+        },
+        set(field, val) {
+            val ??= defaultFieldPreferences().spawnLocations
+            if (!field.fieldPreferences || !this.validate(val)) {
+                console.warn("validation failed", val, field.fieldPreferences)
+                return
+            }
+            field.fieldPreferences.spawnLocations = val
+        },
+        validate(val: unknown): val is FieldPreferences["spawnLocations"] {
+            const isStructureCorrect =
+                typeof val === "object" &&
+                val != null &&
+                "red" in val &&
+                "blue" in val &&
+                "default" in val &&
+                "hasConfiguredLocations" in val
+
+            if (!isStructureCorrect) return false
+            return (["red", "blue"] as const).every(v => {
+                const obj = val[v]
+                if (!(typeof obj === "object" && obj != null && 1 in obj && 2 in obj && 3 in obj)) return false
+                return ([1, 2, 3] as const).every(v => {
+                    const spawnposition = obj[v]
+                    return (
+                        typeof spawnposition == "object" &&
+                        spawnposition != null &&
+                        "pos" in spawnposition &&
+                        "yaw" in spawnposition &&
+                        Array.isArray(spawnposition["pos"]) &&
+                        spawnposition["pos"].length == 3 &&
+                        typeof spawnposition["yaw"] == "number"
+                    )
+                })
+            })
+        },
+    },
+} as const satisfies Partial<{
+    [K in keyof DevtoolMiraData]: {
+        get(field: MirabufSceneObject): DevtoolMiraData[K]
+        set(field: MirabufSceneObject, val: unknown | null): void
+        validate(val: unknown): val is DevtoolMiraData[K]
+    }
+}>
+
+export type DevtoolKey = keyof typeof devtoolHandlers
+export const devtoolKeys = Object.keys(devtoolHandlers) as DevtoolKey[]
 
 /**
  * Utility for reading and writing developer tool data in the mira file's UserData field.
