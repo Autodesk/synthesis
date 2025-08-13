@@ -30,6 +30,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null)
     const [dragStartElement, setDragStartElement] = useState<{ type: string; index: number } | null>(null)
     const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight })
+    const [isPointerLocked, setIsPointerLocked] = useState(false)
 
     const calculateResponsiveSize = () => {
         if (!scaleWithWindow) return size
@@ -61,27 +62,42 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 setLastMousePos(null)
                 setDragStartPos(null)
                 setDragStartElement(null)
+
+                if (document.pointerLockElement) {
+                    document.exitPointerLock()
+                }
             }
         }
 
         const handleGlobalMouseMove = (event: MouseEvent) => {
-            if (isDragging && lastMousePos) {
-                const deltaX = event.clientX - lastMousePos.x
-                const deltaY = event.clientY - lastMousePos.y
+            if (!isDragging) return
 
-                const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
+            let deltaX = 0
+            let deltaY = 0
 
-                const controls = World.sceneRenderer.currentCameraControls
-                if (controls instanceof CustomOrbitControls) {
-                    const currentCoords = controls.getCurrentCoordinates()
-
-                    const newTheta = currentCoords.theta - deltaX * sensitivity
-                    const newPhi = currentCoords.phi - deltaY * sensitivity
-
-                    controls.setImmediateCoordinates({ theta: newTheta, phi: newPhi })
-                }
-
+            if (isPointerLocked) {
+                // Use movementX and movementY when pointer is locked
+                deltaX = event.movementX ?? 0
+                deltaY = event.movementY ?? 0
+            } else if (lastMousePos) {
+                // Use regular mouse tracking as fallback
+                deltaX = event.clientX - lastMousePos.x
+                deltaY = event.clientY - lastMousePos.y
                 setLastMousePos({ x: event.clientX, y: event.clientY })
+            }
+
+            if (deltaX === 0 && deltaY === 0) return
+
+            const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
+
+            const controls = World.sceneRenderer.currentCameraControls
+            if (controls instanceof CustomOrbitControls) {
+                const currentCoords = controls.getCurrentCoordinates()
+
+                const newTheta = currentCoords.theta - deltaX * sensitivity
+                const newPhi = currentCoords.phi - deltaY * sensitivity
+
+                controls.setImmediateCoordinates({ theta: newTheta, phi: newPhi })
             }
         }
 
@@ -91,6 +107,30 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 setLastMousePos(null)
                 setDragStartPos(null)
                 setDragStartElement(null)
+
+                if (document.pointerLockElement) {
+                    document.exitPointerLock()
+                }
+            }
+        }
+
+        const handlePointerLockChange = () => {
+            setIsPointerLocked(document.pointerLockElement != null)
+        }
+
+        const handlePointerLockError = () => {
+            // Fallback to regular mouse tracking if pointer lock fails
+            setIsPointerLocked(false)
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            // Allow escape key to exit pointer lock
+            if (event.key === "Escape" && isDragging) {
+                setIsDragging(false)
+                setLastMousePos(null)
+                setDragStartPos(null)
+                setDragStartElement(null)
+                document.exitPointerLock()
             }
         }
 
@@ -98,14 +138,20 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             document.addEventListener("mouseup", handleGlobalMouseUp)
             document.addEventListener("mousemove", handleGlobalMouseMove)
             document.addEventListener("visibilitychange", handleVisibilityChange)
+            document.addEventListener("pointerlockchange", handlePointerLockChange)
+            document.addEventListener("pointerlockerror", handlePointerLockError)
+            document.addEventListener("keydown", handleKeyDown)
         }
 
         return () => {
             document.removeEventListener("mouseup", handleGlobalMouseUp)
             document.removeEventListener("mousemove", handleGlobalMouseMove)
             document.removeEventListener("visibilitychange", handleVisibilityChange)
+            document.removeEventListener("pointerlockchange", handlePointerLockChange)
+            document.removeEventListener("pointerlockerror", handlePointerLockError)
+            document.removeEventListener("keydown", handleKeyDown)
         }
-    }, [isDragging, lastMousePos])
+    }, [isDragging, lastMousePos, isPointerLocked])
     const updateHighlights = useCallback((element: { type: string; index: number } | null) => {
         if (!cubeRef.current) return
 
@@ -815,26 +861,9 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     }
 
     const handleMouseMove = (event: React.MouseEvent) => {
-        setCurrentMousePos({ x: event.clientX, y: event.clientY })
-
-        if (isDragging && lastMousePos) {
-            const deltaX = event.clientX - lastMousePos.x
-            const deltaY = event.clientY - lastMousePos.y
-
-            const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
-
-            const controls = World.sceneRenderer.currentCameraControls
-            if (controls instanceof CustomOrbitControls) {
-                const currentCoords = controls.getCurrentCoordinates()
-
-                const newTheta = currentCoords.theta - deltaX * sensitivity
-                const newPhi = currentCoords.phi - deltaY * sensitivity
-
-                controls.setImmediateCoordinates({ theta: newTheta, phi: newPhi })
-            }
-
-            setLastMousePos({ x: event.clientX, y: event.clientY })
-        } else {
+        // Only update mouse position and highlights when not dragging
+        if (!isDragging) {
+            setCurrentMousePos({ x: event.clientX, y: event.clientY })
             const element = getClickedElement(event)
             setHoveredElement(element)
             updateHighlights(element)
@@ -848,6 +877,12 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             setLastMousePos(mousePos)
             setDragStartPos(mousePos)
             setDragStartElement(getClickedElement(event))
+
+            // Request pointer lock for better cursor control
+            if (containerRef.current) {
+                containerRef.current.requestPointerLock()
+            }
+
             event.preventDefault()
         }
     }
