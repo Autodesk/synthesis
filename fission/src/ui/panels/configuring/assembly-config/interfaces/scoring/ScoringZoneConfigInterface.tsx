@@ -1,5 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Button, TextField } from "@mui/material"
+import { Button, Stack, TextField } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
@@ -11,15 +11,20 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+
 import Checkbox from "@/ui/components/Checkbox"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import DevtoolZoneRemovalModal from "@/ui/modals/DevtoolZoneRemovalModal"
+import { isZoneFromDevtools, modifyZoneInDevtools } from "@/util/DevtoolZoneUtils"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
+import type { Panel } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 /**
  * Saves ejector configuration to selected field.
@@ -101,9 +106,10 @@ interface ZoneConfigProps {
     selectedField: MirabufSceneObject
     selectedZone: ScoringZonePreferences
     saveAllZones: () => void
+    panel?: Panel<any, any>
 }
 
-const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
+const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones, panel }) => {
     //Official FIRST hex
     // TODO: Do we want to eventually make these editable?
     const redMaterial = useMemo(() => {
@@ -130,10 +136,23 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [points, setPoints] = useState<number>(selectedZone.points)
     const [destroy] = useState<boolean>(selectedZone.destroyGamepiece)
     const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
+    const [confirmationModal, setConfirmationModal] = useState<{
+        isOpen: boolean
+        pendingSave: boolean
+    }>({ isOpen: false, pendingSave: false })
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
+    const originalZoneRef = useRef<ScoringZonePreferences>(structuredClone(selectedZone))
+    const { configureScreen, closePanel } = useUIContext()
 
-    const saveEvent = useCallback(() => {
+    // Hide the panel's default footer buttons when this interface is active
+    useEffect(() => {
+        if (panel) {
+            configureScreen(panel, { hideAccept: true, hideCancel: true }, {})
+        }
+    }, [panel, configureScreen])
+
+    const handleSave = useCallback(() => {
         if (gizmoRef.current && selectedField) {
             save(
                 selectedField,
@@ -149,14 +168,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             saveAllZones()
         }
     }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
-
-    useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-
-        return () => {
-            ConfigurationSavedEvent.removeListener(saveEvent)
-        }
-    }, [saveEvent])
 
     /** Holds a pause for the duration of the interface component */
     useEffect(() => {
@@ -245,6 +256,47 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         [selectedField]
     )
 
+    const handleTemporaryModification = () => {
+        // For temporary modification, just save the changes to the current session
+        // without persisting to the field file cache
+        handleSave()
+        
+        // Save all zones to ensure the changes are persisted to preferences
+        saveAllZones()
+        
+        setConfirmationModal({ isOpen: false, pendingSave: false })
+        if (panel) closePanel(panel.id, CloseType.Accept)
+    }
+
+    const handlePermanentModification = async () => {
+        try {
+            const modifiedZone: ScoringZonePreferences = {
+                name,
+                alliance,
+                parentNode: selectedNode,
+                points,
+                destroyGamepiece: destroy,
+                persistentPoints: persistent,
+                deltaTransformation: selectedZone.deltaTransformation 
+            }
+          
+            handleSave()
+            modifiedZone.deltaTransformation = selectedZone.deltaTransformation
+
+            await modifyZoneInDevtools(originalZoneRef.current, modifiedZone, "scoring")
+            
+        } catch (error) {
+            console.error("Failed to permanently modify zone:", error)
+        } finally {
+            setConfirmationModal({ isOpen: false, pendingSave: false })
+            if (panel) closePanel(panel.id, CloseType.Accept)
+        }
+    }
+
+    const handleCloseConfirmation = () => {
+        setConfirmationModal({ isOpen: false, pendingSave: false })
+    }
+
     return (
         <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
             {/** Set the zone name */}
@@ -294,6 +346,43 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             {/** Switch between transform control modes */}
 
             {gizmoComponent}
+
+            <DevtoolZoneRemovalModal
+                isOpen={confirmationModal.isOpen}
+                onClose={handleCloseConfirmation}
+                zoneType="scoring"
+                zoneName={selectedZone.name}
+                onTemporaryRemoval={handleTemporaryModification}
+                onPermanentRemoval={handlePermanentModification}
+                actionType="modification"
+            />
+
+            {/** Custom Save/Cancel buttons that replace the panel's default buttons */}
+            <Stack direction="row" justifyContent="flex-end" gap={1} mt={2}>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                        if (panel) closePanel(panel.id, CloseType.Cancel)
+                    }}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                        if (isZoneFromDevtools(selectedZone, "scoring")) {
+                            setConfirmationModal({ isOpen: true, pendingSave: true })
+                        } else {
+                            handleSave()
+                            if (panel) closePanel(panel.id, CloseType.Accept)
+                        }
+                    }}
+                >
+                    Save
+                </Button>
+            </Stack>
         </div>
     )
 }

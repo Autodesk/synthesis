@@ -98,6 +98,60 @@ export async function removeZoneFromDevtools(
 }
 
 /**
+ * Modifies a zone in the field file cache permanently by replacing it with updated data.
+ */
+export async function modifyZoneInDevtools(
+    originalZone: ScoringZonePreferences | ProtectedZonePreferences,
+    modifiedZone: ScoringZonePreferences | ProtectedZonePreferences,
+    zoneType: ZoneType
+): Promise<void> {
+    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+    if (!field) throw new Error("No field loaded")
+
+    const parts = field.mirabufInstance.parser.assembly.data?.parts
+    if (!parts) throw new Error("No field parts found")
+
+    const editor = new FieldMiraEditor(parts)
+
+    if (zoneType === "scoring") {
+        const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
+        if (!devtoolZones) return
+
+        // Find and replace the zone in field file data
+        const updatedZones = devtoolZones.map(devZone => {
+            if (
+                devZone.name === originalZone.name &&
+                devZone.alliance === originalZone.alliance &&
+                devZone.parentNode === originalZone.parentNode &&
+                JSON.stringify(devZone.deltaTransformation) === JSON.stringify(originalZone.deltaTransformation)
+            ) {
+                return modifiedZone as ScoringZonePreferences
+            }
+            return devZone
+        })
+
+        editor.setUserData("devtool:scoring_zones", updatedZones)
+
+        if (field.fieldPreferences) {
+            field.fieldPreferences.scoringZones = updatedZones
+            PreferencesSystem.savePreferences?.()
+            field.updateScoringZones()
+        }
+
+        const assembly = field.mirabufInstance.parser.assembly
+        const cacheId = field.cacheId
+        if (cacheId) {
+            const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+            if (!success) {
+                throw new Error("Failed to persist changes to cache")
+            }
+        }
+    } else {
+        throw new Error("Protected zone field file modification not yet implemented")
+    }
+}
+
+/**
  * Gets all zones that exist in the field file for a given type.
  */
 export function getDevtoolZones(zoneType: ZoneType): ScoringZonePreferences[] | ProtectedZonePreferences[] | undefined {

@@ -10,6 +10,7 @@ interface DevtoolZoneRemovalModalProps {
     zoneName: string
     onTemporaryRemoval: () => void
     onPermanentRemoval: () => void
+    actionType?: "removal" | "modification"
 }
 
 const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
@@ -19,6 +20,7 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
     zoneName,
     onTemporaryRemoval,
     onPermanentRemoval,
+    actionType = "removal",
 }) => {
     const [isRemoving, setIsRemoving] = useState(false)
 
@@ -31,10 +33,13 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
         setIsRemoving(true)
         try {
             await onPermanentRemoval()
-            globalAddToast?.("info", "Zone Removed", `${zoneName} has been permanently removed from the field file.`)
+            const actionText = actionType === "modification" ? "modified" : "removed"
+            const actionCapitalized = actionType === "modification" ? "Modified" : "Removed"
+            globalAddToast?.("info", `Zone ${actionCapitalized}`, `${zoneName} has been permanently ${actionText} in the field file.`)
         } catch (error) {
-            globalAddToast?.("error", "Removal Failed", "Failed to permanently remove zone from the field file cache.")
-            console.error("Failed to remove zone from field file:", error)
+            const actionText = actionType === "modification" ? "modify" : "remove"
+            globalAddToast?.("error", `${actionType === "modification" ? "Modification" : "Removal"} Failed`, `Failed to permanently ${actionText} zone in the field file cache.`)
+            console.error(`Failed to ${actionText} zone in field file:`, error)
         } finally {
             setIsRemoving(false)
             onClose()
@@ -43,23 +48,21 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
 
     return (
         <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Remove {zoneType === "scoring" ? "Scoring" : "Protected"} Zone</DialogTitle>
+            <DialogTitle>{actionType === "modification" ? "Modify" : "Remove"} {zoneType === "scoring" ? "Scoring" : "Protected"} Zone</DialogTitle>
             <DialogContent>
                 <Stack spacing={2}>
                     <Typography variant="body1">
                         The {zoneType} zone "{zoneName}" was defined in the field file and is cached.
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Choose how you'd like to remove it:
+                        Choose how you'd like to {actionType === "modification" ? "save your modifications" : "remove it"}:
                     </Typography>
                     <Stack spacing={1}>
                         <Typography variant="body2">
-                            <strong>Temporary removal:</strong> Remove zone until next field reload. The zone will
-                            reappear when you refresh or reload the field.
+                            <strong>Temporary {actionType === "modification" ? "modification" : "removal"}:</strong> {actionType === "modification" ? "Save changes until next field reload. Original zone will reappear when you refresh or reload the field." : "Remove zone until next field reload. The zone will reappear when you refresh or reload the field."}
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Permanent removal:</strong> Remove zone from the field file cache. This will prevent it
-                            from reappearing on future loads.
+                            <strong>Permanent {actionType === "modification" ? "modification" : "removal"}:</strong> {actionType === "modification" ? "Save changes to the field file cache. This will persist your modifications on future loads." : "Remove zone from the field file cache. This will prevent it from reappearing on future loads."}
                         </Typography>
                     </Stack>
                 </Stack>
@@ -69,10 +72,10 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
                     Cancel
                 </Button>
                 <Button onClick={handleTemporaryRemoval} disabled={isRemoving} variant="outlined" color="warning">
-                    Temporary Removal
+                    Temporary {actionType === "modification" ? "Modification" : "Removal"}
                 </Button>
-                <Button onClick={handlePermanentRemoval} disabled={isRemoving} variant="contained" color="error">
-                    {isRemoving ? "Removing..." : "Permanent Removal"}
+                <Button onClick={handlePermanentRemoval} disabled={isRemoving} variant="contained" color={actionType === "modification" ? "primary" : "error"}>
+                    {isRemoving ? `${actionType === "modification" ? "Modifying" : "Removing"}...` : `Permanent ${actionType === "modification" ? "Modification" : "Removal"}`}
                 </Button>
             </DialogActions>
         </Dialog>
