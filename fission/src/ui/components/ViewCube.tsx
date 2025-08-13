@@ -77,8 +77,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
             if (isPointerLocked) {
                 // Use movementX and movementY when pointer is locked
-                deltaX = event.movementX || 0
-                deltaY = event.movementY || 0
+                deltaX = event.movementX ?? 0
+                deltaY = event.movementY ?? 0
             } else if (lastMousePos) {
                 // Use regular mouse tracking as fallback
                 deltaX = event.clientX - lastMousePos.x
