@@ -93,33 +93,37 @@ export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, pr
     await MirabufCachingService.get(info.hash)
         .then(async assembly => {
             if (assembly) {
-                createMirabuf(assembly, progressHandle).then(async x => {
-                    if (x) {
-                        World.sceneRenderer.registerSceneObject(x)
+                createMirabuf(assembly, progressHandle).then(async mirabufSceneObject => {
+                    if (mirabufSceneObject) {
+                        World.sceneRenderer.registerSceneObject(mirabufSceneObject)
 
                         if (World.multiplayerSystem != null) {
                             const encodedAssembly =
-                                x.miraType !== MiraType.FIELD
+                                mirabufSceneObject.miraType !== MiraType.FIELD
                                     ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
                                     : undefined
                             const message: Message = {
                                 type: "newObject",
                                 data: {
-                                    sceneObjectKey: x.id,
+                                    sceneObjectKey: mirabufSceneObject.id,
                                     assembly: encodedAssembly,
                                     assemblyHash: info.hash,
                                     miraType: info.miraType,
-                                    initialPreferences: x.getPreferenceData(),
-                                    bodyIds: x.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+                                    initialPreferences: mirabufSceneObject.getPreferenceData(),
+                                    bodyIds: mirabufSceneObject
+                                        .getAllBodyIds()
+                                        .map(id => id.GetIndexAndSequenceNumber()),
                                 },
                             }
                             await World.multiplayerSystem?.broadcast(message)
-                            World.multiplayerSystem.registerOwnSceneObject(x.id)
+                            World.multiplayerSystem.registerOwnSceneObject(mirabufSceneObject.id)
                         }
 
                         progressHandle.done()
 
-                        globalOpenPanel(InitialConfigPanel, undefined)
+                        if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                            globalOpenPanel(InitialConfigPanel, undefined)
+                        }
                     } else {
                         progressHandle.fail()
                     }

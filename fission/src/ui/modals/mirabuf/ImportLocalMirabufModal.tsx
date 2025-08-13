@@ -54,11 +54,13 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
                         }
                         return undefined
                     })
-                    .then(x => {
-                        if (x) {
-                            World.sceneRenderer.registerSceneObject(x)
+                    .then(mirabufSceneObject => {
+                        if (mirabufSceneObject) {
+                            World.sceneRenderer.registerSceneObject(mirabufSceneObject)
 
-                            openPanel(InitialConfigPanel, undefined, modal)
+                            if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                                openPanel(InitialConfigPanel, undefined, modal)
+                            }
                             closeModal(CloseType.Overwrite)
                         }
                     })
