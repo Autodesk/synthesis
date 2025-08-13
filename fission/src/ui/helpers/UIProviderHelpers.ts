@@ -25,6 +25,7 @@ export interface UIScreenProps<P> {
     title?: string
     hideCancel?: boolean
     hideAccept?: boolean
+    disableAccept?: boolean
     cancelText?: string
     acceptText?: string
     custom: P
