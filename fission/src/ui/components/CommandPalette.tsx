@@ -35,6 +35,17 @@ const CommandPalette: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState<number>(0)
     const inputRef = useRef<HTMLInputElement | null>(null)
 
+    const closePalette = useCallback(() => {
+        setIsOpen(false)
+        setQuery("")
+        setActiveIndex(0)
+    }, [])
+
+    const openPalette = useCallback(() => {
+        setIsOpen(true)
+        setTimeout(() => inputRef.current?.focus(), 0)
+    }, [])
+
     const openImportPanel = useCallback(
         (configurationType: ConfigurationType) => {
             openPanel<void, { configurationType: ConfigurationType }>(
@@ -70,6 +81,19 @@ const CommandPalette: React.FC = () => {
                 keywords: ["panel", "debug"],
                 perform: () =>
                     openPanel(DebugPanel as unknown as React.FunctionComponent<PanelImplProps<void, void>>, undefined),
+            },
+            {
+                id: "toggle-drag-mode",
+                label: "Toggle Drag Mode",
+                description: "Enable or disable drag mode.",
+                keywords: ["drag", "mode", "toggle", "move"],
+                perform: () => {
+                    const dragSystem = World.dragModeSystem
+                    if (!dragSystem) return
+                    dragSystem.enabled = !dragSystem.enabled
+                    const status = dragSystem.enabled ? "enabled" : "disabled"
+                    addToast("info", "Drag Mode", `Drag mode has been ${status}`)
+                },
             },
 
             {
@@ -132,11 +156,9 @@ const CommandPalette: React.FC = () => {
         (index: number) => {
             const cmd = visible[index]
             cmd.perform()
-            setIsOpen(false)
-            setQuery("")
-            setActiveIndex(0)
+            closePalette()
         },
-        [visible]
+        [visible, closePalette]
     )
 
     useEffect(() => {
@@ -146,28 +168,23 @@ const CommandPalette: React.FC = () => {
                 if (!World.isAlive) return
                 if (isMainMenuOpen) return
                 e.preventDefault()
-                setIsOpen(true)
-                setTimeout(() => inputRef.current?.focus(), 0)
+                openPalette()
             } else if (e.key === "Escape") {
                 if (isOpen) {
                     e.preventDefault()
-                    setIsOpen(false)
-                    setQuery("")
-                    setActiveIndex(0)
+                    closePalette()
                 }
             }
         }
         window.addEventListener("keydown", onKeyDown)
         return () => window.removeEventListener("keydown", onKeyDown)
-    }, [isOpen, isMainMenuOpen])
+    }, [isOpen, isMainMenuOpen, openPalette, closePalette])
 
     useEffect(() => {
         if (isMainMenuOpen && isOpen) {
-            setIsOpen(false)
-            setQuery("")
-            setActiveIndex(0)
+            closePalette()
         }
-    }, [isMainMenuOpen, isOpen])
+    }, [isMainMenuOpen, isOpen, closePalette])
 
     useEffect(() => {
         if (!isOpen) return
@@ -187,12 +204,10 @@ const CommandPalette: React.FC = () => {
                 execute(activeIndex)
             } else if (e.key === "Escape") {
                 e.preventDefault()
-                setIsOpen(false)
-                setQuery("")
-                setActiveIndex(0)
+                closePalette()
             }
         },
-        [activeIndex, execute, visible.length]
+        [activeIndex, execute, visible.length, closePalette]
     )
 
     if (!isOpen) return null
