@@ -1,3 +1,4 @@
+import Fuse from "fuse.js"
 import { Box, List, ListItemButton, ListItemText, Paper, Stack, TextField } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -125,30 +126,25 @@ const CommandPalette: React.FC = () => {
         [addToast, openPanel, openModal, openImportPanel]
     )
 
+    const fuse = useMemo(() => {
+        return new Fuse(commands, {
+            keys: ["label", "description", "keywords"],
+            threshold: 0.3,
+            ignoreLocation: true,
+            includeMatches: true,
+            shouldSort: false,
+            includeScore: true,
+        })
+    }, [commands])
+
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase()
-        if (q.length === 0) return commands
-
-        type Scored = { cmd: CommandDefinition; score: number; idx: number }
-        const scored: Scored[] = []
-        for (let i = 0; i < commands.length; i++) {
-            const c = commands[i]
-            const label = c.label.toLowerCase()
-            const keywords = (c.keywords ?? []).map(k => k.toLowerCase())
-            let score = 0
-            if (label === q) score += 1000
-            if (label.startsWith(q)) score += 500
-            if (label.includes(q)) score += 200
-            if (keywords.includes(q)) score += 300
-            if (keywords.some(k => k.startsWith(q))) score += 150
-            if (keywords.some(k => k.includes(q))) score += 50
-            if (score > 0) {
-                scored.push({ cmd: c, score, idx: i })
-            }
-        }
-        scored.sort((a, b) => (a.score === b.score ? a.idx - b.idx : a.score - b.score))
-        return scored.map(s => s.cmd)
-    }, [commands, query])
+        if (!q) return commands
+        return fuse
+            .search(q)
+            .reverse()
+            .map(r => r.item)
+    }, [commands, fuse, query])
 
     const visible = useMemo(() => filtered.slice(0, 5), [filtered])
 
