@@ -237,9 +237,14 @@ const CommandPalette: React.FC = () => {
         aiDebounceTimerRef.current = window.setTimeout(async () => {
             try {
                 console.log("Running AI fallback")
+                // Build candidate strings that include both label and description for better semantic matching
+                const aiCandidates = commands.map(c => `${c.label} | ${c.description ?? ""}`)
+                const candidateToCommand = new Map<string, CommandDefinition>()
+                aiCandidates.forEach((cand, i) => candidateToCommand.set(cand, commands[i]))
+
                 // Load once and cache
                 if (!aiClassifyRef.current) {
-                    aiClassifyRef.current = await loadCommandClassifier(commands.map(c => c.label))
+                    aiClassifyRef.current = await loadCommandClassifier(aiCandidates)
                 }
                 const classify = aiClassifyRef.current
                 if (!classify) return
@@ -275,12 +280,12 @@ const CommandPalette: React.FC = () => {
                         setAiFallbackResults([])
                         return
                     }
-                    const fallbackCmd = commands.find(cmd => cmd.label === fallbackLabel)
+                    const fallbackCmd = candidateToCommand.get(fallbackLabel)
                     setAiFallbackResults(fallbackCmd ? [fallbackCmd] : [])
                 } else {
                     const topMatches: CommandDefinition[] = []
                     for (const c of eligible) {
-                        const cmd = commands.find(cmd => cmd.label === c.label)
+                        const cmd = candidateToCommand.get(c.label)
                         if (cmd) topMatches.push(cmd)
                     }
                     setAiFallbackResults(topMatches.reverse())
