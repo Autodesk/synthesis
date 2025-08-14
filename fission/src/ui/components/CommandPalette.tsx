@@ -1,18 +1,16 @@
-import Fuse from "fuse.js"
 import { Box, List, ListItemButton, ListItemText, Paper, Stack, TextField } from "@mui/material"
+import Fuse from "fuse.js"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import DebugPanel from "@/ui/panels/DebugPanel"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import SettingsModal from "@/ui/modals/configuring/SettingsModal"
-import type { PanelImplProps } from "@/ui/components/Panel"
-import type { ModalImplProps } from "@/ui/components/Modal"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import World from "@/systems/World"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import SettingsModal from "@/ui/modals/configuring/SettingsModal"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import MatchMode from "@/systems/match_mode/MatchMode"
+import DebugPanel from "@/ui/panels/DebugPanel"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 
 type CommandDefinition = {
@@ -53,12 +51,7 @@ const CommandPalette: React.FC = () => {
 
     const openImportPanel = useCallback(
         (configurationType: ConfigurationType) => {
-            openPanel<void, { configurationType: ConfigurationType }>(
-                ImportMirabufPanel as unknown as React.FunctionComponent<
-                    PanelImplProps<void, { configurationType: ConfigurationType }>
-                >,
-                { configurationType }
-            )
+            openPanel<void, { configurationType: ConfigurationType }>(ImportMirabufPanel, { configurationType })
         },
         [openPanel]
     )
@@ -70,8 +63,7 @@ const CommandPalette: React.FC = () => {
                 label: "Open Debug Panel",
                 description: "Open the Debug tools panel.",
                 keywords: ["panel", "debug"],
-                perform: () =>
-                    openPanel(DebugPanel as unknown as React.FunctionComponent<PanelImplProps<void, void>>, undefined),
+                perform: () => openPanel(DebugPanel, undefined),
             },
             {
                 id: "toggle-drag-mode",
@@ -146,11 +138,7 @@ const CommandPalette: React.FC = () => {
                 label: "Open Settings",
                 description: "Open the Settings modal.",
                 keywords: ["settings", "preferences", "config"],
-                perform: () =>
-                    openModal(
-                        SettingsModal as unknown as React.FunctionComponent<ModalImplProps<void, void>>,
-                        undefined
-                    ),
+                perform: () => openModal(SettingsModal, undefined),
             },
             {
                 id: "toggle-match-mode",
