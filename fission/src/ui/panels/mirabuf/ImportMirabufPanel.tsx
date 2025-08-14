@@ -1,5 +1,4 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Stack, Tooltip } from "@mui/material"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
@@ -16,6 +15,7 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import type { EncodedAssembly, Message } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -23,11 +23,14 @@ import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
+    Button,
     DeleteButton,
     PositiveButton,
     PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
+    ToggleButton,
+    ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -35,7 +38,6 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 interface ItemCardProps {
     id: string

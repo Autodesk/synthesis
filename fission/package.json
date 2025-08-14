@@ -16,7 +16,7 @@
     "build:dev": "tsc && vite build --base=/fission-closed/ --outDir dist/dev",
     "preview": "vite preview --base=/fission/",
     "lint": "bunx --bun biome lint",
-    "lint:fix": "bunx --bun biome lint --fix",
+    "lint:fix": "bunx --bun biome lint --write",
     "fmt": "bunx --bun biome format src",
     "fmt:fix": "bunx --bun biome format src --write",
     "style": "bun run fmt && bun run lint",

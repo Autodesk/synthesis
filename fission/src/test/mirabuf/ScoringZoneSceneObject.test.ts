@@ -23,6 +23,9 @@ const mockSceneRenderer = {
     scene: {
         remove: vi.fn(),
     },
+    mirabufSceneObjects: {
+        getField: vi.fn(),
+    },
 }
 
 vi.mock("@/systems/World", () => ({

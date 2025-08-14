@@ -1,5 +1,4 @@
 import { Box, Divider } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
 import { Stack } from "@mui/system"
 import type React from "react"
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
@@ -11,7 +10,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 /**

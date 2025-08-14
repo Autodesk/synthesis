@@ -1,19 +1,19 @@
 import { Box, Stack } from "@mui/material"
-import { Button } from "../components/StyledComponents"
 import type React from "react"
 import { useEffect } from "react"
 import APS from "@/aps/APS"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
+import ConfirmModal from "@/ui/modals/common/ConfirmModal"
 import { random } from "@/util/Random"
 import { globalAddToast } from "../components/GlobalUIControls"
 import Label from "../components/Label"
 import type { PanelImplProps } from "../components/Panel"
+import { Button } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
-import ConfirmModal from "@/ui/modals/common/ConfirmModal"
 
 function toggleDragMode() {
     const dragSystem = World.dragModeSystem

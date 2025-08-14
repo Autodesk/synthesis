@@ -1,6 +1,12 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
+import type {
+    FieldConfiguration,
+    MetadataUpdateData,
+    RobotConfiguration,
+    UpdateObjectData,
+} from "@/systems/multiplayer/types"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import type Mechanism from "@/systems/physics/Mechanism"
@@ -50,12 +56,6 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import type {
-    FieldConfiguration,
-    MetadataUpdateData,
-    RobotConfiguration,
-    UpdateObjectData,
-} from "@/systems/multiplayer/types"
 
 const DEBUG_BODIES = false
 
