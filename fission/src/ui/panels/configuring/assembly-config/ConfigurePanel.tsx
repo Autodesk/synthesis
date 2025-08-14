@@ -79,7 +79,13 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                 console.error("Field does not contain scoring zone preferences!")
                 return <Label size="md">ERROR: Field does not contain scoring zone configuration!</Label>
             }
-            return <ConfigureScoringZonesInterface panel={panel as Panel<any, any>} selectedField={assembly} initialZones={zones} />
+            return (
+                <ConfigureScoringZonesInterface
+                    panel={panel as Panel<any, any>}
+                    selectedField={assembly}
+                    initialZones={zones}
+                />
+            )
         }
         case ConfigMode.PROTECTED_ZONES: {
             const zones = assembly.fieldPreferences?.protectedZones ?? []

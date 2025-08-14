@@ -15,6 +15,8 @@ import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import type { Panel } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import DevtoolZoneRemovalModal from "@/ui/modals/DevtoolZoneRemovalModal"
 import { isZoneFromDevtools, modifyZoneInDevtools } from "@/util/DevtoolZoneUtils"
 import {
@@ -23,8 +25,6 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
-import type { Panel } from "@/ui/helpers/UIProviderHelpers"
-import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 /**
  * Saves ejector configuration to selected field.
@@ -269,17 +269,19 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 gizmoRef.current,
                 selectedNode
             )
-            
+
             const fieldZones = selectedField.fieldPreferences?.scoringZones
             if (fieldZones) {
-                const zoneIndex = fieldZones.findIndex(z => 
-                    z === selectedZone || 
-                    (z.name === originalZoneRef.current.name &&
-                     z.alliance === originalZoneRef.current.alliance &&
-                     z.parentNode === originalZoneRef.current.parentNode &&
-                     JSON.stringify(z.deltaTransformation) === JSON.stringify(originalZoneRef.current.deltaTransformation))
+                const zoneIndex = fieldZones.findIndex(
+                    z =>
+                        z === selectedZone ||
+                        (z.name === originalZoneRef.current.name &&
+                            z.alliance === originalZoneRef.current.alliance &&
+                            z.parentNode === originalZoneRef.current.parentNode &&
+                            JSON.stringify(z.deltaTransformation) ===
+                                JSON.stringify(originalZoneRef.current.deltaTransformation))
                 )
-                
+
                 if (zoneIndex >= 0) {
                     fieldZones[zoneIndex] = {
                         name,
@@ -288,15 +290,15 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                         points,
                         destroyGamepiece: destroy,
                         persistentPoints: persistent,
-                        deltaTransformation: selectedZone.deltaTransformation
+                        deltaTransformation: selectedZone.deltaTransformation,
                     }
                 }
             }
-            
+
             PreferencesSystem.savePreferences()
             selectedField.updateScoringZones()
         }
-        
+
         setConfirmationModal({ isOpen: false, pendingSave: false })
         if (panel) closePanel(panel.id, CloseType.Accept)
     }
@@ -310,14 +312,13 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 points,
                 destroyGamepiece: destroy,
                 persistentPoints: persistent,
-                deltaTransformation: selectedZone.deltaTransformation 
+                deltaTransformation: selectedZone.deltaTransformation,
             }
-          
+
             handleSave()
             modifiedZone.deltaTransformation = selectedZone.deltaTransformation
 
             await modifyZoneInDevtools(originalZoneRef.current, modifiedZone, "scoring")
-            
         } catch (error) {
             console.error("Failed to permanently modify zone:", error)
         } finally {

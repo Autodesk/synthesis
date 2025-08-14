@@ -1,7 +1,7 @@
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import FieldMiraEditor from "@/mirabuf/FieldMiraEditor"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { ScoringZonePreferences, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { ProtectedZonePreferences, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 
 export type ZoneType = "scoring" | "protected"

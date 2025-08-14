@@ -35,10 +35,18 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
             await onPermanentRemoval()
             const actionText = actionType === "modification" ? "modified" : "removed"
             const actionCapitalized = actionType === "modification" ? "Modified" : "Removed"
-            globalAddToast?.("info", `Zone ${actionCapitalized}`, `${zoneName} has been permanently ${actionText} in the field file.`)
+            globalAddToast?.(
+                "info",
+                `Zone ${actionCapitalized}`,
+                `${zoneName} has been permanently ${actionText} in the field file.`
+            )
         } catch (error) {
             const actionText = actionType === "modification" ? "modify" : "remove"
-            globalAddToast?.("error", `${actionType === "modification" ? "Modification" : "Removal"} Failed`, `Failed to permanently ${actionText} zone in the field file cache.`)
+            globalAddToast?.(
+                "error",
+                `${actionType === "modification" ? "Modification" : "Removal"} Failed`,
+                `Failed to permanently ${actionText} zone in the field file cache.`
+            )
             console.error(`Failed to ${actionText} zone in field file:`, error)
         } finally {
             setIsRemoving(false)
@@ -48,21 +56,31 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
 
     return (
         <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>{actionType === "modification" ? "Modify" : "Remove"} {zoneType === "scoring" ? "Scoring" : "Protected"} Zone</DialogTitle>
+            <DialogTitle>
+                {actionType === "modification" ? "Modify" : "Remove"} {zoneType === "scoring" ? "Scoring" : "Protected"}{" "}
+                Zone
+            </DialogTitle>
             <DialogContent>
                 <Stack spacing={2}>
                     <Typography variant="body1">
                         The {zoneType} zone "{zoneName}" was defined in the field file and is cached.
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Choose how you'd like to {actionType === "modification" ? "save your modifications" : "remove it"}:
+                        Choose how you'd like to{" "}
+                        {actionType === "modification" ? "save your modifications" : "remove it"}:
                     </Typography>
                     <Stack spacing={1}>
                         <Typography variant="body2">
-                            <strong>Temporary {actionType === "modification" ? "modification" : "removal"}:</strong> {actionType === "modification" ? "Save changes until next field reload. Original zone will reappear when you refresh or reload the field." : "Remove zone until next field reload. The zone will reappear when you refresh or reload the field."}
+                            <strong>Temporary {actionType === "modification" ? "modification" : "removal"}:</strong>{" "}
+                            {actionType === "modification"
+                                ? "Save changes until next field reload. Original zone will reappear when you refresh or reload the field."
+                                : "Remove zone until next field reload. The zone will reappear when you refresh or reload the field."}
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Permanent {actionType === "modification" ? "modification" : "removal"}:</strong> {actionType === "modification" ? "Save changes to the field file cache. This will persist your modifications on future loads." : "Remove zone from the field file cache. This will prevent it from reappearing on future loads."}
+                            <strong>Permanent {actionType === "modification" ? "modification" : "removal"}:</strong>{" "}
+                            {actionType === "modification"
+                                ? "Save changes to the field file cache. This will persist your modifications on future loads."
+                                : "Remove zone from the field file cache. This will prevent it from reappearing on future loads."}
                         </Typography>
                     </Stack>
                 </Stack>
@@ -74,8 +92,15 @@ const DevtoolZoneRemovalModal: React.FC<DevtoolZoneRemovalModalProps> = ({
                 <Button onClick={handleTemporaryRemoval} disabled={isRemoving} variant="outlined" color="warning">
                     Temporary {actionType === "modification" ? "Modification" : "Removal"}
                 </Button>
-                <Button onClick={handlePermanentRemoval} disabled={isRemoving} variant="contained" color={actionType === "modification" ? "primary" : "error"}>
-                    {isRemoving ? `${actionType === "modification" ? "Modifying" : "Removing"}...` : `Permanent ${actionType === "modification" ? "Modification" : "Removal"}`}
+                <Button
+                    onClick={handlePermanentRemoval}
+                    disabled={isRemoving}
+                    variant="contained"
+                    color={actionType === "modification" ? "primary" : "error"}
+                >
+                    {isRemoving
+                        ? `${actionType === "modification" ? "Modifying" : "Removing"}...`
+                        : `Permanent ${actionType === "modification" ? "Modification" : "Removal"}`}
                 </Button>
             </DialogActions>
         </Dialog>
