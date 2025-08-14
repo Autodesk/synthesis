@@ -6,11 +6,25 @@ env.allowLocalModels = false
 env.useBrowserCache = false
 
 let classifier: ZeroShotClassificationPipeline | null = null
+let classifierLoading: Promise<ZeroShotClassificationPipeline> | null = null
 
 export async function loadCommandClassifier(labels: string[]) {
-    if (!classifier) {
+    if (!classifier && !classifierLoading) {
         // Use a public, transformers.js-compatible MNLI model
-        classifier = await pipeline("zero-shot-classification", "Xenova/mobilebert-uncased-mnli")
+        console.log("Loading command classifier")
+        classifierLoading = pipeline("zero-shot-classification", "Xenova/mobilebert-uncased-mnli")
+            .then((loaded) => {
+                classifier = loaded
+                console.log("Command classifier loaded")
+                return loaded
+            })
+            .finally(() => {
+                classifierLoading = null
+            })
+    }
+
+    if (classifierLoading) {
+        await classifierLoading
     }
 
     return async (query: string) => {
