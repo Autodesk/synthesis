@@ -94,8 +94,6 @@ export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, pr
                         progressHandle.fail()
                     }
                 })
-
-                if (!info.name) MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
             } else {
                 progressHandle.fail()
                 console.error("Failed to spawn robot")
