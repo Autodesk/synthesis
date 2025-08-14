@@ -13,6 +13,8 @@ import World from "@/systems/World"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import { loadCommandClassifier } from "@/util/useLocalAi"
+import MatchMode from "@/systems/match_mode/MatchMode"
+import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 
 const AI_FALLBACK_DEBOUNCE_TIME = 250
 
@@ -71,8 +73,8 @@ const CommandPalette: React.FC = () => {
         [openPanel]
     )
 
-    const commands = useMemo<CommandDefinition[]>(
-        () => [
+    const commands = useMemo<CommandDefinition[]>(() => {
+        const list: CommandDefinition[] = [
             {
                 id: "open-debug-panel",
                 label: "Open Debug Panel",
@@ -116,6 +118,40 @@ const CommandPalette: React.FC = () => {
                 perform: () => openPanel(ConfigurePanel, {}),
             },
             {
+                id: "configure-robots",
+                label: "Configure Robots",
+                description: "Open the configuration panel scoped to spawned robots.",
+                keywords: ["configure", "robot", "robots", "config"],
+                perform: () => {
+                    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
+                    if (!robots || robots.length === 0) {
+                        addToast("warning", "No Robots", "No robots are currently spawned.")
+                        return
+                    }
+                    openPanel(ConfigurePanel, {
+                        configurationType: "ROBOTS",
+                        selectedAssembly: robots.length === 1 ? robots[0] : undefined,
+                    })
+                },
+            },
+            {
+                id: "configure-field",
+                label: "Configure Field",
+                description: "Open the configuration panel scoped to the spawned field.",
+                keywords: ["configure", "field", "config"],
+                perform: () => {
+                    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+                    if (!field) {
+                        addToast("warning", "No Field", "No field is currently spawned.")
+                        return
+                    }
+                    openPanel(ConfigurePanel, {
+                        configurationType: "FIELDS",
+                        selectedAssembly: field,
+                    })
+                },
+            },
+            {
                 id: "open-settings",
                 label: "Open Settings",
                 description: "Open the Settings modal.",
@@ -126,9 +162,83 @@ const CommandPalette: React.FC = () => {
                         undefined
                     ),
             },
-        ],
-        [addToast, openPanel, openModal, openImportPanel]
-    )
+            {
+                id: "toggle-match-mode",
+                label: "Toggle Match Mode",
+                description: "Toggle match mode, allowing you to simulate and run a full match.",
+                keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
+                perform: () => {
+                    if (MatchMode.getInstance().isMatchEnabled()) {
+                        MatchMode.getInstance().sandboxModeStart()
+                        addToast("info", "Match Mode Cancelled")
+                    } else {
+                        openPanel(MatchModeConfigPanel, undefined)
+                    }
+                },
+            },
+        ]
+
+        // Dynamic per-assembly configuration commands (robots and field)
+        if (isOpen && World.isAlive && World.sceneRenderer) {
+            const robots = World.sceneRenderer.mirabufSceneObjects.getRobots() || []
+            for (const r of robots) {
+                const name = r.assemblyName || "Robot"
+                const nameTokens = String(name)
+                    .split(/\s+|[-_]/g)
+                    .filter(Boolean)
+                list.push({
+                    id: `configure-robot-${r.id}`,
+                    label: `Configure ${name}`,
+                    description: `Open configuration for robot ${name}.`,
+                    keywords: ["configure", "robot", ...nameTokens.map(t => t.toLowerCase())],
+                    perform: () =>
+                        openPanel(ConfigurePanel, {
+                            configurationType: "ROBOTS",
+                            selectedAssembly: r,
+                        }),
+                })
+                list.push({
+                    id: `remove-robot-${r.id}`,
+                    label: `Remove ${name}`,
+                    description: `Remove the robot ${name}.`,
+                    keywords: ["remove", "delete", "robot", ...nameTokens.map(t => t.toLowerCase())],
+                    perform: () => {
+                        World.sceneRenderer.removeSceneObject(r.id)
+                    },
+                })
+            }
+
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
+            if (field) {
+                const name = field.assemblyName || "Field"
+                const nameTokens = String(name)
+                    .split(/\s+|[-_]/g)
+                    .filter(Boolean)
+                list.push({
+                    id: `configure-field-${field.id}`,
+                    label: `Configure ${name}`,
+                    description: `Open configuration for field ${name}.`,
+                    keywords: ["configure", "field", ...nameTokens.map(t => t.toLowerCase())],
+                    perform: () =>
+                        openPanel(ConfigurePanel, {
+                            configurationType: "FIELDS",
+                            selectedAssembly: field,
+                        }),
+                })
+                list.push({
+                    id: `remove-field-${field.id}`,
+                    label: `Remove ${name}`,
+                    description: `Remove the field ${name}.`,
+                    keywords: ["remove", "delete", "field", ...nameTokens.map(t => t.toLowerCase())],
+                    perform: () => {
+                        World.sceneRenderer.removeSceneObject(field.id)
+                    },
+                })
+            }
+        }
+
+        return list
+    }, [addToast, openPanel, openModal, openImportPanel, isOpen])
 
     const fuse = useMemo(() => {
         return new Fuse(commands, {
@@ -308,10 +418,18 @@ const CommandPalette: React.FC = () => {
         (e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === "ArrowDown") {
                 e.preventDefault()
-                setActiveIndex(i => Math.min(i + 1, Math.max(visible.length - 1, 0)))
+                setActiveIndex(i => {
+                    const count = visible.length
+                    if (count <= 0) return 0
+                    return (i + 1 + count) % count
+                })
             } else if (e.key === "ArrowUp") {
                 e.preventDefault()
-                setActiveIndex(i => Math.max(i - 1, 0))
+                setActiveIndex(i => {
+                    const count = visible.length
+                    if (count <= 0) return 0
+                    return (i - 1 + count) % count
+                })
             } else if (e.key === "Enter") {
                 e.preventDefault()
                 execute(activeIndex)
