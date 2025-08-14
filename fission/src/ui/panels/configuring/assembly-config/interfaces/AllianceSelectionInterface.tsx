@@ -1,4 +1,5 @@
-import { Box, Button, Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"

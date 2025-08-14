@@ -1,4 +1,5 @@
-import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material"
+import { Card, CardActions, CardContent, CardHeader } from "@mui/material"
+import { Button } from "./StyledComponents"
 import React, { type ReactElement } from "react"
 import Draggable from "react-draggable"
 import {
@@ -93,6 +94,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                                 onClick={() => closePanel(panel.id, CloseType.Accept)}
                                 variant="contained"
                                 color="primary"
+                                disabled={props.disableAccept}
                             >
                                 {props.acceptText ?? "Accept"}
                             </Button>

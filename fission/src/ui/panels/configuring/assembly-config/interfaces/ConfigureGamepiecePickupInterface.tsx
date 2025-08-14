@@ -1,5 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Button, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"

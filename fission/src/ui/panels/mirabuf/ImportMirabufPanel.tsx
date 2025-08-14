@@ -1,15 +1,5 @@
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Button,
-    CircularProgress,
-    Stack,
-    ToggleButton,
-    ToggleButtonGroup,
-    Tooltip,
-} from "@mui/material"
+import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Stack, Tooltip } from "@mui/material"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
@@ -26,7 +16,7 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import type { EncodedAssembly, Message } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
@@ -444,7 +434,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         setViewType(v)
                     }
                 }}
+<<<<<<< HEAD
                 {...SoundPlayer.getInstance().buttonSoundEffects()}
+=======
+>>>>>>> 7307511bb33b08c6989b3b22d99796ca2f0fea78
                 sx={{
                     alignSelf: "center",
                 }}

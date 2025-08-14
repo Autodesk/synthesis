@@ -1,4 +1,4 @@
-import { Button } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"

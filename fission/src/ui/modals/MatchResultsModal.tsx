@@ -1,4 +1,5 @@
-import { Button, Divider, Stack, styled, Typography } from "@mui/material"
+import { Divider, Stack, styled, Typography } from "@mui/material"
+import { Button } from "../components/StyledComponents"
 import type React from "react"
 import { useEffect } from "react"
 import MatchMode from "@/systems/match_mode/MatchMode"

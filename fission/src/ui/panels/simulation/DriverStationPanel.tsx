@@ -1,4 +1,5 @@
-import { Button, MenuItem, Select, Stack } from "@mui/material"
+import { MenuItem, Select, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import type { PanelImplProps } from "@/ui/components/Panel"
