@@ -998,7 +998,7 @@ export class MirabufObjectChangeEvent extends Event {
         super(MirabufObjectChangeEvent._eventKey)
         this._obj = obj
     }
-    
+
     public static addEventListener(cb: (object: MirabufSceneObject | null) => void): () => void {
         const listener = (event: Event) => {
             if (event instanceof MirabufObjectChangeEvent) {

@@ -1,6 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { Stack } from "@mui/material"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
@@ -13,7 +12,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
+import { Button, LabelWithTooltip, Spacer, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
