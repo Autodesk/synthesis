@@ -1,4 +1,4 @@
-import EventSystem from "@/systems/EventSystem.ts";
+import EventSystem from "@/systems/EventSystem.ts"
 
 let nextHandleId = 0
 
@@ -51,4 +51,3 @@ export class ProgressHandle {
         EventSystem.dispatch("ProgressEvent", this)
     }
 }
-

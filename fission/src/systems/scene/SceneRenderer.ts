@@ -7,10 +7,11 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
+import EventSystem from "@/systems/EventSystem.ts"
 import { type CameraControls, type CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import { type ContextData } from "@/ui/components/ContextMenuData"
+import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import { type PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
+import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
@@ -21,7 +22,6 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -556,7 +556,7 @@ class SceneRenderer extends WorldSystem {
             })
         }
 
-        EventSystem.dispatch("ContextSupplierEvent", {data:miraSupplierData, mousePosition:e.position})
+        EventSystem.dispatch("ContextSupplierEvent", { data: miraSupplierData, mousePosition: e.position })
     }
 }
 

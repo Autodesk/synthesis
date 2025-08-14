@@ -4,13 +4,13 @@ import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MatchResultsModal from "@/modals/MatchResultsModal.tsx"
+import EventSystem from "@/systems/EventSystem.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
-import EventSystem from "@/systems/EventSystem.ts";
 
 class MatchMode {
     private static _instance: MatchMode
@@ -19,7 +19,7 @@ class MatchMode {
 
     private setMatchModeType(val: MatchModeType) {
         this._matchModeType = val
-        EventSystem.dispatch("MatchStateChangedEvent", {mode:val})
+        EventSystem.dispatch("MatchStateChangedEvent", { mode: val })
     }
 
     private _initialTime: number = 0
@@ -52,13 +52,13 @@ class MatchMode {
         this._timeLeft = duration
 
         // Dispatch an event to update the time left in the UI
-        if (updateTimeLeft) EventSystem.dispatch("TimeChangedEvent", {time:this._initialTime})
+        if (updateTimeLeft) EventSystem.dispatch("TimeChangedEvent", { time: this._initialTime })
 
         this._intervalId = window.setInterval(() => {
             this._timeLeft--
 
             if (this._timeLeft >= 0 && updateTimeLeft) {
-                EventSystem.dispatch("TimeChangedEvent", {time:this._timeLeft})
+                EventSystem.dispatch("TimeChangedEvent", { time: this._timeLeft })
             }
 
             // Checks if endgame has started
@@ -118,7 +118,7 @@ class MatchMode {
         clearInterval(this._intervalId as number)
         this._initialTime = 0
         this._timeLeft = 0
-        EventSystem.dispatch("TimeChangedEvent", {time:this._timeLeft})
+        EventSystem.dispatch("TimeChangedEvent", { time: this._timeLeft })
         SimulationSystem.resetScores()
     }
 
@@ -136,6 +136,3 @@ class MatchMode {
 }
 
 export default MatchMode
-
-
-

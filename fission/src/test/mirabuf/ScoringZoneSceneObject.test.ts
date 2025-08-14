@@ -1,10 +1,10 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import EventSystem from "@/systems/EventSystem.ts"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ScoringZoneSceneObject from "../../mirabuf/ScoringZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),

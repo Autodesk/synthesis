@@ -1,21 +1,19 @@
 import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import { FaHandPaper } from "react-icons/fa"
+import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "./GlobalUIControls"
 import Label from "./Label"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
 
     useEffect(() => {
-        return EventSystem.listen("DragModeToggled", ({enabled}) =>
-            setEnabled(enabled)
-        )
+        return EventSystem.listen("DragModeToggled", ({ enabled }) => setEnabled(enabled))
     }, [])
 
     const handleClick = () => {
-        EventSystem.dispatch("DragModeToggled", {enabled:false})
+        EventSystem.dispatch("DragModeToggled", { enabled: false })
         globalAddToast("info", "Drag Mode", "Drag mode has been disabled")
     }
 

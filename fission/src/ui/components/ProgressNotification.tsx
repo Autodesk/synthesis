@@ -2,9 +2,9 @@ import { styled, Typography } from "@mui/material"
 import { Box } from "@mui/system"
 import type React from "react"
 import { useEffect, useReducer, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
 import { easeOutQuad } from "@/util/EasingFunctions"
 import { type ProgressHandle, ProgressHandleStatus } from "./ProgressNotificationData"
-import EventSystem from "@/systems/EventSystem.ts";
 
 interface ProgressData {
     lastValue: number
@@ -123,8 +123,7 @@ const ProgressNotifications: React.FC = () => {
     }, undefined)
 
     useEffect(() => {
-
-        return EventSystem.listen("ProgressEvent",  (handle) => {
+        return EventSystem.listen("ProgressEvent", handle => {
             if (handle.status > 0) {
                 setTimeout(() => handleMap.delete(handle.handleId) && updateProgressElements(), 2000)
             }

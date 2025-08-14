@@ -1,7 +1,7 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const TouchControls: React.FC = () => {
     const inputRef = useRef<HTMLInputElement>(null)
@@ -10,9 +10,7 @@ const TouchControls: React.FC = () => {
     const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
 
     useEffect(() => {
-
-
-        const placeButtonUnsubscriber = EventSystem.listen("SetPlaceAssetButtonVisibleEvent", (visible) => {
+        const placeButtonUnsubscriber = EventSystem.listen("SetPlaceAssetButtonVisibleEvent", visible => {
             setIsPlaceButtonVisible(visible)
         })
 
@@ -74,7 +72,6 @@ const TouchControls: React.FC = () => {
 export default TouchControls
 
 export const MAX_JOYSTICK_RADIUS: number = 55
-
 
 /** Notates the left and right joysticks with their x and y axis */
 export const enum TouchControlsAxes {

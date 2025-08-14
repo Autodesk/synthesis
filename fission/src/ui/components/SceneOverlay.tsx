@@ -1,13 +1,11 @@
 import { Stack } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { useStateContext } from "../helpers/StateProviderHelpers"
 import Label from "./Label"
-import {
-    type SceneOverlayTag,
-} from "./SceneOverlayEvents"
+import type { SceneOverlayTag } from "./SceneOverlayEvents"
 import ViewCube from "./ViewCube"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -45,24 +43,26 @@ const SceneOverlay: React.FC = () => {
 
     /* Creating listener for tag events to update tagMap and rerender overlay */
     useEffect(() => {
-        const unsubscribers:(() => void)[] = []
+        const unsubscribers: (() => void)[] = []
 
         // listening for tags being added and removed
-        unsubscribers.push(EventSystem.listen("SceneOverlayTagAddEvent", (tag) => tagMap.set(tag.id, tag)))
-        unsubscribers.push(EventSystem.listen("SceneOverlayTagRemoveEvent", (tag) => tagMap.delete(tag.id)))
+        unsubscribers.push(EventSystem.listen("SceneOverlayTagAddEvent", tag => tagMap.set(tag.id, tag)))
+        unsubscribers.push(EventSystem.listen("SceneOverlayTagRemoveEvent", tag => tagMap.delete(tag.id)))
 
         // listening for updates to the overlay every frame
         unsubscribers.push(EventSystem.listen("SceneOverlayUpdateEvent", () => updateComponents()))
 
         // listening for disabling and enabling scene tags
-        unsubscribers.push(PreferencesSystem.addPreferenceEventListener("RenderSceneTags", e => {
-            setIsDisabled(!e.prefValue)
-            updateComponents()
-        }))
+        unsubscribers.push(
+            PreferencesSystem.addPreferenceEventListener("RenderSceneTags", e => {
+                setIsDisabled(!e.prefValue)
+                updateComponents()
+            })
+        )
 
         // disposing all the tags and listeners when the scene is destroyed
         return () => {
-            unsubscribers.forEach((func) => func())
+            unsubscribers.forEach(func => func())
             tagMap.clear()
         }
     }, [])

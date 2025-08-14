@@ -2,11 +2,11 @@ import { Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Draggable from "react-draggable"
+import EventSystem from "@/systems/EventSystem.ts"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import Label from "./Label"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const showTime = () => {
     return MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX
@@ -19,13 +19,12 @@ const Scoreboard: React.FC = () => {
     const [blueScore, setBlueScore] = useState(SimulationSystem.blueScore)
     const [time, setTime] = useState("0")
 
-
     useEffect(() => {
-        const scoreUnsubscriber = EventSystem.listen("ScoreChangedEvent", ({red, blue}) => {
+        const scoreUnsubscriber = EventSystem.listen("ScoreChangedEvent", ({ red, blue }) => {
             setRedScore(red)
             setBlueScore(blue)
         })
-        const timeUnsubscriber = EventSystem.listen("TimeChangedEvent", ({time}) => {
+        const timeUnsubscriber = EventSystem.listen("TimeChangedEvent", ({ time }) => {
             setTime(time.toFixed())
         })
 

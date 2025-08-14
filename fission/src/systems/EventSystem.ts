@@ -66,6 +66,7 @@ class CustomEvent<K extends EventKey, T extends EventDataMap[K]> extends Event {
     }
 
     public dispatch() {
+        // console.log("Dispatching event", super.type)
         window.dispatchEvent(this)
     }
 }
@@ -75,6 +76,10 @@ export type SynthesisEventData<K extends EventKey> = EventDataMap[K]
 export type SynthesisEventListener<K extends EventKey> = (data: EventDataMap[K]) => void
 
 class EventSystem {
+    private static _listenerList: Partial<{ [K in EventKey]: EventListener[] }> = {}
+    static {
+        window.listenerList = this._listenerList
+    }
     public static dispatch<K extends EventKeyWithoutValue>(key: K): void
     public static dispatch<K extends EventKeyWithValue>(key: K, data: SynthesisEventData<K>): void
     public static dispatch<K extends EventKey, T extends EventDataMap[K]>(key: K, data?: T): void {
@@ -94,10 +99,18 @@ class EventSystem {
                 console.warn("Incorrect event type dispatched", event, key)
                 return
             }
+            // console.log("Listening event", event.type)
             listener(event.data)
         }
         window.addEventListener(key, cb)
-        return () => window.removeEventListener(key, cb)
+
+        this._listenerList[key] ??= []
+        this._listenerList[key].push(cb)
+        return () => {
+            const index = this._listenerList[key].findIndex(x => x == cb)
+            this._listenerList[key].splice(index, 1)
+            window.removeEventListener(key, cb)
+        }
     }
 }
 export default EventSystem

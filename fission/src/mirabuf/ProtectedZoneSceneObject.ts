@@ -1,5 +1,6 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -19,7 +20,6 @@ import { MiraType } from "./MirabufLoader"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
-import EventSystem, { SynthesisEventListener} from "@/systems/EventSystem.ts";
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors
@@ -121,8 +121,10 @@ class ProtectedZoneSceneObject extends SceneObject {
                 }
 
                 // Detect when something enters or persists in the zone
-                const collisionSubscriber:SynthesisEventListener<"OnContactAddedEvent" | "OnContactPersistedEvent"> = (data) => {
-                    const {body1, body2} = data
+                const collisionSubscriber: SynthesisEventListener<
+                    "OnContactAddedEvent" | "OnContactPersistedEvent"
+                > = data => {
+                    const { body1, body2 } = data
 
                     if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
                         this.zoneCollision(body2)
@@ -138,16 +140,18 @@ class ProtectedZoneSceneObject extends SceneObject {
                 this._unsubscribers.push(EventSystem.listen("OnContactPersistedEvent", collisionSubscriber))
 
                 // Detects when something leaves the zone
-                this._unsubscribers.push(EventSystem.listen("OnContactRemovedEvent", ({message}) => {
-                    const body1 = message.GetBody1ID()
-                    const body2 = message.GetBody2ID()
+                this._unsubscribers.push(
+                    EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
+                        const body1 = message.GetBody1ID()
+                        const body2 = message.GetBody2ID()
 
-                    if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollisionRemoved(body2)
-                    } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollisionRemoved(body1)
-                    }
-                }))
+                        if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                            this.zoneCollisionRemoved(body2)
+                        } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                            this.zoneCollisionRemoved(body1)
+                        }
+                    })
+                )
             }
         }
     }
@@ -195,7 +199,7 @@ class ProtectedZoneSceneObject extends SceneObject {
             }
         }
 
-        this._unsubscribers.forEach((func) => func())
+        this._unsubscribers.forEach(func => func())
     }
 
     private zoneCollision(collisionID: Jolt.BodyID) {

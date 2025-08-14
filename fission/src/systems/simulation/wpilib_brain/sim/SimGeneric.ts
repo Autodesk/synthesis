@@ -1,6 +1,6 @@
+import EventSystem from "@/systems/EventSystem.ts"
 import { getSimMap } from "../WPILibState"
 import { FieldType, type SimType, worker } from "../WPILibTypes"
-import EventSystem from "@/systems/EventSystem.ts";
 
 function getFieldType(field: string): FieldType {
     if (field.length < 2) {
@@ -98,7 +98,7 @@ export default class SimGeneric {
                 data: selectedData,
             },
         })
-        EventSystem.dispatch("SimMapUpdateEvent", {internalUpdate:true})
+        EventSystem.dispatch("SimMapUpdateEvent", { internalUpdate: true })
         return true
     }
 }

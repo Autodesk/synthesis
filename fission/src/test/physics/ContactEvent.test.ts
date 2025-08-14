@@ -1,10 +1,10 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { afterEach, beforeEach, describe, expect, test, beforeAll } from "vitest"
+import { afterEach, beforeAll, beforeEach, describe, expect, test } from "vitest"
+import EventSystem from "@/systems/EventSystem.ts"
+import type { CurrentContactData, OnContactValidateData } from "@/systems/physics/ContactEvents.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem from "../../systems/physics/PhysicsSystem"
-import EventSystem from "@/systems/EventSystem.ts";
-import type {CurrentContactData, OnContactValidateData} from "@/systems/physics/ContactEvents.ts";
 
 describe("Contact Event Integration Tests", () => {
     let physicsSystem: PhysicsSystem
@@ -14,14 +14,14 @@ describe("Contact Event Integration Tests", () => {
     // Event tracking variables
     let contactAddedEvents: CurrentContactData[] = []
     let contactPersistedEvents: CurrentContactData[] = []
-    let contactRemovedEvents: { message:Jolt.SubShapeIDPair }[] = []
+    let contactRemovedEvents: { message: Jolt.SubShapeIDPair }[] = []
     let contactValidateEvents: OnContactValidateData[] = []
 
     beforeAll(() => {
-        EventSystem.listen("OnContactAddedEvent", (v) => contactAddedEvents.push(v))
-        EventSystem.listen("OnContactPersistedEvent", (v) => contactPersistedEvents.push(v))
-        EventSystem.listen("OnContactRemovedEvent", (v) => contactRemovedEvents.push(v))
-        EventSystem.listen("OnContactValidateEvent", (v) => contactValidateEvents.push(v))
+        EventSystem.listen("OnContactAddedEvent", v => contactAddedEvents.push(v))
+        EventSystem.listen("OnContactPersistedEvent", v => contactPersistedEvents.push(v))
+        EventSystem.listen("OnContactRemovedEvent", v => contactRemovedEvents.push(v))
+        EventSystem.listen("OnContactValidateEvent", v => contactValidateEvents.push(v))
     })
 
     beforeEach(() => {
@@ -51,7 +51,6 @@ describe("Contact Event Integration Tests", () => {
             undefined // No rotation
         )
         physicsSystem.addBodyToSystem(fallingBody.GetID(), true)
-
     })
 
     afterEach(() => {
@@ -102,7 +101,6 @@ describe("Contact Event Integration Tests", () => {
         expect(contactEvent.body2).toBeDefined()
         expect(contactEvent.manifold).toBeDefined()
         expect(contactEvent.settings).toBeDefined()
-
     })
 
     test("Contact persisted events are fired for ongoing collisions", async () => {

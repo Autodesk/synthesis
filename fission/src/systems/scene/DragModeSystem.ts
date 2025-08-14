@@ -3,6 +3,7 @@ import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
@@ -15,7 +16,6 @@ import {
     type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
-import EventSystem from "@/systems/EventSystem.ts";
 
 interface DragTarget {
     bodyId: Jolt.BodyID
@@ -102,7 +102,7 @@ class DragModeSystem extends WorldSystem {
                 this.handleWheelDuringDrag(event)
             }
         }
-        this._unsubscriber = EventSystem.listen("DragModeToggled", ({enabled}) => {
+        this._unsubscriber = EventSystem.listen("DragModeToggled", ({ enabled }) => {
             this.enabled = enabled
         })
     }
@@ -132,7 +132,7 @@ class DragModeSystem extends WorldSystem {
             }
         }
 
-        EventSystem.dispatch("DragModeToggled", {enabled})
+        EventSystem.dispatch("DragModeToggled", { enabled })
     }
 
     public update(deltaT: number): void {

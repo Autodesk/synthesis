@@ -1,5 +1,6 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
@@ -16,7 +17,6 @@ import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { findListDifference } from "@/util/Utility"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts";
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
@@ -47,7 +47,7 @@ class ScoringZoneSceneObject extends SceneObject {
     private _prefs?: ScoringZonePreferences
     private _joltBodyId?: Jolt.BodyID
     private _mesh?: THREE.Mesh
-    private _unsubscribers:(() => void)[] = []
+    private _unsubscribers: (() => void)[] = []
 
     private _gpContacted: Jolt.BodyID[] = []
     private _prevGP: Jolt.BodyID[] = []
@@ -107,30 +107,36 @@ class ScoringZoneSceneObject extends SceneObject {
                 }
 
                 // Detect new gamepiece listener
-                this._unsubscribers.push(EventSystem.listen("OnContactAddedEvent", ({body1, body2}) => {
-                    if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollision(body2)
-                    } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollision(body1)
-                    }
-                }))
+                this._unsubscribers.push(
+                    EventSystem.listen("OnContactAddedEvent", ({ body1, body2 }) => {
+                        if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                            this.zoneCollision(body2)
+                        } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                            this.zoneCollision(body1)
+                        }
+                    })
+                )
 
                 // If persistent, detect gamepiece removed listener
                 if (this._prefs.persistentPoints) {
-                    this._unsubscribers.push(EventSystem.listen("OnContactRemovedEvent", ({message}) => {
-                        if (this._prefs?.persistentPoints) {
-                            const body1 = message.GetBody1ID()
-                            const body2 = message.GetBody2ID()
+                    this._unsubscribers.push(
+                        EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
+                            if (this._prefs?.persistentPoints) {
+                                const body1 = message.GetBody1ID()
+                                const body2 = message.GetBody2ID()
 
-                            if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                                this.zoneCollisionRemoved(body2)
-                            } else if (
-                                body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
-                            ) {
-                                this.zoneCollisionRemoved(body1)
+                                if (
+                                    body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
+                                ) {
+                                    this.zoneCollisionRemoved(body2)
+                                } else if (
+                                    body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
+                                ) {
+                                    this.zoneCollisionRemoved(body1)
+                                }
                             }
-                        }
-                    }))
+                        })
+                    )
                 }
             }
         }
@@ -179,7 +185,10 @@ class ScoringZoneSceneObject extends SceneObject {
                         SimulationSystem.blueScore += (gpAdded.length - gpRemoved.length) * points
                     }
 
-                    EventSystem.dispatch("ScoreChangedEvent", {red:SimulationSystem.redScore, blue:SimulationSystem.blueScore})
+                    EventSystem.dispatch("ScoreChangedEvent", {
+                        red: SimulationSystem.redScore,
+                        blue: SimulationSystem.blueScore,
+                    })
 
                     // Per robot score calculations
                     gpAdded.forEach(gpID => {
@@ -214,7 +223,7 @@ class ScoringZoneSceneObject extends SceneObject {
             }
         }
 
-        this._unsubscribers.forEach((unsubscribe) => unsubscribe())
+        this._unsubscribers.forEach(unsubscribe => unsubscribe())
     }
 
     private zoneCollision(gpID: Jolt.BodyID) {
@@ -230,7 +239,10 @@ class ScoringZoneSceneObject extends SceneObject {
                     SimulationSystem.blueScore += this._prefs.points
                 }
 
-                EventSystem.dispatch("ScoreChangedEvent", {red:SimulationSystem.redScore, blue:SimulationSystem.blueScore})
+                EventSystem.dispatch("ScoreChangedEvent", {
+                    red: SimulationSystem.redScore,
+                    blue: SimulationSystem.blueScore,
+                })
 
                 const robotAlliancePoints =
                     associate.robotLastInContactWith?.alliance !== this._prefs?.alliance
@@ -266,6 +278,5 @@ class ScoringZoneSceneObject extends SceneObject {
         }
     }
 }
-
 
 export default ScoringZoneSceneObject

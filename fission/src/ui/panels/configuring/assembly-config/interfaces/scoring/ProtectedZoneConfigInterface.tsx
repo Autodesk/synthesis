@@ -18,6 +18,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
 import { ContactType } from "@/mirabuf/ZoneTypes"
+import EventSystem from "@/systems/EventSystem.ts"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -32,7 +33,6 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const MATCH_MODE_OPTIONS: MatchModeType[] = [
     MatchModeType.SANDBOX,

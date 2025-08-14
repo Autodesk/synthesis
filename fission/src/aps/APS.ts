@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex"
+import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"

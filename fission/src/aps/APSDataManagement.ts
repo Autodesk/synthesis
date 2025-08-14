@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex"
+import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import APS from "./APS"
-import EventSystem from "@/systems/EventSystem.ts";
 
 export const FOLDER_DATA_TYPE = "folders"
 export const ITEM_DATA_TYPE = "items"
@@ -322,22 +322,22 @@ export async function requestMirabufFiles() {
 
                 if (!projects.length) return
                 for (const project of projects) {
-                    EventSystem.dispatch("MirabufFilesStatusUpdateEvent",{
-                            isDone: false,
-                            message: `Searching Project '${project.name}'`,
-                            progress: i++ / projects.length,
-                        })
+                    EventSystem.dispatch("MirabufFilesStatusUpdateEvent", {
+                        isDone: false,
+                        message: `Searching Project '${project.name}'`,
+                        progress: i++ / projects.length,
+                    })
                     const data = await searchRootForMira(project)
                     if (data) fileData.push(...data)
                 }
-                EventSystem.dispatch("MirabufFilesStatusUpdateEvent",{
+                EventSystem.dispatch("MirabufFilesStatusUpdateEvent", {
                     isDone: true,
                     message: `Found ${fileData.length} file${fileData.length == 1 ? "" : "s"}`,
                     progress: 1,
                 })
 
                 mirabufFiles = fileData
-                EventSystem.dispatch("MirabufFilesUpdateEvent",mirabufFiles)
+                EventSystem.dispatch("MirabufFilesUpdateEvent", mirabufFiles)
             })
         }
     })
@@ -346,5 +346,3 @@ export async function requestMirabufFiles() {
 export function getMirabufFiles(): Data[] | undefined {
     return mirabufFiles
 }
-
-

@@ -1,9 +1,7 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import EventSystem, { type SynthesisEvent } from "@/systems/EventSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
-import { mirabuf } from "../../proto/mirabuf"
 import {
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToJoltRVec3,
@@ -16,15 +14,14 @@ import {
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
+import type MirabufParser from "../../mirabuf/MirabufParser"
+import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
+import { mirabuf } from "../../proto/mirabuf"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import WorldSystem from "../WorldSystem"
-import type {
-    CurrentContactData,
-    OnContactValidateData,
-} from "./ContactEvents"
+import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
-import EventSystem, {SynthesisEvent} from "@/systems/EventSystem.ts";
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -89,7 +86,9 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
-    private _physicsEventQueue: SynthesisEvent<"OnContactAddedEvent"|"OnContactPersistedEvent"|"OnContactValidateEvent">[] = []
+    private _physicsEventQueue: SynthesisEvent<
+        "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
+    >[] = []
 
     private _pauseSet = new Set<string>()
 
@@ -1471,7 +1470,7 @@ class PhysicsSystem extends WorldSystem {
         contactListener.OnContactRemoved = subShapePairPtr => {
             const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
 
-            EventSystem.dispatch("OnContactRemovedEvent", {message:shapePair})
+            EventSystem.dispatch("OnContactRemovedEvent", { message: shapePair })
         }
 
         contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {

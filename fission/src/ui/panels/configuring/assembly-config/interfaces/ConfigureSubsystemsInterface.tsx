@@ -1,6 +1,7 @@
 import type React from "react"
 import { useMemo, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
@@ -13,7 +14,6 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import SubsystemRowInterface from "./SubsystemRowInterface"
-import EventSystem from "@/systems/EventSystem.ts";
 
 class ConfigModeSelectionOption extends SelectMenuOption {
     driver: Driver

@@ -1,5 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import EventSystem from "@/systems/EventSystem.ts"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -11,7 +12,6 @@ import {
 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts";
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -45,8 +45,9 @@ class IntakeSensorSceneObject extends SceneObject {
                 return
             }
 
-            this._collisionUnsubscriber = EventSystem.listen("OnContactPersistedEvent", (data) => {
-                if (!this._parentAssembly.intakeActive || this._joltBodyId == null || World.physicsSystem.isPaused) return
+            this._collisionUnsubscriber = EventSystem.listen("OnContactPersistedEvent", data => {
+                if (!this._parentAssembly.intakeActive || this._joltBodyId == null || World.physicsSystem.isPaused)
+                    return
 
                 const body1 = data.body1
                 const body2 = data.body2

@@ -1,12 +1,10 @@
+import EventSystem from "@/systems/EventSystem.ts"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes.ts"
-import EventSystem from "@/systems/EventSystem.ts";
 
 let nextTagId = 0
 
 /* Coordinates for tags in world space */
 export type PixelSpaceCoord = [number, number]
-
-
 
 /**
  * Represents a tag that can be displayed on the screen
