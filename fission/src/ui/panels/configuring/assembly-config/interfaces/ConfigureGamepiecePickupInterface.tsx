@@ -1,5 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Button, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
@@ -7,13 +7,14 @@ import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { Spacer } from "@/ui/components/StyledComponents"
+import { Button, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
@@ -21,7 +22,6 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import EventSystem from "@/systems/EventSystem.ts";
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1

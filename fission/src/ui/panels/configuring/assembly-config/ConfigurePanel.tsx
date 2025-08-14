@@ -1,8 +1,8 @@
-import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import type React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
@@ -12,6 +12,7 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
@@ -30,7 +31,6 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
-import EventSystem from "@/systems/EventSystem.ts";
 
 interface ConfigInterfaceProps<T, P> {
     panel: UIScreen<T, P>
@@ -67,7 +67,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                     >
                         Set Scheme
                     </Button>
-                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} />}
+                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} panelId={panel?.id} />}
                 </>
             )
         }
@@ -154,6 +154,22 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
             if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
         }
+
+        // Listen for input scheme changes from other panels
+        const handleExternalSchemeChange = (event: Event) => {
+            const customEvent = event as CustomEvent
+
+            if (customEvent.detail?.panelId === panel?.id) return
+
+            const currentSchemes: InputScheme[] = InputSchemeManager.allInputSchemes
+            originalInputSchemes.current = structuredClone(currentSchemes)
+        }
+
+        window.addEventListener("inputSchemeChanged", handleExternalSchemeChange)
+
+        return () => {
+            window.removeEventListener("inputSchemeChanged", handleExternalSchemeChange)
+        }
     }, [])
 
     useEffect(() => {
@@ -161,7 +177,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
             setPendingDeletes([])
 
-            InputSchemeManager.saveSchemes()
+            InputSchemeManager.saveSchemes(panel?.id)
 
             originalRobotPrefs.current = null
             originalFieldPrefs.current = null
@@ -185,7 +201,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             if (originalInputSchemes.current) {
                 PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
                 PreferencesSystem.savePreferences()
-                InputSchemeManager.resetDefaultSchemes()
+                InputSchemeManager.resetDefaultSchemes(panel?.id)
             }
 
             originalRobotPrefs.current = null
@@ -300,7 +316,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     </ToggleButton>
                 ))}
             </ToggleButtonGroup>
-            {configurationType === "INPUTS" && <ConfigureInputsInterface />}
+            {configurationType === "INPUTS" && <ConfigureInputsInterface panel={panel!} />}
             {configurationType !== "INPUTS" && (
                 <>
                     <AssemblySelection

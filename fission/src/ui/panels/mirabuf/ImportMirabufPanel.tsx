@@ -1,24 +1,8 @@
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Button,
-    CircularProgress,
-    Stack,
-    ToggleButton,
-    ToggleButtonGroup,
-    Tooltip,
-} from "@mui/material"
+import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Stack, Tooltip } from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
-import {
-    type Data,
-    getMirabufFiles,
-    hasMirabufFiles,
-    requestMirabufFiles,
-} from "@/aps/APSDataManagement"
+import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import MirabufCachingService, {
     backUpFields,
     backUpRobots,
@@ -28,19 +12,23 @@ import MirabufCachingService, {
     MiraType,
 } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
+    Button,
     DeleteButton,
     PositiveButton,
     PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
+    ToggleButton,
+    ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -48,7 +36,6 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
-import EventSystem from "@/systems/EventSystem.ts";
 
 interface ItemCardProps {
     id: string
@@ -160,9 +147,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     }, [])
 
     useEffect(() => {
-
-        const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", (v) => setFilesStatus(v))
-        const unsubscribeUpdate = EventSystem.listen("MirabufFilesUpdateEvent", (v) => setFiles(v))
+        const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", v => setFilesStatus(v))
+        const unsubscribeUpdate = EventSystem.listen("MirabufFilesUpdateEvent", v => setFiles(v))
 
         return () => {
             unsubscribeStatus()
@@ -437,7 +423,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         setViewType(v)
                     }
                 }}
-                {...SoundPlayer.buttonSoundEffects()}
                 sx={{
                     alignSelf: "center",
                 }}

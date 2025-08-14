@@ -29,6 +29,7 @@ interface EventDataMap {
     SceneOverlayUpdateEvent: never
 
     ConfigurationSavedEvent: never
+    InputSchemeChanged: { panelId?: string }
 
     // Match Mode
     ScoreChangedEvent: { red: number; blue: number }

@@ -1,11 +1,28 @@
-import { describe, expect, test } from "vitest"
-import type { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import FieldMiraEditor from "../mirabuf/FieldMiraEditor"
-import { mirabuf } from "../proto/mirabuf"
+import { assert, describe, expect, test, vi } from "vitest"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader.ts"
+import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
+import {
+    type Alliance,
+    defaultRobotSpawnLocation,
+    type ScoringZonePreferences,
+} from "@/systems/preferences/PreferenceTypes.ts"
+import FieldMiraEditor from "../../mirabuf/FieldMiraEditor.ts"
+import { mirabuf } from "../../proto/mirabuf"
 
 function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }
 }
+
+vi.mock("@/systems/World", () => ({
+    default: {
+        sceneRenderer: {
+            setupMaterial: vi.fn(),
+        },
+        physicsSystem: {
+            createMechanismFromParser: vi.fn().mockReturnValue(() => ({})),
+        },
+    },
+}))
 
 const scoringZonePayload: ScoringZonePreferences[] = [
     {
@@ -117,9 +134,6 @@ describe("Devtool Scoring Zones Caching Tests", () => {
         expect(editor.getUserData("devtool:scoring_zones")).toBeUndefined()
         expect(editor.getAllDevtoolKeys()).not.toContain("devtool:scoring_zones")
     })
-})
-
-describe("Caching tests", () => {
     test("cache round-trip preserves devtool scoring zones", () => {
         const parts = mockParts()
         const editor = new FieldMiraEditor(parts)
@@ -129,5 +143,24 @@ describe("Caching tests", () => {
         const decoded = mirabuf.Parts.decode(encoded)
         const roundTripEditor = new FieldMiraEditor(decoded)
         expect(roundTripEditor.getUserData("devtool:scoring_zones")).toEqual(scoringZonePayload)
+    })
+})
+
+describe("Asset tests", () => {
+    test("FRC Field 2018_v13 has spawn locations", async () => {
+        const file = await MirabufCachingService.cacheRemote("/api/mira/Fields/FRC Field 2018_v13.mira", MiraType.FIELD)
+            .then(x => MirabufCachingService.get(x!.id, MiraType.FIELD))
+            .catch(e => {
+                console.error("Could not get mirabuf file", e)
+                return undefined
+            })
+        assert.exists(file)
+
+        const mirabuf = await createMirabuf(file)
+        assert.exists(mirabuf)
+        assert.exists(mirabuf.fieldPreferences)
+        expect(mirabuf.fieldPreferences.spawnLocations.hasConfiguredLocations).toBe(true)
+        expect(mirabuf.fieldPreferences.spawnLocations.red["1"]).not.toStrictEqual(defaultRobotSpawnLocation())
+        expect(mirabuf.fieldPreferences.spawnLocations.default).not.toStrictEqual(defaultRobotSpawnLocation())
     })
 })

@@ -1,17 +1,18 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Button, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
+import { Button, LabelWithTooltip, Spacer, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
@@ -19,7 +20,6 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import EventSystem from "@/systems/EventSystem.ts";
 
 // slider constants
 const MIN_VELOCITY = 0.0

@@ -1,10 +1,11 @@
-import { Button, Divider, Stack } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { type ContextData } from "./ContextMenuData"
+import EventSystem from "@/systems/EventSystem.ts"
+import type { ContextData } from "./ContextMenuData"
 import { globalOpenModal, globalOpenPanel } from "./GlobalUIControls"
 import Label from "./Label"
-import EventSystem from "@/systems/EventSystem.ts";
+import { Button } from "./StyledComponents"
 
 interface ContextMenuStateData {
     data: ContextData
@@ -15,7 +16,7 @@ const ContextMenu: React.FC = () => {
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
     useEffect(() => {
-        return EventSystem.listen("ContextSupplierEvent", (e) => {
+        return EventSystem.listen("ContextSupplierEvent", e => {
             setState({
                 data: e.data,
                 location: [e.mousePosition[0], e.mousePosition[1]],

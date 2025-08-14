@@ -1,4 +1,3 @@
-import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
@@ -7,6 +6,7 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 interface OrbitSettingsProps {

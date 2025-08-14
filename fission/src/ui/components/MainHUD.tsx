@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"
@@ -6,8 +6,8 @@ import { FaXmark } from "react-icons/fa6"
 import APS from "@/aps/APS"
 import logo from "@/assets/autodesk_logo.png"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import EventSystem from "@/systems/EventSystem.ts"
 import MatchMode from "@/systems/match_mode/MatchMode"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { deobf } from "@/util/Utility"
 import { useThemeContext } from "../helpers/ThemeProviderHelpers"
 import { useUIContext } from "../helpers/UIProviderHelpers"
@@ -20,9 +20,8 @@ import DebugPanel from "../panels/DebugPanel"
 import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
-import { SynthesisIcons } from "./StyledComponents"
+import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import UserIcon from "./UserIcon"
-import EventSystem from "@/systems/EventSystem.ts";
 
 type ButtonProps = {
     value: string
@@ -36,7 +35,6 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={onClick}
-            {...SoundPlayer.buttonSoundEffects()}
             className={`relative flex flex-row
                 cursor-pointer
                 w-full m-auto px-2 py-1 border-none rounded-md ${larger ? "justify-center" : ""}
@@ -109,7 +107,6 @@ const MainHUD: React.FC = () => {
         return EventSystem.listen("APSUserInfoUpdate", () => {
             setUserInfo(APS.userInfo)
         })
-
     }, [])
 
     useEffect(() => {

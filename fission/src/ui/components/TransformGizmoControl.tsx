@@ -1,11 +1,10 @@
-import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import * as THREE from "three"
 import InputSystem from "@/systems/input/InputSystem"
 import GizmoSceneObject, { type GizmoMode } from "@/systems/scene/GizmoSceneObject"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
+import { Button, ToggleButton, ToggleButtonGroup } from "./StyledComponents"
 import type TransformGizmoControlProps from "./TransformGizmoControlProps"
 
 /**
@@ -108,7 +107,6 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
                     setMode(v)
                     gizmo?.setMode(v)
                 }}
-                {...SoundPlayer.buttonSoundEffects()}
                 sx={{
                     ...(sx ?? {}),
                     alignSelf: "center",

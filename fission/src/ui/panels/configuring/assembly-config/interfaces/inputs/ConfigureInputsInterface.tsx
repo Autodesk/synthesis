@@ -1,16 +1,18 @@
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
+import type { ConfigurePanelCustomProps } from "../../ConfigurePanel"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
-import EventSystem from "@/systems/EventSystem.ts";
 
 /** If a scheme is assigned to a robot, find the name of that robot */
 const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
@@ -32,25 +34,41 @@ class SchemeSelectionOption extends SelectMenuOption {
     }
 }
 
-const ConfigureInputsInterface: React.FC = () => {
-    const { openModal } = useUIContext()
-    const { selectedScheme: currentSelectedScheme } = useStateContext()
+const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
+    const { openModal, closePanel } = useUIContext()
+    const { selectedScheme: currentSelectedScheme, setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
 
     const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(currentSelectedScheme)
     const [schemes, setSchemes] = useState<InputScheme[]>(InputSchemeManager.allInputSchemes)
 
     const saveEvent = useCallback(() => {
-        InputSchemeManager.saveSchemes()
+        InputSchemeManager.saveSchemes(panel?.id)
     }, [])
 
-    useEffect(() => {
-        const unsubscribe = EventSystem.listen("ConfigurationSavedEvent", saveEvent)
+    const handleSchemeChange = useCallback(() => {
+        const newSchemes = InputSchemeManager.allInputSchemes
+        setSchemes(newSchemes)
 
+        // If the currently selected scheme was deleted, close the panel
+        if (selectedScheme && !newSchemes.includes(selectedScheme)) {
+            if (panel) {
+                setTimeout(() => {
+                    closePanel(panel.id, CloseType.Overwrite)
+                }, 0)
+            }
+        }
+    }, [panel])
+
+    useEffect(() => {
+        const unsubscribeConfig = EventSystem.listen("ConfigurationSavedEvent", saveEvent)
+        const unsubscribeInput = EventSystem.listen("InputSchemeChanged", handleSchemeChange)
         return () => {
             setSelectedScheme(undefined)
-            unsubscribe()
+            setGlobalSelectedScheme(undefined)
+            unsubscribeConfig()
+            unsubscribeInput()
         }
-    }, [saveEvent])
+    }, [saveEvent, handleSchemeChange])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()
@@ -75,8 +93,8 @@ const ConfigureInputsInterface: React.FC = () => {
                         if (!(val instanceof SchemeSelectionOption)) return
 
                         // Fetch current custom schemes
-                        InputSchemeManager.saveSchemes()
-                        InputSchemeManager.resetDefaultSchemes()
+                        InputSchemeManager.saveSchemes(panel?.id)
+                        InputSchemeManager.resetDefaultSchemes(panel?.id)
 
                         // Find the scheme to remove in preferences
                         const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
@@ -96,6 +114,8 @@ const ConfigureInputsInterface: React.FC = () => {
                         PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
                         PreferencesSystem.savePreferences()
 
+                        // TODO: use preference event instead?
+                        EventSystem.dispatch("InputSchemeChanged", { panelId: panel?.id })
                         // Update UI with new schemes
                         setSchemes(InputSchemeManager.allInputSchemes)
                     }}
@@ -110,7 +130,11 @@ const ConfigureInputsInterface: React.FC = () => {
                     defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
                 />
             ) : (
-                <ConfigureSchemeInterface selectedScheme={selectedScheme} />
+                <ConfigureSchemeInterface
+                    selectedScheme={selectedScheme}
+                    panelId={panel?.id}
+                    onBack={() => setSelectedScheme(undefined)}
+                />
             )}
         </>
     )
