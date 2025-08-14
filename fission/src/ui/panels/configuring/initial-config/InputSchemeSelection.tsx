@@ -41,13 +41,7 @@ export default function InputSchemeSelection({
         // Initial load and when robotDriveType changes
         refreshAvailableSchemes()
 
-        // Set up event listener for external scheme changes
-        const handleSchemeChange = () => {
-            refreshAvailableSchemes()
-        }
-
-        window.addEventListener("inputSchemeChanged", handleSchemeChange)
-        return () => window.removeEventListener("inputSchemeChanged", handleSchemeChange)
+        return EventSystem.listen("InputSchemeChanged", () => refreshAvailableSchemes())
     }, [refreshAvailableSchemes])
 
     const SchemeSelector = (
@@ -81,11 +75,7 @@ export default function InputSchemeSelection({
                                     if (scheme.usesTouchControls) {
                                         EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")
                                     }
-                                    window.dispatchEvent(
-                                        new CustomEvent("inputSchemeChanged", {
-                                            detail: { panelId },
-                                        })
-                                    )
+                                    EventSystem.dispatch("InputSchemeChanged", { panelId })
                                     onSelect?.()
                                     update()
                                 }}
@@ -118,11 +108,7 @@ export default function InputSchemeSelection({
                                 PreferencesSystem.savePreferences()
 
                                 // Update the available schemes list to reflect the deletion
-                                window.dispatchEvent(
-                                    new CustomEvent("inputSchemeChanged", {
-                                        detail: { panelId },
-                                    })
-                                )
+                                EventSystem.dispatch("InputSchemeChanged", { panelId })
                                 update()
                             })
                         ) : (

@@ -156,20 +156,12 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         }
 
         // Listen for input scheme changes from other panels
-        const handleExternalSchemeChange = (event: Event) => {
-            const customEvent = event as CustomEvent
-
-            if (customEvent.detail?.panelId === panel?.id) return
+        return EventSystem.listen("InputSchemeChanged", ({ panelId }) => {
+            if (panelId === panel?.id) return
 
             const currentSchemes: InputScheme[] = InputSchemeManager.allInputSchemes
             originalInputSchemes.current = structuredClone(currentSchemes)
-        }
-
-        window.addEventListener("inputSchemeChanged", handleExternalSchemeChange)
-
-        return () => {
-            window.removeEventListener("inputSchemeChanged", handleExternalSchemeChange)
-        }
+        })
     }, [])
 
     useEffect(() => {

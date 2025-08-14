@@ -45,12 +45,6 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
             }
 
-            window.dispatchEvent(
-                new CustomEvent("inputSchemeChanged", {
-                    detail: { modalId: modal?.id },
-                })
-            )
-
             setSelectedScheme(scheme)
             openPanel(
                 ConfigurePanel,
