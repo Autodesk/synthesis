@@ -18,6 +18,7 @@ import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
+import CommandPalette from "@/ui/components/CommandPalette.tsx"
 
 function Synthesis() {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
@@ -77,6 +78,7 @@ function Synthesis() {
                             <ContextMenu />
                             <MainHUD key={"main-hud"} />
                             <UIRenderer />
+                            <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
                             <WPILibConnectionStatus />
                             <DragModeIndicator />
