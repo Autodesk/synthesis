@@ -50,6 +50,12 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import type {
+    FieldConfiguration,
+    MetadataUpdateData,
+    RobotConfiguration,
+    UpdateObjectData,
+} from "@/systems/multiplayer/types"
 
 const DEBUG_BODIES = false
 
@@ -78,7 +84,7 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private readonly _assemblyName: string
     private readonly _mirabufInstance: MirabufInstance
-    private readonly _mechanism: Mechanism
+    private _mechanism: Mechanism
 
     private _brain: Brain | undefined
     private _alliance: Alliance | undefined

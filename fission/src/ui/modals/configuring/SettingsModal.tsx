@@ -527,7 +527,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
                 textColor="inherit"
                 indicatorColor="primary"
                 centered
-                {...SoundPlayer.buttonSoundEffects()}
+                {...SoundPlayer.getInstance().buttonSoundEffects()}
             >
                 {tabs.map(tab => (
                     <Tab key={tab.key} value={tab.key} label={tab.label} />

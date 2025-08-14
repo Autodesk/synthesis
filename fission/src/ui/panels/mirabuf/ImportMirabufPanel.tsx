@@ -35,6 +35,7 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 interface ItemCardProps {
     id: string
@@ -434,10 +435,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         setViewType(v)
                     }
                 }}
-<<<<<<< HEAD
                 {...SoundPlayer.getInstance().buttonSoundEffects()}
-=======
->>>>>>> 7307511bb33b08c6989b3b22d99796ca2f0fea78
                 sx={{
                     alignSelf: "center",
                 }}
