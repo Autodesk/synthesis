@@ -11,6 +11,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import World from "@/systems/World"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 
 type CommandDefinition = {
     id: string
@@ -28,13 +29,14 @@ function isTextInputTarget(target: EventTarget | null): boolean {
 }
 
 const CommandPalette: React.FC = () => {
-    const { addToast, openPanel, openModal } = useUIContext()
+    const { addToast, openPanel, openModal, modal } = useUIContext()
     const { isMainMenuOpen } = useStateContext()
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [query, setQuery] = useState<string>("")
     const [activeIndex, setActiveIndex] = useState<number>(0)
     const inputRef = useRef<HTMLInputElement | null>(null)
+    const containerRef = useRef<HTMLDivElement | null>(null)
 
     const closePalette = useCallback(() => {
         setIsOpen(false)
@@ -62,20 +64,6 @@ const CommandPalette: React.FC = () => {
     const commands = useMemo<CommandDefinition[]>(
         () => [
             {
-                id: "toast-info",
-                label: "Toast: Show info",
-                description: "Show an info toast in the bottom-right.",
-                keywords: ["notification", "snackbar", "message"],
-                perform: () => addToast("info", "Hello from Command Palette"),
-            },
-            {
-                id: "toast-success",
-                label: "Toast: Show success",
-                description: "Show a success toast in the bottom-right.",
-                keywords: ["notification", "snackbar", "message"],
-                perform: () => addToast("success", "Success!"),
-            },
-            {
                 id: "open-debug-panel",
                 label: "Open Debug Panel",
                 description: "Open the Debug tools panel.",
@@ -96,7 +84,6 @@ const CommandPalette: React.FC = () => {
                     addToast("info", "Drag Mode", `Drag mode has been ${status}`)
                 },
             },
-
             {
                 id: "spawn-asset-robots",
                 label: "Spawn Asset (Robots)",
@@ -110,6 +97,13 @@ const CommandPalette: React.FC = () => {
                 description: "Open asset spawn panel scoped to fields.",
                 keywords: ["spawn", "asset", "field", "import", "mirabuf"],
                 perform: () => openImportPanel("FIELDS"),
+            },
+            {
+                id: "configure-assets",
+                label: "Configure Assets",
+                description: "Open the asset configuration panel.",
+                keywords: ["configure", "asset", "config"],
+                perform: () => openPanel(ConfigurePanel, {}),
             },
             {
                 id: "open-settings",
@@ -151,10 +145,15 @@ const CommandPalette: React.FC = () => {
     const execute = useCallback(
         (index: number) => {
             const cmd = visible[index]
-            cmd.perform()
+            if (cmd) {
+                cmd.perform()
+            } else {
+                addToast("error", "Command Not Found", "The command you entered was not found.")
+            }
+
             closePalette()
         },
-        [visible, closePalette]
+        [visible, closePalette, addToast]
     )
 
     useEffect(() => {
@@ -163,6 +162,7 @@ const CommandPalette: React.FC = () => {
                 if (isTextInputTarget(e.target)) return
                 if (!World.isAlive) return
                 if (isMainMenuOpen) return
+                if (modal) return
                 e.preventDefault()
                 openPalette()
             } else if (e.key === "Escape") {
@@ -174,18 +174,30 @@ const CommandPalette: React.FC = () => {
         }
         window.addEventListener("keydown", onKeyDown)
         return () => window.removeEventListener("keydown", onKeyDown)
-    }, [isOpen, isMainMenuOpen, openPalette, closePalette])
+    }, [isOpen, isMainMenuOpen, modal, openPalette, closePalette])
 
     useEffect(() => {
-        if (isMainMenuOpen && isOpen) {
+        if ((isMainMenuOpen || modal) && isOpen) {
             closePalette()
         }
-    }, [isMainMenuOpen, isOpen, closePalette])
+    }, [isMainMenuOpen, modal, isOpen, closePalette])
 
     useEffect(() => {
         if (!isOpen) return
         setActiveIndex(visible.length > 0 ? visible.length - 1 : 0)
     }, [isOpen, visible.length])
+
+    useEffect(() => {
+        if (!isOpen) return
+        const onPointerDown = (e: PointerEvent) => {
+            const target = e.target as Node | null
+            if (containerRef.current && target && !containerRef.current.contains(target)) {
+                closePalette()
+            }
+        }
+        document.addEventListener("pointerdown", onPointerDown)
+        return () => document.removeEventListener("pointerdown", onPointerDown)
+    }, [isOpen, closePalette])
 
     const onInputKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -221,7 +233,7 @@ const CommandPalette: React.FC = () => {
             }}
         >
             <Stack direction="column" alignItems="center" sx={{ mb: 2, pointerEvents: "auto" }}>
-                <Paper elevation={8} sx={{ width: "min(800px, 95vw)" }}>
+                <Paper elevation={8} sx={{ width: "min(800px, 95vw)" }} ref={containerRef}>
                     {visible.length > 0 && (
                         <List dense disablePadding>
                             {visible.map((c, i) => (
