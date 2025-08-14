@@ -264,6 +264,15 @@ class MirabufCachingService {
             key: hash,
             type: miraType == MiraType.ROBOT ? "robot" : "field",
         })
+        if (assembly.dynamic && miraType == MiraType.FIELD) {
+            globalAddToast("warning", "Cannot import robot assembly as a field")
+            return
+        }
+
+        if (!assembly.dynamic && miraType != MiraType.FIELD) {
+            globalAddToast("warning", "Cannot import field assembly as a robot")
+            return
+        }
 
         const info = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
         if (!info) return

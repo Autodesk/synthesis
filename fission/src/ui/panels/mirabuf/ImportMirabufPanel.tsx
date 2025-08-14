@@ -32,7 +32,11 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
-import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
+import {
+    type ConfigurationType,
+    configTypeToMiraType,
+    miraTypeToConfigType,
+} from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 
 interface ItemCardProps {
@@ -398,8 +402,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         [files, selectAPS, viewType]
     )
     useEffect(() => {
-        setViewType(configurationType === "ROBOTS" ? MiraType.ROBOT : MiraType.FIELD)
-    }, [])
+        setViewType(configTypeToMiraType(configurationType) ?? MiraType.ROBOT)
+    }, [configurationType])
     return (
         <Stack direction="column" gap={2} className="overflow-y-auto">
             <ToggleButtonGroup
@@ -496,7 +500,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             <Box alignSelf={"center"}>
                 <Button
                     onClick={() => {
-                        openModal(ImportLocalMirabufModal, undefined)
+                        openModal(ImportLocalMirabufModal, {
+                            configurationType: miraTypeToConfigType(viewType ?? MiraType.ROBOT),
+                        })
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                 >
