@@ -1,4 +1,4 @@
-import { ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"

@@ -1,4 +1,5 @@
-import { Box, Button, Divider, Stack } from "@mui/material"
+import { Box, Divider, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
