@@ -71,7 +71,8 @@ class CacheMap {
     private static isMirabufCacheInfo(data: unknown): data is MirabufCacheInfo {
         return typeof data === "object" && data != null && "hash" in data && "name" in data && "miraType" in data
     }
-    public load() {
+
+    public async load() {
         const lookup = window.localStorage.getItem(localStorageEntryName)
 
         if (lookup == null) {
@@ -84,13 +85,27 @@ class CacheMap {
             this.save()
             return
         }
-        parsed.forEach((data: unknown) => {
-            if (!CacheMap.isMirabufCacheInfo(data)) {
-                console.warn("malformed mirabuf cache info", data)
-                return
-            }
-            this._map.set(data.hash, data)
-        })
+        if (!canOPFS) {
+            console.warn("no OPFS, can't load from cache")
+            return
+        }
+        await Promise.all(
+            parsed.map(async (data: unknown) => {
+                if (!CacheMap.isMirabufCacheInfo(data)) {
+                    console.warn("malformed mirabuf cache info", data)
+                    return
+                }
+                const hasFile = await fsHandle
+                    .getFileHandle(data.hash)
+                    .then(() => true)
+                    .catch(() => false)
+                if (!hasFile) {
+                    console.warn(`Could not find ${data.hash} (${data.name}) in OPFS`)
+                    return
+                }
+                this._map.set(data.hash, data)
+            })
+        )
     }
 
     public save() {
@@ -155,10 +170,11 @@ class MirabufCachingService {
             this.removeAll().catch(console.error)
             this._cacheMap.clear()
         } else {
-            this._cacheMap.load()
-            if (canOPFS) {
-                setTimeout(() => this.clearExtraAssets()) // make sure nothing extra got left behind due to preferences clearing / whatever
-            }
+            this._cacheMap.load().then(() => {
+                if (canOPFS) {
+                    setTimeout(() => this.clearExtraAssets()) // make sure nothing extra got left behind due to preferences clearing / whatever
+                }
+            })
         }
     }
 
