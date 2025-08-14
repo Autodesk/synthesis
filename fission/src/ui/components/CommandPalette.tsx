@@ -12,6 +12,8 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import World from "@/systems/World"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import MatchMode from "@/systems/match_mode/MatchMode"
+import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 
 type CommandDefinition = {
     id: string
@@ -150,6 +152,20 @@ const CommandPalette: React.FC = () => {
                         undefined
                     ),
             },
+            {
+                id: "toggle-match-mode",
+                label: "Toggle Match Mode",
+                description: "Toggle match mode, allowing you to simulate and run a full match.",
+                keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
+                perform: () => {
+                    if (MatchMode.getInstance().isMatchEnabled()) {
+                        MatchMode.getInstance().sandboxModeStart()
+                        addToast("info", "Match Mode Cancelled")
+                    } else {
+                        openPanel(MatchModeConfigPanel, undefined)
+                    }
+                },
+            },
         ]
 
         // Dynamic per-assembly configuration commands (robots and field)
@@ -171,6 +187,15 @@ const CommandPalette: React.FC = () => {
                             selectedAssembly: r,
                         }),
                 })
+                list.push({
+                    id: `remove-robot-${r.id}`,
+                    label: `Remove ${name}`,
+                    description: `Remove the robot ${name}.`,
+                    keywords: ["remove", "delete", "robot", ...nameTokens.map(t => t.toLowerCase())],
+                    perform: () => {
+                        World.sceneRenderer.removeSceneObject(r.id)
+                    },
+                })
             }
 
             const field = World.sceneRenderer.mirabufSceneObjects.getField()
@@ -189,6 +214,15 @@ const CommandPalette: React.FC = () => {
                             configurationType: "FIELDS",
                             selectedAssembly: field,
                         }),
+                })
+                list.push({
+                    id: `remove-field-${field.id}`,
+                    label: `Remove ${name}`,
+                    description: `Remove the field ${name}.`,
+                    keywords: ["remove", "delete", "field", ...nameTokens.map(t => t.toLowerCase())],
+                    perform: () => {
+                        World.sceneRenderer.removeSceneObject(field.id)
+                    },
                 })
             }
         }
