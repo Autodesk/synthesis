@@ -1,5 +1,17 @@
 import InfoIcon from "@mui/icons-material/Info"
-import { Box, Button, type ButtonProps, IconButton, type IconButtonProps, Stack, Tooltip } from "@mui/material"
+import {
+    Box,
+    type ButtonProps,
+    type IconButtonProps,
+    Button as MuiButton,
+    IconButton as MuiIconButton,
+    ToggleButton as MuiToggleButton,
+    ToggleButtonGroup as MuiToggleButtonGroup,
+    Stack,
+    type ToggleButtonGroupProps,
+    type ToggleButtonProps,
+    Tooltip,
+} from "@mui/material"
 import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
 import { BsCodeSquare } from "react-icons/bs"
@@ -25,6 +37,7 @@ import { GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
 import { HiDownload } from "react-icons/hi"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
 
 export class SynthesisIcons {
@@ -81,6 +94,38 @@ export class SynthesisIcons {
 
 export const Spacer = (heightPx?: number, widthPx?: number) => {
     return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
+}
+
+export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
+    return (
+        <MuiButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+            {children}
+        </MuiButton>
+    )
+}
+
+export const IconButton: React.FC<IconButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
+    return (
+        <MuiIconButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+            {children}
+        </MuiIconButton>
+    )
+}
+
+export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
+    return (
+        <MuiToggleButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+            {children}
+        </MuiToggleButton>
+    )
+}
+
+export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, onMouseDown, onMouseUp, ...props }) => {
+    return (
+        <MuiToggleButtonGroup {...SoundPlayer.buttonSoundEffects()} {...props}>
+            {children}
+        </MuiToggleButtonGroup>
+    )
 }
 
 export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => {
@@ -166,7 +211,7 @@ export const RefreshButton = (onClick: () => void, props: IconButtonProps = {}) 
 export const CustomTooltip = (text: string) => {
     return (
         <Tooltip title={text}>
-            <IconButton
+            <MuiIconButton
                 size="small"
                 disableRipple
                 sx={{
@@ -195,7 +240,7 @@ export const CustomTooltip = (text: string) => {
                 }}
             >
                 <InfoIcon fontSize="small" />
-            </IconButton>
+            </MuiIconButton>
         </Tooltip>
     )
 }
@@ -208,3 +253,6 @@ export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
         </Stack>
     )
 }
+
+// Export the raw MUI components for cases where sound effects are not wanted
+export { MuiButton, MuiIconButton, MuiToggleButton, MuiToggleButtonGroup }

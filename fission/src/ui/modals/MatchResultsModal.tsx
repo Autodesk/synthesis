@@ -1,10 +1,11 @@
-import { Button, Stack, styled, Typography } from "@mui/material"
+import { Stack, styled, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect } from "react"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import Label from "../components/Label"
 import type { ModalImplProps } from "../components/Modal"
+import { Button } from "../components/StyledComponents"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 
 type Entry = {

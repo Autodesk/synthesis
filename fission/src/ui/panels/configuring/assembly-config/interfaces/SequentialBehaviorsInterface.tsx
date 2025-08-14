@@ -1,4 +1,4 @@
-import { Button, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
@@ -9,7 +9,7 @@ import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericA
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
-import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 interface BehaviorCardProps {
     elementKey: number
