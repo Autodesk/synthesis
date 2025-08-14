@@ -1,4 +1,5 @@
-import { Button, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"

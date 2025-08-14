@@ -1,15 +1,5 @@
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Button,
-    CircularProgress,
-    Stack,
-    ToggleButton,
-    ToggleButtonGroup,
-    Tooltip,
-} from "@mui/material"
+import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Stack, Tooltip } from "@mui/material"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
@@ -31,7 +21,7 @@ import MirabufCachingService, {
 } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
@@ -108,12 +98,14 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                createMirabuf(assembly, progressHandle, info.id).then(x => {
-                    if (x) {
-                        World.sceneRenderer.registerSceneObject(x)
+                createMirabuf(assembly, progressHandle, info.id).then(mirabufSceneObject => {
+                    if (mirabufSceneObject) {
+                        World.sceneRenderer.registerSceneObject(mirabufSceneObject)
                         progressHandle.done()
 
-                        globalOpenPanel(InitialConfigPanel, undefined)
+                        if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                            globalOpenPanel(InitialConfigPanel, undefined)
+                        }
                     } else {
                         progressHandle.fail()
                     }
@@ -443,7 +435,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         setViewType(v)
                     }
                 }}
-                {...SoundPlayer.buttonSoundEffects()}
                 sx={{
                     alignSelf: "center",
                 }}

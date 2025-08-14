@@ -169,9 +169,16 @@ export type ProtectedZonePreferences = {
     deltaTransformation: number[]
 }
 
+export type SpawnLocation = Readonly<{
+    pos: Readonly<Vector3Tuple>
+    yaw: number
+}>
 export type FieldPreferences = {
-    // TODO: implement this
-    defaultSpawnLocation: Vector3Tuple
+    spawnLocations: {
+        [A in Alliance]: {
+            [S in Station]: SpawnLocation
+        }
+    } & { default: SpawnLocation; hasConfiguredLocations: boolean }
     scoringZones: ScoringZonePreferences[]
     protectedZones: ProtectedZonePreferences[]
 }
@@ -200,9 +207,29 @@ export function defaultRobotPreferences(): RobotPreferences {
     }
 }
 
+// The object will be moved such that the y-value specified is the bottom of the object, and the x and z values are the center
+export function defaultFieldSpawnLocation(): SpawnLocation {
+    return { pos: [0, 0.1, 0], yaw: 0 }
+}
+export function defaultRobotSpawnLocation(): SpawnLocation {
+    return { pos: [0, 0.1, 0], yaw: 0 }
+}
 export function defaultFieldPreferences(): FieldPreferences {
     return {
-        defaultSpawnLocation: [0, 1, 0],
+        spawnLocations: {
+            red: {
+                1: { pos: [-1, 0.1, -1], yaw: Math.PI / 2 },
+                2: { pos: [-1, 0.1, 0], yaw: Math.PI / 2 },
+                3: { pos: [-1, 0.1, 1], yaw: Math.PI / 2 },
+            },
+            blue: {
+                1: { pos: [1, 0.1, 1], yaw: -Math.PI / 2 },
+                2: { pos: [1, 0.1, 0], yaw: -Math.PI / 2 },
+                3: { pos: [1, 0.1, -1], yaw: -Math.PI / 2 },
+            },
+            default: defaultRobotSpawnLocation(),
+            hasConfiguredLocations: false,
+        },
         scoringZones: [],
         protectedZones: [],
     }
