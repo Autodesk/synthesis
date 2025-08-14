@@ -1,3 +1,4 @@
+import EventSystem from "@/systems/EventSystem.ts"
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
@@ -5,7 +6,6 @@ import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { InputName, InputScheme, ModifierState } from "./InputTypes"
 import type Input from "./inputs/Input"
-import EventSystem from "@/systems/EventSystem.ts";
 
 const LOG_GAMEPAD_EVENTS = false
 
@@ -14,6 +14,8 @@ const LOG_GAMEPAD_EVENTS = false
  *  It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.
  */
 class InputSystem extends WorldSystem {
+    private _unsubscribeTouchControls: () => void
+
     public static currentModifierState: ModifierState
 
     /** The keys currently being pressed. */
@@ -52,7 +54,7 @@ class InputSystem extends WorldSystem {
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this)
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
 
-        EventSystem.listen("TouchControlsLoaded", () => {
+        this._unsubscribeTouchControls = EventSystem.listen("TouchControlsLoaded", () => {
             InputSystem._leftJoystick = new Joystick(
                 document.getElementById("joystick-base-left")!,
                 document.getElementById("joystick-stick-left")!
@@ -101,6 +103,7 @@ class InputSystem extends WorldSystem {
         document.removeEventListener("keyup", this.handleKeyUp)
         window.removeEventListener("gamepadconnected", this.gamepadConnected)
         window.removeEventListener("gamepaddisconnected", this.gamepadDisconnected)
+        this._unsubscribeTouchControls()
     }
 
     /** Called when any key is first pressed */

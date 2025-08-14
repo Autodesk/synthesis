@@ -95,7 +95,6 @@ class EventSystem {
             }
             listener(event.data)
         }
-        cb.name = `EventListener[${listener.name}]`
         window.addEventListener(key, cb)
         return () => window.removeEventListener(key, cb)
     }
