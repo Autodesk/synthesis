@@ -31,7 +31,6 @@ export class AssemblySelectionOption extends SelectMenuOption {
 }
 
 function makeSelectionOption(configurationType: ConfigurationType, assembly: MirabufSceneObject) {
-    // console.log("MAKING SELECTION OPTION FOR", configurationType)
     return new AssemblySelectionOption(
         `${configurationType === "ROBOTS" ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
         assembly
