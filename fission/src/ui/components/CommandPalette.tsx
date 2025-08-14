@@ -61,8 +61,8 @@ const CommandPalette: React.FC = () => {
         [openPanel]
     )
 
-    const commands = useMemo<CommandDefinition[]>(
-        () => [
+    const commands = useMemo<CommandDefinition[]>(() => {
+        const list: CommandDefinition[] = [
             {
                 id: "open-debug-panel",
                 label: "Open Debug Panel",
@@ -106,6 +106,40 @@ const CommandPalette: React.FC = () => {
                 perform: () => openPanel(ConfigurePanel, {}),
             },
             {
+                id: "configure-robots",
+                label: "Configure Robots",
+                description: "Open the configuration panel scoped to spawned robots.",
+                keywords: ["configure", "robot", "robots", "config"],
+                perform: () => {
+                    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
+                    if (!robots || robots.length === 0) {
+                        addToast("warning", "No Robots", "No robots are currently spawned.")
+                        return
+                    }
+                    openPanel(ConfigurePanel, {
+                        configurationType: "ROBOTS",
+                        selectedAssembly: robots.length === 1 ? robots[0] : undefined,
+                    })
+                },
+            },
+            {
+                id: "configure-field",
+                label: "Configure Field",
+                description: "Open the configuration panel scoped to the spawned field.",
+                keywords: ["configure", "field", "config"],
+                perform: () => {
+                    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+                    if (!field) {
+                        addToast("warning", "No Field", "No field is currently spawned.")
+                        return
+                    }
+                    openPanel(ConfigurePanel, {
+                        configurationType: "FIELDS",
+                        selectedAssembly: field,
+                    })
+                },
+            },
+            {
                 id: "open-settings",
                 label: "Open Settings",
                 description: "Open the Settings modal.",
@@ -116,9 +150,51 @@ const CommandPalette: React.FC = () => {
                         undefined
                     ),
             },
-        ],
-        [addToast, openPanel, openModal, openImportPanel]
-    )
+        ]
+
+        // Dynamic per-assembly configuration commands (robots and field)
+        if (isOpen && World.isAlive && World.sceneRenderer) {
+            const robots = World.sceneRenderer.mirabufSceneObjects.getRobots() || []
+            for (const r of robots) {
+                const name = r.assemblyName || "Robot"
+                const nameTokens = String(name)
+                    .split(/\s+|[-_]/g)
+                    .filter(Boolean)
+                list.push({
+                    id: `configure-robot-${r.id}`,
+                    label: `Configure ${name}`,
+                    description: `Open configuration for robot ${name}.`,
+                    keywords: ["configure", "robot", ...nameTokens.map(t => t.toLowerCase())],
+                    perform: () =>
+                        openPanel(ConfigurePanel, {
+                            configurationType: "ROBOTS",
+                            selectedAssembly: r,
+                        }),
+                })
+            }
+
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
+            if (field) {
+                const name = field.assemblyName || "Field"
+                const nameTokens = String(name)
+                    .split(/\s+|[-_]/g)
+                    .filter(Boolean)
+                list.push({
+                    id: `configure-field-${field.id}`,
+                    label: `Configure ${name}`,
+                    description: `Open configuration for field ${name}.`,
+                    keywords: ["configure", "field", ...nameTokens.map(t => t.toLowerCase())],
+                    perform: () =>
+                        openPanel(ConfigurePanel, {
+                            configurationType: "FIELDS",
+                            selectedAssembly: field,
+                        }),
+                })
+            }
+        }
+
+        return list
+    }, [addToast, openPanel, openModal, openImportPanel, isOpen])
 
     const fuse = useMemo(() => {
         return new Fuse(commands, {
