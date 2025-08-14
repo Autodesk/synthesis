@@ -50,6 +50,7 @@ import MirabufCachingService, { type MirabufCacheID, MiraType } from "./MirabufL
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import { createMeshForShape } from "@/util/threejs/MeshCreation"
 
 const DEBUG_BODIES = false
 
@@ -318,26 +319,28 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.updateBatches()
 
-        // Only for game piece imported with a field
-        if (this._mirabufInstance.parser.isGamePiece) {
-            const jBodyId = this.mechanism.getBodyByNodeId(this.mechanism.rootBody)
-            if (!jBodyId) {
-                console.warn(
-                    `Jolt Body for SceneObject ${this.id} with rootBody ${this.mechanism.rootBody} as NodeId not found`
-                )
-                return
-            }
-            const position = convertMirabufTransformToJoltPositionRVec3(this.mirabufInstance.parser.gamePieceTransform!)
-            // position.SetZ(position.GetZ() - 0.25)
-            World.physicsSystem.setBodyPosition(jBodyId, position)
-            this.updateMeshTransforms()
-        }
+        // // Only for game piece imported with a field
+        // if (this._mirabufInstance.parser.isGamePiece) {
+        //     const jBodyId = this.mechanism.getBodyByNodeId(this.mechanism.rootBody)
+        //     if (!jBodyId) {
+        //         console.warn(
+        //             `Jolt Body for SceneObject ${this.id} with rootBody ${this.mechanism.rootBody} as NodeId not found`
+        //         )
+        //         return
+        //     }
+        //     const position = convertMirabufTransformToJoltPositionRVec3(this.mirabufInstance.parser.gamePieceTransform!)
+        //     // position.SetZ(position.GetZ() - 0.25)
+        //     World.physicsSystem.setBodyPosition(jBodyId, position)
+        //     this.updateMeshTransforms()
+        // }
 
+        // if (this.miraType === MiraType.ROBOT || this._mirabufInstance.parser.isGamePiece) {
         const bounds = this.computeBoundingBox()
         if (!Number.isFinite(bounds.min.y)) return
         this._basePositionTransform = this.getPositionTransform(new THREE.Vector3())
 
         this.moveToSpawnLocation()
+        // }
 
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
 
@@ -347,7 +350,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     // Centered in xz plane, bottom surface of object
-    private getPositionTransform(vec: THREE.Vector3) {
+    private getPositionTransform(vec: THREE.Vector3): THREE.Vector3 {
         const box = this.computeBoundingBox()
         const transform = box.getCenter(vec)
         transform.setY(box.min.y)
@@ -364,6 +367,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const fieldLocations = field?.fieldPreferences?.spawnLocations
             if (this._alliance != null && this._station != null && fieldLocations != null) {
                 pos = fieldLocations[this._alliance][this._station]
+            } else if (this._miraType === MiraType.PIECE) {
+                console.log("placing game piece")
+                const posVec = convertMirabufTransformToJoltPositionRVec3(
+                    this._mirabufInstance.parser.gamePieceTransform!
+                )
+                pos = {
+                    pos: [posVec.GetX(), posVec.GetY(), posVec.GetZ()],
+                    yaw: 0,
+                }
             } else {
                 pos = fieldLocations?.default ?? pos
             }
