@@ -14,24 +14,23 @@ import { useUIContext } from "../helpers/UIProviderHelpers"
 
 async function saveToCache() {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
-    if (field) {
-        const assembly = field.mirabufInstance.parser.assembly
-        const newName = assembly.info?.name != null ? `Edited ${assembly.info.name}` : undefined
-        const existing = MirabufCachingService.getAll().find(info => info.name == newName)
-        const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
-            miraType: MiraType.FIELD,
-            name: newName,
-        })
+    if (!field) return
+    const assembly = field.mirabufInstance.parser.assembly
+    const newName = assembly.info?.name != null ? `Edited ${assembly.info.name}` : undefined
+    const existing = MirabufCachingService.getAll().find(info => info.name == newName)
+    const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
+        miraType: MiraType.FIELD,
+        name: newName,
+    })
 
-        if (cacheInfo != null) {
-            globalAddToast("info", "Devtool Saved", "Changes have been persisted to cache.")
-        } else {
-            globalAddToast("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
-        }
+    if (cacheInfo != null) {
+        globalAddToast("info", "Devtool Saved", "Changes have been persisted to cache.")
+    } else {
+        globalAddToast("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+    }
 
-        if (existing) {
-            await MirabufCachingService.remove(existing.hash)
-        }
+    if (existing) {
+        await MirabufCachingService.remove(existing.hash)
     }
 }
 
