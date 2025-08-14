@@ -2,7 +2,6 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import { OnContactAddedEvent, OnContactPersistedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
@@ -20,6 +19,7 @@ import { MiraType } from "./MirabufLoader"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
+import EventSystem, { SynthesisEventListener} from "@/systems/EventSystem.ts";
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors
@@ -50,8 +50,7 @@ class ProtectedZoneSceneObject extends SceneObject {
     private _prefs?: ProtectedZonePreferences
     private _joltBodyId?: Jolt.BodyID
     private _mesh?: THREE.Mesh
-    private _collision?: (event: OnContactAddedEvent | OnContactPersistedEvent) => void
-    private _collisionRemoved?: (event: OnContactRemovedEvent) => void
+    private _unsubscribers: (() => void)[] = []
 
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
 
@@ -122,9 +121,8 @@ class ProtectedZoneSceneObject extends SceneObject {
                 }
 
                 // Detect when something enters or persists in the zone
-                this._collision = (event: OnContactAddedEvent | OnContactPersistedEvent) => {
-                    const body1 = event.message.body1
-                    const body2 = event.message.body2
+                const collisionSubscriber:SynthesisEventListener<"OnContactAddedEvent" | "OnContactPersistedEvent"> = (data) => {
+                    const {body1, body2} = data
 
                     if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
                         this.zoneCollision(body2)
@@ -136,21 +134,20 @@ class ProtectedZoneSceneObject extends SceneObject {
                     if (this._prefs?.contactType == ContactType.ROBOT_ENTERS || !this.isZoneActive()) return
                     this.handleContactPenalty(body1, body2)
                 }
-                OnContactAddedEvent.addListener(this._collision)
-                OnContactPersistedEvent.addListener(this._collision)
+                this._unsubscribers.push(EventSystem.listen("OnContactAddedEvent", collisionSubscriber))
+                this._unsubscribers.push(EventSystem.listen("OnContactPersistedEvent", collisionSubscriber))
 
                 // Detects when something leaves the zone
-                this._collisionRemoved = (event: OnContactRemovedEvent) => {
-                    const body1 = event.message.GetBody1ID()
-                    const body2 = event.message.GetBody2ID()
+                this._unsubscribers.push(EventSystem.listen("OnContactRemovedEvent", ({message}) => {
+                    const body1 = message.GetBody1ID()
+                    const body2 = message.GetBody2ID()
 
                     if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
                         this.zoneCollisionRemoved(body2)
                     } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
                         this.zoneCollisionRemoved(body1)
                     }
-                }
-                OnContactRemovedEvent.addListener(this._collisionRemoved)
+                }))
             }
         }
     }
@@ -198,11 +195,7 @@ class ProtectedZoneSceneObject extends SceneObject {
             }
         }
 
-        if (this._collision) {
-            OnContactAddedEvent.removeListener(this._collision)
-            OnContactPersistedEvent.removeListener(this._collision)
-        }
-        if (this._collisionRemoved) OnContactRemovedEvent.removeListener(this._collisionRemoved)
+        this._unsubscribers.forEach((func) => func())
     }
 
     private zoneCollision(collisionID: Jolt.BodyID) {

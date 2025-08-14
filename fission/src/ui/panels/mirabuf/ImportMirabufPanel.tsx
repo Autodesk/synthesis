@@ -17,8 +17,6 @@ import {
     type Data,
     getMirabufFiles,
     hasMirabufFiles,
-    MirabufFilesStatusUpdateEvent,
-    MirabufFilesUpdateEvent,
     requestMirabufFiles,
 } from "@/aps/APSDataManagement"
 import MirabufCachingService, {
@@ -50,6 +48,7 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import EventSystem from "@/systems/EventSystem.ts";
 
 interface ItemCardProps {
     id: string
@@ -161,20 +160,13 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     }, [])
 
     useEffect(() => {
-        const updateFilesStatus = (e: Event) => {
-            setFilesStatus((e as MirabufFilesStatusUpdateEvent).status)
-        }
 
-        const updateFiles = (e: Event) => {
-            setFiles((e as MirabufFilesUpdateEvent).data)
-        }
-
-        window.addEventListener(MirabufFilesStatusUpdateEvent.EVENT_KEY, updateFilesStatus)
-        window.addEventListener(MirabufFilesUpdateEvent.EVENT_KEY, updateFiles)
+        const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", (v) => setFilesStatus(v))
+        const unsubscribeUpdate = EventSystem.listen("MirabufFilesUpdateEvent", (v) => setFiles(v))
 
         return () => {
-            window.removeEventListener(MirabufFilesStatusUpdateEvent.EVENT_KEY, updateFilesStatus)
-            window.removeEventListener(MirabufFilesUpdateEvent.EVENT_KEY, updateFiles)
+            unsubscribeStatus()
+            unsubscribeUpdate()
         }
     })
 

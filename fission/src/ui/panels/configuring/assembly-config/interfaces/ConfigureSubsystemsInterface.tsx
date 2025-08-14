@@ -1,6 +1,5 @@
 import type React from "react"
 import { useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
@@ -14,6 +13,7 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import SubsystemRowInterface from "./SubsystemRowInterface"
+import EventSystem from "@/systems/EventSystem.ts";
 
 class ConfigModeSelectionOption extends SelectMenuOption {
     driver: Driver
@@ -91,7 +91,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
             <SelectMenu
                 options={getSubsystemOptions()}
                 onOptionSelected={val => {
-                    if (val !== undefined) new ConfigurationSavedEvent()
+                    if (val !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
                     setSelectedConfigMode(val as ConfigModeSelectionOption)
                 }}
                 defaultHeaderText="Select a Subsystem"

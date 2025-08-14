@@ -3,7 +3,6 @@ import { Button, Stack } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -22,6 +21,7 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
+import EventSystem from "@/systems/EventSystem.ts";
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -119,11 +119,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-
-        return () => {
-            ConfigurationSavedEvent.removeListener(saveEvent)
-        }
+        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
 
     useEffect(() => {

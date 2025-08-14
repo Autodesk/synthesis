@@ -2,12 +2,12 @@ import { Button, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import AxisInput from "@/systems/input/inputs/AxisInput.ts"
 import type Input from "@/systems/input/inputs/Input"
 import EditInputInterface from "./EditInputInterface"
+import EventSystem from "@/systems/EventSystem.ts";
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
@@ -23,11 +23,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     }, [])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-
-        return () => {
-            ConfigurationSavedEvent.removeListener(saveEvent)
-        }
+        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
 
     /** Disable scrolling with arrow keys to stop accidentally scrolling when binding keys */

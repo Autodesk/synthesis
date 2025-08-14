@@ -1,14 +1,10 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { afterEach, beforeEach, describe, expect, test } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, beforeAll } from "vitest"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import {
-    OnContactAddedEvent,
-    OnContactPersistedEvent,
-    OnContactRemovedEvent,
-    OnContactValidateEvent,
-} from "../../systems/physics/ContactEvents"
 import PhysicsSystem from "../../systems/physics/PhysicsSystem"
+import EventSystem from "@/systems/EventSystem.ts";
+import type {CurrentContactData, OnContactValidateData} from "@/systems/physics/ContactEvents.ts";
 
 describe("Contact Event Integration Tests", () => {
     let physicsSystem: PhysicsSystem
@@ -16,27 +12,17 @@ describe("Contact Event Integration Tests", () => {
     let fallingBody: Jolt.Body
 
     // Event tracking variables
-    let contactAddedEvents: OnContactAddedEvent[] = []
-    let contactPersistedEvents: OnContactPersistedEvent[] = []
-    let contactRemovedEvents: OnContactRemovedEvent[] = []
-    let contactValidateEvents: OnContactValidateEvent[] = []
+    let contactAddedEvents: CurrentContactData[] = []
+    let contactPersistedEvents: CurrentContactData[] = []
+    let contactRemovedEvents: { message:Jolt.SubShapeIDPair }[] = []
+    let contactValidateEvents: OnContactValidateData[] = []
 
-    // Event listeners
-    const onContactAdded = (e: OnContactAddedEvent) => {
-        contactAddedEvents.push(e)
-    }
-
-    const onContactPersisted = (e: OnContactPersistedEvent) => {
-        contactPersistedEvents.push(e)
-    }
-
-    const onContactRemoved = (e: OnContactRemovedEvent) => {
-        contactRemovedEvents.push(e)
-    }
-
-    const onContactValidate = (e: OnContactValidateEvent) => {
-        contactValidateEvents.push(e)
-    }
+    beforeAll(() => {
+        EventSystem.listen("OnContactAddedEvent", (v) => contactAddedEvents.push(v))
+        EventSystem.listen("OnContactPersistedEvent", (v) => contactPersistedEvents.push(v))
+        EventSystem.listen("OnContactRemovedEvent", (v) => contactRemovedEvents.push(v))
+        EventSystem.listen("OnContactValidateEvent", (v) => contactValidateEvents.push(v))
+    })
 
     beforeEach(() => {
         // Clear event arrays
@@ -66,20 +52,9 @@ describe("Contact Event Integration Tests", () => {
         )
         physicsSystem.addBodyToSystem(fallingBody.GetID(), true)
 
-        // Add event listeners
-        OnContactAddedEvent.addListener(onContactAdded)
-        OnContactPersistedEvent.addListener(onContactPersisted)
-        OnContactRemovedEvent.addListener(onContactRemoved)
-        OnContactValidateEvent.addListener(onContactValidate)
     })
 
     afterEach(() => {
-        // Remove event listeners
-        OnContactAddedEvent.removeListener(onContactAdded)
-        OnContactPersistedEvent.removeListener(onContactPersisted)
-        OnContactRemovedEvent.removeListener(onContactRemoved)
-        OnContactValidateEvent.removeListener(onContactValidate)
-
         // Clean up physics system
         physicsSystem.destroy()
     })
@@ -123,13 +98,11 @@ describe("Contact Event Integration Tests", () => {
 
         // Verify the contact data is valid
         const contactEvent = contactAddedEvents[0]
-        expect(contactEvent.message.body1).toBeDefined()
-        expect(contactEvent.message.body2).toBeDefined()
-        expect(contactEvent.message.manifold).toBeDefined()
-        expect(contactEvent.message.settings).toBeDefined()
+        expect(contactEvent.body1).toBeDefined()
+        expect(contactEvent.body2).toBeDefined()
+        expect(contactEvent.manifold).toBeDefined()
+        expect(contactEvent.settings).toBeDefined()
 
-        // The main test is that we got a contact event - this proves collision detection works
-        expect(contactEvent.type).toBe("OnContactAddedEvent")
     })
 
     test("Contact persisted events are fired for ongoing collisions", async () => {
@@ -157,10 +130,10 @@ describe("Contact Event Integration Tests", () => {
 
         // Verify persisted event data
         const persistedEvent = contactPersistedEvents[0]
-        expect(persistedEvent.message.body1).toBeDefined()
-        expect(persistedEvent.message.body2).toBeDefined()
-        expect(persistedEvent.message.manifold).toBeDefined()
-        expect(persistedEvent.message.settings).toBeDefined()
+        expect(persistedEvent.body1).toBeDefined()
+        expect(persistedEvent.body2).toBeDefined()
+        expect(persistedEvent.manifold).toBeDefined()
+        expect(persistedEvent.settings).toBeDefined()
     })
 
     test("Multiple collisions generate multiple contact events", async () => {

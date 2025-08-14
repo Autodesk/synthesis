@@ -9,8 +9,8 @@ import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
 import { DeleteButton, EditButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import EventSystem from "@/systems/EventSystem.ts";
 
 interface InputSchemeSelectionProps {
     brainIndex: number
@@ -58,7 +58,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                                     // TODO: if touch controls, then ensure that they are enabled.
                                     if (scheme.usesTouchControls) {
-                                        new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
+                                        EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")
                                     }
                                     setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
                                     onSelect?.()

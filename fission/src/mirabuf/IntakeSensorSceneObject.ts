@@ -1,6 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -12,6 +11,7 @@ import {
 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts";
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -19,7 +19,7 @@ class IntakeSensorSceneObject extends SceneObject {
     private _deltaTransformation?: THREE.Matrix4
 
     private _joltBodyId?: Jolt.BodyID
-    private _collision?: (e: OnContactPersistedEvent) => void
+    private _collisionUnsubscriber?: () => void
     private _visualIndicator?: THREE.Mesh
 
     public constructor(parentAssembly: MirabufSceneObject) {
@@ -45,22 +45,18 @@ class IntakeSensorSceneObject extends SceneObject {
                 return
             }
 
-            this._collision = (event: OnContactPersistedEvent) => {
-                if (this._parentAssembly.intakeActive) {
-                    if (this._joltBodyId && !World.physicsSystem.isPaused) {
-                        const body1 = event.message.body1
-                        const body2 = event.message.body2
+            this._collisionUnsubscriber = EventSystem.listen("OnContactPersistedEvent", (data) => {
+                if (!this._parentAssembly.intakeActive || this._joltBodyId == null || World.physicsSystem.isPaused) return
 
-                        if (body1.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
-                            this.intakeCollision(body2)
-                        } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
-                            this.intakeCollision(body1)
-                        }
-                    }
+                const body1 = data.body1
+                const body2 = data.body2
+
+                if (body1.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
+                    this.intakeCollision(body2)
+                } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
+                    this.intakeCollision(body1)
                 }
-            }
-
-            OnContactPersistedEvent.addListener(this._collision)
+            })
         }
 
         // Create visual indicator if showZoneAlways is enabled
@@ -120,7 +116,7 @@ class IntakeSensorSceneObject extends SceneObject {
             World.physicsSystem.destroyBodyIds(this._joltBodyId)
         }
 
-        if (this._collision) OnContactPersistedEvent.removeListener(this._collision)
+        this._collisionUnsubscriber?.()
 
         // Clean up visual indicator
         if (this._visualIndicator) {

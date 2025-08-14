@@ -1,12 +1,12 @@
 import { Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Draggable from "react-draggable"
-import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
-import MatchMode, { UpdateTimeLeft } from "@/systems/match_mode/MatchMode"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import Label from "./Label"
+import EventSystem from "@/systems/EventSystem.ts";
 
 const showTime = () => {
     return MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX
@@ -16,26 +16,22 @@ const HALF_W = "calc(50vw - 50%)"
 
 const Scoreboard: React.FC = () => {
     const [redScore, setRedScore] = useState(SimulationSystem.redScore)
-    const [blueScore, setBlueScore] = useState(SimulationSystem.redScore)
+    const [blueScore, setBlueScore] = useState(SimulationSystem.blueScore)
     const [time, setTime] = useState("0")
 
-    const onScoreChange = useCallback((e: OnScoreChangedEvent) => {
-        setRedScore(e.red)
-        setBlueScore(e.blue)
-    }, [])
-
-    const onTimeLeftChange = useCallback((e: UpdateTimeLeft) => {
-        // TODO: should this change?
-        setTime(e.time)
-    }, [])
 
     useEffect(() => {
-        OnScoreChangedEvent.addListener(onScoreChange)
-        UpdateTimeLeft.addListener(onTimeLeftChange)
+        const scoreUnsubscriber = EventSystem.listen("ScoreChangedEvent", ({red, blue}) => {
+            setRedScore(red)
+            setBlueScore(blue)
+        })
+        const timeUnsubscriber = EventSystem.listen("TimeChangedEvent", ({time}) => {
+            setTime(time.toFixed())
+        })
 
         return () => {
-            OnScoreChangedEvent.removeListener(onScoreChange)
-            UpdateTimeLeft.removeListener(onTimeLeftChange)
+            scoreUnsubscriber()
+            timeUnsubscriber()
         }
     }, [])
 

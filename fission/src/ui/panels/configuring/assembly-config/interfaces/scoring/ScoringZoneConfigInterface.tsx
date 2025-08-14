@@ -2,7 +2,6 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { Button, TextField } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
@@ -20,6 +19,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
+import EventSystem from "@/systems/EventSystem.ts";
 
 /**
  * Saves ejector configuration to selected field.
@@ -151,11 +151,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-
-        return () => {
-            ConfigurationSavedEvent.removeListener(saveEvent)
-        }
+        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
 
     /** Holds a pause for the duration of the interface component */

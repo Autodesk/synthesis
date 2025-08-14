@@ -1,0 +1,103 @@
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { Data } from "@/aps/APSDataManagement.ts"
+import type { ContextData } from "@/components/ContextMenuData.ts"
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import type { SceneOverlayTag } from "@/components/SceneOverlayEvents.ts"
+import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes.ts"
+import type { CurrentContactData, OnContactValidateData } from "@/systems/physics/ContactEvents.ts"
+import type TaskStatus from "@/util/TaskStatus.ts"
+
+interface EventDataMap {
+    // Mirabuf
+    ProgressEvent: ProgressHandle
+
+    // APS
+    MirabufFilesUpdateEvent: Data[]
+    MirabufFilesStatusUpdateEvent: TaskStatus
+
+    // Physics
+    OnContactAddedEvent: CurrentContactData
+    OnContactPersistedEvent: CurrentContactData
+    OnContactValidateEvent: OnContactValidateData
+    OnContactRemovedEvent: { message: Jolt.SubShapeIDPair }
+
+    // Scene Overlay Tags
+    SceneOverlayTagAddEvent: SceneOverlayTag
+    SceneOverlayTagRemoveEvent: SceneOverlayTag
+    SceneOverlayEnableEvent: never
+    SceneOverlayDisableEvent: never
+    SceneOverlayUpdateEvent: never
+
+    ConfigurationSavedEvent: never
+
+    // Match Mode
+    ScoreChangedEvent: { red: number; blue: number }
+    TimeChangedEvent: { time: number }
+    MatchStateChangedEvent: { mode: MatchModeType }
+
+    // Code Sim
+    SimMapUpdateEvent: { internalUpdate: boolean }
+
+    // Context Menu
+    ContextSupplierEvent: { data: ContextData; mousePosition: [number, number] }
+
+    // Touch Controls
+    SetPlaceAssetButtonVisibleEvent: boolean
+    ToggleTouchControlsVisibilityEvent: never
+    TouchControlsLoaded: never
+
+    DragModeToggled: { enabled: boolean }
+
+    APSUserInfoUpdate: never
+}
+
+type EventKey = keyof EventDataMap
+type EventKeyWithValue = {
+    [K in EventKey]: EventDataMap[K] extends never ? never : K
+}[EventKey]
+type EventKeyWithoutValue = Exclude<EventKey, EventKeyWithValue>
+
+class CustomEvent<K extends EventKey, T extends EventDataMap[K]> extends Event {
+    public readonly data: T
+    public constructor(event: K, data: T) {
+        super(event)
+        this.data = data
+    }
+
+    public dispatch() {
+        window.dispatchEvent(this)
+    }
+}
+
+export type SynthesisEvent<K extends EventKey> = CustomEvent<K, EventDataMap[K]>
+export type SynthesisEventData<K extends EventKey> = EventDataMap[K]
+export type SynthesisEventListener<K extends EventKey> = (data: EventDataMap[K]) => void
+
+class EventSystem {
+    public static dispatch<K extends EventKeyWithoutValue>(key: K): void
+    public static dispatch<K extends EventKeyWithValue>(key: K, data: SynthesisEventData<K>): void
+    public static dispatch<K extends EventKey, T extends EventDataMap[K]>(key: K, data?: T): void {
+        const event = new CustomEvent(key, data as T)
+        event.dispatch()
+    }
+
+    public static create<K extends EventKeyWithoutValue>(key: K): SynthesisEvent<K>
+    public static create<K extends EventKeyWithValue>(key: K, data: SynthesisEventData<K>): SynthesisEvent<K>
+    public static create<K extends EventKey, T extends EventDataMap[K]>(key: K, data?: T): SynthesisEvent<K> {
+        return new CustomEvent(key, data as T)
+    }
+
+    public static listen<K extends EventKey>(key: K, listener: SynthesisEventListener<K>) {
+        const cb = (event: Event) => {
+            if (!(event instanceof CustomEvent)) {
+                console.warn("Incorrect event type dispatched", event, key)
+                return
+            }
+            listener(event.data)
+        }
+        cb.name = `EventListener[${listener.name}]`
+        window.addEventListener(key, cb)
+        return () => window.removeEventListener(key, cb)
+    }
+}
+export default EventSystem

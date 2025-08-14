@@ -3,10 +3,10 @@ import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { FaXmark } from "react-icons/fa6"
-import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
+import APS from "@/aps/APS"
 import logo from "@/assets/autodesk_logo.png"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import MatchMode, { MatchStateChangeEvent } from "@/systems/match_mode/MatchMode"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { deobf } from "@/util/Utility"
 import { useThemeContext } from "../helpers/ThemeProviderHelpers"
@@ -21,8 +21,8 @@ import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { SynthesisIcons } from "./StyledComponents"
-import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import UserIcon from "./UserIcon"
+import EventSystem from "@/systems/EventSystem.ts";
 
 type ButtonProps = {
     value: string
@@ -87,10 +87,6 @@ const MainHUD: React.FC = () => {
     const [matchModeRunning, setMatchModeRunning] = useState(MatchMode.getInstance().isMatchEnabled())
 
     useEffect(() => {
-        document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
-            setUserInfo(APS.userInfo)
-        })
-
         // biome-ignore-start lint/suspicious/noExplicitAny: allow any
         try {
             const k: string[] = deobf("NmM2ZjYzNjE2YzUzNzQ2ZjcyNjE2NzY1MmU3NDY4NjU2ZDY1").split(String.fromCharCode(46))
@@ -109,10 +105,15 @@ const MainHUD: React.FC = () => {
             // noop
         }
         // biome-ignore-end lint/suspicious/noExplicitAny: disallow any
+
+        return EventSystem.listen("APSUserInfoUpdate", () => {
+            setUserInfo(APS.userInfo)
+        })
+
     }, [])
 
     useEffect(() => {
-        MatchStateChangeEvent.addListener(() => {
+        return EventSystem.listen("MatchStateChangedEvent", () => {
             setMatchModeRunning(MatchMode.getInstance().isMatchEnabled())
         })
     }, [])
@@ -241,7 +242,7 @@ const MainHUD: React.FC = () => {
                         <MainHUDButton
                             value={"Touch Controls"}
                             icon={SynthesisIcons.GAMEPAD}
-                            onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
+                            onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
                         />
                     )}
                 </Stack>

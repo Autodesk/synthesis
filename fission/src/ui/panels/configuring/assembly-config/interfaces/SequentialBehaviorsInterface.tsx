@@ -1,7 +1,6 @@
 import { Button, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
@@ -10,6 +9,7 @@ import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/Sequen
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import EventSystem from "@/systems/EventSystem.ts";
 
 interface BehaviorCardProps {
     elementKey: number
@@ -167,11 +167,7 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
     }, [behaviors, selectedRobot])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-
-        return () => {
-            ConfigurationSavedEvent.removeListener(saveEvent)
-        }
+        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
 
     return (

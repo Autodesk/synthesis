@@ -1,5 +1,4 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import World from "@/systems/World.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -19,6 +18,7 @@ import SliderStimulus from "./stimulus/SliderStimulus"
 import type Stimulus from "./stimulus/Stimulus"
 import { makeStimulusID, StimulusType } from "./stimulus/Stimulus"
 import WheelRotationStimulus from "./stimulus/WheelStimulus"
+import EventSystem from "@/systems/EventSystem.ts";
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
@@ -66,7 +66,7 @@ class SimulationSystem extends WorldSystem {
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
         this.perRobotScore = new Map()
-        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).dispatch()
+        EventSystem.dispatch("ScoreChangedEvent", {red:SimulationSystem.redScore, blue:SimulationSystem.blueScore})
     }
 
     public static addPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
@@ -87,7 +87,7 @@ class SimulationSystem extends WorldSystem {
         } else {
             SimulationSystem.redScore += penaltyPoints
         }
-        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).dispatch()
+        EventSystem.dispatch("ScoreChangedEvent", {red:SimulationSystem.redScore, blue:SimulationSystem.blueScore})
         // Update per robot score
         this.addPerRobotScore(robot, -penaltyPoints)
     }

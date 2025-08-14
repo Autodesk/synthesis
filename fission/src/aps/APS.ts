@@ -1,11 +1,10 @@
 import { Mutex } from "async-mutex"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import EventSystem from "@/systems/EventSystem.ts";
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
-
-export const APS_USER_INFO_UPDATE_EVENT = "aps_user_info_update"
 
 const CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 
@@ -135,8 +134,7 @@ class APS {
         if (info) {
             window.localStorage.setItem(APS_USER_INFO_KEY, JSON.stringify(info))
         }
-
-        document.dispatchEvent(new Event(APS_USER_INFO_UPDATE_EVENT))
+        EventSystem.dispatch("APSUserInfoUpdate")
     }
 
     /**

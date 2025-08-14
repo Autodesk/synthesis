@@ -15,6 +15,7 @@ import {
     type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import EventSystem from "@/systems/EventSystem.ts";
 
 interface DragTarget {
     bodyId: Jolt.BodyID
@@ -89,14 +90,10 @@ class DragModeSystem extends WorldSystem {
         targetSceneObject: undefined,
     }
 
-    private _handleDisableDragMode: () => void
+    private readonly _unsubscriber: () => void
 
     public constructor() {
         super()
-
-        this._handleDisableDragMode = () => {
-            this.enabled = false
-        }
 
         // Create wheel event handler for Z-axis dragging
         this._wheelEventHandler = (event: WheelEvent) => {
@@ -105,8 +102,9 @@ class DragModeSystem extends WorldSystem {
                 this.handleWheelDuringDrag(event)
             }
         }
-
-        window.addEventListener("disableDragMode", this._handleDisableDragMode)
+        this._unsubscriber = EventSystem.listen("DragModeToggled", ({enabled}) => {
+            this.enabled = enabled
+        })
     }
 
     public get enabled(): boolean {
@@ -134,7 +132,7 @@ class DragModeSystem extends WorldSystem {
             }
         }
 
-        window.dispatchEvent(new CustomEvent("dragModeToggled", { detail: { enabled } }))
+        EventSystem.dispatch("DragModeToggled", {enabled})
     }
 
     public update(deltaT: number): void {
@@ -160,7 +158,7 @@ class DragModeSystem extends WorldSystem {
         // Clean up debug sphere
         this.removeDebugSphere()
 
-        window.removeEventListener("disableDragMode", this._handleDisableDragMode)
+        this._unsubscriber?.()
     }
 
     private createDebugSphere(position: THREE.Vector3): void {

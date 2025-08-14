@@ -1,9 +1,10 @@
 import { Button, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
+import { type ContextData } from "./ContextMenuData"
 import { globalOpenModal, globalOpenPanel } from "./GlobalUIControls"
 import Label from "./Label"
+import EventSystem from "@/systems/EventSystem.ts";
 
 interface ContextMenuStateData {
     data: ContextData
@@ -14,17 +15,12 @@ const ContextMenu: React.FC = () => {
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
     useEffect(() => {
-        const func = (e: ContextSupplierEvent) => {
+        return EventSystem.listen("ContextSupplierEvent", (e) => {
             setState({
                 data: e.data,
                 location: [e.mousePosition[0], e.mousePosition[1]],
             })
-        }
-
-        ContextSupplierEvent.listen(func)
-        return () => {
-            ContextSupplierEvent.removeListener(func)
-        }
+        })
     }, [])
 
     return !state ? (

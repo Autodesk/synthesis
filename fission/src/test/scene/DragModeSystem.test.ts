@@ -6,6 +6,7 @@ import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
 import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
 import World from "@/systems/World"
+import EventSystem from "@/systems/EventSystem.ts";
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -119,7 +120,7 @@ describe("DragModeSystem Integration Tests", () => {
         test("should handle disable drag mode event", () => {
             dragModeSystem.enabled = true
 
-            window.dispatchEvent(new CustomEvent("disableDragMode"))
+            EventSystem.dispatch("DragModeToggled", {enabled:false})
 
             expect(dragModeSystem.enabled).toBe(false)
         })

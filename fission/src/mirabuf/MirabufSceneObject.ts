@@ -1,7 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
-import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import type Mechanism from "@/systems/physics/Mechanism"
 import { BodyAssociate, type LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -39,6 +38,7 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import EventSystem from "@/systems/EventSystem.ts";
 
 const DEBUG_BODIES = false
 
@@ -94,7 +94,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _lastEjectableToastTime = 0
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
-    private _collision?: (event: OnContactAddedEvent) => void
+    private _collisionUnsubscriber?: () => void
     private _cacheId?: string
 
     public get intakeActive() {
@@ -216,17 +216,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             )
 
             // Detects when something collides with the robot
-            this._collision = (event: OnContactAddedEvent) => {
-                const body1 = event.message.body1
-                const body2 = event.message.body2
+            this._collisionUnsubscriber = EventSystem.listen("OnContactAddedEvent", (data) => {
+                const {body1, body2} = data
 
                 if (body1.GetIndexAndSequenceNumber() === this.getRootNodeId()?.GetIndexAndSequenceNumber()) {
                     this.recordRobotCollision(body2)
                 } else if (body2.GetIndexAndSequenceNumber() === this.getRootNodeId()?.GetIndexAndSequenceNumber()) {
                     this.recordRobotCollision(body1)
                 }
-            }
-            OnContactAddedEvent.addListener(this._collision)
+            })
+
 
             // Center of Mass Indicator
             const material = new THREE.MeshBasicMaterial({
@@ -357,6 +356,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             ;(x.colliderMesh.material as THREE.Material).dispose()
             ;(x.comMesh.material as THREE.Material).dispose()
         })
+        this._collisionUnsubscriber?.()
         this._debugBodies?.clear()
         this._physicsLayerReserve?.release()
         if (this._centerOfMassIndicator) {

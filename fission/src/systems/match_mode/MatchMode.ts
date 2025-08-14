@@ -10,6 +10,7 @@ import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
+import EventSystem from "@/systems/EventSystem.ts";
 
 class MatchMode {
     private static _instance: MatchMode
@@ -18,7 +19,7 @@ class MatchMode {
 
     private setMatchModeType(val: MatchModeType) {
         this._matchModeType = val
-        new MatchStateChangeEvent(val).dispatch()
+        EventSystem.dispatch("MatchStateChangedEvent", {mode:val})
     }
 
     private _initialTime: number = 0
@@ -51,13 +52,13 @@ class MatchMode {
         this._timeLeft = duration
 
         // Dispatch an event to update the time left in the UI
-        if (updateTimeLeft) new UpdateTimeLeft(this._initialTime).dispatch()
+        if (updateTimeLeft) EventSystem.dispatch("TimeChangedEvent", {time:this._initialTime})
 
         this._intervalId = window.setInterval(() => {
             this._timeLeft--
 
             if (this._timeLeft >= 0 && updateTimeLeft) {
-                new UpdateTimeLeft(this._timeLeft).dispatch()
+                EventSystem.dispatch("TimeChangedEvent", {time:this._timeLeft})
             }
 
             // Checks if endgame has started
@@ -117,7 +118,7 @@ class MatchMode {
         clearInterval(this._intervalId as number)
         this._initialTime = 0
         this._timeLeft = 0
-        new UpdateTimeLeft(this._timeLeft).dispatch()
+        EventSystem.dispatch("TimeChangedEvent", {time:this._timeLeft})
         SimulationSystem.resetScores()
     }
 
@@ -136,47 +137,5 @@ class MatchMode {
 
 export default MatchMode
 
-export class UpdateTimeLeft extends Event {
-    public static readonly EVENT_KEY = "UpdateTimeLeft"
 
-    public readonly time: string
 
-    constructor(time: number) {
-        super(UpdateTimeLeft.EVENT_KEY)
-        this.time = time.toFixed(0)
-    }
-
-    public dispatch(): void {
-        window.dispatchEvent(this)
-    }
-
-    public static addListener(func: (e: UpdateTimeLeft) => void) {
-        window.addEventListener(UpdateTimeLeft.EVENT_KEY, func as (e: Event) => void)
-    }
-
-    public static removeListener(func: (e: UpdateTimeLeft) => void) {
-        window.removeEventListener(UpdateTimeLeft.EVENT_KEY, func as (e: Event) => void)
-    }
-}
-
-export class MatchStateChangeEvent extends Event {
-    public static readonly EVENT_KEY = "MatchEnd"
-
-    public readonly matchModeType: MatchModeType
-    constructor(matchModeType: MatchModeType) {
-        super(MatchStateChangeEvent.EVENT_KEY)
-        this.matchModeType = matchModeType
-    }
-
-    public dispatch(): void {
-        window.dispatchEvent(this)
-    }
-
-    public static addListener(func: (e: MatchStateChangeEvent) => void) {
-        window.addEventListener(MatchStateChangeEvent.EVENT_KEY, func as (e: Event) => void)
-    }
-
-    public static removeListener(func: (e: MatchStateChangeEvent) => void) {
-        window.removeEventListener(MatchStateChangeEvent.EVENT_KEY, func as (e: Event) => void)
-    }
-}

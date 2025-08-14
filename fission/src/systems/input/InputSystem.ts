@@ -5,6 +5,7 @@ import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { InputName, InputScheme, ModifierState } from "./InputTypes"
 import type Input from "./inputs/Input"
+import EventSystem from "@/systems/EventSystem.ts";
 
 const LOG_GAMEPAD_EVENTS = false
 
@@ -51,7 +52,7 @@ class InputSystem extends WorldSystem {
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this)
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
 
-        window.addEventListener("touchcontrolsloaded", () => {
+        EventSystem.listen("TouchControlsLoaded", () => {
             InputSystem._leftJoystick = new Joystick(
                 document.getElementById("joystick-base-left")!,
                 document.getElementById("joystick-stick-left")!

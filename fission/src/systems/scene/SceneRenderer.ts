@@ -8,10 +8,9 @@ import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSc
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
 import { type CameraControls, type CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import { type ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
+import { type ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import { type PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import { type PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
@@ -22,6 +21,7 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
+import EventSystem from "@/systems/EventSystem.ts";
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -84,7 +84,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     public set isPlacingAssembly(value: boolean) {
-        new TouchControlsEvent(TouchControlsEventKeys.PLACE_BUTTON, value)
+        EventSystem.dispatch("SetPlaceAssetButtonVisibleEvent", value)
         this._isPlacingAssembly = value
     }
 
@@ -242,7 +242,7 @@ class SceneRenderer extends WorldSystem {
         this._skybox.position.copy(this._mainCamera.position)
 
         // Update the tags each frame if they are enabled in preferences
-        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
+        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
 
         this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)
@@ -556,7 +556,7 @@ class SceneRenderer extends WorldSystem {
             })
         }
 
-        ContextSupplierEvent.dispatch(miraSupplierData, e.position)
+        EventSystem.dispatch("ContextSupplierEvent", {data:miraSupplierData, mousePosition:e.position})
     }
 }
 

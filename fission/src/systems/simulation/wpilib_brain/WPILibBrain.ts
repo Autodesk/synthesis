@@ -12,7 +12,8 @@ import { SimAnalogInput } from "./sim/SimAI"
 import { SimDigitalInput } from "./sim/SimDIO"
 import { SimGyroInput } from "./sim/SimGyro"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
-import { type DeviceData, SimMapUpdateEvent, SimType, type WSMessage, worker } from "./WPILibTypes"
+import { type DeviceData, SimType, type WSMessage, worker } from "./WPILibTypes"
+import EventSystem from "@/systems/EventSystem.ts";
 
 worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     let data: WSMessage | undefined
@@ -65,7 +66,7 @@ function updateSimMap(type: SimType, device: string, updateData: DeviceData) {
 
     Object.entries(updateData).forEach(([key, value]) => currentData.set(key, value))
 
-    window.dispatchEvent(new SimMapUpdateEvent(false))
+    EventSystem.dispatch("SimMapUpdateEvent", {internalUpdate:false})
 }
 
 class WPILibBrain extends Brain {

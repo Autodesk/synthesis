@@ -1,6 +1,5 @@
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
@@ -11,6 +10,7 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
+import EventSystem from "@/systems/EventSystem.ts";
 
 /** If a scheme is assigned to a robot, find the name of that robot */
 const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
@@ -44,11 +44,11 @@ const ConfigureInputsInterface: React.FC = () => {
     }, [])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
+        const unsubscribe = EventSystem.listen("ConfigurationSavedEvent", saveEvent)
 
         return () => {
             setSelectedScheme(undefined)
-            ConfigurationSavedEvent.removeListener(saveEvent)
+            unsubscribe()
         }
     }, [saveEvent])
 
@@ -67,7 +67,7 @@ const ConfigureInputsInterface: React.FC = () => {
                     onOptionSelected={val => {
                         setSelectedScheme((val as SchemeSelectionOption)?.scheme)
                         if (val == undefined) {
-                            new ConfigurationSavedEvent()
+                            EventSystem.dispatch("ConfigurationSavedEvent")
                         }
                     }}
                     defaultHeaderText={"Select an Input Scheme"}

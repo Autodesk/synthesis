@@ -1,7 +1,6 @@
 import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import type React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -31,6 +30,7 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import EventSystem from "@/systems/EventSystem.ts";
 
 interface ConfigInterfaceProps<T, P> {
     panel: UIScreen<T, P>
@@ -168,7 +168,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
-            new ConfigurationSavedEvent()
+            EventSystem.dispatch("ConfigurationSavedEvent")
         }
         const onCancel = () => {
             setPendingDeletes([])
@@ -290,7 +290,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     }
 
                     setSelectedAssembly(undefined)
-                    new ConfigurationSavedEvent()
+                    EventSystem.dispatch("ConfigurationSavedEvent")
                     setConfigMode(undefined)
                 }}
             >
@@ -307,7 +307,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         panel={panel!}
                         configurationType={configurationType}
                         onAssemblySelected={a => {
-                            if (configMode !== undefined) new ConfigurationSavedEvent()
+                            if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
                             setConfigMode(undefined)
                             setSelectedAssembly(a as MirabufSceneObject)
                         }}
@@ -323,7 +323,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             modes={modes}
                             configMode={configMode}
                             onModeSelected={mode => {
-                                if (configMode !== undefined) new ConfigurationSavedEvent()
+                                if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
                                 setConfigMode(mode)
                             }}
                         />

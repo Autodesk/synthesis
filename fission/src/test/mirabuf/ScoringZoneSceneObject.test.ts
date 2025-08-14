@@ -2,8 +2,9 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import ScoringZoneSceneObject, { OnScoreChangedEvent } from "../../mirabuf/ScoringZoneSceneObject"
+import ScoringZoneSceneObject from "../../mirabuf/ScoringZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import EventSystem from "@/systems/EventSystem.ts";
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -79,10 +80,12 @@ describe("ScoringZoneSceneObject", () => {
         Reflect.set(instance, "_prefs", { persistentPoints: false, alliance: "red", points: 10 })
         const gamePieceBody = {} as unknown as Jolt.BodyID
         mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, associatedBody: 0 }))
-        const dispatchSpy = vi.spyOn(OnScoreChangedEvent.prototype, "dispatch")
+        const dispatchSpy = vi.fn()
+        const unsubscribe = EventSystem.listen("ScoreChangedEvent", dispatchSpy)
         instance["zoneCollision"](gamePieceBody)
         expect(SimulationSystem.redScore).toBe(10)
         expect(dispatchSpy).toHaveBeenCalled()
+        unsubscribe()
     })
 
     test("Dispose destroys mesh and sensor", () => {

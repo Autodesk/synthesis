@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import type TaskStatus from "@/util/TaskStatus"
 import APS from "./APS"
+import EventSystem from "@/systems/EventSystem.ts";
 
 export const FOLDER_DATA_TYPE = "folders"
 export const ITEM_DATA_TYPE = "items"
@@ -296,18 +296,16 @@ export async function requestMirabufFiles() {
         return
     }
 
-    mirabufFilesMutex.runExclusive(async () => {
+    await mirabufFilesMutex.runExclusive(async () => {
         const auth = await APS.getAuth()
         if (auth) {
             getHubs().then(async hubs => {
                 if (!hubs) {
-                    window.dispatchEvent(
-                        new MirabufFilesStatusUpdateEvent({
-                            isDone: true,
-                            message: "Failed to get Hubs",
-                            progress: 1,
-                        })
-                    )
+                    EventSystem.dispatch("MirabufFilesStatusUpdateEvent", {
+                        isDone: true,
+                        message: "Failed to get Hubs",
+                        progress: 1,
+                    })
                     return
                 }
                 const fileData: Data[] = []
@@ -324,25 +322,22 @@ export async function requestMirabufFiles() {
 
                 if (!projects.length) return
                 for (const project of projects) {
-                    window.dispatchEvent(
-                        new MirabufFilesStatusUpdateEvent({
+                    EventSystem.dispatch("MirabufFilesStatusUpdateEvent",{
                             isDone: false,
                             message: `Searching Project '${project.name}'`,
                             progress: i++ / projects.length,
                         })
-                    )
                     const data = await searchRootForMira(project)
                     if (data) fileData.push(...data)
                 }
-                window.dispatchEvent(
-                    new MirabufFilesStatusUpdateEvent({
-                        isDone: true,
-                        message: `Found ${fileData.length} file${fileData.length == 1 ? "" : "s"}`,
-                        progress: 1,
-                    })
-                )
+                EventSystem.dispatch("MirabufFilesStatusUpdateEvent",{
+                    isDone: true,
+                    message: `Found ${fileData.length} file${fileData.length == 1 ? "" : "s"}`,
+                    progress: 1,
+                })
+
                 mirabufFiles = fileData
-                window.dispatchEvent(new MirabufFilesUpdateEvent(mirabufFiles))
+                EventSystem.dispatch("MirabufFilesUpdateEvent",mirabufFiles)
             })
         }
     })
@@ -352,26 +347,4 @@ export function getMirabufFiles(): Data[] | undefined {
     return mirabufFiles
 }
 
-export class MirabufFilesUpdateEvent extends Event {
-    public static readonly EVENT_KEY: string = "MirabufFilesUpdateEvent"
 
-    public data: Data[]
-
-    public constructor(data: Data[]) {
-        super(MirabufFilesUpdateEvent.EVENT_KEY)
-
-        this.data = data
-    }
-}
-
-export class MirabufFilesStatusUpdateEvent extends Event {
-    public static readonly EVENT_KEY: string = "MirabufFilesStatusUpdateEvent"
-
-    public status: TaskStatus
-
-    public constructor(status: TaskStatus) {
-        super(MirabufFilesStatusUpdateEvent.EVENT_KEY)
-
-        this.status = status
-    }
-}

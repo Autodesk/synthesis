@@ -1,3 +1,5 @@
+import EventSystem from "@/systems/EventSystem.ts";
+
 let nextHandleId = 0
 
 export enum ProgressHandleStatus {
@@ -46,30 +48,7 @@ export class ProgressHandle {
     }
 
     public push() {
-        ProgressEvent.dispatch(this)
+        EventSystem.dispatch("ProgressEvent", this)
     }
 }
 
-export class ProgressEvent extends Event {
-    public static readonly EVENT_KEY = "ProgressEvent"
-
-    public handle: ProgressHandle
-
-    private constructor(handle: ProgressHandle) {
-        super(ProgressEvent.EVENT_KEY)
-
-        this.handle = handle
-    }
-
-    public static dispatch(handle: ProgressHandle) {
-        window.dispatchEvent(new ProgressEvent(handle))
-    }
-
-    public static addListener(func: (e: ProgressEvent) => void) {
-        window.addEventListener(this.EVENT_KEY, func as (e: Event) => void)
-    }
-
-    public static removeListener(func: (e: ProgressEvent) => void) {
-        window.removeEventListener(this.EVENT_KEY, func as (e: Event) => void)
-    }
-}
