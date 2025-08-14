@@ -12,6 +12,9 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import World from "@/systems/World"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import { loadCommandClassifier } from "@/util/useLocalAi"
+
+const AI_FALLBACK_DEBOUNCE_TIME = 250
 
 type CommandDefinition = {
     id: string
@@ -38,10 +41,17 @@ const CommandPalette: React.FC = () => {
     const inputRef = useRef<HTMLInputElement | null>(null)
     const containerRef = useRef<HTMLDivElement | null>(null)
 
+    const [aiFallbackResults, setAiFallbackResults] = useState<CommandDefinition[]>([])
+    // Cache the classifier function and manage debounced re-classification on query changes
+    const aiClassifyRef = useRef<null | ((q: string) => Promise<unknown>)>(null)
+    const aiDebounceTimerRef = useRef<number | null>(null)
+    const lastAiQueryRef = useRef<string>("")
+
     const closePalette = useCallback(() => {
         setIsOpen(false)
         setQuery("")
         setActiveIndex(0)
+        setAiFallbackResults([])
     }, [])
 
     const openPalette = useCallback(() => {
@@ -140,7 +150,9 @@ const CommandPalette: React.FC = () => {
             .map(r => r.item)
     }, [commands, fuse, query])
 
-    const visible = useMemo(() => filtered.slice(0, 5), [filtered])
+    const visible = useMemo(() => {
+        return filtered.length > 0 ? filtered.slice(0, 5) : aiFallbackResults
+    }, [filtered, aiFallbackResults])
 
     const execute = useCallback(
         (index: number) => {
@@ -198,6 +210,94 @@ const CommandPalette: React.FC = () => {
         document.addEventListener("pointerdown", onPointerDown)
         return () => document.removeEventListener("pointerdown", onPointerDown)
     }, [isOpen, closePalette])
+
+    useEffect(() => {
+        const q = query.trim()
+        // Clear any pending debounce
+        if (aiDebounceTimerRef.current) {
+            clearTimeout(aiDebounceTimerRef.current)
+            aiDebounceTimerRef.current = null
+        }
+
+        // Reset on empty query
+        if (!q) {
+            setAiFallbackResults([])
+            lastAiQueryRef.current = ""
+            return
+        }
+
+        // If Fuse found results, prefer those and clear AI fallback
+        if (filtered.length > 0) {
+            setAiFallbackResults([])
+            lastAiQueryRef.current = ""
+            return
+        }
+
+        // Debounce AI fallback classification when no Fuse results
+        aiDebounceTimerRef.current = window.setTimeout(async () => {
+            try {
+                console.log("Running AI fallback")
+                // Load once and cache
+                if (!aiClassifyRef.current) {
+                    aiClassifyRef.current = await loadCommandClassifier(commands.map(c => c.label))
+                }
+                const classify = aiClassifyRef.current
+                if (!classify) return
+
+                const currentQuery = q
+                lastAiQueryRef.current = currentQuery
+                const result = (await classify(currentQuery)) as { labels?: string[]; scores?: number[] }
+                console.log("AI fallback result", result)
+
+                // Ignore stale results if query changed while awaiting
+                if (lastAiQueryRef.current !== currentQuery) return
+
+                if (!result || Array.isArray(result)) {
+                    setAiFallbackResults([])
+                    return
+                }
+                const labels = result.labels ?? []
+                const scores = result.scores ?? []
+                if (labels.length === 0) {
+                    setAiFallbackResults([])
+                    return
+                }
+                // Build candidates with scores (if present), filter by score >= 0.5, sort desc, take top 5
+                const candidates = labels.map((lab, i) => ({ label: lab, score: scores[i] }))
+                const eligible = candidates
+                    .filter(c => typeof c.score === "number" && (c.score as number) >= 0.3)
+                    .sort((a, b) => (b.score as number) - (a.score as number))
+                    .slice(0, 5)
+
+                if (eligible.length === 0) {
+                    const fallbackLabel = labels[0]
+                    if (!fallbackLabel) {
+                        setAiFallbackResults([])
+                        return
+                    }
+                    const fallbackCmd = commands.find(cmd => cmd.label === fallbackLabel)
+                    setAiFallbackResults(fallbackCmd ? [fallbackCmd] : [])
+                } else {
+                    const topMatches: CommandDefinition[] = []
+                    for (const c of eligible) {
+                        const cmd = commands.find(cmd => cmd.label === c.label)
+                        if (cmd) topMatches.push(cmd)
+                    }
+                    setAiFallbackResults(topMatches.reverse())
+                }
+            } catch (err) {
+                console.warn("AI fallback failed", err)
+                setAiFallbackResults([])
+            }
+        }, AI_FALLBACK_DEBOUNCE_TIME)
+
+        return () => {
+            if (aiDebounceTimerRef.current) {
+                clearTimeout(aiDebounceTimerRef.current)
+                aiDebounceTimerRef.current = null
+            }
+        }
+    }, [query, filtered, commands])
 
     const onInputKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLInputElement>) => {
