@@ -21,15 +21,17 @@ export interface MirabufRemoteInfo {
 }
 
 const localStorageEntryName = "MirabufAssets"
-const root = await navigator.storage.getDirectory()
-const fsHandle = await root.getDirectoryHandle(localStorageEntryName, {
-    create: true,
-})
+let root: FileSystemDirectoryHandle
+let fsHandle: FileSystemDirectoryHandle
 
 export const inMemoryCache: Record<string, ArrayBuffer | undefined> = {}
 
 export const canOPFS = await (async () => {
     try {
+        root = await navigator.storage.getDirectory()
+        fsHandle = await root.getDirectoryHandle(localStorageEntryName, {
+            create: true,
+        })
         if (fsHandle.name == localStorageEntryName) {
             const fileHandle = await fsHandle.getFileHandle("0", {
                 create: true,
@@ -47,11 +49,6 @@ export const canOPFS = await (async () => {
         }
     } catch (_e) {
         console.log(`No access to OPFS`)
-
-        // Copy-pasted from RemoveAll()
-        for await (const key of fsHandle.keys()) {
-            await fsHandle.removeEntry(key)
-        }
         return false
     }
 })()
@@ -477,6 +474,10 @@ class MirabufCachingService {
     }
 
     public static async hashBuffer(buffer: ArrayBuffer): Promise<string> {
+        if (crypto?.subtle?.digest == null) {
+            console.warn("Crypto not available, using timestamp as key")
+            return Date.now().toString(16)
+        }
         const hashBuffer = await crypto.subtle.digest("SHA-1", buffer)
         return Array.from(new Uint8Array(hashBuffer))
             .map(x => x.toString(16))
