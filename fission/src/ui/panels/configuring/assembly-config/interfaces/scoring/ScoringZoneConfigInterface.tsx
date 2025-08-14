@@ -257,12 +257,45 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     )
 
     const handleTemporaryModification = () => {
-        // For temporary modification, just save the changes to the current session
-        // without persisting to the field file cache
-        handleSave()
-        
-        // Save all zones to ensure the changes are persisted to preferences
-        saveAllZones()
+        if (gizmoRef.current && selectedField) {
+            save(
+                selectedField,
+                selectedZone,
+                name,
+                alliance,
+                points,
+                destroy,
+                persistent,
+                gizmoRef.current,
+                selectedNode
+            )
+            
+            const fieldZones = selectedField.fieldPreferences?.scoringZones
+            if (fieldZones) {
+                const zoneIndex = fieldZones.findIndex(z => 
+                    z === selectedZone || 
+                    (z.name === originalZoneRef.current.name &&
+                     z.alliance === originalZoneRef.current.alliance &&
+                     z.parentNode === originalZoneRef.current.parentNode &&
+                     JSON.stringify(z.deltaTransformation) === JSON.stringify(originalZoneRef.current.deltaTransformation))
+                )
+                
+                if (zoneIndex >= 0) {
+                    fieldZones[zoneIndex] = {
+                        name,
+                        alliance,
+                        parentNode: selectedNode,
+                        points,
+                        destroyGamepiece: destroy,
+                        persistentPoints: persistent,
+                        deltaTransformation: selectedZone.deltaTransformation
+                    }
+                }
+            }
+            
+            PreferencesSystem.savePreferences()
+            selectedField.updateScoringZones()
+        }
         
         setConfirmationModal({ isOpen: false, pendingSave: false })
         if (panel) closePanel(panel.id, CloseType.Accept)
