@@ -1,4 +1,5 @@
-import { Button, Grid, Stack } from "@mui/material"
+import { Grid, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import {
     type Connection,
     type FinalConnectionState,

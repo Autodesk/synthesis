@@ -1,4 +1,5 @@
-import { Box, Button, Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"

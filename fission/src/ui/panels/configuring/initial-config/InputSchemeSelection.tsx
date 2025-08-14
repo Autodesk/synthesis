@@ -1,4 +1,5 @@
-import { Box, Button, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
+import { Box, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"

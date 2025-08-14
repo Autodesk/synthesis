@@ -1,5 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Button, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { TextField } from "@mui/material"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { Stack, styled } from "@mui/system"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -8,7 +9,7 @@ import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
 import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -248,7 +249,6 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     value={countdown}
                     exclusive
                     onChange={(_, v) => setCountdown(v)}
-                    {...SoundPlayer.buttonSoundEffects()}
                     className="self-center"
                 >
                     <ToggleButton value={5}>5</ToggleButton>
@@ -265,13 +265,7 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                 <Label size="md" textAlign="center">
                     Alliance Station
                 </Label>
-                <ToggleButtonGroup
-                    value={station}
-                    exclusive
-                    onChange={(_, v) => setStation(v)}
-                    {...SoundPlayer.buttonSoundEffects()}
-                    className="self-center"
-                >
+                <ToggleButtonGroup value={station} exclusive onChange={(_, v) => setStation(v)} className="self-center">
                     <RedAllianceToggleButton value="red1">1</RedAllianceToggleButton>
                     <RedAllianceToggleButton value="red2">2</RedAllianceToggleButton>
                     <RedAllianceToggleButton value="red3">3</RedAllianceToggleButton>
