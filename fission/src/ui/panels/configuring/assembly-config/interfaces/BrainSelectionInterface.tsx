@@ -1,10 +1,9 @@
-import { ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { BrainType } from "@/systems/simulation/Brain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 type BrainSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
@@ -32,7 +31,6 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
                 }
                 setRobotBrainType(brainType)
             }}
-            {...SoundPlayer.buttonSoundEffects()}
             sx={{
                 alignSelf: "center",
             }}

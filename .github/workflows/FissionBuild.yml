@@ -35,3 +35,8 @@ jobs:
         run: |
           cd fission
           bun run build && echo "Build Passed" || (echo "Build Failed" && exit 1)
+
+      - name: Build Electron Version of Fission
+        run: |
+          cd fission
+          bun run electron:make && echo "Build Passed" || (echo "Build Failed" && exit 1)

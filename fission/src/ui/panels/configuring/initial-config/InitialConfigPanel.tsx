@@ -1,4 +1,5 @@
-import { Box, Button, Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
@@ -151,6 +152,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     onSelect={() => {}}
                     onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
                     onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
+                    panelId={panel?.id}
                 />
             )}
         </Stack>

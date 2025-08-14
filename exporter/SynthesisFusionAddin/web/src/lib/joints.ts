@@ -28,7 +28,7 @@ export const signalInfo: Record<SignalType, { bg: string; outline: string; fg: s
 
 export function createJoint(fusionJoint: FusionJoint): Joint {
     return {
-        entityToken: fusionJoint.entityToken,
+        jointToken: fusionJoint.entityToken,
         name: fusionJoint.name,
         type: fusionJoint.jointType,
         parent: JointParentType.ROOT,
