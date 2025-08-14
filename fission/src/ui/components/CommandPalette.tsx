@@ -203,10 +203,18 @@ const CommandPalette: React.FC = () => {
         (e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === "ArrowDown") {
                 e.preventDefault()
-                setActiveIndex(i => Math.min(i + 1, Math.max(visible.length - 1, 0)))
+                setActiveIndex(i => {
+                    const count = visible.length
+                    if (count <= 0) return 0
+                    return (i + 1 + count) % count
+                })
             } else if (e.key === "ArrowUp") {
                 e.preventDefault()
-                setActiveIndex(i => Math.max(i - 1, 0))
+                setActiveIndex(i => {
+                    const count = visible.length
+                    if (count <= 0) return 0
+                    return (i - 1 + count) % count
+                })
             } else if (e.key === "Enter") {
                 e.preventDefault()
                 execute(activeIndex)
