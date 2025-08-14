@@ -353,9 +353,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             new THREE.Vector3(0, 1, 0),
             initialPos.yaw
         )
+        // For fields, adjust Y position to snap the lowest point to the ground
+        let adjustedYPos = initialPos.pos[1]
+        if (this.miraType === MiraType.FIELD) {
+            const fieldBottomOffset = bounds.min.y
+            adjustedYPos = -fieldBottomOffset
+        }
         const initialTranslation = new JOLT.Vec3(
             initialPos.pos[0] - rotatedBasePositionTransform.x + referencePosition.x,
-            initialPos.pos[1] - rotatedBasePositionTransform.y + referencePosition.y,
+            adjustedYPos - rotatedBasePositionTransform.y + referencePosition.y,
             initialPos.pos[2] - rotatedBasePositionTransform.z + referencePosition.z
         )
         const initialRotation = JOLT.Quat.prototype.sRotation(new JOLT.Vec3(0, 1, 0), initialPos.yaw)
