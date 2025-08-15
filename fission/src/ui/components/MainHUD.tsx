@@ -168,14 +168,14 @@ const MainHUD: React.FC = () => {
                 initial="closed"
                 animate={isOpen ? "open" : "closed"}
                 variants={variants}
-                className="fixed flex flex-col gap-2 w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
+                className="fixed flex flex-col gap-2 w-min p-4 rounded-3xl ml-4 top-1/2"
                 bgcolor="background.default"
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img
                         alt="Autodesk"
                         src={logo}
-                        className="w-[80%] h-[100%] object-contain"
+                        className="w-[80%] h-full object-contain"
                         style={{
                             userSelect: "none",
                             MozUserSelect: "none",

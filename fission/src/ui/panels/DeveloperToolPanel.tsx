@@ -215,7 +215,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             {editor && (
                 <Stack gap={6} className="md:flex-row items-start">
                     {/* Key List */}
-                    <Stack gap={2} className="min-w-[220px] bg-gray-700 dark:bg-gray-800 rounded-lg p-3 shadow-sm">
+                    <Stack gap={2} className="min-w-[220px] bg-gray-700 dark:bg-gray-800 rounded-lg p-3 shadow-xs">
                         <div className="font-bold text-base mb-1 text-gray-100">Devtool Data Keys</div>
                         <ul className="list-none p-0 m-0 flex-1">
                             {keys.length === 0 && <li className="text-gray-400 italic">No devtool data</li>}
@@ -257,7 +257,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                         </div>
                     </Stack>
                     {/* Editor */}
-                    <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-sm text-gray-100">
+                    <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-xs text-gray-100">
                         {selectedKey ? (
                             <>
                                 {/* strip off the prefix here */}
@@ -277,7 +277,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                             text-gray-100
                             rounded p-2
                             resize-vertical
-                            focus:outline-none focus:ring-2 focus:ring-blue-500
+                            focus:outline-hidden focus:ring-2 focus:ring-blue-500
                         `}
                                     value={jsonValue}
                                     onChange={e => setJsonValue(e.target.value)}
