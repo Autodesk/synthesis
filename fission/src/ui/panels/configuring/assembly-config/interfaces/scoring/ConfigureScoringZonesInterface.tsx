@@ -1,17 +1,14 @@
 import { Box, Divider, Stack } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
 import ScoringZoneConfigInterface from "./ScoringZoneConfigInterface"
 
-const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+const saveScoringZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
 
     const fieldPrefs = field.fieldPreferences
@@ -41,16 +38,6 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                 <>
                     <Stack textAlign={"center"} minHeight={"30px"} key="selected-item">
                         <Box width={`60px`} />
-
-                        {/** Back arrow button when an option is selected */}
-                        <Button
-                            startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
-                            onClick={() => {
-                                new ConfigurationSavedEvent()
-                                setSelectedZone(undefined)
-                            }}
-                        />
-
                         {/** Label with either the header text, or the name of the selected option if an option is selected */}
                         <Stack alignSelf={"center"}>
                             <Box width="8px" />
@@ -64,7 +51,7 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                         selectedField={selectedField}
                         selectedZone={selectedZone}
                         saveAllZones={() => {
-                            saveZones(selectedField.fieldPreferences?.scoringZones, selectedField)
+                            saveScoringZones(selectedField.fieldPreferences?.scoringZones, selectedField)
                         }}
                     />
                 </>
