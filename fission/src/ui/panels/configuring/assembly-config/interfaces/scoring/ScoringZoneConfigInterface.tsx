@@ -28,8 +28,6 @@ import ZoneConfigBase from "../zones/ZoneConfigBase"
  * @param points Number of points the zone is worth.
  * @param destroy Destroy gamepiece setting.
  * @param persistent Persistent points setting.
- * @param gizmo Reference to the transform gizmo object.
- * @param selectedNode Selected node that configuration is relative to.
  */
 function attachAndPersistZone(zone: ScoringZonePreferences, field: MirabufSceneObject) {
     if (!field?.fieldPreferences) return

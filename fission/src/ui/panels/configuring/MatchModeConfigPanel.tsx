@@ -1,10 +1,13 @@
-import { Box, Button, Divider } from "@mui/material"
+import { Box, Divider } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import { Stack } from "@mui/system"
 import type React from "react"
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import MatchMode from "@/systems/match_mode/MatchMode"
-
+import World from "@/systems/World.ts"
+import Checkbox from "@/ui/components/Checkbox"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -82,21 +85,6 @@ const props: Readonly<{ id: keyof MatchModeConfig; expectedType: string; require
     { id: "sideExtensionPenalty", expectedType: "number", required: false },
 ]
 
-function matchConfigSelected(config: MatchModeConfig) {
-    if (MatchMode.getInstance().isMatchEnabled()) {
-        globalAddToast(
-            "error",
-            "Match Mode Already Running",
-            "You can't modify the match mode ruleset while a match is running"
-        )
-        return
-    }
-
-    MatchMode.getInstance().setMatchModeConfig(config)
-
-    MatchMode.getInstance().start()
-}
-
 interface ItemCardProps {
     id: string
     name: string
@@ -130,10 +118,12 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     const { closePanel, openModal, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
+    const [useSpawnPositions, setUseSpawnPositions] = useState(false)
+    const [spawnPositionsConfigured, setSpawnPositionsConfigured] = useState(false)
 
     useEffect(() => {
         configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         const loadConfigs = () => {
@@ -154,6 +144,13 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         loadConfigs()
     }, [])
 
+    useEffect(() => {
+        setSpawnPositionsConfigured(
+            World?.sceneRenderer?.mirabufSceneObjects?.getField()?.fieldPreferences?.spawnLocations
+                ?.hasConfiguredLocations === true
+        )
+    })
+
     const matchModeConfigElements = useMemo(
         () =>
             matchModeConfigs.map(config => {
@@ -163,7 +160,22 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
                         primaryOnClick={() => {
-                            matchConfigSelected(config)
+                            if (MatchMode.getInstance().isMatchEnabled()) {
+                                globalAddToast(
+                                    "error",
+                                    "Match Mode Already Running",
+                                    "You can't modify the match mode ruleset while a match is running"
+                                )
+                                return
+                            }
+                            if (useSpawnPositions) {
+                                World.sceneRenderer.sceneObjects.forEach(
+                                    obj => obj instanceof MirabufSceneObject && obj.moveToSpawnLocation()
+                                )
+                            }
+                            MatchMode.getInstance().setMatchModeConfig(config)
+
+                            MatchMode.getInstance().start()
                             closePanel(panel!.id, CloseType.Accept)
                         }}
                         secondaryOnClick={
@@ -186,7 +198,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                     />
                 )
             }),
-        [matchModeConfigs, openModal, closePanel]
+        [matchModeConfigs, openModal, closePanel, useSpawnPositions]
     )
 
     const fileUploadRef = useRef<HTMLInputElement>(null)
@@ -302,7 +314,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         // Reset the input value so the same file can be selected again
         e.target.value = ""
     }
-
     return (
         <>
             <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
@@ -311,6 +322,19 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             </Label>
             <Divider />
             {matchModeConfigElements}
+            <Divider />
+            <Checkbox
+                disabled={!spawnPositionsConfigured}
+                tooltip={
+                    spawnPositionsConfigured
+                        ? "Should robots move to starting positions based on their alliance station"
+                        : "Spawn positions are not configured for this field"
+                }
+                checked={useSpawnPositions}
+                label={"Move Robots to Starting Positions"}
+                onClick={v => setUseSpawnPositions(v)}
+            />
+            <Divider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
             <Box alignSelf={"center"}>

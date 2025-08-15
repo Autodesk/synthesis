@@ -1,5 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Button, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
+import { Button } from "./StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import World from "@/systems/World"
