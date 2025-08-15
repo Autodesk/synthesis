@@ -4,6 +4,7 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import World from "@/systems/World"
+import InputSystem from "@/systems/input/InputSystem"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import SettingsModal from "@/ui/modals/configuring/SettingsModal"
@@ -42,10 +43,12 @@ const CommandPalette: React.FC = () => {
         setIsOpen(false)
         setQuery("")
         setActiveIndex(0)
+        InputSystem.setCommandPaletteOpen(false)
     }, [])
 
     const openPalette = useCallback(() => {
         setIsOpen(true)
+        InputSystem.setCommandPaletteOpen(true)
         setTimeout(() => inputRef.current?.focus(), 0)
     }, [])
 
