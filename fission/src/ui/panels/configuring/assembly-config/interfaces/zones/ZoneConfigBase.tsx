@@ -20,7 +20,6 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 
-
 /**
  * Saves zone configuration to selected field.
  *
