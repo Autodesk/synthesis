@@ -1,0 +1,37 @@
+{
+  "panels": [
+    { "id": "spawn-asset", "label": "Spawn Asset" },
+    { "id": "configure-assets", "label": "Configure Assets" },
+    { "id": "match-mode-config", "label": "Match Mode Config" },
+    { "id": "driver-station", "label": "Driver Station" },
+    { "id": "wiring-panel", "label": "Wiring Panel" },
+    { "id": "auto-testing", "label": "Auto Testing" },
+    { "id": "developer-tool", "label": "Developer Tool" },
+    { "id": "debug-tools", "label": "Debug Tools" },
+    { "id": "education-chat", "label": "Education Chat" },
+    { "id": "choose-input-scheme", "label": "Choose Input Scheme" },
+    { "id": "choose-camera", "label": "Choose a Camera" },
+    { "id": "assembly-setup", "label": "Assembly Setup" },
+    { "id": "ws-view", "label": "WS View Panel" },
+    { "id": "robot-switch", "label": "MultiBot" }
+  ],
+  "menu_paths": [
+    { "label": "Spawn Asset", "path": ["HUD", "Spawn Asset"] },
+    { "label": "Configure Assets", "path": ["HUD", "Configure Assets"] },
+    { "label": "Match Mode Config", "path": ["HUD", "Start Match Mode"] },
+    { "label": "Education Chat", "path": ["HUD", "Education Chat"] },
+    { "label": "Developer Tool", "path": ["HUD", "Developer Tool"] },
+    { "label": "Debug Tools", "path": ["HUD", "Debug Tools"] }
+  ],
+  "selectors": [
+    { "id": "toggle-robots", "panelId": "spawn-asset", "label": "Robots Toggle" },
+    { "id": "toggle-fields", "panelId": "spawn-asset", "label": "Fields Toggle" },
+    { "id": "import-from-file", "panelId": "spawn-asset", "label": "Import from File" },
+    { "id": "download-all", "panelId": "spawn-asset", "label": "Download All" }
+  ],
+  "hotkeys": [],
+  "macros": [
+    { "name": "resetTransforms", "argsSchema": { "scope": "string" } }
+  ]
+}
+
