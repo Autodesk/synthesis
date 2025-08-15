@@ -1,0 +1,17 @@
+{
+  "name": "robot",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "peer": "^1.0.2",
+    "peerjs": "^1.5.5"
+  }
+}
