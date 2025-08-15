@@ -160,6 +160,13 @@ class MirabufInstance {
      * Creates ThreeJS meshes from the parsed mirabuf file.
      */
     private createMeshes() {
+        this.createBatchedMeshes()
+    }
+
+    /**
+     * Creates BatchedMesh, more efficient, but broken in newer versions of Chrome
+     */
+    private createBatchedMeshes() {
         const assembly = this._mirabufParser.assembly
         const instances = assembly.data!.parts!.partInstances!
 
