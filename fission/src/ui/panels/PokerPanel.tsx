@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
+import { Stack } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
+import type * as THREE from "three"
 import World from "@/systems/World"
-import { JoltVec3_JoltRVec3, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
-import Checkbox from "@/ui/components/Checkbox"
-import Slider from "@/ui/components/Slider"
-import { SynthesisIcons } from "../components/StyledComponents"
-import * as THREE from "three"
+import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
+import Checkbox from "../components/Checkbox"
+import type { PanelImplProps } from "../components/Panel"
+import StatefulSlider from "../components/StatefulSlider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const RAY_MAX_LENGTH = 20.0
 
@@ -29,35 +31,38 @@ function affect(
     markRadius: number,
     markers: THREE.Mesh[]
 ) {
-    const origin = World.SceneRenderer.mainCamera.position
+    const origin = World.sceneRenderer.mainCamera.position
 
-    const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
+    const worldSpace = World.sceneRenderer.pixelToWorldSpace(e.clientX, e.clientY)
     const dir = worldSpace.sub(origin).normalize().multiplyScalar(RAY_MAX_LENGTH)
 
-    const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
+    const res = World.physicsSystem.rayCast(convertThreeVector3ToJoltVec3(origin), convertThreeVector3ToJoltVec3(dir))
 
     if (res) {
         if (mark) {
-            const ballMesh = World.SceneRenderer.CreateSphere(
+            const ballMesh = World.sceneRenderer.createSphere(
                 markRadius,
-                World.SceneRenderer.CreateToonMaterial(0xd6564d)
+                World.sceneRenderer.createToonMaterial(0xd6564d)
             )
-            World.SceneRenderer.scene.add(ballMesh)
+            World.sceneRenderer.scene.add(ballMesh)
             const hitPoint = res.point
             ballMesh.position.set(hitPoint.GetX(), hitPoint.GetY(), hitPoint.GetZ())
             markers.push(ballMesh)
         }
 
         if (punch) {
-            World.PhysicsSystem.GetBody(res.data.mBodyID).AddImpulse(
-                ThreeVector3_JoltVec3(dir.normalize().multiplyScalar(punchForce)),
-                JoltVec3_JoltRVec3(res.point)
-            )
+            World.physicsSystem
+                .getBody(res.data.mBodyID)
+                .AddImpulse(
+                    convertThreeVector3ToJoltVec3(dir.normalize().multiplyScalar(punchForce)),
+                    convertJoltVec3ToJoltRVec3(res.point)
+                )
         }
     }
 }
 
-const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const PokerPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [punch, setPunch] = useState(PUNCH_DEFAULT)
     const [punchForce, setPunchForce] = useState(PUNCH_FORCE_DEFAULT)
     const [mark, setMark] = useState(MARK_DEFAULT)
@@ -70,49 +75,48 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             affect(e, punch, mark, punchForce, markRadius, markers)
         }
 
-        World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
+        console.log(punch, mark)
+
+        World.sceneRenderer.renderer.domElement.addEventListener("click", onClick)
 
         return () => {
-            World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
+            World.sceneRenderer.renderer.domElement.removeEventListener("click", onClick)
         }
     }, [mark, markRadius, punch, punchForce, markers])
 
     useEffect(() => {
         return () => {
-            markers.forEach(x => {
-                x.geometry.dispose()
-                World.SceneRenderer.scene.remove(x)
-            })
+            for (const marker of markers) {
+                marker.geometry.dispose()
+                World.sceneRenderer.scene.remove(marker)
+            }
         }
     }, [markers])
 
+    useEffect(() => {
+        configureScreen(panel!, { title: "The Poker", hideAccept: true, cancelText: "Close" }, {})
+    }, [])
+
     return (
-        <Panel
-            openLocation="bottom-right"
-            name={"The Poker"}
-            icon={SynthesisIcons.OutlineDoubleRight}
-            panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Close"
-        >
-            <Checkbox label="Punch?" defaultState={PUNCH_DEFAULT} onClick={x => setPunch(x)} />
-            <Slider
+        <Stack>
+            <Checkbox label="Punch?" checked={punch} onClick={setPunch} />
+            <StatefulSlider
                 label="Punch Force"
                 min={PUNCH_FORCE_MIN}
                 max={PUNCH_FORCE_MAX}
-                value={punchForce}
-                onChange={(_, x) => setPunchForce(x as number)}
+                defaultValue={punchForce}
+                onChange={x => setPunchForce(x as number)}
             />
-            <Checkbox label="Mark?" defaultState={MARK_DEFAULT} onClick={x => setMark(x)} />
-            <Slider
+            <Checkbox label="Mark?" checked={mark} onClick={setMark} />
+            <StatefulSlider
                 label="Mark Radius"
                 min={MARK_RADIUS_MIN}
                 max={MARK_RADIUS_MAX}
                 step={MARK_RADIUS_SLIDER_STEP}
-                value={markRadius}
-                onChange={(_, x) => setMarkRadius(x as number)}
+                defaultValue={markRadius}
+                onChange={x => setMarkRadius(x as number)}
             />
-        </Panel>
+        </Stack>
     )
 }
 

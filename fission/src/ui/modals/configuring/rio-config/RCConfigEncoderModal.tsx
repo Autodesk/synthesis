@@ -1,34 +1,35 @@
-import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import Label, { LabelSize } from "@/components/Label"
-import Input from "@/components/Input"
-import Dropdown from "@/components/Dropdown"
-import WPILibBrain, { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import World from "@/systems/World"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
+import type React from "react"
+import { useEffect, useState } from "react"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
-import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/sim/SimCANEncoder"
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibState"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
+import World from "@/systems/World"
+import Label from "@/ui/components/Label"
+import type { ModalImplProps } from "@/ui/components/Modal"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import RoboRIOModal from "../RoboRIOModal"
 
-const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext()
+const RCConfigEncoderModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { openModal, configureScreen } = useUIContext()
     const [_name, setName] = useState<string>("")
 
     let stimuli: EncoderStimulus[] = []
     let simLayer
-    let brain: WPILibBrain
+    let brain: WPILibBrain | undefined
 
-    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-    if (miraObjs.length > 0) {
+    const miraObj = World.sceneRenderer.mirabufSceneObjects.getRobots()[0]
+    if (miraObj != null) {
         // TODO: make the object selectable
-        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-        simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        const mechanism = miraObj.mechanism
+        simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         stimuli = simLayer?.stimuli.filter(s => s instanceof EncoderStimulus) ?? []
         brain = simLayer?.brain as WPILibBrain
     }
 
-    const devices: [string, unknown][] = [...(getSimMap()?.get(SimType.CANEncoder)?.entries() ?? [])] // ugly
+    const devices: [string, unknown][] = [...(getSimMap()?.get(SimType.CAN_ENCODER)?.entries() ?? [])] // ugly
 
     const stimMap = new Map<string, EncoderStimulus>()
 
@@ -40,29 +41,49 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedDevice, setSelectedDevice] = useState<string>(devices[0] && devices[0][0])
     const [selectedStimulus, setSelectedStimulus] = useState<EncoderStimulus | undefined>(stimuli[0])
 
+    useEffect(() => {
+        const onBeforeAccept = () => {
+            if (selectedDevice && selectedStimulus && brain)
+                brain.addSimInput(new SimEncoderInput(selectedDevice, selectedStimulus))
+        }
+        const onCancel = () => openModal(RoboRIOModal, undefined, modal)
+
+        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
+    }, [brain, selectedDevice, selectedStimulus, openModal, modal])
+
     return (
-        <Modal
-            name="Create Device"
-            icon={SynthesisIcons.Add}
-            modalId={modalId}
-            acceptName="Done"
-            onAccept={() => {
-                if (selectedDevice && selectedStimulus)
-                    brain.addSimInput(new SimEncoderInput(selectedDevice, selectedStimulus))
-            }}
-            onCancel={() => {
-                openModal("roborio")
-            }}
-        >
-            <Label size={LabelSize.Small}>Name</Label>
-            <Input placeholder="..." className="w-full" onInput={setName} />
-            <Dropdown label="CAN Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
-            <Dropdown
-                label="Stimuli"
-                options={[...stimMap.keys()]}
-                onSelect={s => setSelectedStimulus(stimMap.get(s))}
-            />
-        </Modal>
+        <>
+            <Label size="sm">Name</Label>
+            <TextField placeholder="..." className="w-full" onChange={e => setName(e.target.value)} />
+            <FormControl fullWidth>
+                <InputLabel id="can-encoders-label">CAN Encoders</InputLabel>
+                <Select
+                    labelId="can-encoders-label"
+                    label="CAN Encoders"
+                    onChange={e => setSelectedDevice(e.target.value as string)}
+                >
+                    {devices.map(d => (
+                        <MenuItem key={`encoder-type-${d[0]}`} value={d[0]}>
+                            {d[0]}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <FormControl fullWidth>
+                <InputLabel id="stimuli-label">Stimuli</InputLabel>
+                <Select
+                    labelId="stimuli-label"
+                    label="Stimuli"
+                    onChange={e => setSelectedStimulus(stimMap.get(e.target.value as string))}
+                >
+                    {[...stimMap.keys()].map(s => (
+                        <MenuItem key={`stim-type-${s}`} value={s}>
+                            {s}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </>
     )
 }
 

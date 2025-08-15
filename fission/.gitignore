@@ -29,4 +29,5 @@ dist-ssr
 
 yarn.lock
 
-__screenshots__
+test-results
+src/test/**/__screenshots__

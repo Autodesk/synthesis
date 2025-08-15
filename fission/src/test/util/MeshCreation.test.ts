@@ -1,8 +1,8 @@
-import { test, describe, expect } from "vitest"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { createMeshForShape, DeltaFieldTransforms_PhysicalProp } from "@/util/threejs/MeshCreation"
-import { Vector3 } from "three"
 import * as THREE from "three"
+import { Vector3 } from "three"
+import { describe, expect, test } from "vitest"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { createMeshForShape, deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 
 describe("Mesh Creation Tests", () => {
     test("Sphere Mesh Creation", () => {
@@ -31,7 +31,7 @@ describe("Mesh Creation Tests", () => {
 describe("Delta Field Transform Physical Properties Tests", () => {
     test("Returns Identity Transform When Both Matrices Are Identity", () => {
         const identity = new THREE.Matrix4()
-        const result = DeltaFieldTransforms_PhysicalProp(identity, identity)
+        const result = deltaFieldTransformsPhysicalProp(identity, identity)
 
         expect(result.translation).toEqual(new THREE.Vector3(0, 0, 0))
         expect(result.rotation).toEqual(new THREE.Quaternion(0, 0, 0, 1))
@@ -41,7 +41,7 @@ describe("Delta Field Transform Physical Properties Tests", () => {
     test("Applies Translation From Delta Only", () => {
         const delta = new THREE.Matrix4().makeTranslation(5, 0, 0)
         const field = new THREE.Matrix4()
-        const result = DeltaFieldTransforms_PhysicalProp(delta, field)
+        const result = deltaFieldTransformsPhysicalProp(delta, field)
 
         expect(result.translation).toEqual(new THREE.Vector3(5, 0, 0))
         expect(result.rotation.equals(new THREE.Quaternion(0, 0, 0, 1))).toBe(true)
@@ -51,7 +51,7 @@ describe("Delta Field Transform Physical Properties Tests", () => {
     test("Composes Rotation And Scale With Premultiply", () => {
         const delta = new THREE.Matrix4().makeRotationZ(Math.PI / 2)
         const field = new THREE.Matrix4().makeScale(2, 2, 2)
-        const result = DeltaFieldTransforms_PhysicalProp(delta, field)
+        const result = deltaFieldTransformsPhysicalProp(delta, field)
 
         expect(result.scale.x).toBeCloseTo(2)
         expect(result.scale.y).toBeCloseTo(2)
@@ -65,7 +65,7 @@ describe("Delta Field Transform Physical Properties Tests", () => {
         const delta = new THREE.Matrix4().makeTranslation(1, 2, 3)
         const field = new THREE.Matrix4().makeScale(2, 2, 2)
 
-        const result = DeltaFieldTransforms_PhysicalProp(delta, field)
+        const result = deltaFieldTransformsPhysicalProp(delta, field)
 
         expect(result.translation).toEqual(new THREE.Vector3(2, 4, 6))
         expect(result.scale).toEqual(new THREE.Vector3(2, 2, 2))

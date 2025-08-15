@@ -1,9 +1,10 @@
+import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
-import Label, { LabelSize } from "./Label"
 import { FaHandPaper } from "react-icons/fa"
-import { Global_AddToast } from "./GlobalUIControls"
+import { globalAddToast } from "./GlobalUIControls"
+import Label from "./Label"
 
-export default function DragModeIndicator() {
+const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
 
     useEffect(() => {
@@ -20,18 +21,24 @@ export default function DragModeIndicator() {
 
     const handleClick = () => {
         window.dispatchEvent(new CustomEvent("disableDragMode"))
-        Global_AddToast?.("info", "Drag Mode", "Drag mode has been disabled")
+        globalAddToast("info", "Drag Mode", "Drag mode has been disabled")
     }
 
     return enabled ? (
-        <div
-            className="select-none absolute left-1 bottom-1 py-2 px-4 rounded-lg bg-gradient-to-r from-interactive-element-left to-interactive-element-right flex flex-row gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+        <Stack
+            className="select-none absolute left-1 bottom-1 py-2 px-4 rounded-lg gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            direction="row"
             onClick={handleClick}
+            sx={{
+                bgcolor: "background.default",
+            }}
         >
-            <FaHandPaper className="text-main-text self-center" />
-            <Label size={LabelSize.Small}>Drag Mode</Label>
-        </div>
+            <FaHandPaper className="self-center" />
+            <Label size="sm">Drag Mode</Label>
+        </Stack>
     ) : (
         <></>
     )
 }
+
+export default DragModeIndicator

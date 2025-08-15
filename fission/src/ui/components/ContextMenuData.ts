@@ -1,8 +1,13 @@
 // DATA
 
+import type { FunctionComponent } from "react"
+
 export interface ContextItem {
     name: string
-    func: () => void
+    customProps?: Record<string, unknown>
+    screen?: FunctionComponent
+    type?: "panel" | "modal"
+    func?: () => void
 }
 
 export interface ContextData {
@@ -17,7 +22,7 @@ export interface ContextSupplier {
 // EVENTS
 
 export class ContextSupplierEvent extends Event {
-    private static KEY: string = "ContextSupplierEvent"
+    private static readonly KEY: string = "ContextSupplierEvent"
 
     private _data: ContextData
     private _mousePosition: [number, number]
@@ -38,13 +43,13 @@ export class ContextSupplierEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static Dispatch(data: ContextData, mousePosition: [number, number]) {
+    public static dispatch(data: ContextData, mousePosition: [number, number]) {
         new ContextSupplierEvent(data, mousePosition)
     }
-    public static Listen(func: (e: ContextSupplierEvent) => void) {
+    public static listen(func: (e: ContextSupplierEvent) => void) {
         window.addEventListener(ContextSupplierEvent.KEY, func as (e: Event) => void)
     }
-    public static RemoveListener(func: (e: ContextSupplierEvent) => void) {
+    public static removeListener(func: (e: ContextSupplierEvent) => void) {
         window.removeEventListener(ContextSupplierEvent.KEY, func as (e: Event) => void)
     }
 }

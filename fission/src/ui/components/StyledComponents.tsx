@@ -1,74 +1,82 @@
-import { Box, Divider, styled, IconButton, Tooltip } from "@mui/material"
-import Label, { LabelSize } from "./Label"
-import Button, { ButtonProps, ButtonSize } from "./Button"
-import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
-import { HiDownload } from "react-icons/hi"
-import { AiOutlineInfoCircle } from "react-icons/ai"
-import { BiRefresh } from "react-icons/bi"
-import { AiFillWarning } from "react-icons/ai"
-import { BsCodeSquare } from "react-icons/bs"
-import { GiSteeringWheel } from "react-icons/gi"
-import { AiOutlineDoubleRight } from "react-icons/ai"
-import { GrConnect } from "react-icons/gr"
 import InfoIcon from "@mui/icons-material/Info"
-
 import {
+    Box,
+    Button as MuiButton,
+    type ButtonProps,
+    IconButton as MuiIconButton,
+    type IconButtonProps,
+    Stack,
+    Tooltip,
+    ToggleButton as MuiToggleButton,
+    type ToggleButtonProps,
+    ToggleButtonGroup as MuiToggleButtonGroup,
+    type ToggleButtonGroupProps,
+} from "@mui/material"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
+import { BiRefresh } from "react-icons/bi"
+import { BsCodeSquare } from "react-icons/bs"
+import {
+    FaAngleRight,
+    FaArrowLeft,
+    FaBasketball,
+    FaBug,
+    FaCar,
+    FaChessBoard,
+    FaFileImport,
+    FaGamepad,
     FaGear,
     FaMagnifyingGlass,
-    FaPlus,
-    FaGamepad,
-    FaBasketball,
-    FaFileImport,
-    FaWrench,
-    FaScrewdriverWrench,
-    FaQuestion,
-    FaXmark,
-    FaChessBoard,
-    FaCar,
-    FaArrowLeft,
     FaMinus,
-    FaBug,
-    FaAngleRight,
+    FaPlus,
+    FaQuestion,
+    FaScrewdriverWrench,
+    FaWrench,
+    FaXmark,
 } from "react-icons/fa6"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
+import { GiSteeringWheel } from "react-icons/gi"
+import { GrConnect } from "react-icons/gr"
+import { HiDownload } from "react-icons/hi"
+import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
+import Label from "./Label"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
-    public static Basketball = (<FaBasketball />)
-    public static Gamepad = (<FaGamepad />)
-    public static Gear = (<FaGear />)
-    public static MagnifyingGlass = (<FaMagnifyingGlass />)
-    public static Add = (<FaPlus />)
-    public static Minus = (<FaMinus />)
-    public static Import = (<FaFileImport />)
-    public static Wrench = (<FaWrench />)
-    public static ScrewdriverWrench = (<FaScrewdriverWrench />)
-    public static Question = (<FaQuestion />)
-    public static Xmark = (<FaXmark />)
-    public static People = (<IoPeople />)
-    public static ChessBoard = (<FaChessBoard />)
-    public static FillWarning = (<AiFillWarning />)
-    public static Car = (<FaCar />)
-    public static CodeSquare = (<BsCodeSquare />)
-    public static SteeringWheel = (<GiSteeringWheel />)
-    public static OutlineDoubleRight = (<AiOutlineDoubleRight />)
-    public static Connect = (<GrConnect />)
-    public static Info = (<AiOutlineInfoCircle />)
-    public static Bug = (<FaBug />)
+    public static readonly BASKET_BALL = <FaBasketball />
+    public static readonly GAMEPAD = <FaGamepad />
+    public static readonly GEAR = <FaGear />
+    public static readonly MAGNIFYING_GLASS = <FaMagnifyingGlass />
+    public static readonly ADD = <FaPlus />
+    public static readonly MINUS = <FaMinus />
+    public static readonly IMPORT = <FaFileImport />
+    public static readonly WRENCH = <FaWrench />
+    public static readonly SCREWDRIVER_WRENCH = <FaScrewdriverWrench />
+    public static readonly QUESTION = <FaQuestion />
+    public static readonly XMARK = <FaXmark />
+    public static readonly PEOPLE = <IoPeople />
+    public static readonly CHESS_BOARD = <FaChessBoard />
+    public static readonly FILL_WARNING = <AiFillWarning />
+    public static readonly CAR = <FaCar />
+    public static readonly CODE_SQUARE = <BsCodeSquare />
+    public static readonly STEERING_WHEEL = <GiSteeringWheel />
+    public static readonly OUTLINED_DOUBLE_RIGHT = <AiOutlineDoubleRight />
+    public static readonly CONNECT = <GrConnect />
+    public static readonly INFO = <AiOutlineInfoCircle />
+    public static readonly BUG = <FaBug />
 
     /** Large icons: used for icon buttons */
-    public static DeleteLarge = (<IoTrashBin size={"1.25rem"} />)
-    public static DownloadLarge = (<HiDownload size={"1.25rem"} />)
-    public static AddLarge = (<FaPlus size={"1.25rem"} />)
-    public static GearLarge = (<FaGear size={"1.25rem"} />)
-    public static RefreshLarge = (<BiRefresh size={"1.25rem"} />)
-    public static SelectLarge = (<IoCheckmark size={"1.25rem"} />)
-    public static EditLarge = (<IoPencil size={"1.25rem"} />)
-    public static LeftArrowLarge = (<FaArrowLeft size={"1.25rem"} />)
-    public static BugLarge = (<FaBug size={"1.25rem"} />)
-    public static XmarkLarge = (<FaXmark size={"1.25rem"} />)
+    public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />
+    public static readonly DOWNLOAD_LARGE = <HiDownload size={"1.25rem"} />
+    public static readonly ADD_LARGE = <FaPlus size={"1.25rem"} />
+    public static readonly GEAR_LARGE = <FaGear size={"1.25rem"} />
+    public static readonly REFRESH_LARGE = <BiRefresh size={"1.25rem"} />
+    public static readonly SELECT_LARGE = <IoCheckmark size={"1.25rem"} />
+    public static readonly EDIT_LARGE = <IoPencil size={"1.25rem"} />
+    public static readonly LEFT_ARROW_LARGE = <FaArrowLeft size={"1.25rem"} />
+    public static readonly BUG_LARGE = <FaBug size={"1.25rem"} />
+    public static readonly XMARK_LARGE = <FaXmark size={"1.25rem"} />
 
-    public static OpenHudIcon = (
+    public static readonly OPEN_HUD_ICON = (
         <FaAngleRight
             size={"5vh"}
             style={{
@@ -79,103 +87,142 @@ export class SynthesisIcons {
                 maxHeight: "50px",
                 maxWidth: "50px",
             }}
-            color={colorNameToVar("BackgroundSecondary")}
+            // color={colorNameToVar("BackgroundSecondary")}
         />
     )
 }
-
-export const SectionDivider = styled(Divider)({
-    borderColor: "grey",
-})
-
-export const SectionLabel = styled(Label)({
-    fontWeight: 700,
-    margin: "0pt",
-})
 
 export const Spacer = (heightPx?: number, widthPx?: number) => {
     return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
 }
 
-export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick }) => {
+export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
     return (
-        <Button
-            size={ButtonSize.Medium}
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-accept-button hover:brightness-90"
-        />
+        <MuiButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+            {children}
+        </MuiButton>
     )
 }
 
-export const DownloadButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.DeleteLarge} onClick={onClick} />
-}
-
-export const AddButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.DeleteLarge} onClick={onClick} />
-}
-
-export const SelectButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.SelectLarge} onClick={onClick} />
-}
-
-export const EditButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.EditLarge} onClick={onClick} />
-}
-
-export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick, id }) => {
+export const IconButton: React.FC<IconButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
     return (
-        <Button
-            size={ButtonSize.Medium}
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-cancel-button hover:brightness-90"
-            id={id}
-        />
+        <MuiIconButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+            {children}
+        </MuiIconButton>
     )
 }
 
-export const DeleteButton = (onClick: () => void, id?: string) => {
-    return <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={onClick} id={id} />
-}
-
-export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick, id }) => {
+export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
     return (
-        <Button
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-[#00000000] hover:brightness-90"
-            sizeOverrideClass="p-[0.25rem]"
-            id={id}
-            className="h-fit"
-        />
+        <MuiToggleButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+            {children}
+        </MuiToggleButton>
     )
 }
 
-export const RefreshButton = (onClick: () => void) => {
-    return <ButtonIcon value={SynthesisIcons.RefreshLarge} onClick={onClick} />
+export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, onMouseDown, onMouseUp, ...props }) => {
+    return (
+        <MuiToggleButtonGroup {...SoundPlayer.buttonSoundEffects()} {...props}>
+            {children}
+        </MuiToggleButtonGroup>
+    )
 }
 
-export const AddButtonInteractiveColor = (onClick: () => void, id?: string) => {
-    return <Button value={SynthesisIcons.AddLarge} onClick={onClick} id={id} />
+export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => {
+    return (
+        <Button onClick={onClick} {...props} color="success">
+            {children}
+        </Button>
+    )
+}
+
+export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => {
+    return (
+        <IconButton onClick={onClick} {...props} color="success">
+            {children}
+        </IconButton>
+    )
+}
+
+export const DownloadButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.DELETE_LARGE}
+        </PositiveIconButton>
+    )
+}
+
+export const AddButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.ADD_LARGE}
+        </PositiveIconButton>
+    )
+}
+
+export const SelectButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.SELECT_LARGE}
+        </PositiveIconButton>
+    )
+}
+
+export const EditButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.EDIT_LARGE}
+        </PositiveIconButton>
+    )
+}
+
+export const NegativeButton: React.FC<ButtonProps> = ({ children, onClick, id, ...props }) => {
+    return (
+        <Button onClick={onClick} {...props} id={id} color="error">
+            {children}
+        </Button>
+    )
+}
+
+export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => {
+    return (
+        <IconButton onClick={onClick} {...props} color="error">
+            {children}
+        </IconButton>
+    )
+}
+
+export const DeleteButton = (onClick: () => void, id?: string, props: IconButtonProps = {}) => {
+    return (
+        <NegativeIconButton onClick={onClick} id={id} {...props}>
+            {SynthesisIcons.DELETE_LARGE}
+        </NegativeIconButton>
+    )
+}
+
+export const RefreshButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <IconButton onClick={onClick} {...props}>
+            {SynthesisIcons.REFRESH_LARGE}
+        </IconButton>
+    )
 }
 
 export const CustomTooltip = (text: string) => {
     return (
         <Tooltip title={text}>
-            <IconButton
+            <MuiIconButton
                 size="small"
                 disableRipple
                 sx={{
-                    "color": "#ffffff77",
+                    // "color": "#ffffff77",
                     "&:hover": {
                         borderStyle: "solid",
                         borderColor: "grey",
                         backgroundColor: "transparent",
                     },
-                    "position": "relative",
-                    "overflow": "hidden",
+                    position: "relative",
+                    overflow: "hidden",
                     "& .MuiTouchRipple-root span": {
                         backgroundColor: "#ffffffaa",
                         animationDuration: "300ms",
@@ -193,16 +240,19 @@ export const CustomTooltip = (text: string) => {
                 }}
             >
                 <InfoIcon fontSize="small" />
-            </IconButton>
+            </MuiIconButton>
         </Tooltip>
     )
 }
 
-export const LabelWithTooltip = (labelText: string, tooltipText: string, size?: LabelSize) => {
+export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
     return (
-        <Box display={"flex"} flexDirection={"row"} alignItems={"center"} textAlign={"center"}>
-            <Label size={size ?? LabelSize.Small}>{labelText}</Label>
+        <Stack direction="row" alignItems={"center"} textAlign={"center"}>
+            <Label size="sm">{labelText}</Label>
             {CustomTooltip(tooltipText)}
-        </Box>
+        </Stack>
     )
 }
+
+// Export the raw MUI components for cases where sound effects are not wanted
+export { MuiButton, MuiIconButton, MuiToggleButton, MuiToggleButtonGroup }

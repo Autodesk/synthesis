@@ -1,6 +1,8 @@
-import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
-import { InputScheme } from "../input/InputSchemeManager"
-import { Vector3Tuple } from "three"
+import type { Vector3Tuple } from "three"
+import type { ContactType } from "@/mirabuf/ZoneTypes"
+import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import type { InputScheme } from "../input/InputTypes"
+import type { SimConfigData } from "../simulation/SimConfigShared"
 
 /** Names of all global preferences. */
 
@@ -13,6 +15,7 @@ export type GlobalPreferences = {
     ReportAnalytics: boolean
     UseMetric: boolean
     RenderScoringZones: boolean
+    RenderProtectedZones: boolean
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
     RenderScoreboard: boolean
@@ -27,23 +30,23 @@ export type GlobalPreferences = {
 
 export type GlobalPreference = keyof GlobalPreferences
 
-export type Preferences = GlobalPreferences & {
-    [RobotPreferencesKey]: Record<string, RobotPreferences>
-    [FieldPreferencesKey]: Record<string, FieldPreferences>
-    [MotorPreferencesKey]: Record<string, MotorPreferences>
-    [GraphicsPreferenceKey]: GraphicsPreferences
-}
+export const ROBOT_PREFERENCE_KEY = "Robots" as const
+export const FIELD_PREFERENCE_KEY = "Fields" as const
+export const MOTOR_PREFERENCES_KEY = "Motors" as const
+export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
 
-export const RobotPreferencesKey = "Robots" as const
-export const FieldPreferencesKey = "Fields" as const
-export const MotorPreferencesKey = "Motors" as const
-export const GraphicsPreferenceKey = "Quality" as const
+export type Preferences = GlobalPreferences & {
+    [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
+    [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
+    [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>
+    [GRAPHICS_PREFERENCE_KEY]: GraphicsPreferences
+}
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const DefaultGlobalPreferences: GlobalPreferences = {
+export const defaultGlobalPreferences: GlobalPreferences = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
@@ -52,6 +55,7 @@ export const DefaultGlobalPreferences: GlobalPreferences = {
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
+    RenderProtectedZones: true,
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
@@ -73,7 +77,7 @@ export type GraphicsPreferences = {
     antiAliasing: boolean
 }
 
-export function DefaultGraphicsPreferences(): GraphicsPreferences {
+export function defaultGraphicsPreferences(): GraphicsPreferences {
     return {
         lightIntensity: 5,
         fancyShadows: false,
@@ -90,6 +94,7 @@ export type IntakePreferences = {
     parentNode: string | undefined
     showZoneAlways: boolean
     maxPieces: number
+    animationDuration: number
 }
 
 export type EjectorPreferences = {
@@ -111,7 +116,7 @@ export type SequentialBehaviorPreferences = {
 }
 
 /** Default preferences for a joint with not parent specified and inverted set to false. */
-export function DefaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
+export function defaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
     return {
         jointIndex: index,
         parentJointIndex: undefined,
@@ -127,6 +132,7 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
     driveVelocity: number
     driveAcceleration: number
+    unstickForce: number
     sequentialConfig?: SequentialBehaviorPreferences[]
     simConfig?: SimConfigData
 }
@@ -139,6 +145,8 @@ export type MotorPreferences = {
 
 export type Alliance = "red" | "blue"
 
+export type Station = 1 | 2 | 3
+
 export type ScoringZonePreferences = {
     name: string
     alliance: Alliance
@@ -150,13 +158,32 @@ export type ScoringZonePreferences = {
     deltaTransformation: number[]
 }
 
-export type FieldPreferences = {
-    // TODO: implement this
-    defaultSpawnLocation: Vector3Tuple
-    scoringZones: ScoringZonePreferences[]
+export type ProtectedZonePreferences = {
+    name: string
+    alliance: Alliance
+    penaltyPoints: number
+    parentNode: string | undefined
+    contactType: ContactType
+    activeDuring: MatchModeType[]
+
+    deltaTransformation: number[]
 }
 
-export function DefaultRobotPreferences(): RobotPreferences {
+export type SpawnLocation = Readonly<{
+    pos: Readonly<Vector3Tuple>
+    yaw: number
+}>
+export type FieldPreferences = {
+    spawnLocations: {
+        [A in Alliance]: {
+            [S in Station]: SpawnLocation
+        }
+    } & { default: SpawnLocation; hasConfiguredLocations: boolean }
+    scoringZones: ScoringZonePreferences[]
+    protectedZones: ProtectedZonePreferences[]
+}
+
+export function defaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
         motors: [],
@@ -166,6 +193,7 @@ export function DefaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
             showZoneAlways: false,
             maxPieces: 1,
+            animationDuration: 0.5,
         },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
@@ -175,14 +203,39 @@ export function DefaultRobotPreferences(): RobotPreferences {
         },
         driveVelocity: 0,
         driveAcceleration: 0,
+        unstickForce: 8000,
     }
 }
 
-export function DefaultFieldPreferences(): FieldPreferences {
-    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [] }
+// The object will be moved such that the y-value specified is the bottom of the object, and the x and z values are the center
+export function defaultFieldSpawnLocation(): SpawnLocation {
+    return { pos: [0, 0.1, 0], yaw: 0 }
+}
+export function defaultRobotSpawnLocation(): SpawnLocation {
+    return { pos: [0, 0.1, 0], yaw: 0 }
+}
+export function defaultFieldPreferences(): FieldPreferences {
+    return {
+        spawnLocations: {
+            red: {
+                1: { pos: [-1, 0.1, -1], yaw: Math.PI / 2 },
+                2: { pos: [-1, 0.1, 0], yaw: Math.PI / 2 },
+                3: { pos: [-1, 0.1, 1], yaw: Math.PI / 2 },
+            },
+            blue: {
+                1: { pos: [1, 0.1, 1], yaw: -Math.PI / 2 },
+                2: { pos: [1, 0.1, 0], yaw: -Math.PI / 2 },
+                3: { pos: [1, 0.1, -1], yaw: -Math.PI / 2 },
+            },
+            default: defaultRobotSpawnLocation(),
+            hasConfiguredLocations: false,
+        },
+        scoringZones: [],
+        protectedZones: [],
+    }
 }
 
-export function DefaultMotorPreferences(name: string): MotorPreferences {
+export function defaultMotorPreferences(name: string): MotorPreferences {
     return {
         name: name,
         maxVelocity: 1,

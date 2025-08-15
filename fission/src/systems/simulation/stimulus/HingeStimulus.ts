@@ -1,8 +1,8 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { mirabuf } from "@/proto/mirabuf"
+import { type NoraNumber2, NoraTypes } from "../Nora"
 import EncoderStimulus from "./EncoderStimulus"
-import { mirabuf } from "@/proto/mirabuf"
-import { StimulusID } from "./Stimulus"
-import { NoraTypes, NoraNumber2 } from "../Nora"
+import type { StimulusID } from "./Stimulus"
 
 class HingeStimulus extends EncoderStimulus {
     private _accum: boolean = false
@@ -34,7 +34,7 @@ class HingeStimulus extends EncoderStimulus {
         this._hinge = hinge
     }
 
-    public Update(deltaT: number): void {
+    public update(deltaT: number): void {
         if (this._accum) {
             this._hingeAngleAccum += this._hinge.GetTargetAngularVelocity() * deltaT
         }
@@ -45,12 +45,12 @@ class HingeStimulus extends EncoderStimulus {
     }
 
     public getSupplierType(): NoraTypes {
-        return NoraTypes.Number2
+        return NoraTypes.NUMBER2
     }
     public getSupplierValue(): NoraNumber2 {
         return [this.positionValue, this.velocityValue]
     }
-    public DisplayName(): string {
+    public displayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`
     }
 }

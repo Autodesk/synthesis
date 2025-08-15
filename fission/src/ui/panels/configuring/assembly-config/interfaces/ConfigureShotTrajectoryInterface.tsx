@@ -1,26 +1,26 @@
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { Stack } from "@mui/material"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
-import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import SelectButton from "@/components/SelectButton"
-import Slider from "@/ui/components/Slider"
-import Jolt from "@azaleacolburn/jolt-physics"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
-import {
-    Array_ThreeMatrix4,
-    JoltMat44_ThreeMatrix4,
-    ReactRgbaColor_ThreeColor,
-    ThreeMatrix4_Array,
-} from "@/util/TypeConversions"
-import { useTheme } from "@/ui/helpers/UseThemeHelpers"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
-import Button from "@/ui/components/Button"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import { ToggleButtonGroup, ToggleButton } from "@/ui/components/ToggleButtonGroup"
+import {
+    convertArrayToThreeMatrix4,
+    convertJoltMat44ToThreeMatrix4,
+    convertReactRgbaColorToThreeColor,
+    convertThreeMatrix4ToArray,
+} from "@/util/TypeConversions"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -68,10 +68,12 @@ function save(
     }
 
     const gizmoTransformation = gizmo.obj.matrixWorld
-    const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+    const robotTransformation = convertJoltMat44ToThreeMatrix4(
+        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+    )
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
-    selectedRobot.ejectorPreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
+    selectedRobot.ejectorPreferences.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
     selectedRobot.ejectorPreferences.parentNode = selectedNode
     selectedRobot.ejectorPreferences.ejectorVelocity = ejectorVelocity
 
@@ -85,11 +87,6 @@ interface ConfigEjectorProps {
 }
 
 const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ selectedRobot }) => {
-    const { currentTheme, themes } = useTheme()
-    const theme = useMemo(() => {
-        return themes[currentTheme]
-    }, [currentTheme, themes])
-
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
     const [ejectOrder, setEjectOrder] = useState<"FIFO" | "LIFO">(
@@ -102,25 +99,28 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
         if (gizmoRef.current && selectedRobot) {
             save(ejectorVelocity, gizmoRef.current, selectedRobot, selectedNode, ejectOrder)
             const currentGp = selectedRobot.activeEjectables[0]
-            selectedRobot.SetEjectable(undefined)
-            selectedRobot.SetEjectable(currentGp)
+            selectedRobot.setEjectable(undefined)
+            selectedRobot.setEjectable(currentGp)
         }
     }, [selectedRobot, selectedNode, ejectorVelocity, ejectOrder])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
     const placeholderMesh = useMemo(() => {
         return new THREE.Mesh(
             new THREE.ConeGeometry(0.1, 0.4, 4).rotateX(Math.PI / 2.0).translate(0, 0, 0.2),
-            World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
+            // TODO: dynamic color
+            World.sceneRenderer.createToonMaterial(
+                convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 })
+            )
         )
-    }, [theme])
+    }, [])
 
     const gizmoComponent = useMemo(() => {
         if (selectedRobot?.ejectorPreferences) {
@@ -128,7 +128,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
-                const deltaTransformation = Array_ThreeMatrix4(selectedRobot.ejectorPreferences!.deltaTransformation)
+                const deltaTransformation = convertArrayToThreeMatrix4(
+                    selectedRobot.ejectorPreferences!.deltaTransformation
+                )
 
                 let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
                     selectedRobot.ejectorPreferences!.parentNode ?? selectedRobot.rootNodeId
@@ -139,8 +141,8 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 }
 
                 /** W = L x R. See save() for math details */
-                const robotTransformation = JoltMat44_ThreeMatrix4(
-                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                const robotTransformation = convertJoltMat44ToThreeMatrix4(
+                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
@@ -163,8 +165,12 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             gizmoRef.current = undefined
             return <></>
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [placeholderMesh, selectedRobot.ejectorPreferences])
+    }, [
+        placeholderMesh,
+        selectedRobot.ejectorPreferences,
+        selectedRobot.mechanism.nodeToBody.get,
+        selectedRobot.rootNodeId,
+    ])
 
     useEffect(() => {
         if (selectedRobot?.ejectorPreferences) {
@@ -177,10 +183,10 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     }, [selectedRobot])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 
@@ -190,8 +196,8 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 return false
             }
 
-            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
-            if (!assoc || !assoc.sceneObject || assoc.sceneObject != selectedRobot) {
+            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
+            if (!assoc || !assoc.sceneObject || assoc.sceneObject !== selectedRobot) {
                 return false
             }
 
@@ -211,7 +217,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             />
 
             {/* Toggle for adjusting eject order */}
-            <div className="mt-4 flex items-center space-x-2">
+            <Stack direction="row" spacing={2} alignItems="center" className="mt-4">
                 {LabelWithTooltip(
                     "Eject Order",
                     "Choose how to eject pieces: FIFO (first in, first out) ejects the oldest-loaded item first, or LIFO (last in, first out) ejects the most recently loaded item first."
@@ -219,21 +225,22 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 <ToggleButtonGroup
                     value={ejectOrder}
                     exclusive
-                    onChange={(_, v) => v && setEjectOrder(v as "FIFO" | "LIFO")}
+                    onChange={(_: unknown, v: "FIFO" | "LIFO") => v && setEjectOrder(v)}
                 >
                     <ToggleButton value="FIFO">FIFO</ToggleButton>
                     <ToggleButton value="LIFO">LIFO</ToggleButton>
                 </ToggleButtonGroup>
-            </div>
+            </Stack>
 
             {/* Slider for user to set velocity of ejector configuration */}
-            <Slider
+            <StatefulSlider
+                label="Velocity"
                 min={MIN_VELOCITY}
                 max={MAX_VELOCITY}
-                value={ejectorVelocity}
-                label="Velocity"
-                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                onChange={(_, vel: number | number[]) => {
+                defaultValue={ejectorVelocity}
+                // TODO:
+                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={vel => {
                     setEjectorVelocity(vel as number)
                 }}
                 step={0.01}
@@ -243,11 +250,10 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             {gizmoComponent}
             {Spacer(10)}
             <Button
-                value="Reset"
                 onClick={() => {
                     if (gizmoRef.current) {
-                        const robotTransformation = JoltMat44_ThreeMatrix4(
-                            World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
+                        const robotTransformation = convertJoltMat44ToThreeMatrix4(
+                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)
@@ -256,7 +262,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                     setSelectedNode(selectedRobot?.rootNodeId)
                     setEjectOrder(selectedRobot.ejectorPreferences?.ejectOrder ?? "FIFO")
                 }}
-            />
+            >
+                Reset
+            </Button>
         </>
     )
 }

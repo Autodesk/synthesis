@@ -1,28 +1,38 @@
-import { beforeEach, test, describe, assert, expect, vi } from "vitest"
-import InputSystem, { AxisInput, ButtonInput, EmptyModifierState, ModifierState } from "@/systems/input/InputSystem"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import { assert, beforeEach, describe, expect, test, vi } from "vitest"
 import DefaultInputs from "@/systems/input/DefaultInputs"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSystem from "@/systems/input/InputSystem"
+import {
+    EMPTY_MODIFIER_STATE,
+    type InputName,
+    type KeyDescriptor,
+    type ModifierState,
+} from "@/systems/input/InputTypes"
+import AxisInput from "@/systems/input/inputs/AxisInput"
+import ButtonInput from "@/systems/input/inputs/ButtonInput"
+import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
 describe("Input Scheme Manager Checks", () => {
     test("Available Schemes", () => {
-        assert(InputSchemeManager.availableInputSchemes[0].schemeName == DefaultInputs.ernie().schemeName)
+        assert(InputSchemeManager.allInputSchemes[0].schemeName == DefaultInputs.ernie().schemeName)
         assert(InputSchemeManager.defaultInputSchemes.length >= 1)
     })
 
     test("Add a Custom Scheme", () => {
-        const startingLength = InputSchemeManager.availableInputSchemes.length
-        InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme)
+        const startingLength = InputSchemeManager.allInputSchemes.length
+        InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme(DriveType.ARCADE))
 
-        expect(InputSchemeManager.availableInputSchemes.length).toBe(startingLength + 1)
+        expect(InputSchemeManager.allInputSchemes.length).toBe(startingLength + 1)
     })
 
     test("Change Custom Scheme Values", () => {
-        const scheme = DefaultInputs.newBlankScheme
+        const scheme = DefaultInputs.newBlankScheme(DriveType.ARCADE)
         scheme.schemeName = "Test Scheme"
         expect(scheme.schemeName).toBe("Test Scheme")
         InputSchemeManager.addCustomScheme(scheme)
-        scheme.inputs[0].inputName = "Test Input"
+        scheme.inputs[0].inputName = "joint 9999"
         scheme.inputs.forEach(input => {
             if (input instanceof ButtonInput) {
                 input.keyCode = "KeyA"
@@ -36,7 +46,7 @@ describe("Input Scheme Manager Checks", () => {
 
     test("Saving Schemes", () => {
         const startingLength = PreferencesSystem.getGlobalPreference("InputSchemes").length
-        InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme)
+        InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme(DriveType.ARCADE))
         InputSchemeManager.saveSchemes()
         const newLength = PreferencesSystem.getGlobalPreference("InputSchemes").length
         expect(newLength).toBe(startingLength + 1)
@@ -50,7 +60,7 @@ describe("Input Scheme Manager Checks", () => {
             assert(name != undefined)
             expect(name.length).toBeGreaterThan(0)
 
-            const scheme = DefaultInputs.newBlankScheme
+            const scheme = DefaultInputs.newBlankScheme(DriveType.ARCADE)
             scheme.schemeName = name
 
             InputSchemeManager.addCustomScheme(scheme)
@@ -70,14 +80,14 @@ describe("Input System Checks", () => {
     test("Inputs are Zero", () => {
         expect(InputSystem.getInput("arcadeDrive", 0)).toBe(0)
         expect(InputSystem.getGamepadAxis(0)).toBe(0)
-        expect(InputSystem.getInput("randomInputThatDoesNotExist", 1273)).toBe(0)
-        expect(InputSystem.isKeyPressed("keyA")).toBe(false)
-        expect(InputSystem.isKeyPressed("ajhsekff")).toBe(false)
+        expect(InputSystem.getInput("joint 987654", 1273)).toBe(0)
+        expect(InputSystem.isKeyPressed("KeyA")).toBe(false)
+        expect(InputSystem.isKeyPressed("ajhsekff" as KeyCode)).toBe(false)
         expect(InputSystem.isGamepadButtonPressed(1)).toBe(false)
     })
 
     test("Keyboard Input", () => {
-        function testKeyPress(key: string) {
+        function testKeyPress(key: KeyCode) {
             // Simulate key press
             document.dispatchEvent(new KeyboardEvent("keydown", { code: key }))
 
@@ -91,21 +101,21 @@ describe("Input System Checks", () => {
             expect(InputSystem.isKeyPressed(key)).toBe(false)
         }
 
-        testKeyPress("keyA")
+        testKeyPress("KeyA")
         testKeyPress("KeyK")
         testKeyPress("KeyR")
-        testKeyPress("RightShift")
-        testKeyPress("LeftControl")
+        testKeyPress("ShiftRight")
+        testKeyPress("ControlLeft")
         testKeyPress("Enter")
         testKeyPress("Escape")
         testKeyPress("Space")
     })
 
     test("Arcade Drive", () => {
-        InputSystem.brainIndexSchemeMap.set(0, DefaultInputs.ernie())
-        inputSystem.Update(-1) // Initialize the input system
+        InputSystem.setBrainIndexSchemeMapping(0, DefaultInputs.ernie())
+        inputSystem.update(-1) // Initialize the input system
 
-        function testArcadeInput(inputMap: string, key: string, expectedValue: number) {
+        function testArcadeInput(inputMap: InputName, key: string, expectedValue: number) {
             document.dispatchEvent(new KeyboardEvent("keydown", { code: key }))
             expect(InputSystem.getInput(inputMap, 0)).toBe(expectedValue)
             document.dispatchEvent(new KeyboardEvent("keyup", { code: key }))
@@ -133,9 +143,9 @@ describe("Input System Checks", () => {
             meta: true,
         }
 
-        inputSystem.Update(-1)
+        inputSystem.update(-1)
 
-        expect(InputSystem.compareModifiers(allFalse, EmptyModifierState)).toBe(true)
+        expect(InputSystem.compareModifiers(allFalse, EMPTY_MODIFIER_STATE)).toBe(true)
         expect(InputSystem.compareModifiers(allFalse, InputSystem.currentModifierState)).toBe(true)
         expect(InputSystem.compareModifiers(differentState, InputSystem.currentModifierState)).toBe(false)
         expect(InputSystem.compareModifiers(differentState, differentState)).toBe(true)
@@ -173,7 +183,7 @@ describe("Gamepad Input Check", () => {
 
     test("Reads axes correctly", () => {
         const sys = new InputSystem()
-        sys.Update(0)
+        sys.update(0)
 
         expect(InputSystem.getGamepadAxis(0)).toBe(0.5)
         expect(InputSystem.getGamepadAxis(1)).toBe(-0.5)
@@ -187,7 +197,7 @@ describe("Gamepad Input Check", () => {
 
         vi.spyOn(navigator, "getGamepads").mockReturnValue([updatedGamepad, null, null, null])
         const sys = new InputSystem()
-        sys.Update(0)
+        sys.update(0)
 
         expect(InputSystem.getGamepadAxis(0)).toBe(0)
         expect(InputSystem.getGamepadAxis(1)).toBe(0)
@@ -200,7 +210,7 @@ describe("Gamepad Input Check", () => {
         } as unknown as Gamepad
         vi.spyOn(navigator, "getGamepads").mockReturnValue([updatedGamepad, null, null, null])
         const sys = new InputSystem()
-        sys.Update(0)
+        sys.update(0)
 
         expect(InputSystem.getGamepadAxis(-1)).toBe(0)
         expect(InputSystem.getGamepadAxis(0)).toBe(0.9)
@@ -209,7 +219,7 @@ describe("Gamepad Input Check", () => {
 
     test("Gamepad button pressed", () => {
         const sys = new InputSystem()
-        sys.Update(0)
+        sys.update(0)
 
         expect(InputSystem.isGamepadButtonPressed(0)).toBe(true)
         expect(InputSystem.isGamepadButtonPressed(1)).toBe(false)
@@ -219,12 +229,12 @@ describe("Gamepad Input Check", () => {
     test("AxisInput inverts axis values (joystickInverted=true)", () => {
         vi.spyOn(InputSystem, "getGamepadAxis").mockReturnValue(0.6)
 
-        const axis = new AxisInput("foo", undefined, undefined, 0, /* joystickInverted=true */ true, false)
+        const axis = new AxisInput("joint 1", undefined, undefined, 0, /* joystickInverted=true */ true, false)
         expect(axis.getValue(true, false)).toBe(-0.6)
     })
 
     test("Use gamepad buttons mode", () => {
-        const axis = new AxisInput("bar", undefined, undefined, undefined, false, true, 1, 2)
+        const axis = new AxisInput("joint 2", undefined, undefined, undefined, false, true, 1, 2)
         vi.spyOn(InputSystem, "isGamepadButtonPressed").mockImplementation(b => b === 1)
         expect(axis.getValue(true, false)).toBe(1)
 
@@ -236,7 +246,7 @@ describe("Gamepad Input Check", () => {
     })
 
     test("End-to-end button-input", () => {
-        const btn = new ButtonInput("shoot", undefined, /*gamepadButton*/ 0)
+        const btn = new ButtonInput("joint 3", undefined, /*gamepadButton*/ 0)
         vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(true)
         expect(btn.getValue(true)).toBe(1)
 
@@ -251,12 +261,35 @@ describe("Gamepad Input Check", () => {
     })
 
     test("Get input with gamepad scheme", () => {
-        const scheme = DefaultInputs.newBlankScheme
+        const scheme = DefaultInputs.newBlankScheme(DriveType.ARCADE)
         scheme.usesGamepad = true
-        scheme.inputs = [new ButtonInput("foo", undefined, 0)]
-        InputSystem.brainIndexSchemeMap.set(42, scheme)
+        scheme.inputs = [new ButtonInput("joint 4", undefined, 0)]
+        InputSystem.setBrainIndexSchemeMapping(42, scheme)
 
         vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(true)
-        expect(InputSystem.getInput("foo", 42)).toBe(1)
+        expect(InputSystem.getInput("joint 4", 42)).toBe(1)
+    })
+})
+
+describe("Default Input Scheme Checks", () => {
+    test("Default schemes unique names", () => {
+        const defaults = DefaultInputs.defaultInputCopies
+        const names = defaults.map(scheme => scheme.schemeName)
+        names.forEach(name => {
+            expect.soft(names.filter(other => other == name).length, `Only one schema named ${name}`).toBe(1)
+        })
+    })
+    test("Default schemes internally conflict-free", () => {
+        DefaultInputs.defaultInputCopies.forEach(scheme => {
+            const usedKeys = new Map<KeyDescriptor, number>()
+            scheme.inputs.forEach(input => {
+                input.keysUsed
+                    .filter(key => key != null)
+                    .forEach(key => usedKeys.set(key, (usedKeys.get(key) ?? 0) + 1))
+                usedKeys.forEach((count, key) => {
+                    expect.soft(count, `key ${key} used only once in scheme ${scheme.schemeName}`).toBe(1)
+                })
+            })
+        })
     })
 })

@@ -1,192 +1,541 @@
-import React, { useState } from "react"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import Label, { LabelSize } from "@/components/Label"
-import Button from "@/components/Button"
-import Checkbox from "@/components/Checkbox"
+import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
+import type React from "react"
+import { useCallback, useEffect, useReducer, useState } from "react"
+import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { Box } from "@mui/material"
-import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import Slider from "@/ui/components/Slider"
+import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import { Global_AddToast } from "@/components/GlobalUIControls.ts"
+import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
+import Label from "@/ui/components/Label"
+import type { ModalImplProps } from "@/ui/components/Modal"
+import StatefulSlider from "@/ui/components/StatefulSlider"
+import { Spacer } from "@/ui/components/StyledComponents"
+import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { randomColor } from "@/util/Random"
 
-const StatefulSlider: React.FC<
-    Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & { defaultValue: number; onChange: (val: number) => void }
-> = props => {
-    const [value, setValue] = useState(props.defaultValue)
+// Graphics settings constants
+const MIN_LIGHT_INTENSITY = 1
+const MAX_LIGHT_INTENSITY = 10
+const MIN_MAX_FAR = 10
+const MAX_MAX_FAR = 40
+const MIN_CASCADES = 3
+const MAX_CASCADES = 8
+const MIN_SHADOW_MAP_SIZE = 1024
+
+type GraphicsTabActions = {
+    save: () => void
+    reset: () => void
+    requiresReload: boolean
+}
+
+type ThemeEditorTabActions = {
+    save: () => void
+    reset: () => void
+}
+
+type GeneralTabProps = {
+    writePreference: <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => void
+}
+
+type GraphicsTabProps = {
+    onActionsChange?: (actions: GraphicsTabActions) => void
+}
+
+type ThemeEditorTabProps = {
+    onActionsChange?: (actions: ThemeEditorTabActions) => void
+}
+
+interface TabConfigBase {
+    key: string
+    label: string
+}
+
+interface GeneralTabConfig extends TabConfigBase {
+    key: "general"
+    component: React.ComponentType<GeneralTabProps>
+}
+
+interface GraphicsTabConfig extends TabConfigBase {
+    key: "graphics"
+    component: React.ComponentType<GraphicsTabProps>
+}
+
+interface ThemeTabConfig extends TabConfigBase {
+    key: "theme"
+    component: React.ComponentType<ThemeEditorTabProps>
+}
+
+type TabConfig = GeneralTabConfig | GraphicsTabConfig | ThemeTabConfig
+
+const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: string) => void }> = ({
+    label,
+    color,
+    setColor,
+}) => {
     return (
-        <Slider
-            {...props}
-            value={value}
-            onChange={(_, value) => {
-                setValue(value as number)
-                props.onChange?.(value as number)
-            }}
-        ></Slider>
+        <Stack direction="row" gap={2}>
+            <TextField
+                label={label}
+                variant="outlined"
+                defaultValue={color}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setColor(event.target.value)
+                }}
+            />
+            <Box
+                sx={{
+                    height: 55,
+                    aspectRatio: 1,
+                    borderRadius: 1,
+                    bgcolor: `${color}`,
+                }}
+            />
+        </Stack>
     )
 }
-const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { closeModal } = useModalControlContext()
-    const { openPanel } = usePanelControlContext()
-    const save = () => {
-        SoundPlayer.changeVolume()
-        PreferencesSystem.savePreferences()
-        Global_AddToast?.("info", "Settings Saved", "")
-    }
+
+const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
+    <Stack direction="column" gap={2}>
+        {Spacer(5)}
+        <Label size="sm">Camera Settings</Label>
+        <StatefulSlider
+            min={0.1}
+            max={2.0}
+            defaultValue={PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")}
+            label={"Scene Rotation Sensitivity"}
+            onChange={value => writePreference("SceneRotationSensitivity", value)}
+            step={0.1}
+            tooltip="Controls how fast the scene rotates when dragging with the mouse."
+        />
+        {Spacer(5)}
+        <StatefulSlider
+            min={0.06}
+            max={6.0}
+            defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
+            label={"ViewCube Rotation Sensitivity"}
+            onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
+            step={0.06}
+            tooltip="Controls how fast the view changes when dragging on the view cube."
+        />
+        <Checkbox
+            label="Show View Cube"
+            checked={PreferencesSystem.getGlobalPreference("ShowViewCube")}
+            onClick={checked => writePreference("ShowViewCube", checked)}
+            tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
+        />
+        {Spacer(10)}
+        <Label size="sm">Preferences</Label>
+        <Stack direction="column">
+            <Checkbox
+                label="Report Analytics"
+                checked={PreferencesSystem.getGlobalPreference("ReportAnalytics")}
+                onClick={checked => writePreference("ReportAnalytics", checked)}
+                tooltip="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
+            />
+            <Checkbox
+                label="Realistic Subsystem Gravity"
+                checked={PreferencesSystem.getGlobalPreference("SubsystemGravity")}
+                onClick={checked => writePreference("SubsystemGravity", checked)}
+                tooltip="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
+            />
+            <Checkbox
+                label="Show Score Zones"
+                checked={PreferencesSystem.getGlobalPreference("RenderScoringZones")}
+                onClick={checked => writePreference("RenderScoringZones", checked)}
+                tooltip="If disabled, scoring zones will not be visible but will continue to function the same."
+            />
+            <Checkbox
+                label="Show Protected Zones"
+                checked={PreferencesSystem.getGlobalPreference("RenderProtectedZones")}
+                onClick={checked => writePreference("RenderProtectedZones", checked)}
+                tooltip="If disabled, protected zones will not be visible but will continue to function the same."
+            />
+            <Checkbox
+                label="Show Scene Tags"
+                checked={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
+                onClick={checked => writePreference("RenderSceneTags", checked)}
+                tooltip="Name tags above robot."
+            />
+            <Checkbox
+                label="Show Scoreboard"
+                checked={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
+                onClick={checked => {
+                    writePreference("RenderScoreboard", checked)
+                    if (checked) {
+                        // TODO: figure out scoreboard - I think it should be its own component and not a panel
+                        // openPanel("scoreboard");
+                    }
+                }}
+            />
+            <Checkbox
+                label="Show Centers of Mass"
+                checked={PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")}
+                onClick={checked => writePreference("ShowCenterOfMassIndicators", checked)}
+                tooltip="Show a purple dot to indicate the center of mass of each robot in frame"
+            />
+            <Checkbox
+                label="Mute All Sound"
+                checked={PreferencesSystem.getGlobalPreference("MuteAllSound")}
+                onClick={checked => writePreference("MuteAllSound", checked)}
+            />
+            <StatefulSlider
+                min={0}
+                max={100}
+                defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
+                label={"SFX Volume"}
+                onChange={value => writePreference("SFXVolume", value)}
+                tooltip="Volume of sound effects (%)."
+            />
+        </Stack>
+    </Stack>
+)
+
+const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
+    const [reload, setReload] = useState<boolean>(false)
+    const [lightIntensity, setLightIntensity] = useState<number>(
+        PreferencesSystem.getGraphicsPreferences().lightIntensity
+    )
+    const [fancyShadows, setFancyShadows] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+    const [maxFar, setMaxFar] = useState<number>(PreferencesSystem.getGraphicsPreferences().maxFar)
+    const [cascades, setCascades] = useState<number>(PreferencesSystem.getGraphicsPreferences().cascades)
+    const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
+    const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
+
+    // Create actions object and notify parent
+    useEffect(() => {
+        const actions: GraphicsTabActions = {
+            save: () => {
+                PreferencesSystem.getGraphicsPreferences().fancyShadows = fancyShadows
+                PreferencesSystem.getGraphicsPreferences().lightIntensity = lightIntensity
+                PreferencesSystem.getGraphicsPreferences().maxFar = maxFar
+                PreferencesSystem.getGraphicsPreferences().cascades = cascades
+                PreferencesSystem.getGraphicsPreferences().shadowMapSize = shadowMapSize
+                PreferencesSystem.getGraphicsPreferences().antiAliasing = antiAliasing
+                if (reload) window.location.reload()
+            },
+            reset: () => {
+                const g = PreferencesSystem.getGraphicsPreferences()
+                setLightIntensity(g.lightIntensity)
+                setFancyShadows(g.fancyShadows)
+                setMaxFar(g.maxFar)
+                setCascades(g.cascades)
+                setShadowMapSize(g.shadowMapSize)
+                setAntiAliasing(g.antiAliasing)
+                setReload(false)
+                World.sceneRenderer.changeLighting(g.fancyShadows)
+            },
+            requiresReload: reload,
+        }
+        onActionsChange?.(actions)
+    }, [lightIntensity, fancyShadows, maxFar, cascades, shadowMapSize, antiAliasing, reload, onActionsChange])
+
     return (
-        <Modal
-            name="Settings"
-            icon={SynthesisIcons.GearLarge}
-            modalId={modalId}
-            onAccept={save}
-            onClickAway={save}
-            onCancel={() => {
-                PreferencesSystem.revertPreferences()
-                SoundPlayer.changeVolume()
-            }}
-        >
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
-                <Box alignSelf={"center"}>
-                    <Button
-                        value="Graphics Settings"
-                        onClick={() => {
-                            openPanel("graphics-settings")
-                            closeModal()
-                            save()
+        <Stack gap={2}>
+            <StatefulSlider
+                label="Light Intensity"
+                min={MIN_LIGHT_INTENSITY}
+                max={MAX_LIGHT_INTENSITY}
+                defaultValue={lightIntensity}
+                valueLabelFormat={(val, _idx) => val.toFixed(2)}
+                onChange={value => {
+                    setLightIntensity(value as number)
+                    World.sceneRenderer.setLightIntensity(value as number)
+                }}
+                step={0.25}
+            />
+            <Checkbox
+                label="Fancy Shadows"
+                checked={fancyShadows}
+                onClick={checked => {
+                    setFancyShadows(checked)
+                    World.sceneRenderer.changeLighting(checked)
+                }}
+            />
+            {fancyShadows && (
+                <>
+                    <StatefulSlider
+                        label="Max Far"
+                        min={MIN_MAX_FAR}
+                        max={MAX_MAX_FAR}
+                        defaultValue={maxFar}
+                        onChange={value => {
+                            setMaxFar(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                maxFar: value as number,
+                                lightIntensity,
+                                fancyShadows,
+                                cascades,
+                                shadowMapSize,
+                                antiAliasing,
+                            })
                         }}
-                    />
-                </Box>
-
-                {/* Disabled until these settings are implemented */}
-                {/*   {Spacer(5)}
-                <Label size={LabelSize.Medium}>Camera Settings</Label>
-                <Slider
-                    min={1}
-                    max={15}
-                    value={zoomSensitivity}
-                    label={"Zoom Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setZoomSensitivity(value as number)}
-                />
-                {Spacer(2)}
-                <Slider
-                    min={1}
-                    max={15}
-                    value={pitchSensitivity}
-                    label={"Pitch Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setPitchSensitivity(value as number)}
-                    tooltipText="Moving the camera up and down."
-                />
-                {Spacer(2)}
-                <Slider
-                    min={1}
-                    max={15}
-                    value={yawSensitivity}
-                    label={"Yaw Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setYawSensitivity(value as number)}
-                    tooltipText="Moving the camera left and right."
-                />*/}
-                {Spacer(5)}
-                <Label size={LabelSize.Medium}>Camera Settings</Label>
-                <StatefulSlider
-                    min={0.1}
-                    max={2.0}
-                    defaultValue={PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")}
-                    label={"Scene Rotation Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={value => PreferencesSystem.setGlobalPreference("SceneRotationSensitivity", value)}
-                    step={0.1}
-                    tooltipText="Controls how fast the scene rotates when dragging with the mouse."
-                />
-                {Spacer(5)}
-                <StatefulSlider
-                    min={0.06}
-                    max={6.0}
-                    defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
-                    label={"ViewCube Rotation Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={value => PreferencesSystem.setGlobalPreference("ViewCubeRotationSensitivity", value)}
-                    step={0.06}
-                    tooltipText="Controls how fast the view changes when dragging on the view cube."
-                />
-                <Checkbox
-                    label="Show View Cube"
-                    defaultState={PreferencesSystem.getGlobalPreference("ShowViewCube")}
-                    onClick={checked => {
-                        PreferencesSystem.setGlobalPreference("ShowViewCube", checked)
-                    }}
-                    tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
-                />
-                {Spacer(10)}
-                <Label size={LabelSize.Medium}>Preferences</Label>
-                <Box display="flex" flexDirection={"column"}>
-                    <Checkbox
-                        label="Report Analytics"
-                        defaultState={PreferencesSystem.getGlobalPreference("ReportAnalytics")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("ReportAnalytics", checked)}
-                        tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
-                    />
-                    <Checkbox
-                        label="Realistic Subsystem Gravity"
-                        defaultState={PreferencesSystem.getGlobalPreference("SubsystemGravity")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("SubsystemGravity", checked)}
-                        tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
-                    />
-                    <Checkbox
-                        label="Show Score Zones"
-                        defaultState={PreferencesSystem.getGlobalPreference("RenderScoringZones")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("RenderScoringZones", checked)}
-                        tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
-                    />
-                    <Checkbox
-                        label="Show Scene Tags"
-                        defaultState={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
-                        onClick={checked => {
-                            PreferencesSystem.setGlobalPreference("RenderSceneTags", checked)
-                        }}
-                        tooltipText="Name tags above robot."
-                    />
-                    <Checkbox
-                        label="Show Scoreboard"
-                        defaultState={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
-                        onClick={checked => {
-                            PreferencesSystem.setGlobalPreference("RenderScoreboard", checked)
-                            if (checked) {
-                                openPanel("scoreboard")
-                            }
-                        }}
-                    />
-
-                    <Checkbox
-                        label="Show Centers of Mass"
-                        defaultState={PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")}
-                        onClick={checked => {
-                            PreferencesSystem.setGlobalPreference("ShowCenterOfMassIndicators", checked)
-                        }}
-                        tooltipText={"Show a purple dot to indicate the center of mass of each robot in frame"}
-                    />
-                    <Checkbox
-                        label="Mute All Sound"
-                        defaultState={PreferencesSystem.getGlobalPreference("MuteAllSound")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("MuteAllSound", checked)}
+                        step={1}
                     />
                     <StatefulSlider
-                        min={0}
-                        max={100}
-                        defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
-                        label={"SFX Volume"}
-                        format={{ maximumFractionDigits: 2 }}
-                        onChange={value => PreferencesSystem.setGlobalPreference("SFXVolume", value)}
-                        tooltipText="Volume of sound effects (%)."
+                        label="Cascade Count"
+                        min={MIN_CASCADES}
+                        max={MAX_CASCADES}
+                        defaultValue={cascades}
+                        onChange={value => {
+                            setCascades(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                cascades: value as number,
+                                maxFar,
+                                lightIntensity,
+                                fancyShadows,
+                                shadowMapSize,
+                                antiAliasing,
+                            })
+                        }}
+                        step={1}
                     />
-                    {Spacer(8)}
-                </Box>
-            </div>
-        </Modal>
+                    <StatefulSlider
+                        label="Shadow Map Size"
+                        min={MIN_SHADOW_MAP_SIZE}
+                        max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
+                        defaultValue={shadowMapSize}
+                        onChange={value => {
+                            setShadowMapSize(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                shadowMapSize: value as number,
+                                maxFar,
+                                lightIntensity,
+                                fancyShadows,
+                                cascades,
+                                antiAliasing,
+                            })
+                        }}
+                        step={1024}
+                    />
+                    <Box alignSelf="center">
+                        <Button
+                            onClick={() => {
+                                setShadowMapSize(4096)
+                                setMaxFar(30)
+                                setLightIntensity(5)
+                                setCascades(4)
+                                World.sceneRenderer.changeCSMSettings({
+                                    shadowMapSize: 4096,
+                                    maxFar: 30,
+                                    lightIntensity: 5,
+                                    fancyShadows,
+                                    cascades: 4,
+                                    antiAliasing,
+                                })
+                            }}
+                        >
+                            Reset Default
+                        </Button>
+                    </Box>
+                </>
+            )}
+            <Label size="sm">Requires Browser Refresh</Label>
+            <Checkbox
+                label="Anti-Aliasing"
+                checked={antiAliasing}
+                onClick={checked => {
+                    setAntiAliasing(checked)
+                    setReload(true)
+                }}
+            />
+        </Stack>
+    )
+}
+
+const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
+    const {
+        mode,
+        setMode,
+        primaryColor,
+        secondaryColor,
+        blueAllianceColor,
+        redAllianceColor,
+        setPrimaryColor,
+        setSecondaryColor,
+        setBlueAllianceColor,
+        setRedAllianceColor,
+    } = useThemeContext()
+
+    const [tempPrimary, setTempPrimary] = useState(primaryColor)
+    const [tempSecondary, setTempSecondary] = useState(secondaryColor)
+    const [tempBlue, setTempBlue] = useState(blueAllianceColor)
+    const [tempRed, setTempRed] = useState(redAllianceColor)
+
+    // Create actions object and notify parent
+    useEffect(() => {
+        const actions: ThemeEditorTabActions = {
+            save: () => {
+                setPrimaryColor(tempPrimary)
+                setSecondaryColor(tempSecondary)
+                setBlueAllianceColor(tempBlue)
+                setRedAllianceColor(tempRed)
+            },
+            reset: () => {
+                setTempPrimary(primaryColor)
+                setTempSecondary(secondaryColor)
+                setTempBlue(blueAllianceColor)
+                setTempRed(redAllianceColor)
+            },
+        }
+        onActionsChange?.(actions)
+    }, [
+        tempPrimary,
+        tempSecondary,
+        tempBlue,
+        tempRed,
+        primaryColor,
+        secondaryColor,
+        blueAllianceColor,
+        redAllianceColor,
+        onActionsChange,
+        setBlueAllianceColor,
+        setPrimaryColor,
+        setRedAllianceColor,
+        setSecondaryColor,
+    ])
+
+    return (
+        <Stack gap={4}>
+            <Label size="md">Theme Editor</Label>
+            <ColorEditor label="Primary Color" color={tempPrimary} setColor={setTempPrimary} />
+            <ColorEditor label="Secondary Color" color={tempSecondary} setColor={setTempSecondary} />
+            <ColorEditor label="Blue Alliance" color={tempBlue} setColor={setTempBlue} />
+            <ColorEditor label="Red Alliance" color={tempRed} setColor={setTempRed} />
+            <Checkbox
+                label="Dark Mode"
+                checked={mode === "dark"}
+                onClick={checked => setMode(checked ? "dark" : "light")}
+            />
+            <Button
+                startIcon={<GiPerspectiveDiceSixFacesOne />}
+                onClick={() => {
+                    setTempPrimary(randomColor())
+                    setTempSecondary(randomColor())
+                }}
+            >
+                Randomize
+            </Button>
+            <Button
+                onClick={() => {
+                    setTempPrimary("#90caf9")
+                    setTempSecondary("#ce93d8")
+                    setTempBlue("#0066b3")
+                    setTempRed("#ed1c24")
+                }}
+            >
+                Reset
+            </Button>
+            <Button
+                onClick={() => {
+                    setPrimaryColor(tempPrimary)
+                    setSecondaryColor(tempSecondary)
+                    setBlueAllianceColor(tempBlue)
+                    setRedAllianceColor(tempRed)
+                }}
+            >
+                Apply
+            </Button>
+        </Stack>
+    )
+}
+interface SettingsModalCustomProps {
+    initialTab?: string
+}
+
+const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | undefined>> = ({ modal }) => {
+    const { configureScreen } = useUIContext()
+    const [_, refresh] = useReducer(x => !x, false)
+    const [activeTab, setActiveTab] = useState<string>(modal?.props.custom?.initialTab || "general")
+
+    const [graphicsActions, setGraphicsActions] = useState<GraphicsTabActions | null>(null)
+    const [themeActions, setThemeActions] = useState<ThemeEditorTabActions | null>(null)
+
+    // Tab configuration - easily extensible
+    const tabs: TabConfig[] = [
+        { key: "general", label: "General", component: GeneralTab },
+        { key: "graphics", label: "Graphics", component: GraphicsTab },
+        { key: "theme", label: "Theme Editor", component: ThemeEditorTab },
+    ]
+
+    const writePreference = <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => {
+        PreferencesSystem.setGlobalPreference(pref, value)
+        refresh()
+    }
+
+    const save = useCallback(() => {
+        if (graphicsActions) {
+            graphicsActions.save()
+        }
+
+        if (themeActions) {
+            themeActions.save()
+        }
+
+        SoundPlayer.changeVolume()
+        PreferencesSystem.savePreferences()
+        globalAddToast("info", "Settings Saved")
+    }, [graphicsActions, themeActions])
+
+    const reset = useCallback(() => {
+        if (graphicsActions) {
+            graphicsActions.reset()
+        }
+
+        if (themeActions) {
+            themeActions.reset()
+        }
+
+        PreferencesSystem.revertPreferences()
+        SoundPlayer.changeVolume()
+    }, [graphicsActions, themeActions])
+
+    useEffect(() => {
+        configureScreen(modal!, { title: "Settings", allowClickAway: false }, { onBeforeAccept: save, onCancel: reset })
+    }, [modal, save, reset, configureScreen])
+
+    const renderTabContent = () => {
+        const currentTab = tabs.find(tab => tab.key === activeTab)
+        if (!currentTab) return null
+
+        switch (currentTab.key) {
+            case "general": {
+                const GeneralComponent = currentTab.component
+                return <GeneralComponent writePreference={writePreference} />
+            }
+            case "graphics": {
+                const GraphicsComponent = currentTab.component
+                return <GraphicsComponent onActionsChange={setGraphicsActions} />
+            }
+            case "theme": {
+                const ThemeComponent = currentTab.component
+                return <ThemeComponent onActionsChange={setThemeActions} />
+            }
+            default:
+                return null
+        }
+    }
+
+    return (
+        <Stack direction="column" gap={2} className="overflow-y-auto rounded-md p-2 max-h-[60vh] min-w-[20vw]">
+            <Tabs
+                value={activeTab}
+                onChange={(_, newValue) => setActiveTab(newValue)}
+                textColor="inherit"
+                indicatorColor="primary"
+                centered
+                {...SoundPlayer.buttonSoundEffects()}
+            >
+                {tabs.map(tab => (
+                    <Tab key={tab.key} value={tab.key} label={tab.label} />
+                ))}
+            </Tabs>
+
+            <Box sx={{ mt: 2 }}>{renderTabContent()}</Box>
+        </Stack>
     )
 }
 

@@ -1,119 +1,159 @@
-import Panel, { PanelPropsImpl } from "@/components/Panel"
+import { Box, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
+import type React from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
+import { InputSchemeUseType } from "@/systems/input/InputTypes"
+import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
+import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { useCallback, useEffect, useMemo } from "react"
-import { ConfigurationType, setSelectedConfigurationType } from "../assembly-config/ConfigurationType"
-import { setSelectedScheme } from "../assembly-config/interfaces/inputs/ConfigureInputsInterface"
-import InputSchemeSelection from "./InputSchemeSelection"
-import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import World from "@/systems/World"
-import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
-import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
+import ConfigurePanel from "../assembly-config/ConfigurePanel"
+import InputSchemeSelection from "./InputSchemeSelection"
 
-const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { closePanel, openPanel } = usePanelControlContext()
-    const { openModal } = useModalControlContext()
+const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    // TODO: can we pass these as custom props?
+    const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
+    const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
+    const [alliance, setAlliance] = useState<Alliance>("red")
+    const [station, setStation] = useState<Station>(1)
 
-    const targetAssembly = useMemo(() => {
-        return getSpotlightAssembly()
-    }, [])
+    const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
-    }, [])
-
-    useEffect(() => {
-        closePanel("import-mirabuf")
-        mirabufPanelState.hasUnconfirmedImport = true
-
-        return () => {
-            mirabufPanelState.hasUnconfirmedImport = false
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const closeFinish = useCallback(() => {
-        if (targetAssembly?.miraType == MiraType.ROBOT) {
-            setSelectedConfigurationType(ConfigurationType.ROBOT)
-            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+        if (targetAssembly?.miraType === MiraType.ROBOT) {
+            targetAssembly.alliance = alliance
+            targetAssembly.station = station
+            SimulationSystem.addPerRobotScore(targetAssembly, 0)
 
-            if (brainIndex == undefined) return
+            const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
+
+            if (brainIndex === undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemes[0]
-            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            // Find first available scheme
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).find(
+                scheme => scheme.status == InputSchemeUseType.AVAILABLE
+            )?.scheme
 
-            setSelectedScheme(scheme)
-        } else {
-            setSelectedConfigurationType(ConfigurationType.FIELD)
+            if (scheme) {
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
+                setSelectedScheme(scheme)
+            }
         }
-
-        closePanel(panelId)
-    }, [closePanel, panelId, targetAssembly])
+    }, [closePanel, panel, targetAssembly])
 
     const closeDelete = useCallback(() => {
-        if (targetAssembly) {
-            World.SceneRenderer.RemoveSceneObject(targetAssembly.id)
-        }
-
-        closePanel(panelId)
-    }, [closePanel, panelId, targetAssembly])
+        if (targetAssembly) World.sceneRenderer.removeSceneObject(targetAssembly.id)
+    }, [closePanel, panel, targetAssembly])
 
     const brainIndex = useMemo(() => {
-        return SynthesisBrain.GetBrainIndex(targetAssembly)
+        return SynthesisBrain.getBrainIndex(targetAssembly)
     }, [targetAssembly])
 
+    useEffect(() => {
+        setUnconfirmedImport(true)
+
+        configureScreen(
+            panel!,
+            { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
+            {
+                onBeforeAccept: closeFinish,
+                onCancel: closeDelete,
+                onClose: () => {
+                    setUnconfirmedImport(false)
+                },
+            }
+        )
+    }, [])
+
     return (
-        <Panel
-            name="Assembly Setup"
-            panelId={panelId}
-            openLocation={"right"}
-            sidePadding={8}
-            acceptEnabled={true}
-            acceptName="Finish"
-            onAccept={() => closeFinish()}
-            icon={SynthesisIcons.Gamepad}
-            cancelEnabled={true}
-            cancelName="Remove"
-            onCancel={() => closeDelete()}
-        >
-            {/** A scroll view with buttons to select default and custom input schemes */}
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
-                {targetAssembly ? (
-                    <TransformGizmoControl
-                        key={"init-config-gizmo"}
-                        defaultMode="translate"
-                        scaleDisabled={true}
-                        size={3.0}
-                        parent={targetAssembly}
-                        onAccept={closeFinish}
-                        onCancel={closeDelete}
-                    />
-                ) : (
-                    <></>
-                )}
-                {brainIndex != undefined ? (
-                    <InputSchemeSelection
-                        brainIndex={brainIndex}
-                        onSelect={() => {}}
-                        onEdit={() => openPanel("configure")}
-                        onCreateNew={() => openModal("assign-new-scheme")}
-                    />
-                ) : (
-                    <></>
-                )}
-            </div>
-        </Panel>
+        <Stack gap={2}>
+            {targetAssembly?.miraType === MiraType.ROBOT && (
+                <Box>
+                    <Label size="md">Alliance: </Label>
+                    {/** Set the alliance color */}
+                    <Button
+                        onClick={() => setAlliance(alliance === "blue" ? "red" : "blue")}
+                        sx={{ bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }}
+                    >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
+                    <Box>
+                        <Label size="md">Station: </Label>
+                        {/** Set the station number */}
+                        <Stack gap={2} direction="row">
+                            <Button
+                                onClick={() => setStation(1)}
+                                sx={
+                                    station === 1
+                                        ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }
+                                        : {}
+                                }
+                            >
+                                1
+                            </Button>
+                            <Button
+                                onClick={() => setStation(2)}
+                                sx={
+                                    station === 2
+                                        ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }
+                                        : {}
+                                }
+                            >
+                                2
+                            </Button>
+                            <Button
+                                onClick={() => setStation(3)}
+                                sx={
+                                    station === 3
+                                        ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }
+                                        : {}
+                                }
+                            >
+                                3
+                            </Button>
+                        </Stack>
+                    </Box>
+                </Box>
+            )}
+            {targetAssembly && (
+                <TransformGizmoControl
+                    key="init-config-gizmo"
+                    defaultMode="translate"
+                    scaleDisabled={true}
+                    size={3.0}
+                    parent={targetAssembly}
+                    onAccept={closeFinish}
+                    onCancel={closeDelete}
+                />
+            )}
+            {brainIndex !== undefined && (
+                <InputSchemeSelection
+                    brainIndex={brainIndex}
+                    onSelect={() => {}}
+                    onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
+                    onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
+                    panelId={panel?.id}
+                />
+            )}
+        </Stack>
     )
 }
 

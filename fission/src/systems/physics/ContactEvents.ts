@@ -1,4 +1,4 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 
 export interface CurrentContactData {
     body1: Jolt.BodyID
@@ -15,7 +15,7 @@ export interface OnContactValidateData {
 }
 
 export abstract class PhysicsEvent extends Event {
-    abstract Dispatch(): void
+    abstract dispatch(): void
 }
 
 export class OnContactAddedEvent extends PhysicsEvent {
@@ -29,15 +29,15 @@ export class OnContactAddedEvent extends PhysicsEvent {
         this.message = data
     }
 
-    public Dispatch(): void {
+    public dispatch(): void {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: OnContactAddedEvent) => void) {
+    public static addListener(func: (e: OnContactAddedEvent) => void) {
         window.addEventListener(OnContactAddedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: OnContactAddedEvent) => void) {
+    public static removeListener(func: (e: OnContactAddedEvent) => void) {
         window.removeEventListener(OnContactAddedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
@@ -53,15 +53,15 @@ export class OnContactPersistedEvent extends PhysicsEvent {
         this.message = data
     }
 
-    public Dispatch(): void {
+    public dispatch(): void {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: OnContactPersistedEvent) => void) {
+    public static addListener(func: (e: OnContactPersistedEvent) => void) {
         window.addEventListener(OnContactPersistedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: OnContactPersistedEvent) => void) {
+    public static removeListener(func: (e: OnContactPersistedEvent) => void) {
         window.removeEventListener(OnContactPersistedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
@@ -80,11 +80,11 @@ export class OnContactRemovedEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: OnContactRemovedEvent) => void) {
+    public static addListener(func: (e: OnContactRemovedEvent) => void) {
         window.addEventListener(OnContactRemovedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: OnContactRemovedEvent) => void) {
+    public static removeListener(func: (e: OnContactRemovedEvent) => void) {
         window.removeEventListener(OnContactRemovedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
@@ -100,15 +100,15 @@ export class OnContactValidateEvent extends PhysicsEvent {
         this.message = data
     }
 
-    public Dispatch(): void {
+    public dispatch(): void {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: OnContactValidateEvent) => void) {
+    public static addListener(func: (e: OnContactValidateEvent) => void) {
         window.addEventListener(OnContactValidateEvent.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: OnContactValidateEvent) => void) {
+    public static removeListener(func: (e: OnContactValidateEvent) => void) {
         window.removeEventListener(OnContactValidateEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }

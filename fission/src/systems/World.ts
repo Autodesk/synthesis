@@ -1,12 +1,13 @@
 import * as THREE from "three"
-
-import PhysicsSystem from "./physics/PhysicsSystem"
-import SceneRenderer from "./scene/SceneRenderer"
-import SimulationSystem from "./simulation/SimulationSystem"
-import InputSystem from "./input/InputSystem"
-import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
-import DragModeSystem from "./scene/DragModeSystem"
 import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
+import AnalyticsSystem, { type AccumTimes } from "./analytics/AnalyticsSystem"
+import InputSystem from "./input/InputSystem"
+import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
+import PhysicsSystem from "./physics/PhysicsSystem"
+import DragModeSystem from "./scene/DragModeSystem"
+import SceneRenderer from "./scene/SceneRenderer"
+import RobotPositionTracker from "./simulation/RobotPositionTracker"
+import SimulationSystem from "./simulation/SimulationSystem"
 
 class World {
     private static _isAlive: boolean = false
@@ -38,22 +39,22 @@ class World {
         return World._isAlive
     }
 
-    public static get SceneRenderer() {
+    public static get sceneRenderer() {
         return World._sceneRenderer
     }
-    public static get PhysicsSystem() {
+    public static get physicsSystem() {
         return World._physicsSystem
     }
-    public static get SimulationSystem() {
+    public static get simulationSystem() {
         return World._simulationSystem
     }
-    public static get InputSystem() {
+    public static get inputSystem() {
         return World._inputSystem
     }
-    public static get AnalyticsSystem() {
+    public static get analyticsSystem() {
         return World._analyticsSystem
     }
-    public static get DragModeSystem() {
+    public static get dragModeSystem() {
         return World._dragModeSystem
     }
 
@@ -68,7 +69,7 @@ class World {
         }
     }
 
-    public static InitWorld() {
+    public static initWorld() {
         if (World._isAlive) return
 
         World._clock = new THREE.Clock()
@@ -87,36 +88,39 @@ class World {
         }
     }
 
-    public static DestroyWorld() {
+    public static destroyWorld() {
         if (!World._isAlive) return
 
         World._isAlive = false
 
-        World._physicsSystem.Destroy()
-        World._sceneRenderer.Destroy()
-        World._simulationSystem.Destroy()
-        World._inputSystem.Destroy()
-        World._dragModeSystem.Destroy()
+        World._physicsSystem.destroy()
+        World._sceneRenderer.destroy()
+        World._simulationSystem.destroy()
+        World._inputSystem.destroy()
+        World._dragModeSystem.destroy()
 
-        World._performanceMonitorSystem.Destroy()
-        World._analyticsSystem?.Destroy()
+        World._performanceMonitorSystem.destroy()
+        World._analyticsSystem?.destroy()
     }
 
-    public static UpdateWorld() {
+    public static updateWorld() {
         this._currentDeltaT = World._clock.getDelta()
 
         this._accumTimes.frames++
 
         this._accumTimes.totalTime += this.time(() => {
-            this._accumTimes.simulationTime += this.time(() => World._simulationSystem.Update(this._currentDeltaT))
-            this._accumTimes.physicsTime += this.time(() => World._physicsSystem.Update(this._currentDeltaT))
-            this._accumTimes.inputTime += this.time(() => World._inputSystem.Update(this._currentDeltaT))
-            this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.Update(this._currentDeltaT))
-            World._dragModeSystem.Update(this._currentDeltaT)
+            this._accumTimes.simulationTime += this.time(() => World._simulationSystem.update(this._currentDeltaT))
+            this._accumTimes.physicsTime += this.time(() => World._physicsSystem.update(this._currentDeltaT))
+            this._accumTimes.inputTime += this.time(() => World._inputSystem.update(this._currentDeltaT))
+            this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.update(this._currentDeltaT))
+            World._dragModeSystem.update(this._currentDeltaT)
         })
 
-        World._analyticsSystem?.Update(this._currentDeltaT)
-        World._performanceMonitorSystem?.Update(this._currentDeltaT)
+        World._analyticsSystem?.update(this._currentDeltaT)
+        World._performanceMonitorSystem?.update(this._currentDeltaT)
+
+        RobotDimensionTracker.update()
+        RobotPositionTracker.update()
     }
 
     public static get currentDeltaT(): number {

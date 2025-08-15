@@ -1,29 +1,37 @@
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
-import Checkbox from "@/ui/components/Checkbox"
+import { Divider, Stack } from "@mui/material"
+import { Button, IconButton } from "@/ui/components/StyledComponents"
+import type React from "react"
+import { useCallback, useEffect, useReducer, useRef, useState } from "react"
+import Checkbox from "@/components/Checkbox.tsx"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import type { InputScheme } from "@/systems/input/InputTypes"
+import AxisInput from "@/systems/input/inputs/AxisInput.ts"
+import type Input from "@/systems/input/inputs/Input"
+import Label from "@/ui/components/Label"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import EditInputInterface from "./EditInputInterface"
-import { useCallback, useEffect, useRef, useState } from "react"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import { SectionDivider } from "@/ui/components/StyledComponents"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
+    panelId?: string
+    onBack?: () => void
 }
 
-/** Interface to configure a specific input scheme */
-const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
-    const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme.usesGamepad)
-    const [useTouchControls, setUseTouchControls] = useState<boolean>(selectedScheme.usesTouchControls)
+const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme, panelId, onBack }) => {
+    const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
+    const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
-
+    const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
-        InputSchemeManager.saveSchemes()
-    }, [])
+        InputSchemeManager.saveSchemes(panelId)
+    }, [panelId])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -49,30 +57,57 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
 
     return (
         <>
+            {/** Back button to return to input scheme selection */}
+            {onBack && (
+                <>
+                    <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
+                        {/** Back arrow button when an option is selected */}
+                        <IconButton onClick={onBack} id="select-menu-back-button">
+                            {SynthesisIcons.LEFT_ARROW_LARGE}
+                        </IconButton>
+
+                        <Stack alignSelf={"center"}>
+                            <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                Back to Input Schemes
+                            </Label>
+                        </Stack>
+                    </Stack>
+                    <Divider />
+                </>
+            )}
+
             {/** Toggle the input scheme between controller and keyboard mode */}
             <Checkbox
                 label="Use Controller"
-                defaultState={selectedScheme.usesGamepad}
+                checked={useGamepad}
                 onClick={val => {
                     setUseGamepad(val)
+                    if (val) {
+                        setUseTouchControls(false)
+                        selectedScheme.usesTouchControls = false
+                    }
                     selectedScheme.usesGamepad = val
                 }}
-                tooltipText="Supported controllers: Xbox one, Xbox 360."
+                tooltip="Supported controllers: Xbox one, Xbox 360."
             />
             <Checkbox
                 label="Use Touch Controls"
-                defaultState={selectedScheme.usesTouchControls}
+                checked={useTouchControls}
                 onClick={val => {
                     setUseTouchControls(val)
+                    if (val) {
+                        setUseGamepad(false)
+                        selectedScheme.usesGamepad = false
+                    }
                     selectedScheme.usesTouchControls = val
                 }}
-                tooltipText="Enable on-screen touch controls (only for mobile devices)."
+                tooltip="Enable on-screen touch controls (only for mobile devices)."
             />
-            <SectionDivider />
+            <Divider />
 
             {/* Scroll view for inputs */}
-            <div ref={scrollRef} tabIndex={0} className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
-                {selectedScheme.inputs.map(i => {
+            <Stack ref={scrollRef} gap={2}>
+                {selectedScheme.inputs.map((i: Input) => {
                     return (
                         <EditInputInterface
                             key={i.inputName}
@@ -85,8 +120,22 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                         />
                     )
                 })}
-            </div>
+                <Button
+                    onClick={() => {
+                        const existingJointIndexes = selectedScheme.inputs
+                            .map(input => parseInt(input.inputName.replace("joint ", "")))
+                            .filter(val => !isNaN(val))
+                        const newJointIndex = Math.max(0, ...existingJointIndexes) + 1
+                        selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
+                        selectedScheme.customized = true
+                        update()
+                    }}
+                >
+                    Add Joint Control
+                </Button>
+            </Stack>
         </>
     )
 }
+
 export default ConfigureSchemeInterface

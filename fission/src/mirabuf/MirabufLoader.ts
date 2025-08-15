@@ -1,8 +1,8 @@
-import { Data, downloadData } from "@/aps/APSDataManagement"
-import { mirabuf } from "@/proto/mirabuf"
-import { Global_AddToast } from "@/components/GlobalUIControls"
-import World from "@/systems/World"
 import Pako from "pako"
+import { type Data, downloadData } from "@/aps/APSDataManagement"
+import { globalAddToast } from "@/components/GlobalUIControls"
+import { mirabuf } from "@/proto/mirabuf"
+import World from "@/systems/World"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "4543246"
@@ -13,7 +13,7 @@ export interface MirabufCacheInfo {
     id: MirabufCacheID
     miraType: MiraType
     cacheKey: string
-    buffer?: ArrayBuffer
+    buffer?: Uint8Array<ArrayBufferLike>
     name?: string
     thumbnailStorageID?: string
 }
@@ -28,8 +28,12 @@ type MapCache = { [id: MirabufCacheID]: MirabufCacheInfo }
 const robotsDirName = "Robots"
 const fieldsDirName = "Fields"
 const root = await navigator.storage.getDirectory()
-const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, { create: true })
-const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, { create: true })
+const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, {
+    create: true,
+})
+const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, {
+    create: true,
+})
 
 export let backUpRobots: MapCache = {}
 export let backUpFields: MapCache = {}
@@ -40,7 +44,9 @@ export const canOPFS = await (async () => {
             robotFolderHandle.entries
             robotFolderHandle.keys
 
-            const fileHandle = await robotFolderHandle.getFileHandle("0", { create: true })
+            const fileHandle = await robotFolderHandle.getFileHandle("0", {
+                create: true,
+            })
             const writable = await fileHandle.createWritable()
             await writable.close()
             await fileHandle.getFile()
@@ -52,7 +58,7 @@ export const canOPFS = await (async () => {
             console.log(`No access to OPFS`)
             return false
         }
-    } catch (e) {
+    } catch (_e) {
         console.log(`No access to OPFS`)
 
         // Copy-pasted from RemoveAll()
@@ -73,7 +79,7 @@ export const canOPFS = await (async () => {
     }
 })()
 
-export function UnzipMira(buff: Uint8Array): Uint8Array {
+export function unzipMira(buff: Uint8Array): Uint8Array {
     // Check if file is gzipped via magic gzip numbers 31 139
     if (buff[0] == 31 && buff[1] == 139) {
         return Pako.ungzip(buff)
@@ -90,12 +96,12 @@ class MirabufCachingService {
      *
      * @returns {MapCache} Map of cached keys and paired MirabufCacheInfo
      */
-    public static GetCacheMap(miraType: MiraType): MapCache {
+    public static getCacheMap(miraType: MiraType): MapCache {
         if (
             (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") != MIRABUF_LOCALSTORAGE_GENERATION
         ) {
             window.localStorage.setItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY, MIRABUF_LOCALSTORAGE_GENERATION)
-            this.RemoveAll()
+            this.removeAll()
             return {}
         }
 
@@ -115,12 +121,17 @@ class MirabufCachingService {
      *
      * @param {string} fetchLocation Location of Mirabuf file.
      * @param {MiraType} miraType Type of Mirabuf Assembly.
+     * @param {string} name Optional display name for the cached file.
      *
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
-    public static async CacheRemote(fetchLocation: string, miraType?: MiraType): Promise<MirabufCacheInfo | undefined> {
+    public static async cacheRemote(
+        fetchLocation: string,
+        miraType?: MiraType,
+        name?: string
+    ): Promise<MirabufCacheInfo | undefined> {
         if (miraType !== undefined) {
-            const map = MirabufCachingService.GetCacheMap(miraType)
+            const map = MirabufCachingService.getCacheMap(miraType)
             const target = map[fetchLocation]
             if (target) return target
         }
@@ -131,27 +142,25 @@ class MirabufCachingService {
 
             const miraBuff = await resp.arrayBuffer()
 
-            World.AnalyticsSystem?.Event("Remote Download", {
+            World.analyticsSystem?.event("Remote Download", {
+                assemblyName: name ?? fetchLocation,
                 type: miraType === MiraType.ROBOT ? "robot" : "field",
                 fileSize: miraBuff.byteLength,
             })
 
-            const cached = await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
+            const cached = await MirabufCachingService.storeInCache(fetchLocation, miraBuff, miraType, name)
 
             if (cached) return cached
 
-            Global_AddToast?.(
-                "error",
-                "Cache Fallback",
-                `Unable to cache “${fetchLocation}”. Using raw buffer instead.`
-            )
+            globalAddToast("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
 
             // fallback: return raw buffer wrapped in MirabufCacheInfo
             return {
                 id: Date.now().toString(),
-                miraType: miraType ?? (this.AssemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
+                miraType: miraType ?? (this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
                 cacheKey: fetchLocation,
-                buffer: miraBuff,
+                buffer: new Uint8Array(miraBuff),
+                name: name,
             }
         } catch (e) {
             console.warn("Caching failed", e)
@@ -159,13 +168,13 @@ class MirabufCachingService {
         }
     }
 
-    public static async CacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
+    public static async cacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
         if (!data.href) {
             console.error("Data has no href")
             return undefined
         }
 
-        const map = MirabufCachingService.GetCacheMap(miraType)
+        const map = MirabufCachingService.getCacheMap(miraType)
         const target = map[data.id]
 
         if (target) {
@@ -178,12 +187,12 @@ class MirabufCachingService {
             return undefined
         }
 
-        World.AnalyticsSystem?.Event("APS Download", {
+        World.analyticsSystem?.event("APS Download", {
             type: miraType == MiraType.ROBOT ? "robot" : "field",
             fileSize: miraBuff.byteLength,
         })
 
-        return await MirabufCachingService.StoreInCache(data.id, miraBuff, miraType)
+        return await MirabufCachingService.storeInCache(data.id, miraBuff, miraType)
     }
 
     /**
@@ -194,17 +203,17 @@ class MirabufCachingService {
      *
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
-    public static async CacheLocal(buffer: ArrayBuffer, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
-        const key = await this.HashBuffer(buffer)
+    public static async cacheLocal(buffer: ArrayBuffer, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
+        const key = await this.hashBuffer(buffer)
 
-        const map = MirabufCachingService.GetCacheMap(miraType)
+        const map = MirabufCachingService.getCacheMap(miraType)
         const target = map[key]
 
         if (target) {
             return target
         }
 
-        return await MirabufCachingService.StoreInCache(key, buffer, miraType)
+        return await MirabufCachingService.storeInCache(key, buffer, miraType)
     }
 
     /**
@@ -215,34 +224,88 @@ class MirabufCachingService {
      * @param {string} name (Optional) Name of Mirabuf Assembly.
      * @param {string} thumbnailStorageID (Optional) ID of the the thumbnail storage for the Mirabuf Assembly.
      */
-    public static async CacheInfo(
+    public static async cacheInfo(
         key: string,
         miraType: MiraType,
         name?: string,
         thumbnailStorageID?: string
     ): Promise<boolean> {
         try {
-            const map: MapCache = this.GetCacheMap(miraType)
+            const map: MapCache = this.getCacheMap(miraType)
             const id = map[key].id
-            const _buffer = miraType == MiraType.ROBOT ? backUpRobots[id].buffer : backUpFields[id].buffer
-            const _name = map[key].name
-            const _thumbnailStorageID = map[key].thumbnailStorageID
+            const buffer = miraType == MiraType.ROBOT ? backUpRobots[id].buffer : backUpFields[id].buffer
+            const defaultName = map[key].name
+            const defaultStorageID = map[key].thumbnailStorageID
             const info: MirabufCacheInfo = {
                 id: id,
                 cacheKey: key,
                 miraType: miraType,
-                buffer: _buffer,
-                name: name ?? _name,
-                thumbnailStorageID: thumbnailStorageID ?? _thumbnailStorageID,
+                buffer: buffer,
+                name: name ?? defaultName,
+                thumbnailStorageID: thumbnailStorageID ?? defaultStorageID,
             }
             map[key] = info
-            miraType == MiraType.ROBOT ? (backUpRobots[id] = info) : (backUpFields[id] = info)
+            if (miraType == MiraType.ROBOT) {
+                backUpRobots[id] = info
+            } else {
+                backUpFields[id] = info
+            }
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
             return true
         } catch (e) {
             console.error(`Failed to cache info\n${e}`)
             return false
         }
+    }
+
+    /**
+     * Caches and gets local Mirabuf file with cache info
+     *
+     * @param {ArrayBuffer} buffer ArrayBuffer of Mirabuf file.
+     * @param {MiraType} miraType Type of Mirabuf Assembly.
+     *
+     * @returns {Promise<{assembly: mirabuf.Assembly, cacheInfo: MirabufCacheInfo} | undefined>} Promise with the result of the promise. Assembly and cache info of the mirabuf file if successful, undefined if not.
+     */
+    public static async cacheAndGetLocalWithInfo(
+        buffer: ArrayBuffer,
+        miraType: MiraType
+    ): Promise<{ assembly: mirabuf.Assembly; cacheInfo: MirabufCacheInfo } | undefined> {
+        const key = await this.hashBuffer(buffer)
+        const map = MirabufCachingService.getCacheMap(miraType)
+        const target = map[key]
+        const assembly = this.assemblyFromBuffer(buffer)
+
+        // Check if assembly has devtool data and update name accordingly
+        let displayName = assembly.info?.name ?? undefined
+        if (assembly.data?.parts?.userData?.data) {
+            const devtoolKeys = Object.keys(assembly.data.parts.userData.data).filter(k => k.startsWith("devtool:"))
+            if (devtoolKeys.length > 0) {
+                displayName = displayName ? `Edited ${displayName}` : "Edited Field"
+            }
+        }
+
+        World.analyticsSystem?.event("Local Upload", {
+            assemblyName: displayName,
+            fileSize: buffer.byteLength,
+            key,
+            type: miraType == MiraType.ROBOT ? "robot" : "field",
+        })
+
+        if (!target) {
+            const cacheInfo = await MirabufCachingService.storeInCache(key, buffer, miraType, displayName)
+            if (cacheInfo) {
+                return { assembly, cacheInfo }
+            }
+        } else {
+            // Update existing cache info with new name if it has devtool data
+            if (displayName && displayName !== target.name) {
+                await MirabufCachingService.cacheInfo(key, miraType, displayName)
+                target.name = displayName
+            }
+            return { assembly, cacheInfo: target }
+        }
+
+        return undefined
     }
 
     /**
@@ -253,17 +316,26 @@ class MirabufCachingService {
      *
      * @returns {Promise<mirabufAssembly | undefined>} Promise with the result of the promise. Assembly of the mirabuf file if successful, undefined if not.
      */
-    public static async CacheAndGetLocal(
+    public static async cacheAndGetLocal(
         buffer: ArrayBuffer,
         miraType: MiraType
     ): Promise<mirabuf.Assembly | undefined> {
-        const key = await this.HashBuffer(buffer)
-        const map = MirabufCachingService.GetCacheMap(miraType)
+        const key = await this.hashBuffer(buffer)
+        const map = MirabufCachingService.getCacheMap(miraType)
         const target = map[key]
-        const assembly = this.AssemblyFromBuffer(buffer)
+        const assembly = this.assemblyFromBuffer(buffer)
+
+        // Check if assembly has devtool data and update name accordingly
+        let displayName = assembly.info?.name ?? undefined
+        if (assembly.data?.parts?.userData?.data) {
+            const devtoolKeys = Object.keys(assembly.data.parts.userData.data).filter(k => k.startsWith("devtool:"))
+            if (devtoolKeys.length > 0) {
+                displayName = displayName ? `Edited ${displayName}` : "Edited Field"
+            }
+        }
 
         if (!target) {
-            await MirabufCachingService.StoreInCache(key, buffer, miraType, assembly.info?.name ?? undefined)
+            await MirabufCachingService.storeInCache(key, buffer, miraType, displayName)
         }
 
         return assembly
@@ -277,7 +349,7 @@ class MirabufCachingService {
      *
      * @returns {Promise<mirabufAssembly | undefined>} Promise with the result of the promise. Assembly of the mirabuf file if successful, undefined if not.
      */
-    public static async Get(id: MirabufCacheID, miraType: MiraType): Promise<mirabuf.Assembly | undefined> {
+    public static async get(id: MirabufCacheID, miraType: MiraType): Promise<mirabuf.Assembly | undefined> {
         try {
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
             const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
@@ -289,13 +361,17 @@ class MirabufCachingService {
                               create: false,
                           })
                         : undefined
-                    return fileHandle ? await fileHandle.getFile().then(x => x.arrayBuffer()) : undefined
+                    return fileHandle
+                        ? new Uint8Array(
+                              (await fileHandle.getFile().then(async x => await x.arrayBuffer())) as ArrayBuffer
+                          )
+                        : undefined
                 })())
 
             // If we have buffer, get assembly
             if (buff) {
-                const assembly = this.AssemblyFromBuffer(buff)
-                World.AnalyticsSystem?.Event("Cache Get", {
+                const assembly = this.assemblyFromBuffer(buff.buffer as ArrayBuffer)
+                World.analyticsSystem?.event("Cache Get", {
                     key: id,
                     type: miraType == MiraType.ROBOT ? "robot" : "field",
                     assemblyName: assembly.info!.name!,
@@ -320,9 +396,9 @@ class MirabufCachingService {
      *
      * @returns {Promise<boolean>} Promise with the result of the promise. True if successful, false if not.
      */
-    public static async Remove(key: string, id: MirabufCacheID, miraType: MiraType): Promise<boolean> {
+    public static async remove(key: string, id: MirabufCacheID, miraType: MiraType): Promise<boolean> {
         try {
-            const map = this.GetCacheMap(miraType)
+            const map = this.getCacheMap(miraType)
             if (map) {
                 delete map[key]
                 window.localStorage.setItem(
@@ -341,14 +417,14 @@ class MirabufCachingService {
                 delete backUpCache[id]
             }
 
-            World.AnalyticsSystem?.Event("Cache Remove", {
+            World.analyticsSystem?.event("Cache Remove", {
                 key: key,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
             })
             return true
         } catch (e) {
             console.error(`Failed to remove\n${e}`)
-            World.AnalyticsSystem?.Exception("Failed to remove mirabuf from cache")
+            World.analyticsSystem?.exception("Failed to remove mirabuf from cache")
             return false
         }
     }
@@ -356,7 +432,7 @@ class MirabufCachingService {
     /**
      * Removes all Mirabuf files from the caching services. Mostly for debugging purposes.
      */
-    public static async RemoveAll() {
+    public static async removeAll() {
         if (canOPFS) {
             for await (const key of robotFolderHandle.keys()) {
                 robotFolderHandle.removeEntry(key)
@@ -373,8 +449,58 @@ class MirabufCachingService {
         backUpFields = {}
     }
 
+    /**
+     * Persists devtool changes back to the cache by re-encoding the assembly
+     *
+     * @param {MirabufCacheID} id ID of the cached mirabuf file
+     * @param {MiraType} miraType Type of Mirabuf Assembly
+     * @param {mirabuf.Assembly} assembly The updated assembly with devtool changes
+     *
+     * @returns {Promise<boolean>} Promise with the result. True if successful, false if not.
+     */
+    public static async persistDevtoolChanges(
+        id: MirabufCacheID,
+        miraType: MiraType,
+        assembly: mirabuf.Assembly
+    ): Promise<boolean> {
+        try {
+            // Re-encode the assembly with devtool changes
+            const updatedBuffer = mirabuf.Assembly.encode(assembly).finish()
+
+            // Update the cached buffer
+            const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+            if (cache[id]) {
+                cache[id].buffer = updatedBuffer
+            }
+
+            // Update OPFS if available
+            if (canOPFS) {
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : fieldFolderHandle
+                ).getFileHandle(id, { create: false })
+                const writable = await fileHandle.createWritable()
+                await writable.write(updatedBuffer.buffer as ArrayBuffer)
+                await writable.close()
+            }
+
+            World.analyticsSystem?.event("Devtool Cache Persist", {
+                key: id,
+                type: miraType == MiraType.ROBOT ? "robot" : "field",
+                assemblyName: assembly.info?.name ?? "unknown",
+                fileSize: updatedBuffer.byteLength,
+            })
+
+            return true
+        } catch (e) {
+            console.error("Failed to persist devtool changes", e)
+            World.analyticsSystem?.exception("Failed to persist devtool changes to cache")
+            return false
+        }
+    }
+
     // Optional name for when assembly is being decoded anyway like in CacheAndGetLocal()
-    private static async StoreInCache(
+    private static async storeInCache(
         key: string,
         miraBuff: ArrayBuffer,
         miraType?: MiraType,
@@ -384,11 +510,11 @@ class MirabufCachingService {
             const backupID = Date.now().toString()
             if (!miraType) {
                 console.debug("Double loading")
-                miraType = this.AssemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
+                miraType = this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
             }
 
             // Local cache map
-            const map: MapCache = this.GetCacheMap(miraType)
+            const map: MapCache = this.getCacheMap(miraType)
             const info: MirabufCacheInfo = {
                 id: backupID,
                 miraType: miraType,
@@ -398,8 +524,8 @@ class MirabufCachingService {
             map[key] = info
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
 
-            World.AnalyticsSystem?.Event("Cache Store", {
-                name: name ?? "-",
+            World.analyticsSystem?.event("Cache Store", {
+                assemblyName: name ?? "-",
                 key: key,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
                 fileSize: miraBuff.byteLength,
@@ -408,8 +534,9 @@ class MirabufCachingService {
             // Store buffer
             if (canOPFS) {
                 // Store in OPFS
-                const fileHandle = await (
-                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : fieldFolderHandle
                 ).getFileHandle(backupID, { create: true })
                 const writable = await fileHandle.createWritable()
                 await writable.write(miraBuff)
@@ -422,7 +549,7 @@ class MirabufCachingService {
                 id: backupID,
                 miraType: miraType,
                 cacheKey: key,
-                buffer: miraBuff,
+                buffer: new Uint8Array(miraBuff),
                 name: name,
             }
             cache[backupID] = mapInfo
@@ -430,20 +557,22 @@ class MirabufCachingService {
             return info
         } catch (e) {
             console.error("Failed to cache mira " + e)
-            World.AnalyticsSystem?.Exception("Failed to store in cache")
+            World.analyticsSystem?.exception("Failed to store in cache")
             return undefined
         }
     }
 
-    private static async HashBuffer(buffer: ArrayBuffer): Promise<string> {
+    private static async hashBuffer(buffer: ArrayBuffer): Promise<string> {
         const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
         let hash = ""
-        new Uint8Array(hashBuffer).forEach(x => (hash = hash + String.fromCharCode(x)))
+        new Uint8Array(hashBuffer).forEach(x => {
+            hash = hash + String.fromCharCode(x)
+        })
         return btoa(hash).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
     }
 
-    private static AssemblyFromBuffer(buffer: ArrayBuffer): mirabuf.Assembly {
-        return mirabuf.Assembly.decode(UnzipMira(new Uint8Array(buffer)))
+    private static assemblyFromBuffer(buffer: ArrayBuffer): mirabuf.Assembly {
+        return mirabuf.Assembly.decode(unzipMira(new Uint8Array(buffer)))
     }
 }
 

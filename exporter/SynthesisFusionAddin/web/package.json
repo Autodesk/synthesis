@@ -1,0 +1,45 @@
+{
+  "name": "web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_ENV=dev vite build --watch",
+    "dev:ui": "vite --open",
+    "build": "tsc -p tsconfig.app.json && vite build",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --fix",
+    "style": "biome format",
+    "style:fix": "biome format --fix",
+    "preview": "vite preview",
+    "format": "biome check --fix"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.2.0",
+    "@mui/material": "^7.2.0",
+    "eslint-plugin-react-dom": "^1.52.2",
+    "eslint-plugin-react-x": "^1.52.2",
+    "immer": "^10.1.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "use-immer": "^0.11.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "@eslint/js": "^9.29.0",
+    "@types/node": "^24.0.14",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react-swc": "^3.10.2",
+    "eslint": "^9.29.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.2.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.34.1",
+    "vite": "^6.3.5",
+    "prettier": "^3.6.2"
+  }
+}
