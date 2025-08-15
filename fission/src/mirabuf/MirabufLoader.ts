@@ -508,10 +508,12 @@ class MirabufCachingService {
     ): Promise<MirabufCacheInfo | undefined> {
         try {
             const backupID = Date.now().toString()
-            if (!miraType) {
-                console.debug("Double loading")
-                miraType = this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
+            // Infer actual type from buffer to ensure correct categorization
+            const inferredType = this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
+            if (miraType !== undefined && miraType !== inferredType) {
+                console.debug("Overriding provided MiraType with inferred type from assembly buffer")
             }
+            miraType = inferredType
 
             // Local cache map
             const map: MapCache = this.getCacheMap(miraType)

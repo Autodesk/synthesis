@@ -85,21 +85,22 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
 }
 
 export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
-    // If spawning a field, then remove all other fields
-    if (type === MiraType.FIELD) {
-        World.sceneRenderer.removeAllFields()
-    }
+    // Use the entry's own type to load from the correct cache directory
+    const effectiveType = info.miraType ?? type
 
     if (!progressHandle) {
         progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
     }
 
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    MirabufCachingService.get(info.id, type)
+    MirabufCachingService.get(info.id, effectiveType)
         .then(assembly => {
             if (assembly) {
                 createMirabuf(assembly, progressHandle, info.id).then(mirabufSceneObject => {
                     if (mirabufSceneObject) {
+                        if (mirabufSceneObject.miraType === MiraType.FIELD) {
+                            World.sceneRenderer.removeAllFields()
+                        }
                         World.sceneRenderer.registerSceneObject(mirabufSceneObject)
                         progressHandle.done()
 
@@ -111,7 +112,7 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
                     }
                 })
 
-                if (!info.name) MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
+                if (!info.name) MirabufCachingService.cacheInfo(info.cacheKey, effectiveType, assembly.info?.name ?? undefined)
             } else {
                 progressHandle.fail()
                 console.error("Failed to spawn robot")
