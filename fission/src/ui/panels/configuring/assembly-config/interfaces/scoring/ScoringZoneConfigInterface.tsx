@@ -6,29 +6,11 @@ import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTyp
 import ZoneConfigBase from "../zones/ZoneConfigBase"
 
 /**
- * Saves ejector configuration to selected field.
- *
- * Math Explanation:
- * Let W be the world transformation matrix of the gizmo.
- * Let R be the world transformation matrix of the selected field node.
- * Let L be the local transformation matrix of the gizmo, relative to the selected field node.
- *
- * We are given W and R, and want to save L with the field. This way when we create
- * the ejection point afterwards, it will be relative to the selected field node.
- *
- * W = L R
- * L = W R^(-1)
- *
- * ThreeJS sets the standard multiplication operation for matrices to be premultiply. I really
- * don't like this terminology as it's thrown me off multiple times, but I suppose it does go
- * against most other multiplication operations.
- *
- * @param name Name given to the scoring zone by the user.
- * @param alliance Scoring zone alliance.
  * @param points Number of points the zone is worth.
  * @param destroy Destroy gamepiece setting.
  * @param persistent Persistent points setting.
  */
+
 function attachAndPersistZone(zone: ScoringZonePreferences, field: MirabufSceneObject) {
     if (!field?.fieldPreferences) return
     if (!field.fieldPreferences.scoringZones.includes(zone)) field.fieldPreferences.scoringZones.push(zone)

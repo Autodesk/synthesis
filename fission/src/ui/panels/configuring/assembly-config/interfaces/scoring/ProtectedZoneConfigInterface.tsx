@@ -17,6 +17,12 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import ZoneConfigBase from "../zones/ZoneConfigBase"
 
+/**
+ * @param penaltyPoints Number of points the zone is worth.
+ * @param contactType Contact type of the zone.
+ * @param activeDuring Match modes during which the zone is active.
+ */
+
 const MATCH_MODE_OPTIONS: MatchModeType[] = [
     MatchModeType.SANDBOX,
     MatchModeType.AUTONOMOUS,
