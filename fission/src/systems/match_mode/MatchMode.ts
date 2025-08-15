@@ -2,20 +2,13 @@ import beep from "@/assets/sound-files/beep.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
-import { globalOpenModal } from "@/ui/components/GlobalUIControls"
-import MatchResultsModal from "@/ui/modals/MatchResultsModal"
+import { globalOpenModal } from "@/components/GlobalUIControls.ts"
+import MatchResultsModal from "@/modals/MatchResultsModal.tsx"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
-import {
-    DEFAULT_AUTONOMOUS_TIME,
-    DEFAULT_ENDGAME_TIME,
-    DEFAULT_HEIGHT_PENALTY,
-    DEFAULT_IGNORE_ROTATION,
-    DEFAULT_MAX_HEIGHT,
-    DEFAULT_TELEOP_TIME,
-    MatchModeType,
-} from "./MatchModeTypes"
+import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
 
 class MatchMode {
@@ -33,17 +26,7 @@ class MatchMode {
     private _intervalId: number | null = null
 
     // Match Mode Config
-    private _matchModeConfig: MatchModeConfig = {
-        id: "default",
-        name: "Default",
-        isDefault: true,
-        autonomousTime: DEFAULT_AUTONOMOUS_TIME,
-        teleopTime: DEFAULT_TELEOP_TIME,
-        endgameTime: DEFAULT_ENDGAME_TIME,
-        ignoreRotation: DEFAULT_IGNORE_ROTATION,
-        maxHeight: DEFAULT_MAX_HEIGHT,
-        heightPenalty: DEFAULT_HEIGHT_PENALTY,
-    }
+    private _matchModeConfig: MatchModeConfig = DefaultMatchModeConfigs.fallbackValues()
 
     private constructor() {}
 
@@ -54,7 +37,13 @@ class MatchMode {
 
     setMatchModeConfig(config: MatchModeConfig) {
         this._matchModeConfig = config
-        RobotDimensionTracker.setConfigValues(config.ignoreRotation, config.maxHeight, config.heightPenalty)
+        RobotDimensionTracker.setConfigValues(
+            config.ignoreRotation,
+            config.maxHeight,
+            config.heightLimitPenalty,
+            config.sideMaxExtension,
+            config.sideExtensionPenalty
+        )
     }
 
     startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
@@ -109,6 +98,7 @@ class MatchMode {
     start() {
         this.autonomousModeStart()
         SimulationSystem.resetScores()
+        RobotDimensionTracker.matchStart()
     }
 
     matchEnded() {

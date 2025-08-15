@@ -1,4 +1,5 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
+import { Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
+import { Button } from "./StyledComponents"
 import React, { type ReactElement } from "react"
 import type { Modal as ModalType, Panel as PanelType } from "../helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
@@ -52,7 +53,12 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                             </Button>
                         )}
                         {!props.hideAccept && (
-                            <Button onClick={() => closeModal(CloseType.Accept)} variant="contained" color="primary">
+                            <Button
+                                onClick={() => closeModal(CloseType.Accept)}
+                                variant="contained"
+                                color="primary"
+                                disabled={props.disableAccept}
+                            >
                                 {props.acceptText ?? "Accept"}
                             </Button>
                         )}

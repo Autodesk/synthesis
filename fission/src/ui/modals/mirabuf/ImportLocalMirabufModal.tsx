@@ -1,9 +1,10 @@
-import { Button, Stack, styled, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { Stack, styled } from "@mui/material"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { type ChangeEvent, useEffect, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
@@ -54,11 +55,13 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
                         }
                         return undefined
                     })
-                    .then(x => {
-                        if (x) {
-                            World.sceneRenderer.registerSceneObject(x)
+                    .then(mirabufSceneObject => {
+                        if (mirabufSceneObject) {
+                            World.sceneRenderer.registerSceneObject(mirabufSceneObject)
 
-                            openPanel(InitialConfigPanel, undefined, modal)
+                            if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                                openPanel(InitialConfigPanel, undefined, modal)
+                            }
                             closeModal(CloseType.Overwrite)
                         }
                     })
@@ -81,7 +84,6 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
                 value={miraType}
                 exclusive
                 onChange={(_, v) => v != null && setSelectedType(v)}
-                {...SoundPlayer.buttonSoundEffects()}
                 sx={{
                     alignSelf: "center",
                 }}

@@ -1,4 +1,5 @@
-import { Button, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
+import { Button } from "../components/StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"

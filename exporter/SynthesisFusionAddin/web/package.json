@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "NODE_ENV=dev vite build --watch",
     "dev:ui": "vite --open",
-    "build": "vite build",
+    "build": "tsc -p tsconfig.app.json && vite build",
     "lint": "biome lint",
     "lint:fix": "biome lint --fix",
     "style": "biome format",

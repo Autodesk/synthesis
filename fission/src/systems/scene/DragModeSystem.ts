@@ -1,7 +1,8 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
@@ -242,7 +243,7 @@ class DragModeSystem extends WorldSystem {
         const hitResult = this.raycastFromMouse(interaction.position)
         if (hitResult) {
             const association = World.physicsSystem.getBodyAssociation(hitResult.data.mBodyID) as RigidNodeAssociate
-            if (association?.sceneObject && association.sceneObject instanceof MirabufSceneObject) {
+            if (association?.sceneObject) {
                 const body = World.physicsSystem.getBody(hitResult.data.mBodyID)
                 if (body) {
                     const isStatic = body.GetMotionType() === JOLT.EMotionType_Static
