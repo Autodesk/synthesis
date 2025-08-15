@@ -1,14 +1,15 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Button, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { TextField } from "@mui/material"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { Stack, styled } from "@mui/system"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
 import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -132,21 +133,19 @@ export const RedAllianceToggleButton = styled(ToggleButton)({
 
 function captureBodies(): BodyCapture[] {
     const captures: BodyCapture[] = []
-    World.sceneRenderer.sceneObjects.forEach(sceneObj => {
-        if (sceneObj instanceof MirabufSceneObject) {
-            sceneObj.mechanism.nodeToBody.forEach(bodyId => {
-                const body = World.physicsSystem.getBody(bodyId)
-                const transform = body.GetWorldTransform()
-                const translation = new THREE.Vector3(0, 0, 0)
-                const rotation = new THREE.Quaternion(0, 0, 0, 1)
-                convertJoltMat44ToThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
-                captures.push({
-                    id: bodyId,
-                    pos: convertThreeVector3ToJoltRVec3(translation),
-                    rot: convertThreeQuaternionToJoltQuat(rotation),
-                })
+    World.sceneRenderer.mirabufSceneObjects.getAll().forEach(sceneObj => {
+        sceneObj.mechanism.nodeToBody.forEach(bodyId => {
+            const body = World.physicsSystem.getBody(bodyId)
+            const transform = body.GetWorldTransform()
+            const translation = new THREE.Vector3(0, 0, 0)
+            const rotation = new THREE.Quaternion(0, 0, 0, 1)
+            convertJoltMat44ToThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
+            captures.push({
+                id: bodyId,
+                pos: convertThreeVector3ToJoltRVec3(translation),
+                rot: convertThreeQuaternionToJoltQuat(rotation),
             })
-        }
+        })
     })
     return captures
 }
@@ -250,7 +249,6 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     value={countdown}
                     exclusive
                     onChange={(_, v) => setCountdown(v)}
-                    {...SoundPlayer.buttonSoundEffects()}
                     className="self-center"
                 >
                     <ToggleButton value={5}>5</ToggleButton>
@@ -267,13 +265,7 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                 <Label size="md" textAlign="center">
                     Alliance Station
                 </Label>
-                <ToggleButtonGroup
-                    value={station}
-                    exclusive
-                    onChange={(_, v) => setStation(v)}
-                    {...SoundPlayer.buttonSoundEffects()}
-                    className="self-center"
-                >
+                <ToggleButtonGroup value={station} exclusive onChange={(_, v) => setStation(v)} className="self-center">
                     <RedAllianceToggleButton value="red1">1</RedAllianceToggleButton>
                     <RedAllianceToggleButton value="red2">2</RedAllianceToggleButton>
                     <RedAllianceToggleButton value="red3">3</RedAllianceToggleButton>
@@ -308,10 +300,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
-        () =>
-            [...World.sceneRenderer.sceneObjects.values()].find(
-                x => (x as MirabufSceneObject).brain?.brainType === "wpilib"
-            ) as MirabufSceneObject,
+        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
         []
     )
 
@@ -328,7 +317,10 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
-
+        if (assembly == null) {
+            console.warn("Couldn't find assembly with wpilib brain")
+            return
+        }
         setActiveProps({
             state: "Staging",
             assembly: assembly,

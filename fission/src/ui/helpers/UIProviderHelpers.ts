@@ -25,6 +25,7 @@ export interface UIScreenProps<P> {
     title?: string
     hideCancel?: boolean
     hideAccept?: boolean
+    disableAccept?: boolean
     cancelText?: string
     acceptText?: string
     custom: P
@@ -80,16 +81,16 @@ export interface Panel<T, P> extends UIScreen<T, P> {
 }
 
 export type OpenModalFn = <T, P>(
-    contents: FunctionComponent<ModalImplProps<T, P>>,
+    content: FunctionComponent<ModalImplProps<T, P>>,
     customProps: P,
     parent?: UIScreen<any, any>,
-    props?: Omit<ModalProps<P>, "type" | "configured" | "custom">
+    props?: Omit<ModalProps<P>, "type" | "configured" | "custom"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept">
 ) => string
 export type OpenPanelFn = <T, P>(
-    contents: FunctionComponent<PanelImplProps<T, P>>,
+    content: FunctionComponent<PanelImplProps<T, P>>,
     customProps: P,
     parent?: UIScreen<any, any>,
-    props?: Omit<PanelProps<P>, "type" | "configured" | "custom">
+    props?: Omit<PanelProps<P>, "type" | "configured" | "custom"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept">
 ) => string
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void

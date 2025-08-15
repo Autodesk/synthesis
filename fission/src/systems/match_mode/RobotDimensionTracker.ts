@@ -1,8 +1,5 @@
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import World from "@/systems/World"
-import type SceneRenderer from "../scene/SceneRenderer"
+import World from "@/systems/World.ts"
 import MatchMode from "./MatchMode"
 
 const BUFFER_HEIGHT = 0.1
@@ -31,14 +28,10 @@ class RobotDimensionTracker {
         this._sideExtensionPenalty = sideExtensionPenalty
     }
 
-    public static update(sceneRenderer: SceneRenderer): void {
+    public static update(): void {
         if (!MatchMode.getInstance().isMatchEnabled()) return
 
-        const robots = [...sceneRenderer.sceneObjects.values()].filter(
-            (obj): obj is MirabufSceneObject => obj instanceof MirabufSceneObject && obj.miraType === MiraType.ROBOT
-        )
-
-        robots.forEach(robot => {
+        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
             const dimensions = this._ignoreRotation ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
 
             if (dimensions.height > this._maxHeight + BUFFER_HEIGHT) {
@@ -69,11 +62,7 @@ class RobotDimensionTracker {
         this._robotSize.clear()
         this._robotLastFramePenalty.clear()
 
-        const robots = [...World.sceneRenderer.sceneObjects.values()].filter(
-            (obj): obj is MirabufSceneObject => obj instanceof MirabufSceneObject && obj.miraType === MiraType.ROBOT
-        )
-
-        robots.forEach(robot => {
+        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
             this._robotSize.set(robot.id, robot.getDimensions())
         })
     }

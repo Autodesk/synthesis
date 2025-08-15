@@ -1,4 +1,5 @@
-import { Button, FormControlLabel } from "@mui/material"
+import { FormControlLabel } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useEffect } from "react"
 import type { ModalImplProps } from "@/ui/components/Modal"

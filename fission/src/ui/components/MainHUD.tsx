@@ -1,4 +1,5 @@
-import { Box, Button, IconButton, Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
+import { Button, IconButton } from "./StyledComponents"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"
@@ -7,7 +8,6 @@ import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import logo from "@/assets/autodesk_logo.png"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import MatchMode, { MatchStateChangeEvent } from "@/systems/match_mode/MatchMode"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { deobf } from "@/util/Utility"
 import { useThemeContext } from "../helpers/ThemeProviderHelpers"
 import { useUIContext } from "../helpers/UIProviderHelpers"
@@ -36,7 +36,6 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={onClick}
-            {...SoundPlayer.buttonSoundEffects()}
             className={`relative flex flex-row
                 cursor-pointer
                 w-full m-auto px-2 py-1 border-none rounded-md ${larger ? "justify-center" : ""}
