@@ -316,7 +316,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     // Centered in xz plane, bottom surface of object
-    private getPositionTransform(vec: THREE.Vector3) {
+    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()) {
         const box = this.computeBoundingBox()
         const transform = box.getCenter(vec)
         transform.setY(box.min.y)
