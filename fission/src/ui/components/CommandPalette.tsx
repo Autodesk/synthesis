@@ -51,7 +51,7 @@ const CommandPalette: React.FC = () => {
 
     const openImportPanel = useCallback(
         (configurationType: ConfigurationType) => {
-            openPanel<void, { configurationType: ConfigurationType }>(ImportMirabufPanel, { configurationType })
+            openPanel(ImportMirabufPanel, { configurationType })
         },
         [openPanel]
     )
