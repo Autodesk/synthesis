@@ -166,8 +166,8 @@ const CommandPalette: React.FC = () => {
                     .filter(Boolean)
                 list.push({
                     id: `configure-robot-${r.id}`,
-                    label: `Configure ${name}`,
-                    description: `Open configuration for robot ${name}.`,
+                    label: `Configure ${r.nameTag?.text()} (${name})`,
+                    description: `Open configuration for robot ${r.nameTag?.text()} (${name}).`,
                     keywords: ["configure", "robot", ...nameTokens.map(t => t.toLowerCase())],
                     perform: () =>
                         openPanel(ConfigurePanel, {
@@ -177,8 +177,8 @@ const CommandPalette: React.FC = () => {
                 })
                 list.push({
                     id: `remove-robot-${r.id}`,
-                    label: `Remove ${name}`,
-                    description: `Remove the robot ${name}.`,
+                    label: `Remove ${r.nameTag?.text()} (${name})`,
+                    description: `Remove the robot ${r.nameTag?.text()} (${name}).`,
                     keywords: ["remove", "delete", "robot", ...nameTokens.map(t => t.toLowerCase())],
                     perform: () => {
                         World.sceneRenderer.removeSceneObject(r.id)
