@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true, "defaultBranch": "dev" },
   "files": { "ignoreUnknown": false },
   "formatter": {
@@ -33,6 +33,7 @@
         "noUselessTypeConstraint": "error"
       },
       "correctness": {
+        "useUniqueElementIds": "off",
         "noConstAssign": "error",
         "noConstantCondition": "error",
         "noEmptyCharacterClassInRegex": "error",
@@ -60,7 +61,7 @@
         "useValidTypeof": "error",
         "useYield": "error"
       },
-      "nursery": { "noTsIgnore": "error", "noUselessBackrefInRegex": "error" },
+      "nursery": {},
       "style": {
         "noNamespace": "error",
         "useArrayLiterals": "error",
@@ -152,7 +153,8 @@
         "noUnsafeDeclarationMerging": "error",
         "noUnsafeNegation": "error",
         "noWith": "error",
-        "useGetterReturn": "error"
+        "useGetterReturn": "error",
+        "noTsIgnore": "error"
       }
     },
     "includes": ["src/**/*.{ts,tsx,js,json}", "./*.{ts,js,json,html}"]
