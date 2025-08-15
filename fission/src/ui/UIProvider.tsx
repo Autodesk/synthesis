@@ -143,9 +143,24 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
                 )
                 if (existing) {
-                    // Bring it to front
-                    setPanels(p => [...p.filter(x => x !== existing), existing])
-                    return existing.id
+                    // If the existing panel is ConfigurePanel and a spawn/initial panel is being opened while editing,
+                    // warn the user and keep Configure open. Otherwise, replace existing with the new panel.
+                    const existingName = (existing.content as unknown as { name?: string })?.name ?? ""
+                    const isExistingConfigure = existingName === "ConfigurePanel"
+                    const isNewSpawnOrInit =
+                        contentName === "ImportMirabufPanel" || contentName === "InitialConfigPanel"
+                    if (isExistingConfigure && isNewSpawnOrInit) {
+                        // Show a warning toast about unsaved configuration
+                        enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
+                            variant: "warning",
+                            action: snackbarAction,
+                        })
+                        setPanels(p => [...p.filter(x => x !== existing), existing])
+                        return existing.id
+                    }
+                    // Replace existing with the new one
+                    setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])
+                    return id
                 }
             }
 

@@ -75,6 +75,8 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     pointerEvents: "auto",
                     p: 2,
                     boxShadow: 6,
+                    maxHeight: "70vh",
+                    overflowY: "auto",
                 }}
                 ref={nodeRef}
             >
@@ -82,8 +84,23 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     <CardHeader
                         title={props.title}
                         className="panel-drag-handle select-none"
-                        sx={{ cursor: "move", py: 1, px: 2 }}
+                        sx={{
+                            cursor: "move",
+                            py: 1,
+                            px: 2,
+                            borderBottom: theme => `1px solid ${theme.palette.divider}`,
+                        }}
                         titleTypographyProps={{ variant: "subtitle1" }}
+                        action={
+                            <div
+                                className="h-2 w-10 rounded-sm"
+                                style={{
+                                    background:
+                                        "linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.2) 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, rgba(0,0,0,0.2) 75%)",
+                                    backgroundSize: "8px 100%",
+                                }}
+                            />
+                        }
                     />
                 )}
                 <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>

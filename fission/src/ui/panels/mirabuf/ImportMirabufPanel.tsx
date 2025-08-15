@@ -507,7 +507,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         hubElements
                     ) : filesStatus.isDone ? (
                         <Label size="sm">No Assets Found</Label>
-                    ) : null}
+                    ) : (
+                        <Label size="sm">Loading from APS...</Label>
+                    )}
                 </AccordionDetails>
             </Accordion>
             <Accordion>
