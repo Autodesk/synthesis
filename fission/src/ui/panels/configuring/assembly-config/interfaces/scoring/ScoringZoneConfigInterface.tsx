@@ -1,5 +1,5 @@
 import { TextField } from "@mui/material"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import Checkbox from "@/ui/components/Checkbox"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -22,20 +22,26 @@ interface ZoneConfigProps {
     saveAllZones: () => void
 }
 
-const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
+const ScoringZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
+    const [points, setPoints] = useState<number>(selectedZone.points)
     const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
+
+    const applyExtrasOnSave = useCallback((zone: ScoringZonePreferences) => {
+        zone.points = points
+        zone.persistentPoints = persistent
+    }, [points, persistent])
+
+    const removeZoneObject = useCallback((field: MirabufSceneObject, zone: ScoringZonePreferences) => {
+        field.removeScoringZoneObject(zone)
+    }, [])
 
     return (
         <ZoneConfigBase
             selectedField={selectedField}
             selectedZone={selectedZone}
             attachAndPersistZone={attachAndPersistZone}
-            applyExtrasOnSave={zone => {
-                zone.points = zone.points ?? selectedZone.points
-                zone.destroyGamepiece = selectedZone.destroyGamepiece
-                zone.persistentPoints = persistent
-            }}
-            removeZoneObject={(field, zone) => field.removeScoringZoneObject(zone)}
+            applyExtrasOnSave={applyExtrasOnSave}
+            removeZoneObject={removeZoneObject}
             saveAllZones={saveAllZones}
         >
             <TextField
@@ -43,14 +49,11 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 label="Points"
                 placeholder="Zone points"
                 defaultValue={selectedZone.points}
-                onChange={v => {
-                    const parsed = parseInt(v.target.value)
-                    selectedZone.points = Number.isNaN(parsed) ? 1 : parsed
-                }}
+                onChange={v => setPoints(parseInt(v.target.value) || 1)}
             />
             <Checkbox label="Persistent Points" checked={persistent} onClick={checked => setPersistent(checked)} />
         </ZoneConfigBase>
     )
 }
 
-export default ZoneConfigInterface
+export default ScoringZoneConfigInterface

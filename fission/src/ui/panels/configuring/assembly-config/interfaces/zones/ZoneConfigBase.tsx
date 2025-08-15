@@ -178,32 +178,32 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
         return new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), getAllianceMaterial(selectedZone.alliance, materials))
     }, [selectedZone, selectedZone?.alliance, materials])
 
+    const postGizmoCreation = useCallback((gizmo: GizmoSceneObject) => {
+        const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+        material.depthTest = false
+
+        const deltaTransformation = convertArrayToThreeMatrix4(selectedZone.deltaTransformation)
+        let nodeBodyId = selectedField.mechanism.nodeToBody.get(
+            selectedZone.parentNode ?? selectedField.rootNodeId
+        )
+        if (!nodeBodyId) {
+            nodeBodyId = selectedField.mechanism.nodeToBody.get(selectedField.rootNodeId)!
+        }
+
+        const fieldTransformation = convertJoltMat44ToThreeMatrix4(
+            World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+        )
+        const props = deltaFieldTransformsPhysicalProp(deltaTransformation, fieldTransformation)
+
+        gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
+        gizmo.obj.rotation.setFromQuaternion(props.rotation)
+        gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
+
+        removeZoneObject(selectedField, selectedZone)
+    }, [selectedField, selectedZone, removeZoneObject])
+
     const gizmoComponent = useMemo(() => {
         if (selectedField && selectedZone) {
-            const postGizmoCreation = (gizmo: GizmoSceneObject) => {
-                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
-                material.depthTest = false
-
-                const deltaTransformation = convertArrayToThreeMatrix4(selectedZone.deltaTransformation)
-                let nodeBodyId = selectedField.mechanism.nodeToBody.get(
-                    selectedZone.parentNode ?? selectedField.rootNodeId
-                )
-                if (!nodeBodyId) {
-                    nodeBodyId = selectedField.mechanism.nodeToBody.get(selectedField.rootNodeId)!
-                }
-
-                const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
-                )
-                const props = deltaFieldTransformsPhysicalProp(deltaTransformation, fieldTransformation)
-
-                gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
-                gizmo.obj.rotation.setFromQuaternion(props.rotation)
-                gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
-
-                removeZoneObject(selectedField, selectedZone)
-            }
-
             return (
                 <TransformGizmoControl
                     key="zone-transform-gizmo"
@@ -218,7 +218,7 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
             gizmoRef.current = undefined
             return <></>
         }
-    }, [selectedField, selectedZone, defaultGizmoMesh, removeZoneObject])
+    }, [selectedField, selectedZone, defaultGizmoMesh, postGizmoCreation])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {

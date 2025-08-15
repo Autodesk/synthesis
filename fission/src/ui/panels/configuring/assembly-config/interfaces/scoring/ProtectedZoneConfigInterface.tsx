@@ -8,8 +8,7 @@ import {
     Select,
     TextField,
 } from "@mui/material"
-import { useState } from "react"
-import type * as THREE from "three"
+import { useState, useCallback, useMemo } from "react"
 import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
 import { ContactType } from "@/mirabuf/ZoneTypes"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
@@ -43,28 +42,34 @@ interface ZoneConfigProps {
     saveAllZones: () => void
 }
 
-const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
+const ProtectedZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
     const [penaltyPoints, setPenaltyPoints] = useState<number>(selectedZone.penaltyPoints)
     const [contactType, setContactType] = useState<ContactType>(selectedZone.contactType || ContactType.ROBOT_ENTERS)
     const [activeDuring, setActiveDuring] = useState<MatchModeType[]>(selectedZone.activeDuring)
 
     // Use the cloned FIRST materials like before
-    const materials = {
-        red: ProtectedZoneSceneObject.redMaterial.clone() as THREE.MeshPhongMaterial,
-        blue: ProtectedZoneSceneObject.blueMaterial.clone() as THREE.MeshPhongMaterial,
-    }
+    const materials = useMemo(() => ({
+        red: ProtectedZoneSceneObject.redMaterial.clone(),
+        blue: ProtectedZoneSceneObject.blueMaterial.clone(),
+    }), [])
+
+    const applyExtrasOnSave = useCallback((zone: ProtectedZonePreferences) => {
+        zone.penaltyPoints = penaltyPoints
+        zone.contactType = contactType
+        zone.activeDuring = activeDuring
+    }, [penaltyPoints, contactType, activeDuring])
+
+    const removeZoneObject = useCallback((field: MirabufSceneObject, zone: ProtectedZonePreferences) => {
+        field.removeProtectedZoneObject(zone)
+    }, [])
 
     return (
         <ZoneConfigBase
             selectedField={selectedField}
             selectedZone={selectedZone}
             attachAndPersistZone={attachAndPersistZone}
-            applyExtrasOnSave={zone => {
-                zone.penaltyPoints = penaltyPoints
-                zone.contactType = contactType
-                zone.activeDuring = activeDuring
-            }}
-            removeZoneObject={(field, zone) => field.removeProtectedZoneObject(zone)}
+            applyExtrasOnSave={applyExtrasOnSave}
+            removeZoneObject={removeZoneObject}
             saveAllZones={saveAllZones}
             materials={materials}
         >
@@ -85,12 +90,12 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                             target: { value },
                         } = e
                         setActiveDuring(
-                            (typeof value === "string" ? (value as string).split(",") : value) as MatchModeType[]
+                            typeof value === "string" ? value.split(",") as MatchModeType[] : value
                         )
                     }}
                     value={activeDuring}
                     input={<OutlinedInput label="Contact Type" />}
-                    renderValue={selected => (selected as MatchModeType[]).join(", ")}
+                    renderValue={selected => selected.join(", ")}
                     multiple
                 >
                     {MATCH_MODE_OPTIONS.map(opt => (
@@ -119,4 +124,4 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     )
 }
 
-export default ZoneConfigInterface
+export default ProtectedZoneConfigInterface

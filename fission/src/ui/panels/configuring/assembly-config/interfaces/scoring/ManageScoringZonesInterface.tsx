@@ -14,7 +14,7 @@ interface ScoringZonesProps {
     selectZone: (zone: ScoringZonePreferences) => void
 }
 
-const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, initialZones, selectZone }) => {
+const ManageScoringZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, initialZones, selectZone }) => {
     const baseProps: ManageZonesBaseProps<ScoringZonePreferences> = {
         selectedField,
         initialZones,
@@ -39,4 +39,4 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
     return <ManageZonesBase {...baseProps} />
 }
 
-export default ManageZonesInterface
+export default ManageScoringZonesInterface

@@ -16,7 +16,7 @@ interface ProtectedZonesProps {
     selectZone: (zone: ProtectedZonePreferences) => void
 }
 
-const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, initialZones, selectZone }) => {
+const ManageProtectedZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, initialZones, selectZone }) => {
     const baseProps: ManageZonesBaseProps<ProtectedZonePreferences> = {
         selectedField,
         initialZones,
@@ -41,4 +41,4 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
     return <ManageZonesBase {...baseProps} />
 }
 
-export default ManageZonesInterface
+export default ManageProtectedZonesInterface

@@ -6,9 +6,9 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
-import ZoneConfigInterface from "./ProtectedZoneConfigInterface"
+import ProtectedZoneConfigInterface from "./ProtectedZoneConfigInterface"
 
-const protectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+const saveProtectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
 
     const fieldPrefs = field.fieldPreferences
@@ -48,11 +48,11 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                         </Stack>
                     </Stack>
                     <Divider />
-                    <ZoneConfigInterface
+                    <ProtectedZoneConfigInterface
                         selectedField={selectedField}
                         selectedZone={selectedZone}
                         saveAllZones={() => {
-                            protectedZones(selectedField.fieldPreferences?.protectedZones, selectedField)
+                            saveProtectedZones(selectedField.fieldPreferences?.protectedZones, selectedField)
                         }}
                     />
                 </>
