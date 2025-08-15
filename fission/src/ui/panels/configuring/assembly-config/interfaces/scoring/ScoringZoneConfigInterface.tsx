@@ -26,10 +26,13 @@ const ScoringZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, 
     const [points, setPoints] = useState<number>(selectedZone.points)
     const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
 
-    const applyExtrasOnSave = useCallback((zone: ScoringZonePreferences) => {
-        zone.points = points
-        zone.persistentPoints = persistent
-    }, [points, persistent])
+    const applyExtrasOnSave = useCallback(
+        (zone: ScoringZonePreferences) => {
+            zone.points = points
+            zone.persistentPoints = persistent
+        },
+        [points, persistent]
+    )
 
     const removeZoneObject = useCallback((field: MirabufSceneObject, zone: ScoringZonePreferences) => {
         field.removeScoringZoneObject(zone)

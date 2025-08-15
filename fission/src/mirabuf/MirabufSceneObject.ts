@@ -600,28 +600,28 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return true
     }
 
-    	public updateScoringZones(render?: boolean) {
-		this._scoringZones.filter(zone => zone.id != -1).forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
-		this._scoringZones = []
+    public updateScoringZones(render?: boolean) {
+        this._scoringZones.filter(zone => zone.id != -1).forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
+        this._scoringZones = []
 
-		if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
-			// Auto-sync devtool data so scoring zones persist across reloads
-			const parts = this._mirabufInstance.parser.assembly.data?.parts
-			if (parts) {
-				const editor = new FieldMiraEditor(parts)
-				editor.setUserData("devtool:scoring_zones", this._fieldPreferences.scoringZones)
-			}
-			for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
-				const newZone = new ScoringZoneSceneObject(
-					this,
-					i,
-					render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
-				)
-				this._scoringZones.push(newZone)
-				World.sceneRenderer.registerSceneObject(newZone)
-			}
-		}
-	}
+        if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
+            // Auto-sync devtool data so scoring zones persist across reloads
+            const parts = this._mirabufInstance.parser.assembly.data?.parts
+            if (parts) {
+                const editor = new FieldMiraEditor(parts)
+                editor.setUserData("devtool:scoring_zones", this._fieldPreferences.scoringZones)
+            }
+            for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
+                const newZone = new ScoringZoneSceneObject(
+                    this,
+                    i,
+                    render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
+                )
+                this._scoringZones.push(newZone)
+                World.sceneRenderer.registerSceneObject(newZone)
+            }
+        }
+    }
 
     public updateProtectedZones(render?: boolean) {
         this._protectedZones
@@ -815,27 +815,27 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
 
-        		// For fields, sync devtool data with field preferences
-		if (this.miraType === MiraType.FIELD) {
-			const parts = this._mirabufInstance.parser.assembly.data?.parts
-			if (parts) {
-				const editor = new FieldMiraEditor(parts)
-				// First, push current preferences into devtool so handlers don't overwrite saved prefs
-				if (this._fieldPreferences) {
-					if (this._fieldPreferences.scoringZones && this._fieldPreferences.scoringZones.length > 0) {
-						editor.setUserData("devtool:scoring_zones", this._fieldPreferences.scoringZones)
-					}
-					if (this._fieldPreferences.spawnLocations?.hasConfiguredLocations) {
-						editor.setUserData("devtool:spawn_locations", this._fieldPreferences.spawnLocations)
-					}
-				}
-				devtoolKeys.forEach(key => {
-					devtoolHandlers[key].set(this, editor.getUserData(key))
-				})
-				PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
-				PreferencesSystem.savePreferences()
-			}
-		}
+        // For fields, sync devtool data with field preferences
+        if (this.miraType === MiraType.FIELD) {
+            const parts = this._mirabufInstance.parser.assembly.data?.parts
+            if (parts) {
+                const editor = new FieldMiraEditor(parts)
+                // First, push current preferences into devtool so handlers don't overwrite saved prefs
+                if (this._fieldPreferences) {
+                    if (this._fieldPreferences.scoringZones && this._fieldPreferences.scoringZones.length > 0) {
+                        editor.setUserData("devtool:scoring_zones", this._fieldPreferences.scoringZones)
+                    }
+                    if (this._fieldPreferences.spawnLocations?.hasConfiguredLocations) {
+                        editor.setUserData("devtool:spawn_locations", this._fieldPreferences.spawnLocations)
+                    }
+                }
+                devtoolKeys.forEach(key => {
+                    devtoolHandlers[key].set(this, editor.getUserData(key))
+                })
+                PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
+                PreferencesSystem.savePreferences()
+            }
+        }
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {

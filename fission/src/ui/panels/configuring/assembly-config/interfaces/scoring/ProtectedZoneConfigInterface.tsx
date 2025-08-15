@@ -48,16 +48,22 @@ const ProtectedZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField
     const [activeDuring, setActiveDuring] = useState<MatchModeType[]>(selectedZone.activeDuring)
 
     // Use the cloned FIRST materials like before
-    const materials = useMemo(() => ({
-        red: ProtectedZoneSceneObject.redMaterial.clone(),
-        blue: ProtectedZoneSceneObject.blueMaterial.clone(),
-    }), [])
+    const materials = useMemo(
+        () => ({
+            red: ProtectedZoneSceneObject.redMaterial.clone(),
+            blue: ProtectedZoneSceneObject.blueMaterial.clone(),
+        }),
+        []
+    )
 
-    const applyExtrasOnSave = useCallback((zone: ProtectedZonePreferences) => {
-        zone.penaltyPoints = penaltyPoints
-        zone.contactType = contactType
-        zone.activeDuring = activeDuring
-    }, [penaltyPoints, contactType, activeDuring])
+    const applyExtrasOnSave = useCallback(
+        (zone: ProtectedZonePreferences) => {
+            zone.penaltyPoints = penaltyPoints
+            zone.contactType = contactType
+            zone.activeDuring = activeDuring
+        },
+        [penaltyPoints, contactType, activeDuring]
+    )
 
     const removeZoneObject = useCallback((field: MirabufSceneObject, zone: ProtectedZonePreferences) => {
         field.removeProtectedZoneObject(zone)
@@ -89,9 +95,7 @@ const ProtectedZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField
                         const {
                             target: { value },
                         } = e
-                        setActiveDuring(
-                            typeof value === "string" ? value.split(",") as MatchModeType[] : value
-                        )
+                        setActiveDuring(typeof value === "string" ? (value.split(",") as MatchModeType[]) : value)
                     }}
                     value={activeDuring}
                     input={<OutlinedInput label="Contact Type" />}
