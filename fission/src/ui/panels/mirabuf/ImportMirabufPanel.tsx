@@ -439,8 +439,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     alignSelf: "center",
                 }}
             >
-                <ToggleButton value={MiraType.ROBOT}>Robots</ToggleButton>
-                <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
+                <ToggleButton id="toggle-robots" value={MiraType.ROBOT}>Robots</ToggleButton>
+                <ToggleButton id="toggle-fields" value={MiraType.FIELD}>Fields</ToggleButton>
             </ToggleButtonGroup>
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
@@ -511,6 +511,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     {viewType === MiraType.ROBOT ? remoteRobotElements : remoteFieldElements}
                     <Stack justifyContent="center" mt={1}>
                         <PositiveButton
+                            id="download-all"
                             onClick={viewType === MiraType.ROBOT ? downloadAllRemoteRobots : downloadAllRemoteFields}
                         >
                             Download All
@@ -520,6 +521,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             </Accordion>
             <Box alignSelf={"center"}>
                 <Button
+                    id="import-from-file"
                     onClick={() => {
                         openModal(ImportLocalMirabufModal, undefined)
                         closePanel(panel!.id, CloseType.Overwrite)

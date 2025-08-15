@@ -18,6 +18,7 @@ import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import DebugPanel from "../panels/DebugPanel"
 import DeveloperToolPanel from "../panels/DeveloperToolPanel"
+import EducationChatPanel from "../panels/EducationChatPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { SynthesisIcons } from "./StyledComponents"
@@ -222,6 +223,11 @@ const MainHUD: React.FC = () => {
                         value={"Developer Tool"}
                         icon={SynthesisIcons.CODE_SQUARE}
                         onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                    />
+                    <MainHUDButton
+                        value={"Education Chat"}
+                        icon={SynthesisIcons.QUESTION}
+                        onClick={() => openPanel(EducationChatPanel, undefined)}
                     />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
