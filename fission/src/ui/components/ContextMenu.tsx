@@ -1,4 +1,5 @@
-import { Button, Divider, Stack } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
+import { Button } from "./StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"

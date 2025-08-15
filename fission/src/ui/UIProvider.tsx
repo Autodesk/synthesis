@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close"
-import { IconButton } from "@mui/material"
+import { IconButton } from "./components/StyledComponents"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"

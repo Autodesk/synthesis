@@ -1,4 +1,5 @@
-import { Button, Divider, Stack } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
+import { Button, IconButton } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
@@ -7,20 +8,24 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import AxisInput from "@/systems/input/inputs/AxisInput.ts"
 import type Input from "@/systems/input/inputs/Input"
+import Label from "@/ui/components/Label"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
+    panelId?: string
+    onBack?: () => void
 }
 
-const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
+const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme, panelId, onBack }) => {
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
     const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
-        InputSchemeManager.saveSchemes()
-    }, [])
+        InputSchemeManager.saveSchemes(panelId)
+    }, [panelId])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
@@ -52,6 +57,25 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
 
     return (
         <>
+            {/** Back button to return to input scheme selection */}
+            {onBack && (
+                <>
+                    <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
+                        {/** Back arrow button when an option is selected */}
+                        <IconButton onClick={onBack} id="select-menu-back-button">
+                            {SynthesisIcons.LEFT_ARROW_LARGE}
+                        </IconButton>
+
+                        <Stack alignSelf={"center"}>
+                            <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                Back to Input Schemes
+                            </Label>
+                        </Stack>
+                    </Stack>
+                    <Divider />
+                </>
+            )}
+
             {/** Toggle the input scheme between controller and keyboard mode */}
             <Checkbox
                 label="Use Controller"

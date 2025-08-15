@@ -1,4 +1,5 @@
-import { Button, Divider, IconButton, Stack } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
+import { Button, IconButton } from "./StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Label from "./Label"
