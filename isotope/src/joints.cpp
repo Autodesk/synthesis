@@ -12,6 +12,10 @@
 #include <Fusion/Components/JointGeometry.h>
 #include <Fusion/Components/JointOrigin.h>
 #include <Fusion/Components/Occurrence.h>
+#include <Core/Memory.h>
+#include <Fusion/Components/Component.h>
+#include <Fusion/Fusion/Design.h>
+#include <Fusion/FusionTypeDefs.h>
 
 #include "assembly.pb.h"
 #include "joint.pb.h"
@@ -20,9 +24,14 @@
 
 #include "util.h"
 
+#include <memory>
+#include <stack>
 #include <variant>
 #include <string>
+#include <unordered_set>
 #include <unordered_map>
+#include <optional>
+#include <vector>
 
 namespace {
 
@@ -205,6 +214,271 @@ adsk::core::Ptr<adsk::core::Point3D> get_joint_origin(const adsk::fusion::Joint*
     return result;
 }
 
+adsk::core::Ptr<adsk::fusion::Occurrence> search_for_grounded(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
+    if (occurrence->isGrounded()) {
+        return occurrence;
+    }
+
+    for (const auto occ : occurrence->childOccurrences()) {
+        auto searched = search_for_grounded(occ);
+
+        if (searched) {
+            return searched;
+        }
+    }
+
+    return nullptr;
+}
+
+adsk::core::Ptr<adsk::fusion::Occurrence> search_for_grounded(const adsk::core::Ptr<adsk::fusion::Component>& root) {
+    for (const auto occ : root->allOccurrences()) {
+        auto searched = search_for_grounded(occ);
+
+        if (searched) {
+            return searched;
+        }
+    }
+
+    return nullptr;
+}
+
+enum OccurrenceRelationship {
+    TRANSFORM, // Hierarchy parenting
+    CONNECTION, // A rigid joint or other designator
+    GROUP, // A rigid grouping
+    NEXT, // The next joint in a list
+    END, // Orphaned child relationship
+    NONE,
+};
+
+struct GraphEdge;
+
+// TODO: Should maybe separate this out into multiple structs
+// overlapping purpose
+struct GraphNode {
+    adsk::core::Ptr<adsk::fusion::Occurrence> data = nullptr;
+    std::shared_ptr<GraphNode> previous = nullptr;
+    std::vector<std::shared_ptr<GraphEdge>> edges{};
+
+    adsk::core::Ptr<adsk::fusion::Joint> joint = nullptr;
+};
+
+struct GraphEdge {
+    OccurrenceRelationship relationship = NONE;
+    std::shared_ptr<GraphNode> node = nullptr;
+};
+
+std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence, std::shared_ptr<GraphNode> prev, OccurrenceRelationship relationship, bool is_ground, std::unordered_set<std::string>& visited_occurrence_entity_tokens, const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints) {
+    if (occurrence->isGrounded() && !is_ground) {
+        return std::nullopt;
+    }
+
+    if (relationship == NEXT && prev) {
+        auto node = GraphNode{occurrence};
+        auto edge = GraphEdge{relationship, std::make_shared<GraphNode>(node)};
+        prev->edges.push_back(std::make_shared<GraphEdge>(edge));
+        return std::nullopt;
+    } 
+
+    if (prev && dynamic_joints.find(occurrence->entityToken()) != dynamic_joints.end()) {
+        return std::nullopt;
+    }
+
+    if (visited_occurrence_entity_tokens.count(occurrence->entityToken())) {
+        return std::nullopt;
+    }
+
+    visited_occurrence_entity_tokens.insert(occurrence->entityToken());
+    auto node = std::make_shared<GraphNode>(GraphNode{occurrence, prev});
+    for (auto occ : occurrence->childOccurrences()) {
+        populate_node(occ, node, TRANSFORM, is_ground, visited_occurrence_entity_tokens, dynamic_joints);
+    }
+
+    for (auto joint : occurrence->joints()) {
+        if (!joint || !joint->occurrenceOne() || !joint->occurrenceTwo()) {
+            continue;
+        }
+
+        bool is_rigid = joint->jointMotion()->jointType() == adsk::fusion::RigidJointType;
+        adsk::core::Ptr<adsk::fusion::Occurrence> connection = nullptr;
+        if (is_rigid) {
+            if (joint->occurrenceOne() == occurrence) {
+                connection = joint->occurrenceTwo();
+            } else if (joint->occurrenceTwo() == occurrence) {
+                connection = joint->occurrenceOne();
+            }
+        } else {
+            if (joint->occurrenceOne() != occurrence) {
+                connection = joint->occurrenceOne();
+            }
+        }
+
+        if (!connection) {
+            continue;
+        }
+
+        if (!prev || connection->entityToken() != prev->data->entityToken()) {
+            populate_node(connection, node, is_rigid ? CONNECTION : NEXT, is_ground, visited_occurrence_entity_tokens, dynamic_joints);
+        }
+    }
+
+    if (prev) {
+        prev->edges.push_back(std::make_shared<GraphEdge>(GraphEdge{relationship, node}));
+    }
+
+    return node;
+}
+
+std::optional<mirabuf::Node> create_tree_parts(std::shared_ptr<GraphNode> occurrence_node, OccurrenceRelationship relationship) {
+    if (relationship == NEXT || !occurrence_node->data->isLightBulbOn()) {
+        return std::nullopt;
+    }
+
+    mirabuf::Node node;
+    node.set_value(occurrence_node->data->name());
+    for (auto edge : occurrence_node->edges) {
+        auto dyn_node = std::dynamic_pointer_cast<GraphNode>(edge->node);
+        auto child_node = create_tree_parts(dyn_node, edge->relationship);
+        if (child_node) {
+            node.mutable_children()->Add()->CopyFrom(child_node.value());
+        }
+    }
+
+    return node;
+}
+
+void populate_joint(std::shared_ptr<GraphNode> sim_node, mirabuf::joint::Joints* joints) {
+    mirabuf::joint::JointInstance* joint = nullptr;
+    if (!sim_node->joint) {
+        joint = &(*joints->mutable_joint_instances())["grounded"];
+    } else {
+        joint = &(*joints->mutable_joint_instances())[sim_node->joint->entityToken()];
+    }
+
+    assert(joint);
+    auto root = create_tree_parts(sim_node, CONNECTION);
+    if (root) {
+        joint->mutable_parts()->mutable_nodes()->Add()->CopyFrom(root.value());
+    }
+
+    for (auto edge : sim_node->edges) {
+        populate_joint(edge->node, joints);
+    }
+}
+
+void get_all_joints(adsk::core::Ptr<adsk::fusion::Component> root_component, adsk::core::Ptr<adsk::fusion::Occurrence> grounded, std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>>& grounded_connections,     std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints) {
+    auto process_joint = [&](const auto /* adsk::fusion::joint | adsk::fusion::AsBuiltJoint */ joint) -> void {
+        assert(joint);
+        if (!joint->occurrenceOne() || !joint->occurrenceTwo()) {
+            return;
+        }
+
+        if (joint->jointMotion()->jointType() != adsk::fusion::RigidJointType) {
+            if (dynamic_joints.find(joint->occurrenceOne()->entityToken()) == dynamic_joints.end()) {
+                dynamic_joints[joint->occurrenceOne()->entityToken()] = joint;
+            }
+        } else {
+            if (joint->occurrenceOne()->entityToken() == grounded->entityToken()) {
+                grounded_connections.push_back(joint->occurrenceTwo());
+            } else if (joint->occurrenceTwo()->entityToken() == grounded->entityToken()) {
+                grounded_connections.push_back(joint->occurrenceOne());
+            }
+        }
+    };
+
+    for (const auto& j : root_component->allJoints()) {
+        process_joint(j);
+    }
+
+    for (const auto& j : root_component->allAsBuiltJoints()) {
+        process_joint(j);
+    }
+}
+
+void look_for_grounded_joints(const std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>>& grounded_connections, const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints, std::shared_ptr<GraphNode> root_node) {
+    for (auto& grounded_connection : grounded_connections) {
+        std::unordered_set<std::string> visited;
+        populate_node(grounded_connection, root_node, CONNECTION, false, visited, dynamic_joints);
+    }
+}
+
+void populate_axis(const adsk::core::Ptr<adsk::fusion::Design>& design, std::unordered_map<std::string, std::shared_ptr<GraphNode>>& simulation_nodes, const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints, const std::string& occurrence_token, const adsk::core::Ptr<adsk::fusion::Joint>& joint) {
+    auto result = design->findEntityByToken(occurrence_token);
+    if (result.empty() || !result.at(0)) {
+        return;
+    }
+
+    auto occurrence = static_cast<adsk::core::Ptr<adsk::fusion::Occurrence>>(result[0]);
+    if (!occurrence) {
+        return;
+    }
+
+    std::unordered_set<std::string> visited;
+    auto node = populate_node(occurrence, nullptr, NONE, false, visited, dynamic_joints);
+    if (node) {
+        node.value()->joint = joint;
+        simulation_nodes[occurrence_token] = node.value();
+    }
+}
+
+std::vector<std::string> get_connected_axis_tokens(std::shared_ptr<GraphNode> start) {
+    std::vector<std::string> tokens;
+    std::unordered_set<const GraphNode*> visited_nodes;
+    std::unordered_set<std::string> visited_tokens;
+
+    std::stack<const GraphNode*> stack;
+    stack.push(start.get());
+
+    while (!stack.empty()) {
+        const GraphNode* node = stack.top();
+        stack.pop();
+        if (!visited_nodes.insert(node).second) {
+            continue;
+        }
+
+        for (const auto& edge : node->edges) {
+            if (edge->relationship == NEXT) {
+                std::string token = edge->node->data->entityToken();
+                if (visited_tokens.insert(token).second) {
+                    tokens.emplace_back(std::move(token));
+                }
+            } else {
+                stack.push(edge->node.get());
+            }
+        }
+    }
+
+    return tokens;
+}
+
+void recurse_link_node_axis(std::shared_ptr<GraphNode> root_node, const std::unordered_map<std::string, std::shared_ptr<GraphNode>>& simulation_nodes) {
+    const std::vector<std::string> tokens = get_connected_axis_tokens(root_node);
+    for (const auto& key : tokens) {
+        auto it = simulation_nodes.find(key);
+        if (it == simulation_nodes.end()) {
+            continue;
+        }
+
+        // The original python exporter has separate enums for tracking
+        // both occurrence relationships and joint relationships.
+        //
+        // This, when transitioning to C++, made the types very complex as each
+        // node would contain either a occurrence relationship or a joint
+        // relationship label.
+        //
+        // Within this rewrite of the exporter this was omitted as the original
+        // functionality and necessity for these two distinct label types was
+        // unclear.
+        //
+        // Joint relationships are not tracked, only occurrence relationships are.
+        //
+        // For more information visit:
+        // https://github.com/Autodesk/synthesis/blob/f9bc9be63e21a705d7c8f5be9607f912764e0aa0/exporter/SynthesisFusionAddin/src/Parser/SynthesisParser/JointHierarchy.py#L54-L67
+        root_node->edges.push_back(std::make_shared<GraphEdge>(GraphEdge{NONE, it->second}));
+        recurse_link_node_axis(it->second, simulation_nodes);
+    }
+}
+
 } // namespace
 
 std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
@@ -324,4 +598,39 @@ mirabuf::GraphContainer create_joint_graph(const mirabuf::joint::Joints& joints)
     }
 
     return joint_tree;
+}
+
+void build_joint_part_hierarchy(mirabuf::joint::Joints *joints, const adsk::core::Ptr<adsk::fusion::Design>& design) {
+    std::unordered_set<std::string> visited_occurrence_entity_tokens;
+    std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>> dynamic_joints;
+    std::unordered_map<std::string, std::shared_ptr<GraphNode>> simulation_nodes;
+    std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> grounded_connections;
+
+    auto grounded = search_for_grounded(design->rootComponent());
+
+    // If there was anything that represented that the C++ exporter is currently 
+    // experimental it would be this. Not having a grounded node is a very common
+    // user facing problem and simply asserting this will cause fusion to crash.
+    // In the future if we want to actually support this section of the project
+    // we will need to update this into an actual error system.
+    //
+    // Note for future development:
+    // All instances of `assert(..)` need to be removed as Fusion simply cannot catch
+    // these errors and will crash.
+    assert(grounded);
+
+    get_all_joints(design->rootComponent(), grounded, grounded_connections, dynamic_joints);
+
+    auto root_node = populate_node(grounded, nullptr, NONE, true, visited_occurrence_entity_tokens, dynamic_joints).value();
+    simulation_nodes["ground"] = root_node;
+
+    look_for_grounded_joints(grounded_connections, dynamic_joints, root_node);
+
+    for (const auto&[key, value] : dynamic_joints) {
+        populate_axis(design, simulation_nodes, dynamic_joints, key, value);
+    }
+
+    recurse_link_node_axis(root_node, simulation_nodes);
+
+    populate_joint(root_node, joints);
 }
