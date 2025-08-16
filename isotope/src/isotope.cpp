@@ -1,6 +1,3 @@
-#include "config_command.h"
-#include "context.h"
-
 #include <Core/Application/Application.h>
 #include <Core/Memory.h>
 #include <Core/UserInterface/CommandControl.h>
@@ -19,6 +16,9 @@
 #include <Core/UserInterface/Workspaces.h>
 
 #include <string>
+
+#include "config_command.h"
+#include "context.h"
 
 GlobalContext gctx;
 

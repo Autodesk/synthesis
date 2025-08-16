@@ -1,91 +1,92 @@
 #include "components.h"
 
-#include "Core/Geometry/Matrix3D.h"
+#include <vector>
+
 #include "assembly.pb.h"
 #include "types.pb.h"
 
-#include <vector>
+#include "Core/Geometry/Matrix3D.h"
 
 namespace {
 
-    mirabuf::PhysicalProperties map_physical_properties(
-        const adsk::core::Ptr<adsk::fusion::PhysicalProperties>& properties) {
-        mirabuf::PhysicalProperties new_properties;
-        new_properties.set_mass(properties->mass());
-        new_properties.set_volume(properties->volume());
-        new_properties.set_density(properties->density());
-        new_properties.set_area(properties->area());
-        if (auto com = properties->centerOfMass()) {
-            if (auto vec = com->asVector()) {
-                new_properties.mutable_com()->set_x(vec->x());
-                new_properties.mutable_com()->set_y(vec->y());
-                new_properties.mutable_com()->set_z(vec->z());
-            }
+mirabuf::PhysicalProperties map_physical_properties(
+    const adsk::core::Ptr<adsk::fusion::PhysicalProperties>& properties) {
+    mirabuf::PhysicalProperties new_properties;
+    new_properties.set_mass(properties->mass());
+    new_properties.set_volume(properties->volume());
+    new_properties.set_density(properties->density());
+    new_properties.set_area(properties->area());
+    if (auto com = properties->centerOfMass()) {
+        if (auto vec = com->asVector()) {
+            new_properties.mutable_com()->set_x(vec->x());
+            new_properties.mutable_com()->set_y(vec->y());
+            new_properties.mutable_com()->set_z(vec->z());
         }
-
-        return new_properties;
     }
 
-    mirabuf::TriangleMesh map_b_rep_body(const adsk::core::Ptr<adsk::fusion::BRepBody>& body) {
-        // auto calc = body->meshManager()->createMeshCalculator();
-        auto mesh_mgr = body->meshManager();
-        if (!mesh_mgr) {
-            return {};
-        }
+    return new_properties;
+}
 
-        auto calc = mesh_mgr->createMeshCalculator();
-        if (!calc) {
-            return {};
-        }
-
-        calc->setQuality(adsk::fusion::TriangleMeshQualityOptions::LowQualityTriangleMesh);
-        auto fus_mesh = calc->calculate();
-        if (!fus_mesh) {
-            return {};
-        }
-
-        mirabuf::TriangleMesh mesh;
-        mesh.mutable_info()->set_name(body->name());
-        // TODO: Info guid
-        mesh.mutable_info()->set_version(1);
-        mesh.set_has_volume(true);
-
-        std::vector<float> coords = fus_mesh->nodeCoordinatesAsFloat();
-        mesh.mutable_mesh()->mutable_verts()->Add(coords.begin(), coords.end());
-
-        std::vector<float> normals = fus_mesh->normalVectorsAsFloat();
-        mesh.mutable_mesh()->mutable_normals()->Add(normals.begin(), normals.end());
-
-        std::vector<int> node_indicies = fus_mesh->nodeIndices();
-        mesh.mutable_mesh()->mutable_indices()->Add(node_indicies.begin(), node_indicies.end());
-
-        std::vector<float> texture_coords = fus_mesh->textureCoordinatesAsFloat();
-        mesh.mutable_mesh()->mutable_uv()->Add(texture_coords.begin(), texture_coords.end());
-
-        return mesh;
+mirabuf::TriangleMesh map_b_rep_body(const adsk::core::Ptr<adsk::fusion::BRepBody>& body) {
+    // auto calc = body->meshManager()->createMeshCalculator();
+    auto mesh_mgr = body->meshManager();
+    if (!mesh_mgr) {
+        return {};
     }
 
-    mirabuf::TriangleMesh map_mesh_body(const adsk::core::Ptr<adsk::fusion::MeshBody>& body) {
-        auto fus_mesh = body->displayMesh();
-
-        mirabuf::TriangleMesh mesh;
-        // TODO: Info crap (this is getting annoying)
-        mesh.set_has_volume(true);
-
-        std::vector<float> coords = fus_mesh->nodeCoordinatesAsFloat();
-        mesh.mutable_mesh()->mutable_verts()->Add(coords.begin(), coords.end());
-
-        std::vector<float> normals = fus_mesh->normalVectorsAsFloat();
-        mesh.mutable_mesh()->mutable_normals()->Add(normals.begin(), normals.end());
-
-        std::vector<int> node_indicies = fus_mesh->nodeIndices();
-        mesh.mutable_mesh()->mutable_indices()->Add(node_indicies.begin(), node_indicies.end());
-
-        std::vector<float> texture_coords = fus_mesh->textureCoordinatesAsFloat();
-        mesh.mutable_mesh()->mutable_uv()->Add(texture_coords.begin(), texture_coords.end());
-
-        return mesh;
+    auto calc = mesh_mgr->createMeshCalculator();
+    if (!calc) {
+        return {};
     }
+
+    calc->setQuality(adsk::fusion::TriangleMeshQualityOptions::LowQualityTriangleMesh);
+    auto fus_mesh = calc->calculate();
+    if (!fus_mesh) {
+        return {};
+    }
+
+    mirabuf::TriangleMesh mesh;
+    mesh.mutable_info()->set_name(body->name());
+    // TODO: Info guid
+    mesh.mutable_info()->set_version(1);
+    mesh.set_has_volume(true);
+
+    std::vector<float> coords = fus_mesh->nodeCoordinatesAsFloat();
+    mesh.mutable_mesh()->mutable_verts()->Add(coords.begin(), coords.end());
+
+    std::vector<float> normals = fus_mesh->normalVectorsAsFloat();
+    mesh.mutable_mesh()->mutable_normals()->Add(normals.begin(), normals.end());
+
+    std::vector<int> node_indicies = fus_mesh->nodeIndices();
+    mesh.mutable_mesh()->mutable_indices()->Add(node_indicies.begin(), node_indicies.end());
+
+    std::vector<float> texture_coords = fus_mesh->textureCoordinatesAsFloat();
+    mesh.mutable_mesh()->mutable_uv()->Add(texture_coords.begin(), texture_coords.end());
+
+    return mesh;
+}
+
+mirabuf::TriangleMesh map_mesh_body(const adsk::core::Ptr<adsk::fusion::MeshBody>& body) {
+    auto fus_mesh = body->displayMesh();
+
+    mirabuf::TriangleMesh mesh;
+    // TODO: Info crap (this is getting annoying)
+    mesh.set_has_volume(true);
+
+    std::vector<float> coords = fus_mesh->nodeCoordinatesAsFloat();
+    mesh.mutable_mesh()->mutable_verts()->Add(coords.begin(), coords.end());
+
+    std::vector<float> normals = fus_mesh->normalVectorsAsFloat();
+    mesh.mutable_mesh()->mutable_normals()->Add(normals.begin(), normals.end());
+
+    std::vector<int> node_indicies = fus_mesh->nodeIndices();
+    mesh.mutable_mesh()->mutable_indices()->Add(node_indicies.begin(), node_indicies.end());
+
+    std::vector<float> texture_coords = fus_mesh->textureCoordinatesAsFloat();
+    mesh.mutable_mesh()->mutable_uv()->Add(texture_coords.begin(), texture_coords.end());
+
+    return mesh;
+}
 
 } // namespace
 
@@ -152,68 +153,68 @@ mirabuf::Parts map_all_parts(
 }
 
 namespace {
-    adsk::core::Ptr<adsk::core::Matrix3D> get_matrix_world(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
-        if (!occurrence) {
-            return nullptr;
-        }
-
-        auto matrix = occurrence->transform2()->copy();
-        auto next_occurrence = occurrence;
-        while (next_occurrence->assemblyContext()) {
-            matrix->transformBy(next_occurrence->assemblyContext()->transform2());
-            next_occurrence = next_occurrence->assemblyContext();
-        }
-
-        return matrix;
+adsk::core::Ptr<adsk::core::Matrix3D> get_matrix_world(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
+    if (!occurrence) {
+        return nullptr;
     }
 
-    mirabuf::Node parse_child_occurrence(
-        const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence, mirabuf::Parts* parts) {
-        assert(occurrence->isLightBulbOn());
-
-        mirabuf::Node node;
-        // TODO: Info stuff
-
-        auto part = parts->mutable_part_instances()->find(occurrence->component()->id());
-
-        // set top info
-
-        // set occurrence appearance
-        if (occurrence->appearance()) {
-            auto appearance_id = occurrence->appearance()->id();
-            part->second.set_appearance(appearance_id);
-        }
-
-        // set part physical material
-        if (auto material = occurrence->component()->material()) {
-            part->second.set_physical_material(material->id());
-        }
-
-        // set part spatial matrix
-        part->second.mutable_transform()->mutable_spatial_matrix()->Add(
-            occurrence->transform()->asArray().begin(), occurrence->transform()->asArray().end());
-
-        // set part global transform
-        // auto world_transform = get_matrix_world(occurrence);
-        // if (world_transform) {
-        //     part->second.mutable_global_transform()->mutable_spatial_matrix()->Add(
-        //         world_transform->asArray().begin(), world_transform->asArray().end());
-        // }
-
-        // final recursive step to parse child occurrences
-        std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;
-        occurrence->childOccurrences()->copyTo(std::back_inserter(child_occurrences));
-        for (const auto& child_occurrence : child_occurrences) {
-            if (!child_occurrence->isLightBulbOn()) {
-                continue;
-            }
-
-            auto child_node = parse_child_occurrence(child_occurrence, parts);
-            node.mutable_children()->Add()->CopyFrom(child_node);
-        }
-
-        return node;
+    auto matrix          = occurrence->transform2()->copy();
+    auto next_occurrence = occurrence;
+    while (next_occurrence->assemblyContext()) {
+        matrix->transformBy(next_occurrence->assemblyContext()->transform2());
+        next_occurrence = next_occurrence->assemblyContext();
     }
+
+    return matrix;
+}
+
+mirabuf::Node parse_child_occurrence(
+    const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence, mirabuf::Parts* parts) {
+    assert(occurrence->isLightBulbOn());
+
+    mirabuf::Node node;
+    // TODO: Info stuff
+
+    auto part = parts->mutable_part_instances()->find(occurrence->component()->id());
+
+    // set top info
+
+    // set occurrence appearance
+    if (occurrence->appearance()) {
+        auto appearance_id = occurrence->appearance()->id();
+        part->second.set_appearance(appearance_id);
+    }
+
+    // set part physical material
+    if (auto material = occurrence->component()->material()) {
+        part->second.set_physical_material(material->id());
+    }
+
+    // set part spatial matrix
+    part->second.mutable_transform()->mutable_spatial_matrix()->Add(
+        occurrence->transform()->asArray().begin(), occurrence->transform()->asArray().end());
+
+    // set part global transform
+    // auto world_transform = get_matrix_world(occurrence);
+    // if (world_transform) {
+    //     part->second.mutable_global_transform()->mutable_spatial_matrix()->Add(
+    //         world_transform->asArray().begin(), world_transform->asArray().end());
+    // }
+
+    // final recursive step to parse child occurrences
+    std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;
+    occurrence->childOccurrences()->copyTo(std::back_inserter(child_occurrences));
+    for (const auto& child_occurrence : child_occurrences) {
+        if (!child_occurrence->isLightBulbOn()) {
+            continue;
+        }
+
+        auto child_node = parse_child_occurrence(child_occurrence, parts);
+        node.mutable_children()->Add()->CopyFrom(child_node);
+    }
+
+    return node;
+}
 
 } // namespace
 

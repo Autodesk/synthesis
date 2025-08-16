@@ -6,15 +6,15 @@
 #include <Fusion/Components/JointGeometry.h>
 #include <Fusion/Components/JointOrigin.h>
 
-#include <variant>
 #include <string_view>
+#include <variant>
 
-template<typename T>
+template <typename T>
 struct FusionTypeName;
 
-#define DEFINE_FUSION_TYPE_NAME(type) \
-    template<> \
-    struct FusionTypeName<type> { \
+#define DEFINE_FUSION_TYPE_NAME(type)                    \
+    template <>                                          \
+    struct FusionTypeName<type> {                        \
         static constexpr std::string_view value = #type; \
     }
 
@@ -23,7 +23,7 @@ DEFINE_FUSION_TYPE_NAME(adsk::fusion::JointOrigin);
 DEFINE_FUSION_TYPE_NAME(adsk::fusion::BRepEdge);
 DEFINE_FUSION_TYPE_NAME(adsk::fusion::BRepFace);
 
-template<typename T>
+template <typename T>
 const T* fusion_try_cast(const adsk::core::Base* base) {
     if (!base) {
         return nullptr;
@@ -55,7 +55,11 @@ std::variant<std::monostate, const Ts*...> fusion_base_to_variant(const adsk::co
     return fusion_base_to_variant_impl<VariantT, Ts...>(base);
 }
 
-template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+template <class... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+template <class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
 
 #endif // ISOTOPE_UTILITY_H_

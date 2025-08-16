@@ -2,10 +2,10 @@
 #ifndef ISOTOPE_CONFIG_COMMAND_H_
 #define ISOTOPE_CONFIG_COMMAND_H_
 
-#include "context.h"
-
 #include <Core/UserInterface/CommandCreatedEventHandler.h>
 #include <Core/UserInterface/CommandEventHandler.h>
+
+#include "context.h"
 
 class ConfigureCommandCreatedHandler : public adsk::core::CommandCreatedEventHandler {
 private:

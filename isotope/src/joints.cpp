@@ -1,21 +1,29 @@
 #include "joints.h"
 
-#include <Fusion/FusionAll.h>
 #include <Core/CoreAll.h>
-
-#include <Fusion/Components/RevoluteJointMotion.h>
-#include <Fusion/Components/SliderJointMotion.h>
 #include <Core/Geometry/Point3D.h>
+#include <Core/Memory.h>
 #include <Fusion/BRep/BRepEdge.h>
 #include <Fusion/BRep/BRepFace.h>
+#include <Fusion/Components/Component.h>
 #include <Fusion/Components/Joint.h>
 #include <Fusion/Components/JointGeometry.h>
 #include <Fusion/Components/JointOrigin.h>
 #include <Fusion/Components/Occurrence.h>
-#include <Core/Memory.h>
-#include <Fusion/Components/Component.h>
+#include <Fusion/Components/RevoluteJointMotion.h>
+#include <Fusion/Components/SliderJointMotion.h>
 #include <Fusion/Fusion/Design.h>
+#include <Fusion/FusionAll.h>
 #include <Fusion/FusionTypeDefs.h>
+
+#include <memory>
+#include <optional>
+#include <stack>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <variant>
+#include <vector>
 
 #include "assembly.pb.h"
 #include "joint.pb.h"
@@ -24,30 +32,19 @@
 
 #include "util.h"
 
-#include <memory>
-#include <stack>
-#include <variant>
-#include <string>
-#include <unordered_set>
-#include <unordered_map>
-#include <optional>
-#include <vector>
-
 namespace {
 
-mirabuf::joint::RigidGroup map_rigid_group(const adsk::fusion::Joint* /* adsk::fusion::joint | adsk::fusion::AsBuiltJoint */ joint
-) {
+mirabuf::joint::RigidGroup map_rigid_group(
+    const adsk::fusion::Joint* /* adsk::fusion::joint | adsk::fusion::AsBuiltJoint */ joint) {
     assert(joint);
     assert(joint->jointMotion()->jointType() == adsk::fusion::JointTypes::RigidJointType);
 
-    if (!joint->occurrenceOne()->isLightBulbOn() ||
-        !joint->occurrenceTwo()->isLightBulbOn()) {
+    if (!joint->occurrenceOne()->isLightBulbOn() || !joint->occurrenceTwo()->isLightBulbOn()) {
         return {};
     }
 
     mirabuf::joint::RigidGroup group;
-    std::string group_name = "group_" + joint->occurrenceOne()->name() + "_" +
-                             joint->occurrenceTwo()->name();
+    std::string group_name = "group_" + joint->occurrenceOne()->name() + "_" + joint->occurrenceTwo()->name();
     group.set_name(group_name);
     group.add_occurrences(joint->occurrenceOne()->name());
     group.add_occurrences(joint->occurrenceTwo()->name());
@@ -55,7 +52,8 @@ mirabuf::joint::RigidGroup map_rigid_group(const adsk::fusion::Joint* /* adsk::f
     return group;
 }
 
-void fill_revolute_joint_motion(const adsk::core::Ptr<adsk::fusion::RevoluteJointMotion>& motion, mirabuf::joint::Joint* proto_joint) {
+void fill_revolute_joint_motion(
+    const adsk::core::Ptr<adsk::fusion::RevoluteJointMotion>& motion, mirabuf::joint::Joint* proto_joint) {
     assert(motion);
     assert(proto_joint);
 
@@ -82,7 +80,8 @@ void fill_revolute_joint_motion(const adsk::core::Ptr<adsk::fusion::RevoluteJoin
     }
 }
 
-void fill_slider_joint_motion(const adsk::core::Ptr<adsk::fusion::SliderJointMotion>& motion, mirabuf::joint::Joint* proto_joint) {
+void fill_slider_joint_motion(
+    const adsk::core::Ptr<adsk::fusion::SliderJointMotion>& motion, mirabuf::joint::Joint* proto_joint) {
     assert(motion);
     assert(proto_joint);
 
@@ -115,7 +114,8 @@ void fill_slider_joint_motion(const adsk::core::Ptr<adsk::fusion::SliderJointMot
     dof->set_value(motion->slideValue());
 }
 
-void fill_motion_from_joint(const adsk::core::Ptr<adsk::fusion::JointMotion>& motion, mirabuf::joint::Joint* proto_joint) {
+void fill_motion_from_joint(
+    const adsk::core::Ptr<adsk::fusion::JointMotion>& motion, mirabuf::joint::Joint* proto_joint) {
     assert(motion);
     assert(proto_joint);
 
@@ -139,11 +139,11 @@ void fill_motion_from_joint(const adsk::core::Ptr<adsk::fusion::JointMotion>& mo
     }
 }
 
-adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_geometry(const adsk::fusion::JointGeometry* geometry, const adsk::core::Ptr<adsk::fusion::Occurrence> occurrence) {
+adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_geometry(
+    const adsk::fusion::JointGeometry* geometry, const adsk::core::Ptr<adsk::fusion::Occurrence> occurrence) {
     if (!geometry) {
         return adsk::core::Point3D::create();
     }
-
 
     auto entity_one = geometry->entityOne();
     if (!entity_one) {
@@ -151,30 +151,29 @@ adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_geometry(const adsk::fusi
     }
 
     auto edge_or_face = fusion_base_to_variant<adsk::fusion::BRepEdge, adsk::fusion::BRepFace>(entity_one.get());
-    adsk::core::Ptr<adsk::core::Point3D> result = std::visit(overloaded{
-        [&geometry](std::monostate) -> auto {
-            return geometry->origin();
-        },
-        [&geometry, &occurrence](const adsk::fusion::BRepEdge* edge) -> auto {
-            if (!edge->assemblyContext()) {
-                auto new_entity = edge->createForAssemblyContext(occurrence);
-                auto min = new_entity->boundingBox()->minPoint();
-                auto max = new_entity->boundingBox()->maxPoint();
-                auto org = adsk::core::Point3D::create((max->x() + min->x()) / 2.0f, (max->y() + min->y()) / 2.0f, (max->z() + min->z()) / 2.0f);
-                return org;
-            }
+    adsk::core::Ptr<adsk::core::Point3D> result =
+        std::visit(overloaded{[&geometry](std::monostate) -> auto { return geometry->origin(); },
+                       [&geometry, &occurrence](const adsk::fusion::BRepEdge* edge) -> auto {
+                           if (!edge->assemblyContext()) {
+                               auto new_entity = edge->createForAssemblyContext(occurrence);
+                               auto min        = new_entity->boundingBox()->minPoint();
+                               auto max        = new_entity->boundingBox()->maxPoint();
+                               auto org        = adsk::core::Point3D::create((max->x() + min->x()) / 2.0f,
+                                          (max->y() + min->y()) / 2.0f, (max->z() + min->z()) / 2.0f);
+                               return org;
+                           }
 
-            return geometry->origin();
-        },
-        [&geometry, &occurrence](const adsk::fusion::BRepFace* face) -> auto {
-            if (!face->assemblyContext()) {
-                auto new_entity = face->createForAssemblyContext(occurrence);
-                return new_entity->centroid();
-            }
+                           return geometry->origin();
+                       },
+                       [&geometry, &occurrence](const adsk::fusion::BRepFace* face) -> auto {
+                           if (!face->assemblyContext()) {
+                               auto new_entity = face->createForAssemblyContext(occurrence);
+                               return new_entity->centroid();
+                           }
 
-            return geometry->origin();
-        }
-    }, edge_or_face);
+                           return geometry->origin();
+                       }},
+            edge_or_face);
 
     return result;
 }
@@ -184,7 +183,7 @@ adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_origin(const adsk::fusion
         return adsk::core::Point3D::create();
     }
 
-    auto origin = joint_origin->geometry()->origin();
+    auto origin     = joint_origin->geometry()->origin();
     double offset_x = joint_origin->offsetX() ? joint_origin->offsetX()->value() : 0;
     double offset_y = joint_origin->offsetY() ? joint_origin->offsetY()->value() : 0;
     double offset_z = joint_origin->offsetZ() ? joint_origin->offsetZ()->value() : 0;
@@ -194,27 +193,25 @@ adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_origin(const adsk::fusion
 adsk::core::Ptr<adsk::core::Point3D> get_joint_origin(const adsk::fusion::Joint* fusion_joint) {
     assert(fusion_joint);
     auto raw_geo_test = fusion_joint->geometryOrOriginOne();
-    auto geometry_or_origin = fusion_base_to_variant<adsk::fusion::JointGeometry, adsk::fusion::JointOrigin>(raw_geo_test.get());
+    auto geometry_or_origin =
+        fusion_base_to_variant<adsk::fusion::JointGeometry, adsk::fusion::JointOrigin>(raw_geo_test.get());
     if (std::holds_alternative<std::monostate>(geometry_or_origin)) {
         return adsk::core::Point3D::create();
     }
 
-    adsk::core::Ptr<adsk::core::Point3D> result = std::visit(overloaded{
-        [](std::monostate) -> auto {
-            return adsk::core::Point3D::create();
-        },
-        [&fusion_joint](const adsk::fusion::JointGeometry* geometry) -> auto {
-            return origin_from_joint_geometry(geometry, fusion_joint->occurrenceOne());
-        },
-        [](const adsk::fusion::JointOrigin* origin) -> auto {
-            return origin_from_joint_origin(origin);
-        }
-    }, geometry_or_origin);
+    adsk::core::Ptr<adsk::core::Point3D> result = std::visit(
+        overloaded{[](std::monostate) -> auto { return adsk::core::Point3D::create(); },
+            [&fusion_joint](const adsk::fusion::JointGeometry* geometry) -> auto {
+                return origin_from_joint_geometry(geometry, fusion_joint->occurrenceOne());
+            },
+            [](const adsk::fusion::JointOrigin* origin) -> auto { return origin_from_joint_origin(origin); }},
+        geometry_or_origin);
 
     return result;
 }
 
-adsk::core::Ptr<adsk::fusion::Occurrence> search_for_grounded(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
+adsk::core::Ptr<adsk::fusion::Occurrence> search_for_grounded(
+    const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
     if (occurrence->isGrounded()) {
         return occurrence;
     }
@@ -257,7 +254,7 @@ struct GraphEdge;
 // overlapping purpose
 struct GraphNode {
     adsk::core::Ptr<adsk::fusion::Occurrence> data = nullptr;
-    std::shared_ptr<GraphNode> previous = nullptr;
+    std::shared_ptr<GraphNode> previous            = nullptr;
     std::vector<std::shared_ptr<GraphEdge>> edges{};
 
     adsk::core::Ptr<adsk::fusion::Joint> joint = nullptr;
@@ -265,10 +262,13 @@ struct GraphNode {
 
 struct GraphEdge {
     OccurrenceRelationship relationship = NONE;
-    std::shared_ptr<GraphNode> node = nullptr;
+    std::shared_ptr<GraphNode> node     = nullptr;
 };
 
-std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence, std::shared_ptr<GraphNode> prev, OccurrenceRelationship relationship, bool is_ground, std::unordered_set<std::string>& visited_occurrence_entity_tokens, const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints) {
+std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence,
+    std::shared_ptr<GraphNode> prev, OccurrenceRelationship relationship, bool is_ground,
+    std::unordered_set<std::string>& visited_occurrence_entity_tokens,
+    const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints) {
     if (occurrence->isGrounded() && !is_ground) {
         return std::nullopt;
     }
@@ -278,7 +278,7 @@ std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<ad
         auto edge = GraphEdge{relationship, std::make_shared<GraphNode>(node)};
         prev->edges.push_back(std::make_shared<GraphEdge>(edge));
         return std::nullopt;
-    } 
+    }
 
     if (prev && dynamic_joints.find(occurrence->entityToken()) != dynamic_joints.end()) {
         return std::nullopt;
@@ -318,7 +318,8 @@ std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<ad
         }
 
         if (!prev || connection->entityToken() != prev->data->entityToken()) {
-            populate_node(connection, node, is_rigid ? CONNECTION : NEXT, is_ground, visited_occurrence_entity_tokens, dynamic_joints);
+            populate_node(connection, node, is_rigid ? CONNECTION : NEXT, is_ground, visited_occurrence_entity_tokens,
+                dynamic_joints);
         }
     }
 
@@ -329,7 +330,8 @@ std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<ad
     return node;
 }
 
-std::optional<mirabuf::Node> create_tree_parts(std::shared_ptr<GraphNode> occurrence_node, OccurrenceRelationship relationship) {
+std::optional<mirabuf::Node> create_tree_parts(
+    std::shared_ptr<GraphNode> occurrence_node, OccurrenceRelationship relationship) {
     if (relationship == NEXT || !occurrence_node->data->isLightBulbOn()) {
         return std::nullopt;
     }
@@ -337,7 +339,7 @@ std::optional<mirabuf::Node> create_tree_parts(std::shared_ptr<GraphNode> occurr
     mirabuf::Node node;
     node.set_value(occurrence_node->data->name());
     for (auto edge : occurrence_node->edges) {
-        auto dyn_node = std::dynamic_pointer_cast<GraphNode>(edge->node);
+        auto dyn_node   = std::dynamic_pointer_cast<GraphNode>(edge->node);
         auto child_node = create_tree_parts(dyn_node, edge->relationship);
         if (child_node) {
             node.mutable_children()->Add()->CopyFrom(child_node.value());
@@ -366,7 +368,10 @@ void populate_joint(std::shared_ptr<GraphNode> sim_node, mirabuf::joint::Joints*
     }
 }
 
-void get_all_joints(adsk::core::Ptr<adsk::fusion::Component> root_component, adsk::core::Ptr<adsk::fusion::Occurrence> grounded, std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>>& grounded_connections,     std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints) {
+void get_all_joints(adsk::core::Ptr<adsk::fusion::Component> root_component,
+    adsk::core::Ptr<adsk::fusion::Occurrence> grounded,
+    std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>>& grounded_connections,
+    std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints) {
     auto process_joint = [&](const auto /* adsk::fusion::joint | adsk::fusion::AsBuiltJoint */ joint) -> void {
         assert(joint);
         if (!joint->occurrenceOne() || !joint->occurrenceTwo()) {
@@ -395,14 +400,19 @@ void get_all_joints(adsk::core::Ptr<adsk::fusion::Component> root_component, ads
     }
 }
 
-void look_for_grounded_joints(const std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>>& grounded_connections, const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints, std::shared_ptr<GraphNode> root_node) {
+void look_for_grounded_joints(const std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>>& grounded_connections,
+    const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints,
+    std::shared_ptr<GraphNode> root_node) {
     for (auto& grounded_connection : grounded_connections) {
         std::unordered_set<std::string> visited;
         populate_node(grounded_connection, root_node, CONNECTION, false, visited, dynamic_joints);
     }
 }
 
-void populate_axis(const adsk::core::Ptr<adsk::fusion::Design>& design, std::unordered_map<std::string, std::shared_ptr<GraphNode>>& simulation_nodes, const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints, const std::string& occurrence_token, const adsk::core::Ptr<adsk::fusion::Joint>& joint) {
+void populate_axis(const adsk::core::Ptr<adsk::fusion::Design>& design,
+    std::unordered_map<std::string, std::shared_ptr<GraphNode>>& simulation_nodes,
+    const std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>>& dynamic_joints,
+    const std::string& occurrence_token, const adsk::core::Ptr<adsk::fusion::Joint>& joint) {
     auto result = design->findEntityByToken(occurrence_token);
     if (result.empty() || !result.at(0)) {
         return;
@@ -416,7 +426,7 @@ void populate_axis(const adsk::core::Ptr<adsk::fusion::Design>& design, std::uno
     std::unordered_set<std::string> visited;
     auto node = populate_node(occurrence, nullptr, NONE, false, visited, dynamic_joints);
     if (node) {
-        node.value()->joint = joint;
+        node.value()->joint                = joint;
         simulation_nodes[occurrence_token] = node.value();
     }
 }
@@ -451,7 +461,8 @@ std::vector<std::string> get_connected_axis_tokens(std::shared_ptr<GraphNode> st
     return tokens;
 }
 
-void recurse_link_node_axis(std::shared_ptr<GraphNode> root_node, const std::unordered_map<std::string, std::shared_ptr<GraphNode>>& simulation_nodes) {
+void recurse_link_node_axis(std::shared_ptr<GraphNode> root_node,
+    const std::unordered_map<std::string, std::shared_ptr<GraphNode>>& simulation_nodes) {
     const std::vector<std::string> tokens = get_connected_axis_tokens(root_node);
     for (const auto& key : tokens) {
         auto it = simulation_nodes.find(key);
@@ -499,7 +510,8 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
 
     joint_instance_ground.set_joint_reference(joint_definition_ground.info().guid());
 
-    auto process_joint = [&joints, &signals](const adsk::fusion::Joint* /* adsk::fusion::joint | adsk::fusion::AsBuiltJoint */ joint) {
+    auto process_joint = [&joints, &signals](
+                             const adsk::fusion::Joint* /* adsk::fusion::joint | adsk::fusion::AsBuiltJoint */ joint) {
         assert(joint);
         if (joint->isSuppressed()) {
             return;
@@ -547,7 +559,7 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
 
         joint_definition.set_break_magnitude(0.0f);
 
-        auto& motor = (*joints.mutable_motor_definitions())[joint->name()];
+        auto& motor       = (*joints.mutable_motor_definitions())[joint->name()];
         auto simple_motor = motor.mutable_simple_motor();
 
         // These are values I just chose on a whim, they need to be checked and changed to make sure
@@ -569,7 +581,7 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
         // process_joint(asBuiltJoint.get());
     }
 
-    return { joints, signals };
+    return {joints, signals};
 }
 
 mirabuf::GraphContainer create_joint_graph(const mirabuf::joint::Joints& joints) {
@@ -600,7 +612,7 @@ mirabuf::GraphContainer create_joint_graph(const mirabuf::joint::Joints& joints)
     return joint_tree;
 }
 
-void build_joint_part_hierarchy(mirabuf::joint::Joints *joints, const adsk::core::Ptr<adsk::fusion::Design>& design) {
+void build_joint_part_hierarchy(mirabuf::joint::Joints* joints, const adsk::core::Ptr<adsk::fusion::Design>& design) {
     std::unordered_set<std::string> visited_occurrence_entity_tokens;
     std::unordered_map<std::string, adsk::core::Ptr<adsk::fusion::Joint>> dynamic_joints;
     std::unordered_map<std::string, std::shared_ptr<GraphNode>> simulation_nodes;
@@ -608,7 +620,7 @@ void build_joint_part_hierarchy(mirabuf::joint::Joints *joints, const adsk::core
 
     auto grounded = search_for_grounded(design->rootComponent());
 
-    // If there was anything that represented that the C++ exporter is currently 
+    // If there was anything that represented that the C++ exporter is currently
     // experimental it would be this. Not having a grounded node is a very common
     // user facing problem and simply asserting this will cause fusion to crash.
     // In the future if we want to actually support this section of the project
@@ -621,12 +633,13 @@ void build_joint_part_hierarchy(mirabuf::joint::Joints *joints, const adsk::core
 
     get_all_joints(design->rootComponent(), grounded, grounded_connections, dynamic_joints);
 
-    auto root_node = populate_node(grounded, nullptr, NONE, true, visited_occurrence_entity_tokens, dynamic_joints).value();
+    auto root_node =
+        populate_node(grounded, nullptr, NONE, true, visited_occurrence_entity_tokens, dynamic_joints).value();
     simulation_nodes["ground"] = root_node;
 
     look_for_grounded_joints(grounded_connections, dynamic_joints, root_node);
 
-    for (const auto&[key, value] : dynamic_joints) {
+    for (const auto& [key, value] : dynamic_joints) {
         populate_axis(design, simulation_nodes, dynamic_joints, key, value);
     }
 

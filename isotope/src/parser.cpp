@@ -7,16 +7,17 @@
 #include <Fusion/Components/Component.h>
 #include <Fusion/Fusion/Design.h>
 #include <Fusion/Fusion/FusionDocument.h>
+
+#include <fstream>
+
 #include <google/protobuf/util/json_util.h>
 
 #include "assembly.pb.h"
 #include "types.pb.h"
 
-#include "joints.h"
 #include "components.h"
+#include "joints.h"
 #include "materials.h"
-
-#include <fstream>
 
 void export_design(const GlobalContext& gctx) {
     assert(gctx.isValid());

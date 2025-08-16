@@ -1,0 +1,40 @@
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AlignAfterOpenBracket: DontAlign
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
+AlignTrailingComments:
+  Kind: Never
+AllowShortFunctionsOnASingleLine: Empty
+AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeBinaryOperators: NonAssignment
+ColumnLimit: 120
+IncludeIsMainRegex: ''
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<(Fusion|Core)/'
+    Priority: 1
+  - Regex: '^<[^/]+>$'
+    Priority: 2
+  - Regex: '^<google/protobuf/'
+    Priority: 3
+  - Regex: '^(<|").*\.pb\.h[">]$'
+    Priority: 4
+  - Regex: '^"(?!.+\.pb\.h").*"$'
+    Priority: 5
+  - Regex: '.*'
+    Priority: 6
+IndentCaseLabels: true
+IndentWidth: 4
+IndentWrappedFunctionNames: true
+InsertBraces: true
+InsertNewlineAtEOF: true
+LineEnding: LF
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+PointerAlignment: Left
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: true

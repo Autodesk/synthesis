@@ -1,10 +1,10 @@
 #include "config_command.h"
 
-#include "parser.h"
-
 #include <Core/UserInterface/Command.h>
 #include <Core/UserInterface/CommandCreatedEventArgs.h>
 #include <Core/UserInterface/CommandEvent.h>
+
+#include "parser.h"
 
 void ConfigureCommandCreatedHandler::notify(const adsk::core::Ptr<adsk::core::CommandCreatedEventArgs>& args) {
     assert(this->gctx.isValid());

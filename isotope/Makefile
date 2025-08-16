@@ -25,11 +25,15 @@ build-xcode:
 open-xcode: build-xcode
 	@open build-xcode/isotope.xcodeproj
 
+format:
+	@clang-format -i -style=file $(shell git ls-files '*.h' '*.cpp')
+
 install: build
 	@cmake --install "$(BUILD_DIR)"
 
 clean:
 	@rm -rf "$(BUILD_DIR)"
+	@rm -rf "$(XCODE_BUILD_DIR)"
 	@rm -f compile_commands.json
 
 help:
