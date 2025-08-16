@@ -14,7 +14,7 @@ For more information on the product itself or the team, visit [http://synthesis.
 
 ## Goals
 
-Synthesis is built with a direct focus on the FIRST® community. Every single one of our developers is a FIRST® student. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
+Synthesis is built with a direct focus on the FIRST® community. Every single one of our developers is or was a FIRST® student. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
 
 Here are some of our primary goals for Synthesis:
 
@@ -25,10 +25,7 @@ Here are some of our primary goals for Synthesis:
 
 ## Getting Started
 
-If you are a FIRST robotics student who just wants to use Synthesis, you *don't* need this repo. Simply **install the latest release of Synthesis from [synthesis.autodesk.com/download](https://synthesis.autodesk.com/download.html)**.
-
-> [!IMPORTANT]
-> Moving to [synthesis.autodesk.com](http://synthesis.autodesk.com/).
+If you are a FIRST robotics student who just wants to use Synthesis, you _don't_ need this repo. Simply go follow [this link](https://synthesis.autodesk.com/fission) to the simulator and start spawning in robots!
 
 If you're a developer who wants to contribute to Synthesis, you're in the right place. Synthesis is comprised of 3 main components that can be developed separately. These components include:
 
