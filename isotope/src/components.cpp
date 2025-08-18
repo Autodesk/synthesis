@@ -189,12 +189,8 @@ mirabuf::Node parse_child_occurrence(
     auto transform_array = occurrence->transform()->asArray();
     part.mutable_transform()->mutable_spatial_matrix()->Add(transform_array.begin(), transform_array.end());
 
-    // set part global transform
-    // auto world_transform = get_matrix_world(occurrence);
-    // if (world_transform) {
-    //     part->second.mutable_global_transform()->mutable_spatial_matrix()->Add(
-    //         world_transform->asArray().begin(), world_transform->asArray().end());
-    // }
+    auto world_transform = get_matrix_world(occurrence)->asArray();
+    part.mutable_global_transform()->mutable_spatial_matrix()->Add(world_transform.begin(), world_transform.end());
 
     // final recursive step to parse child occurrences
     std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;
