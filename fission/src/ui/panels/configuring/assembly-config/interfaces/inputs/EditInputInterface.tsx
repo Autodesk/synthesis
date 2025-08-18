@@ -1,4 +1,5 @@
-import { Box, Divider, MenuItem, Select, Stack } from "@mui/material"
+import { Box, Divider, MenuItem, Stack } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
 import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"

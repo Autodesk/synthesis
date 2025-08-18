@@ -11,6 +11,8 @@ import {
     type ToggleButtonProps,
     ToggleButtonGroup as MuiToggleButtonGroup,
     type ToggleButtonGroupProps,
+    Select as MuiSelect,
+    type SelectProps,
 } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
@@ -127,6 +129,14 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, 
         <MuiToggleButtonGroup {...SoundPlayer.buttonSoundEffects()} {...props}>
             {children}
         </MuiToggleButtonGroup>
+    )
+}
+
+export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
+    return (
+        <MuiSelect {...SoundPlayer.dropdownSoundEffects()} {...props}>
+            {children}
+        </MuiSelect>
     )
 }
 
@@ -257,4 +267,4 @@ export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
 }
 
 // Export the raw MUI components for cases where sound effects are not wanted
-export { MuiButton, MuiIconButton, MuiToggleButton, MuiToggleButtonGroup }
+export { MuiButton, MuiIconButton, MuiToggleButton, MuiToggleButtonGroup, MuiSelect }

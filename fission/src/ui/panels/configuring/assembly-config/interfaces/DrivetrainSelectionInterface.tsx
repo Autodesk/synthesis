@@ -1,4 +1,5 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
+import { FormControl, InputLabel, MenuItem } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"

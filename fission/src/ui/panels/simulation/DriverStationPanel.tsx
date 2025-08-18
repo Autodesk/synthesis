@@ -1,4 +1,5 @@
-import { MenuItem, Select, Stack } from "@mui/material"
+import { MenuItem, Stack } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
 import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
