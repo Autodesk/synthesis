@@ -605,12 +605,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._scoringZones = []
 
         if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
-            // Auto-sync devtool data so scoring zones persist across reloads
-            const parts = this._mirabufInstance.parser.assembly.data?.parts
-            if (parts) {
-                const editor = new FieldMiraEditor(parts)
-                editor.setUserData("devtool:scoring_zones", this._fieldPreferences.scoringZones)
-            }
             for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
                 const newZone = new ScoringZoneSceneObject(
                     this,
