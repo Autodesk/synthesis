@@ -55,9 +55,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
 
         const onBeforeAccept = async () => {
             if (selectedFile && miraType !== undefined) {
-                const hashBuffer = await selectedFile.arrayBuffer()
+                const buffer = await selectedFile.arrayBuffer()
                 World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-                await MirabufCachingService.cacheLocalAndReturn(hashBuffer, miraType)
+                await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     .then(result => {
                         if (result) {
                             return createMirabuf(result.assembly, undefined)

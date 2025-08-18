@@ -43,7 +43,6 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const [keys, setKeys] = useState<string[]>([])
     const [fieldLoaded, setFieldLoaded] = useState<boolean>(false)
     const prevFieldObj = useRef<MirabufSceneObject | undefined>(undefined)
-
     // Effect: Watch for field changes and update editor/keys only if field changes
     useEffect(() => {
         const updateEditor = () => {

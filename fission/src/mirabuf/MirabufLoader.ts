@@ -3,6 +3,7 @@ import { type Data, downloadData } from "@/aps/APSDataManagement"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
+import { hashBuffer } from "@/util/Utility.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -196,7 +197,8 @@ class MirabufCachingService {
     public static async cacheRemote(
         fetchLocation: string,
         miraType: MiraType,
-        name?: string
+        name?: string,
+        expectedHash?: string
     ): Promise<MirabufCacheInfo | undefined> {
         try {
             // grab file remote
@@ -218,13 +220,20 @@ class MirabufCachingService {
                 remotePath: fetchLocation,
             })
 
+            if (expectedHash != null && cached?.hash != null && cached?.hash != expectedHash) {
+                globalAddToast("warning", "Hash Mismatch", `Try downloading again`)
+                console.log(expectedHash, cached?.hash)
+                console.log(expectedHash == cached?.hash)
+                // await this.remove(cached.hash)
+            }
+
             if (cached) return cached
 
             globalAddToast("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
 
             // fallback: return raw buffer wrapped in MirabufCacheInfo
             return {
-                hash: await this.hashBuffer(miraBuff),
+                hash: await hashBuffer(miraBuff),
                 miraType: miraType,
                 name: name,
             }
@@ -270,7 +279,7 @@ class MirabufCachingService {
         miraType: MiraType
     ): Promise<{ assembly: mirabuf.Assembly; cacheInfo: MirabufCacheInfo } | undefined> {
         const assembly = this.assemblyFromBuffer(buffer)
-        const hash = await this.hashBuffer(buffer)
+        const hash = await hashBuffer(buffer)
 
         World.analyticsSystem?.event("Local Upload", {
             fileSize: buffer.byteLength,
@@ -331,12 +340,15 @@ class MirabufCachingService {
     ): Promise<{ buffer: ArrayBuffer; info?: MirabufCacheInfo } | undefined> {
         try {
             const info = this._cacheMap.get(hash)
-            // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
 
             const memCache = inMemoryCache[hash]
             if (memCache) {
                 console.log(`Retrieved ${info?.name ?? hash} from memory`)
                 return { buffer: memCache, info }
+            }
+            if (info == null) {
+                console.warn(`${hash} not found in cache`)
+                return
             }
             if (canOPFS) {
                 const fileHandle = await fsHandle.getFileHandle(hash, {
@@ -390,6 +402,7 @@ class MirabufCachingService {
                 type: info.miraType == MiraType.ROBOT ? "robot" : "field",
                 assemblyName: info.name,
             })
+            console.log(`Removed ${hash} from cache`)
             return true
         } catch (e) {
             console.error(`Failed to remove\n${e}`)
@@ -436,7 +449,8 @@ class MirabufCachingService {
         extra: Omit<MirabufCacheInfo, "hash">
     ): Promise<MirabufCacheInfo | undefined> {
         try {
-            const hash = await this.hashBuffer(buffer)
+            const hash = await hashBuffer(buffer)
+
             inMemoryCache[hash] = buffer
             const existing = this._cacheMap.get(hash)
             extra = { ...extra, ...existing }
@@ -447,6 +461,15 @@ class MirabufCachingService {
                 hash: hash,
             }
 
+            // Store buffer
+            if (!canOPFS) return info
+
+            // Store in OPFS
+            const fileHandle = await fsHandle.getFileHandle(info.hash, { create: true })
+            const writable = await fileHandle.createWritable()
+            await writable.write(buffer)
+            await writable.close()
+
             this._cacheMap.store(info)
 
             World.analyticsSystem?.event("Cache Store", {
@@ -455,33 +478,13 @@ class MirabufCachingService {
                 type: info.miraType == MiraType.ROBOT ? "robot" : "field",
                 fileSize: buffer.byteLength,
             })
-
-            // Store buffer
-            if (canOPFS) {
-                // Store in OPFS
-                const fileHandle = await fsHandle.getFileHandle(info.hash, { create: true })
-                const writable = await fileHandle.createWritable()
-                await writable.write(buffer)
-                await writable.close()
-            }
-
+            console.log(`Added cache entry for ${hash}`)
             return info
         } catch (e) {
             console.error("Failed to cache mira " + e)
             World.analyticsSystem?.exception("Failed to store in cache")
             return undefined
         }
-    }
-
-    public static async hashBuffer(buffer: ArrayBuffer): Promise<string> {
-        if (crypto?.subtle?.digest == null) {
-            console.warn("Crypto not available, using timestamp as key")
-            return Date.now().toString(16)
-        }
-        const hashBuffer = await crypto.subtle.digest("SHA-1", buffer)
-        return Array.from(new Uint8Array(hashBuffer))
-            .map(x => x.toString(16))
-            .join("")
     }
 
     private static assemblyFromBuffer(buffer: ArrayBuffer): mirabuf.Assembly {

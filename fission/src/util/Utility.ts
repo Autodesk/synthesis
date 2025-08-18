@@ -26,3 +26,14 @@ export function findListDifference<T>(previousList: T[], currentList: T[]): { ad
 
     return { added, removed }
 }
+
+export async function hashBuffer(buffer: ArrayBuffer, allowDateFallback: boolean = true): Promise<string> {
+    if (crypto?.subtle?.digest == null && allowDateFallback) {
+        console.warn("Crypto not available, using timestamp as key")
+        return Date.now().toString(16)
+    }
+    const hashBuffer = await crypto.subtle.digest("SHA-1", buffer)
+    return Array.from(new Uint8Array(hashBuffer))
+        .map(x => x.toString(16))
+        .join("")
+}

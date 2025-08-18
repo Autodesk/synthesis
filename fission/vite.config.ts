@@ -65,9 +65,7 @@ export default defineConfig(async ({ mode }) => {
               secure: false,
               rewrite: path =>
                   path
-                      .replace(/^\/api\/mira/, "/Downloadables/Mira")
-                      .replace("robots", "Robots")
-                      .replace("fields", "Fields"),
+                      .replace(/^\/api\/mira/, "/Downloadables/mira")
           }
         : {
               target: `https://synthesis.autodesk.com/`,

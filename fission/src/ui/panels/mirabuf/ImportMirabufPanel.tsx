@@ -10,7 +10,8 @@ import {
     MirabufFilesUpdateEvent,
     requestMirabufFiles,
 } from "@/aps/APSDataManagement"
-import MirabufCachingService, { type MirabufCacheInfo, type MirabufRemoteInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
+import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
@@ -67,14 +68,9 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primar
     )
 }
 
-export type MiraManifest = {
-    robots: MirabufRemoteInfo[]
-    fields: MirabufRemoteInfo[]
-}
-
-export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
-    if (type === MiraType.FIELD) {
+    if (info.miraType === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
     }
 
@@ -122,7 +118,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const [cachedRobots, setCachedRobots] = useState(MirabufCachingService.getAll(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(MirabufCachingService.getAll(MiraType.FIELD))
 
-    const [manifest, setManifest] = useState<MiraManifest | undefined>()
+    // const [manifest, setManifest] = useState<MiraManifest | undefined>()
+    const manifestRobots = useMemo(() => DefaultAssetLoader.robots, [])
+    const manifestFields = useMemo(() => DefaultAssetLoader.fields, [])
     const [viewType, setViewType] = useState<MiraType>(MiraType.ROBOT)
 
     const [filesStatus, setFilesStatus] = useState<TaskStatus>({
@@ -156,7 +154,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     useEffect(() => {
         if (!hasMirabufFiles()) {
-            requestMirabufFiles()
+            requestMirabufFiles().catch(console.error)
         } else {
             setFiles(getMirabufFiles())
         }
@@ -173,52 +171,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         if (parent) closePanel(parent.id, CloseType.Cancel)
     }, [])
 
-    // Get Default Mirabuf Data, Load into manifest.
-    useEffect(() => {
-        // To remove the prettier warning
-        const x = async () => {
-            // Detect if we're running in electron and use direct remote URL
-            const isElectron = window.electronAPI != null
-            const baseUrl = isElectron ? "https://synthesis.autodesk.com" : ""
-
-            fetch(`${baseUrl}/api/mira/manifest.json`)
-                .then(x => x.json())
-                .then(x => {
-                    const robots: MirabufRemoteInfo[] = []
-                    for (const src of x["robots"]) {
-                        const obj =
-                            typeof src == "string"
-                                ? { displayName: src, src: `${baseUrl}/api/mira/robots/${src}` }
-                                : { displayName: src.displayName, src: src.src }
-                        robots.push(obj)
-                    }
-
-                    const fields: MirabufRemoteInfo[] = []
-                    for (const src of x["fields"]) {
-                        const obj =
-                            typeof src == "string"
-                                ? { displayName: src, src: `${baseUrl}/api/mira/fields/${src}` }
-                                : { displayName: src.displayName, src: src.src }
-                        fields.push(obj)
-                    }
-
-                    setManifest({
-                        robots,
-                        fields,
-                    })
-                })
-                .catch(error => {
-                    console.error("Failed to fetch manifest:", error)
-                })
-        }
-        x()
-    }, [])
-
     // Select a mirabuf assembly from the cache.
     const selectCache = useCallback(
-        async (info: MirabufCacheInfo, type: MiraType) => {
-            await spawnCachedMira(info, type)
-
+        async (info: MirabufCacheInfo) => {
+            await spawnCachedMira(info)
             if (panel) closePanel(panel.id, CloseType.Cancel)
         },
         [closePanel, panel]
@@ -226,14 +182,14 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     // Cache a selected remote mirabuf assembly, load from cache.
     const selectRemote = useCallback(
-        (info: MirabufRemoteInfo, type: MiraType) => {
-            const status = new ProgressHandle(info.displayName)
+        (info: DefaultAssetInfo) => {
+            const status = new ProgressHandle(info.name)
             status.update("Downloading from Synthesis...", 0.05)
 
-            MirabufCachingService.cacheRemote(info.src, type, info.displayName)
+            MirabufCachingService.cacheRemote(info.remotePath, info.miraType, info.name, info.hash)
                 .then(async cacheInfo => {
                     if (cacheInfo) {
-                        await spawnCachedMira(cacheInfo, type, status)
+                        await spawnCachedMira(cacheInfo, status)
                     } else {
                         status.fail("Failed to cache")
                     }
@@ -244,22 +200,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         },
         [closePanel, panel]
     )
-
-    // Cache a selected remote mirabuf assembly, without load.
-    const cacheRemoteOnly = useCallback((info: MirabufRemoteInfo, type: MiraType) => {
-        const status = new ProgressHandle(info.displayName)
-        status.update("Downloading from Synthesis...", 0.05)
-
-        MirabufCachingService.cacheRemote(info.src, type, info.displayName)
-            .then(cacheInfo => {
-                if (cacheInfo) {
-                    status.done()
-                } else {
-                    status.fail("Failed to cache")
-                }
-            })
-            .catch(() => status.fail())
-    }, [])
 
     const selectAPS = useCallback(
         (data: Data, type: MiraType) => {
@@ -269,7 +209,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             MirabufCachingService.cacheAPS(data, type)
                 .then(async cacheInfo => {
                     if (cacheInfo) {
-                        await spawnCachedMira(cacheInfo, type, status)
+                        await spawnCachedMira(cacheInfo, status)
                     } else {
                         status.fail("Failed to cache")
                     }
@@ -280,108 +220,128 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         },
         [closePanel, panel]
     )
-
-    // Generate Item cards for cached robots.
-    const cachedRobotElements = useMemo(
-        () =>
-            cachedRobots
+    const createCachedAssetElements = useCallback(
+        (items: MirabufCacheInfo[]) => {
+            return items
                 .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
                 .map(info =>
                     ItemCard({
-                        name: info.name || "Unnamed Robot",
+                        name: info.name || "Unnamed",
                         id: info.hash,
                         primaryButtonNode: SynthesisIcons.ADD_LARGE,
                         primaryOnClick: async () => {
-                            console.log(`Selecting cached robot: ${info.name}`)
-                            await selectCache(info, MiraType.ROBOT)
+                            console.log(`Selecting cached: ${info.name}`)
+                            await selectCache(info)
                         },
                         secondaryOnClick: async () => {
                             console.log(`Deleting cache of: ${info.name}`)
                             await MirabufCachingService.remove(info.hash)
-                            setCachedRobots(MirabufCachingService.getAll(MiraType.ROBOT))
+                            if (info.miraType == MiraType.ROBOT) {
+                                setCachedRobots(MirabufCachingService.getAll(MiraType.ROBOT))
+                            } else {
+                                setCachedFields(MirabufCachingService.getAll(MiraType.FIELD))
+                            }
                         },
                     })
-                ),
-        [cachedRobots, selectCache]
+                )
+        },
+        [selectCache]
+    )
+    // Generate Item cards for cached robots.
+    const cachedRobotElements = useMemo(
+        () => createCachedAssetElements(cachedRobots),
+        [cachedRobots, createCachedAssetElements]
     )
 
     // Generate Item cards for cached fields.
     const cachedFieldElements = useMemo(
-        () =>
-            cachedFields
-                .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
-                .map(info =>
-                    ItemCard({
-                        name: info.name || "Unnamed Field",
-                        id: info.hash,
-                        primaryButtonNode: SynthesisIcons.ADD_LARGE,
-                        primaryOnClick: () => {
-                            console.log(`Selecting cached field: ${info.hash}`)
-                            selectCache(info, MiraType.FIELD)
-                        },
-                        secondaryOnClick: async () => {
-                            console.log(`Deleting cache of: ${info.hash}`)
-                            await MirabufCachingService.remove(info.hash)
-                            setCachedFields(MirabufCachingService.getAll(MiraType.FIELD))
-                        },
-                    })
-                ),
-        [cachedFields, selectCache]
+        () => createCachedAssetElements(cachedFields),
+        [cachedFields, createCachedAssetElements]
     )
 
     // Generate Item cards for remote robots.
     const remoteRobotElements = useMemo(() => {
-        const remoteRobots = manifest?.robots.filter(path => !cachedRobots.some(info => info.remotePath == path.src))
+        const remoteRobots = manifestRobots.filter(
+            remoteRobot => !cachedRobots.some(info => info.hash == remoteRobot.hash)
+        )
         return remoteRobots
-            ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
-            .map(path =>
+            ?.sort((a, b) => a.name.localeCompare(b.name))
+            .map(item =>
                 ItemCard({
-                    name: path.displayName,
-                    id: path.src,
+                    name: item.name,
+                    id: item.hash,
                     primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                     primaryOnClick: () => {
-                        console.log(`Selecting remote: ${path.src}`)
-                        selectRemote(path, MiraType.ROBOT)
+                        console.log(`Selecting remote: ${item.remotePath}`)
+                        selectRemote(item)
                     },
                 })
             )
-    }, [manifest?.robots, cachedRobots, selectRemote])
+    }, [manifestRobots, cachedRobots, selectRemote])
 
     // Generate Item cards for remote fields.
     const remoteFieldElements = useMemo(() => {
-        const remoteFields = manifest?.fields.filter(path => !cachedFields.some(info => info.remotePath == path.src))
+        const remoteFields = manifestFields.filter(
+            remoteField => !cachedFields.some(info => info.hash == remoteField.hash)
+        )
         return remoteFields
-            ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
-            .map(path =>
+            ?.sort((a, b) => a.name.localeCompare(b.name))
+            .map(asset =>
                 ItemCard({
-                    name: path.displayName,
-                    id: path.src,
+                    name: asset.name,
+                    id: asset.hash,
                     primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                     primaryOnClick: () => {
-                        console.log(`Selecting remote: ${path.src}`)
-                        selectRemote(path, MiraType.FIELD)
+                        console.log(`Selecting remote: ${asset.remotePath}`)
+                        selectRemote(asset)
                     },
                 })
             )
-    }, [manifest?.fields, cachedFields, selectRemote])
+    }, [manifestFields, cachedFields, selectRemote])
 
-    function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
-        // biome-ignore lint: Returning a callback is fine to avoid repeating ourselves
-        return useCallback(() => {
-            const miraType: MiraType | undefined = cached[0]?.miraType
-            const property = miraType === MiraType.ROBOT ? "robots" : "fields"
-            const remotes = manifest ? manifest[property] : []
+    const downloadAllRemote = useCallback(
+        (manifestAssets: DefaultAssetInfo[], cachedAssets: MirabufCacheInfo[]) => {
+            const status = new ProgressHandle("Caching Remote Assets")
 
-            remotes
-                .filter(path => !cached.some(info => info.remotePath?.includes(path.src)))
-                .forEach(path => cacheRemoteOnly(path, miraType))
+            const toCache = manifestAssets.filter(asset => !cachedAssets.some(info => info.hash === asset.hash))
+
+            let completeCount = 0
+            const totalCount = toCache.length
+            status.update(`Downloading... (0/${totalCount})}`, 0.05)
+
+            toCache.forEach(asset => {
+                MirabufCachingService.cacheRemote(asset.remotePath, asset.miraType, asset.name, asset.hash)
+                    .then(cacheInfo => {
+                        if (cacheInfo) {
+                            completeCount++
+                            if (completeCount == totalCount) {
+                                status.done()
+                            } else {
+                                status.update(
+                                    `Downloading... (${completeCount}/${totalCount})}`,
+                                    completeCount / totalCount
+                                )
+                            }
+                        } else {
+                            status.fail("Failed to cache")
+                        }
+                    })
+                    .catch(() => status.fail())
+            })
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
-        }, [manifest, cached, cacheRemoteOnly, closePanel, panel])
-    }
+        },
+        [closePanel, panel]
+    )
 
-    const downloadAllRemoteRobots = downloadAllRemote(cachedRobots)
-    const downloadAllRemoteFields = downloadAllRemote(cachedFields)
+    const downloadAllRemoteRobots = useCallback(
+        () => downloadAllRemote(manifestRobots, cachedRobots),
+        [manifestRobots, cachedRobots, downloadAllRemote]
+    )
+    const downloadAllRemoteFields = useCallback(
+        () => downloadAllRemote(manifestFields, cachedFields),
+        [manifestFields, cachedFields, downloadAllRemote]
+    )
 
     // Generate Item cards for APS robots and fields.
     const hubElements = useMemo(

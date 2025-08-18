@@ -122,13 +122,6 @@ describe("MirabufLoader", () => {
             const result = await MirabufLoader.cacheRemote("/fake/path", MiraType.ROBOT)
             expect(result).toBeDefined()
         })
-
-        test("HashBuffer returns a string", async () => {
-            const buffer = new ArrayBuffer(8)
-            const hash = await MirabufLoader["hashBuffer"](buffer)
-            expect(typeof hash).toBe("string")
-            expect(hash.length).toBeGreaterThan(0)
-        })
     })
 
     describe("Real Fetch", () => {
