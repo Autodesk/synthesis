@@ -147,26 +147,26 @@ export type Alliance = "red" | "blue"
 
 export type Station = 1 | 2 | 3
 
-export type ScoringZonePreferences = {
+/**
+ * Base properties shared by all zone types
+ */
+export type BaseZonePreferences = {
     name: string
     alliance: Alliance
     parentNode: string | undefined
-    points: number
-    destroyGamepiece: boolean
-    persistentPoints: boolean
-
     deltaTransformation: number[]
 }
 
-export type ProtectedZonePreferences = {
-    name: string
-    alliance: Alliance
+export type ScoringZonePreferences = BaseZonePreferences & {
+    points: number
+    destroyGamepiece: boolean
+    persistentPoints: boolean
+}
+
+export type ProtectedZonePreferences = BaseZonePreferences & {
     penaltyPoints: number
-    parentNode: string | undefined
     contactType: ContactType
     activeDuring: MatchModeType[]
-
-    deltaTransformation: number[]
 }
 
 export type SpawnLocation = Readonly<{

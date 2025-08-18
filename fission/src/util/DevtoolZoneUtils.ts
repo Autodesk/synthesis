@@ -1,16 +1,28 @@
 import FieldMiraEditor from "@/mirabuf/FieldMiraEditor"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { ProtectedZonePreferences, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { BaseZonePreferences, ProtectedZonePreferences, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 
 export type ZoneType = "scoring" | "protected"
 
 /**
+ * Checks if two zones are equal by comparing their common base properties
+ */
+function zonesEqual(zone1: BaseZonePreferences, zone2: BaseZonePreferences): boolean {
+    return (
+        zone1.name === zone2.name &&
+        zone1.alliance === zone2.alliance &&
+        zone1.parentNode === zone2.parentNode &&
+        JSON.stringify(zone1.deltaTransformation) === JSON.stringify(zone2.deltaTransformation)
+    )
+}
+
+/**
  * Checks if a zone was originally defined in the field file by comparing it with the cached field data.
  */
 export function isZoneFromDevtools(
-    zone: ScoringZonePreferences | ProtectedZonePreferences,
+    zone: BaseZonePreferences,
     zoneType: ZoneType
 ): boolean {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
@@ -21,22 +33,14 @@ export function isZoneFromDevtools(
 
     const editor = new FieldMiraEditor(parts)
 
-    if (zoneType === "scoring") {
-        const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
-        if (!devtoolZones) return false
-
-        return devtoolZones.some(
-            devZone =>
-                devZone.name === zone.name &&
-                devZone.alliance === zone.alliance &&
-                devZone.parentNode === zone.parentNode &&
-                JSON.stringify(devZone.deltaTransformation) === JSON.stringify(zone.deltaTransformation)
-        )
-    } else {
-        // For protected zones, we'd need to add field file support first
-        // For now, return false as protected zones don't have field file support yet
+    if (zoneType === "protected") {
         return false
     }
+    
+    const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
+    if (!devtoolZones) return false
+
+    return devtoolZones.some(devZone => zonesEqual(devZone, zone))
 }
 
 /**
@@ -53,47 +57,34 @@ export async function removeZoneFromDevtools(
     if (!parts) throw new Error("No field parts found")
 
     const editor = new FieldMiraEditor(parts)
-
-    if (zoneType === "scoring") {
-        const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
-        if (!devtoolZones) return
-
-        // Remove the zone from field file data
-        const filteredZones = devtoolZones.filter(
-            devZone =>
-                !(
-                    devZone.name === zone.name &&
-                    devZone.alliance === zone.alliance &&
-                    devZone.parentNode === zone.parentNode &&
-                    JSON.stringify(devZone.deltaTransformation) === JSON.stringify(zone.deltaTransformation)
-                )
-        )
-
-        // Update the field file data
-        if (filteredZones.length === 0) {
-            editor.removeUserData("devtool:scoring_zones")
-        } else {
-            editor.setUserData("devtool:scoring_zones", filteredZones)
-        }
-
-        // Update field preferences to match the filtered field file data
-        if (field.fieldPreferences) {
-            field.fieldPreferences.scoringZones = filteredZones
-            PreferencesSystem.savePreferences?.()
-            field.updateScoringZones()
-        }
-
-        // Persist changes to cache
-        const assembly = field.mirabufInstance.parser.assembly
-        const cacheId = field.cacheId
-        if (cacheId) {
-            const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-            if (!success) {
-                throw new Error("Failed to persist changes to cache")
-            }
-        }
-    } else {
+   
+    if (zoneType === "protected") {
         throw new Error("Protected zone field file removal not yet implemented")
+    }
+    
+    const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
+    if (!devtoolZones) return
+
+    const filteredZones = devtoolZones.filter(devZone => !zonesEqual(devZone, zone))
+    if (filteredZones.length === 0) {
+        editor.removeUserData("devtool:scoring_zones")
+    } else {
+        editor.setUserData("devtool:scoring_zones", filteredZones)
+    }
+
+    if (field.fieldPreferences) {
+        field.fieldPreferences.scoringZones = filteredZones
+        PreferencesSystem.savePreferences?.()
+        field.updateScoringZones()
+    }
+
+    const assembly = field.mirabufInstance.parser.assembly
+    const cacheId = field.cacheId
+    if (cacheId) {
+        const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+        if (!success) {
+            throw new Error("Failed to persist changes to cache")
+        }
     }
 }
 
@@ -112,42 +103,37 @@ export async function modifyZoneInDevtools(
     if (!parts) throw new Error("No field parts found")
 
     const editor = new FieldMiraEditor(parts)
-
-    if (zoneType === "scoring") {
-        const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
-        if (!devtoolZones) return
-
-        // Find and replace the zone in field file data
-        const updatedZones = devtoolZones.map(devZone => {
-            if (
-                devZone.name === originalZone.name &&
-                devZone.alliance === originalZone.alliance &&
-                devZone.parentNode === originalZone.parentNode &&
-                JSON.stringify(devZone.deltaTransformation) === JSON.stringify(originalZone.deltaTransformation)
-            ) {
-                return modifiedZone as ScoringZonePreferences
-            }
-            return devZone
-        })
-
-        editor.setUserData("devtool:scoring_zones", updatedZones)
-
-        if (field.fieldPreferences) {
-            field.fieldPreferences.scoringZones = updatedZones
-            PreferencesSystem.savePreferences?.()
-            field.updateScoringZones()
-        }
-
-        const assembly = field.mirabufInstance.parser.assembly
-        const cacheId = field.cacheId
-        if (cacheId) {
-            const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-            if (!success) {
-                throw new Error("Failed to persist changes to cache")
-            }
-        }
-    } else {
+    
+    if (zoneType === "protected") {
         throw new Error("Protected zone field file modification not yet implemented")
+    }
+    
+    const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
+    if (!devtoolZones) return
+
+    // Find and replace the zone in field file data
+    const updatedZones = devtoolZones.map(devZone => {
+        if (zonesEqual(devZone, originalZone)) {
+            return modifiedZone
+        }
+        return devZone
+    })
+
+    editor.setUserData("devtool:scoring_zones", updatedZones as ScoringZonePreferences[])
+
+    if (field.fieldPreferences) {
+        field.fieldPreferences.scoringZones = updatedZones as ScoringZonePreferences[]
+        PreferencesSystem.savePreferences?.()
+        field.updateScoringZones()
+    }
+
+    const assembly = field.mirabufInstance.parser.assembly
+    const cacheId = field.cacheId
+    if (cacheId) {
+        const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+        if (!success) {
+            throw new Error("Failed to persist changes to cache")
+        }
     }
 }
 
@@ -163,9 +149,9 @@ export function getDevtoolZones(zoneType: ZoneType): ScoringZonePreferences[] | 
 
     const editor = new FieldMiraEditor(parts)
 
-    if (zoneType === "scoring") {
-        return editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
-    } else {
+    if (zoneType === "protected") {
         return undefined
     }
+
+    return editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
 }
