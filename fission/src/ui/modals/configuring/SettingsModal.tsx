@@ -20,11 +20,11 @@ import CommandRegistry from "@/ui/components/CommandRegistry"
 
 // Register command: Open Settings (module-scope side effect)
 CommandRegistry.get().registerCommand({
-	id: "open-settings",
-	label: "Open Settings",
-	description: "Open the Settings modal.",
-	keywords: ["settings", "preferences", "config"],
-	perform: () => import("./SettingsModal").then(m => globalOpenModal(m.default, undefined)),
+    id: "open-settings",
+    label: "Open Settings",
+    description: "Open the Settings modal.",
+    keywords: ["settings", "preferences", "config"],
+    perform: () => import("./SettingsModal").then(m => globalOpenModal(m.default, undefined)),
 })
 
 // Graphics settings constants

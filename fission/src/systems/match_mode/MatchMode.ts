@@ -15,20 +15,20 @@ import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControl
 
 // Register command: Toggle Match Mode
 CommandRegistry.get().registerCommand({
-	id: "toggle-match-mode",
-	label: "Toggle Match Mode",
-	description: "Toggle match mode, allowing you to simulate and run a full match.",
-	keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
-	perform: () => {
-		if (MatchMode.getInstance().isMatchEnabled()) {
-			MatchMode.getInstance().sandboxModeStart()
-			globalAddToast("info", "Match Mode Cancelled")
-		} else {
-			import("@/ui/panels/configuring/MatchModeConfigPanel").then(m => {
-				globalOpenPanel(m.default, undefined)
-			})
-		}
-	},
+    id: "toggle-match-mode",
+    label: "Toggle Match Mode",
+    description: "Toggle match mode, allowing you to simulate and run a full match.",
+    keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
+    perform: () => {
+        if (MatchMode.getInstance().isMatchEnabled()) {
+            MatchMode.getInstance().sandboxModeStart()
+            globalAddToast("info", "Match Mode Cancelled")
+        } else {
+            import("@/ui/panels/configuring/MatchModeConfigPanel").then(m => {
+                globalOpenPanel(m.default, undefined)
+            })
+        }
+    },
 })
 
 class MatchMode {

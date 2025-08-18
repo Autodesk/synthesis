@@ -26,7 +26,7 @@ CommandRegistry.get().registerCommand({
     label: "Open Debug Panel",
     description: "Open the Debug tools panel.",
     keywords: ["panel", "debug"],
-    	perform: () => import("./DebugPanel").then(m => globalOpenPanel(m.default, undefined)),
+    perform: () => import("./DebugPanel").then(m => globalOpenPanel(m.default, undefined)),
 })
 
 function toggleDragMode() {
