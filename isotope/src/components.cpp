@@ -1,5 +1,6 @@
 #include "components.h"
 
+#include <joint.pb.h>
 #include <vector>
 
 #include "assembly.pb.h"
@@ -173,26 +174,20 @@ mirabuf::Node parse_child_occurrence(
     assert(occurrence->isLightBulbOn());
 
     mirabuf::Node node;
+    node.set_value(occurrence->component()->id());
     // TODO: Info stuff
 
-    auto part = parts->mutable_part_instances()->find(occurrence->component()->id());
-
-    // set top info
-
-    // set occurrence appearance
+    auto& part = (*parts->mutable_part_instances())[occurrence->component()->id()];
     if (occurrence->appearance()) {
-        auto appearance_id = occurrence->appearance()->id();
-        part->second.set_appearance(appearance_id);
+        part.set_appearance(occurrence->appearance()->id());
     }
 
-    // set part physical material
     if (auto material = occurrence->component()->material()) {
-        part->second.set_physical_material(material->id());
+        part.set_physical_material(material->id());
     }
 
-    // set part spatial matrix
-    part->second.mutable_transform()->mutable_spatial_matrix()->Add(
-        occurrence->transform()->asArray().begin(), occurrence->transform()->asArray().end());
+    auto transform_array = occurrence->transform()->asArray();
+    part.mutable_transform()->mutable_spatial_matrix()->Add(transform_array.begin(), transform_array.end());
 
     // set part global transform
     // auto world_transform = get_matrix_world(occurrence);
@@ -223,16 +218,10 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
     root_node.set_value(component->id());
 
     // TODO: Info stuff
-
-    auto part = parts->mutable_part_instances()->find(component->id());
-    if (part == parts->part_instances().end()) {
-        return root_node; // this is problematic
-    }
-
-    // find out if this is necessary as we are editing objects in place which i really wanted to avoid
-    auto part_defs = parts->part_definitions();
+    auto& part      = (*parts->mutable_part_instances())[component->id()];
+    auto& part_defs = parts->part_definitions();
     if (part_defs.find(component->id()) != part_defs.end()) {
-        part->second.set_part_definition_reference(component->id());
+        part.set_part_definition_reference(component->id());
     }
 
     std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;
@@ -247,4 +236,22 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
     }
 
     return root_node;
+}
+
+void map_rigid_groups(const adsk::core::Ptr<adsk::fusion::Component>& root, mirabuf::joint::Joints* joints) {
+    for (const auto& fus_group : root->allRigidGroups()) {
+        auto mira_group = mirabuf::joint::RigidGroup();
+        mira_group.set_name(fus_group->entityToken());
+        for (const auto& occurrence : fus_group->occurrences()) {
+            if (!occurrence || !occurrence->isLightBulbOn()) {
+                continue;
+            }
+
+            mira_group.mutable_occurrences()->Add(occurrence->entityToken());
+        }
+
+        if (mira_group.occurrences().size()) {
+            joints->mutable_rigid_groups()->Add()->CopyFrom(mira_group);
+        }
+    }
 }

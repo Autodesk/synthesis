@@ -51,6 +51,8 @@ void export_design(const GlobalContext& gctx) {
     assembly.mutable_data()->mutable_joints()->CopyFrom(joints);
     assembly.mutable_data()->mutable_signals()->CopyFrom(signals);
 
+    map_rigid_groups(design->rootComponent(), assembly.mutable_data()->mutable_joints());
+
     auto joint_hierarchy = create_joint_graph(joints);
     assembly.mutable_joint_hierarchy()->CopyFrom(joint_hierarchy);
 
@@ -68,6 +70,18 @@ void export_design(const GlobalContext& gctx) {
 
     output_file << json_output;
     output_file.close();
+
+    std::ofstream binary_output(
+        std::getenv("HOME") + std::string("/Desktop/test_dozer.mira"), std::ios::out | std::ios::binary);
+    if (!binary_output.is_open()) {
+        gctx.app->userInterface()->messageBox("Failed to open output file for writing.");
+        return;
+    }
+
+    if (!assembly.SerializeToOstream(&binary_output)) {
+        gctx.app->userInterface()->messageBox("Failed to write binary.");
+        return;
+    }
 
     gctx.app->userInterface()->messageBox("Exported assembly:\n" + json_output);
 }

@@ -525,24 +525,24 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
             }
         }
 
-        auto& signal = (*signals.mutable_signal_map())[joint->name()];
-        signal.mutable_info()->set_name(joint->name());
-        signal.mutable_info()->set_guid(joint->name());
+        auto& signal = (*signals.mutable_signal_map())[joint->entityToken()];
+        signal.mutable_info()->set_name(joint->entityToken());
+        signal.mutable_info()->set_guid(joint->entityToken());
         signal.mutable_info()->set_version(1);
         signal.set_io(mirabuf::signal::IOType::OUTPUT);
         signal.set_device_type(mirabuf::signal::DeviceType::PWM);
 
-        auto& joint_instance = (*joints.mutable_joint_instances())[joint->name()];
+        auto& joint_instance = (*joints.mutable_joint_instances())[joint->entityToken()];
         joint_instance.set_signal_reference(signal.info().guid());
         joint_instance.set_parent_part(joint->occurrenceOne()->name());
         joint_instance.set_child_part(joint->occurrenceTwo()->name());
 
         // TODO: Wheel logic should go here
 
-        auto& joint_definition = (*joints.mutable_joint_definitions())[joint->name()];
+        auto& joint_definition = (*joints.mutable_joint_definitions())[joint->entityToken()];
         joint_definition.set_motor_reference(signal.info().guid());
-        joint_definition.mutable_info()->set_name(joint->name());
-        joint_definition.mutable_info()->set_guid(joint->name());
+        joint_definition.mutable_info()->set_name(joint->entityToken());
+        joint_definition.mutable_info()->set_guid(joint->entityToken());
         joint_definition.mutable_info()->set_version(1);
 
         auto joint_origin = get_joint_origin(joint);
@@ -559,7 +559,7 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
 
         joint_definition.set_break_magnitude(0.0f);
 
-        auto& motor       = (*joints.mutable_motor_definitions())[joint->name()];
+        auto& motor       = (*joints.mutable_motor_definitions())[joint->entityToken()];
         auto simple_motor = motor.mutable_simple_motor();
 
         // These are values I just chose on a whim, they need to be checked and changed to make sure
