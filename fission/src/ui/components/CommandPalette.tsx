@@ -13,14 +13,7 @@ import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePan
 import DebugPanel from "@/ui/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
-
-type CommandDefinition = {
-    id: string
-    label: string
-    description?: string
-    keywords?: string[]
-    perform: () => void
-}
+import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 
 function isTextInputTarget(target: EventTarget | null): boolean {
     if (!(target instanceof HTMLElement)) return false
@@ -59,8 +52,9 @@ const CommandPalette: React.FC = () => {
         [openPanel]
     )
 
-    const commands = useMemo<CommandDefinition[]>(() => {
-        const list: CommandDefinition[] = [
+    // Register initial static commands with the registry
+    useEffect(() => {
+        const staticCommands: CommandDefinition[] = [
             {
                 id: "open-debug-panel",
                 label: "Open Debug Panel",
@@ -159,8 +153,17 @@ const CommandPalette: React.FC = () => {
             },
         ]
 
-        // Dynamic per-assembly configuration commands (robots and field)
-        if (isOpen && World.isAlive && World.sceneRenderer) {
+        const registry = CommandRegistry.get()
+        const dispose = registry.registerCommands(staticCommands)
+        return () => dispose()
+    }, [addToast, openPanel, openModal, openImportPanel])
+
+    // Register dynamic per-assembly commands via a provider
+    useEffect(() => {
+        const provider: CommandProvider = () => {
+            if (!World.isAlive || !World.sceneRenderer) return []
+            const list: CommandDefinition[] = []
+
             const robots = World.sceneRenderer.mirabufSceneObjects.getRobots() || []
             for (const r of robots) {
                 const name = r.assemblyName || "Robot"
@@ -216,10 +219,25 @@ const CommandPalette: React.FC = () => {
                     },
                 })
             }
+
+            return list
         }
 
-        return list
-    }, [addToast, openPanel, openModal, openImportPanel, isOpen])
+        const registry = CommandRegistry.get()
+        const dispose = registry.registerProvider(provider)
+        return () => dispose()
+    }, [openPanel])
+
+    // Subscribe to registry updates to refresh palette command list
+    const [registryTick, setRegistryTick] = useState(0)
+    useEffect(() => {
+        const registry = CommandRegistry.get()
+        return registry.subscribe(() => setRegistryTick(t => t + 1))
+    }, [])
+
+    const commands = useMemo<CommandDefinition[]>(() => {
+        return CommandRegistry.get().getCommands()
+    }, [registryTick])
 
     const fuse = useMemo(() => {
         return new Fuse(commands, {
@@ -227,7 +245,7 @@ const CommandPalette: React.FC = () => {
             threshold: 0.3,
             ignoreLocation: true,
             includeMatches: true,
-            shouldSort: false,
+            shouldSort: true,
             includeScore: true,
         })
     }, [commands])
@@ -235,13 +253,12 @@ const CommandPalette: React.FC = () => {
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase()
         if (!q) return commands
-        return fuse
-            .search(q)
-            .reverse()
-            .map(r => r.item)
+        return fuse.search(q).map(r => r.item)
     }, [commands, fuse, query])
 
-    const visible = useMemo(() => filtered.slice(0, 5), [filtered])
+    const visible = useMemo(() => {
+        return filtered.slice(0, 5).reverse()
+    }, [filtered])
 
     const execute = useCallback(
         (index: number) => {
