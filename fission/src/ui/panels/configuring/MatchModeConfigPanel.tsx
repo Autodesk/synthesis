@@ -12,6 +12,7 @@ import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { Button, NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import CreateNewMatchModeConfigPanel from "./CreateNewMatchModeConfigPanel"
 
 /**
  * Configuration for match mode rules and timing.
@@ -84,6 +85,57 @@ const props: Readonly<{ id: keyof MatchModeConfig; expectedType: string; require
     { id: "sideExtensionPenalty", expectedType: "number", required: false },
 ]
 
+export const validateAndNormalizeMatchModeConfig = (config: unknown): MatchModeConfig | null => {
+    // Type guard to check if config is an object
+    if (typeof config !== "object" || config === null) {
+        console.error("Match mode config validation failed: config must be an object")
+        globalAddToast("error", "Invalid Match Mode Config", "Configuration must be an object")
+        return null
+    }
+    const configObj = config as Record<string, unknown>
+
+    const typeError = (id: string, expectedType?: string) => {
+        const errorMessage = expectedType ? `must be a ${expectedType}` : "is required"
+        console.error(`Match mode config validation failed: the '${id}' field ${errorMessage}`)
+        globalAddToast("error", "Invalid Match Mode Config", `The '${id}' field ${errorMessage}`)
+    }
+
+    function checkValidity(configObj: Record<string, unknown>): configObj is Partial<MatchModeConfig> {
+        for (const prop of props) {
+            if (configObj[prop.id] == undefined) {
+                if (prop.required) {
+                    typeError(prop.id)
+                    return false
+                }
+            } else if (typeof configObj[prop.id] != prop.expectedType) {
+                if (prop.required) {
+                    typeError(prop.id, prop.expectedType)
+                    return false
+                } else {
+                    globalAddToast(
+                        "warning",
+                        "Invalid Match Mode Config",
+                        `The '${prop.id}' field must be a ${prop.expectedType}, ignoring ${prop.id} field`
+                    )
+                }
+            }
+        }
+        return true
+    }
+
+    if (!checkValidity(configObj)) {
+        return null
+    }
+
+    // If validation passes, use the default values in any missing fields
+    const normalizedConfig = {
+        ...DefaultMatchModeConfigs.fallbackValues(),
+        ...configObj,
+    }
+    normalizedConfig.isDefault = false
+    return normalizedConfig
+}
+
 interface ItemCardProps {
     id: string
     name: string
@@ -107,14 +159,14 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
                 {secondaryOnClick && (
                     <NegativeButton onClick={secondaryOnClick}>{SynthesisIcons.DELETE_LARGE}</NegativeButton>
                 )}
-                <PositiveButton onClick={primaryOnClick}>{SynthesisIcons.SELECT_LARGE}</PositiveButton>
+                <PositiveButton onClick={primaryOnClick}>{SynthesisIcons.PLAY_LARGE}</PositiveButton>
             </Stack>
         </Stack>
     )
 }
 
 const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { closePanel, openModal, configureScreen } = useUIContext()
+    const { openPanel, closePanel, openModal, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
     const [useSpawnPositions, setUseSpawnPositions] = useState(false)
@@ -186,11 +238,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                                       // Only save custom configs to local storage
                                       const customConfigs = updatedConfigs.filter(c => !c.isDefault)
                                       window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
-                                      globalAddToast(
-                                          "info",
-                                          "Match Mode Config Deleted",
-                                          `Successfully deleted "${config.name}"`
-                                      )
                                   }
                                 : undefined
                         }
@@ -206,57 +253,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         if (fileUploadRef.current) {
             fileUploadRef.current.click()
         }
-    }
-
-    const validateAndNormalizeMatchModeConfig = (config: unknown): MatchModeConfig | null => {
-        // Type guard to check if config is an object
-        if (typeof config !== "object" || config === null) {
-            console.error("Match mode config validation failed: config must be an object")
-            globalAddToast("error", "Invalid Match Mode Config", "Configuration must be an object")
-            return null
-        }
-        const configObj = config as Record<string, unknown>
-
-        const typeError = (id: string, expectedType?: string) => {
-            const errorMessage = expectedType ? `must be a ${expectedType}` : "is required"
-            console.error(`Match mode config validation failed: the '${id}' field ${errorMessage}`)
-            globalAddToast("error", "Invalid Match Mode Config", `The '${id}' field ${errorMessage}`)
-        }
-
-        function checkValidity(configObj: Record<string, unknown>): configObj is Partial<MatchModeConfig> {
-            for (const prop of props) {
-                if (configObj[prop.id] == undefined) {
-                    if (prop.required) {
-                        typeError(prop.id)
-                        return false
-                    }
-                } else if (typeof configObj[prop.id] != prop.expectedType) {
-                    if (prop.required) {
-                        typeError(prop.id, prop.expectedType)
-                        return false
-                    } else {
-                        globalAddToast(
-                            "warning",
-                            "Invalid Match Mode Config",
-                            `The '${prop.id}' field must be a ${prop.expectedType}, ignoring ${prop.id} field`
-                        )
-                    }
-                }
-            }
-            return true
-        }
-
-        if (!checkValidity(configObj)) {
-            return null
-        }
-
-        // If validation passes, use the default values in any missing fields
-        const normalizedConfig = {
-            ...DefaultMatchModeConfigs.fallbackValues(),
-            ...configObj,
-        }
-        normalizedConfig.isDefault = false
-        return normalizedConfig
     }
 
     const handleFileUpload = async (file: File) => {
@@ -313,6 +309,12 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         // Reset the input value so the same file can be selected again
         e.target.value = ""
     }
+
+    const createNewMatchModeConfig = () => {
+        openPanel(CreateNewMatchModeConfigPanel, undefined)
+        closePanel(panel!.id, CloseType.Overwrite)
+    }
+
     return (
         <>
             <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
@@ -336,6 +338,15 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             <Divider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
+            <Box alignSelf={"center"}>
+                <Button
+                    onClick={() => {
+                        createNewMatchModeConfig()
+                    }}
+                >
+                    Create Match Mode Config
+                </Button>
+            </Box>
             <Box alignSelf={"center"}>
                 <Button onClick={uploadClicked}>Upload File</Button>
             </Box>
