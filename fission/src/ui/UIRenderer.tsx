@@ -13,9 +13,7 @@ export const UIRenderer: React.FC = () => {
     const [prefRenderScoreboard, setPrefRenderScoreboard] = useState(
         PreferencesSystem.getGlobalPreference("RenderScoreboard")
     )
-    const [inMatchMode, setInMatchMode] = useState(
-        MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX
-    )
+    const [inMatchMode, setInMatchMode] = useState(MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX)
 
     useEffect(() => {
         const onMatchStateChange = (e: MatchStateChangeEvent) => {
