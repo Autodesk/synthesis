@@ -88,7 +88,7 @@ class CommandRegistry {
                 for (const cmd of provided) {
                     merged.set(cmd.id, cmd)
                 }
-            } catch (err) {
+            } catch {
                 console.error("Error in command provider", provider)
             }
         }
