@@ -21,6 +21,7 @@ import type {
     ObjectPreferences,
     UpdateObjectData,
 } from "./types"
+import PreferencesSystem from "../preferences/PreferencesSystem"
 
 export const peerMessageHandlers = {
     info: handlePeerInfo,
@@ -80,13 +81,13 @@ function handlePeerUpdate(data: UpdateObjectData[], peerId: string) {
             return
         }
 
-        // Set all the ejectables that are in activeEjectables but not gamePiecesControlled
+        // Add all the ejectables that are in activeEjectables but not gamePiecesControlled
         sceneObject.activeEjectables
             .filter(id => !gamePiecesControlled.includes(id.GetIndexAndSequenceNumber()))
             // We're not ejecting the actual game piece here, but the robots should be configured to eject in the same order so it's fine
             .forEach(_ => sceneObject.eject())
 
-        // Set all the ejectables that are in gamePiecesControlled but not activeEjectables
+        // Add all the ejectables that are in gamePiecesControlled but not activeEjectables
         gamePiecesControlled
             .filter(id => !sceneObject.activeEjectables.map(n => n.GetIndexAndSequenceNumber()).includes(id))
             .forEach(id => {
@@ -261,6 +262,7 @@ function handleObjectConfiguration(data: ObjectPreferences) {
     const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
     if (sceneObject instanceof MirabufSceneObject) {
         sceneObject.setPreferenceData(data.objectConfigurationData)
+        PreferencesSystem.savePreferences()
     } else {
         pendingOperations.push(() => handleObjectConfiguration(data))
     }

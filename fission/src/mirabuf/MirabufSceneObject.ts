@@ -621,8 +621,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             console.log(bodyId)
             const now = Date.now()
             if (now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS) {
-                console.log(`Configure an ejectable first.`)
-                globalAddToast("info", "Configure Ejectable", "Configure an ejectable first.")
+                console.log(`Configure an ejector first.`)
+                globalAddToast("info", "Configure Ejector", "Configure an ejector first.")
                 this._lastEjectableToastTime = now
             }
 
@@ -842,7 +842,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
-    private async sendPreferences() {
+    public async sendPreferences() {
         if (!World.multiplayerSystem) return
 
         await World.multiplayerSystem.broadcast({
