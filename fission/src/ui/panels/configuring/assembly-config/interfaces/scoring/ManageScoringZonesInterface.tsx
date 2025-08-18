@@ -9,7 +9,7 @@ import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
-import DevtoolZoneRemovalModal from "@/ui/modals/DevtoolZoneRemovalModal"
+import DevtoolZoneModificationModal from "@/ui/modals/DevtoolZoneModificationModal"
 import { isZoneFromDevtools, removeZoneFromDevtools } from "@/util/DevtoolZoneUtils"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
@@ -176,13 +176,13 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
                 selectZone(newZone)
             })}
 
-            <DevtoolZoneRemovalModal
+            <DevtoolZoneModificationModal
                 isOpen={confirmationModal.isOpen}
                 onClose={handleCloseConfirmation}
                 zoneType="scoring"
                 zoneName={confirmationModal.zone?.name ?? ""}
-                onTemporaryRemoval={handleTemporaryRemoval}
-                onPermanentRemoval={handlePermanentRemoval}
+                onTemporaryModification={handleTemporaryRemoval}
+                onPermanentModification={handlePermanentRemoval}
             />
         </>
     )

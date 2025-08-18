@@ -16,7 +16,7 @@ import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import DevtoolZoneRemovalModal from "@/ui/modals/DevtoolZoneRemovalModal"
+import DevtoolZoneModificationModal from "@/ui/modals/DevtoolZoneModificationModal"
 import { isZoneFromDevtools, modifyZoneInDevtools } from "@/util/DevtoolZoneUtils"
 import {
     convertArrayToThreeMatrix4,
@@ -380,14 +380,13 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
             {gizmoComponent}
 
-            <DevtoolZoneRemovalModal
+            <DevtoolZoneModificationModal
                 isOpen={confirmationModal.isOpen}
                 onClose={handleCloseConfirmation}
                 zoneType="scoring"
                 zoneName={selectedZone.name}
-                onTemporaryRemoval={handleTemporaryModification}
-                onPermanentRemoval={handlePermanentModification}
-                actionType="modification"
+                onTemporaryModification={handleTemporaryModification}
+                onPermanentModification={handlePermanentModification}
             />
 
             {/** Custom Save/Cancel buttons that replace the panel's default buttons */}
