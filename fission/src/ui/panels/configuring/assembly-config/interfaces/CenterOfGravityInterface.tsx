@@ -7,7 +7,6 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
-import StatefulSlider from "@/ui/components/StatefulSlider"
 import { Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
@@ -22,9 +21,8 @@ interface CenterOfGravityInterfaceProps {
  *
  * @param gizmo Reference to the transform gizmo object.
  * @param selectedRobot Selected robot to save data to.
- * @param effectStrength The strength of the CoG effect (0-2, where 1 is normal).
  */
-function saveCenterOfGravity(gizmo: GizmoSceneObject, selectedRobot: MirabufSceneObject, effectStrength: number) {
+function saveCenterOfGravity(gizmo: GizmoSceneObject, selectedRobot: MirabufSceneObject) {
     if (!gizmo || !selectedRobot) {
         return
     }
@@ -48,14 +46,12 @@ function saveCenterOfGravity(gizmo: GizmoSceneObject, selectedRobot: MirabufScen
     relativePos.applyQuaternion(robotWorldQuat.clone().invert())
 
     selectedRobot.modifiedCenterOfGravity = relativePos
-    selectedRobot.cogEffectStrength = effectStrength
     selectedRobot.updateMeshTransforms()
 }
 
 const CenterOfGravityInterface: React.FC<CenterOfGravityInterfaceProps> = ({ selectedRobot }) => {
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
     const [cogPosition, setCogPosition] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
-    const [effectStrength, setEffectStrength] = useState<number>(selectedRobot.cogEffectStrength ?? 1.0)
 
     // Create the center of gravity sphere mesh
     const cogSphereMesh = useMemo(() => {
@@ -72,9 +68,9 @@ const CenterOfGravityInterface: React.FC<CenterOfGravityInterfaceProps> = ({ sel
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            saveCenterOfGravity(gizmoRef.current, selectedRobot, effectStrength)
+            saveCenterOfGravity(gizmoRef.current, selectedRobot)
         }
-    }, [selectedRobot, effectStrength])
+    }, [selectedRobot])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
@@ -141,8 +137,6 @@ const CenterOfGravityInterface: React.FC<CenterOfGravityInterfaceProps> = ({ sel
 
     const handleReset = useCallback(() => {
         selectedRobot.modifiedCenterOfGravity = undefined
-        selectedRobot.cogEffectStrength = 1.0 // reset
-        setEffectStrength(1.0)
 
         if (gizmoRef.current) {
             const actualCoG = selectedRobot.currentCenterOfGravity
@@ -187,17 +181,7 @@ const CenterOfGravityInterface: React.FC<CenterOfGravityInterfaceProps> = ({ sel
 
             {Spacer(8)}
 
-            <StatefulSlider
-                min={0}
-                max={2}
-                defaultValue={effectStrength}
-                label={"Effect Strength"}
-                onChange={value => {
-                    setEffectStrength(value)
-                    selectedRobot.cogEffectStrength = value
-                }}
-                tooltip="Adjusts how strongly the modified center of gravity affects the robot's physics (0 = no effect, 1 = normal, 2 = exaggerated)"
-            />
+            {/* Removed CoG effect strength control */}
 
             {Spacer(8)}
 

@@ -100,7 +100,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _centerOfMassIndicator: THREE.Mesh | undefined
 
     private _modifiedCenterOfGravity: THREE.Vector3 | undefined
-    private _cogEffectStrength: number = 1.0
     private _basePositionTransform: THREE.Vector3 | undefined
 
     private _intakeActive = false
@@ -204,14 +203,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public set modifiedCenterOfGravity(position: THREE.Vector3 | undefined) {
         this._modifiedCenterOfGravity = position
-    }
-
-    public get cogEffectStrength(): number {
-        return this._cogEffectStrength
-    }
-
-    public set cogEffectStrength(strength: number) {
-        this._cogEffectStrength = Math.max(0, Math.min(2, strength))
     }
 
     public get currentCenterOfGravity(): THREE.Vector3 {
@@ -1071,8 +1062,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const gravityForce = new THREE.Vector3(0, -9.81 * totalMass, 0)
         const torque = new THREE.Vector3().crossVectors(offset, gravityForce)
 
-        torque.multiplyScalar(this._cogEffectStrength)
-
         const joltTorque = new JOLT.Vec3(torque.x, torque.y, torque.z)
         rootBody.AddTorque(joltTorque)
         JOLT.destroy(joltTorque)
@@ -1082,7 +1071,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         if (speed > 0.1) {
             const angularVel = rootBody.GetAngularVelocity()
-            const dampingFactor = 0.5 * this._cogEffectStrength
+            const dampingFactor = 0.5
             const dampingTorque = new JOLT.Vec3(
                 -angularVel.GetX() * dampingFactor * totalMass,
                 -angularVel.GetY() * dampingFactor * totalMass,
@@ -1106,7 +1095,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
             const mass = 1 / inverseMass
 
-            const correctionFactor = (mass / totalMass) * this._cogEffectStrength
+            const correctionFactor = mass / totalMass
             const bodyTorque = new JOLT.Vec3(
                 torque.x * correctionFactor * 0.1,
                 torque.y * correctionFactor * 0.1,
