@@ -42,7 +42,7 @@ if (useSsl) {
 }
 
 const localAssetsExist = await fs
-    .access("./public/Downloadables/Mira", fs.constants.R_OK)
+    .access("./public/Downloadables/mira", fs.constants.R_OK)
     .then(() => true)
     .catch(() => false)
 

@@ -222,8 +222,7 @@ class MirabufCachingService {
 
             if (expectedHash != null && cached?.hash != null && cached?.hash != expectedHash) {
                 globalAddToast("warning", "Hash Mismatch", `Try downloading again`)
-                console.log(expectedHash, cached?.hash)
-                console.log(expectedHash == cached?.hash)
+                console.warn("mismatched hashes", expectedHash, cached?.hash)
                 // await this.remove(cached.hash)
             }
 

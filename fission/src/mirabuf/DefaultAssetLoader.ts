@@ -1,16 +1,19 @@
 import { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader.ts"
-import type { ManifestFileType } from "../../update_manifest.ts"
+import type { ManifestFileType } from "../../manifest.d.ts"
 
 export type DefaultAssetInfo = Required<Pick<MirabufCacheInfo, "hash" | "remotePath" | "miraType" | "name">>
 
 class DefaultAssetLoader {
     private static _assets: DefaultAssetInfo[] = []
-
+    private static _hasLoaded = false
     static {
-        setTimeout(() => this.refresh(), 1000)
+        setTimeout(() => {
+            if (!this._hasLoaded) this.refresh().catch(console.error)
+        }, 1000)
     }
 
-    private static async refresh() {
+    public static async refresh() {
+        this._hasLoaded = true
         this._assets = []
 
         const isElectron = window.electronAPI != null

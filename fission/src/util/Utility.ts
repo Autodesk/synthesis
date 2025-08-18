@@ -27,8 +27,8 @@ export function findListDifference<T>(previousList: T[], currentList: T[]): { ad
     return { added, removed }
 }
 
-export async function hashBuffer(buffer: ArrayBuffer, allowDateFallback: boolean = true): Promise<string> {
-    if (crypto?.subtle?.digest == null && allowDateFallback) {
+export async function hashBuffer(buffer: ArrayBuffer): Promise<string> {
+    if (crypto?.subtle?.digest == null) {
         console.warn("Crypto not available, using timestamp as key")
         return Date.now().toString(16)
     }
