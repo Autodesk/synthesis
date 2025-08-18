@@ -31,11 +31,7 @@ const DevtoolZoneModificationModal: React.FC<DevtoolZoneModificationModalProps> 
         setIsModifying(true)
         try {
             await onPermanentModification()
-            globalAddToast?.(
-                "info",
-                "Zone Modified",
-                `${zoneName} has been permanently modified in the field file.`
-            )
+            globalAddToast?.("info", "Zone Modified", `${zoneName} has been permanently modified in the field file.`)
         } catch (error) {
             globalAddToast?.(
                 "error",
@@ -51,9 +47,7 @@ const DevtoolZoneModificationModal: React.FC<DevtoolZoneModificationModalProps> 
 
     return (
         <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>
-                Modify {zoneType === "scoring" ? "Scoring" : "Protected"} Zone
-            </DialogTitle>
+            <DialogTitle>Modify {zoneType === "scoring" ? "Scoring" : "Protected"} Zone</DialogTitle>
             <DialogContent>
                 <Stack spacing={2}>
                     <Typography variant="body1">
@@ -64,10 +58,12 @@ const DevtoolZoneModificationModal: React.FC<DevtoolZoneModificationModalProps> 
                     </Typography>
                     <Stack spacing={1}>
                         <Typography variant="body2">
-                            <strong>Temporary modification:</strong> Save changes until next field reload. Original zone will reappear when you refresh the page.
+                            <strong>Temporary modification:</strong> Save changes until next field reload. Original zone
+                            will reappear when you refresh the page.
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Permanent modification:</strong> Save changes to the local asset file. This will persist your modifications until you remove it from the cache.
+                            <strong>Permanent modification:</strong> Save changes to the local asset file. This will
+                            persist your modifications until you remove it from the cache.
                         </Typography>
                     </Stack>
                 </Stack>

@@ -1,7 +1,11 @@
 import FieldMiraEditor from "@/mirabuf/FieldMiraEditor"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { BaseZonePreferences, ProtectedZonePreferences, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type {
+    BaseZonePreferences,
+    ProtectedZonePreferences,
+    ScoringZonePreferences,
+} from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 
 export type ZoneType = "scoring" | "protected"
@@ -21,10 +25,7 @@ function zonesEqual(zone1: BaseZonePreferences, zone2: BaseZonePreferences): boo
 /**
  * Checks if a zone was originally defined in the field file by comparing it with the cached field data.
  */
-export function isZoneFromDevtools(
-    zone: BaseZonePreferences,
-    zoneType: ZoneType
-): boolean {
+export function isZoneFromDevtools(zone: BaseZonePreferences, zoneType: ZoneType): boolean {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
     if (!field) return false
 
@@ -36,7 +37,7 @@ export function isZoneFromDevtools(
     if (zoneType === "protected") {
         return false
     }
-    
+
     const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
     if (!devtoolZones) return false
 
@@ -57,11 +58,11 @@ export async function removeZoneFromDevtools(
     if (!parts) throw new Error("No field parts found")
 
     const editor = new FieldMiraEditor(parts)
-   
+
     if (zoneType === "protected") {
         throw new Error("Protected zone field file removal not yet implemented")
     }
-    
+
     const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
     if (!devtoolZones) return
 
@@ -103,11 +104,11 @@ export async function modifyZoneInDevtools(
     if (!parts) throw new Error("No field parts found")
 
     const editor = new FieldMiraEditor(parts)
-    
+
     if (zoneType === "protected") {
         throw new Error("Protected zone field file modification not yet implemented")
     }
-    
+
     const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
     if (!devtoolZones) return
 
