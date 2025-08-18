@@ -3,10 +3,14 @@
 
 <br/>
 
-[![Fission - Unit Test](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml/badge.svg?branch=prod?style=flat-square)](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml)
-[![Fission - Packaging](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml)
-[![Fission - Lint/Format](https://github.com/Autodesk/synthesis/actions/workflows/FissionBiome.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionBiome.yml)
-[![Fusion - Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml)
+![Fission - Unit Test](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/FissionUnitTest.yml?branch=prod&style=for-the-badge&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FFissionUnitTest.yml)
+<!-- [![Fission - Unit Test](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml/badge.svg?branch=prod?style=for-the-badge)](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml) -->
+![Fission - Packaging](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/FissionPackaging.yml?branch=prod&style=for-the-badge&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FFissionPackaging.yml)
+<!-- [![Fission - Packaging](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml) -->
+![Fission - Lint/Format](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/FissionBiome.yml?branch=prod&style=for-the-badge&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FFissionBiome.yml)
+<!-- [![Fission - Lint/Format](https://github.com/Autodesk/synthesis/actions/workflows/FissionBiome.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionBiome.yml) -->
+![Fusion Exporter - Format](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/BlackFormat.yml?branch=prod&style=for-the-badge&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FBlackFormat.yml)
+<!-- [![Fusion - Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml) -->
 
 Synthesis is a robotics simulator designed by and for [FIRST®](https://www.firstinspires.org/) robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion Exporter](/exporter/) or use the pre-made ones available within Synthesis.
 
