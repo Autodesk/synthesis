@@ -211,7 +211,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     value={gamepadAxes[input.gamepadAxisNumber + 1]}
                     onChange={e => {
                         setSelectedInput(input.inputName)
-                        setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value))
+                        setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value as string))
                     }}
                 >
                     {gamepadAxes.map(axis => (
@@ -279,7 +279,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     value={touchControlsAxes[input.touchControlAxis]}
                     onChange={e => {
                         setSelectedInput(input.inputName)
-                        setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value))
+                        setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value as string))
                     }}
                 >
                     {touchControlsAxes.map(axis => (
