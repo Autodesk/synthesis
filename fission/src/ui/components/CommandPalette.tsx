@@ -2,18 +2,16 @@ import { Box, List, ListItemButton, ListItemText, Paper, Stack, TextField } from
 import Fuse from "fuse.js"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import MatchMode from "@/systems/match_mode/MatchMode"
 import World from "@/systems/World"
 import InputSystem from "@/systems/input/InputSystem"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import SettingsModal from "@/ui/modals/configuring/SettingsModal"
-import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import DebugPanel from "@/ui/panels/DebugPanel"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
-import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
+import CommandRegistry, { type CommandDefinition } from "@/ui/components/CommandRegistry"
+import "@/ui/panels/DebugPanel"
+import "@/ui/modals/configuring/SettingsModal"
+import "@/ui/panels/mirabuf/ImportMirabufPanel"
+import "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import "@/ui/panels/configuring/MatchModeConfigPanel"
 
 function isTextInputTarget(target: EventTarget | null): boolean {
     if (!(target instanceof HTMLElement)) return false
@@ -23,7 +21,7 @@ function isTextInputTarget(target: EventTarget | null): boolean {
 }
 
 const CommandPalette: React.FC = () => {
-    const { addToast, openPanel, openModal, modal } = useUIContext()
+    const { addToast, modal } = useUIContext()
     const { isMainMenuOpen } = useStateContext()
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -45,23 +43,9 @@ const CommandPalette: React.FC = () => {
         setTimeout(() => inputRef.current?.focus(), 0)
     }, [])
 
-    const openImportPanel = useCallback(
-        (configurationType: ConfigurationType) => {
-            openPanel(ImportMirabufPanel, { configurationType })
-        },
-        [openPanel]
-    )
-
-    // Register initial static commands with the registry
+    // Register command(s) not owned elsewhere
     useEffect(() => {
         const staticCommands: CommandDefinition[] = [
-            {
-                id: "open-debug-panel",
-                label: "Open Debug Panel",
-                description: "Open the Debug tools panel.",
-                keywords: ["panel", "debug"],
-                perform: () => openPanel(DebugPanel, undefined),
-            },
             {
                 id: "toggle-drag-mode",
                 label: "Toggle Drag Mode",
@@ -75,158 +59,12 @@ const CommandPalette: React.FC = () => {
                     addToast("info", "Drag Mode", `Drag mode has been ${status}`)
                 },
             },
-            {
-                id: "spawn-asset-robots",
-                label: "Spawn Asset (Robots)",
-                description: "Open asset spawn panel scoped to robots.",
-                keywords: ["spawn", "asset", "robot", "import", "mirabuf"],
-                perform: () => openImportPanel("ROBOTS"),
-            },
-            {
-                id: "spawn-asset-fields",
-                label: "Spawn Asset (Fields)",
-                description: "Open asset spawn panel scoped to fields.",
-                keywords: ["spawn", "asset", "field", "import", "mirabuf"],
-                perform: () => openImportPanel("FIELDS"),
-            },
-            {
-                id: "configure-assets",
-                label: "Configure Assets",
-                description: "Open the asset configuration panel.",
-                keywords: ["configure", "asset", "config"],
-                perform: () => openPanel(ConfigurePanel, {}),
-            },
-            {
-                id: "configure-robots",
-                label: "Configure Robots",
-                description: "Open the configuration panel scoped to spawned robots.",
-                keywords: ["configure", "robot", "robots", "config"],
-                perform: () => {
-                    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
-                    if (!robots || robots.length === 0) {
-                        addToast("warning", "No Robots", "No robots are currently spawned.")
-                        return
-                    }
-                    openPanel(ConfigurePanel, {
-                        configurationType: "ROBOTS",
-                        selectedAssembly: robots.length === 1 ? robots[0] : undefined,
-                    })
-                },
-            },
-            {
-                id: "configure-field",
-                label: "Configure Field",
-                description: "Open the configuration panel scoped to the spawned field.",
-                keywords: ["configure", "field", "config"],
-                perform: () => {
-                    const field = World.sceneRenderer.mirabufSceneObjects.getField()
-                    if (!field) {
-                        addToast("warning", "No Field", "No field is currently spawned.")
-                        return
-                    }
-                    openPanel(ConfigurePanel, {
-                        configurationType: "FIELDS",
-                        selectedAssembly: field,
-                    })
-                },
-            },
-            {
-                id: "open-settings",
-                label: "Open Settings",
-                description: "Open the Settings modal.",
-                keywords: ["settings", "preferences", "config"],
-                perform: () => openModal(SettingsModal, undefined),
-            },
-            {
-                id: "toggle-match-mode",
-                label: "Toggle Match Mode",
-                description: "Toggle match mode, allowing you to simulate and run a full match.",
-                keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
-                perform: () => {
-                    if (MatchMode.getInstance().isMatchEnabled()) {
-                        MatchMode.getInstance().sandboxModeStart()
-                        addToast("info", "Match Mode Cancelled")
-                    } else {
-                        openPanel(MatchModeConfigPanel, undefined)
-                    }
-                },
-            },
         ]
 
         const registry = CommandRegistry.get()
         const dispose = registry.registerCommands(staticCommands)
         return () => dispose()
-    }, [addToast, openPanel, openModal, openImportPanel])
-
-    // Register dynamic per-assembly commands via a provider
-    useEffect(() => {
-        const provider: CommandProvider = () => {
-            if (!World.isAlive || !World.sceneRenderer) return []
-            const list: CommandDefinition[] = []
-
-            const robots = World.sceneRenderer.mirabufSceneObjects.getRobots() || []
-            for (const r of robots) {
-                const name = r.assemblyName || "Robot"
-                const nameTokens = String(name)
-                    .split(/\s+|[-_]/g)
-                    .filter(Boolean)
-                list.push({
-                    id: `configure-robot-${r.id}`,
-                    label: `Configure ${r.nameTag?.text()} (${name})`,
-                    description: `Open configuration for robot ${r.nameTag?.text()} (${name}).`,
-                    keywords: ["configure", "robot", ...nameTokens.map(t => t.toLowerCase())],
-                    perform: () =>
-                        openPanel(ConfigurePanel, {
-                            configurationType: "ROBOTS",
-                            selectedAssembly: r,
-                        }),
-                })
-                list.push({
-                    id: `remove-robot-${r.id}`,
-                    label: `Remove ${r.nameTag?.text()} (${name})`,
-                    description: `Remove the robot ${r.nameTag?.text()} (${name}).`,
-                    keywords: ["remove", "delete", "robot", ...nameTokens.map(t => t.toLowerCase())],
-                    perform: () => {
-                        World.sceneRenderer.removeSceneObject(r.id)
-                    },
-                })
-            }
-
-            const field = World.sceneRenderer.mirabufSceneObjects.getField()
-            if (field) {
-                const name = field.assemblyName || "Field"
-                const nameTokens = String(name)
-                    .split(/\s+|[-_]/g)
-                    .filter(Boolean)
-                list.push({
-                    id: `configure-field-${field.id}`,
-                    label: `Configure ${name}`,
-                    description: `Open configuration for field ${name}.`,
-                    keywords: ["configure", "field", ...nameTokens.map(t => t.toLowerCase())],
-                    perform: () =>
-                        openPanel(ConfigurePanel, {
-                            configurationType: "FIELDS",
-                            selectedAssembly: field,
-                        }),
-                })
-                list.push({
-                    id: `remove-field-${field.id}`,
-                    label: `Remove ${name}`,
-                    description: `Remove the field ${name}.`,
-                    keywords: ["remove", "delete", "field", ...nameTokens.map(t => t.toLowerCase())],
-                    perform: () => {
-                        World.sceneRenderer.removeSceneObject(field.id)
-                    },
-                })
-            }
-
-            return list
-        }
-
-        const registry = CommandRegistry.get()
-        const dispose = registry.registerProvider(provider)
-        return () => dispose()
-    }, [openPanel])
+    }, [addToast])
 
     // Subscribe to registry updates to refresh palette command list
     const [registryTick, setRegistryTick] = useState(0)
@@ -234,6 +72,13 @@ const CommandPalette: React.FC = () => {
         const registry = CommandRegistry.get()
         return registry.subscribe(() => setRegistryTick(t => t + 1))
     }, [])
+
+    // Force a refresh when opening, so dynamic providers reflect current assemblies
+    useEffect(() => {
+        if (isOpen) {
+            setRegistryTick(t => t + 1)
+        }
+    }, [isOpen])
 
     const commands = useMemo<CommandDefinition[]>(() => {
         return CommandRegistry.get().getCommands()

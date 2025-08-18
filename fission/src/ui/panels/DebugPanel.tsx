@@ -11,13 +11,23 @@ import MirabufCachingService, {
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import { random } from "@/util/Random"
-import { globalAddToast } from "../components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "../components/GlobalUIControls"
 import Label from "../components/Label"
 import type { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register command: Open Debug Panel (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "open-debug-panel",
+    label: "Open Debug Panel",
+    description: "Open the Debug tools panel.",
+    keywords: ["panel", "debug"],
+    	perform: () => import("./DebugPanel").then(m => globalOpenPanel(m.default, undefined)),
+})
 
 function toggleDragMode() {
     const dragSystem = World.dragModeSystem

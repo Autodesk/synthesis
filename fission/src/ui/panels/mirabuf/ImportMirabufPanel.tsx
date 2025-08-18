@@ -40,6 +40,27 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register commands: Open import panel scoped to robots/fields (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "spawn-asset-robots",
+    label: "Spawn Asset (Robots)",
+    description: "Open asset spawn panel scoped to robots.",
+    keywords: ["spawn", "asset", "robot", "import", "mirabuf"],
+    perform: () => {
+        globalOpenPanel<void, ImportMirabufPanelCustomProps>(ImportMirabufPanel, { configurationType: "ROBOTS" })
+    },
+})
+CommandRegistry.get().registerCommand({
+    id: "spawn-asset-fields",
+    label: "Spawn Asset (Fields)",
+    description: "Open asset spawn panel scoped to fields.",
+    keywords: ["spawn", "asset", "field", "import", "mirabuf"],
+    perform: () => {
+        globalOpenPanel<void, ImportMirabufPanelCustomProps>(ImportMirabufPanel, { configurationType: "FIELDS" })
+    },
+})
 
 interface ItemCardProps {
     id: string
