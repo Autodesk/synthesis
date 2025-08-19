@@ -90,6 +90,59 @@ mirabuf::TriangleMesh map_mesh_body(const adsk::core::Ptr<adsk::fusion::MeshBody
     return mesh;
 }
 
+adsk::core::Ptr<adsk::core::Matrix3D> get_matrix_world(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
+    if (!occurrence) {
+        return nullptr;
+    }
+
+    auto matrix          = occurrence->transform2()->copy();
+    auto next_occurrence = occurrence;
+    while (next_occurrence->assemblyContext()) {
+        matrix->transformBy(next_occurrence->assemblyContext()->transform2());
+        next_occurrence = next_occurrence->assemblyContext();
+    }
+
+    return matrix;
+}
+
+mirabuf::Node parse_child_occurrence(
+    const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence, mirabuf::Parts* parts) {
+    assert(occurrence->isLightBulbOn());
+
+    mirabuf::Node node;
+    node.set_value(occurrence->component()->id());
+
+    auto& part = (*parts->mutable_part_instances())[occurrence->component()->id()];
+    part.mutable_info()->CopyFrom(create_info_from_fus_obj(occurrence));
+    if (occurrence->appearance()) {
+        part.set_appearance(occurrence->appearance()->id());
+    }
+
+    if (auto material = occurrence->component()->material()) {
+        part.set_physical_material(material->id());
+    }
+
+    auto transform_array = occurrence->transform()->asArray();
+    part.mutable_transform()->mutable_spatial_matrix()->Add(transform_array.begin(), transform_array.end());
+
+    auto world_transform = get_matrix_world(occurrence)->asArray();
+    part.mutable_global_transform()->mutable_spatial_matrix()->Add(world_transform.begin(), world_transform.end());
+
+    // final recursive step to parse child occurrences
+    std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;
+    occurrence->childOccurrences()->copyTo(std::back_inserter(child_occurrences));
+    for (const auto& child_occurrence : child_occurrences) {
+        if (!child_occurrence->isLightBulbOn()) {
+            continue;
+        }
+
+        auto child_node = parse_child_occurrence(child_occurrence, parts);
+        node.mutable_children()->Add()->CopyFrom(child_node);
+    }
+
+    return node;
+}
+
 } // namespace
 
 mirabuf::Parts map_all_parts(
@@ -148,62 +201,6 @@ mirabuf::Parts map_all_parts(
 
     return parts;
 }
-
-namespace {
-adsk::core::Ptr<adsk::core::Matrix3D> get_matrix_world(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
-    if (!occurrence) {
-        return nullptr;
-    }
-
-    auto matrix          = occurrence->transform2()->copy();
-    auto next_occurrence = occurrence;
-    while (next_occurrence->assemblyContext()) {
-        matrix->transformBy(next_occurrence->assemblyContext()->transform2());
-        next_occurrence = next_occurrence->assemblyContext();
-    }
-
-    return matrix;
-}
-
-mirabuf::Node parse_child_occurrence(
-    const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence, mirabuf::Parts* parts) {
-    assert(occurrence->isLightBulbOn());
-
-    mirabuf::Node node;
-    node.set_value(occurrence->component()->id());
-
-    auto& part = (*parts->mutable_part_instances())[occurrence->component()->id()];
-    part.mutable_info()->CopyFrom(create_info_from_fus_obj(occurrence));
-    if (occurrence->appearance()) {
-        part.set_appearance(occurrence->appearance()->id());
-    }
-
-    if (auto material = occurrence->component()->material()) {
-        part.set_physical_material(material->id());
-    }
-
-    auto transform_array = occurrence->transform()->asArray();
-    part.mutable_transform()->mutable_spatial_matrix()->Add(transform_array.begin(), transform_array.end());
-
-    auto world_transform = get_matrix_world(occurrence)->asArray();
-    part.mutable_global_transform()->mutable_spatial_matrix()->Add(world_transform.begin(), world_transform.end());
-
-    // final recursive step to parse child occurrences
-    std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;
-    occurrence->childOccurrences()->copyTo(std::back_inserter(child_occurrences));
-    for (const auto& child_occurrence : child_occurrences) {
-        if (!child_occurrence->isLightBulbOn()) {
-            continue;
-        }
-
-        auto child_node = parse_child_occurrence(child_occurrence, parts);
-        node.mutable_children()->Add()->CopyFrom(child_node);
-    }
-
-    return node;
-}
-
-} // namespace
 
 mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component>& component, mirabuf::Parts* parts) {
     mirabuf::Node root_node;
