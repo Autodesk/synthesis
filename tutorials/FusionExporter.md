@@ -15,7 +15,7 @@ The Synthesis Fusion 360 exporter is the tool used by both developers and users 
 
 For information regarding the manual install process visit the [Synthesis Fusion 360 Exporter](https://github.com/Autodesk/synthesis/tree/prod/exporter) source code for more information.
 
-## Getting Started
+## Installing the Exporter
 
 ### Using an Installer
 
@@ -53,6 +53,8 @@ under the `Utilities` tab.
 
 Thanks for installing the Synthesis Fusion Exporter! For any additional help visit our [Synthesis Community Discord Server](https://www.discord.gg/hHcF9AVgZA) where you can talk directly to our developers.
 
+## Exporting Robots
+
 ### Launching the Exporter
 
 After clicking the button, a panel will open up. This is the exporter. In this panel, you can provide us with most of the extra data we need to properly simulate your robot or field in Synthesis.
@@ -71,12 +73,14 @@ This is where you will do most of your configuring. Here is a basic overview of 
 - Weight:
   - The weight of your exported model. This is used for physics calculations within Synthesis, however, it does not need to be exact. If you happen to know the real world weight of your robot put that here. Otherwise click the `Calculate` button to have the exporter estimate the weight for you.
   - Note: The weight can either be measured in `lbs` or `kgs`.
-- Wheel Configuration:
-  - This is where you will select all of your drivetrain wheels on your robot.
-  - Use the wheel type to decide between standard or omni wheels (mecanum drive can be used with either in the engine)
-  - Change the signal type of the joint (PWN, CAN for simulation. Passive to not be controlled)
+
+![image_caption](img/fusion/joint-tab.png)
+
 - Joint Configuration:
   - This is where you will select all other moving joints on your robot that are not a part of your drivetrain. All joints are automatically added to this list. If you want to remove it either suppress it, or manually remove it from the list.
+  - You will also be able to configure all of your drivetrain wheels on your robot.
+  - Use the wheel type to decide between standard or omni wheels (mecanum drive can be used with either in the engine)
+  - Change the signal type of the joint (PWN, CAN for simulation. Passive to not be controlled)
 
 Notes:
 
@@ -84,14 +88,8 @@ Notes:
 - When selecting your joints it is important that your robot is structured correctly. See [Design Hierarchy](#design-hierarchy) for more information.
 - Signal type specifies what type of IO is used to control the wheel. This is needed for code emulation.
 
-### Advanced Tab
-
-![image_caption](img/fusion/exporter-advanced.png)
-
-The advanced tab has some optional toggles for disabling / enabling some more advanced features. If your not confident in your ability with the Synthesis exporter, it is recommended that you leave these options alone.
 
 - Exporter Settings:
-  - **Algorithmic Wheel Selection**: Automatically selects similar wheels when a wheel is picked (default on)
   - **Compress Output**: Compress Output: Compresses resulting mirabuf file with GZip (default on)
   - **Open Synthesis**: Open Synthesis: Opens Synthesis when the export is finished (default on)
 - Physics Settings:
@@ -122,7 +120,11 @@ Below is a basic overview of the design hierarchy rules that the exporter expect
 
 #### 1. Grounded Node
 
-You must ground one of your parts in the design. This tells Synthesis where to start branching off the rest of the nodes from. In the browser, you'll see there is a main root component. All other components under this root component will actually be used in the export. **NOTE**: Generally anything that is *underdefined* or *"disjointed"* from the rest of the design will be added under the main grounded object, so if objects that are supposed to be moving relative to what you define as grounded aren't, that is likely why.
+You must ground one of your parts in the design. To do this, you must pin a component.
+
+![image_caption](img/fusion/ground_component.png)
+
+This tells Synthesis where to start branching off the rest of the nodes from. In the browser, you'll see there is a main root component. All other components under this root component will actually be used in the export. **NOTE**: Generally anything that is *underdefined* or *"disjointed"* from the rest of the design will be added under the main grounded object, so if objects that are supposed to be moving relative to what you define as grounded aren't, that is likely why.
 All child components of the component that is grounded (and disjointed components) will be attached to the grounded node. If a component is associated with any joint (rigidgroups are a big exception here) will not be attached to the grounded. Instead, they will start creating their own node. As a result, if you joint two child components together, it will create those components (and their children) as completely separate objects in Synthesis. You will need to specify which component in the joint should remain with the grounded node.
 
 #### 2. Rigidgroups
@@ -133,7 +135,11 @@ Rigidgroups act as a bandage. They ensure that whatever components are within th
 
 You can follow the same logic as the grounded node, but instead its stemming from that parented joint.
 
+## Video Walkthrough
+
+Watch the video below to walk through exporting the Dozer model.
+
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our
-[discord sever](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
+[discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
