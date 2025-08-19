@@ -1,6 +1,6 @@
-import { Box, Button, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
-import { type ReactElement, useEffect, useReducer, useState } from "react"
-import DefaultInputs from "@/systems/input/DefaultInputs"
+import { Box, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
+import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
@@ -17,24 +17,46 @@ interface InputSchemeSelectionProps {
     onSelect?: () => void
     onEdit?: () => void
     onCreateNew?: () => void
+    panelId?: string
 }
 
-export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
+export default function InputSchemeSelection({
+    brainIndex,
+    onSelect,
+    onEdit,
+    onCreateNew,
+    panelId,
+}: InputSchemeSelectionProps) {
     const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
     )
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
-    useEffect(() => {
+
+    const refreshAvailableSchemes = useCallback(() => {
         setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
     }, [robotDriveType])
+
+    useEffect(() => {
+        // Initial load and when robotDriveType changes
+        refreshAvailableSchemes()
+
+        // Set up event listener for external scheme changes
+        const handleSchemeChange = () => {
+            refreshAvailableSchemes()
+        }
+
+        window.addEventListener("inputSchemeChanged", handleSchemeChange)
+        return () => window.removeEventListener("inputSchemeChanged", handleSchemeChange)
+    }, [refreshAvailableSchemes])
 
     const SchemeSelector = (
         scheme: InputScheme,
         style: React.CSSProperties,
         message: string,
-        disabled: boolean = false
+        disabled: boolean = false,
+        status?: InputSchemeUseType
     ): ReactElement | null => {
         if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
         return (
@@ -60,7 +82,11 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
                                     }
-                                    setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
+                                    window.dispatchEvent(
+                                        new CustomEvent("inputSchemeChanged", {
+                                            detail: { panelId },
+                                        })
+                                    )
                                     onSelect?.()
                                     update()
                                 }}
@@ -76,12 +102,12 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                             onEdit?.()
                         })}
 
-                        {/** Delete button (only if the scheme is customized) */}
-                        {scheme.customized ? (
+                        {/** Delete button (only if the scheme is customized and not in use) */}
+                        {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
                             DeleteButton(() => {
                                 // Fetch current custom schemes
-                                InputSchemeManager.saveSchemes()
-                                InputSchemeManager.resetDefaultSchemes()
+                                InputSchemeManager.saveSchemes(panelId)
+                                InputSchemeManager.resetDefaultSchemes(panelId)
                                 const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
                                 // Find and remove this input scheme
@@ -92,6 +118,12 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                 PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
                                 PreferencesSystem.savePreferences()
 
+                                // Update the available schemes list to reflect the deletion
+                                window.dispatchEvent(
+                                    new CustomEvent("inputSchemeChanged", {
+                                        detail: { panelId },
+                                    })
+                                )
                                 update()
                             })
                         ) : (
@@ -138,13 +170,13 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
                     .map(scheme => {
-                        return SchemeSelector(scheme.scheme, {}, "Available", false)
+                        return SchemeSelector(scheme.scheme, {}, "Available", false, scheme.status)
                     })}
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
                     .map((scheme, i) => {
                         return (
-                            <>
+                            <div key={`conflict-${scheme.scheme.schemeName}`}>
                                 {i == 0 && <Divider />}
                                 {SchemeSelector(
                                     scheme.scheme,
@@ -152,17 +184,17 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                                     "Conflicts with " + scheme.conflictingSchemeNames,
                                     false
                                 )}
-                            </>
+                            </div>
                         )
                     })}
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
                     .map((scheme, i) => {
                         return (
-                            <>
+                            <div key={`in-use-${scheme.scheme.schemeName}`}>
                                 {i == 0 && <Divider />}
-                                {SchemeSelector(scheme.scheme, {}, "In Use", true)}
-                            </>
+                                {SchemeSelector(scheme.scheme, {}, "In Use", true, scheme.status)}
+                            </div>
                         )
                     })}
             </>
@@ -171,7 +203,6 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                 color="success"
                 variant="outlined"
                 onClick={() => {
-                    InputSystem.setBrainIndexSchemeMapping(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
                     onCreateNew?.()
                 }}
             >

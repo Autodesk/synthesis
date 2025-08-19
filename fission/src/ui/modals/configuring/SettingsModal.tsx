@@ -1,4 +1,5 @@
-import { Box, Button, Stack, Tab, Tabs, TextField } from "@mui/material"
+import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
@@ -526,6 +527,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
                 textColor="inherit"
                 indicatorColor="primary"
                 centered
+                {...SoundPlayer.buttonSoundEffects()}
             >
                 {tabs.map(tab => (
                     <Tab key={tab.key} value={tab.key} label={tab.label} />

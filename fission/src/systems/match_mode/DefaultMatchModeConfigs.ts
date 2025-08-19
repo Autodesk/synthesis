@@ -12,7 +12,7 @@ class DefaultMatchModeConfigs {
             teleopTime: 135,
             endgameTime: 20,
             ignoreRotation: true,
-            maxHeight: Infinity,
+            maxHeight: Number.MAX_SAFE_INTEGER,
             heightLimitPenalty: 0,
             sideMaxExtension: convertFeetToMeters(1.5),
             sideExtensionPenalty: 0,
@@ -60,10 +60,26 @@ class DefaultMatchModeConfigs {
             teleopTime: 15,
             endgameTime: 5,
             ignoreRotation: true,
-            maxHeight: Infinity,
+            maxHeight: Number.MAX_SAFE_INTEGER,
             heightLimitPenalty: 0,
-            sideMaxExtension: Infinity,
+            sideMaxExtension: Number.MAX_SAFE_INTEGER,
             sideExtensionPenalty: 0,
+        }
+    }
+
+    static fallbackValues = (): MatchModeConfig => {
+        return {
+            id: "default",
+            name: "Default",
+            isDefault: true,
+            autonomousTime: 15,
+            teleopTime: 135,
+            endgameTime: 20,
+            ignoreRotation: true,
+            maxHeight: Number.MAX_SAFE_INTEGER,
+            heightLimitPenalty: 2,
+            sideMaxExtension: Number.MAX_SAFE_INTEGER,
+            sideExtensionPenalty: 2,
         }
     }
 
