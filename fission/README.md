@@ -1,12 +1,12 @@
 # Fission
 
-Fission is Synthesis' web-based robotics simulator. This app is hosted [on our website](https://synthesis.github.com/fission/), in addition to a closed, [beta version](https://synthesis.autodesk.com/beta/).
+Fission is Synthesis' web-based robotics simulator. This app is hosted [on our website](https://synthesis.github.com/fission/), in addition to a closed [beta version](https://synthesis.autodesk.com/beta/).
 
 ## Setup & Building
 
 ### Requirements
 
-1. NPM (v10.2.4 recommended)
+1. Bun (v1.2.0 recommended)
    - Yarn, Bun, or any other package managers work just as well.
 2. NodeJS (v20.10.0 recommended)
    - Needed for running the development server.
@@ -29,7 +29,7 @@ bun i
 ```
 
 For the asset pack that will be available in production, download the asset pack [here](https://synthesis.autodesk.com/Downloadables/assetpack.zip) and unzip it.
-Make sure that the Downloadables directory is placed inside of the public directory like so:
+Make sure that the `Downloadables` directory is placed inside the public directory like so:
 
 ```
 /fission/public/Downloadables/
@@ -132,7 +132,7 @@ These systems will extend off of the core systems to build out features in Synth
 ## Package Scripts
 
 | Script               | Description                                                                                                       |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+|----------------------|-------------------------------------------------------------------------------------------------------------------|
 | `init`               | Runs the initialization commands to install all dependencies, assets, and unit testing browsers.                  |
 | `dev`                | Starts the development server used for testing. Supports hot-reloading (though finicky with WASM module loading). |
 | `test`               | Runs the unit tests via Vitest.                                                                                   |

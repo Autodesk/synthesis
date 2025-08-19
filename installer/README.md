@@ -18,7 +18,7 @@ We recently transitioned to a platform independent, web-based application. As su
 
 - Navigate to [`synthesis.autodesk.com/download`](https://synthesis.autodesk.com/download.html).
 - Find the Exporter source code zip download.
-  - Note that the source code is platform agnostic, it will work for **both** `Windows` and `Mac`.
+  - Note that the source code is platform-agnostic, it will work for **both** `Windows` and `Mac`.
 - Once the source code for the Exporter is downloaded, unzip the folder.
 - Next, if you haven't already, install `Autodesk Fusion`.
 - Once Fusion is open, navigate to the `Utilities Toolbar`.
