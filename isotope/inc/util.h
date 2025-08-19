@@ -4,9 +4,11 @@
 
 #include <Core/Base.h>
 #include <Core/Memory.h>
+#include <Fusion/Components/Component.h>
 #include <Fusion/Components/Joint.h>
 #include <Fusion/Components/JointGeometry.h>
 #include <Fusion/Components/JointOrigin.h>
+#include <Fusion/Components/Occurrence.h>
 
 #include <string_view>
 #include <variant>
@@ -86,7 +88,7 @@ template <class T>
 struct has_id<T, std::void_t<decltype(std::declval<T>()->id())>> : std::true_type {};
 
 template <typename FusObjPtr>
-mirabuf::Info create_info_from_fus_obj(const FusObjPtr& obj) {
+mirabuf::Info create_info_from_fus_obj(const FusObjPtr& obj, const std::string& override_guid = "") {
     mirabuf::Info info;
 
     // The python exporter sets all version numbers to 5.
@@ -98,13 +100,20 @@ mirabuf::Info create_info_from_fus_obj(const FusObjPtr& obj) {
         info.set_name(obj->name());
     }
 
-    if constexpr (has_entity_token<FusObjPtr>::value) {
-        info.set_guid(obj->entityToken());
-    } else if constexpr (has_id<FusObjPtr>::value) {
-        info.set_guid(obj->id());
+    if (!override_guid.length()) {
+        if constexpr (has_entity_token<FusObjPtr>::value) {
+            info.set_guid(obj->entityToken());
+        } else if constexpr (has_id<FusObjPtr>::value) {
+            info.set_guid(obj->id());
+        }
+    } else {
+        info.set_guid(override_guid);
     }
 
     return info;
 }
+
+std::string guid_component(const adsk::core::Ptr<adsk::fusion::Component>& component);
+std::string guid_occurrence(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence);
 
 #endif // ISOTOPE_UTILITY_H_

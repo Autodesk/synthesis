@@ -110,16 +110,31 @@ mirabuf::Node parse_child_occurrence(
     assert(occurrence->isLightBulbOn());
 
     mirabuf::Node node;
-    node.set_value(occurrence->component()->id());
 
-    auto& part = (*parts->mutable_part_instances())[occurrence->component()->id()];
+    // TODO: Really explicit typing for this sort of thing would be great.
+    const std::string map_constant = guid_occurrence(occurrence);
+    node.set_value(map_constant);
+
+    if (parts->part_instances().find(map_constant) != parts->part_instances().end()) {
+        assert(false);
+    }
+
+    auto& part = (*parts->mutable_part_instances())[map_constant];
     part.mutable_info()->CopyFrom(create_info_from_fus_obj(occurrence));
     if (occurrence->appearance()) {
-        part.set_appearance(occurrence->appearance()->id());
+        part.set_appearance(occurrence->appearance()->id()); // TODO: Check if this is correct.
+    } else {
+        part.set_appearance("default");
     }
 
     if (auto material = occurrence->component()->material()) {
         part.set_physical_material(material->id());
+    }
+
+    auto& part_defs                 = parts->part_definitions();
+    const std::string component_ref = guid_component(occurrence->component());
+    if (part_defs.find(component_ref) != part_defs.end()) {
+        part.set_part_definition_reference(component_ref);
     }
 
     auto transform_array = occurrence->transform()->asArray();
@@ -152,7 +167,12 @@ mirabuf::Parts map_all_parts(
     std::vector<adsk::core::Ptr<adsk::fusion::Component>> fusion_components;
     components->copyTo(std::back_inserter(fusion_components));
     for (const auto& component : fusion_components) {
-        auto& part = (*parts.mutable_part_definitions())[component->id()];
+        const std::string component_ref = guid_component(component);
+        if (parts.part_definitions().find(component_ref) != parts.part_definitions().end()) {
+            assert(false);
+        }
+
+        auto& part = (*parts.mutable_part_definitions())[component_ref];
         part.mutable_info()->CopyFrom(create_info_from_fus_obj(component));
         part.set_dynamic(true);
 
@@ -204,14 +224,19 @@ mirabuf::Parts map_all_parts(
 
 mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component>& component, mirabuf::Parts* parts) {
     mirabuf::Node root_node;
-    root_node.set_value(component->id());
+    const std::string map_constant = guid_component(component);
+    root_node.set_value(map_constant);
 
     // TODO: Info stuff
-    auto& part = (*parts->mutable_part_instances())[component->id()];
+    if (parts->part_instances().find(map_constant) != parts->part_instances().end()) {
+        assert(false);
+    }
+
+    auto& part = (*parts->mutable_part_instances())[map_constant];
     part.mutable_info()->CopyFrom(create_info_from_fus_obj(component));
     auto& part_defs = parts->part_definitions();
-    if (part_defs.find(component->id()) != part_defs.end()) {
-        part.set_part_definition_reference(component->id());
+    if (part_defs.find(map_constant) != part_defs.end()) {
+        part.set_part_definition_reference(map_constant);
     }
 
     std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;

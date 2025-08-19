@@ -46,8 +46,8 @@ mirabuf::joint::RigidGroup map_rigid_group(
     mirabuf::joint::RigidGroup group;
     std::string group_name = "group_" + joint->occurrenceOne()->name() + "_" + joint->occurrenceTwo()->name();
     group.set_name(group_name);
-    group.add_occurrences(joint->occurrenceOne()->name());
-    group.add_occurrences(joint->occurrenceTwo()->name());
+    group.add_occurrences(guid_occurrence(joint->occurrenceOne()));
+    group.add_occurrences(guid_occurrence(joint->occurrenceTwo()));
 
     return group;
 }
@@ -337,7 +337,7 @@ std::optional<mirabuf::Node> create_tree_parts(
     }
 
     mirabuf::Node node;
-    node.set_value(occurrence_node->data->name());
+    node.set_value(guid_occurrence(occurrence_node->data));
     for (auto edge : occurrence_node->edges) {
         auto dyn_node   = std::dynamic_pointer_cast<GraphNode>(edge->node);
         auto child_node = create_tree_parts(dyn_node, edge->relationship);
@@ -504,7 +504,8 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
 
     auto& joint_definition_ground = (*joints.mutable_joint_definitions())["grounded"];
     joint_definition_ground.mutable_info()->set_name("grounded");
-    joint_definition_ground.mutable_info()->set_guid("grounded-def-guid");
+    // TODO: Add comment
+    joint_definition_ground.mutable_info()->set_guid("grounded");
     joint_definition_ground.mutable_info()->set_version(1);
 
     auto& joint_instance_ground = (*joints.mutable_joint_instances())["grounded"];
@@ -537,8 +538,8 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
         auto& joint_instance = (*joints.mutable_joint_instances())[joint->entityToken()];
         joint_instance.mutable_info()->CopyFrom(create_info_from_fus_obj(joint));
         joint_instance.set_signal_reference(signal.info().guid());
-        joint_instance.set_parent_part(joint->occurrenceOne()->name());
-        joint_instance.set_child_part(joint->occurrenceTwo()->name());
+        joint_instance.set_parent_part(guid_occurrence(joint->occurrenceOne()));
+        joint_instance.set_child_part(guid_occurrence(joint->occurrenceTwo()));
 
         // TODO: Wheel logic should go here
 
