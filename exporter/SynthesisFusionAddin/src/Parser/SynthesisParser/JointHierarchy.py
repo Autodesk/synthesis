@@ -223,7 +223,7 @@ class JointParser:
 
         if self.grounded is None:
             message = "There is not a pinned component in this assembly, aborting kinematic export."
-            gm.ui.messageBox(message)
+            # gm.ui.messageBox(message)
             _____: Err[None] = Err(message, ErrorSeverity.Fatal)
             raise RuntimeError(message)
 

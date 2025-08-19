@@ -43,7 +43,7 @@ const errorMatchers: { text: string; cb: () => void }[] = [
     {
         text: "not a pinned",
         cb: () => {
-            Global_SetAlert("error", "No Grounded Joint On Assembly")
+            Global_SetAlert("error", "Please pin a component to export the assembly")
         },
     },
 ]
