@@ -13,6 +13,12 @@ import {
     type ToggleButtonGroupProps,
     Select as MuiSelect,
     type SelectProps,
+    Accordion as MuiAccordion,
+    type AccordionProps,
+    AccordionSummary as MuiAccordionSummary,
+    type AccordionSummaryProps,
+    AccordionDetails as MuiAccordionDetails,
+    type AccordionDetailsProps,
 } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
@@ -138,6 +144,22 @@ export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
             {children}
         </MuiSelect>
     )
+}
+
+export const Accordion: React.FC<AccordionProps> = ({ children, ...props }) => {
+    return <MuiAccordion {...props}>{children}</MuiAccordion>
+}
+
+export const AccordionSummary: React.FC<AccordionSummaryProps> = ({ children, ...props }) => {
+    return (
+        <MuiAccordionSummary {...SoundPlayer.dropdownSoundEffects()} {...props}>
+            {children}
+        </MuiAccordionSummary>
+    )
+}
+
+export const AccordionDetails: React.FC<AccordionDetailsProps> = ({ children, ...props }) => {
+    return <MuiAccordionDetails {...props}>{children}</MuiAccordionDetails>
 }
 
 export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => {
