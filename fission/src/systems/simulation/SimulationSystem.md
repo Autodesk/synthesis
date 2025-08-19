@@ -14,4 +14,4 @@ Stimuli are mostly read-only. They read values from given physics objects and co
 
 Brains are the controllers of the mechanisms. They use a combination of Drivers and Stimuli to control a given mechanism.
 
-For basic user control of the mechanisms, we'll have a Synthesis Brain. We hope to have an additional brain by the end of Summer 2024: the WPIBrain for facilitating WPILib code control over the mechanisms inside of Synthesis.
+The [Synthesis Brain](./synthesis_brain/SynthesisBrain.ts) exists for basic user control of the mechanisms, while the [WPILib Brain](./wpilib_brain/WPILibBrain.ts) facilitates controlling mechanisms over a websocket connection with a WPILib HALSim instance.

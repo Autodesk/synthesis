@@ -13,7 +13,7 @@ Fission is Synthesis' web-based robotics simulator. This app is hosted [on our w
 
 ### Setup
 
-You can either run the `init` command or run the following commands details in "Specific Steps":
+You can either run the `init` command or run the following commands detailed in the "Specific Steps" section below:
 
 ```bash
 bun i && bun run init
@@ -115,7 +115,7 @@ The packaged app will be located in the `/fission/out` directory.
 
 ## Core Systems
 
-These core systems make up the lionshare of the fission source code. Each systems manages a different aspect of the simulated world
+These core systems make up the lion's share of the fission source code. Each systems manages a different aspect of the simulated world
 
 - [World](/fission/src/systems/World.md)
 - [Scene Renderer](/fission/src/systems/scene/SceneRenderer.md)
@@ -127,12 +127,12 @@ These core systems make up the lionshare of the fission source code. Each system
 
 These systems will extend off of the core systems to build out features in Synthesis.
 
-- [Simulation System](fission/src/systems/simulation/SimulationSystem.md)
+- [Simulation System](/fission/src/systems/simulation/SimulationSystem.md)
 
 ## Package Scripts
 
 | Script               | Description                                                                                                       |
-|----------------------|-------------------------------------------------------------------------------------------------------------------|
+| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `init`               | Runs the initialization commands to install all dependencies, assets, and unit testing browsers.                  |
 | `dev`                | Starts the development server used for testing. Supports hot-reloading (though finicky with WASM module loading). |
 | `test`               | Runs the unit tests via Vitest.                                                                                   |
@@ -146,3 +146,4 @@ These systems will extend off of the core systems to build out features in Synth
 | `format`             | Runs `prettier:fix` and `lint:fix`.                                                                               |
 | `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                           |
 | `playwright:install` | Downloads the Playwright browsers.                                                                                |
+| `electron:make`      | Build electron application                                                                                        |
