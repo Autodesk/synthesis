@@ -18,6 +18,7 @@
 #include "components.h"
 #include "joints.h"
 #include "materials.h"
+#include "util.h"
 
 void export_design(const GlobalContext& gctx) {
     assert(gctx.isValid());
@@ -25,8 +26,7 @@ void export_design(const GlobalContext& gctx) {
     auto design   = document->query<adsk::fusion::FusionDocument>()->design();
 
     mirabuf::Assembly assembly;
-    assembly.mutable_info()->set_name(design->rootComponent()->name());
-    assembly.mutable_info()->set_version(1);
+    assembly.mutable_info()->CopyFrom(create_info_from_fus_obj(design->rootComponent()));
     assembly.mutable_info()->set_guid(design->parentDocument()->name());
 
     // Determines if the exported design should be treated as a robot or field

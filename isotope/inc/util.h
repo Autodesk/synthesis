@@ -2,12 +2,16 @@
 #ifndef ISOTOPE_UTILITY_H_
 #define ISOTOPE_UTILITY_H_
 
+#include <Core/Base.h>
+#include <Core/Memory.h>
 #include <Fusion/Components/Joint.h>
 #include <Fusion/Components/JointGeometry.h>
 #include <Fusion/Components/JointOrigin.h>
 
 #include <string_view>
 #include <variant>
+
+#include "types.pb.h"
 
 template <typename T>
 struct FusionTypeName;
@@ -59,7 +63,48 @@ template <class... Ts>
 struct overloaded : Ts... {
     using Ts::operator()...;
 };
+
 template <class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
+
+template <class, class = void>
+struct has_name : std::false_type {};
+
+template <class T>
+struct has_name<T, std::void_t<decltype(std::declval<T>()->name())>> : std::true_type {};
+
+template <class, class = void>
+struct has_entity_token : std::false_type {};
+
+template <class T>
+struct has_entity_token<T, std::void_t<decltype(std::declval<T>()->entityToken())>> : std::true_type {};
+
+template <class, class = void>
+struct has_id : std::false_type {};
+
+template <class T>
+struct has_id<T, std::void_t<decltype(std::declval<T>()->id())>> : std::true_type {};
+
+template <typename FusObjPtr>
+mirabuf::Info create_info_from_fus_obj(const FusObjPtr& obj) {
+    mirabuf::Info info;
+
+    // The python exporter sets all version numbers to 5.
+    // This version number can be used to differentiate between robot exports from
+    // the C++ and python exporters respectively.
+    info.set_version(1);
+
+    if constexpr (has_name<FusObjPtr>::value) {
+        info.set_name(obj->name());
+    }
+
+    if constexpr (has_entity_token<FusObjPtr>::value) {
+        info.set_guid(obj->entityToken());
+    } else if constexpr (has_id<FusObjPtr>::value) {
+        info.set_guid(obj->id());
+    }
+
+    return info;
+}
 
 #endif // ISOTOPE_UTILITY_H_

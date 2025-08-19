@@ -1,12 +1,14 @@
 #include "components.h"
 
-#include <joint.pb.h>
+#include <Core/Geometry/Matrix3D.h>
+
 #include <vector>
 
 #include "assembly.pb.h"
+#include "joint.pb.h"
 #include "types.pb.h"
 
-#include "Core/Geometry/Matrix3D.h"
+#include "util.h"
 
 namespace {
 
@@ -47,9 +49,8 @@ mirabuf::TriangleMesh map_b_rep_body(const adsk::core::Ptr<adsk::fusion::BRepBod
     }
 
     mirabuf::TriangleMesh mesh;
-    mesh.mutable_info()->set_name(body->name());
-    // TODO: Info guid
-    mesh.mutable_info()->set_version(1);
+    mesh.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
+
     mesh.set_has_volume(true);
 
     std::vector<float> coords = fus_mesh->nodeCoordinatesAsFloat();
@@ -71,7 +72,7 @@ mirabuf::TriangleMesh map_mesh_body(const adsk::core::Ptr<adsk::fusion::MeshBody
     auto fus_mesh = body->displayMesh();
 
     mirabuf::TriangleMesh mesh;
-    // TODO: Info crap (this is getting annoying)
+    mesh.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
     mesh.set_has_volume(true);
 
     std::vector<float> coords = fus_mesh->nodeCoordinatesAsFloat();
@@ -99,9 +100,7 @@ mirabuf::Parts map_all_parts(
     components->copyTo(std::back_inserter(fusion_components));
     for (const auto& component : fusion_components) {
         auto& part = (*parts.mutable_part_definitions())[component->id()];
-        part.mutable_info()->set_name(component->name());
-        part.mutable_info()->set_guid(component->id());
-        part.mutable_info()->set_version(1);
+        part.mutable_info()->CopyFrom(create_info_from_fus_obj(component));
         part.set_dynamic(true);
 
         if (auto props = component->physicalProperties()) {
@@ -116,9 +115,7 @@ mirabuf::Parts map_all_parts(
             }
 
             auto& part_body = *part.mutable_bodies()->Add();
-            part_body.mutable_info()->set_name(body->name());
-            // TODO: guid
-            part_body.mutable_info()->set_version(1);
+            part_body.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
             part_body.mutable_triangle_mesh()->CopyFrom(map_b_rep_body(body));
 
             if (auto appearances = materials.appearances(); // TODO: Replace the parameter
@@ -137,8 +134,7 @@ mirabuf::Parts map_all_parts(
             }
 
             auto& part_body = *part.mutable_bodies()->Add();
-            part_body.mutable_info()->set_name(body->name());
-            part_body.mutable_info()->set_version(1);
+            part_body.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
             part_body.mutable_triangle_mesh()->CopyFrom(map_mesh_body(body));
 
             if (auto appearances = materials.appearances(); // TODO: Replace the parameter
@@ -175,9 +171,9 @@ mirabuf::Node parse_child_occurrence(
 
     mirabuf::Node node;
     node.set_value(occurrence->component()->id());
-    // TODO: Info stuff
 
     auto& part = (*parts->mutable_part_instances())[occurrence->component()->id()];
+    part.mutable_info()->CopyFrom(create_info_from_fus_obj(occurrence));
     if (occurrence->appearance()) {
         part.set_appearance(occurrence->appearance()->id());
     }
@@ -214,7 +210,8 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
     root_node.set_value(component->id());
 
     // TODO: Info stuff
-    auto& part      = (*parts->mutable_part_instances())[component->id()];
+    auto& part = (*parts->mutable_part_instances())[component->id()];
+    part.mutable_info()->CopyFrom(create_info_from_fus_obj(component));
     auto& part_defs = parts->part_definitions();
     if (part_defs.find(component->id()) != part_defs.end()) {
         part.set_part_definition_reference(component->id());

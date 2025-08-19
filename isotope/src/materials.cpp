@@ -7,6 +7,8 @@
 
 #include "material.pb.h"
 
+#include "util.h"
+
 namespace {
 
 mirabuf::material::Appearance default_appearance() {
@@ -70,6 +72,7 @@ mirabuf::material::Materials map_all_materials(const adsk::core::Ptr<adsk::core:
     for (const auto& appearance : appearances) {
         auto& new_appearance = (*materials.mutable_appearances())[appearance->id()];
         new_appearance       = map_appearance(appearance);
+        new_appearance.mutable_info()->CopyFrom(create_info_from_fus_obj(appearance));
     }
 
     std::vector<adsk::core::Ptr<adsk::core::Material>> physical_materials;
@@ -77,6 +80,7 @@ mirabuf::material::Materials map_all_materials(const adsk::core::Ptr<adsk::core:
     for (const auto& material : physical_materials) {
         auto& new_physical_material = (*materials.mutable_physicalmaterials())[material->id()];
         new_physical_material       = map_physical_material(material);
+        new_physical_material.mutable_info()->CopyFrom(create_info_from_fus_obj(material));
     }
 
     return materials;
