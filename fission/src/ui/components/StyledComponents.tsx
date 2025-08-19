@@ -37,7 +37,7 @@ import {
 import { GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
 import { HiDownload } from "react-icons/hi"
-import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
+import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
 import Label from "./Label"
 
 export class SynthesisIcons {
@@ -63,6 +63,7 @@ export class SynthesisIcons {
     public static readonly CONNECT = <GrConnect />
     public static readonly INFO = <AiOutlineInfoCircle />
     public static readonly BUG = <FaBug />
+    public static readonly PLAY = <IoPlayOutline />
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />
@@ -75,6 +76,7 @@ export class SynthesisIcons {
     public static readonly LEFT_ARROW_LARGE = <FaArrowLeft size={"1.25rem"} />
     public static readonly BUG_LARGE = <FaBug size={"1.25rem"} />
     public static readonly XMARK_LARGE = <FaXmark size={"1.25rem"} />
+    public static readonly PLAY_LARGE = <IoPlayOutline size={"1.25rem"} />
 
     public static readonly OPEN_HUD_ICON = (
         <FaAngleRight
