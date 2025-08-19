@@ -39,6 +39,7 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                     selectedField={selectedField}
                     initialZones={initialZones}
                     selectZone={setSelectedZone}
+                    panel={panel}
                 />
             ) : (
                 <>

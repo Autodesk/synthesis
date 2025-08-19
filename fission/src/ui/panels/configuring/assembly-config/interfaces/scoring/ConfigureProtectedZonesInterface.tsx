@@ -5,6 +5,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
+import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
 import ZoneConfigInterface from "./ProtectedZoneConfigInterface"
 
@@ -21,9 +22,10 @@ const protectedZones = (zones: ProtectedZonePreferences[] | undefined, field: Mi
 interface ConfigureZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ProtectedZonePreferences[]
+    panel?: Panel<any, any>
 }
 
-const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selectedField, initialZones }) => {
+const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selectedField, initialZones, panel }) => {
     const [selectedZone, setSelectedZone] = useState<ProtectedZonePreferences | undefined>(undefined)
 
     return (
@@ -33,6 +35,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                     selectedField={selectedField}
                     initialZones={initialZones}
                     selectZone={setSelectedZone}
+                    panel={panel}
                 />
             ) : (
                 <>

@@ -11,6 +11,8 @@ import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import type { Panel } from "@/ui/helpers/UIProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -59,10 +61,20 @@ interface ProtectedZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ProtectedZonePreferences[]
     selectZone: (zone: ProtectedZonePreferences) => void
+    panel?: Panel<any, any>
 }
 
-const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, initialZones, selectZone }) => {
+const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, initialZones, selectZone, panel }) => {
     const [zones, setZones] = useState<ProtectedZonePreferences[]>(initialZones)
+
+    const { configureScreen } = useUIContext()
+
+    // Show the panel's default footer buttons when this interface is active
+    useEffect(() => {
+        if (panel) {
+            configureScreen(panel, { hideAccept: false, hideCancel: false }, {})
+        }
+    }, [panel, configureScreen])
 
     const saveEvent = useCallback(() => {
         saveZones(zones, selectedField)

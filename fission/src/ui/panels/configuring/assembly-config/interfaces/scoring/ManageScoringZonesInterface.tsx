@@ -11,6 +11,8 @@ import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import DevtoolZoneModificationModal from "@/ui/modals/DevtoolZoneModificationModal"
 import { isZoneFromDevtools, removeZoneFromDevtools } from "@/util/DevtoolZoneUtils"
+import type { Panel } from "@/ui/helpers/UIProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -73,15 +75,25 @@ interface ScoringZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ScoringZonePreferences[]
     selectZone: (zone: ScoringZonePreferences) => void
+    panel?: Panel<any, any>
 }
 
-const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, initialZones, selectZone }) => {
+const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, initialZones, selectZone, panel }) => {
     const [zones, setZones] = useState<ScoringZonePreferences[]>(initialZones)
     const [confirmationModal, setConfirmationModal] = useState<{
         isOpen: boolean
         zone: ScoringZonePreferences | null
         zoneIndex: number
     }>({ isOpen: false, zone: null, zoneIndex: -1 })
+
+    const { configureScreen } = useUIContext()
+
+    // Show the panel's default footer buttons when this interface is active
+    useEffect(() => {
+        if (panel) {
+            configureScreen(panel, { hideAccept: false, hideCancel: false }, {})
+        }
+    }, [panel, configureScreen])
 
     const saveEvent = useCallback(() => {
         saveZones(zones, selectedField)
