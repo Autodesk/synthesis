@@ -3,11 +3,13 @@ import { mirabuf } from "@/proto/mirabuf"
 import {
     defaultFieldPreferences,
     type FieldPreferences,
+    type ProtectedZonePreferences,
     type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
 
 export interface DevtoolMiraData {
     "devtool:scoring_zones": ScoringZonePreferences[]
+    "devtool:protected_zones": ProtectedZonePreferences[]
     "devtool:camera_locations": unknown
     "devtool:spawn_locations": FieldPreferences["spawnLocations"]
     "devtool:a": unknown

@@ -38,7 +38,7 @@ export function isZoneFromDevtools(zone: BaseZonePreferences, zoneType: ZoneType
         return false
     }
 
-    const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
+    const devtoolZones = editor.getUserData("devtool:scoring_zones")
     if (!devtoolZones) return false
 
     return devtoolZones.some(devZone => zonesEqual(devZone, zone))
@@ -47,6 +47,8 @@ export function isZoneFromDevtools(zone: BaseZonePreferences, zoneType: ZoneType
 /**
  * Removes a zone from the field file cache permanently.
  */
+export async function removeZoneFromDevtools(zone: ScoringZonePreferences, zoneType: "scoring"): Promise<void>
+export async function removeZoneFromDevtools(zone: ProtectedZonePreferences, zoneType: "protected"): Promise<void>
 export async function removeZoneFromDevtools(
     zone: ScoringZonePreferences | ProtectedZonePreferences,
     zoneType: ZoneType
@@ -63,7 +65,7 @@ export async function removeZoneFromDevtools(
         throw new Error("Protected zone field file removal not yet implemented")
     }
 
-    const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
+    const devtoolZones = editor.getUserData("devtool:scoring_zones")
     if (!devtoolZones) return
 
     const filteredZones = devtoolZones.filter(devZone => !zonesEqual(devZone, zone))
@@ -93,6 +95,16 @@ export async function removeZoneFromDevtools(
  * Modifies a zone in the field file cache permanently by replacing it with updated data.
  */
 export async function modifyZoneInDevtools(
+    originalZone: ScoringZonePreferences,
+    modifiedZone: ScoringZonePreferences,
+    zoneType: "scoring"
+): Promise<void>
+export async function modifyZoneInDevtools(
+    originalZone: ProtectedZonePreferences,
+    modifiedZone: ProtectedZonePreferences,
+    zoneType: "protected"
+): Promise<void>
+export async function modifyZoneInDevtools(
     originalZone: ScoringZonePreferences | ProtectedZonePreferences,
     modifiedZone: ScoringZonePreferences | ProtectedZonePreferences,
     zoneType: ZoneType
@@ -109,21 +121,22 @@ export async function modifyZoneInDevtools(
         throw new Error("Protected zone field file modification not yet implemented")
     }
 
-    const devtoolZones = editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
+    const devtoolZones = editor.getUserData("devtool:scoring_zones")
     if (!devtoolZones) return
 
     // Find and replace the zone in field file data
+    // Since we're in the scoring branch, we know modifiedZone is ScoringZonePreferences
     const updatedZones = devtoolZones.map(devZone => {
         if (zonesEqual(devZone, originalZone)) {
-            return modifiedZone
+            return modifiedZone as ScoringZonePreferences
         }
         return devZone
     })
 
-    editor.setUserData("devtool:scoring_zones", updatedZones as ScoringZonePreferences[])
+    editor.setUserData("devtool:scoring_zones", updatedZones)
 
     if (field.fieldPreferences) {
-        field.fieldPreferences.scoringZones = updatedZones as ScoringZonePreferences[]
+        field.fieldPreferences.scoringZones = updatedZones
         PreferencesSystem.savePreferences?.()
         field.updateScoringZones()
     }
@@ -141,6 +154,8 @@ export async function modifyZoneInDevtools(
 /**
  * Gets all zones that exist in the field file for a given type.
  */
+export function getDevtoolZones(zoneType: "scoring"): ScoringZonePreferences[] | undefined
+export function getDevtoolZones(zoneType: "protected"): ProtectedZonePreferences[] | undefined
 export function getDevtoolZones(zoneType: ZoneType): ScoringZonePreferences[] | ProtectedZonePreferences[] | undefined {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
     if (!field) return undefined
@@ -154,5 +169,5 @@ export function getDevtoolZones(zoneType: ZoneType): ScoringZonePreferences[] | 
         return undefined
     }
 
-    return editor.getUserData("devtool:scoring_zones") as ScoringZonePreferences[] | undefined
+    return editor.getUserData("devtool:scoring_zones")
 }
