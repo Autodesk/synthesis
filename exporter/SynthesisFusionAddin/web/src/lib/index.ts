@@ -70,9 +70,10 @@ export async function sendData<A extends keyof Messages>(
             })
             if (!wasHandled) {
                 console.error({ action, errorResponse: parsed._err })
+                return undefined
             }
 
-            return undefined
+            return parsed as Messages[A][1] & { _err: string }
         }
         return parsed as Messages[A][1]
     } catch (error) {
@@ -91,9 +92,12 @@ export async function sendDataAndToast<A extends keyof Messages>(
 
     if (resp === undefined) {
         Global_SetAlert("error", failureMsg)
-    } else {
+    } else if (resp._err === undefined) {
         Global_SetAlert("info", sucessMsg)
+    } else {
+        return undefined
     }
+
     return resp
 }
 

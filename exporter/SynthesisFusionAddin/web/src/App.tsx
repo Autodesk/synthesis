@@ -290,7 +290,7 @@ function App() {
                     variant="contained"
                     color="primary"
                     sx={{ flexGrow: 9 }}
-                    onClick={async () => sendData("export", await getFinalizedConfig())}
+                    onClick={async () => sendDataAndToast("export", await getFinalizedConfig(), "Exported!")}
                     startIcon={<DownloadIcon />}
                 >
                     Export
