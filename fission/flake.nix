@@ -1,5 +1,5 @@
 {
-  description = "A Nix-flake-based Bun development environment";
+  description = "Synthesis' Web-Based Robot Simulator";
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
@@ -26,7 +26,6 @@
         { pkgs }:
         {
           default = pkgs.mkShell {
-            pkgs = [ ];
             nativeBuildInputs = with pkgs; [
               playwright-driver.browsers
             ];
