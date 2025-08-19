@@ -40,6 +40,12 @@ const errorMatchers: { text: string; cb: () => void }[] = [
             Global_SetAlert("info", "Selection cancelled")
         },
     },
+    {
+        text: "not a pinned",
+        cb: () => {
+            Global_SetAlert("error", "No Grounded Joint On Assembly")
+        },
+    },
 ]
 
 export async function sendData<A extends keyof Messages>(
