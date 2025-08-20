@@ -6,6 +6,7 @@ import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MatchResultsModal from "@/modals/MatchResultsModal.tsx"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import { createMatchEventFromConfig } from "./MatchModeAnalyticsUtils"
 import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
@@ -101,13 +102,8 @@ class MatchMode {
         SimulationSystem.resetScores()
         RobotDimensionTracker.matchStart()
 
-        World.analyticsSystem?.event("Match Start", {
-            matchName: this._matchModeConfig.name,
-            isDefault: this._matchModeConfig.isDefault,
-            autonomousTime: this._matchModeConfig.autonomousTime,
-            teleopTime: this._matchModeConfig.teleopTime,
-            endgameTime: this._matchModeConfig.endgameTime,
-        })
+        const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
+        World.analyticsSystem?.event("Match Start", matchEvent)
     }
 
     matchEnded() {
@@ -120,13 +116,8 @@ class MatchMode {
             hideAccept: true,
         })
 
-        World.analyticsSystem?.event("Match End", {
-            matchName: this._matchModeConfig.name,
-            isDefault: this._matchModeConfig.isDefault,
-            autonomousTime: this._matchModeConfig.autonomousTime,
-            teleopTime: this._matchModeConfig.teleopTime,
-            endgameTime: this._matchModeConfig.endgameTime,
-        })
+        const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
+        World.analyticsSystem?.event("Match End", matchEvent)
     }
 
     sandboxModeStart() {

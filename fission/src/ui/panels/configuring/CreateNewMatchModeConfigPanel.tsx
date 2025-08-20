@@ -6,6 +6,8 @@ import { useEffect, useState, useCallback } from "react"
 import type { MatchModeConfig } from "./MatchModeConfigPanel"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { validateAndNormalizeMatchModeConfig } from "./MatchModeConfigPanel"
+import { createMatchEventFromConfig } from "@/systems/match_mode/MatchModeAnalyticsUtils"
+import World from "@/systems/World"
 
 interface ValidationRule {
     validate: (value: unknown) => boolean
@@ -327,6 +329,9 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                         openPanel(MatchModeConfigPanelComponent, undefined)
                         closePanel(panel!.id, CloseType.Overwrite)
                     }, 0)
+
+                    const matchEvent = createMatchEventFromConfig(validatedConfig, { isDefault: undefined })
+                    World.analyticsSystem?.event("Match Mode Config Created", matchEvent)
 
                     return validatedConfig
                 },

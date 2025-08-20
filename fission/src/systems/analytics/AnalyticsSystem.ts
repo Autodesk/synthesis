@@ -27,12 +27,21 @@ type MiraEvent = {
      */
     fileSize?: number
 }
-type MatchEvent = {
+export type MatchEvent = {
     matchName: string
-    isDefault: boolean
+    isDefault?: boolean
     autonomousTime: number
     teleopTime: number
     endgameTime: number
+    // Height penalty configuration
+    hasHeightPenalty?: boolean
+    maxHeight?: number
+    heightLimitPenalty?: number
+    ignoreRotation?: boolean
+    // Side extension penalty configuration
+    hasSideExtensionPenalty?: boolean
+    sideMaxExtension?: number
+    sideExtensionPenalty?: number
 }
 
 export interface AnalyticsEvents {
@@ -71,6 +80,7 @@ export interface AnalyticsEvents {
     // Match Mode Events
     "Match Start": MatchEvent
     "Match End": MatchEvent
+    "Match Mode Config Created": MatchEvent
 
     // Graphics Settings Event
     "Graphics Settings": {
@@ -82,8 +92,12 @@ export interface AnalyticsEvents {
         antiAliasing: boolean
     }
 
-    // Drag Mode Event
+    // Scene Interaction Events
     "Drag Mode Toggled": unknown
+    "View Cube Used": unknown
+
+    // Robot Control Events
+    "Unstick Used": unknown
 
     // Main Menu Events
     "Main Menu Entered": {
@@ -113,6 +127,7 @@ class AnalyticsSystem extends WorldSystem {
     }
 
     public event<K extends keyof AnalyticsEvents>(name: K, params?: AnalyticsEvents[K]) {
+        console.log("AnalyticsEvent", name, params)
         event({ name: name, params: params ?? {} })
     }
 
