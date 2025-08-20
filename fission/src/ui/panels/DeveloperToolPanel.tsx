@@ -34,7 +34,11 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     if (parts) {
                         const newEditor = new FieldMiraEditor(parts)
                         setEditor(newEditor)
-                        setKeys(newEditor.getAllDevtoolKeys())
+                        setKeys(
+                            newEditor
+                                .getAllDevtoolKeys()
+                                .filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k))
+                        )
                         setFieldLoaded(true)
                     } else {
                         setEditor(undefined)
@@ -50,7 +54,9 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 setJsonValue("")
                 setError("")
             } else if (currentField && editor) {
-                setKeys(editor.getAllDevtoolKeys())
+                setKeys(
+                    editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k))
+                )
             }
         }
         const allKeys = editor?.getAllDevtoolKeys()
@@ -64,7 +70,8 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     // Load value when key changes
     useEffect(() => {
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!editor || !field || !selectedKey) return
+        if (!editor || !field || !selectedKey || !Object.prototype.hasOwnProperty.call(devtoolHandlers, selectedKey))
+            return
 
         const val = devtoolHandlers[selectedKey].get(field)
         editor.setUserData(selectedKey, val)
@@ -83,7 +90,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             }
             editor.setUserData(selectedKey, parsed)
 
-            setKeys(editor.getAllDevtoolKeys())
+            setKeys(editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)))
 
             // Persist changes to cache
             const field = World.sceneRenderer.mirabufSceneObjects.getField()
@@ -127,7 +134,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const handleRemove = () => {
         if (!editor || !selectedKey) return
         editor.removeUserData(selectedKey)
-        setKeys(editor.getAllDevtoolKeys())
+        setKeys(editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)))
         setSelectedKey(undefined)
         setJsonValue("")
         setError("")
