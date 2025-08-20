@@ -83,7 +83,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                 {props.title && (
                     <CardHeader
                         title={props.title}
-                        className="panel-drag-handle select-none"
+                        className="panel-drag-handle select-none hover:cursor-grab active:cursor-grabbing"
                         sx={{
                             cursor: "move",
                             py: 1,
