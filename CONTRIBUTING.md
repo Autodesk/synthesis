@@ -39,9 +39,9 @@ If you or someone you know can read and write in another language, we would like
 
 Did you add a feature to Synthesis, or learn how to use a specific feature? Write a how-to guide or [share your project with us](#Contact-Us).
 
-### Share your Use Case
+### Share Your Use Case
 
-Hearing how you use Synthesis is valuable feedback to our team. Share your use-cases by tagging us [@synthesis.adsk](https://www.instagram.com/synthesis.adsk/) on Instagram, posting on [ChiefDelphi](https://www.chiefdelphi.com/), or talking about it on [our Discord](https://discord.gg/FuuQ9UGycM).
+Hearing how you use Synthesis is valuable feedback to our team. Share your use cases by tagging us [@synthesis.adsk](https://www.instagram.com/synthesis.adsk/) on Instagram, posting on [ChiefDelphi](https://www.chiefdelphi.com/), or talking about it on [our Discord](https://discord.gg/FuuQ9UGycM).
 
 ### Expand FIRST Support
 

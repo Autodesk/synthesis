@@ -9,11 +9,6 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/BlackFormat.yml?branch=prod&style=for-the-badge&logoSize=auto&label=Fusion%20Exporter%20Format&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FBlackFormat.yml)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/FusionWebUI.yml?branch=prod&style=for-the-badge&logoSize=auto&label=Fusion%20Exporter%20WebUI%20Build&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FFusionWebUI.yml)
 
-<!-- [![Fission - Packaging](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml) -->
-<!-- [![Fusion - Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml) -->
-<!-- [![Fission - Lint/Format](https://github.com/Autodesk/synthesis/actions/workflows/FissionBiome.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionBiome.yml) -->
-<!-- [![Fission - Unit Test](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml/badge.svg?branch=prod?style=for-the-badge)](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml) -->
-
 Synthesis is a robotics simulator designed by and for [FIRST®](https://www.firstinspires.org/) robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion Exporter](/exporter/) or use the pre-made ones available within Synthesis.
 
 For more information on the product itself or the team, visit [http://synthesis.autodesk.com](http://synthesis.autodesk.com/).

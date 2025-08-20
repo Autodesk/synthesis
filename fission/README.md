@@ -121,12 +121,6 @@ These core systems make up the lion's share of the fission source code. Each sys
 - [Scene Renderer](/fission/src/systems/scene/SceneRenderer.md)
 - [Physics System](/fission/src/systems/physics/PhysicsSystem.md)
 - [Input System](/fission/src/systems/input/InputSystem.md)
-- UI System
-
-## Additional Systems
-
-These systems will extend off of the core systems to build out features in Synthesis.
-
 - [Simulation System](/fission/src/systems/simulation/SimulationSystem.md)
 
 ## Package Scripts
