@@ -4,8 +4,6 @@
 
 #include <Core/CoreAll.h>
 
-#include <vector>
-
 #include "material.pb.h"
 
 mirabuf::material::Materials map_all_materials(const adsk::core::Ptr<adsk::core::Appearances>& design_appearances,
