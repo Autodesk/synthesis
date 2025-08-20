@@ -27,6 +27,14 @@ type MiraEvent = {
      */
     fileSize?: number
 }
+type MatchEvent = {
+    matchName: string
+    isDefault: boolean
+    autonomousTime: number
+    teleopTime: number
+    endgameTime: number
+}
+
 export interface AnalyticsEvents {
     "Performance Sample": {
         frames: number
@@ -36,23 +44,33 @@ export interface AnalyticsEvents {
         avgInput: number
         avgSimulation: number
     }
+
+    // APS Events
     "APS Calls per Minute": unknown
     "APS Login": unknown
     "APS Download": MiraEvent
 
+    // Cache Events
     "Cache Get": MiraEvent
     "Cache Store": MiraEvent
     "Cache Remove": MiraEvent
 
+    // Remote Download Events
     "Remote Download": MiraEvent
     "Local Upload": MiraEvent
 
+    // Devtool Cache Events
     "Devtool Cache Persist": MiraEvent
 
+    // Scheme Events
     "Scheme Applied": {
         isCustomized: boolean
         schemeName: string
     }
+
+    // Match Mode Events
+    "Match Start": MatchEvent
+    "Match End": MatchEvent
 }
 
 class AnalyticsSystem extends WorldSystem {

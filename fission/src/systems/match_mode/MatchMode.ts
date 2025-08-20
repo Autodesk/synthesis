@@ -10,6 +10,7 @@ import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
+import World from "../World"
 
 class MatchMode {
     private static _instance: MatchMode
@@ -99,6 +100,14 @@ class MatchMode {
         this.autonomousModeStart()
         SimulationSystem.resetScores()
         RobotDimensionTracker.matchStart()
+
+        World.analyticsSystem?.event("Match Start", {
+            matchName: this._matchModeConfig.name,
+            isDefault: this._matchModeConfig.isDefault,
+            autonomousTime: this._matchModeConfig.autonomousTime,
+            teleopTime: this._matchModeConfig.teleopTime,
+            endgameTime: this._matchModeConfig.endgameTime,
+        })
     }
 
     matchEnded() {
@@ -109,6 +118,14 @@ class MatchMode {
             allowClickAway: false,
             hideCancel: true,
             hideAccept: true,
+        })
+
+        World.analyticsSystem?.event("Match End", {
+            matchName: this._matchModeConfig.name,
+            isDefault: this._matchModeConfig.isDefault,
+            autonomousTime: this._matchModeConfig.autonomousTime,
+            teleopTime: this._matchModeConfig.teleopTime,
+            endgameTime: this._matchModeConfig.endgameTime,
         })
     }
 
