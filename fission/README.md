@@ -28,7 +28,7 @@ To install all dependencies:
 bun i
 ```
 
-For the asset pack that will be available in production, download the asset pack [here](https://synthesis.autodesk.com/Downloadables/assetpack.zip) and unzip it.
+[Download the production assetpack](https://synthesis.autodesk.com/Downloadables/assetpack.zip), then unzip it.
 Make sure that the `Downloadables` directory is placed inside the public directory like so:
 
 ```
