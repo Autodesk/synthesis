@@ -538,6 +538,7 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
         auto& joint_instance = (*joints.mutable_joint_instances())[joint->entityToken()];
         joint_instance.mutable_info()->CopyFrom(create_info_from_fus_obj(joint));
         joint_instance.set_signal_reference(signal.info().guid());
+        joint_instance.set_joint_reference(joint_instance.info().guid());
         joint_instance.set_parent_part(guid_occurrence(joint->occurrenceOne()));
         joint_instance.set_child_part(guid_occurrence(joint->occurrenceTwo()));
 

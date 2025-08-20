@@ -120,7 +120,7 @@ mirabuf::Node parse_child_occurrence(
     }
 
     auto& part = (*parts->mutable_part_instances())[map_constant];
-    part.mutable_info()->CopyFrom(create_info_from_fus_obj(occurrence));
+    part.mutable_info()->CopyFrom(create_info_from_fus_obj(occurrence, map_constant));
     if (occurrence->appearance()) {
         part.set_appearance(occurrence->appearance()->id()); // TODO: Check if this is correct.
     } else {
@@ -173,7 +173,7 @@ mirabuf::Parts map_all_parts(
         }
 
         auto& part = (*parts.mutable_part_definitions())[component_ref];
-        part.mutable_info()->CopyFrom(create_info_from_fus_obj(component));
+        part.mutable_info()->CopyFrom(create_info_from_fus_obj(component, component_ref));
         part.set_dynamic(true);
 
         if (auto props = component->physicalProperties()) {
@@ -233,7 +233,7 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
     }
 
     auto& part = (*parts->mutable_part_instances())[map_constant];
-    part.mutable_info()->CopyFrom(create_info_from_fus_obj(component));
+    part.mutable_info()->CopyFrom(create_info_from_fus_obj(component, map_constant));
     auto& part_defs = parts->part_definitions();
     if (part_defs.find(map_constant) != part_defs.end()) {
         part.set_part_definition_reference(map_constant);
