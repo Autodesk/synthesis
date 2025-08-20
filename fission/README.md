@@ -6,8 +6,8 @@ Fission is Synthesis' web-based robotics simulator. This app is hosted [on our w
 
 ### Requirements
 
-1. Bun (v1.2.0 recommended)
-   - Yarn, Bun, or any other package managers work just as well.
+1. Bun (v1.2.20 recommended)
+   - Yarn, NPM, or any other package managers work just as well.
 2. NodeJS (v20.10.0 recommended)
    - Needed for running the development server.
 
@@ -35,7 +35,7 @@ Make sure that the `Downloadables` directory is placed inside the public directo
 /fission/public/Downloadables/
 ```
 
-This can be accomplished with the `assetpack` script:
+Alternatively for development, you can download and install the assetpack for whatever branch you're operating on with [Git LFS]. This can be accomplished with the `assetpack` script:
 
 ```bash
 bun run assetpack
@@ -74,7 +74,7 @@ bun run dev
 We use a combination of Vitest and Playwright for running our unit tests. A number of the unit tests rely on the asset pack data and may time out due to download speeds. By default, the unit test command uses a Chromium browser.
 
 ```bash
-npm run test
+bun run test
 ```
 
 ## Packaging
@@ -86,19 +86,19 @@ We have two packaging commands: one for compiling dev for attachment to the in-d
 Release:
 
 ```bash
-npm run build:prod
+bun run build:prod
 ```
 
 In-development:
 
 ```bash
-npm run build:dev
+bun run build:dev
 ```
 
 You can alternatively run the default build command for your own hosting:
 
 ```bash
-npm run build
+bun run build
 ```
 
 ### Electron Packaging
@@ -108,7 +108,7 @@ We also give you the option to package Synthesis with electron. This will not gi
 To package the app run:
 
 ```bash
-npm run electron:publish
+bun run electron:publish
 ```
 
 The packaged app will be located in the `/fission/out` directory.
@@ -131,19 +131,26 @@ These systems will extend off of the core systems to build out features in Synth
 
 ## Package Scripts
 
-| Script               | Description                                                                                                       |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `init`               | Runs the initialization commands to install all dependencies, assets, and unit testing browsers.                  |
-| `dev`                | Starts the development server used for testing. Supports hot-reloading (though finicky with WASM module loading). |
-| `test`               | Runs the unit tests via Vitest.                                                                                   |
-| `build`              | Builds the project into its packaged form. Uses the root base path.                                               |
-| `build:prod`         | Builds the project into its packaged form. Uses the `/fission/` base path.                                        |
-| `preview`            | Runs the built project for preview locally before deploying.                                                      |
-| `lint`               | Runs ESLint on the project.                                                                                       |
-| `lint:fix`           | Attempts to fix issues found with ESLint.                                                                         |
-| `prettier`           | Runs Prettier on the project as a check.                                                                          |
-| `prettier:fix`       | Runs Prettier on the project to fix any issues with formatting.                                                   |
-| `format`             | Runs `prettier:fix` and `lint:fix`.                                                                               |
-| `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                           |
-| `playwright:install` | Downloads the Playwright browsers.                                                                                |
-| `electron:make`      | Build electron application                                                                                        |
+| Script               | Description                                                                                                                                     |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `init`               | Runs the initialization commands to install all dependencies, assets, and unit testing browsers.                                                |
+| `host`               | Starts the development server used for testing and exposes it to the network. Supports hot-reloading (though finicky with WASM module loading). |
+| `dev`                | Starts the development server used for testing. Supports hot-reloading (though finicky with WASM module loading).                               |
+| `test`               | Runs the unit tests via Vitest.                                                                                                                 |
+| `build`              | Builds the project into its packaged form. Uses the root base path.                                                                             |
+| `build:prod`         | Builds the project into its packaged form. Uses the `/fission/` base path.                                                                      |
+| `build:dev`          | Builds the project into its packaged form. Uses the `/fission-closed/` base path.                                                               |
+| `preview`            | Runs the built project for preview locally before deploying.                                                                                    |
+| `lint`               | Runs lints the projects with Biome.                                                                                                             |
+| `lint:fix`           | Attempts to fix issues found with Biome lintign.                                                                                                |
+| `fmt`                | Runs the Biome formatter without applying fixes.                                                                                                |
+| `fmt:fix`            | Runs the Biome formatter and applies fixes.                                                                                                     |
+| `style`              | Runs the `lint` and `fmt` commands                                                                                                              |
+| `style:fix`          | Runs the `lint:fix` and `fmt:fix` commands                                                                                                      |
+| `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                                                         |
+| `assetpack:update`   | Downloads the assetpack and unzips/installs it in the correct location, replacing the old directory if it exists.                               |
+| `playwright:install` | Downloads the Playwright browsers.                                                                                                              |
+| `electron:make`      | Builds Synthesis as an electron application                                                                                                     |
+| `electron:start`     | Starts Synthesis as an electron application                                                                                                     |
+| `electron:package`   | Packages Synthesis as an electron application                                                                                                   |
+| `electron:publish`   | Publishes Synthesis as an electron application                                                                                                  |
