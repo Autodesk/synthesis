@@ -96,6 +96,7 @@ class DragModeSystem extends WorldSystem {
 
         this._handleDisableDragMode = () => {
             this.enabled = false
+            World.analyticsSystem?.event("Drag Mode Toggled")
         }
 
         // Create wheel event handler for Z-axis dragging

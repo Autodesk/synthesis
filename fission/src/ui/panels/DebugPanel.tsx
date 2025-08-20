@@ -25,6 +25,7 @@ function toggleDragMode() {
         dragSystem.enabled = !dragSystem.enabled
         const status = dragSystem.enabled ? "enabled" : "disabled"
         globalAddToast("info", "Drag Mode", `Drag mode has been ${status}`)
+        World.analyticsSystem?.event("Drag Mode Toggled")
     }
 }
 

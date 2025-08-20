@@ -81,6 +81,14 @@ export interface AnalyticsEvents {
         shadowMapSize: number
         antiAliasing: boolean
     }
+
+    // Drag Mode Event
+    "Drag Mode Toggled": unknown
+
+    // Main Menu Events
+    "Main Menu Entered": {
+        type: string
+    }
 }
 
 class AnalyticsSystem extends WorldSystem {
