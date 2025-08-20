@@ -152,7 +152,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     if (isExistingConfigure && isNewSpawnOrInit) {
                         // Only block if actively configuring an assembly (has selection or a mode set)
                         const custom = (existing.props as unknown as { custom?: any })?.custom ?? {}
-                        const isActivelyConfiguring = Boolean(custom?.selectedAssembly) || custom?.configMode !== undefined
+                        const isActivelyConfiguring =
+                            Boolean(custom?.selectedAssembly) || custom?.configMode !== undefined
                         if (isActivelyConfiguring) {
                             // Show a warning toast about unsaved configuration
                             enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
