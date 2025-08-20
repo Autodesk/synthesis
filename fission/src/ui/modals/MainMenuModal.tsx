@@ -34,7 +34,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                 onClick={() => {
                     closeModal(CloseType.Accept)
                     startSingleplayerCallback()
-                    World.analyticsSystem?.event("Main Menu Entered", { type: "Singleplayer" })
+                    World.analyticsSystem?.event("Mode Selected", { mode: "Singleplayer" })
                 }}
                 fullWidth={true}
                 className="my-1"
@@ -45,7 +45,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                 onClick={() => {
                     closeModal(CloseType.Accept)
                     startSingleplayerCallback()
-                    World.analyticsSystem?.event("Main Menu Entered", { type: "Load Default" })
+                    World.analyticsSystem?.event("Mode Selected", { mode: "Load Default" })
                     Promise.all([
                         MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD),
                         MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT),
@@ -62,7 +62,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
             </Button>
             <Button
                 onClick={() => {
-                    World.analyticsSystem?.event("Main Menu Entered", { type: "Multiplayer" })
+                    World.analyticsSystem?.event("Mode Selected", { mode: "Multiplayer" })
                     globalAddToast("error", "Not Supported", "Multiplayer is not yet supported. Come back soon!")
                 }}
                 fullWidth={true}

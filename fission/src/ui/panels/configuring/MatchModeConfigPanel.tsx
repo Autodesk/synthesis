@@ -14,6 +14,7 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import { NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CreateNewMatchModeConfigPanel from "./CreateNewMatchModeConfigPanel"
+import { createMatchEventFromConfig } from "@/systems/match_mode/MatchModeAnalyticsUtils"
 
 /**
  * Configuration for match mode rules and timing.
@@ -296,6 +297,9 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             // Only save custom configs to local storage
             const customConfigs = [...matchModeConfigs.filter(c => !c.isDefault), normalizedConfig]
             window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
+
+            const matchEvent = createMatchEventFromConfig(normalizedConfig, { isDefault: undefined })
+            World.analyticsSystem?.event("Match Mode Config Uploaded", matchEvent)
 
             globalAddToast("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
         } catch (_error) {

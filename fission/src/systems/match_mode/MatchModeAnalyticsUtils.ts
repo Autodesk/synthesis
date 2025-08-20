@@ -22,6 +22,6 @@ export function createMatchEventFromConfig(config: MatchModeConfig, overrides?: 
         hasSideExtensionPenalty: hasSideExtensionPenalty,
         sideMaxExtension: hasSideExtensionPenalty ? config.sideMaxExtension : undefined,
         sideExtensionPenalty: hasSideExtensionPenalty ? config.sideExtensionPenalty : undefined,
-        ...overrides
+        ...overrides,
     }
 }

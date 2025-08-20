@@ -81,6 +81,7 @@ export interface AnalyticsEvents {
     "Match Start": MatchEvent
     "Match End": MatchEvent
     "Match Mode Config Created": MatchEvent
+    "Match Mode Config Uploaded": MatchEvent
 
     // Graphics Settings Event
     "Graphics Settings": {
@@ -94,14 +95,13 @@ export interface AnalyticsEvents {
 
     // Scene Interaction Events
     "Drag Mode Toggled": unknown
-    "View Cube Used": unknown
 
     // Robot Control Events
     "Unstick Used": unknown
 
     // Main Menu Events
-    "Main Menu Entered": {
-        type: string
+    "Mode Selected": {
+        mode: string
     }
 }
 
