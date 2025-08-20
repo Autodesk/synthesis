@@ -3,7 +3,7 @@
 
 # Synthesis Contribution Guide
 
-Synthesis is 100% open source and relies on the FIRST community to help make it better. The Synthesis Contribution Guide suggests ways in which you can get involved through development and non-development avenues.
+Synthesis is 100% open source and relies on the FIRST community to help shape its growth. The Synthesis Contribution Guide suggests ways in which you can get involved through development and non-development avenues.
 
 # Why Contribute? Benefits to Contributing
 
@@ -19,7 +19,7 @@ Synthesis is 100% open source and relies on the FIRST community to help make it 
 
 Please [contact us](#Contact-Us) to let us know about the issue or feature!
 
-_A Note to Developers_: When contributing to this repository and making large changes, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This way, we can ensure that there is no overlap between contributions and internal development work. You may contact us using any of [these methods](#Contact-Us), although email is preferred in this case.
+_A Note to Developers_: Please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This way, we can ensure that there is no overlap between contributions and internal development work. You may contact us using any of [these methods](#Contact-Us), although email is preferred in this case.
 
 For smaller changes, just submit a pull request and be sure to follow the PR template to create a clear and detailed description of the changes you've made.
 
