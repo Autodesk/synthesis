@@ -137,8 +137,6 @@ Standard servo and speed controller motors work right out of the box with WPILib
 private Spark m_leftMotor = new Spark(0);  
 private Spark m_rightMotor = new Spark(1);  
 
-// ...
-
 public void teleopPeriodic() {
     double forward = -m_Controller.getLeftY();
     double turn = m_Controller.getRightX();
@@ -160,8 +158,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 private CANSparkMax m_driveLeft = new CANSparkMax(1, MotorType.kBrushless);
 private CANSparkMax m_driveRight = new CANSparkMax(2, MotorType.kBrushless);
 private TalonFX m_shooter = new TalonFX(7);
-
-// ...
 
 public void autonomousPeriodic() {
     m_driveLeft.set(0.5);
@@ -208,8 +204,6 @@ For detecting impacts, measuring tilt, or monitoring acceleration:
 import com.autodesk.synthesis.wpilibj.ADXL362;
 
 private ADXL362 m_accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
-
-// ...
 
 public void robotPeriodic() {
     double xAccel = m_accelerometer.getX(); 
