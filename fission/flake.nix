@@ -15,28 +15,23 @@
       forEachSupportedSystem =
         f:
         inputs.nixpkgs.lib.genAttrs supportedSystems (
-          system:
-          f {
-            pkgs = import inputs.nixpkgs { inherit system; };
-          }
+          system: f inputs.nixpkgs.legacyPackages.${system}
+
         );
     in
     {
-      devShells = forEachSupportedSystem (
-        { pkgs }:
-        {
-          default = pkgs.mkShell {
-            nativeBuildInputs = with pkgs; [
-              playwright-driver.browsers
-            ];
+      devShells = forEachSupportedSystem (pkgs: {
+        default = pkgs.mkShell {
+          nativeBuildInputs = with pkgs; [
+            playwright-driver.browsers
+          ];
 
-            shellHook = ''
-              export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
-              export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
-            '';
-
+          env = {
+            PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
+            PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
           };
-        }
-      );
+        };
+      });
+      formatter = forEachSupportedSystem (pkgs: pkgs.nixfmt-tree);
     };
 }
