@@ -150,13 +150,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     const isNewSpawnOrInit =
                         contentName === "ImportMirabufPanel" || contentName === "InitialConfigPanel"
                     if (isExistingConfigure && isNewSpawnOrInit) {
-                        // Show a warning toast about unsaved configuration
-                        enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
-                            variant: "warning",
-                            action: snackbarAction,
-                        })
-                        setPanels(p => [...p.filter(x => x !== existing), existing])
-                        return existing.id
+                        // Only block if actively configuring an assembly (has selection or a mode set)
+                        const custom = (existing.props as unknown as { custom?: any })?.custom ?? {}
+                        const isActivelyConfiguring = Boolean(custom?.selectedAssembly) || custom?.configMode !== undefined
+                        if (isActivelyConfiguring) {
+                            // Show a warning toast about unsaved configuration
+                            enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
+                                variant: "warning",
+                                action: snackbarAction,
+                            })
+                            setPanels(p => [...p.filter(x => x !== existing), existing])
+                            return existing.id
+                        }
                     }
                     // Replace existing with the new one
                     setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])

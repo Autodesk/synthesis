@@ -337,7 +337,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                     </Box>
                 </>
             )}
-            <Label size="sm">Requires Browser Refresh</Label>
             <Checkbox
                 label="Anti-Aliasing"
                 checked={antiAliasing}
@@ -345,6 +344,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                     setAntiAliasing(checked)
                     setReload(true)
                 }}
+                tooltip={"Requires browser refresh to fully apply"}
             />
         </Stack>
     )

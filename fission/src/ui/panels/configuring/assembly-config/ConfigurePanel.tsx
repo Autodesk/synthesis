@@ -15,6 +15,7 @@ import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
 import { CONFIG_OPTS, ConfigMode, type ConfigurationType } from "./ConfigTypes"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
@@ -122,6 +123,7 @@ export interface ConfigurePanelCustomProps {
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
+    const { setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
 
     const {
         configMode: initialConfigMode,
@@ -303,6 +305,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 onChange={(_e, v) => {
                     if (v !== null) {
                         setConfigurationType(v)
+                        if (v === "INPUTS") setGlobalSelectedScheme(undefined)
                     }
 
                     setSelectedAssembly(undefined)
