@@ -1,4 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close"
+import { IconButton } from "./components/StyledComponents"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
@@ -7,7 +8,6 @@ import { useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
 import type { PanelImplProps } from "./components/Panel"
-import { IconButton } from "./components/StyledComponents"
 import {
     CloseType,
     type ConfigureScreenFn,

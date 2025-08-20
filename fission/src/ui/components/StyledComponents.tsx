@@ -1,17 +1,18 @@
 import InfoIcon from "@mui/icons-material/Info"
 import {
     Box,
-    type ButtonProps,
-    type IconButtonProps,
     Button as MuiButton,
+    type ButtonProps,
     IconButton as MuiIconButton,
-    ToggleButton as MuiToggleButton,
-    ToggleButtonGroup as MuiToggleButtonGroup,
+    type IconButtonProps,
     Stack,
-    type ToggleButtonGroupProps,
-    type ToggleButtonProps,
     Tooltip,
+    ToggleButton as MuiToggleButton,
+    type ToggleButtonProps,
+    ToggleButtonGroup as MuiToggleButtonGroup,
+    type ToggleButtonGroupProps,
 } from "@mui/material"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
 import { BsCodeSquare } from "react-icons/bs"
@@ -37,7 +38,6 @@ import { GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
 import { HiDownload } from "react-icons/hi"
 import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
 
 export class SynthesisIcons {

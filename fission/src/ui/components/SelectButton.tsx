@@ -1,10 +1,11 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { Stack } from "@mui/material"
+import { Button } from "./StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import World from "@/systems/World"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
-import { Button, LabelWithTooltip } from "./StyledComponents"
+import { LabelWithTooltip } from "./StyledComponents"
 
 // raycasting constants
 const RAY_MAX_LENGTH = 20.0

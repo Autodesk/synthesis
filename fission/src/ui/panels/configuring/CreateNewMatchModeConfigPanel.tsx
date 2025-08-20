@@ -1,10 +1,10 @@
-import { Box, Button, Divider, FormControlLabel, Stack, TextField, Typography } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
-import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
-import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { Box, TextField, FormControlLabel, Stack, Divider, Button, Typography } from "@mui/material"
+import Checkbox from "@/ui/components/Checkbox"
+import { useEffect, useState, useCallback } from "react"
 import type { MatchModeConfig } from "./MatchModeConfigPanel"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { validateAndNormalizeMatchModeConfig } from "./MatchModeConfigPanel"
 
 interface ValidationRule {

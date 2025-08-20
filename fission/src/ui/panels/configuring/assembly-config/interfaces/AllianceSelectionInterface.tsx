@@ -1,9 +1,9 @@
 import { Box, Stack } from "@mui/material"
+import { Button } from "@/ui/components/StyledComponents"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
-import { Button } from "@/ui/components/StyledComponents"
 
 type AllianceSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject

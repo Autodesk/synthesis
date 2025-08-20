@@ -1,4 +1,5 @@
 import { Divider, Stack } from "@mui/material"
+import { Button, IconButton } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
@@ -8,7 +9,7 @@ import type { InputScheme } from "@/systems/input/InputTypes"
 import AxisInput from "@/systems/input/inputs/AxisInput.ts"
 import type Input from "@/systems/input/inputs/Input"
 import Label from "@/ui/components/Label"
-import { Button, IconButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {

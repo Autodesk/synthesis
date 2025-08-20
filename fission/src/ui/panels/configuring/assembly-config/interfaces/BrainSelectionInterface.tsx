@@ -1,9 +1,9 @@
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { BrainType } from "@/systems/simulation/Brain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 
 type BrainSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
