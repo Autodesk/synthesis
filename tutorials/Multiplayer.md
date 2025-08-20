@@ -18,19 +18,19 @@ The Multiplayer mode will allow you to host a simulation world to access across 
 
 ## Setup
 
-<img src="img/multiplayer/welcome-modal.png" width="300">
+<img src="img/multiplayer/welcome-modal.png" alt="View of the welcome modal users are presented with on loading Synthesis" width="300">
 
 - After selecting multiplayer from the main menu screen, enter a name (this will be visible to other players in your room) and either:
 
-<img src="img/multiplayer/create-game.png" width="300">
+<img src="img/multiplayer/create-game.png" alt="Creating a multiplayer game session" width="300">
 
   - Click "Create Game" to generate a room code to share with the other players
 
-<img src="img/multiplayer/room-code.png" width="300">
+<img src="img/multiplayer/room-code.png" alt="The room code displays in the corner of the screen with a list of the users in the current session" width="300">
 
   - Enter a room code from another player and click "Join Game"
 
-<img src="img/multiplayer/join-game.png" width="300">
+<img src="img/multiplayer/join-game.png" alt="Type the session code on other devices to join another computer's session" width="300">
 
 - Anyone can spawn in robots or the field, and will have exclusive control of the robots they spawn in
   - Select a control scheme and configure your robot as you typically would
