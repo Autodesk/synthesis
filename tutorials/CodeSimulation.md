@@ -35,12 +35,19 @@ wpi.sim.addWebsocketsServer().defaultEnabled = true
 
 For CAN-based device support (TalonFX, CANSparkMax, most Gyros), you'll need our SyntheSim library. Although currently only available for Java, SyntheSim adds additional support for third-party devices that don't follow WPILib's WebSocket specification. It's still in early development, so you'll need to clone and install the library locally in order to use it:
 
-<!-- TODO: clone only synthesim instead of whole repo? -->
 
+To clone just the SyntheSym portion of the repository (faster than cloning the whole repository), you can use the following commands
 ```sh
-$ git clone https://github.com/Autodesk/synthesis.git
-$ cd synthesis/simulation/SyntheSimJava
-$ ./gradlew build && ./gradlew publishToMavenLocal
+git clone --no-checkout --depth=1 --filter=tree:0 https://github.com/Autodesk/synthesis.git
+cd synthesis
+git sparse-checkout set --no-cone /simulation
+git checkout
+```
+
+Once you've cloned Synthesis, you can build and publish the SyntheSym package to your local maven
+```sh
+cd simulation/SyntheSimJava
+./gradlew build && ./gradlew publishToMavenLocal
 ```
 
 Next, you'll need to ensure that the local Maven repository is added to your project by verifying that the following is included in your `build.gradle` file:
