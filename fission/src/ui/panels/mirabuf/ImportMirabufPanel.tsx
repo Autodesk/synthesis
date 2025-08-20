@@ -1,5 +1,4 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Stack, Tooltip } from "@mui/material"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
@@ -21,22 +20,25 @@ import MirabufCachingService, {
 } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
+    Button,
     DeleteButton,
     PositiveButton,
     PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
+    ToggleButton,
+    ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
+import { API_URL } from "@/util/Consts.ts"
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
@@ -191,18 +193,14 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     useEffect(() => {
         // To remove the prettier warning
         const x = async () => {
-            // Detect if we're running in electron and use direct remote URL
-            const isElectron = window.electronAPI != null
-            const baseUrl = isElectron ? "https://synthesis.autodesk.com" : ""
-
-            fetch(`${baseUrl}/api/mira/manifest.json`)
+            fetch(`${API_URL}/mira/manifest.json`)
                 .then(x => x.json())
                 .then(x => {
                     const map = MirabufCachingService.getCacheMap(MiraType.ROBOT)
                     const robots: MirabufRemoteInfo[] = []
                     for (const src of x["robots"]) {
                         if (typeof src == "string") {
-                            const str = `${baseUrl}/api/mira/robots/${src}`
+                            const str = `${API_URL}/mira/robots/${src}`
                             if (!map[str]) robots.push({ displayName: src, src: str })
                         } else {
                             if (!map[src.src]) robots.push({ displayName: src.displayName, src: src.src })
@@ -211,7 +209,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     const fields: MirabufRemoteInfo[] = []
                     for (const src of x["fields"]) {
                         if (typeof src == "string") {
-                            const str = `${baseUrl}/api/mira/fields/${src}`
+                            const str = `${API_URL}/mira/fields/${src}`
                             if (!map[str]) fields.push({ displayName: src, src: str })
                         } else {
                             if (!map[src.src]) fields.push({ displayName: src.displayName, src: src.src })
