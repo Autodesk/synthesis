@@ -1,5 +1,5 @@
 {
-  description = "Synthesis' Web-Based Robot Simulator";
+  description = "Synthesis' Web-Based Robotics Simulator";
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
@@ -13,11 +13,7 @@
         "aarch64-darwin"
       ];
       forEachSupportedSystem =
-        f:
-        inputs.nixpkgs.lib.genAttrs supportedSystems (
-          system: f inputs.nixpkgs.legacyPackages.${system}
-
-        );
+        f: inputs.nixpkgs.lib.genAttrs supportedSystems (system: f inputs.nixpkgs.legacyPackages.${system});
     in
     {
       devShells = forEachSupportedSystem (pkgs: {
@@ -32,6 +28,7 @@
           };
         };
       });
+
       formatter = forEachSupportedSystem (pkgs: pkgs.nixfmt-tree);
     };
 }
