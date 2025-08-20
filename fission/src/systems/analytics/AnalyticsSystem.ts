@@ -71,6 +71,16 @@ export interface AnalyticsEvents {
     // Match Mode Events
     "Match Start": MatchEvent
     "Match End": MatchEvent
+
+    // Graphics Settings Event
+    "Graphics Settings": {
+        lightIntensity: number
+        fancyShadows: boolean
+        maxFar: number
+        cascades: number
+        shadowMapSize: number
+        antiAliasing: boolean
+    }
 }
 
 class AnalyticsSystem extends WorldSystem {
