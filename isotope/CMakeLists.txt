@@ -49,21 +49,20 @@ set(protobuf_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(protobuf_BUILD_CONFORMANCE OFF CACHE BOOL "" FORCE)
 set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)
 
-include(FetchContent)
-FetchContent_Declare(
-    protobuf
-    GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-    GIT_TAG        v23.0
-)
-FetchContent_MakeAvailable(protobuf)
-find_package(Protobuf REQUIRED)
-set(Protobuf_PROTOC_EXECUTABLE $<TARGET_FILE:protoc>)
+set(GOOGLE_PROTOBUF_SUBMODULE_DIR "${CMAKE_CURRENT_LIST_DIR}/../protobuf")
+if(NOT EXISTS "${GOOGLE_PROTOBUF_SUBMODULE_DIR}/.git")
+    message(FATAL_ERROR "google-protobuf is not checked out; make sure to run\n\tgit submodule update --init ../protobuf")
+endif()
 
+add_subdirectory(${GOOGLE_PROTOBUF_SUBMODULE_DIR} "${CMAKE_BINARY_DIR}/protobuf")
+
+set(Protobuf_PROTOC_EXECUTABLE $<TARGET_FILE:protoc>)
 target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf)
 
 set(PROTO_GEN_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf_gen")
+set(MIRABUF_SUBMODULE_DIR "${CMAKE_CURRENT_LIST_DIR}/../mirabuf")
 file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
-file(GLOB PROTO_FILES "${CMAKE_CURRENT_LIST_DIR}/../mirabuf/*.proto")
+file(GLOB PROTO_FILES "${MIRABUF_SUBMODULE_DIR}/*.proto")
 
 set(PROTO_SRCS "")
 set(PROTO_HDRS "")
@@ -77,7 +76,7 @@ add_custom_command(
   OUTPUT ${PROTO_SRCS} ${PROTO_HDRS}
   COMMAND ${Protobuf_PROTOC_EXECUTABLE}
           --cpp_out=${PROTO_GEN_DIR}
-          -I ${CMAKE_CURRENT_LIST_DIR}/../mirabuf
+          -I ${MIRABUF_SUBMODULE_DIR}
           ${PROTO_FILES}
   DEPENDS ${PROTO_FILES}
   COMMENT "Generating protobuf sources"
