@@ -307,7 +307,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
             let completeCount = 0
             const totalCount = toCache.length
-            status.update(`Downloading... (0/${totalCount})}`, 0.05)
+            status.update(`Downloading... (0/${totalCount})`, 0.05)
 
             toCache.forEach(asset => {
                 MirabufCachingService.cacheRemote(asset.remotePath, asset.miraType, asset.name, asset.hash)
