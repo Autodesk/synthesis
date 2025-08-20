@@ -13,7 +13,7 @@ export type ZoneType = "scoring" | "protected"
 /**
  * Checks if two zones are equal by comparing their common base properties
  */
-function zonesEqual(zone1: BaseZonePreferences, zone2: BaseZonePreferences): boolean {
+export function zonesEqual(zone1: BaseZonePreferences, zone2: BaseZonePreferences): boolean {
     return (
         zone1.name === zone2.name &&
         zone1.alliance === zone2.alliance &&
@@ -137,6 +137,73 @@ export async function modifyZoneInDevtools(
 
     if (field.fieldPreferences) {
         field.fieldPreferences.scoringZones = updatedZones
+        PreferencesSystem.savePreferences?.()
+        field.updateScoringZones()
+    }
+
+    const assembly = field.mirabufInstance.parser.assembly
+    const cacheId = field.cacheId
+    if (cacheId) {
+        const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+        if (!success) {
+            throw new Error("Failed to persist changes to cache")
+        }
+    }
+}
+
+/**
+ * Automatically caches user-created or modified zones to the field file for persistence across reloads.
+ */
+export async function addUserZoneToDevtools(
+    zone: ScoringZonePreferences,
+    originalZone: ScoringZonePreferences | undefined,
+    zoneType: "scoring"
+): Promise<void>
+export async function addUserZoneToDevtools(
+    zone: ProtectedZonePreferences,
+    originalZone: ProtectedZonePreferences | undefined,
+    zoneType: "protected"
+): Promise<void>
+export async function addUserZoneToDevtools(
+    zone: ScoringZonePreferences | ProtectedZonePreferences,
+    originalZone: ScoringZonePreferences | ProtectedZonePreferences | undefined,
+    zoneType: ZoneType
+): Promise<void> {
+    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+    if (!field) throw new Error("No field loaded")
+
+    const parts = field.mirabufInstance.parser.assembly.data?.parts
+    if (!parts) throw new Error("No field parts found")
+
+    const editor = new FieldMiraEditor(parts)
+
+    if (zoneType === "protected") {
+        throw new Error("Protected zone field file addition not yet implemented")
+    }
+
+    const devtoolZones = editor.getUserData("devtool:scoring_zones") || []
+
+    let updated = false
+
+    if (originalZone) {
+        const existingIndex = devtoolZones.findIndex(devZone => zonesEqual(devZone, originalZone))
+        if (existingIndex >= 0) {
+            devtoolZones[existingIndex] = zone as ScoringZonePreferences
+            updated = true
+        }
+    }
+
+    if (!updated) {
+        const zoneExists = devtoolZones.some(devZone => zonesEqual(devZone, zone))
+        if (!zoneExists) {
+            devtoolZones.push(zone as ScoringZonePreferences)
+        }
+    }
+
+    editor.setUserData("devtool:scoring_zones", devtoolZones)
+
+    if (field.fieldPreferences) {
+        field.fieldPreferences.scoringZones = devtoolZones
         PreferencesSystem.savePreferences?.()
         field.updateScoringZones()
     }

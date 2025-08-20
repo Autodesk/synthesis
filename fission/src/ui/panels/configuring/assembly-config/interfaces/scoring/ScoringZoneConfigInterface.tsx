@@ -17,7 +17,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import DevtoolZoneModificationModal from "@/ui/modals/DevtoolZoneModificationModal"
-import { isZoneFromDevtools, modifyZoneInDevtools } from "@/util/DevtoolZoneUtils"
+import { addUserZoneToDevtools, isZoneFromDevtools, modifyZoneInDevtools, zonesEqual } from "@/util/DevtoolZoneUtils"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
@@ -151,7 +151,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         }
     }, [panel, configureScreen])
 
-    const handleSave = useCallback(() => {
+    const handleSave = useCallback(async () => {
         if (gizmoRef.current && selectedField) {
             save(
                 selectedField,
@@ -164,6 +164,24 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 gizmoRef.current,
                 selectedNode
             )
+
+            // Auto-cache user-created zones for persistence
+            const isExistingZone = selectedField.fieldPreferences?.scoringZones.some(
+                z => z === originalZoneRef.current || zonesEqual(z, originalZoneRef.current)
+            )
+
+            if (!isZoneFromDevtools(originalZoneRef.current, "scoring")) {
+                try {
+                    await addUserZoneToDevtools(
+                        selectedZone,
+                        isExistingZone ? originalZoneRef.current : undefined,
+                        "scoring"
+                    )
+                } catch (error) {
+                    console.warn("Failed to auto-cache user zone:", error)
+                }
+            }
+
             saveAllZones()
         }
     }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
@@ -403,11 +421,11 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => {
+                    onClick={async () => {
                         if (isZoneFromDevtools(selectedZone, "scoring")) {
                             setConfirmationModal({ isOpen: true, pendingSave: true })
                         } else {
-                            handleSave()
+                            await handleSave()
                             if (panel) closePanel(panel.id, CloseType.Accept)
                         }
                     }}
