@@ -3,12 +3,9 @@ import { useEffect, useState } from "react"
 import { type DesignRule, sendData } from "../lib"
 
 function DesignCheckTab() {
-    const [isWindowLoaded, setIsWindowLoaded] = useState<boolean>()
     const [rules, setRules] = useState<DesignRule[]>([])
 
     useEffect(() => {
-        if (!isWindowLoaded) return
-
         const fetchRules = async () => {
             const data = await sendData("designRules", {})
             if (data) {
@@ -17,20 +14,11 @@ function DesignCheckTab() {
             }
         }
 
-        fetchRules()
-    }, [isWindowLoaded])
-
-    // biome-ignore lint/correctness/useExhaustiveDependencies: onWindowLoad is stable
-    useEffect(() => {
         if (typeof window.adsk === "undefined") {
-            requestAnimationFrame(onWindowLoad)
+            requestAnimationFrame(fetchRules)
             return
         }
     }, [])
-
-    function onWindowLoad(): void {
-        setIsWindowLoaded(true)
-    }
 
     function isDesignValid(): string {
         rules.forEach(rule => {
