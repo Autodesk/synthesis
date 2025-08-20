@@ -318,7 +318,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 status.done()
                             } else {
                                 status.update(
-                                    `Downloading... (${completeCount}/${totalCount})}`,
+                                    `Downloading... (${completeCount}/${totalCount})`,
                                     completeCount / totalCount
                                 )
                             }
