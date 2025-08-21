@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest"
 import MirabufCachingService, { MiraType } from "../../mirabuf/MirabufLoader.ts"
 import MirabufParser, { type RigidNodeReadOnly } from "../../mirabuf/MirabufParser.ts"
-import { mirabuf } from "../../proto/mirabuf"
+import type { mirabuf } from "../../proto/mirabuf"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
@@ -53,7 +53,6 @@ describe("Mirabuf Parser Tests", () => {
 
         const t = new MirabufParser(field!)
         const physicsNodes = filterNonPhysicsNodes([...t.rigidNodes.values()], field!)
-        const transformsSum = 1954.8213339462916
 
         expect(physicsNodes.length).toBe(34)
         expect([...t.partTreeValues.values()].length).toBe(982)
