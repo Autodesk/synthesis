@@ -814,6 +814,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const parts = this._mirabufInstance.parser.assembly.data?.parts
             if (parts) {
                 const editor = new FieldMiraEditor(parts)
+                // First, push current preferences into devtool so handlers don't overwrite saved prefs
+                if (this._fieldPreferences) {
+                    if (this._fieldPreferences.scoringZones && this._fieldPreferences.scoringZones.length > 0) {
+                        editor.setUserData("devtool:scoring_zones", this._fieldPreferences.scoringZones)
+                    }
+                }
                 devtoolKeys.forEach(key => {
                     devtoolHandlers[key].set(this, editor.getUserData(key))
                 })
