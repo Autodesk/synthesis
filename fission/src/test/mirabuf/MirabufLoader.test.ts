@@ -79,32 +79,24 @@ describe("MirabufLoader", () => {
         beforeEach(async () => {
             await MirabufLoader.removeAll()
         })
-        test("Loads Robot", async () => {
-            const info = await MirabufLoader.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
+        const tests: [string, MiraType][] = [
+            ["/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT],
+            ["/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD],
+        ]
+        test.for(tests)("Loads Asset ($0)", async ([url, miratype]) => {
+            const info = await MirabufLoader.cacheRemote(url, miratype)
             expect(info).toBeDefined()
-            expect(info?.miraType).toBe(MiraType.ROBOT)
-            expect(info?.name).toBe("Dozer v9")
+            expect(info?.miraType).toBe(miratype)
+            expect(info?.name).toMatchSnapshot()
+            expect(info?.hash).toMatchSnapshot()
             const assembly = await MirabufLoader.get(info!.hash)
             expect(assembly).toBeDefined()
             expect(assembly?.info?.name).toBe(info!.name)
             expect(MirabufLoader.getAll()).toStrictEqual([info])
-            expect(MirabufLoader.getAll(MiraType.ROBOT)).toStrictEqual([info])
-            expect(MirabufLoader.getAll(MiraType.FIELD)).toStrictEqual([])
+            expect(MirabufLoader.getAll(miratype)).toStrictEqual([info])
+            expect(MirabufLoader.getAll(miratype == MiraType.FIELD ? MiraType.ROBOT : MiraType.FIELD)).toStrictEqual([])
         })
 
-        test("Loads Field", async () => {
-            const info = await MirabufLoader.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD)
-            expect(info).toBeDefined()
-            expect(info?.miraType).toBe(MiraType.FIELD)
-            expect(info?.name).toBe("FRC Field 2023 v7")
-            expect(info?.hash).toBe("60440aa3010e1fa2f12877ae52aafbea68e81d")
-            const assembly = await MirabufLoader.get(info!.hash)
-            expect(assembly).toBeDefined()
-            expect(assembly?.info?.name).toBe(info!.name)
-            expect(MirabufLoader.getAll()).toStrictEqual([info])
-            expect(MirabufLoader.getAll(MiraType.FIELD)).toStrictEqual([info])
-            expect(MirabufLoader.getAll(MiraType.ROBOT)).toStrictEqual([])
-        })
         test("Remove All Cleans Up", async () => {
             const field1 = await MirabufLoader.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD)
             const robot1 = await MirabufLoader.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
