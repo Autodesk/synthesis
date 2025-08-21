@@ -159,7 +159,6 @@ class MirabufCachingService {
     private static _cacheMap = new CacheMap()
     private static _inMemoryCache: Record<string, ArrayBuffer | undefined> = {}
     static {
-        window.mirabuf = MirabufCachingService
         if (
             (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") != MIRABUF_LOCALSTORAGE_GENERATION
         ) {
