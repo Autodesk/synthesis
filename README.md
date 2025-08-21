@@ -67,7 +67,7 @@ Additional protobuf files that we use in addition to Mirabuf. [See Protocols](/p
 
 We have a variety of tutorials available to help you get started with Synthesis. Additionally, you can view these same tutorials as Markdown files in the [tutorials](/tutorials/) directory of this repository.
 
-Updating our tutorials is an ongoing process. If you are at all interested in helping, checkout the [Synthesis Contribution Guide](/CONTRIBUTING.md) for more information on how to get started.
+Updating our tutorials is an ongoing process. If you are at all interested in helping, check out the [Synthesis Contribution Guide](/CONTRIBUTING.md) for more information on how to get started.
 
 ## [Immersion Program](https://synthesis.autodesk.com/internship.html)
 
@@ -86,7 +86,7 @@ Applications open each year during the spring. For more information about applyi
 
 ## Contact
 
-If you have any questions about Synthesis or the Immersion Program, you can contact us through email ([frc@autodesk.com](mailto:frc@autodesk.com)). Additionally please reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in touch with not only the community, but Synthesis' current development team.
+If you have any questions about Synthesis or the Immersion Program, you can contact us through email ([frc@autodesk.com](mailto:frc@autodesk.com)). Additionally, please reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in touch with not only the community, but Synthesis' current development team.
 
 ## [License](/LICENSE.txt)
 

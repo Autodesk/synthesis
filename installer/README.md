@@ -1,6 +1,6 @@
 # Installers
 
-We recently transitioned to a platform independent, web-based application. As such, we no longer maintain a installer for the core simulator. We do, however, still have one for our Fusion Exporter.
+We recently transitioned to a platform independent, web-based application. As such, we no longer maintain an installer for the core simulator. We do, however, still have one for our Fusion Exporter.
 
 ## Installing the Synthesis Fusion Exporter
 
@@ -22,20 +22,20 @@ We recently transitioned to a platform independent, web-based application. As su
 - Once the source code for the Exporter is downloaded, unzip the folder.
 - Next, if you haven't already, install `Autodesk Fusion`.
 - Once Fusion is open, navigate to the `Utilities Toolbar`.
-![image_caption](../tutorials/img/fusion/fusion-empty.png)
+  ![image_caption](../tutorials/img/fusion/fusion-empty.png)
 - Click on `Scripts and Add-ins` in the toolbar.
-![image_caption](../tutorials/img/fusion/fusion-addins-highlight.png)
+  ![image_caption](../tutorials/img/fusion/fusion-addins-highlight.png)
 - Navigate to `Add-ins` and select the green plus icon.
-![image_caption](../tutorials/img/fusion/fusion-addins-panel.png)
+  ![image_caption](../tutorials/img/fusion/fusion-addins-panel.png)
 - Now navigate to wherever you extracted the original `.zip` source code file you downloaded.
   - Make sure to select the folder that contains the `Synthesis.py` file, this is the entry point to the Exporter.
-![image_caption](../tutorials/img/fusion/fusion-add-addin.png)
+    ![image_caption](../tutorials/img/fusion/fusion-add-addin.png)
 - Once the extension is added you should be able to see it under `My Add-Ins`.
 - Select `Synthesis` from the `My Add-Ins` drop down and click `Run` in the bottom right.
-![image_caption](../tutorials/img/fusion/fusion-addin-synthesis.png)
+  ![image_caption](../tutorials/img/fusion/fusion-addin-synthesis.png)
 - The first time you run the extension it may prompt you to restart Fusion, this is totally normal.
 - Once you restart Fusion the extension will run on startup, you will be able to find it on the right side of the toolbar
-under the `Utilities` tab.
-![image_caption](../tutorials/img/fusion/fusion-utilities-with-synthesis.png)
+  under the `Utilities` tab.
+  ![image_caption](../tutorials/img/fusion/fusion-utilities-with-synthesis.png)
 
 Thanks for installing the Synthesis Fusion Exporter! For any additional help visit our [Synthesis Community Discord Server](https://www.discord.gg/hHcF9AVgZA) where you can talk directly to our developers.

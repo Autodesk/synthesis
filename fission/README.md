@@ -28,14 +28,14 @@ To install all dependencies:
 bun i
 ```
 
-[Download the production assetpack](https://synthesis.autodesk.com/Downloadables/assetpack.zip), then unzip it.
+[Download the production asset pack](https://synthesis.autodesk.com/Downloadables/assetpack.zip), then unzip it.
 Make sure that the `Downloadables` directory is placed inside the public directory like so:
 
 ```
 /fission/public/Downloadables/
 ```
 
-Alternatively for development, you can download and install the assetpack for whatever branch you're operating on with [Git LFS]. This can be accomplished with the `assetpack` script:
+Alternatively for development, you can download and install the asset pack for whatever branch you're operating on with [Git LFS]. This can be accomplished with the `assetpack` script:
 
 ```bash
 bun run assetpack
