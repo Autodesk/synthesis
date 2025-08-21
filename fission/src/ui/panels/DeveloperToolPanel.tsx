@@ -12,6 +12,28 @@ import type { PanelImplProps } from "../components/Panel"
 import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
+async function saveToCache() {
+    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+    if (!field) return
+    const assembly = field.mirabufInstance.parser.assembly
+    const newName = assembly.info?.name != null ? `Edited ${assembly.info.name}` : undefined
+    const existing = MirabufCachingService.getAll().find(info => info.name == newName)
+    const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
+        miraType: MiraType.FIELD,
+        name: newName,
+    })
+
+    if (cacheInfo != null) {
+        globalAddToast("info", "Devtool Saved", "Changes have been persisted to cache.")
+    } else {
+        globalAddToast("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+    }
+
+    if (existing) {
+        await MirabufCachingService.remove(existing.hash)
+    }
+}
+
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [selectedKey, setSelectedKey] = useState<DevtoolKey | undefined>(undefined)
@@ -21,7 +43,6 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const [keys, setKeys] = useState<string[]>([])
     const [fieldLoaded, setFieldLoaded] = useState<boolean>(false)
     const prevFieldObj = useRef<MirabufSceneObject | undefined>(undefined)
-
     // Effect: Watch for field changes and update editor/keys only if field changes
     useEffect(() => {
         const updateEditor = () => {
@@ -71,7 +92,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         setError("")
     }, [selectedKey, editor])
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!editor || !selectedKey) return
         try {
             setError("")
@@ -85,33 +106,9 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             setKeys(editor.getAllDevtoolKeys())
 
             // Persist changes to cache
+            await saveToCache()
             const field = World.sceneRenderer.mirabufSceneObjects.getField()
-            if (!field) {
-                globalAddToast?.("error", "Devtool Error", "No field loaded to apply changes.")
-                return
-            }
-
-            const assembly = field.mirabufInstance.parser.assembly
-            const cacheId = field.cacheId // add to MirabufSceneObject
-            if (cacheId) {
-                MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-                    .then(success => {
-                        if (success) {
-                            globalAddToast?.("info", "Devtool Saved", "Changes have been persisted to cache.")
-                        } else {
-                            globalAddToast?.(
-                                "warning",
-                                "Devtool Warning",
-                                "Changes saved but failed to persist to cache."
-                            )
-                        }
-                    })
-                    .catch(() => {
-                        globalAddToast?.("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
-                    })
-            }
-
-            if (!field.fieldPreferences) {
+            if (!field?.fieldPreferences) {
                 globalAddToast?.("error", "Devtool Error", "Field preferences not available.")
                 return
             }
@@ -123,7 +120,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
     }
 
-    const handleRemove = () => {
+    const handleRemove = async () => {
         if (!editor || !selectedKey) return
         editor.removeUserData(selectedKey)
         setKeys(editor.getAllDevtoolKeys())
@@ -132,26 +129,10 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         setError("")
 
         // Persist removal to cache
+        await saveToCache()
+
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!field) return
-
-        const assembly = field.mirabufInstance.parser.assembly
-        const cacheId = field.cacheId
-        if (cacheId) {
-            MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-                .then(success => {
-                    if (success) {
-                        globalAddToast?.("info", "Devtool Removed", "Removal has been persisted to cache.")
-                    } else {
-                        globalAddToast?.("warning", "Devtool Warning", "Removal saved but failed to persist to cache.")
-                    }
-                })
-                .catch(() => {
-                    globalAddToast?.("warning", "Devtool Warning", "Removal saved but failed to persist to cache.")
-                })
-        }
-
-        if (!field.fieldPreferences) return
+        if (!field?.fieldPreferences) return
 
         devtoolHandlers[selectedKey].set(field, null)
         PreferencesSystem.savePreferences?.()
