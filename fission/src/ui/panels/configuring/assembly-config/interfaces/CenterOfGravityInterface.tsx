@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
@@ -71,6 +72,15 @@ const CenterOfGravityInterface: React.FC<CenterOfGravityInterfaceProps> = ({ sel
             saveCenterOfGravity(gizmoRef.current, selectedRobot)
         }
     }, [selectedRobot])
+
+    useEffect(() => {
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+
+        return () => {
+            selectedRobot.stabilizeAfterCenterOfGravityEdit()
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+        }
+    }, [])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
