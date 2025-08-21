@@ -70,13 +70,12 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
             <Card
                 elevation={8}
                 sx={{
-                    display: panel.props.configured ? "" : "none",
+                    display: panel.props.configured ? "flex" : "none",
                     position: "absolute",
                     pointerEvents: "auto",
                     p: 0,
                     boxShadow: 6,
                     maxHeight: "70vh",
-                    display: "flex",
                     flexDirection: "column",
                 }}
                 ref={nodeRef}

@@ -31,7 +31,7 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
         >
             <Card
                 sx={{
-                    display: modal.props.configured ? "" : "none",
+                    display: modal.props.configured ? "flex" : "none",
                     position: "absolute",
                     top: "50%",
                     left: "50%",
@@ -39,7 +39,6 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                     p: 0,
                     maxHeight: "70vh",
                     minWidth: "20vw",
-                    display: "flex",
                     flexDirection: "column",
                 }}
             >
