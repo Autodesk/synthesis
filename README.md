@@ -15,7 +15,7 @@ For more information on the product itself or the team, visit [http://synthesis.
 
 ## Goals
 
-Synthesis is built with a direct focus on the FIRST® community. Every single one of our developers is or was a FIRST® student. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
+Synthesis is built with a direct focus on the FIRST® community. Every single one of our developers is or was a FIRST® student. We've also made the project completely open source in order to better involve the community. This way contributors can help improve Synthesis broadly or adapt it to their team’s needs.
 
 Here are some of our primary goals for Synthesis:
 
@@ -45,7 +45,7 @@ This project welcomes community suggestions and contributions. Synthesis is near
 
 Before you contribute to this repository, please first discuss the change you wish to make a GitHub issue or reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). This way we can ensure that there is no overlap between outside contributors and internal development work.
 
-When ready to contribute, fork the synthesis repository, make your changes, and submit a pull request. When contributing to Synthesis, please branch from and submit to our `dev` branch. The `prod` branch is intended to be a copy of either exactly what is in production, or what is ready for production. We like to keep changes to the dev branch so they have time to simmer and be distributed via beta releases.
+When ready to contribute, fork the Synthesis repository, make your changes, and submit a pull request. When contributing to Synthesis, please branch from and submit to our `dev` branch. The `prod` branch is intended to be a copy of either exactly what is in production, or what is ready for production. We like to keep changes to the dev branch so they have time to simmer and be distributed via beta releases.
 
 Be sure to fill out the pull request template accordingly to make reviewing your work as smooth as possible.
 
@@ -57,7 +57,7 @@ Mirabuf is a file format we use to store physical data from Fusion to load into 
 
 ### [Jolt Physics](https://github.com/HunterBarclay/JoltPhysics.js)
 
-Jolt is the core physics engine for our web biased simulator.
+Jolt is the core physics engine for our web-based simulator.
 
 ### Protocols
 
@@ -67,7 +67,7 @@ Additional protobuf files that we use in addition to Mirabuf. [See Protocols](/p
 
 We have a variety of tutorials available to help you get started with Synthesis. Additionally, you can view these same tutorials as Markdown files in the [tutorials](/tutorials/) directory of this repository.
 
-Updating our tutorials is a ongoing process. If you are at all interested in helping, checkout the [Synthesis Contribution Guide](/CONTRIBUTING.md) for more information on how to get started.
+Updating our tutorials is an ongoing process. If you are at all interested in helping, checkout the [Synthesis Contribution Guide](/CONTRIBUTING.md) for more information on how to get started.
 
 ## [Immersion Program](https://synthesis.autodesk.com/internship.html)
 

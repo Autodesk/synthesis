@@ -115,7 +115,7 @@ The packaged app will be located in the `/fission/out` directory.
 
 ## Core Systems
 
-These core systems make up the lion's share of the fission source code. Each systems manages a different aspect of the simulated world
+These core systems make up the lion's share of the fission source code. Each system manages a different aspect of the simulated world
 
 - [World](/fission/src/systems/World.md)
 - [Scene Renderer](/fission/src/systems/scene/SceneRenderer.md)
@@ -135,16 +135,16 @@ These core systems make up the lion's share of the fission source code. Each sys
 | `build:prod`         | Builds the project into its packaged form. Uses the `/fission/` base path.                                                                      |
 | `build:dev`          | Builds the project into its packaged form. Uses the `/fission-closed/` base path.                                                               |
 | `preview`            | Runs the built project for preview locally before deploying.                                                                                    |
-| `lint`               | Runs lints the projects with Biome.                                                                                                             |
-| `lint:fix`           | Attempts to fix issues found with Biome lintign.                                                                                                |
+| `lint`               | Runs the Biome linter without applying fixes.                                                                                                   |
+| `lint:fix`           | Runs the Biome linter and applies fixes.                                                                                                        |
 | `fmt`                | Runs the Biome formatter without applying fixes.                                                                                                |
 | `fmt:fix`            | Runs the Biome formatter and applies fixes.                                                                                                     |
-| `style`              | Runs the `lint` and `fmt` commands                                                                                                              |
-| `style:fix`          | Runs the `lint:fix` and `fmt:fix` commands                                                                                                      |
+| `style`              | Runs the `lint` and `fmt` commands.                                                                                                             |
+| `style:fix`          | Runs the `lint:fix` and `fmt:fix` commands.                                                                                                     |
 | `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                                                         |
 | `assetpack:update`   | Downloads the assetpack and unzips/installs it in the correct location, replacing the old directory if it exists.                               |
 | `playwright:install` | Downloads the Playwright browsers.                                                                                                              |
-| `electron:make`      | Builds Synthesis as an electron application                                                                                                     |
-| `electron:start`     | Starts Synthesis as an electron application                                                                                                     |
-| `electron:package`   | Packages Synthesis as an electron application                                                                                                   |
-| `electron:publish`   | Publishes Synthesis as an electron application                                                                                                  |
+| `electron:make`      | Builds Synthesis as an electron application.                                                                                                    |
+| `electron:start`     | Starts Synthesis as an electron application.                                                                                                    |
+| `electron:package`   | Packages Synthesis as an electron application.                                                                                                  |
+| `electron:publish`   | Publishes Synthesis as an electron application.                                                                                                 |
