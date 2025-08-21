@@ -38,6 +38,7 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import { CustomOrbitControls } from "@/systems/scene/CameraControls"
 
 interface ItemCardProps {
     id: string
@@ -90,11 +91,14 @@ export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, pr
                     if (mirabufSceneObject) {
                         World.sceneRenderer.registerSceneObject(mirabufSceneObject)
 
+                        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+
                         if (World.multiplayerSystem != null) {
                             const encodedAssembly =
                                 mirabufSceneObject.miraType !== MiraType.FIELD
                                     ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
                                     : undefined
+
                             const message: Message = {
                                 type: "newObject",
                                 data: {
@@ -109,7 +113,11 @@ export async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, pr
                                 },
                             }
                             await World.multiplayerSystem?.broadcast(message)
-                            World.multiplayerSystem.registerOwnSceneObject(mirabufSceneObject.id)
+                            World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
+                        }
+
+                        if (type === MiraType.ROBOT || !cameraControls.focusProvider) {
+                            cameraControls.focusProvider = mirabufSceneObject
                         }
 
                         progressHandle.done()

@@ -354,10 +354,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.moveToSpawnLocation()
 
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
-
-        if (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
-            cameraControls.focusProvider = this
-        }
     }
 
     // Centered in xz plane, bottom surface of object
@@ -620,7 +616,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (!this._ejectorPreferences?.parentNode) {
             console.log(bodyId)
             const now = Date.now()
-            if (now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS) {
+            if (
+                (!World.multiplayerSystem || World.multiplayerSystem?.getOwnRobots().includes(this)) &&
+                now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS
+            ) {
                 console.log(`Configure an ejector first.`)
                 globalAddToast("info", "Configure Ejector", "Configure an ejector first.")
                 this._lastEjectableToastTime = now
