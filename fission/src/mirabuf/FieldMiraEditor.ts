@@ -1,14 +1,17 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import { ContactType } from "@/mirabuf/ZoneTypes.ts"
 import { mirabuf } from "@/proto/mirabuf"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes.ts"
 import {
     defaultFieldPreferences,
     type FieldPreferences,
+    type ProtectedZonePreferences,
     type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
 
 export interface DevtoolMiraData {
     "devtool:scoring_zones": ScoringZonePreferences[]
-    "devtool:camera_locations": unknown
+    "devtool:protected_zones": ProtectedZonePreferences[]
     "devtool:spawn_locations": FieldPreferences["spawnLocations"]
     "devtool:a": unknown
     "devtool:b": unknown
@@ -46,6 +49,40 @@ export const devtoolHandlers = {
                     typeof z.points === "number" &&
                     typeof z.destroyGamepiece === "boolean" &&
                     typeof z.persistentPoints === "boolean" &&
+                    Array.isArray(z.deltaTransformation)
+            )
+        },
+    },
+    "devtool:protected_zones": {
+        get(field) {
+            return field.fieldPreferences?.protectedZones ?? defaultFieldPreferences().protectedZones
+        },
+        set(field, val) {
+            val ??= defaultFieldPreferences().protectedZones
+            if (!field.fieldPreferences || !this.validate(val)) {
+                console.warn("validation failed", val, field.fieldPreferences)
+                return
+            }
+            field.fieldPreferences.protectedZones = val
+            field.updateProtectedZones()
+        },
+        validate(val): val is ProtectedZonePreferences[] {
+            if (!Array.isArray(val)) return false
+            return val.every(
+                z =>
+                    typeof z === "object" &&
+                    z !== null &&
+                    typeof z.name === "string" &&
+                    (z.alliance === "red" || z.alliance === "blue") &&
+                    (typeof z.parentNode === "string" || z.parentNode === undefined) &&
+                    typeof z.penaltyPoints === "number" &&
+                    typeof z.contactType === "string" &&
+                    Object.values(ContactType).includes(z.contactType as ContactType) &&
+                    Array.isArray(z.activeDuring) &&
+                    z.activeDuring.every(
+                        (v: unknown) =>
+                            typeof v === "string" && Object.values(MatchModeType).includes(v as MatchModeType)
+                    ) &&
                     Array.isArray(z.deltaTransformation)
             )
         },

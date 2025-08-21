@@ -86,6 +86,10 @@ class World {
         } catch (_) {
             World._analyticsSystem = undefined
         }
+
+        if (import.meta.env.DEV) {
+            window.World = World
+        }
     }
 
     public static destroyWorld() {
