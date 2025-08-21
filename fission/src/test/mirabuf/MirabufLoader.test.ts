@@ -97,7 +97,7 @@ describe("MirabufLoader", () => {
             expect(info).toBeDefined()
             expect(info?.miraType).toBe(MiraType.FIELD)
             expect(info?.name).toBe("FRC Field 2023 v7")
-            expect(info?.hash).toBe("96b0d75cf3fde2c90a9b63e2497170e37b3e40")
+            expect(info?.hash).toBe("60440aa3010e1fa2f12877ae52aafbea68e81d")
             const assembly = await MirabufLoader.get(info!.hash)
             expect(assembly).toBeDefined()
             expect(assembly?.info?.name).toBe(info!.name)
