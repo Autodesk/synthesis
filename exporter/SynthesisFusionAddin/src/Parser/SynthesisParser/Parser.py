@@ -148,7 +148,12 @@ class Parser:
             self.pdMessage,
         )
 
-        JointHierarchy.buildJointPartHierarchy(design, assembly_out.data.joints, self.exporterOptions, self.pdMessage)
+        try:
+            JointHierarchy.buildJointPartHierarchy(
+                design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
+            )
+        except RuntimeError as e:
+            raise e
 
         # These don't have an effect, I forgot how this is suppose to work
         # progressDialog.message = "Taking Photo for thumbnail..."
