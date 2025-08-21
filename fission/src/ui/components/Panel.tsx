@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material"
+import { Card, CardActions, CardContent, CardHeader } from "@mui/material"
 import React, { type ReactElement, useRef } from "react"
 import Draggable from "react-draggable"
 import {
@@ -8,6 +8,7 @@ import {
     type Panel as PanelType,
     useUIContext,
 } from "../helpers/UIProviderHelpers"
+import { Button } from "./StyledComponents"
 
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 export type PanelImplProps<T, P> = Partial<{

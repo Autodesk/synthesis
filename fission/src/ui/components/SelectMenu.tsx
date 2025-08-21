@@ -1,9 +1,8 @@
 import { Divider, Stack } from "@mui/material"
-import { Button, IconButton } from "./StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Label from "./Label"
-import { CustomTooltip, Spacer, SynthesisIcons } from "./StyledComponents"
+import { Button, CustomTooltip, IconButton, Spacer, SynthesisIcons } from "./StyledComponents"
 
 /** Extend this to make a type that contains custom data */
 export class SelectMenuOption {

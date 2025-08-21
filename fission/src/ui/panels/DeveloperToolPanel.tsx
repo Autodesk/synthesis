@@ -1,4 +1,4 @@
-import { Alert, Button, Stack } from "@mui/material"
+import { Alert, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
@@ -9,7 +9,7 @@ import World from "@/systems/World"
 import FieldMiraEditor, { type DevtoolKey, devtoolHandlers, devtoolKeys } from "../../mirabuf/FieldMiraEditor"
 import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
-import { LabelWithTooltip } from "../components/StyledComponents"
+import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {

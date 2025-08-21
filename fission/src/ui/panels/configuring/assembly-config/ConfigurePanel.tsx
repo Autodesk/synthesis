@@ -1,4 +1,3 @@
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
@@ -13,6 +12,7 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
