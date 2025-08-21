@@ -77,6 +77,7 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private readonly _assemblyName: string
     private readonly _mirabufInstance: MirabufInstance
+
     private readonly _mechanism: Mechanism
     private _brain: Brain | undefined
     private _alliance: Alliance | undefined
@@ -106,7 +107,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
     private _collision?: (event: OnContactAddedEvent) => void
-    private _cacheId?: string
 
     public get intakeActive() {
         return this._intakeActive
@@ -194,21 +194,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._station = station
     }
 
-    public get cacheId() {
-        return this._cacheId
-    }
-
-    public constructor(
-        mirabufInstance: MirabufInstance,
-        assemblyName: string,
-        progressHandle?: ProgressHandle,
-        cacheId?: string
-    ) {
+    public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
         super()
 
         this._mirabufInstance = mirabufInstance
         this._assemblyName = assemblyName
-        this._cacheId = cacheId
 
         progressHandle?.update("Creating mechanism...", 0.9)
 
@@ -313,10 +303,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
             cameraControls.focusProvider = this
         }
+
+        MirabufObjectChangeEvent.dispatch(this)
     }
 
     // Centered in xz plane, bottom surface of object
-    private getPositionTransform(vec: THREE.Vector3) {
+    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()) {
         const box = this.computeBoundingBox()
         const transform = box.getCenter(vec)
         transform.setY(box.min.y)
@@ -431,6 +423,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
         }
+        MirabufObjectChangeEvent.dispatch(null)
     }
 
     public eject() {
@@ -949,8 +942,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
 export async function createMirabuf(
     assembly: mirabuf.Assembly,
-    progressHandle?: ProgressHandle,
-    cacheId?: string
+    progressHandle?: ProgressHandle
 ): Promise<MirabufSceneObject | null | undefined> {
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
@@ -958,7 +950,7 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle, cacheId)
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle)
 }
 
 /**
@@ -986,3 +978,29 @@ export class RigidNodeAssociate extends BodyAssociate {
 }
 
 export default MirabufSceneObject
+
+export class MirabufObjectChangeEvent extends Event {
+    private static _eventKey = "MirabufObjectChange"
+    private _obj: MirabufSceneObject | null
+
+    private constructor(obj: MirabufSceneObject | null) {
+        super(MirabufObjectChangeEvent._eventKey)
+        this._obj = obj
+    }
+
+    public static addEventListener(cb: (object: MirabufSceneObject | null) => void): () => void {
+        const listener = (event: Event) => {
+            if (event instanceof MirabufObjectChangeEvent) {
+                cb(event._obj)
+            } else {
+                cb(null)
+            }
+        }
+        window.addEventListener(this._eventKey, listener)
+        return () => window.removeEventListener(this._eventKey, listener)
+    }
+
+    public static dispatch(obj: MirabufSceneObject | null) {
+        window.dispatchEvent(new MirabufObjectChangeEvent(obj))
+    }
+}
