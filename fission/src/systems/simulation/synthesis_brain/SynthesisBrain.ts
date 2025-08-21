@@ -142,8 +142,6 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        World.analyticsSystem?.event("Unstick Used")
-
         const unstickForce = new JOLT.Vec3(0, PreferencesSystem.getRobotPreferences(this._assemblyName).unstickForce, 0)
         body.AddForce(unstickForce)
     }

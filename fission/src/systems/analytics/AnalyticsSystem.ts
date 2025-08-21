@@ -96,9 +96,6 @@ export interface AnalyticsEvents {
     // Scene Interaction Events
     "Drag Mode Toggled": unknown
 
-    // Robot Control Events
-    "Unstick Used": unknown
-
     // Main Menu Events
     "Mode Selected": {
         mode: string
@@ -127,7 +124,6 @@ class AnalyticsSystem extends WorldSystem {
     }
 
     public event<K extends keyof AnalyticsEvents>(name: K, params?: AnalyticsEvents[K]) {
-        console.log("AnalyticsEvent", name, params)
         event({ name: name, params: params ?? {} })
     }
 
