@@ -22,54 +22,54 @@ import CreateNewMatchModeConfigPanel from "./CreateNewMatchModeConfigPanel"
  */
 export interface MatchModeConfig {
     /** Unique identifier for this match mode configuration */
-    id: string
+    readonly id: string
 
     /** Human-readable name for this match mode configuration */
-    name: string
+    readonly name: string
 
     /** Whether this is a built-in default configuration (cannot be deleted) */
-    isDefault: boolean
+    readonly isDefault: boolean
 
     /** Duration of autonomous period in seconds (default: 15) */
-    autonomousTime: number
+    readonly autonomousTime: number
 
     /** Duration of teleoperated period in seconds (default: 135) */
-    teleopTime: number
+    readonly teleopTime: number
 
     /** Duration of endgame period in seconds (default: 20) */
-    endgameTime: number
+    readonly endgameTime: number
 
     /**
      * Whether to ignore robot rotation when calculating height violations.
      * If true, the height limit will be calculated relative to the base of the robot, rather than the base of the field
      * (default: true)
      */
-    ignoreRotation: boolean
+    readonly ignoreRotation: boolean
 
     /**
      * Maximum allowed robot height in meters (stored internally).
      * Set to Infinity for no height limit. (default: Infinity)
      */
-    maxHeight: number
+    readonly maxHeight: number
 
     /**
      * Points to penalize for height limit violations (default: 2).
      * Applied each time a robot exceeds maxHeight after cooldown period.
      */
-    heightLimitPenalty: number
+    readonly heightLimitPenalty: number
 
     /**
      * Maximum allowed robot side extension in meters
      * User input is in feet but converted to meters during config processing.
      * Set to Infinity for no side extension limit. (default: Infinity)
      */
-    sideMaxExtension: number
+    readonly sideMaxExtension: number
 
     /**
      * Points to penalize for side extension violations (default: 2).
      * Applied each time a robot exceeds sideMaxExtension after cooldown period.
      */
-    sideExtensionPenalty: number
+    readonly sideExtensionPenalty: number
 }
 
 const props: Readonly<{ id: keyof MatchModeConfig; expectedType: string; required: boolean }>[] = [
@@ -179,7 +179,8 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     useEffect(() => {
         const loadConfigs = () => {
             try {
-                const defaultConfigs = DefaultMatchModeConfigs.defaultMatchModeConfigCopies
+                const defaultConfigs = DefaultMatchModeConfigs.configs
+                console.log(defaultConfigs)
                 const localConfigs = JSON.parse(window.localStorage.getItem("match-mode-configs") || "[]")
 
                 const combinedConfigs = [...defaultConfigs, ...localConfigs]

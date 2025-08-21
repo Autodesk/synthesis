@@ -91,7 +91,7 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     maxHeight: {
-        defaultValue: fallbackConfig.maxHeight === Number.MAX_SAFE_INTEGER ? 1.2 : fallbackConfig.maxHeight,
+        defaultValue: fallbackConfig.maxHeight === -1 ? 1.2 : fallbackConfig.maxHeight,
         rules: [VALIDATION_RULES.nonNegativeNumber("Max height must be a non-negative number")],
         type: "decimal",
     },
@@ -106,8 +106,7 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     sideMaxExtension: {
-        defaultValue:
-            fallbackConfig.sideMaxExtension === Number.MAX_SAFE_INTEGER ? 0.5 : fallbackConfig.sideMaxExtension,
+        defaultValue: fallbackConfig.sideMaxExtension === -1 ? 0.5 : fallbackConfig.sideMaxExtension,
         rules: [VALIDATION_RULES.nonNegativeNumber("Side max extension must be a non-negative number")],
         type: "decimal",
     },
@@ -260,15 +259,13 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             teleopTime: parseInt(formState.teleopTime.value as string, 10),
             endgameTime: parseInt(formState.endgameTime.value as string, 10),
             ignoreRotation: formState.ignoreRotation.value as boolean,
-            maxHeight: formState.enableHeightPenalty.value
-                ? parseFloat(formState.maxHeight.value as string)
-                : Number.MAX_SAFE_INTEGER,
+            maxHeight: formState.enableHeightPenalty.value ? parseFloat(formState.maxHeight.value as string) : -1,
             heightLimitPenalty: formState.enableHeightPenalty.value
                 ? parseFloat(formState.heightLimitPenalty.value as string)
                 : 0,
             sideMaxExtension: formState.enableSideExtensionPenalty.value
                 ? parseFloat(formState.sideMaxExtension.value as string)
-                : Number.MAX_SAFE_INTEGER,
+                : -1,
             sideExtensionPenalty: formState.enableSideExtensionPenalty.value
                 ? parseFloat(formState.sideExtensionPenalty.value as string)
                 : 0,
