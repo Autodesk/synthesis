@@ -1,10 +1,10 @@
 import { Stack } from "@mui/material"
-import { Button } from "../components/StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
 import Label from "../components/Label"
 import type { PanelImplProps } from "../components/Panel"
+import { Button } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const RobotSwitchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
