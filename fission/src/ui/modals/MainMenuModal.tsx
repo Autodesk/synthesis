@@ -46,10 +46,10 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                     Promise.all([
                         MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD),
                         MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT),
-                    ]).then(([cachedField, cachedRobot]) => {
+                    ]).then(async ([cachedField, cachedRobot]) => {
                         if (cachedField && cachedRobot) {
-                            spawnCachedMira(cachedField, MiraType.FIELD)
-                            spawnCachedMira(cachedRobot, MiraType.ROBOT)
+                            await spawnCachedMira(cachedField)
+                            await spawnCachedMira(cachedRobot)
                         }
                     })
                 }}
