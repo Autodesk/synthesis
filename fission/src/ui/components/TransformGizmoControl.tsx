@@ -3,9 +3,8 @@ import { useEffect, useState } from "react"
 import InputSystem from "@/systems/input/InputSystem"
 import GizmoSceneObject, { type GizmoMode } from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
-import { Button, ToggleButton, ToggleButtonGroup } from "./StyledComponents"
+import { ToggleButton, ToggleButtonGroup } from "./StyledComponents"
 import type TransformGizmoControlProps from "./TransformGizmoControlProps"
-import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 
 /**
  * Creates GizmoSceneObject and gives you a toggle button group to control the modes of the gizmo.
