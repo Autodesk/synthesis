@@ -113,7 +113,7 @@ class World {
         ScoreTracker.resetScores()
 
         if (import.meta.env.DEV) {
-            window.world = World
+            window.World = World
         }
     }
 

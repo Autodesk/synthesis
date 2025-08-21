@@ -55,14 +55,15 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                 onClick={async () => {
                     closeModal(CloseType.Accept)
                     startSingleplayerCallback()
-
-                    const [field, robot] = await Promise.all([
+                    await Promise.all([
                         MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD),
                         MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT),
-                    ])
-
-                    if (field) await spawnCachedMira(field, MiraType.FIELD)
-                    if (robot) await spawnCachedMira(robot, MiraType.ROBOT)
+                    ]).then(async ([cachedField, cachedRobot]) => {
+                        if (cachedField && cachedRobot) {
+                            await spawnCachedMira(cachedField)
+                            await spawnCachedMira(cachedRobot)
+                        }
+                    })
                 }}
                 className="my-1"
             >

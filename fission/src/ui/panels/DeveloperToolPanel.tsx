@@ -12,43 +12,25 @@ import type { PanelImplProps } from "../components/Panel"
 import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
-// Helper: type guard for ScoringZonePreferences[]
-// function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferences[] {
-//     if (!Array.isArray(val)) return false
-//     return val.every(
-//         z =>
-//             typeof z === "object" &&
-//             z !== null &&
-//             typeof z.name === "string" &&
-//             (z.alliance === "red" || z.alliance === "blue") &&
-//             (typeof z.parentNode === "string" || z.parentNode === undefined) &&
-//             typeof z.points === "number" &&
-//             typeof z.destroyGamepiece === "boolean" &&
-//             typeof z.persistentPoints === "boolean" &&
-//             Array.isArray(z.deltaTransformation)
-//     )
-// }
-//
 async function saveToCache() {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
-    if (field) {
-        const assembly = field.mirabufInstance.parser.assembly
-        const newName = assembly.info?.name != null ? `Edited ${assembly.info.name}` : undefined
-        const existing = MirabufCachingService.getAll().find(info => info.name == newName)
-        const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
-            miraType: MiraType.FIELD,
-            name: newName,
-        })
+    if (!field) return
+    const assembly = field.mirabufInstance.parser.assembly
+    const newName = assembly.info?.name != null ? `Edited ${assembly.info.name}` : undefined
+    const existing = MirabufCachingService.getAll().find(info => info.name == newName)
+    const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
+        miraType: MiraType.FIELD,
+        name: newName,
+    })
 
-        if (cacheInfo != null) {
-            globalAddToast("info", "Devtool Saved", "Changes have been persisted to cache.")
-        } else {
-            globalAddToast("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
-        }
+    if (cacheInfo != null) {
+        globalAddToast("info", "Devtool Saved", "Changes have been persisted to cache.")
+    } else {
+        globalAddToast("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+    }
 
-        if (existing) {
-            await MirabufCachingService.remove(existing.hash)
-        }
+    if (existing) {
+        await MirabufCachingService.remove(existing.hash)
     }
 }
 

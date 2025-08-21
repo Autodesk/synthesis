@@ -34,7 +34,7 @@ class RobotDimensionTracker {
         World.getOwnRobots().forEach(robot => {
             const dimensions = this._ignoreRotation ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
 
-            if (dimensions.height > this._maxHeight + BUFFER_HEIGHT) {
+            if (this._maxHeight !== -1 && dimensions.height > this._maxHeight + BUFFER_HEIGHT) {
                 if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
                     ScoreTracker.robotPenalty(robot, this._heightLimitPenalty, "Height Expansion Limit")
                 }
@@ -44,8 +44,9 @@ class RobotDimensionTracker {
 
             const startingRobotSize = this._robotSize.get(robot.id) ?? { width: Infinity, depth: Infinity }
             if (
-                dimensions.width > startingRobotSize.width + this._sideMaxExtension + SIDE_BUFFER ||
-                dimensions.depth > startingRobotSize.depth + this._sideMaxExtension + SIDE_BUFFER
+                this._sideMaxExtension !== -1 &&
+                (dimensions.width > startingRobotSize.width + this._sideMaxExtension + SIDE_BUFFER ||
+                    dimensions.depth > startingRobotSize.depth + this._sideMaxExtension + SIDE_BUFFER)
             ) {
                 if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
                     ScoreTracker.robotPenalty(robot, this._sideExtensionPenalty, "Side Expansion Limit")

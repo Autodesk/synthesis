@@ -36,8 +36,8 @@ import {
 import { GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
 import { HiDownload } from "react-icons/hi"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
 
 export class SynthesisIcons {

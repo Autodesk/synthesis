@@ -1,6 +1,7 @@
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -40,7 +41,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
-            console.log({ alliance, station })
             targetAssembly.alliance = alliance
             targetAssembly.station = station
             ScoreTracker.addPerRobotScore(targetAssembly, 0)
@@ -61,6 +61,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             }
             World.multiplayerSystem?.broadcast({ type: "metadataUpdate", data: targetAssembly.multiplayerInfo })
         }
+        new ConfigurationSavedEvent()
     }, [alliance, targetAssembly, station, setSelectedScheme])
 
     const closeDelete = useCallback(() => {

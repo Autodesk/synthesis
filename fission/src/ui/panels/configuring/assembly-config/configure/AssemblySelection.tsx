@@ -1,8 +1,10 @@
 import type React from "react"
-import { useMemo, useReducer } from "react"
+import { useCallback, useEffect, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import InputSystem from "@/systems/input/InputSystem"
-import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { MirabufObjectChangeEvent } from "@/mirabuf/MirabufSceneObject"
+import InputSystem from "@/systems/input/InputSystem.ts"
+import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import World from "@/systems/World.ts"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
@@ -49,25 +51,37 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     onStageDelete,
     pendingDeletes,
 }) => {
-    const [u, update] = useReducer(x => !x, false)
     const { openPanel, closePanel } = useUIContext()
+    const [options, setOptions] = useState<AssemblySelectionOption[]>([])
 
-    const robots = useMemo(() => {
-        return World.sceneRenderer.mirabufSceneObjects.getRobots().filter(x => !pendingDeletes.includes(x.id))
-    }, [u, pendingDeletes])
+    const getRobots = useCallback(
+        () => World.sceneRenderer.mirabufSceneObjects.getRobots().filter(x => !pendingDeletes.includes(x.id)),
+        [pendingDeletes]
+    )
+    const getFields = useCallback(() => {
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        return !field || pendingDeletes.includes(field.id) ? [] : [field]
+    }, [pendingDeletes])
 
-    const fields = useMemo(() => {
-        return [World.sceneRenderer.mirabufSceneObjects.getField()]
-            .filter(x => x != null)
-            .filter(x => !pendingDeletes.includes(x.id))
-    }, [u, pendingDeletes])
+    const update = useCallback(() => {
+        const items: MirabufSceneObject[] = configurationType === "ROBOTS" ? getRobots() : getFields()
+        const newOptions = items
+            .filter(assembly => assembly != null)
+            .map(assembly => makeSelectionOption(configurationType, assembly))
+        setOptions(newOptions)
+    }, [getRobots, getFields, configurationType])
 
-    console.log(robots[0], fields[0])
+    MirabufObjectChangeEvent.addEventListener(() => {
+        update()
+    })
 
-    const options = useMemo(() => {
-        const list = configurationType === "ROBOTS" ? robots : fields
-        return list.map(assembly => makeSelectionOption(configurationType, assembly))
-    }, [configurationType, robots, fields])
+    ConfigurationSavedEvent.listen(() => {
+        update()
+    })
+
+    useEffect(() => {
+        update()
+    }, [update])
 
     return (
         <SelectMenu

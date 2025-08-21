@@ -3,6 +3,7 @@ import { type Data, downloadData } from "@/aps/APSDataManagement"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
+import { hashBuffer } from "@/util/Utility.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -21,15 +22,15 @@ export interface MirabufRemoteInfo {
 }
 
 const localStorageEntryName = "MirabufAssets"
-const root = await navigator.storage.getDirectory()
-const fsHandle = await root.getDirectoryHandle(localStorageEntryName, {
-    create: true,
-})
-
-export const inMemoryCache: Record<string, ArrayBuffer | undefined> = {}
+let root: FileSystemDirectoryHandle
+let fsHandle: FileSystemDirectoryHandle
 
 export const canOPFS = await (async () => {
     try {
+        root = await navigator.storage.getDirectory()
+        fsHandle = await root.getDirectoryHandle(localStorageEntryName, {
+            create: true,
+        })
         if (fsHandle.name == localStorageEntryName) {
             const fileHandle = await fsHandle.getFileHandle("0", {
                 create: true,
@@ -47,11 +48,6 @@ export const canOPFS = await (async () => {
         }
     } catch (_e) {
         console.log(`No access to OPFS`)
-
-        // Copy-pasted from RemoveAll()
-        for await (const key of fsHandle.keys()) {
-            await fsHandle.removeEntry(key)
-        }
         return false
     }
 })()
@@ -71,7 +67,8 @@ class CacheMap {
     private static isMirabufCacheInfo(data: unknown): data is MirabufCacheInfo {
         return typeof data === "object" && data != null && "hash" in data && "name" in data && "miraType" in data
     }
-    public load() {
+
+    public async load() {
         const lookup = window.localStorage.getItem(localStorageEntryName)
 
         if (lookup == null) {
@@ -84,13 +81,27 @@ class CacheMap {
             this.save()
             return
         }
-        parsed.forEach((data: unknown) => {
-            if (!CacheMap.isMirabufCacheInfo(data)) {
-                console.warn("malformed mirabuf cache info", data)
-                return
-            }
-            this._map.set(data.hash, data)
-        })
+        if (!canOPFS) {
+            console.warn("no OPFS, can't load from cache")
+            return
+        }
+        await Promise.all(
+            parsed.map(async (data: unknown) => {
+                if (!CacheMap.isMirabufCacheInfo(data)) {
+                    console.warn("malformed mirabuf cache info", data)
+                    return
+                }
+                const hasFile = await fsHandle
+                    .getFileHandle(data.hash)
+                    .then(() => true)
+                    .catch(() => false)
+                if (!hasFile) {
+                    console.warn(`Could not find ${data.hash} (${data.name}) in OPFS`)
+                    return
+                }
+                this._map.set(data.hash, data)
+            })
+        )
     }
 
     public save() {
@@ -146,7 +157,7 @@ class CacheMap {
 
 class MirabufCachingService {
     private static _cacheMap = new CacheMap()
-
+    private static _inMemoryCache: Record<string, ArrayBuffer | undefined> = {}
     static {
         if (
             (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") != MIRABUF_LOCALSTORAGE_GENERATION
@@ -155,10 +166,11 @@ class MirabufCachingService {
             this.removeAll().catch(console.error)
             this._cacheMap.clear()
         } else {
-            this._cacheMap.load()
-            if (canOPFS) {
-                setTimeout(() => this.clearExtraAssets()) // make sure nothing extra got left behind due to preferences clearing / whatever
-            }
+            this._cacheMap.load().then(() => {
+                if (canOPFS) {
+                    setTimeout(() => this.clearExtraAssets()) // make sure nothing extra got left behind due to preferences clearing / whatever
+                }
+            })
         }
     }
 
@@ -183,7 +195,8 @@ class MirabufCachingService {
     public static async cacheRemote(
         fetchLocation: string,
         miraType: MiraType,
-        name?: string
+        name?: string,
+        expectedHash?: string
     ): Promise<MirabufCacheInfo | undefined> {
         try {
             // grab file remote
@@ -205,13 +218,19 @@ class MirabufCachingService {
                 remotePath: fetchLocation,
             })
 
+            if (expectedHash != null && cached?.hash != null && cached?.hash != expectedHash) {
+                globalAddToast("warning", "Hash Mismatch", `Try downloading again`)
+                console.warn("mismatched hashes", expectedHash, cached?.hash)
+                // await this.remove(cached.hash)
+            }
+
             if (cached) return cached
 
             globalAddToast("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
 
             // fallback: return raw buffer wrapped in MirabufCacheInfo
             return {
-                hash: await this.hashBuffer(miraBuff),
+                hash: await hashBuffer(miraBuff),
                 miraType: miraType,
                 name: name,
             }
@@ -257,13 +276,22 @@ class MirabufCachingService {
         miraType: MiraType
     ): Promise<{ assembly: mirabuf.Assembly; cacheInfo: MirabufCacheInfo } | undefined> {
         const assembly = this.assemblyFromBuffer(buffer)
-        const hash = await this.hashBuffer(buffer)
+        const hash = await hashBuffer(buffer)
 
         World.analyticsSystem?.event("Local Upload", {
             fileSize: buffer.byteLength,
             key: hash,
             type: miraType == MiraType.ROBOT ? "robot" : "field",
         })
+        if (assembly.dynamic && miraType == MiraType.FIELD) {
+            globalAddToast("warning", "Cannot import robot assembly as a field")
+            return
+        }
+
+        if (!assembly.dynamic && miraType != MiraType.FIELD) {
+            globalAddToast("warning", "Cannot import field assembly as a robot")
+            return
+        }
 
         const info = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
         if (!info) return
@@ -309,12 +337,15 @@ class MirabufCachingService {
     ): Promise<{ buffer: ArrayBuffer; info?: MirabufCacheInfo } | undefined> {
         try {
             const info = this._cacheMap.get(hash)
-            // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
 
-            const memCache = inMemoryCache[hash]
+            const memCache = this._inMemoryCache[hash]
             if (memCache) {
                 console.log(`Retrieved ${info?.name ?? hash} from memory`)
                 return { buffer: memCache, info }
+            }
+            if (info == null) {
+                console.warn(`${hash} not found in cache`)
+                return
             }
             if (canOPFS) {
                 const fileHandle = await fsHandle.getFileHandle(hash, {
@@ -331,7 +362,7 @@ class MirabufCachingService {
                     console.warn(`Could not find ${hash} in OPFS`)
                     return undefined
                 }
-                inMemoryCache[hash] = buffer
+                this._inMemoryCache[hash] = buffer
                 console.log(`Retrieved ${info?.name ?? hash} from OPFS`)
                 return { buffer: buffer, info }
             }
@@ -355,7 +386,7 @@ class MirabufCachingService {
             const info = this._cacheMap.get(hash)
 
             this._cacheMap.remove(hash)
-            delete inMemoryCache[hash]
+            delete this._inMemoryCache[hash]
             if (canOPFS) {
                 await fsHandle.removeEntry(hash)
             }
@@ -368,6 +399,7 @@ class MirabufCachingService {
                 type: info.miraType == MiraType.ROBOT ? "robot" : "field",
                 assemblyName: info.name,
             })
+            console.log(`Removed ${hash} from cache`)
             return true
         } catch (e) {
             console.error(`Failed to remove\n${e}`)
@@ -380,19 +412,21 @@ class MirabufCachingService {
      * Removes all Mirabuf files from the caching services. Mostly for debugging purposes.
      */
     public static async removeAll() {
-        console.log("removing")
+        // remove old separated localstorage keys
+        localStorage.removeItem("Robots")
+        localStorage.removeItem("Fields")
+        localStorage.removeItem("Pieces")
         if (canOPFS) {
             // Remove old separated directories
             root.removeEntry("Robots", { recursive: true }).catch(() => {})
             root.removeEntry("Fields", { recursive: true }).catch(() => {})
             root.removeEntry("Pieces", { recursive: true }).catch(() => {})
-            localStorage.removeItem("Robots")
-            localStorage.removeItem("Fields")
-            localStorage.removeItem("Pieces")
+
             for await (const key of fsHandle.keys()) {
                 await fsHandle.removeEntry(key).catch(e => console.warn("could not remove file", key, e))
             }
         }
+        Object.keys(this._inMemoryCache).forEach(key => delete this._inMemoryCache[key])
         this._cacheMap.clear()
     }
 
@@ -414,8 +448,9 @@ class MirabufCachingService {
         extra: Omit<MirabufCacheInfo, "hash">
     ): Promise<MirabufCacheInfo | undefined> {
         try {
-            const hash = await this.hashBuffer(buffer)
-            inMemoryCache[hash] = buffer
+            const hash = await hashBuffer(buffer)
+
+            this._inMemoryCache[hash] = buffer
             const existing = this._cacheMap.get(hash)
             extra = { ...extra, ...existing }
 
@@ -425,6 +460,15 @@ class MirabufCachingService {
                 hash: hash,
             }
 
+            // Store buffer
+            if (!canOPFS) return info
+
+            // Store in OPFS
+            const fileHandle = await fsHandle.getFileHandle(info.hash, { create: true })
+            const writable = await fileHandle.createWritable()
+            await writable.write(buffer)
+            await writable.close()
+
             this._cacheMap.store(info)
 
             World.analyticsSystem?.event("Cache Store", {
@@ -433,29 +477,13 @@ class MirabufCachingService {
                 type: info.miraType == MiraType.ROBOT ? "robot" : "field",
                 fileSize: buffer.byteLength,
             })
-
-            // Store buffer
-            if (canOPFS) {
-                // Store in OPFS
-                const fileHandle = await fsHandle.getFileHandle(info.hash, { create: true })
-                const writable = await fileHandle.createWritable()
-                await writable.write(buffer)
-                await writable.close()
-            }
-
+            console.log(`Added cache entry for ${hash}`)
             return info
         } catch (e) {
             console.error("Failed to cache mira " + e)
             World.analyticsSystem?.exception("Failed to store in cache")
             return undefined
         }
-    }
-
-    public static async hashBuffer(buffer: ArrayBuffer): Promise<string> {
-        const hashBuffer = await crypto.subtle.digest("SHA-1", buffer)
-        return Array.from(new Uint8Array(hashBuffer))
-            .map(x => x.toString(16))
-            .join("")
     }
 
     private static assemblyFromBuffer(buffer: ArrayBuffer): mirabuf.Assembly {

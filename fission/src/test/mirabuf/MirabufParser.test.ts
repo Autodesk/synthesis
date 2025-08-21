@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest"
+import { mirabuf } from "@/proto/mirabuf"
 import MirabufCachingService, { MiraType } from "../../mirabuf/MirabufLoader.ts"
 import MirabufParser, { type RigidNodeReadOnly } from "../../mirabuf/MirabufParser.ts"
-import { mirabuf } from "../../proto/mirabuf"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
@@ -58,7 +58,7 @@ describe("Mirabuf Parser Tests", () => {
 
     test("Generate Rigid Nodes (FRC Field 2018_v13.mira)", async () => {
         const field = await MirabufCachingService.cacheRemote(
-            "/api/mira/Fields/FRC Field 2018_v13.mira",
+            "/api/mira/fields/FRC Field 2018_v13.mira",
             MiraType.FIELD
         ).then(x => MirabufCachingService.get(x!.hash))
         const t = new MirabufParser(field!)
