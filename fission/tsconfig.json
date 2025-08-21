@@ -40,12 +40,14 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
+        "composite": true,
         "types": [
             "vite-plugin-glsl/ext"
-        ],
+        ]
     },
     "include": [
-        "src"
+        "src/**/*.ts",
+        "src/**/*.tsx"
     ],
     "references": [
         {

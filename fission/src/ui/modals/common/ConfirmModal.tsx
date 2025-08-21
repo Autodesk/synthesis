@@ -1,8 +1,8 @@
 import { Stack, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect } from "react"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type { ModalImplProps } from "@/ui/components/Modal"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 export type ConfirmModalCustomProps = {
     message: string

@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/fields/FRC Field 2023_v7.mi…') 1`] = `"FRC Field 2023 v7"`;
+
+exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/fields/FRC Field 2023_v7.mi…') 2`] = `"60440aa3010e1fa2f12877ae52aafbea68e81d"`;
+
+exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/robots/Dozer_v9.mira') 1`] = `"Dozer v9"`;
+
+exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/robots/Dozer_v9.mira') 2`] = `"fc2094375a8373ee3782ba92ced2f7a60e697f3"`;

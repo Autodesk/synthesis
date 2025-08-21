@@ -1,6 +1,4 @@
 import { Box, Divider, FormControl, InputLabel, MenuItem, Stack, Tooltip } from "@mui/material"
-import { Select } from "@/ui/components/StyledComponents"
-import { Button } from "@/ui/components/StyledComponents"
 import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
@@ -9,7 +7,14 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
-import { DeleteButton, EditButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import {
+    Button,
+    DeleteButton,
+    EditButton,
+    PositiveButton,
+    SynthesisIcons,
+    Select,
+} from "@/ui/components/StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
