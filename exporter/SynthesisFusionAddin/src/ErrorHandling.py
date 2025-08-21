@@ -129,6 +129,7 @@ def handle_err_top(func: Callable[..., Result[None]]) -> Callable[..., None]:
 
     def wrapper(*args, **kwargs):  # type: ignore
         result = func(*args, **kwargs)
+
         if result.is_err():
             message, severity = result.unwrap_err()
             if severity == ErrorSeverity.Fatal:
