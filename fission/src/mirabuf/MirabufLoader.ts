@@ -25,8 +25,6 @@ const localStorageEntryName = "MirabufAssets"
 let root: FileSystemDirectoryHandle
 let fsHandle: FileSystemDirectoryHandle
 
-export const inMemoryCache: Record<string, ArrayBuffer | undefined> = {}
-
 export const canOPFS = await (async () => {
     try {
         root = await navigator.storage.getDirectory()
@@ -159,8 +157,9 @@ class CacheMap {
 
 class MirabufCachingService {
     private static _cacheMap = new CacheMap()
-
+    private static _inMemoryCache: Record<string, ArrayBuffer | undefined> = {}
     static {
+        window.mirabuf = MirabufCachingService
         if (
             (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") != MIRABUF_LOCALSTORAGE_GENERATION
         ) {
@@ -340,7 +339,7 @@ class MirabufCachingService {
         try {
             const info = this._cacheMap.get(hash)
 
-            const memCache = inMemoryCache[hash]
+            const memCache = this._inMemoryCache[hash]
             if (memCache) {
                 console.log(`Retrieved ${info?.name ?? hash} from memory`)
                 return { buffer: memCache, info }
@@ -364,7 +363,7 @@ class MirabufCachingService {
                     console.warn(`Could not find ${hash} in OPFS`)
                     return undefined
                 }
-                inMemoryCache[hash] = buffer
+                this._inMemoryCache[hash] = buffer
                 console.log(`Retrieved ${info?.name ?? hash} from OPFS`)
                 return { buffer: buffer, info }
             }
@@ -388,7 +387,7 @@ class MirabufCachingService {
             const info = this._cacheMap.get(hash)
 
             this._cacheMap.remove(hash)
-            delete inMemoryCache[hash]
+            delete this._inMemoryCache[hash]
             if (canOPFS) {
                 await fsHandle.removeEntry(hash)
             }
@@ -414,19 +413,21 @@ class MirabufCachingService {
      * Removes all Mirabuf files from the caching services. Mostly for debugging purposes.
      */
     public static async removeAll() {
-        console.log("removing")
+        // remove old separated localstorage keys
+        localStorage.removeItem("Robots")
+        localStorage.removeItem("Fields")
+        localStorage.removeItem("Pieces")
         if (canOPFS) {
             // Remove old separated directories
             root.removeEntry("Robots", { recursive: true }).catch(() => {})
             root.removeEntry("Fields", { recursive: true }).catch(() => {})
             root.removeEntry("Pieces", { recursive: true }).catch(() => {})
-            localStorage.removeItem("Robots")
-            localStorage.removeItem("Fields")
-            localStorage.removeItem("Pieces")
+
             for await (const key of fsHandle.keys()) {
                 await fsHandle.removeEntry(key).catch(e => console.warn("could not remove file", key, e))
             }
         }
+        Object.keys(this._inMemoryCache).forEach(key => delete this._inMemoryCache[key])
         this._cacheMap.clear()
     }
 
@@ -450,7 +451,7 @@ class MirabufCachingService {
         try {
             const hash = await hashBuffer(buffer)
 
-            inMemoryCache[hash] = buffer
+            this._inMemoryCache[hash] = buffer
             const existing = this._cacheMap.get(hash)
             extra = { ...extra, ...existing }
 
