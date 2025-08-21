@@ -46,9 +46,9 @@ export default class AchievementsSystem extends WorldSystem {
 				imageSrc: "/synthesis-logo.svg",
 			},
 			{
-				key: "mystery_hidden",
-				title: "Hidden",
-				description: "???",
+				key: "devtools_opened",
+				title: "Under the Hood",
+				description: "Open the Developer Tool panel",
 				imageSrc: "/synthesis-logo.svg",
 				hidden: true,
 			},
@@ -64,19 +64,16 @@ export default class AchievementsSystem extends WorldSystem {
 			console.warn("Attempted to unlock unknown achievement", key)
 			return
 		}
-		try {
-			if (this._states.has(key)) return
-			const def = this._definitions.get(key)
-			const now = Date.now()
-			this._states.set(key, { key, unlockedAt: now })
-			this.saveLocal()
-			this.dispatchUpdate()
+		if (this._states.has(key)) return
+		const def = this._definitions.get(key)
+		const now = Date.now()
+		this._states.set(key, { key, unlockedAt: now })
+		this.saveLocal()
+		this.dispatchUpdate()
+		import("@/systems/World").then(m => m.default.analyticsSystem?.event("Achievement Unlocked", { key })).catch(() => {})
 
-			if (def) {
-				globalAddToast("default", this.makeToast(def))
-			}
-		} catch (e) {
-			console.warn("Failed to unlock achievement", key, e)
+		if (def) {
+			globalAddToast("default", this.makeToast(def))
 		}
 	}
 
@@ -152,11 +149,7 @@ export default class AchievementsSystem extends WorldSystem {
 	}
 
 	private dispatchUpdate() {
-		try {
-			window.dispatchEvent(new Event(ACHIEVEMENTS_UPDATED_EVENT))
-		} catch (e) {
-			console.warn("Failed to dispatch achievements update", e)
-		}
+		window.dispatchEvent(new Event(ACHIEVEMENTS_UPDATED_EVENT))
 	}
 
 	public destroy(): void {}

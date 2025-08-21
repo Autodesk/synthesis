@@ -53,6 +53,10 @@ export interface AnalyticsEvents {
         isCustomized: boolean
         schemeName: string
     }
+    "Achievement Unlocked": {
+        key: string
+    }
+    "Achievements Panel Opened": unknown
 }
 
 class AnalyticsSystem extends WorldSystem {

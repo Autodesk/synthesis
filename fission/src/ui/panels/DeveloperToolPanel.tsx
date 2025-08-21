@@ -206,7 +206,8 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
     useEffect(() => {
         configureScreen(panel!, { title: "Developer Tool", acceptText: "Exit", hideCancel: true }, {})
-    }, [])
+        World.achievementsSystem?.unlock("devtools_opened")
+    }, [configureScreen, panel])
 
     return (
         <Stack gap={4} className="rounded-md p-4 max-h-[60vh] min-h-[350px] overflow-y-auto">

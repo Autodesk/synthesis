@@ -16,6 +16,7 @@ const AchievementsPanel: React.FC<PanelImplProps<void, PanelCustomProps>> = ({ p
 
     useEffect(() => {
         configureScreen(panel!, { title: "Achievements", position: "right", hideAccept: true }, {})
+        World.analyticsSystem?.event("Achievements Panel Opened")
         const onUpdate = () => setNonce(x => x + 1)
         window.addEventListener(ACHIEVEMENTS_UPDATED_EVENT, onUpdate)
         return () => window.removeEventListener(ACHIEVEMENTS_UPDATED_EVENT, onUpdate)
