@@ -10,8 +10,7 @@ describe("Default Asset Tests", async () => {
         expect(DefaultAssetLoader.fields.length).toBeGreaterThan(1)
         expect(DefaultAssetLoader.robots.length).toBeGreaterThan(1)
     })
-
-    test.runIf(import.meta.env.RUN_ASSETPACK_TESTS).each(DefaultAssetLoader.fields)(
+    test.runIf(import.meta.env.VITE_RUN_ASSETPACK_TEST).each(DefaultAssetLoader.fields)(
         "Manifest hashes match assets ($name)",
         async asset => {
             const info = await MirabufCachingService.cacheRemote(asset.remotePath, asset.miraType)
@@ -21,7 +20,7 @@ describe("Default Asset Tests", async () => {
             await MirabufCachingService.remove(info.hash)
         }
     )
-    test.runIf(import.meta.env.RUN_ASSETPACK_TESTS).each(DefaultAssetLoader.robots)(
+    test.runIf(import.meta.env.VITE_RUN_ASSETPACK_TEST).each(DefaultAssetLoader.robots)(
         "Manifest hashes match assets ($name)",
         async asset => {
             const info = await MirabufCachingService.cacheRemote(asset.remotePath, asset.miraType)

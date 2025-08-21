@@ -94,4 +94,4 @@ jobs:
       - name: Run Assetpack Tests
         run: HOME=/root npm run test src/test/mirabuf/DefaultAssets.test.ts
         env:
-          RUN_ASSETPACK_TESTS: true
+          VITE_RUN_ASSETPACK_TEST: true
