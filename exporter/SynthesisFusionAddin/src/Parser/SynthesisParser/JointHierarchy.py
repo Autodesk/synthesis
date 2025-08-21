@@ -1,6 +1,7 @@
 import enum
 import sys
 from logging import ERROR
+from os import error
 from typing import Any, Iterator, cast
 
 import adsk.core
@@ -221,10 +222,10 @@ class JointParser:
         self.grounded = searchForGrounded(design.rootComponent)
 
         if self.grounded is None:
-            message = "These is no grounded component in this assembly, aborting kinematic export."
-            gm.ui.messageBox(message)
+            message = "There is not a pinned component in this assembly, aborting kinematic export."
+            # gm.ui.messageBox(message)
             _____: Err[None] = Err(message, ErrorSeverity.Fatal)
-            raise RuntimeError()
+            raise RuntimeError(message)
 
         self.currentTraversal: dict[str, DynamicOccurrenceNode | bool] = dict()
         self.groundedConnections: list[adsk.fusion.Occurrence] = []
@@ -247,7 +248,7 @@ class JointParser:
             message = populate_node_result.unwrap_err()[0]
             gm.ui.messageBox(message)
             ____: Err[None] = Err(message, ErrorSeverity.Fatal)
-            raise RuntimeError()
+            raise RuntimeError(message)
 
         rootNode = populate_node_result.unwrap()
         self.groundSimNode = SimulationNode(rootNode, None, grounded=True)
@@ -522,12 +523,9 @@ def buildJointPartHierarchy(
 
         return Ok(None)
 
-    # I'm fairly certain bubbling this back up is the way to go
-    except Warning:
-        return Err(
-            "Instantiation of the JointParser failed, likely due to a lack of a grounded component in the assembly",
-            ErrorSeverity.Fatal,
-        )
+    except RuntimeError as e:
+        progressDialog.progressDialog.hide()
+        raise e
 
 
 def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog: PDMessage) -> Result[None]:
