@@ -23,7 +23,7 @@ class DefaultMatchModeConfigs {
         })
         if (json == null) {
             console.error("Could not load match mode manifest")
-            return
+            return undefined
         }
         const keys: (keyof MatchConfigManifest)[] = import.meta.env.DEV
             ? (["public", "private"] as const)
