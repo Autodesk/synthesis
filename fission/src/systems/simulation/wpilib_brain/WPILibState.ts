@@ -42,6 +42,21 @@ export function getIsConnected() {
     return isConnected
 }
 
+worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
+    if (!eventData?.data?.status) return
+    switch (eventData.data.status) {
+        case "open":
+            setConnected(true)
+            break
+        case "close":
+        case "error":
+            setConnected(false)
+            break
+        default:
+            break
+    }
+})
+
 export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.PWM]: NoraTypes.NUMBER,
     [SimType.SIM_DEVICE]: undefined,

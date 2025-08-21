@@ -1,7 +1,6 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
-import Lazy from "@/util/Lazy.ts"
 import { random } from "@/util/Random"
 import Brain from "../Brain"
 import { type NoraNumber, type NoraNumber2, type NoraNumber3, NoraTypes } from "../Nora"
@@ -10,11 +9,8 @@ import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import { type SimFlow, type SimReceiver, type SimSupplier, validate } from "./SimDataFlow"
 import { SimAccelInput, SimAnalogInput, SimCameraInput, SimDigitalInput, SimGyroInput, type SimInput } from "./SimInput"
 import { SimAnalogOutput, SimDigitalOutput, type SimOutput } from "./SimOutput"
-import { getSimBrain, setConnected } from "./WPILibState"
-import { SimMapUpdateEvent } from "./WPILibTypes"
-import WPILibWSWorker from "./WPILibWSWorker?worker"
-
-const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
+import * as WPILibState from "./WPILibState"
+import { SimMapUpdateEvent, worker } from "./WPILibTypes"
 
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
@@ -577,11 +573,11 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     if (eventData.data.status) {
         switch (eventData.data.status) {
             case "open":
-                setConnected(true)
+                WPILibState.setConnected(true)
                 break
             case "close":
             case "error":
-                setConnected(false)
+                WPILibState.setConnected(false)
                 break
             default:
                 return
@@ -601,6 +597,8 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     }
 
     if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type)) return
+
+    WPILibState.setConnected(true)
 
     updateSimMap(data.type as SimType, data.device, data.data)
 })
@@ -728,13 +726,13 @@ class WPILibBrain extends Brain {
     }
 
     public enable(): void {
-        setSimBrain(this)
+        WPILibState.setSimBrain(this)
         // worker.getValue().postMessage({ command: "enable", reconnect: RECONNECT })
     }
 
     public disable(): void {
-        if (getSimBrain() == this) {
-            setSimBrain(undefined)
+        if (WPILibState.getSimBrain() == this) {
+            WPILibState.setSimBrain(undefined)
         }
         // worker.getValue().postMessage({ command: "disable" })
     }
