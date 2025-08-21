@@ -12,14 +12,14 @@ import {
     requestMirabufFiles,
 } from "@/aps/APSDataManagement"
 import MirabufCachingService, {
-    backUpFields,
-    backUpRobots,
+    backUpMap,
     canOPFS,
     type MirabufCacheInfo,
     type MirabufRemoteInfo,
     MiraType,
 } from "@/mirabuf/MirabufLoader"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { mirabuf } from "@/proto/mirabuf"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 
 import World from "@/systems/World"
@@ -72,49 +72,108 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primar
 export type MiraManifest = {
     robots: MirabufRemoteInfo[]
     fields: MirabufRemoteInfo[]
+    pieces: MirabufRemoteInfo[]
 }
 
 function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
-    return Object.values(
-        canOPFS
-            ? MirabufCachingService.getCacheMap(miraType)
-            : miraType === MiraType.ROBOT
-              ? backUpRobots
-              : backUpFields
-    )
+    return Object.values(canOPFS ? MirabufCachingService.getCacheMap(miraType) : backUpMap[miraType])
 }
 
+// TODO Move this function to lib file since we can't export non-components with components
 export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
+        World.sceneRenderer.removeAllGamePieces()
     }
 
-    if (!progressHandle) {
-        progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
-    }
+    progressHandle ??= new ProgressHandle(info.name ?? info.cacheKey)
 
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                createMirabuf(assembly, progressHandle, info.id).then(mirabufSceneObject => {
-                    if (mirabufSceneObject) {
-                        World.sceneRenderer.registerSceneObject(mirabufSceneObject)
+                const mirabufSceneObjects = createMirabuf(assembly, info.id, type, progressHandle)
+                if (mirabufSceneObjects) {
+                    if (type === MiraType.PIECE) {
+                        assembly.transform = new mirabuf.Transform({
+                            // Transform matrix for the position (0, 200, 0)
+                            spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 200, 0, 0, 1, 0, 0, 0, 0, 1],
+                        })
+                    }
+                    const { mainSceneObject, gamePieces } = mirabufSceneObjects
+
+                    if (mainSceneObject) {
+                        // The point of this code is to prevent the caching of game pieces of the same type
+                        // This might actually be the worst code I've ever written
+                        // It essentially keeps a list of all the game piece name prefixes as delimited by a few characters I noticed were being used for that purpose
+                        // It also tracks which prefixes have already had a game piece of that type cached
+
+                        // There are certainly better ways of checking prefixes, although the correct way of handling this problem would be to traverse the mesh and check that it's identical
+                        // However, that solution would be slow and more difficult to implement and this solution will work for now
+                        const pieceNames: [string, boolean][] = []
+                        gamePieces
+                            ?.map(gp => gp.parser.assembly?.info?.name)
+                            .filter(name => name != undefined)
+                            .forEach(name => {
+                                // Which prefixes are checked should be updated whenever someone finds a new one
+                                if (name.includes(":")) {
+                                    pieceNames.push([name.split(":")[0], false])
+                                } else if (name.includes(" ")) {
+                                    pieceNames.push([name.split(" ")[0], false])
+                                }
+                            })
+
+                        gamePieces?.forEach(async instance => {
+                            const assembly = instance.parser.assembly
+                            if (
+                                pieceNames.some(([name, hasCached], i, arr) => {
+                                    // If a piece has a prefix and another game piece of this type has been cached, this pieces should not be
+                                    const hasPrefix = assembly?.info?.name?.includes(name)
+                                    const noCache = hasPrefix && hasCached
+                                    // If a piece has the prefix but there hasn't been a cache, there will be so we should mark it as such
+                                    // This has to be done here, since we loose information about what prefix this game piece has when this predicate is resolved
+                                    if (hasPrefix && !hasCached) {
+                                        arr[i][1] = true
+                                    }
+                                    return noCache
+                                })
+                            ) {
+                                const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, "")
+                                World.sceneRenderer.registerSceneObject(sceneObject)
+                            } else {
+                                const buffer = mirabuf.Assembly.encode(assembly).finish().buffer as ArrayBuffer
+
+                                const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
+                                if (!cacheInfo) return
+
+                                if (!cacheInfo.name) {
+                                    MirabufCachingService.cacheInfo(
+                                        cacheInfo.cacheKey,
+                                        MiraType.PIECE,
+                                        assembly.info?.name ?? undefined
+                                    )
+                                }
+                                const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, cacheInfo.id)
+                                World.sceneRenderer.registerSceneObject(sceneObject)
+                            }
+                        })
+
+                        World.sceneRenderer.registerSceneObject(mainSceneObject)
                         progressHandle.done()
 
-                        if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                        if (mainSceneObject.miraType == MiraType.ROBOT) {
                             globalOpenPanel(InitialConfigPanel, undefined)
                         }
                     } else {
                         progressHandle.fail()
                     }
-                })
+                }
 
                 if (!info.name) MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
             } else {
                 progressHandle.fail()
-                console.error("Failed to spawn robot")
+                console.error("Failed to spawn assembly")
             }
         })
         .catch(() => progressHandle.fail())
@@ -135,6 +194,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     const [cachedRobots, setCachedRobots] = useState(getCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(getCacheInfo(MiraType.FIELD))
+    const [cachedPieces, setCachedPieces] = useState(getCacheInfo(MiraType.PIECE))
 
     const [manifest, setManifest] = useState<MiraManifest | undefined>()
     const [viewType, setViewType] = useState<MiraType>(MiraType.ROBOT)
@@ -148,7 +208,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     useEffect(() => {
         configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         const updateFilesStatus = (e: Event) => {
@@ -217,9 +277,20 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                             if (!map[src.src]) fields.push({ displayName: src.displayName, src: src.src })
                         }
                     }
+                    const pieces: MirabufRemoteInfo[] = []
+                    for (const src of x["pieces"] ?? []) {
+                        if (typeof src == "string") {
+                            const str = `/api/mira/pieces/${src}`
+                            if (!map[str]) pieces.push({ displayName: src, src: str })
+                        } else {
+                            if (!map[src["src"]]) pieces.push({ displayName: src["displayName"], src: src["src"] })
+                        }
+                    }
+
                     setManifest({
                         robots,
                         fields,
+                        pieces,
                     })
                 })
                 .catch(error => {
@@ -346,6 +417,30 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         [cachedFields, selectCache]
     )
 
+    const cachedGamePieces = useMemo(
+        () =>
+            cachedPieces
+                .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
+                .map(info =>
+                    ItemCard({
+                        name: info.name || info.cacheKey || "Unnamed Piece",
+                        id: info.id,
+                        primaryButtonNode: SynthesisIcons.ADD_LARGE,
+                        primaryOnClick: () => {
+                            console.log(`Selecting cached game pieces: ${info.cacheKey}`)
+                            selectCache(info, MiraType.PIECE)
+                        },
+                        secondaryOnClick: () => {
+                            console.log(`Deleting cache of: ${info.cacheKey}`)
+                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.PIECE)
+
+                            setCachedPieces(getCacheInfo(MiraType.PIECE))
+                        },
+                    })
+                ),
+        [cachedPieces, selectCache]
+    )
+
     // Generate Item cards for remote robots.
     const remoteRobotElements = useMemo(() => {
         const remoteRobots = manifest?.robots.filter(
@@ -386,11 +481,31 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             )
     }, [manifest?.fields, cachedFields, selectRemote])
 
+    // Generate Item cards for remote game pieces.
+    const remoteGamePieces = useMemo(() => {
+        const remotePieces = manifest?.pieces.filter(
+            path => !cachedPieces.some(info => info.cacheKey.includes(path.src))
+        )
+        return remotePieces
+            ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
+            .map(path =>
+                ItemCard({
+                    name: path.displayName,
+                    id: path.src,
+                    primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
+                    primaryOnClick: () => {
+                        console.log(`Selecting remote: ${path.displayName}`)
+                        selectRemote(path, MiraType.PIECE)
+                    },
+                })
+            )
+    }, [manifest?.pieces, cachedPieces, selectRemote])
+
     function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
         // biome-ignore lint: Returning a callback is fine to avoid repeating ourselves
         return useCallback(() => {
             const miraType: MiraType | undefined = cached[0]?.miraType
-            const property = miraType === MiraType.ROBOT ? "robots" : "fields"
+            const property = miraType === MiraType.ROBOT ? "robots" : miraType === MiraType.FIELD ? "fields" : "pieces"
             const remotes = manifest ? manifest[property] : []
 
             remotes
@@ -403,6 +518,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     const downloadAllRemoteRobots = downloadAllRemote(cachedRobots)
     const downloadAllRemoteFields = downloadAllRemote(cachedFields)
+    const downloadAllRemotePieces = downloadAllRemote(cachedPieces)
 
     // Generate Item cards for APS robots and fields.
     const hubElements = useMemo(
@@ -423,8 +539,14 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         [files, selectAPS, viewType]
     )
     useEffect(() => {
-        setViewType(configurationType === "ROBOTS" ? MiraType.ROBOT : MiraType.FIELD)
-    }, [])
+        setViewType(
+            configurationType === "ROBOTS"
+                ? MiraType.ROBOT
+                : configurationType === "FIELDS"
+                  ? MiraType.FIELD
+                  : MiraType.PIECE
+        )
+    }, [configurationType])
     return (
         <Stack direction="column" gap={2} className="overflow-y-auto">
             <ToggleButtonGroup
@@ -441,6 +563,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             >
                 <ToggleButton value={MiraType.ROBOT}>Robots</ToggleButton>
                 <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
+                <ToggleButton value={MiraType.PIECE}>Game Pieces</ToggleButton>
             </ToggleButtonGroup>
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
@@ -450,16 +573,26 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length === 1 ? "" : "s"}`
                                 : "Loading Saved Robots"}
                         </Label>
-                    ) : (
+                    ) : viewType === MiraType.FIELD ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedFieldElements
                                 ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
                                 : "Loading Saved Fields"}
                         </Label>
+                    ) : (
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {cachedGamePieces
+                                ? `${cachedGamePieces.length} Saved Field${cachedGamePieces.length == 1 ? "" : "s"}`
+                                : "Loading Saved Pieces"}
+                        </Label>
                     )}
                 </AccordionSummary>
                 <AccordionDetails>
-                    {viewType === MiraType.ROBOT ? cachedRobotElements : cachedFieldElements}
+                    {viewType === MiraType.ROBOT
+                        ? cachedRobotElements
+                        : viewType === MiraType.FIELD
+                          ? cachedFieldElements
+                          : cachedGamePieces}
                 </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -499,19 +632,35 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length === 1 ? "" : "s"}`
                                 : "Loading Default Robots"}
                         </Label>
-                    ) : (
+                    ) : viewType === MiraType.FIELD ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteFieldElements
                                 ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length === 1 ? "" : "s"}`
                                 : "Loading Default Fields"}
                         </Label>
+                    ) : (
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {remoteGamePieces
+                                ? `${remoteGamePieces.length} Default Piece${remoteGamePieces.length === 1 ? "" : "s"}`
+                                : "Loading Default Game Pieces"}
+                        </Label>
                     )}
                 </AccordionSummary>
                 <AccordionDetails>
-                    {viewType === MiraType.ROBOT ? remoteRobotElements : remoteFieldElements}
+                    {viewType === MiraType.ROBOT
+                        ? remoteRobotElements
+                        : viewType === MiraType.FIELD
+                          ? remoteFieldElements
+                          : remoteGamePieces}
                     <Stack justifyContent="center" mt={1}>
                         <PositiveButton
-                            onClick={viewType === MiraType.ROBOT ? downloadAllRemoteRobots : downloadAllRemoteFields}
+                            onClick={
+                                viewType === MiraType.ROBOT
+                                    ? downloadAllRemoteRobots
+                                    : viewType === MiraType.FIELD
+                                      ? downloadAllRemoteFields
+                                      : downloadAllRemotePieces
+                            }
                         >
                             Download All
                         </PositiveButton>

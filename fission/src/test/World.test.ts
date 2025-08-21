@@ -8,6 +8,7 @@ vi.mock("@/systems/physics/PhysicsSystem", () => ({
     })),
     getLastDeltaT: vi.fn(() => 0.016),
     BodyAssociate: vi.fn(),
+    LAYER_GENERAL_DYNAMIC: 1,
 }))
 
 vi.mock("@/systems/scene/SceneRenderer", () => ({

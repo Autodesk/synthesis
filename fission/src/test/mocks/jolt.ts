@@ -83,5 +83,6 @@ export function createBodyMock() {
         SetLinearVelocity: vi.fn(),
         SetAngularVelocity: vi.fn(),
         GetAngularVelocity: vi.fn(() => createVec3Mock()),
+        GetObjectLayer: vi.fn(() => 1), // In the future, this would need to be amended
     }
 }

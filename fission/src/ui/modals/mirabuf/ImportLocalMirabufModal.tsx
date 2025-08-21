@@ -2,7 +2,8 @@ import { Stack, styled } from "@mui/material"
 import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { type ChangeEvent, useEffect, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { mirabuf } from "@/proto/mirabuf"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 
 import World from "@/systems/World"
@@ -45,21 +46,40 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
         }
 
         const onBeforeAccept = async () => {
-            if (selectedFile && miraType !== undefined) {
+            if (selectedFile && miraType != undefined) {
                 const hashBuffer = await selectedFile.arrayBuffer()
                 World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
                 await MirabufCachingService.cacheAndGetLocalWithInfo(hashBuffer, miraType)
-                    .then(result => {
-                        if (result) {
-                            return createMirabuf(result.assembly, undefined, result.cacheInfo.id)
-                        }
-                        return undefined
+                    .then(x => {
+                        if (!x) return undefined
+
+                        return createMirabuf(x.assembly, x.cacheInfo.id, miraType)
                     })
                     .then(mirabufSceneObject => {
                         if (mirabufSceneObject) {
-                            World.sceneRenderer.registerSceneObject(mirabufSceneObject)
+                            const { mainSceneObject, gamePieces } = mirabufSceneObject
 
-                            if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                            World.sceneRenderer.registerSceneObject(mainSceneObject)
+                            gamePieces?.forEach(async instance => {
+                                const assembly = instance.parser.assembly
+                                const buffer = mirabuf.Assembly.encode(assembly).finish().buffer as ArrayBuffer
+
+                                const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
+                                if (!cacheInfo) return
+
+                                if (!cacheInfo.name) {
+                                    MirabufCachingService.cacheInfo(
+                                        cacheInfo.cacheKey,
+                                        MiraType.PIECE,
+                                        assembly.info?.name ?? undefined
+                                    )
+                                }
+
+                                const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, cacheInfo.id)
+                                World.sceneRenderer.registerSceneObject(sceneObject)
+                            })
+
+                            if (mirabufSceneObject.mainSceneObject.miraType == MiraType.ROBOT) {
                                 openPanel(InitialConfigPanel, undefined, modal)
                             }
                             closeModal(CloseType.Overwrite)
@@ -76,7 +96,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedFile, miraType, openPanel, modal])
+    }, [selectedFile, miraType, openPanel, modal, configureScreen])
 
     return (
         <Stack className="items-center" gap={5}>
@@ -90,6 +110,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
             >
                 <ToggleButton value={MiraType.ROBOT}>Robot</ToggleButton>
                 <ToggleButton value={MiraType.FIELD}>Field</ToggleButton>
+                <ToggleButton value={MiraType.PIECE}>Piece</ToggleButton>
             </ToggleButtonGroup>
             <Button component="label" role={undefined}>
                 Upload File

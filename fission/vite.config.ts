@@ -10,9 +10,6 @@ const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
 
-
-
-
 const useLocalAPS = false
 const useSsl = false
 
@@ -64,10 +61,7 @@ export default defineConfig(async ({ mode }) => {
               changeOrigin: true,
               secure: false,
               rewrite: path =>
-                  path
-                      .replace(/^\/api\/mira/, "/Downloadables/Mira")
-                      .replace("robots", "Robots")
-                      .replace("fields", "Fields"),
+                  path.replace(/^\/api\/mira/, "/Downloadables/Mira")
           }
         : {
               target: `https://synthesis.autodesk.com/`,

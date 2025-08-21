@@ -25,7 +25,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
 
     useEffect(() => {
         configureScreen(panel!, { title: "Choose Input Scheme", hideAccept: true, cancelText: "Close" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         if (targetAssembly) return
@@ -46,7 +46,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
             }
             if (scheme) setSelectedScheme(scheme)
         }
-    }, [closePanel, targetAssembly])
+    }, [targetAssembly, setSelectedScheme])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)

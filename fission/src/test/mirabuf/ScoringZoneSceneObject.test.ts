@@ -10,7 +10,8 @@ const mockPhysicsSystem = {
     destroyBodyIds: vi.fn(),
     setBodyPosition: vi.fn(),
     setBodyRotation: vi.fn(),
-    getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
+    // This cast is fine as long as we regularly update createBodyMock() to include new methods we call on bodies in functions we're testing
+    getBody: vi.fn(() => createBodyMock() as unknown as Jolt.Body),
     getBodyAssociation: vi.fn(),
     disablePhysicsForBody: vi.fn(),
     enablePhysicsForBody: vi.fn(),
@@ -77,10 +78,12 @@ describe("ScoringZoneSceneObject", () => {
     test("ZoneCollision updates score", () => {
         const instance = new ScoringZoneSceneObject({} as unknown as MirabufSceneObject, 0)
         Reflect.set(instance, "_prefs", { persistentPoints: false, alliance: "red", points: 10 })
-        const gamePieceBody = {} as unknown as Jolt.BodyID
+        // This is *ok* as long as we update createBodyMock properly
+        // In the long run, we should have better ways of constructing arguments for testing
+        const gpID = {} as unknown as Jolt.BodyID
         mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, associatedBody: 0 }))
         const dispatchSpy = vi.spyOn(OnScoreChangedEvent.prototype, "dispatch")
-        instance["zoneCollision"](gamePieceBody)
+        instance.zoneCollision(gpID)
         expect(SimulationSystem.redScore).toBe(10)
         expect(dispatchSpy).toHaveBeenCalled()
     })

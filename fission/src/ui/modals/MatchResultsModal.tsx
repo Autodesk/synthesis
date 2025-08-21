@@ -62,7 +62,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             { title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false },
             {}
         )
-    }, [])
+    }, [configureScreen, modal])
 
     return (
         <>

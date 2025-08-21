@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, type MockedFunction, test, vi } from "vitest"
-import MirabufLoader, { backUpRobots, MiraType } from "../../mirabuf/MirabufLoader"
+import MirabufLoader, { backUpMap, MiraType } from "../../mirabuf/MirabufLoader"
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -75,7 +75,7 @@ describe("MirabufLoader", () => {
             Object.defineProperty(navigator.storage, "getDirectory", {
                 value: vi.fn(async () => ({
                     getDirectoryHandle: vi.fn(async () => ({
-                        name: "Robots",
+                        name: "robot",
                         getFileHandle: vi.fn(async () => ({
                             createWritable: vi.fn(async () => ({
                                 write: vi.fn(),
@@ -156,8 +156,13 @@ describe("MirabufLoader", () => {
 
         localStorageMock["Synthesis Nonce Key"] = "4543246"
         const map = { [key]: { id, miraType, cacheKey: key } }
-        localStorageMock["Robots"] = JSON.stringify(map)
-        backUpRobots[id] = { id, miraType, cacheKey: key, buffer: new Uint8Array(new ArrayBuffer(1)) }
+        localStorageMock["robot"] = JSON.stringify(map)
+        backUpMap[miraType][id] = {
+            id,
+            miraType,
+            cacheKey: key,
+            buffer: new Uint8Array(new ArrayBuffer(1)),
+        }
 
         const name = "Test Robot"
         const thumbnailStorageID = "thumb123"
@@ -165,7 +170,7 @@ describe("MirabufLoader", () => {
 
         expect(result).toBe(true)
 
-        const updatedMap = JSON.parse(localStorageMock["Robots"])
+        const updatedMap = JSON.parse(localStorageMock["robot"])
         expect(updatedMap[key].name).toBe(name)
         expect(updatedMap[key].thumbnailStorageID).toBe(thumbnailStorageID)
         expect(updatedMap[key].id).toBe(id)

@@ -49,7 +49,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) 
         }
 
         configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
-    }, [brain, name, checkedPorts, checkedDrivers, openModal, modal])
+    }, [brain, name, checkedPorts, checkedDrivers, openModal, modal, configureScreen])
 
     return (
         <>

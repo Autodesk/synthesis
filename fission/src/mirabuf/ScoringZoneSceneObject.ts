@@ -1,6 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { OnContactAddedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
+import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
@@ -224,9 +225,10 @@ class ScoringZoneSceneObject extends SceneObject {
         if (this._collisionRemoved) OnContactRemovedEvent.removeListener(this._collisionRemoved)
     }
 
-    private zoneCollision(gpID: Jolt.BodyID) {
+    public zoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-        if (associate?.isGamePiece && this._prefs) {
+        const inGPLayer = World.physicsSystem.getBody(gpID).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        if ((associate?.isGamePiece || inGPLayer) && this._prefs) {
             // If persistent, Update() will handle points
             if (this._prefs.persistentPoints) {
                 this._gpContacted.push(gpID)

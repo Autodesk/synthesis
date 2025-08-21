@@ -91,7 +91,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setModal(newModal as Modal<any, any>)
             return id
         },
-        [modal]
+        [modal, DEFAULT_MODAL_PROPS, DEFAULT_PROPS]
     )
 
     const openPanel: OpenPanelFn = useCallback(
@@ -131,7 +131,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setPanels([...panels, panel as Panel<any, any>])
             return id
         },
-        [panels]
+        [panels, DEFAULT_PANEL_PROPS]
     )
 
     const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
@@ -155,16 +155,19 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             if (modal) closeCallbacks<T, P>(modal as Modal<T, P>, closeType)
             setModal(undefined)
         },
-        [modal]
+        [modal, closeCallbacks]
     )
 
-    const closePanel = useCallback((id: string, closeType: CloseType) => {
-        setPanels(p => {
-            const panel = p.find((p: Panel<any, any>) => p.id === id)
-            if (panel) closeCallbacks(panel, closeType)
-            return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
-        })
-    }, [])
+    const closePanel = useCallback(
+        (id: string, closeType: CloseType) => {
+            setPanels(p => {
+                const panel = p.find((p: Panel<any, any>) => p.id === id)
+                if (panel) closeCallbacks(panel, closeType)
+                return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
+            })
+        },
+        [closeCallbacks]
+    )
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
     const snackbarAction = useCallback(
@@ -173,7 +176,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 <CloseIcon />
             </IconButton>
         ),
-        []
+        [closeSnackbar]
     )
 
     const addToast = useCallback(
@@ -194,7 +197,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 { variant, action: snackbarAction }
             )
         },
-        [enqueueSnackbar]
+        [enqueueSnackbar, snackbarAction]
     )
 
     const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {

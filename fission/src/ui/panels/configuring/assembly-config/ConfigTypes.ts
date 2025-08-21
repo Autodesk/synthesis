@@ -1,4 +1,4 @@
-export const CONFIG_OPTS = ["ROBOTS", "FIELDS", "INPUTS"] as const
+export const CONFIG_OPTS = ["ROBOTS", "FIELDS", "PIECES", "INPUTS"] as const
 export type ConfigurationType = (typeof CONFIG_OPTS)[number]
 
 export enum ConfigMode {

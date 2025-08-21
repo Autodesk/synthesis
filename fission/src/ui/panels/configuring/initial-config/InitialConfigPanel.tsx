@@ -24,7 +24,7 @@ import InputSchemeSelection from "./InputSchemeSelection"
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
     const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
-    const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
+    const { openModal, openPanel, configureScreen } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -59,11 +59,11 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 setSelectedScheme(scheme)
             }
         }
-    }, [closePanel, panel, targetAssembly])
+    }, [targetAssembly, alliance, setSelectedScheme, station])
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) World.sceneRenderer.removeSceneObject(targetAssembly.id)
-    }, [closePanel, panel, targetAssembly])
+    }, [targetAssembly])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)
@@ -83,7 +83,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 },
             }
         )
-    }, [])
+    }, [closeDelete, closeFinish, configureScreen, panel, setUnconfirmedImport])
 
     return (
         <Stack gap={2}>

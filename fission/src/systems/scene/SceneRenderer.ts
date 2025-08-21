@@ -63,8 +63,9 @@ class SceneRenderer extends WorldSystem {
         getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
         findWhere: (predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]) =>
             this.mirabufSceneObjects.getAll().find(predicate),
-        getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD),
-        getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT),
+        getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType === MiraType.FIELD),
+        getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType === MiraType.ROBOT),
+        getPieces: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType === MiraType.PIECE),
     } as const
 
     public get mainCamera() {
@@ -393,6 +394,10 @@ class SceneRenderer extends WorldSystem {
             this._gizmosOnMirabuf.delete(obj.parentObjectId!)
         }
 
+        if (obj instanceof MirabufSceneObject && obj.miraType == MiraType.FIELD) {
+            this.removeAllGamePieces()
+        }
+
         if (this._sceneObjects.delete(id)) {
             obj!.dispose()
         }
@@ -401,6 +406,14 @@ class SceneRenderer extends WorldSystem {
     public removeAllFields() {
         for (const [id, obj] of this._sceneObjects) {
             if (obj instanceof MirabufSceneObject && obj.miraType == MiraType.FIELD) {
+                this.removeSceneObject(id)
+            }
+        }
+    }
+
+    public removeAllGamePieces() {
+        for (const [id, obj] of this._sceneObjects) {
+            if (obj instanceof MirabufSceneObject && obj.miraType == MiraType.PIECE) {
                 this.removeSceneObject(id)
             }
         }

@@ -37,7 +37,7 @@ const Scoreboard: React.FC = () => {
             OnScoreChangedEvent.removeListener(onScoreChange)
             UpdateTimeLeft.removeListener(onTimeLeftChange)
         }
-    }, [])
+    }, [onScoreChange, onTimeLeftChange])
 
     return (
         <Draggable positionOffset={{ x: HALF_W, y: 0 }}>

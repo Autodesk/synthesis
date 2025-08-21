@@ -2,7 +2,7 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
+import { GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import { mirabuf } from "../../proto/mirabuf"
 import {
     convertJoltRVec3ToJoltVec3,
@@ -34,7 +34,7 @@ import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
  * Layers used for determining enabled/disabled collisions.
  */
 const LAYER_FIELD = 0 // Used for grounded rigid node of a field as well as any rigid nodes jointed to it.
-const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
+export const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
 const ROBOT_LAYERS: number[] = [
     // Reserved layers for robots. Robot layers have no collision with themselves but have collision with everything else.
     2,
@@ -327,9 +327,9 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public createMechanismFromParser(parser: MirabufParser): Mechanism {
-        const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
-        const bodyMap = this.createBodiesFromParser(parser, layer)
+        const layer = parser.assembly.dynamic && !parser.isGamePiece ? new LayerReserve() : undefined
         const rootBody = parser.rootNode
+        const bodyMap = this.createBodiesFromParser(parser, layer)
         const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)
         this.createJointsFromParser(parser, mechanism)
         return mechanism
@@ -664,15 +664,6 @@ class PhysicsSystem extends WorldSystem {
         const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint)
         this._joltPhysSystem.AddStepListener(listener)
 
-        // const callbacks = new JOLT.VehicleConstraintCallbacksJS()
-        // callbacks.GetCombinedFriction = (_wheelIndex, _tireFrictionDirection, tireFriction, _body2Ptr, _subShapeID2) => {
-        //     return tireFriction
-        // }
-        // callbacks.OnPreStepCallback = (_vehicle, _stepContext) => { };
-        // callbacks.OnPostCollideCallback = (_vehicle, _stepContext) => { };
-        // callbacks.OnPostStepCallback = (_vehicle, _stepContext) => { };
-        // callbacks.SetVehicleConstraint(vehicleConstraint)
-
         this._joltPhysSystem.AddConstraint(vehicleConstraint)
         this._joltPhysSystem.AddConstraint(fixedConstraint)
 
@@ -783,122 +774,6 @@ class PhysicsSystem extends WorldSystem {
         }
     }
 
-    // TODO: Ball socket joints should try to be reduced to the shoulder joint equivalent for Jolt (SwingTwistConstraint)
-    // private CreateBallBadAgainConstraint(
-    //     jointInstance: mirabuf.joint.JointInstance,
-    //     jointDefinition: mirabuf.joint.Joint,
-    //     bodyA: Jolt.Body,
-    //     bodyB: Jolt.Body,
-    //     mechanism: Mechanism,
-    // ): void {
-
-    //     const jointOrigin = jointDefinition.origin
-    //         ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
-    //         : new JOLT.Vec3(0, 0, 0)
-    //     // TODO: Offset transformation for robot builder.
-    //     const jointOriginOffset = jointInstance.offset
-    //         ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
-    //         : new JOLT.Vec3(0, 0, 0)
-
-    //     const anchorPoint = jointOrigin.Add(jointOriginOffset)
-
-    //     const pitchDof = jointDefinition.custom!.dofs!.at(0)
-    //     const yawDof = jointDefinition.custom!.dofs!.at(1)
-    //     const rollDof = jointDefinition.custom!.dofs!.at(2)
-    //     const pitchAxis = new JOLT.Vec3(pitchDof?.axis?.x ?? 0, pitchDof?.axis?.y ?? 0, pitchDof?.axis?.z ?? 0)
-    //     const yawAxis = new JOLT.Vec3(yawDof?.axis?.x ?? 0, yawDof?.axis?.y ?? 0, yawDof?.axis?.z ?? 0)
-    //     const rollAxis = new JOLT.Vec3(rollDof?.axis?.x ?? 0, rollDof?.axis?.y ?? 0, rollDof?.axis?.z ?? 0)
-
-    //     console.debug(`Anchor Point: ${joltVec3ToString(anchorPoint)}`)
-    //     console.debug(`Pitch Axis: ${joltVec3ToString(pitchAxis)} ${pitchDof?.limits ? `[${pitchDof.limits.lower!.toFixed(3)}, ${pitchDof.limits.upper!.toFixed(3)}]` : ''}`)
-    //     console.debug(`Yaw Axis: ${joltVec3ToString(yawAxis)} ${yawDof?.limits ? `[${yawDof.limits.lower!.toFixed(3)}, ${yawDof.limits.upper!.toFixed(3)}]` : ''}`)
-    //     console.debug(`Roll Axis: ${joltVec3ToString(rollAxis)} ${rollDof?.limits ? `[${rollDof.limits.lower!.toFixed(3)}, ${rollDof.limits.upper!.toFixed(3)}]` : ''}`)
-
-    //     const constraints: { axis: Jolt.Vec3, friction: number, value: number, upper?: number, lower?: number }[] = []
-
-    //     if (pitchDof?.limits && (pitchDof.limits.upper ?? 0) - (pitchDof.limits.lower ?? 0) < 0.001) {
-    //         console.debug('Pitch Fixed')
-    //     } else {
-    //         constraints.push({
-    //             axis: pitchAxis,
-    //             friction: 0.0,
-    //             value: pitchDof?.value ?? 0,
-    //             upper: pitchDof?.limits ? pitchDof.limits.upper ?? 0 : undefined,
-    //             lower: pitchDof?.limits ? pitchDof.limits.lower ?? 0 : undefined
-    //         })
-    //     }
-
-    //     if (yawDof?.limits && (yawDof.limits.upper ?? 0) - (yawDof.limits.lower ?? 0) < 0.001) {
-    //         console.debug('Yaw Fixed')
-    //     } else {
-    //         constraints.push({
-    //             axis: yawAxis,
-    //             friction: 0.0,
-    //             value: yawDof?.value ?? 0,
-    //             upper: yawDof?.limits ? yawDof.limits.upper ?? 0 : undefined,
-    //             lower: yawDof?.limits ? yawDof.limits.lower ?? 0 : undefined
-    //         })
-    //     }
-
-    //     if (rollDof?.limits && (rollDof.limits.upper ?? 0) - (rollDof.limits.lower ?? 0) < 0.001) {
-    //         console.debug('Roll Fixed')
-    //     } else {
-    //         constraints.push({
-    //             axis: rollAxis,
-    //             friction: 0.0,
-    //             value: rollDof?.value ?? 0,
-    //             upper: rollDof?.limits ? rollDof.limits.upper ?? 0 : undefined,
-    //             lower: rollDof?.limits ? rollDof.limits.lower ?? 0 : undefined
-    //         })
-    //     }
-
-    //     let bodyStart = bodyB
-    //     let bodyNext = bodyA
-    //     if (constraints.length > 1) {
-    //         console.debug('Starting with Ghost Body')
-    //         bodyNext = this.CreateGhostBody(anchorPoint)
-    //         this._joltBodyInterface.AddBody(bodyNext.GetID(), JOLT.EActivation_Activate)
-    //         mechanism.ghostBodies.push(bodyNext.GetID())
-    //     }
-    //     for (let i = 0; i < constraints.length; ++i) {
-    //         console.debug(`Constraint ${i}`)
-    //         const c = constraints[i]
-    //         const hingeSettings = new JOLT.HingeConstraintSettings()
-    //         hingeSettings.mMaxFrictionTorque = c.friction;
-    //         hingeSettings.mPoint1 = hingeSettings.mPoint2 = anchorPoint
-    //         hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = c.axis.Normalized()
-    //         hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = getPerpendicular(
-    //             hingeSettings.mHingeAxis1
-    //         )
-    //         if (c.upper && c.lower) {
-    //             // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
-    //             // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
-    //             const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
-
-    //             const currentPos = piSafetyCheck(c.value)
-    //             const upper = piSafetyCheck(c.upper) - currentPos
-    //             const lower = piSafetyCheck(c.lower) - currentPos
-
-    //             hingeSettings.mLimitsMin = -upper
-    //             hingeSettings.mLimitsMax = -lower
-    //         }
-
-    //         const hingeConstraint = hingeSettings.Create(bodyStart, bodyNext)
-    //         this._joltPhysSystem.AddConstraint(hingeConstraint)
-    //         this._constraints.push(hingeConstraint)
-    //         bodyStart = bodyNext
-    //         if (i == constraints.length - 2) {
-    //             bodyNext = bodyA
-    //             console.debug('Finishing with Body A')
-    //         } else {
-    //             console.debug('New Ghost Body')
-    //             bodyNext = this.CreateGhostBody(anchorPoint)
-    //             this._joltBodyInterface.AddBody(bodyNext.GetID(), JOLT.EActivation_Activate)
-    //             mechanism.ghostBodies.push(bodyNext.GetID())
-    //         }
-    //     }
-    // }
-
     private isWheel(jDef: mirabuf.joint.Joint): boolean {
         return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
     }
@@ -912,8 +787,8 @@ class PhysicsSystem extends WorldSystem {
     public createBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
         const rnToBodies = new Map<string, Jolt.BodyID>()
 
-        if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
-            throw new Error("No layer reserve for dynamic assembly")
+        if ((parser.assembly.dynamic && !layerReserve && !parser.isGamePiece) || layerReserve?.isReleased) {
+            throw new Error("No layer reserve for non-game piece dynamic assembly")
         }
 
         const reservedLayer: number | undefined = layerReserve?.layer
@@ -949,21 +824,22 @@ class PhysicsSystem extends WorldSystem {
 
             const rnLayer: number = reservedLayer
                 ? reservedLayer
-                : rn.id.endsWith(GAMEPIECE_SUFFIX)
+                : parser.isGamePiece
                   ? LAYER_GENERAL_DYNAMIC
                   : LAYER_FIELD
 
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
-                if (partInstance.skipCollider) return
+                if (!partInstance?.partDefinitionReference || partInstance?.skipCollider) {
+                    return
+                }
 
                 const partDefinition =
-                    parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
+                    parser.assembly.data!.parts!.partDefinitions![partInstance?.partDefinitionReference]
 
                 const partShapeResult = rn.isDynamic
                     ? this.createConvexShapeSettingsFromPart(partDefinition)
                     : this.createConcaveShapeSettingsFromPart(partDefinition)
-                // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
                 if (!partShapeResult) return
 
@@ -1018,7 +894,9 @@ class PhysicsSystem extends WorldSystem {
                     frictionAccum.push(frictionPairing)
                 }
 
-                if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
+                if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) {
+                    return
+                }
 
                 const mass = partDefinition.massOverride
                     ? partDefinition.massOverride!
@@ -1203,7 +1081,11 @@ class PhysicsSystem extends WorldSystem {
         if (!collector.HadHit()) return undefined
 
         const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
-        return { data: collector.mHit, point: convertJoltRVec3ToJoltVec3(hitPoint), ray: ray }
+        return {
+            data: collector.mHit,
+            point: convertJoltRVec3ToJoltVec3(hitPoint),
+            ray: ray,
+        }
     }
 
     /**
@@ -1572,9 +1454,13 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
 }
 
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
+    const instances = mira.data?.parts?.partInstances
     return nodes.filter(x => {
         for (const part of x.parts) {
-            const inst = mira.data!.parts!.partInstances![part]!
+            const inst = instances![part] ?? instances![mira.info?.GUID ?? ""]
+            if (!inst) {
+                return false
+            }
             const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!
             if (def.bodies && def.bodies.length > 0) {
                 return true
