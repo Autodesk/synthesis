@@ -11,7 +11,7 @@ jobs:
   runUnitTests:
     name: Playwright Unit Tests
     container:
-      image: mcr.microsoft.com/playwright:v1.55.0-noble
+      image: mcr.microsoft.com/playwright:v1.54.2-noble
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,7 +62,7 @@ jobs:
     name: Assetpack Tests
     needs: runUnitTests
     container:
-      image: mcr.microsoft.com/playwright:v1.55.0-noble
+      image: mcr.microsoft.com/playwright:v1.54.2-noble
     runs-on: ubuntu-latest
     defaults:
       run:
