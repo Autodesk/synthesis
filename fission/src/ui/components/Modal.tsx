@@ -37,8 +37,9 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     p: 0,
-                    maxHeight: "70vh",
+                    maxHeight: "85vh",
                     minWidth: "20vw",
+                    bgcolor: "background.default",
                     flexDirection: "column",
                 }}
             >
@@ -51,7 +52,7 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                             position: "sticky",
                             top: 0,
                             zIndex: 1,
-                            bgcolor: theme => theme.palette.background.paper,
+                            bgcolor: "inherit",
                             borderBottom: theme => `1px solid ${theme.palette.divider}`,
                             py: 1,
                             px: 2,
@@ -69,7 +70,7 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                             position: "sticky",
                             bottom: 0,
                             zIndex: 1,
-                            bgcolor: theme => theme.palette.background.paper,
+                            bgcolor: "inherit",
                             borderTop: theme => `1px solid ${theme.palette.divider}`,
                             p: 2,
                         }}
