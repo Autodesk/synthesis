@@ -179,5 +179,5 @@
     { "includes": ["src/proto/**/*"], "linter": { "enabled": false } }
   ],
 
-  "assist": { "enabled": true, "actions": { "source": { "organizeImports": "on" } } }
+  "assist": { "enabled": true, "actions": { "source": { "organizeImports": "off" } } }
 }

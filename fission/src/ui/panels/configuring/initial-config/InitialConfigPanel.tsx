@@ -20,6 +20,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
+import EventSystem from "@/systems/EventSystem.ts"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
@@ -59,6 +60,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 setSelectedScheme(scheme)
             }
         }
+        EventSystem.dispatch("ConfigurationSavedEvent")
     }, [closePanel, panel, targetAssembly])
 
     const closeDelete = useCallback(() => {
