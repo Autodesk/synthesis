@@ -7,11 +7,33 @@ environments: Synthesis
 status: Draft
 feedback link: https://github.com/Autodesk/synthesis/issues
 
+## General Settings
 
+<img src="img/settings/general.png" alt="general settings panel" width="300">
 
-## Video Walkthrough
+The general settings panel allows you to configure options such as drag sensitivity, toggling the scoreboard, muting sounds, etc...
 
-Watch the video below to walk through starting a simulated match.
+Note that for each of the settings, you may hover over the 'i' icon for an explaination of that setting.
+
+## Graphics
+
+<img src="img/settings/graphics.png" alt="graphics settings panel" width="300">
+
+The graphics settings allows you to increase and decrease the shadow quality for performance.
+
+- Light intensity: changes the brightness
+- Fancy Shadows: enables cascading shadows
+  - Max Far: how far the camera has to zoom out before the shadows stop rendering
+  - Cascade Count: How many cascades of shadow qualities their are
+  - Shadow Map Size: Texture Quality
+
+If enabling Anti-Aliasing, your browser will force refresh when you click "Accept" causing any currently spawned assets to disappear.
+
+## Theme
+
+<img src="img/settings/theme.png" alt="theme editor panel" width="300">
+
+Configure the Synthesis theme colors and alliance colors. This will save to your browser and apply even if you refresh.
 
 ## Need More Help?
 
