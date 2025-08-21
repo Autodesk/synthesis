@@ -111,9 +111,7 @@ This works the same as the controls section for the robot. You can modify the co
 
 Watch the video below to walk through configuring your assemblies.
 
-[//]: # (TODO: Add Tutorial)
-<video id=""></video>
-
+<video id="hHf-7Ojl-fE"></video>
 
 ## Need More Help?
 

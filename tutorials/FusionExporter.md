@@ -128,7 +128,8 @@ You can follow the same logic as the grounded node, but instead its stemming fro
 ## Video Walkthrough
 
 Watch the video below to walk through exporting the Dozer model.
-[//]: # (TODO: Add Tutorial)
+
+<video id="RVsX7CZn1Pg"></video>
 
 ## Need More Help?
 

@@ -41,10 +41,6 @@ Select the config you now created, and the match will start.
 
 If using a downloaded .json, click Upload File, and select your saved config. 
 
-## Video Walkthrough
-
-Watch the video below to walk through starting a simulated match.
-
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our

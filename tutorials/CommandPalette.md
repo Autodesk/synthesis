@@ -7,7 +7,63 @@ environments: Synthesis
 status: Draft
 feedback link: https://github.com/Autodesk/synthesis/issues
 
-##
+## Overview
+
+The Command Palette in Synthesis is a tool that lets you quickly access and execute various functions without navigating through multiple panels. 
+
+## Usage
+
+To open the command pallet, press the “/” key 
+
+Start typing the command you're looking for, and a list of suggested commands will appear. 
+
+<img src="img/command/palette-view.png" alt="Image of command palette" width="500">
+
+You can either click on the desired command or use the arrow keys to navigate through the list. Press Enter to run the selected command. Press Esc to exit the pallete without running any commands. 
+
+## All Commands
+
+As of version 7.2.0 of Synthesis, here is a list of all supported commands 
+
+Toggle Drag Mode 
+
+Enables or disables drag mode, which lets you drag robots/game pieces around the field 
+
+Toggle Match Mode 
+
+Starts/stops a match 
+
+Spawn Asset Robots 
+
+Opens the robot spawn asset panel 
+
+Spawn Asset Fields 
+
+Opens the field spawn asset panel 
+
+Configure Assets 
+
+Opens the configure assets panel 
+
+Configure Robots 
+
+Opens the configure asset panel to the robot's tab 
+
+Configure [NAME] 
+
+Configures a spawned in robot/field with the corresponding [NAME] 
+
+Remove [NAME] 
+
+Removes a spawned in robot/field with the corresponding [NAME] 
+
+Open Debug Panel 
+
+Opens the debug panel 
+
+Open Settings 
+
+Opens the settings panel 
 
 ## Need More Help?
 

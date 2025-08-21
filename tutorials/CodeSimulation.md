@@ -306,10 +306,6 @@ Set your maximum test time, choose your alliance station, and input any game-spe
 
 When the timer elapses or the test is manually stopped, you're provided the option to reset the robot for another test.
 
-## Video Walkthrough
-
-Watch the video below to walk through setting up code simulation with SyntheSim.
-
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our

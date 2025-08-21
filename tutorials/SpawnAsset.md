@@ -100,6 +100,8 @@ Configure your joints if exported from Fusion to control them in the simulator.
 
 Watch the video below to walk through spawning local .mira files and the default remote assets.
 
+<video id="u608dgHAc2s"></video>
+
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our

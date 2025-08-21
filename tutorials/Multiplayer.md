@@ -47,10 +47,6 @@ The Multiplayer mode will allow you to host a simulation world to access across 
 - Just like in Singleplayer, Match Mode will keep track of scores, time remaining, and penalties.
 - Any user can start a match and it will also be started for all other users in the room.
 
-## Video Walkthrough
-
-Watch the video below to walk through starting a multiplayer session in Synthesis.
-
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our
