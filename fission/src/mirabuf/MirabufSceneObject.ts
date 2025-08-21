@@ -163,9 +163,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public set ejectorActive(a: boolean) {
         this._ejectorActive = a
     }
-    public set mechanism(a: Mechanism) {
-        this._mechanism = a
-    }
+
     public set mirabufInstance(a: MirabufInstance) {
         this.mirabufInstance = a
     }

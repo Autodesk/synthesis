@@ -115,7 +115,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                             World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
                         }
 
-                        if (type === MiraType.ROBOT || !cameraControls.focusProvider) {
+                        if (info.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
                             cameraControls.focusProvider = mirabufSceneObject
                         }
 

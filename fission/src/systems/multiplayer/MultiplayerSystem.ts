@@ -2,13 +2,14 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
 import type { ClientInfo, Message, MessageType } from "./types"
+import { hashBuffer } from "@/util/Utility"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -170,7 +171,7 @@ class MultiplayerSystem {
                     type: "newObject",
                     data: {
                         sceneObjectKey: obj.id,
-                        assemblyHash: await MirabufCachingService.hashBuffer(
+                        assemblyHash: await hashBuffer(
                             mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
                         ),
                         miraType: obj.miraType,
