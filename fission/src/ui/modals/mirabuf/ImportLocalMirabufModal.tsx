@@ -11,7 +11,7 @@ import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",

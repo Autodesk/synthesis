@@ -38,7 +38,7 @@ import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal
 import type TaskStatus from "@/util/TaskStatus"
 import type { ConfigurationType } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
 
 interface ItemCardProps {
     id: string

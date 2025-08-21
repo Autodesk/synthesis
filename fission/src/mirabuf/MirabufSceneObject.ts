@@ -352,8 +352,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._basePositionTransform = this.getPositionTransform(new THREE.Vector3())
 
         this.moveToSpawnLocation()
-
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
     }
 
     // Centered in xz plane, bottom surface of object
