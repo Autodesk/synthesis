@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 
 import "./App.css"
-import { RestartAlt, Settings, SportsFootball, Texture } from "@mui/icons-material"
+import { RestartAlt, Settings, SportsFootball } from "@mui/icons-material"
 import DownloadIcon from "@mui/icons-material/Download"
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import SaveIcon from "@mui/icons-material/Save"
@@ -36,7 +36,7 @@ import GamepiecesConfigTab from "./ui/GamepiecesConfigTab.tsx"
 import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
 import GlobalAlert from "./ui/GlobalAlert.tsx"
 import JointsConfigTab from "./ui/JointsConfigTab.tsx"
-import MaterialTaggingTab, { type TaggedBody } from "./ui/MaterialTaggingTab.tsx"
+import type { TaggedBody } from "./ui/MaterialTaggingTab.tsx"
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
@@ -179,7 +179,11 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <Backdrop
-                sx={theme => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1, backdropFilter: "blur(0px)" })}
+                sx={theme => ({
+                    color: "#fff",
+                    zIndex: theme.zIndex.drawer + 1,
+                    backdropFilter: "blur(0px)",
+                })}
                 open={isSelecting}
                 onClick={() => {
                     Global_SetAlert(
@@ -227,7 +231,7 @@ function App() {
                             disabled={generalConfig.exportMode === ExportMode.ROBOT}
                         />
 
-                        <Tab icon={<Texture />} iconPosition={"start"} label="Materials" />
+                        {/*<Tab icon={<Texture />} iconPosition={"start"} label="Materials" />*/}
 
                         {/*<Tab label="APS" />*/}
                     </Tabs>
@@ -252,13 +256,13 @@ function App() {
                     selection={{ isSelecting, setIsSelecting }}
                 />
             </TabPanel>
-            <TabPanel value={activeTab} index={3}>
-                <MaterialTaggingTab
-                    tags={taggedBodies}
-                    updateTags={updateTaggedBodies}
-                    selection={{ isSelecting, setIsSelecting }}
-                />
-            </TabPanel>
+            {/*<TabPanel value={activeTab} index={3}>*/}
+            {/*    <MaterialTaggingTab*/}
+            {/*        tags={taggedBodies}*/}
+            {/*        updateTags={updateTaggedBodies}*/}
+            {/*        selection={{ isSelecting, setIsSelecting }}*/}
+            {/*    />*/}
+            {/*</TabPanel>*/}
             <Container
                 sx={{
                     position: "sticky",
