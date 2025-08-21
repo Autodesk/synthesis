@@ -94,7 +94,10 @@ export interface AnalyticsEvents {
     }
 
     // Scene Interaction Events
-    "Drag Mode Toggled": unknown
+    "Drag Mode Enabled": unknown
+    "Drag Mode Disabled": {
+        durationSeconds: number
+    }
 
     // Main Menu Events
     "Mode Selected": {

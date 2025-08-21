@@ -68,6 +68,7 @@ class DragModeSystem extends WorldSystem {
     private _dragTarget: DragTarget | undefined
     private _isDragging: boolean = false
     private _lastMousePosition: [number, number] = [0, 0]
+    private _dragModeStartTime: number | undefined
 
     // Debug visualization
     private _debugSphere: THREE.Mesh | undefined
@@ -96,7 +97,6 @@ class DragModeSystem extends WorldSystem {
 
         this._handleDisableDragMode = () => {
             this.enabled = false
-            World.analyticsSystem?.event("Drag Mode Toggled")
         }
 
         // Create wheel event handler for Z-axis dragging
@@ -124,6 +124,8 @@ class DragModeSystem extends WorldSystem {
         this._enabled = enabled
 
         if (enabled) {
+            this._dragModeStartTime = Date.now()
+            World.analyticsSystem?.event("Drag Mode Enabled")
             this.hookInteractionHandlers()
         } else {
             this.unhookInteractionHandlers()
@@ -132,6 +134,12 @@ class DragModeSystem extends WorldSystem {
             if (this._cameraTransition.isTransitioning) {
                 this._cameraTransition.isTransitioning = false
                 World.sceneRenderer.currentCameraControls.enabled = true
+            }
+
+            if (this._dragModeStartTime !== undefined) {
+                const durationSeconds = (Date.now() - this._dragModeStartTime) / 1000
+                World.analyticsSystem?.event("Drag Mode Disabled", { durationSeconds })
+                this._dragModeStartTime = undefined
             }
         }
 
