@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
-import { Button } from "./StyledComponents"
 import { AiOutlineClose } from "react-icons/ai"
 import Label from "./Label"
+import { Button } from "./StyledComponents"
 
 interface AnalyticsConsentProps {
     onClose: () => void

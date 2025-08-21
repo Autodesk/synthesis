@@ -313,10 +313,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
             cameraControls.focusProvider = this
         }
+
+        MirabufObjectChangeEvent.dispatch(this)
     }
 
     // Centered in xz plane, bottom surface of object
-    private getPositionTransform(vec: THREE.Vector3) {
+    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()) {
         const box = this.computeBoundingBox()
         const transform = box.getCenter(vec)
         transform.setY(box.min.y)
@@ -431,6 +433,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
         }
+        MirabufObjectChangeEvent.dispatch(null)
     }
 
     public eject() {
@@ -986,3 +989,29 @@ export class RigidNodeAssociate extends BodyAssociate {
 }
 
 export default MirabufSceneObject
+
+export class MirabufObjectChangeEvent extends Event {
+    private static _eventKey = "MirabufObjectChange"
+    private _obj: MirabufSceneObject | null
+
+    private constructor(obj: MirabufSceneObject | null) {
+        super(MirabufObjectChangeEvent._eventKey)
+        this._obj = obj
+    }
+
+    public static addEventListener(cb: (object: MirabufSceneObject | null) => void): () => void {
+        const listener = (event: Event) => {
+            if (event instanceof MirabufObjectChangeEvent) {
+                cb(event._obj)
+            } else {
+                cb(null)
+            }
+        }
+        window.addEventListener(this._eventKey, listener)
+        return () => window.removeEventListener(this._eventKey, listener)
+    }
+
+    public static dispatch(obj: MirabufSceneObject | null) {
+        window.dispatchEvent(new MirabufObjectChangeEvent(obj))
+    }
+}
