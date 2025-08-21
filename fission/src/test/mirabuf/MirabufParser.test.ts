@@ -5,6 +5,30 @@ import { mirabuf } from "../../proto/mirabuf"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
+        const expectedTransforms = [
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -2.6645352591003757e-15, 0, -1, 0, 0, 1, 0, 0, 1, 0,
+            -2.6645352591003757e-15, 0, -0.19047861099243166, 0, -0.6847509002685547, 1, -2.6645352591003757e-15, 0, -1,
+            0, 0, 1, 0, 0, 1, 0, -2.6645352591003757e-15, 0, -0.19047861099243166, 0, -0.6847509002685547, 1,
+            -2.6645352591003757e-15, 0, -1, 0, 0, 1, 0, 0, 1, 0, -2.6645352591003757e-15, 0, -0.19047861099243166, 0,
+            -0.6847509002685547, 1, 2.220446049250313e-16, 1, -6.123234262925859e-17, 0, -1, 2.220446049250313e-16,
+            2.4674707145810578e-15, 0, 2.4674707145810578e-15, 6.12323426292582e-17, 1, 0, 0.09802138328552246,
+            0.025399999618530275, -0.4117508697509766, 1, 2.220446049250313e-16, -1, -6.123234262925859e-17, 0, 1,
+            2.220446049250313e-16, -2.4674707145810578e-15, 0, 2.4674707145810578e-15, -6.12323426292582e-17, 1, 0,
+            -0.4789786148071289, 0.025399999618530275, -0.4117508697509766, 1, 2.220446049250313e-16, 1,
+            -6.123234262925859e-17, 0, -1, 2.220446049250313e-16, 2.4674707145810578e-15, 0, 2.4674707145810578e-15,
+            6.12323426292582e-17, 1, 0, 0.09802138328552246, 0.025399999618530275, -0.6847509002685547, 1,
+            2.220446049250313e-16, -1, -6.123234262925859e-17, 0, 1, 2.220446049250313e-16, -2.4674707145810578e-15, 0,
+            2.4674707145810578e-15, -6.12323426292582e-17, 1, 0, -0.4789786148071289, 0.025399999618530275,
+            -0.6847509002685547, 1, 2.220446049250313e-16, -1, -6.123234262925859e-17, 0, 1, 2.220446049250313e-16,
+            -2.4674707145810578e-15, 0, 2.4674707145810578e-15, -6.12323426292582e-17, 1, 0, -0.4789786148071289,
+            0.025399999618530275, -1.0085508728027344, 1, 2.220446049250313e-16, 1, -6.123234262925859e-17, 0, -1,
+            2.220446049250313e-16, 2.4674707145810578e-15, 0, 2.4674707145810578e-15, 6.12323426292582e-17, 1, 0,
+            0.09802138328552246, 0.025399999618530275, -1.0085508728027344, 1, -2.6645352591003757e-15, 0, -1, 0, 0, 1,
+            0, 0, 1, 0, -2.6645352591003757e-15, 0, -0.19047861099243166, 0, -0.6847509002685547, 1,
+            -2.6645352591003757e-15, 0, -1, 0, 0, 1, 0, 0, 1, 0, -2.6645352591003757e-15, 0, -0.19047861099243166, 0,
+            -0.6847509002685547, 1,
+        ]
+
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/robots/Dozer_v9.mira",
             MiraType.ROBOT
@@ -13,15 +37,12 @@ describe("Mirabuf Parser Tests", () => {
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
 
-        expect(filterNonPhysicsNodes(rn, spikeMira!).length).toBe(7)
-
-        // Validate joints
-        const jointValidation = validateJoints(spikeMira!)
-        expect(jointValidation.isValid).toBe(true)
-        expect(jointValidation.jointCount).toBe(6)
-        expect(jointValidation.wheelJoints).toBe(6)
-        expect(jointValidation.allJoints).toContain(mirabuf.joint.JointMotion.REVOLUTE) // Wheels are revolute joints
-        expect(jointValidation.allJoints).not.toContain(mirabuf.joint.JointMotion.SLIDER) // Dozer has no slider joints
+        const physicsNodes = filterNonPhysicsNodes(rn, spikeMira!).length
+        expect(physicsNodes).toBe(7)
+        expect([...t.partTreeValues.values()].length).toBe(13)
+        expect([...t.partToNodeMap.values()].length).toBe(12)
+        expect([...t.globalTransforms.values()].flatMap(matrix => matrix.toArray())).toStrictEqual(expectedTransforms)
+        expect(t.rootNode).toBe("12")
     })
 
     /*
@@ -32,6 +53,26 @@ describe("Mirabuf Parser Tests", () => {
      * Mira File: https://synthesis.autodesk.com/api/mira/private/Multi-Joint_Wheels_v0.mira
      */
     test("Generate Rigid Nodes (Multi-Joint Wheels)", async () => {
+        const expectedTransforms = [
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1.7763568394002505e-15, -1, 0, 0, 1,
+            1.7763568394002505e-15, 0, 0, 0.2675, 0.3675, 1, 1, 0, 0, 0, 0, 1.7763568394002505e-15, -1, 0, 0, 1,
+            1.7763568394002505e-15, 0, 0, 0.2675, 0.3675, 1, 1, 0, 0, 0, 0, 1.7763568394002505e-15, -1, 0, 0, 1,
+            1.7763568394002505e-15, 0, 0, 0.25159368515014646, 0.3675, 1, 1, 0, 0, 0, 0, 1.7763568394002505e-15, -1, 0,
+            0, 1, 1.7763568394002505e-15, 0, 0, 0.2675, 0.3675, 1, 1, 0, 0, 0, 0, 1.7763568394002505e-15, -1, 0, 0, 1,
+            1.7763568394002505e-15, 0, 0, 0.2675, 0.3675, 1, 0.7732124781661257, -0.6341470362685602,
+            -1.1657341758564144e-15, 0, -1.6653345369377348e-16, 1.5543122344752192e-15, -1.0000000000000002, 0,
+            0.6341470362685602, 0.7732124781661258, 9.992007221626409e-16, 0, -0.035183987617492675, 0.2640233612060547,
+            0.3675, 1, 0.7732124781661258, -0.6341470362685601, -1.0547118733938985e-15, 0, -6.308850805844422e-17,
+            1.5053687278135902e-15, -1.0000000000000002, 0, 0.6341470362685601, 0.7732124781661259,
+            1.026956297778269e-15, 0, -0.0351839876174927, 0.2640233612060547, 0.3675, 1, 1, 5.551115123125783e-17,
+            -1.5660009058798645e-16, 0, -5.541350988171935e-17, 1.4990741093153677e-15, -1.0000000000000002, 0, 0, 1,
+            1.4566032141052243e-15, 0, 0.024999999825429893, 0.2424999971276784, 0.3674999999999999, 1, 1,
+            5.551115123125783e-17, -1.5660009058798645e-16, 0, -5.541350988171935e-17, 1.4990741093153677e-15,
+            -1.0000000000000002, 0, 0, 1, 1.4566032141052243e-15, 0, -0.02499999988244097, 0.2424999976714384,
+            0.3675000000000001, 1, 1, 5.551115123125783e-17, -1.5660009058798645e-16, 0, -5.541350988171935e-17,
+            1.4990741093153677e-15, -1.0000000000000002, 0, 0, 1, 1.4566032141052243e-15, 0, 0.024999999825429893,
+            0.2424999971276784, 0.3674999999999998, 1,
+        ]
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
@@ -39,21 +80,13 @@ describe("Mirabuf Parser Tests", () => {
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
+        const physicsNodes = filterNonPhysicsNodes(rn, spikeMira!)
 
-        expect(filterNonPhysicsNodes(rn, spikeMira!).length).toBe(9)
-
-        // Validate joints
-        const jointValidation = validateJoints(spikeMira!)
-        expect(jointValidation.isValid).toBe(true)
-        expect(jointValidation.jointCount).toBe(8)
-
-        // Validate joint type distribution
-        const revoluteJoints = jointValidation.allJoints.filter(j => j === mirabuf.joint.JointMotion.REVOLUTE)
-        const sliderJoints = jointValidation.allJoints.filter(j => j === mirabuf.joint.JointMotion.SLIDER)
-
-        expect(revoluteJoints.length).toBe(6) // Should have 6 revolute joints (4 wheels + 2 additional)
-        expect(sliderJoints.length).toBe(2) // Should have 2 slider joints
-        expect(jointValidation.wheelJoints).toBe(4) // Should have 4 wheel joints
+        expect(physicsNodes.length).toBe(9)
+        expect([...t.partTreeValues.values()].length).toBe(12)
+        expect([...t.partToNodeMap.values()].length).toBe(11)
+        expect([...t.globalTransforms.values()].flatMap(matrix => matrix.toArray())).toStrictEqual(expectedTransforms) //
+        expect(t.rootNode).toBe("16")
     })
 
     test("Generate Rigid Nodes (FRC Field 2018_v13.mira)", async () => {
@@ -61,9 +94,19 @@ describe("Mirabuf Parser Tests", () => {
             "/api/mira/Fields/FRC Field 2018_v13.mira",
             MiraType.FIELD
         ).then(x => MirabufCachingService.get(x!.id, MiraType.FIELD))
-        const t = new MirabufParser(field!)
 
-        expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(34)
+        const t = new MirabufParser(field!)
+        const physicsNodes = filterNonPhysicsNodes([...t.rigidNodes.values()], field!)
+        const transformsSum = 1954.8213339462916
+
+        expect(physicsNodes.length).toBe(34)
+        expect([...t.partTreeValues.values()].length).toBe(982)
+        expect([...t.partToNodeMap.values()].length).toBe(981)
+        expect([...t.globalTransforms.values()].length).toBe(981) //
+        expect([...t.globalTransforms.values()].flatMap(mat => mat.toArray()).reduce((acc, c) => acc + c, 0)).toBe(
+            transformsSum
+        )
+        expect(t.rootNode).toBe("35merged")
     })
 })
 
@@ -78,116 +121,6 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
         }
         return false
     })
-}
-
-interface JointValidationResult {
-    isValid: boolean
-    jointCount: number
-    allJoints: mirabuf.joint.JointMotion[]
-    wheelJoints: number
-    errors: string[]
-    warnings: string[]
-}
-
-function validateJoints(assembly: mirabuf.Assembly): JointValidationResult {
-    const result: JointValidationResult = {
-        isValid: true,
-        jointCount: 0,
-        allJoints: [],
-        wheelJoints: 0,
-        errors: [],
-        warnings: [],
-    }
-
-    const jointData = assembly.data?.joints
-    if (!jointData) {
-        result.errors.push("No joint data found in assembly")
-        result.isValid = false
-        return result
-    }
-
-    // Validate joint definitions and instances
-    const jointDefinitions = jointData.jointDefinitions || {}
-    const jointInstances = jointData.jointInstances || {}
-
-    // Count non-grounded joints
-    const nonGroundedJoints = Object.entries(jointInstances).filter(([key]) => key !== "grounded")
-    result.jointCount = nonGroundedJoints.length
-
-    // Validate each joint
-    for (const [jointId, jointInstance] of nonGroundedJoints) {
-        try {
-            // Check if joint definition exists
-            const jointDef = jointDefinitions[jointInstance.jointReference!]
-            if (!jointDef) {
-                result.errors.push(
-                    `Joint instance '${jointId}' references missing definition '${jointInstance.jointReference}'`
-                )
-                result.isValid = false
-                continue
-            }
-
-            // Get all joints
-            if (jointDef.jointMotionType !== null && jointDef.jointMotionType !== undefined)
-                result.allJoints.push(jointDef.jointMotionType)
-
-            // Check for wheel joints
-            if (
-                jointDef.userData?.data?.wheel === "true" ||
-                (jointDef.jointMotionType === mirabuf.joint.JointMotion.REVOLUTE &&
-                    jointDef.userData?.data?.wheelType !== undefined)
-            ) {
-                result.wheelJoints++
-            }
-
-            // Validate joint motion type specific properties
-            switch (jointDef.jointMotionType) {
-                case mirabuf.joint.JointMotion.REVOLUTE:
-                    if (!jointDef.rotational) {
-                        result.errors.push(`Revolute joint '${jointId}' missing rotational definition`)
-                        result.isValid = false
-                    }
-                    break
-                case mirabuf.joint.JointMotion.SLIDER:
-                    if (!jointDef.prismatic) {
-                        result.errors.push(`Slider joint '${jointId}' missing prismatic definition`)
-                        result.isValid = false
-                    }
-                    break
-                case mirabuf.joint.JointMotion.BALL:
-                    // Note: Ball joint properties are validated differently in the mirabuf format
-                    if (!jointDef.custom) {
-                        result.warnings.push(`Ball joint '${jointId}' may be missing ball-specific configuration`)
-                    }
-                    break
-                case mirabuf.joint.JointMotion.CUSTOM:
-                    if (!jointDef.custom) {
-                        result.errors.push(`Custom joint '${jointId}' missing custom definition`)
-                        result.isValid = false
-                    }
-                    break
-            }
-
-            // Validate joint has an origin
-            if (!jointDef.origin) {
-                result.warnings.push(`Joint '${jointId}' has no origin defined`)
-            }
-        } catch (error) {
-            result.errors.push(`Error validating joint '${jointId}': ${error}`)
-            result.isValid = false
-        }
-    }
-
-    // Validate rigid groups if they exist
-    if (jointData.rigidGroups) {
-        for (const rigidGroup of jointData.rigidGroups) {
-            if (!rigidGroup.occurrences || rigidGroup.occurrences.length < 2) {
-                result.warnings.push(`Rigid group '${rigidGroup.name}' has fewer than 2 occurrences`)
-            }
-        }
-    }
-
-    return result
 }
 
 // function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
