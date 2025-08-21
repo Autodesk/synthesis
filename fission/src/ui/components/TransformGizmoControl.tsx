@@ -110,6 +110,8 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
                 sx={{
                     ...(sx ?? {}),
                     alignSelf: "center",
+                    display: "flex",
+                    justifyContent: "center",
                 }}
             >
                 {buttons}

@@ -48,7 +48,7 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             textAlign="center"
             minWidth="290px"
         >
-            <Stack>
+            <Stack gap={1}>
                 <Label size="sm">Generic</Label>
                 <Button
                     onClick={() => {

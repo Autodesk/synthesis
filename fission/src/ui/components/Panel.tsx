@@ -73,10 +73,11 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     display: panel.props.configured ? "" : "none",
                     position: "absolute",
                     pointerEvents: "auto",
-                    p: 2,
+                    p: 0,
                     boxShadow: 6,
                     maxHeight: "70vh",
-                    overflowY: "auto",
+                    display: "flex",
+                    flexDirection: "column",
                 }}
                 ref={nodeRef}
             >
@@ -89,11 +90,15 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                             py: 1,
                             px: 2,
                             borderBottom: theme => `1px solid ${theme.palette.divider}`,
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 1,
+                            bgcolor: theme => theme.palette.background.paper,
                         }}
-                        titleTypographyProps={{ variant: "subtitle1" }}
+                        titleTypographyProps={{ variant: "h5" }}
                     />
                 )}
-                <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                <CardContent sx={{ p: 2, flex: "1 1 auto", overflowY: "auto", "&:last-child": { pb: 2 } }}>
                     <div className="panel-contents">
                         {React.Children.map(children, child => {
                             if (React.isValidElement(child)) return React.cloneElement(child, { panel, parent })
@@ -101,7 +106,16 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     </div>
                 </CardContent>
                 {(!props.hideCancel || !props.hideAccept) && (
-                    <CardActions>
+                    <CardActions
+                        sx={{
+                            position: "sticky",
+                            bottom: 0,
+                            zIndex: 1,
+                            bgcolor: theme => theme.palette.background.paper,
+                            borderTop: theme => `1px solid ${theme.palette.divider}`,
+                            p: 2,
+                        }}
+                    >
                         {!props.hideCancel && (
                             <Button
                                 onClick={() => closePanel(panel.id, CloseType.Cancel)}

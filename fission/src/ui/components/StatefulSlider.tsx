@@ -1,4 +1,5 @@
 import { Slider, Stack, Tooltip, Typography } from "@mui/material"
+import Label from "./Label"
 import { useState } from "react"
 
 const StatefulSlider: React.FC<
@@ -25,8 +26,10 @@ const StatefulSlider: React.FC<
                     width: "100%",
                 }}
             >
-                <Stack direction="row" justifyContent="space-between" alignItems="baseline">
-                    <Typography variant="body2">{props.label}</Typography>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Label size="sm" className="mr-12 whitespace-nowrap">
+                        {props.label}
+                    </Label>
                     {props.showValue !== false && <Typography variant="caption">{value.toFixed(2)}</Typography>}
                 </Stack>
                 <Slider

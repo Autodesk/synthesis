@@ -487,9 +487,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 `${hubElements.length} Remote Asset${hubElements.length === 1 ? "" : "s"}`
                             ) : (
                                 <Tooltip title={filesStatus.message}>
-                                    <Stack direction="row" gap={1}>
+                                    <Stack direction="row" gap={1} alignItems="center">
                                         <Label size="md">Loading from APS...</Label>
                                         <CircularProgress
+                                            size="1em"
                                             variant="determinate"
                                             value={filesStatus.isDone ? 100 : filesStatus.progress * 100}
                                         />

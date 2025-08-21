@@ -350,7 +350,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             <Divider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
-            <Box alignSelf={"center"}>
+            <Box alignSelf={"center"} sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
                 <Button
                     onClick={() => {
                         createNewMatchModeConfig()
@@ -358,8 +358,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                 >
                     Create Match Mode Config
                 </Button>
-            </Box>
-            <Box alignSelf={"center"}>
                 <Button onClick={uploadClicked}>Upload File</Button>
             </Box>
         </>

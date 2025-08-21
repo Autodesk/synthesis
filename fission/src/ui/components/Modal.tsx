@@ -36,17 +36,45 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
-                    p: 4,
+                    p: 0,
+                    maxHeight: "70vh",
+                    minWidth: "20vw",
+                    display: "flex",
+                    flexDirection: "column",
                 }}
             >
-                {props.title && <CardHeader title={props.title} className="select-none" />}
-                <CardContent>
+                {props.title && (
+                    <CardHeader
+                        title={props.title}
+                        className="select-none"
+                        titleTypographyProps={{ variant: "h5" }}
+                        sx={{
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 1,
+                            bgcolor: theme => theme.palette.background.paper,
+                            borderBottom: theme => `1px solid ${theme.palette.divider}`,
+                            py: 1,
+                            px: 2,
+                        }}
+                    />
+                )}
+                <CardContent sx={{ p: 2, flex: "1 1 auto", overflowY: "auto" }}>
                     {React.Children.map(children, child => {
                         if (React.isValidElement(child)) return React.cloneElement(child, { modal, parent })
                     })}
                 </CardContent>
                 {(!props.hideCancel || !props.hideAccept) && (
-                    <CardActions>
+                    <CardActions
+                        sx={{
+                            position: "sticky",
+                            bottom: 0,
+                            zIndex: 1,
+                            bgcolor: theme => theme.palette.background.paper,
+                            borderTop: theme => `1px solid ${theme.palette.divider}`,
+                            p: 2,
+                        }}
+                    >
                         {!props.hideCancel && (
                             <Button onClick={() => closeModal(CloseType.Cancel)} variant="outlined" color="secondary">
                                 {props.cancelText ?? "Cancel"}
