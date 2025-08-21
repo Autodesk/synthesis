@@ -235,7 +235,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
             context.skip()
         }
 
-        const assembly = await MirabufCachingService.get(cacheInfo!.id, MiraType.ROBOT)
+        const assembly = await MirabufCachingService.get(cacheInfo!.hash)
 
         if (!assembly) {
             context.skip()

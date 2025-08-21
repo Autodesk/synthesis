@@ -1,10 +1,10 @@
 import { Stack } from "@mui/material"
-import { Button } from "../components/StyledComponents"
 import type React from "react"
 import { useLayoutEffect } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import type { ModalImplProps } from "../components/Modal"
+import { Button } from "../components/StyledComponents"
 import { useStateContext } from "../helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { spawnCachedMira } from "../panels/mirabuf/ImportMirabufPanel"
@@ -46,10 +46,10 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                     Promise.all([
                         MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD),
                         MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT),
-                    ]).then(([cachedField, cachedRobot]) => {
+                    ]).then(async ([cachedField, cachedRobot]) => {
                         if (cachedField && cachedRobot) {
-                            spawnCachedMira(cachedField, MiraType.FIELD)
-                            spawnCachedMira(cachedRobot, MiraType.ROBOT)
+                            await spawnCachedMira(cachedField)
+                            await spawnCachedMira(cachedRobot)
                         }
                     })
                 }}
