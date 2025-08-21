@@ -108,6 +108,7 @@ const CommandPalette: React.FC = () => {
     const execute = useCallback(
         (index: number) => {
             const cmd = visible[index]
+            World.analyticsSystem?.event("Command Executed", { command: cmd?.label ?? "Unknown" })
             if (cmd) {
                 cmd.perform()
             } else {
