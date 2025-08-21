@@ -41,7 +41,7 @@ describe("Mirabuf Parser Tests", () => {
         expect(physicsNodes.length).toBe(9)
         expect([...t.partTreeValues.values()].length).toBe(12)
         expect([...t.partToNodeMap.values()].length).toBe(11)
-        expect([...t.globalTransforms.values()].flatMap(matrix => matrix.toArray())).toMatchSnapshot() //
+        expect([...t.globalTransforms.values()].flatMap(matrix => matrix.toArray())).toMatchSnapshot()
         expect(t.rootNode).toBe("16")
     })
 
@@ -58,7 +58,7 @@ describe("Mirabuf Parser Tests", () => {
         expect(physicsNodes.length).toBe(34)
         expect([...t.partTreeValues.values()].length).toBe(982)
         expect([...t.partToNodeMap.values()].length).toBe(981)
-        expect([...t.globalTransforms.values()].length).toBe(981) //
+        expect([...t.globalTransforms.values()].length).toBe(981)
         expect([...t.globalTransforms.values()].flatMap(mat => mat.toArray())).toMatchSnapshot()
         expect(t.rootNode).toBe("35merged")
     })
