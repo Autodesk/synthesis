@@ -1,6 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { Stack } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
@@ -15,7 +14,7 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { Spacer } from "@/ui/components/StyledComponents"
+import { Button, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,

@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -14,6 +14,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -59,6 +60,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 setSelectedScheme(scheme)
             }
         }
+        new ConfigurationSavedEvent()
     }, [closePanel, panel, targetAssembly])
 
     const closeDelete = useCallback(() => {
