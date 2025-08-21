@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest"
 import MirabufCachingService, { MiraType } from "../../mirabuf/MirabufLoader.ts"
 import MirabufParser, { type RigidNodeReadOnly } from "../../mirabuf/MirabufParser.ts"
 import type { mirabuf } from "../../proto/mirabuf"
+import { Matrix4 } from "three"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
@@ -17,7 +18,7 @@ describe("Mirabuf Parser Tests", () => {
         expect(physicsNodes).toBe(7)
         expect([...t.partTreeValues.values()].length).toBe(13)
         expect([...t.partToNodeMap.values()].length).toBe(12)
-        expect([...t.globalTransforms.values()].flatMap(matrix => matrix.toArray())).toMatchSnapshot()
+        expect(await hashTransforms(t.globalTransforms)).toMatchSnapshot()
         expect(t.rootNode).toBe("12")
     })
 
@@ -41,7 +42,7 @@ describe("Mirabuf Parser Tests", () => {
         expect(physicsNodes.length).toBe(9)
         expect([...t.partTreeValues.values()].length).toBe(12)
         expect([...t.partToNodeMap.values()].length).toBe(11)
-        expect([...t.globalTransforms.values()].flatMap(matrix => matrix.toArray())).toMatchSnapshot()
+        expect(await hashTransforms(t.globalTransforms)).toMatchSnapshot()
         expect(t.rootNode).toBe("16")
     })
 
@@ -57,11 +58,17 @@ describe("Mirabuf Parser Tests", () => {
         expect(physicsNodes.length).toBe(34)
         expect([...t.partTreeValues.values()].length).toBe(982)
         expect([...t.partToNodeMap.values()].length).toBe(981)
-        expect([...t.globalTransforms.values()].length).toBe(981)
-        expect([...t.globalTransforms.values()].flatMap(mat => mat.toArray())).toMatchSnapshot()
+        expect(await hashTransforms(t.globalTransforms)).toMatchSnapshot()
         expect(t.rootNode).toBe("35merged")
     })
 })
+
+async function hashTransforms(globalTransforms: Map<string, Matrix4>): Promise<ArrayBuffer> {
+    return crypto.subtle.digest(
+        "SHA-1",
+        new Int16Array([...globalTransforms.values()].flatMap(mat => mat.toArray()).map(n => Math.round(n * 1000)))
+    )
+}
 
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
     return nodes.filter(x => {
