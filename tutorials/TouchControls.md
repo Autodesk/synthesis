@@ -7,11 +7,18 @@ environments: Synthesis
 status: Draft
 feedback link: https://github.com/Autodesk/synthesis/issues
 
+## Requirements
 
+Touch controls will only be avalible on devices that have touch screen capabilities including phones, tablets, and touch screen laptops.
 
-## Video Walkthrough
+<img src="img/touch/joysticks.png" alt="image of synthesis world with joysticks">
 
-Watch the video below to walk through the interface of mobile devices.
+## Setup
+
+If on a compatible device, the "Touch Controls" button will appear on the MainHUD. Clicking the button, the touch control joysticks will appear.
+
+Alternatively, when spawning an robot, set the input scheme to "Brandon" which will automatically spawn the joysticks.
+
 
 ## Need More Help?
 
