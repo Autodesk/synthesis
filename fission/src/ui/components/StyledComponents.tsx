@@ -30,6 +30,7 @@ import {
     FaPlus,
     FaQuestion,
     FaScrewdriverWrench,
+    FaStar,
     FaWrench,
     FaXmark,
 } from "react-icons/fa6"
@@ -64,6 +65,7 @@ export class SynthesisIcons {
     public static readonly INFO = <AiOutlineInfoCircle />
     public static readonly BUG = <FaBug />
     public static readonly PLAY = <IoPlayOutline />
+    public static readonly STAR = <FaStar />
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />

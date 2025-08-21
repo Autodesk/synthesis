@@ -18,6 +18,7 @@ import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import DebugPanel from "../panels/DebugPanel"
 import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
+import AchievementsPanel from "../panels/AchievementsPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
@@ -221,6 +222,11 @@ const MainHUD: React.FC = () => {
                         value={"Developer Tool"}
                         icon={SynthesisIcons.CODE_SQUARE}
                         onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                    />
+                    <MainHUDButton
+                        value={"Achievements"}
+                        icon={SynthesisIcons.STAR}
+                        onClick={() => openPanel(AchievementsPanel, undefined)}
                     />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton

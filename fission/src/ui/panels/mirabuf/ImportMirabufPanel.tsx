@@ -107,6 +107,10 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
 
                         if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                             globalOpenPanel(InitialConfigPanel, undefined)
+                            World.achievementsSystem?.unlock("first_robot_spawn")
+                        }
+                        if (mirabufSceneObject.miraType == MiraType.FIELD) {
+                            World.achievementsSystem?.unlock("first_field_spawn")
                         }
                     } else {
                         progressHandle.fail()
@@ -150,7 +154,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     useEffect(() => {
         configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         const updateFilesStatus = (e: Event) => {
@@ -422,7 +426,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     )
     useEffect(() => {
         setViewType(configurationType === "ROBOTS" ? MiraType.ROBOT : MiraType.FIELD)
-    }, [])
+    }, [configurationType])
     return (
         <Stack direction="column" gap={2} className="overflow-y-auto">
             <ToggleButtonGroup

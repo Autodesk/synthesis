@@ -8,6 +8,7 @@ import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
 import RobotPositionTracker from "./simulation/RobotPositionTracker"
 import SimulationSystem from "./simulation/SimulationSystem"
+import AchievementsSystem from "./achievements/AchievementsSystem"
 
 class World {
     private static _isAlive: boolean = false
@@ -21,6 +22,7 @@ class World {
     private static _analyticsSystem: AnalyticsSystem | undefined = undefined
     private static _dragModeSystem: DragModeSystem
     private static _performanceMonitorSystem: PerformanceMonitoringSystem
+    private static _achievementsSystem: AchievementsSystem
 
     private static _accumTimes: AccumTimes = {
         frames: 0,
@@ -54,6 +56,9 @@ class World {
     public static get analyticsSystem() {
         return World._analyticsSystem
     }
+    public static get achievementsSystem() {
+        return World._achievementsSystem
+    }
     public static get dragModeSystem() {
         return World._dragModeSystem
     }
@@ -81,6 +86,7 @@ class World {
         World._inputSystem = new InputSystem()
         World._dragModeSystem = new DragModeSystem()
         World._performanceMonitorSystem = new PerformanceMonitoringSystem()
+        World._achievementsSystem = new AchievementsSystem()
         try {
             World._analyticsSystem = new AnalyticsSystem()
         } catch (_) {
@@ -104,6 +110,7 @@ class World {
         World._dragModeSystem.destroy()
 
         World._performanceMonitorSystem.destroy()
+        // achievements system has no destroy hook
         World._analyticsSystem?.destroy()
     }
 

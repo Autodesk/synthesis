@@ -298,6 +298,8 @@ class APS {
                 await this.loadUserInfo(auth)
                 if (APS.userInfo) {
                     globalAddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                    const { default: World } = await import("@/systems/World")
+                    World.achievementsSystem?.unlock("first_login_aps")
                 }
             } else {
                 console.error("Couldn't get auth data.")
