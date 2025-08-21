@@ -18,12 +18,6 @@ export interface AchievementWithState extends AchievementDefinition {
 	state?: AchievementState
 }
 
-export interface AchievementStats {
-	key: AchievementKey
-	/** Percentage of users (0-100). Undefined if unavailable. */
-	percentUnlocked?: number
-}
-
 export type AchievementsSavePayload = {
 	userEmail?: string
 	achievements: AchievementState[]

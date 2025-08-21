@@ -22,7 +22,6 @@ const AchievementsPanel: React.FC<PanelImplProps<void, PanelCustomProps>> = ({ p
     }, [configureScreen, panel])
 
     const achievements = World.achievementsSystem?.list() ?? []
-    const stats = World.achievementsSystem?.stats() ?? new Map()
 
     return (
         <Stack gap={1} className="w-[360px] max-w-[90vw]">
@@ -30,24 +29,38 @@ const AchievementsPanel: React.FC<PanelImplProps<void, PanelCustomProps>> = ({ p
                 const unlocked = !!a.state
                 const displayTitle = unlocked || !a.hidden ? a.title : "Hidden"
                 const displayDesc = unlocked || !a.hidden ? a.description : "Unlock to reveal"
-                const imgSrc = unlocked || !a.hidden ? (a.imageSrc ?? placeholderImg) : placeholderImg
-                const percent = stats.get(a.key)?.percentUnlocked
+                const isHiddenLocked = a.hidden && !unlocked
+                const imgSrc = unlocked || !a.hidden ? (a.imageSrc ?? placeholderImg) : undefined
                 return (
                     <div
                         key={a.key}
-                        className={`flex flex-row gap-3 items-center p-2 rounded-md ${unlocked ? "bg-green-800/20" : "bg-gray-600/20"}`}
+                        className={`flex flex-row gap-3 items-center p-2 rounded-md ${unlocked ? "bg-green-800/20" : "bg-gray-600/20"} ${isHiddenLocked ? "relative overflow-hidden" : ""}`}
+                        style={
+                            isHiddenLocked
+                                ? {
+                                      opacity: 0.5,
+                                  }
+                                : undefined
+                        }
                     >
-                        <img src={imgSrc} alt={displayTitle} style={{ width: 48, height: 48, borderRadius: 8 }} />
+                        {isHiddenLocked ? (
+                            <div
+                                style={{ width: 48, height: 48, borderRadius: 8, background: "#3a3a3a" }}
+                                aria-hidden="true"
+                            />
+                        ) : (
+                            <img
+                                src={imgSrc}
+                                alt={displayTitle}
+                                style={{ width: 48, height: 48, borderRadius: 8 }}
+                                draggable={false}
+                            />
+                        )}
                         <div className="flex-1">
                             <Typography variant="subtitle1">{displayTitle}</Typography>
                             <Typography variant="body2" color="text.secondary">
                                 {displayDesc}
                             </Typography>
-                            {percent != null && (
-                                <Typography variant="caption" color="text.secondary">
-                                    {percent.toFixed(1)}% of users unlocked
-                                </Typography>
-                            )}
                         </div>
                     </div>
                 )

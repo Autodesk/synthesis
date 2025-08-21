@@ -110,7 +110,6 @@ class World {
         World._dragModeSystem.destroy()
 
         World._performanceMonitorSystem.destroy()
-        // achievements system has no destroy hook
         World._analyticsSystem?.destroy()
     }
 

@@ -1,5 +1,5 @@
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import type { AchievementDefinition, AchievementKey, AchievementState, AchievementStats, AchievementWithState } from "./AchievementsTypes"
+import type { AchievementDefinition, AchievementKey, AchievementState, AchievementWithState } from "./AchievementsTypes"
 import WorldSystem from "../WorldSystem"
 import React from "react"
 
@@ -14,15 +14,12 @@ type SavedShape = {
 export default class AchievementsSystem extends WorldSystem {
 	private _definitions: Map<AchievementKey, AchievementDefinition> = new Map()
 	private _states: Map<AchievementKey, AchievementState> = new Map()
-	private _stats: Map<AchievementKey, AchievementStats> = new Map()
 
 	public constructor() {
 		super()
 		this.registerDefaultDefinitions()
 		this.loadLocal()
-
 	}
-
 
 	public register(defs: AchievementDefinition[]) {
 		for (const d of defs) this._definitions.set(d.key, d)
@@ -62,15 +59,11 @@ export default class AchievementsSystem extends WorldSystem {
 		return [...this._definitions.values()].map(def => ({ ...def, state: this._states.get(def.key) }))
 	}
 
-	public stats(): Map<AchievementKey, AchievementStats> {
-		return this._stats
-	}
-
-	public isUnlocked(key: AchievementKey): boolean {
-		return this._states.has(key)
-	}
-
 	public unlock(key: AchievementKey) {
+		if (!this._definitions.has(key)) {
+			console.warn("Attempted to unlock unknown achievement", key)
+			return
+		}
 		try {
 			if (this._states.has(key)) return
 			const def = this._definitions.get(key)
@@ -80,7 +73,7 @@ export default class AchievementsSystem extends WorldSystem {
 			this.dispatchUpdate()
 
 			if (def) {
-				globalAddToast("success", this.makeToast(def))
+				globalAddToast("default", this.makeToast(def))
 			}
 		} catch (e) {
 			console.warn("Failed to unlock achievement", key, e)
@@ -90,13 +83,50 @@ export default class AchievementsSystem extends WorldSystem {
 	private makeToast(def: AchievementDefinition) {
 		return React.createElement(
 			"div",
-			{ className: "flex flex-row items-center gap-2" },
+			{
+				"data-achievement-toast": true,
+				className: "flex flex-row items-center gap-3 px-2 py-1",
+				style: {
+					minWidth: 340,
+					maxWidth: 520,
+					minHeight: 84,
+					userSelect: "none",
+					MozUserSelect: "none",
+					msUserSelect: "none",
+					WebkitUserSelect: "none",
+				},
+			},
+			React.createElement("div", {
+				className: "w-1 self-stretch rounded-md bg-emerald-500",
+				style: { marginRight: 4 },
+			}),
 			React.createElement("img", {
 				src: def.imageSrc ?? "/synthesis-logo.svg",
 				alt: "Achievement",
-				style: { width: "24px", height: "24px", borderRadius: "4px" },
+				style: { width: 56, height: 56, borderRadius: 8, objectFit: "cover" },
+				draggable: false,
 			}),
-			React.createElement("div", null, `Achievement Unlocked: ${def.title}`)
+			React.createElement(
+				"div",
+				{ className: "flex flex-col" },
+				React.createElement(
+					"div",
+					{ className: "text-emerald-400 text-[12px] uppercase tracking-wider font-semibold drop-shadow" },
+					"Achievement Unlocked"
+				),
+				React.createElement(
+					"div",
+					{ className: "text-white text-[15px] font-semibold drop-shadow" },
+					def.title
+				),
+				def.description
+					? React.createElement(
+						"div",
+						{ className: "text-zinc-200 text-[12px] drop-shadow" },
+						def.description
+					  )
+					: null
+			)
 		)
 	}
 
@@ -104,8 +134,8 @@ export default class AchievementsSystem extends WorldSystem {
 		const data: SavedShape = { states: [...this._states.values()] }
 		try {
 			window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data))
-		} catch (_) {
-			// ignore quota errors
+		} catch (e) {
+			console.warn("Failed to save achievements", e)
 		}
 	}
 
@@ -116,18 +146,16 @@ export default class AchievementsSystem extends WorldSystem {
 			const data = JSON.parse(raw) as SavedShape
 			for (const s of data.states ?? []) this._states.set(s.key, s)
 			this.dispatchUpdate()
-		} catch (_) {
-			// ignore
+		} catch (e) {
+			console.warn("Failed to load achievements", e)
 		}
 	}
-
-
 
 	private dispatchUpdate() {
 		try {
 			window.dispatchEvent(new Event(ACHIEVEMENTS_UPDATED_EVENT))
-		} catch (_) {
-			// ignore
+		} catch (e) {
+			console.warn("Failed to dispatch achievements update", e)
 		}
 	}
 
@@ -135,5 +163,3 @@ export default class AchievementsSystem extends WorldSystem {
 
 	public update(_: number): void {}
 }
-
-
