@@ -1,5 +1,6 @@
 import { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader.ts"
 import type { ManifestFileType } from "../../manifest.d.ts"
+import { API_URL } from "@/util/Consts.ts"
 
 export type DefaultAssetInfo = Required<Pick<MirabufCacheInfo, "hash" | "remotePath" | "miraType" | "name">>
 
@@ -15,11 +16,7 @@ class DefaultAssetLoader {
     public static async refresh() {
         this._hasLoaded = true
         this._assets = []
-
-        const isElectron = window.electronAPI != null
-        const host = isElectron ? "https://synthesis.autodesk.com" : ""
-        const baseUrl = `${host}/api/mira`
-
+        const baseUrl = `${API_URL}/mira`
         const manifest: ManifestFileType = await fetch(`${baseUrl}/manifest.json`).then(x => x.json())
 
         const miraTypeMap: Partial<Record<keyof ManifestFileType, MiraType>> = {

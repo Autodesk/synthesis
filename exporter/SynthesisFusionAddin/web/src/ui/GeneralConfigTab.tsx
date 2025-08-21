@@ -2,7 +2,6 @@ import AnimationIcon from "@mui/icons-material/Animation"
 import ArchiveIcon from "@mui/icons-material/Archive"
 import BalanceIcon from "@mui/icons-material/Balance"
 import LaunchIcon from "@mui/icons-material/Launch"
-import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import SaveIcon from "@mui/icons-material/Save"
 import TuneIcon from "@mui/icons-material/Tune"
 import {
@@ -135,13 +134,14 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                     <Switch edge="end" onChange={updateLiteral("compressOutput")} checked={config.compressOutput} />
                 </ListItem>
                 <Collapse in={config.exportMode === ExportMode.ROBOT}>
-                    <ListItem>
-                        <ListItemIcon>
-                            <PrecisionManufacturingIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Export as Part" secondary="Use to export as a part for Mix And Match" />
-                        <Switch edge="end" onChange={updateLiteral("exportAsPart")} checked={config.exportAsPart} />
-                    </ListItem>
+                    {/* TODO: enable when mix and match is created */}
+                    {/*<ListItem>*/}
+                    {/*    <ListItemIcon>*/}
+                    {/*        <PrecisionManufacturingIcon />*/}
+                    {/*    </ListItemIcon>*/}
+                    {/*    <ListItemText primary="Export as Part" secondary="Use to export as a part for Mix And Match" />*/}
+                    {/*    <Switch edge="end" onChange={updateLiteral("exportAsPart")} checked={config.exportAsPart} />*/}
+                    {/*</ListItem>*/}
                     <ListItem>
                         <ListItemIcon>
                             <TuneIcon />

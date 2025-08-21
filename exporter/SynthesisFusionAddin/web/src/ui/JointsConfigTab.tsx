@@ -207,7 +207,8 @@ function JointsConfigTab({ joints, updateJoints, selection }: JointsConfigTabPro
             />
 
             <h4>
-                {joints.filter(j => j.isWheel).length} Wheel{joints.filter(j => j.isWheel).length !== 1 ? "s" : ""}
+                {joints.filter(j => j.isWheel).length} Wheel
+                {joints.filter(j => j.isWheel).length !== 1 ? "s" : ""}
             </h4>
             <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -241,8 +242,8 @@ function JointsConfigTab({ joints, updateJoints, selection }: JointsConfigTabPro
                                                 fullWidth
                                             >
                                                 <MenuItem value={WheelType.STANDARD}>Standard</MenuItem>
-                                                <MenuItem value={WheelType.MECANUM}>Mecanum</MenuItem>
-                                                <MenuItem value={WheelType.OMNI}>Omni</MenuItem>
+                                                {/*<MenuItem value={WheelType.MECANUM}>Mecanum</MenuItem>*/}
+                                                {/*<MenuItem value={WheelType.OMNI}>Omni</MenuItem>*/}
                                             </Select>
                                         </TableCell>
                                     </TableRow>

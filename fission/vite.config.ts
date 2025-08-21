@@ -2,9 +2,9 @@ import fs from "node:fs/promises"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import react from "@vitejs/plugin-react-swc"
 import * as path from "path"
-import { loadEnv, type ProxyOptions } from "vite"
+import {loadEnv, type ProxyOptions} from "vite"
 import glsl from "vite-plugin-glsl"
-import { defineConfig } from "vitest/config"
+import {defineConfig} from "vitest/config"
 
 const basePath = "/fission/"
 const serverPort = 3000
@@ -58,20 +58,22 @@ export default defineConfig(async ({ mode }) => {
     console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
     const proxies: Record<string, ProxyOptions> = {}
-    proxies["/api/mira"] = useLocalAssets
+    const assetProxy:ProxyOptions = useLocalAssets
         ? {
               target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
               changeOrigin: true,
               secure: false,
               rewrite: path =>
                   path
-                      .replace(/^\/api\/mira/, "/Downloadables/mira")
+                      .replace(/^\/api/, "/Downloadables")
           }
         : {
               target: `https://synthesis.autodesk.com/`,
               changeOrigin: true,
               secure: true,
           }
+    proxies["/api/mira"] = assetProxy
+    proxies["/api/match_configs"] = assetProxy
     proxies["/api/aps"] = useLocalAPS
         ? {
               target: `http://localhost:${dockerServerPort}/`,
