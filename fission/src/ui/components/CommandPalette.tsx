@@ -233,6 +233,8 @@ const CommandPalette: React.FC = () => {
                         onKeyDown={onInputKeyDown}
                         sx={{
                             "& .MuiOutlinedInput-root": {
+                                borderTopLeftRadius: 0,
+                                borderTopRightRadius: 0,
                                 "&:hover fieldset, &.Mui-focused fieldset": {
                                     borderColor: "rgba(0, 0, 0, 0.9)",
                                     borderWidth: "1px",
