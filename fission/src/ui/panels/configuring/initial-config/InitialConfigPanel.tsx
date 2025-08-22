@@ -1,19 +1,20 @@
 import { Box, Stack } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { InputSchemeUseType } from "@/systems/input/InputTypes"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -24,7 +25,7 @@ import InputSchemeSelection from "./InputSchemeSelection"
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
     const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
-    const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
+    const { openModal, openPanel, configureScreen } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -42,7 +43,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             targetAssembly.alliance = alliance
             targetAssembly.station = station
-            SimulationSystem.addPerRobotScore(targetAssembly, 0)
+            ScoreTracker.addPerRobotScore(targetAssembly, 0)
 
             const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
@@ -58,12 +59,14 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                 setSelectedScheme(scheme)
             }
+            World.multiplayerSystem?.broadcast({ type: "metadataUpdate", data: targetAssembly.multiplayerInfo })
         }
-    }, [closePanel, panel, targetAssembly])
+        new ConfigurationSavedEvent()
+    }, [alliance, targetAssembly, station, setSelectedScheme])
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) World.sceneRenderer.removeSceneObject(targetAssembly.id)
-    }, [closePanel, panel, targetAssembly])
+    }, [targetAssembly])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)
@@ -76,14 +79,16 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             panel!,
             { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
             {
-                onBeforeAccept: closeFinish,
-                onCancel: closeDelete,
+                onBeforeAccept: () => {
+                    closeFinish()
+                },
+                onCancel: () => closeDelete(),
                 onClose: () => {
                     setUnconfirmedImport(false)
                 },
             }
         )
-    }, [])
+    }, [closeFinish, closeDelete, configureScreen, panel, setUnconfirmedImport])
 
     return (
         <Stack gap={2}>
@@ -140,7 +145,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     scaleDisabled={true}
                     size={3.0}
                     parent={targetAssembly}
-                    onAccept={closeFinish}
+                    onAccept={() => closeFinish()}
                     onCancel={closeDelete}
                 />
             )}

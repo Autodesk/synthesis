@@ -247,8 +247,7 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
             )
         elif html_args.action == "export":
             opts = moduleExporterOptions.ExporterOptions().readFromJSON(data)
-            export(opts)
-            html_args.returnData = "{}"
+            export(opts, html_args)
         elif html_args.action == "save":
             opts = moduleExporterOptions.ExporterOptions().readFromJSON(data)
             opts.writeToDesign()
@@ -336,7 +335,7 @@ def buildGamepiece(gamepiece: adsk.fusion.Occurrence) -> dict[str, Any]:
 
 
 @logFailure(messageBox=True)
-def export(exporterOptions: moduleExporterOptions.ExporterOptions) -> None:
+def export(exporterOptions: moduleExporterOptions.ExporterOptions, html_args: adsk.core.HTMLEventArgs) -> None:
     logger.info("NEWUI")
     logger.info(exporterOptions)
     design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
@@ -361,8 +360,13 @@ def export(exporterOptions: moduleExporterOptions.ExporterOptions) -> None:
     exporterOptions.version = docVersion
     exporterOptions.materials = 0
 
-    Parser.Parser(exporterOptions).export()
+    try:
+        Parser.Parser(exporterOptions).export()
+    except RuntimeError as e:
+        html_args.returnData = json.dumps({"_err": str(e)})
+        return
     exporterOptions.writeToDesign()
+    html_args.returnData = "{}"
 
     if exporterOptions.openSynthesisUponExport:
         res = webbrowser.open(APP_WEBSITE_URL)
@@ -431,7 +435,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
         try:
             Parser.Parser(exporterOptions).export()
         except:
-            pass
+            jointConfigTab.reset()
+            gamepieceConfigTab.reset()
+
+            return
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()

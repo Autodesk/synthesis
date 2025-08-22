@@ -1,17 +1,22 @@
 import { Stack, styled } from "@mui/material"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { type ChangeEvent, useEffect, useState } from "react"
+import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import {
+    type ConfigurationType,
+    configTypeToMiraType,
+    miraTypeToConfigType,
+} from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -24,13 +29,18 @@ const VisuallyHiddenInput = styled("input")({
     whiteSpace: "nowrap",
     width: 1,
 })
+interface ImportLocalMirabufProps {
+    configurationType: ConfigurationType
+}
 
-const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufProps>> = ({ modal }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
     const { openPanel, closeModal, configureScreen } = useUIContext()
 
+    const { configurationType } = modal!.props.custom
+
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
-    const [miraType, setSelectedType] = useState<MiraType | undefined>(MiraType.ROBOT)
+    const [miraType, setSelectedType] = useState<MiraType | undefined>()
 
     const onInputChanged = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -41,18 +51,21 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
 
     useEffect(() => {
         const onCancel = () => {
-            openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
+            openPanel(ImportMirabufPanel, { configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT) })
         }
 
         const onBeforeAccept = async () => {
             if (selectedFile && miraType !== undefined) {
-                const hashBuffer = await selectedFile.arrayBuffer()
+                const buffer = await selectedFile.arrayBuffer()
                 World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-                await MirabufCachingService.cacheAndGetLocalWithInfo(hashBuffer, miraType)
+                await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     .then(result => {
                         if (result) {
-                            return createMirabuf(result.assembly, undefined, result.cacheInfo.id)
+                            return createMirabuf(result.assembly, undefined)
                         }
+                        globalOpenModal(ImportLocalMirabufModal, {
+                            configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT),
+                        })
                         return undefined
                     })
                     .then(mirabufSceneObject => {
@@ -62,6 +75,10 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
                             if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                                 openPanel(InitialConfigPanel, undefined, modal)
                             }
+                            const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+                            if (miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
+                                cameraControls.focusProvider = mirabufSceneObject
+                            }
                             closeModal(CloseType.Overwrite)
                         }
                     })
@@ -69,15 +86,16 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, void>> = ({ modal }
             }
         }
 
-        console.log("HIDE ACCEPT IN IMPL?", selectedFile === undefined || miraType === undefined)
-
         configureScreen(
             modal!,
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedFile, miraType, openPanel, modal])
+    }, [selectedFile, miraType, openPanel, modal, closeModal, configureScreen])
 
+    useEffect(() => {
+        setSelectedType(configTypeToMiraType(configurationType))
+    }, [configurationType])
     return (
         <Stack className="items-center" gap={5}>
             <ToggleButtonGroup

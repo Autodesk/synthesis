@@ -1,5 +1,4 @@
 import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
@@ -12,7 +11,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { Spacer } from "@/ui/components/StyledComponents"
+import { Button, Spacer } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
@@ -485,7 +484,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
             themeActions.save()
         }
 
-        SoundPlayer.changeVolume()
+        SoundPlayer.getInstance().changeVolume()
         PreferencesSystem.savePreferences()
         globalAddToast("info", "Settings Saved")
     }, [graphicsActions, themeActions])
@@ -500,7 +499,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
         }
 
         PreferencesSystem.revertPreferences()
-        SoundPlayer.changeVolume()
+        SoundPlayer.getInstance().changeVolume()
     }, [graphicsActions, themeActions])
 
     useEffect(() => {
@@ -537,7 +536,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
                 textColor="inherit"
                 indicatorColor="primary"
                 centered
-                {...SoundPlayer.buttonSoundEffects()}
+                {...SoundPlayer.getInstance().buttonSoundEffects()}
             >
                 {tabs.map(tab => (
                     <Tab key={tab.key} value={tab.key} label={tab.label} />

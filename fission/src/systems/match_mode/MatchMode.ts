@@ -2,16 +2,16 @@ import beep from "@/assets/sound-files/beep.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
-import { globalOpenModal } from "@/components/GlobalUIControls.ts"
-import MatchResultsModal from "@/modals/MatchResultsModal.tsx"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
+import World from "@/systems/World.ts"
+import { globalOpenModal } from "@/ui/components/GlobalUIControls"
+import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { createMatchEventFromConfig } from "./MatchModeAnalyticsUtils"
-import SimulationSystem from "../simulation/SimulationSystem"
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
-import World from "../World"
 
 class MatchMode {
     private static _instance: MatchMode
@@ -48,58 +48,79 @@ class MatchMode {
         )
     }
 
-    startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
+    get matchModeConfig() {
+        return this._matchModeConfig
+    }
+
+    async runTimer(duration: number, updateTimeLeft: boolean = true) {
         this._initialTime = duration
         this._timeLeft = duration
 
         // Dispatch an event to update the time left in the UI
         if (updateTimeLeft) new UpdateTimeLeft(this._initialTime).dispatch()
+        return new Promise<void>(res => {
+            this._intervalId = window.setInterval(() => {
+                this._timeLeft--
 
-        this._intervalId = window.setInterval(() => {
-            this._timeLeft--
+                if (this._timeLeft >= 0 && updateTimeLeft) {
+                    new UpdateTimeLeft(this._timeLeft).dispatch()
+                }
 
-            if (this._timeLeft >= 0 && updateTimeLeft) {
-                new UpdateTimeLeft(this._timeLeft).dispatch()
-            }
+                // Checks if endgame has started
+                if (
+                    this._matchModeType === MatchModeType.TELEOP &&
+                    this._timeLeft == this._matchModeConfig.endgameTime
+                ) {
+                    this.endgameStart()
+                }
 
-            // Checks if endgame has started
-            if (this._matchModeType === MatchModeType.TELEOP && this._timeLeft == this._matchModeConfig.endgameTime) {
-                this.endgameStart()
-            }
-
-            if (this._timeLeft <= 0) {
-                clearInterval(this._intervalId as number)
-                functionCall()
-            }
-        }, 1000)
+                if (this._timeLeft <= 0) {
+                    console.log("resolving")
+                    res()
+                }
+            }, 1000)
+        }).finally(() => {
+            clearInterval(this._intervalId as number)
+        })
     }
 
     autonomousModeStart() {
-        SoundPlayer.play(MatchStart)
+        void SoundPlayer.getInstance().play(MatchStart)
         this.setMatchModeType(MatchModeType.AUTONOMOUS)
-        this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd())
+        this.runTimer(this._matchModeConfig.autonomousTime).then(() => this.autonomousModeEnd())
     }
 
     autonomousModeEnd() {
-        SoundPlayer.play(MatchEnd)
-        this.startTimer(3, () => this.teleopModeStart(), false) // Delay between autonomous and teleop modes
+        void SoundPlayer.getInstance().play(MatchEnd)
+        this.runTimer(3, false).then(() => this.teleopModeStart()) // Delay between autonomous and teleop modes
     }
 
     teleopModeStart() {
-        SoundPlayer.play(MatchResume)
+        void SoundPlayer.getInstance().play(MatchResume)
         this.setMatchModeType(MatchModeType.TELEOP)
-        this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded())
+        this.runTimer(this._matchModeConfig.teleopTime).then(() => this.matchEnded())
     }
 
     endgameStart() {
-        SoundPlayer.play(beep)
+        void SoundPlayer.getInstance().play(beep)
         this._matchModeType = MatchModeType.ENDGAME
+        console.log("endgame start")
         this._endgame = true
     }
 
-    start() {
+    async start(broadcast = true, useSpawnPositions: boolean) {
+        if (broadcast) {
+            await World.multiplayerSystem?.broadcast({
+                type: "matchModeState",
+                data: { event: "start", config: this._matchModeConfig, moveRobots: useSpawnPositions },
+            })
+            console.log("sent multiplayer")
+        }
+        if (useSpawnPositions) {
+            World.getOwnRobots().forEach(obj => obj.moveToSpawnLocation())
+        }
         this.autonomousModeStart()
-        SimulationSystem.resetScores()
+        ScoreTracker.resetScores()
         RobotDimensionTracker.matchStart()
 
         const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
@@ -107,17 +128,13 @@ class MatchMode {
     }
 
     matchEnded() {
-        SoundPlayer.play(MatchEnd)
+        void SoundPlayer.getInstance().play(MatchEnd)
         clearInterval(this._intervalId as number)
         this.setMatchModeType(MatchModeType.MATCH_ENDED)
-        globalOpenModal?.(MatchResultsModal, undefined, undefined, {
-            allowClickAway: false,
-            hideCancel: true,
-            hideAccept: true,
-        })
 
         const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
         World.analyticsSystem?.event("Match End", matchEvent)
+        globalOpenModal(MatchResultsModal, undefined)
     }
 
     sandboxModeStart() {
@@ -126,7 +143,7 @@ class MatchMode {
         this._initialTime = 0
         this._timeLeft = 0
         new UpdateTimeLeft(this._timeLeft).dispatch()
-        SimulationSystem.resetScores()
+        ScoreTracker.resetScores()
     }
 
     isMatchEnabled(): boolean {
