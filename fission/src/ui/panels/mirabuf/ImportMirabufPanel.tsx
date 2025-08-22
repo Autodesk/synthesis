@@ -7,6 +7,8 @@ import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAsse
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
+import { mirabuf } from "@/proto/mirabuf"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -33,6 +35,7 @@ import {
     miraTypeToConfigType,
 } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
 
 interface ItemCardProps {
     id: string
@@ -76,9 +79,39 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
     await MirabufCachingService.get(info.hash)
         .then(async assembly => {
             if (assembly) {
-                await createMirabuf(assembly, progressHandle).then(mirabufSceneObject => {
+                await createMirabuf(assembly, progressHandle).then(async mirabufSceneObject => {
                     if (mirabufSceneObject) {
                         World.sceneRenderer.registerSceneObject(mirabufSceneObject)
+
+                        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+
+                        if (World.multiplayerSystem != null) {
+                            const encodedAssembly =
+                                mirabufSceneObject.miraType !== MiraType.FIELD
+                                    ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
+                                    : undefined
+
+                            const message: Message = {
+                                type: "newObject",
+                                data: {
+                                    sceneObjectKey: mirabufSceneObject.id,
+                                    assembly: encodedAssembly,
+                                    assemblyHash: info.hash,
+                                    miraType: info.miraType,
+                                    initialPreferences: mirabufSceneObject.getPreferenceData(),
+                                    bodyIds: mirabufSceneObject
+                                        .getAllBodyIds()
+                                        .map(id => id.GetIndexAndSequenceNumber()),
+                                },
+                            }
+                            await World.multiplayerSystem?.broadcast(message)
+                            World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
+                        }
+
+                        if (info.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
+                            cameraControls.focusProvider = mirabufSceneObject
+                        }
+
                         progressHandle.done()
 
                         if (mirabufSceneObject.miraType == MiraType.ROBOT) {
@@ -112,7 +145,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const [cachedRobots, setCachedRobots] = useState(MirabufCachingService.getAll(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(MirabufCachingService.getAll(MiraType.FIELD))
 
-    // const [manifest, setManifest] = useState<MiraManifest | undefined>()
     const manifestRobots = useMemo(() => DefaultAssetLoader.robots, [])
     const manifestFields = useMemo(() => DefaultAssetLoader.fields, [])
     const [viewType, setViewType] = useState<MiraType>(MiraType.ROBOT)

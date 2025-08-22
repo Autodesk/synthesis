@@ -2,7 +2,6 @@ import type React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
@@ -31,6 +30,7 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import EventSystem from "@/systems/EventSystem.ts"
 
 interface ConfigInterfaceProps<T, P> {
     panel: UIScreen<T, P>
@@ -176,6 +176,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
+            selectedAssembly?.sendPreferences()
             EventSystem.dispatch("ConfigurationSavedEvent")
         }
         const onCancel = () => {

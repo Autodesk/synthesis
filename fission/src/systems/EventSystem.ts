@@ -1,17 +1,17 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import type {Data} from "@/aps/APSDataManagement.ts"
-import type {ContextData} from "@/components/ContextMenuData.ts"
-import type {ProgressHandle} from "@/components/ProgressNotificationData.ts"
-import type {SceneOverlayTag} from "@/components/SceneOverlayEvents.ts"
-import type {MatchModeType} from "@/systems/match_mode/MatchModeTypes.ts"
-import type {CurrentContactData, OnContactValidateData} from "@/systems/physics/ContactEvents.ts"
+import type { Data } from "@/aps/APSDataManagement.ts"
+import type { ContextData } from "@/components/ContextMenuData.ts"
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import type { SceneOverlayTag } from "@/components/SceneOverlayEvents.ts"
+import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes.ts"
+import type { CurrentContactData, OnContactValidateData } from "@/systems/physics/ContactEvents.ts"
 import type TaskStatus from "@/util/TaskStatus.ts"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts";
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 
 interface EventDataMap {
     // Mirabuf
     ProgressEvent: ProgressHandle
-    MirabufObjectChangeEvent: MirabufSceneObject|null
+    MirabufObjectChangeEvent: MirabufSceneObject | null
 
     // APS
     MirabufFilesUpdateEvent: Data[]
@@ -52,6 +52,9 @@ interface EventDataMap {
     DragModeToggled: { enabled: boolean }
 
     APSUserInfoUpdate: never
+
+    MultiplayerStateJoinRoom: never
+    MultiplayerStatePeerChange: never
 }
 
 type EventKey = keyof EventDataMap
@@ -62,8 +65,10 @@ type EventKeyWithoutValue = Exclude<EventKey, EventKeyWithValue>
 
 class CustomEvent<K extends EventKey, T extends EventDataMap[K]> extends Event {
     public readonly data: T
+    public readonly type: K
     public constructor(event: K, data: T) {
         super(event)
+        this.type = event
         this.data = data
     }
 

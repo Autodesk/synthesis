@@ -15,13 +15,17 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
-import { mirabuf } from "../../proto/mirabuf"
+import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import { mirabuf } from "@/proto/mirabuf"
+import type { Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
+import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -1256,7 +1260,7 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    public getBody(bodyId: Jolt.BodyID) {
+    public getBody(bodyId: Jolt.BodyID): Jolt.Body {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
 
@@ -1275,8 +1279,49 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltInterface.Step(lastDeltaT, substeps)
 
+        if (World.multiplayerSystem != null) {
+            const interObjectCollisions = this._physicsEventQueue
+                .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
+                .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
+
+            World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
+                const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)
+
+                if (clientSceneObject == null || !(clientSceneObject instanceof MirabufSceneObject)) {
+                    console.warn("Could not find multiplayer robot") // happens when you delete
+                    return
+                }
+                const touchedBodies = clientSceneObject.mechanism.touchedObjects
+
+                const message: Message =
+                    interObjectCollisions.length > 0
+                        ? {
+                              type: "collision",
+                              data: World.sceneRenderer.mirabufSceneObjects
+                                  .getAll()
+                                  .map(object => object.getUpdateData())
+                                  .filter(n => n != null),
+                          }
+                        : {
+                              type: "update",
+                              data: [clientSceneObject, ...touchedBodies]
+                                  .map(object => object.getUpdateData())
+                                  .filter(n => n != null),
+                          }
+                World.multiplayerSystem?.broadcast(message)
+
+                if (clientSceneObjectId != null) {
+                    clientSceneObject.mechanism.touchedObjects = []
+                }
+            })
+        }
+
         this._physicsEventQueue.forEach(x => x.dispatch())
         this._physicsEventQueue = []
+    }
+
+    private onSameLayer(body1: Jolt.BodyID, body2: Jolt.BodyID): boolean {
+        return this.getBody(body1).GetObjectLayer() === this.getBody(body2).GetObjectLayer()
     }
 
     /*
@@ -1426,6 +1471,47 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Finds the MirabufSceneObject containing the mechanism containing the body referenced by the given id
+     */
+    private bodyToMiraSceneObject(body: Jolt.Body): MirabufSceneObject | null {
+        const id = body.GetID()
+        return (
+            World.sceneRenderer.mirabufSceneObjects.findWhere(obj =>
+                [...obj.mechanism.nodeToBody].some(n => n[1] == id)
+            ) ?? null
+        )
+    }
+
+    /**
+     * In multiplayer, returns whether the given jolt body is on the client's robot
+     *
+     * In singleplayer returns false
+     */
+    private isClient(body: Jolt.Body): boolean {
+        return (
+            (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
+                World.multiplayerSystem
+                    ?.getOwnSceneObjectIDs()
+                    .includes(this.bodyToMiraSceneObject(body)?.id as number)) ??
+            false
+        )
+    }
+
+    /**
+     * Records the robot body as having touched another body
+     * This is used for tracking which bodies the client needs to send the state of to peers
+     */
+    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body) {
+        if (other == null || robot == null) return
+
+        const robotSceneObject = this.bodyToMiraSceneObject(robot)
+        const otherSceneObject = this.bodyToMiraSceneObject(other)
+        if (robotSceneObject == null || otherSceneObject == null) return
+
+        robotSceneObject.mechanism.touchedObjects.push(otherSceneObject)
+    }
+
+    /**
      * Creates and assigns Jolt contact listener that dispatches events.
      *
      * @param physSystem The physics system the contact listener will attach to
@@ -1446,6 +1532,14 @@ class PhysicsSystem extends WorldSystem {
                 manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
                 settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
             }
+
+            // Detect if a robot is touching a gp, then push to the robot's touched list
+            const [clientBody, otherBody] = this.isClient(body1)
+                ? [body1, body2]
+                : this.isClient(body2)
+                  ? [body2, body1]
+                  : [undefined, undefined]
+            this.recordOtherBodyCollision(clientBody, otherBody)
 
             this._physicsEventQueue.push(EventSystem.create("OnContactAddedEvent", message))
         }
@@ -1598,17 +1692,6 @@ export type RayCastHit = {
     data: Jolt.RayCastResult
     point: Jolt.Vec3
     ray: Jolt.RRayCast
-}
-
-/**
- * An interface to create an association between a body and anything.
- */
-export class BodyAssociate {
-    readonly associatedBody: JoltBodyIndexAndSequence
-
-    public constructor(bodyId: Jolt.BodyID) {
-        this.associatedBody = bodyId.GetIndexAndSequenceNumber()
-    }
 }
 
 export default PhysicsSystem

@@ -54,6 +54,9 @@ class SceneRenderer extends WorldSystem {
     public get sceneObjects() {
         return this._sceneObjects
     }
+    public set sceneObjects(objects: Map<number, SceneObject>) {
+        this._sceneObjects = objects
+    }
 
     public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
         return [...this._sceneObjects.values()].filter(predicate)
@@ -61,7 +64,7 @@ class SceneRenderer extends WorldSystem {
 
     public readonly mirabufSceneObjects = {
         getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
-        findWhere: (predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]) =>
+        findWhere: (predicate: (obj: MirabufSceneObject) => boolean) =>
             this.mirabufSceneObjects.getAll().find(predicate),
         getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD),
         getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT),
@@ -362,8 +365,15 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(obj: T): number {
-        const id = nextSceneObjectId++
+    public registerSceneObject<T extends SceneObject>(obj: T, idOverride?: number): number {
+        const id = idOverride ?? nextSceneObjectId++
+        if (nextSceneObjectId <= id) {
+            nextSceneObjectId = id + 1
+        }
+        if (this._sceneObjects.has(id)) {
+            console.error("Trying to add with existing ID!", obj, idOverride)
+            return -1
+        }
         obj.id = id
         this._sceneObjects.set(id, obj)
         obj.setup()
@@ -394,6 +404,10 @@ class SceneRenderer extends WorldSystem {
         }
 
         if (this._sceneObjects.delete(id)) {
+            World?.multiplayerSystem?.broadcast({
+                type: "deleteObject",
+                data: id,
+            })
             obj!.dispose()
         }
     }
@@ -540,11 +554,20 @@ class SceneRenderer extends WorldSystem {
         let miraSupplierData: ContextData | undefined = undefined
         if (res) {
             const assoc = World.physicsSystem.getBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
-            if (assoc?.sceneObject) {
-                miraSupplierData = assoc.sceneObject.getSupplierData()
+            const sceneObject = assoc?.sceneObject
+            if (sceneObject) {
+                if (
+                    !World.multiplayerSystem ||
+                    (sceneObject.miraType === MiraType.ROBOT &&
+                        World.multiplayerSystem
+                            ?.getOwnRobots()
+                            .map(obj => obj.id)
+                            .includes(sceneObject.id))
+                ) {
+                    miraSupplierData = assoc.sceneObject.getSupplierData()
+                }
             }
         }
-
         // All else fails, present default options.
         if (!miraSupplierData) {
             miraSupplierData = { title: "The Scene", items: [] }

@@ -3,10 +3,10 @@ import * as THREE from "three"
 import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
@@ -214,7 +214,7 @@ class ProtectedZoneSceneObject extends SceneObject {
             collisionObject.alliance !== this._prefs?.alliance &&
             !this.isRobotInside(collisionObject)
         ) {
-            SimulationSystem.robotPenalty(collisionObject, this._prefs?.penaltyPoints ?? 0, `Entered protected zone`)
+            ScoreTracker.robotPenalty(collisionObject, this._prefs?.penaltyPoints ?? 0, `Entered protected zone`)
         }
 
         this._robotsInside.set(collisionObject, Date.now())
@@ -284,7 +284,7 @@ class ProtectedZoneSceneObject extends SceneObject {
 
         if (shouldPenalize) {
             this._lastRobotCollisionTime = Date.now()
-            SimulationSystem.robotPenalty(
+            ScoreTracker.robotPenalty(
                 opposingRobot,
                 this._prefs?.penaltyPoints ?? 0,
                 `Contact penalty in protected zone`

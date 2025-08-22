@@ -1,10 +1,10 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
@@ -179,16 +179,7 @@ class ScoringZoneSceneObject extends SceneObject {
                     const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
                     const points = this._prefs.points
 
-                    if (this._prefs.alliance == "red") {
-                        SimulationSystem.redScore += (gpAdded.length - gpRemoved.length) * points
-                    } else {
-                        SimulationSystem.blueScore += (gpAdded.length - gpRemoved.length) * points
-                    }
-
-                    EventSystem.dispatch("ScoreChangedEvent", {
-                        red: SimulationSystem.redScore,
-                        blue: SimulationSystem.blueScore,
-                    })
+                    ScoreTracker.addPoints(this._prefs.alliance, (gpAdded.length - gpRemoved.length) * points)
 
                     // Per robot score calculations
                     gpAdded.forEach(gpID => {
@@ -196,14 +187,14 @@ class ScoringZoneSceneObject extends SceneObject {
                         const robotAlliancePoints =
                             associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
-                            SimulationSystem.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
+                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
                     })
                     gpRemoved.forEach(gpID => {
                         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
                         const robotAlliancePoints =
                             associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
-                            SimulationSystem.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
+                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
                     })
 
                     this._prevGP = Object.assign([], this._gpContacted)
@@ -211,6 +202,10 @@ class ScoringZoneSceneObject extends SceneObject {
         } else {
             console.debug("Failed to update scoring zone")
         }
+    }
+
+    public reset() {
+        this._prevGP = []
     }
 
     public dispose(): void {
@@ -233,23 +228,13 @@ class ScoringZoneSceneObject extends SceneObject {
             if (this._prefs.persistentPoints) {
                 this._gpContacted.push(gpID)
             } else {
-                if (this._prefs.alliance == "red") {
-                    SimulationSystem.redScore += this._prefs.points
-                } else {
-                    SimulationSystem.blueScore += this._prefs.points
-                }
-
-                EventSystem.dispatch("ScoreChangedEvent", {
-                    red: SimulationSystem.redScore,
-                    blue: SimulationSystem.blueScore,
-                })
-
+                ScoreTracker.addPoints(this._prefs.alliance, this._prefs.points)
                 const robotAlliancePoints =
                     associate.robotLastInContactWith?.alliance !== this._prefs?.alliance
                         ? -this._prefs.points
                         : this._prefs.points
                 associate.robotLastInContactWith &&
-                    SimulationSystem.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
+                    ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
             }
         }
     }

@@ -1,7 +1,7 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import EventSystem from "@/systems/EventSystem.ts"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ScoringZoneSceneObject from "../../mirabuf/ScoringZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
@@ -24,6 +24,9 @@ const mockSceneRenderer = {
     scene: {
         remove: vi.fn(),
     },
+    mirabufSceneObjects: {
+        getField: vi.fn(),
+    },
 }
 
 vi.mock("@/systems/World", () => ({
@@ -42,8 +45,7 @@ describe("ScoringZoneSceneObject", () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-        SimulationSystem.redScore = 0
-        SimulationSystem.blueScore = 0
+        ScoreTracker.resetScores()
         console.log = vi.fn()
     })
 
@@ -83,7 +85,7 @@ describe("ScoringZoneSceneObject", () => {
         const dispatchSpy = vi.fn()
         const unsubscribe = EventSystem.listen("ScoreChangedEvent", dispatchSpy)
         instance["zoneCollision"](gamePieceBody)
-        expect(SimulationSystem.redScore).toBe(10)
+        expect(ScoreTracker.redScore).toBe(10)
         expect(dispatchSpy).toHaveBeenCalled()
         unsubscribe()
     })

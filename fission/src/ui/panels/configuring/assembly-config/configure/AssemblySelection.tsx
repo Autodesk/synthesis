@@ -24,14 +24,20 @@ export class AssemblySelectionOption extends SelectMenuOption {
     assemblyObject: MirabufSceneObject
 
     constructor(name: string, assemblyObject: MirabufSceneObject) {
-        super(assemblyObject.id.toString(), name)
+        const isDisabled = !assemblyObject.isOwnObject
+        super(
+            assemblyObject.id.toString(),
+            name,
+            isDisabled ? `Object belongs to ${assemblyObject.multiplayerOwnerName}` : undefined,
+            isDisabled
+        )
         this.assemblyObject = assemblyObject
     }
 }
 
 function makeSelectionOption(configurationType: ConfigurationType, assembly: MirabufSceneObject) {
     return new AssemblySelectionOption(
-        `${configurationType === "ROBOTS" ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
+        `${configurationType === "ROBOTS" ? `[${assembly.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
         assembly
     )
 }
