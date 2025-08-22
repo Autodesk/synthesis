@@ -229,6 +229,7 @@ const CommandPalette: React.FC = () => {
                         onChange={e => {
                             setQuery(e.target.value)
                         }}
+                        autoComplete="off"
                         onKeyDown={onInputKeyDown}
                         sx={{
                             "& .MuiOutlinedInput-root": {
