@@ -2,9 +2,9 @@ import fs from "node:fs/promises"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import react from "@vitejs/plugin-react-swc"
 import * as path from "path"
-import { loadEnv, type ProxyOptions } from "vite"
+import {loadEnv, type ProxyOptions} from "vite"
 import glsl from "vite-plugin-glsl"
-import { defineConfig } from "vitest/config"
+import {defineConfig} from "vitest/config"
 
 const basePath = "/fission/"
 const serverPort = 3000
@@ -42,14 +42,14 @@ if (useSsl) {
 }
 
 const localAssetsExist = await fs
-    .access("./public/Downloadables/Mira", fs.constants.R_OK)
+    .access("./public/Downloadables/mira", fs.constants.R_OK)
     .then(() => true)
     .catch(() => false)
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
-
+    process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9002"
     const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
 
     if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")) {
@@ -58,22 +58,22 @@ export default defineConfig(async ({ mode }) => {
     console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
     const proxies: Record<string, ProxyOptions> = {}
-    proxies["/api/mira"] = useLocalAssets
+    const assetProxy:ProxyOptions = useLocalAssets
         ? {
               target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
               changeOrigin: true,
               secure: false,
               rewrite: path =>
                   path
-                      .replace(/^\/api\/mira/, "/Downloadables/Mira")
-                      .replace("robots", "Robots")
-                      .replace("fields", "Fields"),
+                      .replace(/^\/api/, "/Downloadables")
           }
         : {
               target: `https://synthesis.autodesk.com/`,
               changeOrigin: true,
               secure: true,
           }
+    proxies["/api/mira"] = assetProxy
+    proxies["/api/match_configs"] = assetProxy
     proxies["/api/aps"] = useLocalAPS
         ? {
               target: `http://localhost:${dockerServerPort}/`,

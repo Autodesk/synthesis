@@ -1,18 +1,20 @@
 import { Divider, Stack } from "@mui/material"
-import { Button, IconButton } from "./StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Label from "./Label"
-import { CustomTooltip, Spacer, SynthesisIcons } from "./StyledComponents"
+import { Button, CustomTooltip, IconButton, Spacer, SynthesisIcons } from "./StyledComponents"
 
 /** Extend this to make a type that contains custom data */
 export class SelectMenuOption {
     id: string
     name: string
+    disabled: boolean
     tooltipText?: string
-    constructor(id: string, name: string, tooltipText?: string) {
+
+    constructor(id: string, name: string, tooltipText?: string, disabled: boolean = false) {
         this.id = id
         this.name = name
+        this.disabled = disabled
         this.tooltipText = tooltipText
     }
 }
@@ -51,6 +53,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 fullWidth={true}
                 color="secondary"
                 variant="outlined"
+                disabled={value.disabled}
                 onClick={() => {
                     onSelected(value)
                 }}
@@ -70,15 +73,11 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
             {/* Button used for selecting a parent (shows up as an outline) */}
             {value.tooltipText && CustomTooltip(value.tooltipText)}
             {/** Delete button only if onDelete is defined */}
-            {onDelete && includeDelete && (
+            {onDelete && includeDelete && !value.disabled && (
                 <>
                     {Spacer(0, 10)}
                     {/*DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")&*/}
-                    <Button
-                        color="error"
-                        onClick={onDelete !== undefined ? onDelete : () => {}}
-                        id="select-menu-delete-button"
-                    >
+                    <Button color="error" onClick={() => onDelete?.()} id="select-menu-delete-button">
                         {SynthesisIcons.DELETE_LARGE}
                     </Button>
                 </>

@@ -1,6 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { TextField } from "@mui/material"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { Stack, styled } from "@mui/system"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -9,10 +8,10 @@ import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
 import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
-
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -134,14 +133,13 @@ export const RedAllianceToggleButton = styled(ToggleButton)({
 function captureBodies(): BodyCapture[] {
     const captures: BodyCapture[] = []
     World.sceneRenderer.mirabufSceneObjects.getAll().forEach(sceneObj => {
-        sceneObj.mechanism.nodeToBody.forEach(bodyId => {
-            const body = World.physicsSystem.getBody(bodyId)
+        sceneObj.getAllBodies().forEach(body => {
             const transform = body.GetWorldTransform()
             const translation = new THREE.Vector3(0, 0, 0)
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             convertJoltMat44ToThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
             captures.push({
-                id: bodyId,
+                id: body.GetID(),
                 pos: convertThreeVector3ToJoltRVec3(translation),
                 rot: convertThreeQuaternionToJoltQuat(rotation),
             })

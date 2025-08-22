@@ -1,13 +1,13 @@
 import { assert, describe, expect, test, vi } from "vitest"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
+import { mirabuf } from "@/proto/mirabuf"
 import {
     type Alliance,
     defaultRobotSpawnLocation,
     type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes.ts"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor.ts"
-import { mirabuf } from "../../proto/mirabuf"
 
 function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }
@@ -149,7 +149,7 @@ describe("Devtool Scoring Zones Caching Tests", () => {
 describe("Asset tests", () => {
     test("FRC Field 2018_v13 has spawn locations", async () => {
         const file = await MirabufCachingService.cacheRemote("/api/mira/Fields/FRC Field 2018_v13.mira", MiraType.FIELD)
-            .then(x => MirabufCachingService.get(x!.id, MiraType.FIELD))
+            .then(x => MirabufCachingService.get(x!.hash))
             .catch(e => {
                 console.error("Could not get mirabuf file", e)
                 return undefined

@@ -1,0 +1,1 @@
+export type ManifestFileType = Record<"robots"|"private"|"fields", { filename: string, hash: string }[]>
