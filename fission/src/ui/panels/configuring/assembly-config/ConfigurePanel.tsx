@@ -35,25 +35,32 @@ import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 
 // Register command: Configure Assets (module-scope side effect)
-CommandRegistry.get().registerCommands([{
-    id: "configure-assets-robots",
-    label: "Configure Assets (Robots)",
-    description: "Open the asset configuration panel.",
-    keywords: ["configure", "asset", "config", "robot", "robots"],
-    perform: () => import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "ROBOTS" })),
-}, {
-    id: "configure-assets-fields",
-    label: "Configure Assets (Fields)",
-    description: "Open the asset configuration panel.",
-    keywords: ["configure", "asset", "config", "field", "fields"],
-    perform: () => import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "FIELDS" })),
-}, {
-    id: "configure-assets-inputs",
-    label: "Configure Assets (Inputs)",
-    description: "Open the asset configuration panel.",
-    keywords: ["configure", "asset", "config", "input", "inputs"],
-    perform: () => import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "INPUTS" })),
-}])
+CommandRegistry.get().registerCommands([
+    {
+        id: "configure-assets-robots",
+        label: "Configure Assets (Robots)",
+        description: "Open the asset configuration panel.",
+        keywords: ["configure", "asset", "config", "robot", "robots"],
+        perform: () =>
+            import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "ROBOTS" })),
+    },
+    {
+        id: "configure-assets-fields",
+        label: "Configure Assets (Fields)",
+        description: "Open the asset configuration panel.",
+        keywords: ["configure", "asset", "config", "field", "fields"],
+        perform: () =>
+            import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "FIELDS" })),
+    },
+    {
+        id: "configure-assets-inputs",
+        label: "Configure Assets (Inputs)",
+        description: "Open the asset configuration panel.",
+        keywords: ["configure", "asset", "config", "input", "inputs"],
+        perform: () =>
+            import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "INPUTS" })),
+    },
+])
 
 // Register command: Configure Robots (module-scope)
 CommandRegistry.get().registerCommand({
