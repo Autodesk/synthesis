@@ -39,15 +39,7 @@ Follow the above links to the respective READMEs on how to build, run, and test 
 > [!NOTE]
 > As Fusion is not officially supported on Linux, we do not provide an installer for the Fusion Exporter on Linux.
 
-## Contributing
-
-This project welcomes community suggestions and contributions. Synthesis is nearly 100% open source and relies on the FIRST® community to help make it better. The [Synthesis Contribution Guide](/CONTRIBUTING.md) suggests ways in which you can get involved with both software development and other roles such as marketing.
-
-Before you contribute to this repository, please first discuss the change you wish to make a GitHub issue or reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). This way we can ensure that there is no overlap between outside contributors and internal development work.
-
-When ready to contribute, fork the Synthesis repository, make your changes, and submit a pull request. When contributing to Synthesis, please branch from and submit to our `dev` branch. The `prod` branch is intended to be a copy of either exactly what is in production, or what is ready for production. We like to keep changes to the dev branch so they have time to simmer and be distributed via beta releases.
-
-Be sure to fill out the pull request template accordingly to make reviewing your work as smooth as possible.
+## [Contributing Guidelines](/CONTRIBUTING.md)
 
 ## Other Components
 

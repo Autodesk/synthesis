@@ -5,6 +5,14 @@
 
 Synthesis is 100% open source and relies on the FIRST community to help shape its growth. The Synthesis Contribution Guide suggests ways in which you can get involved through development and non-development avenues.
 
+# How to Contribute
+
+Before you contribute to this repository, please first discuss the change you wish to make a GitHub issue or reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). This way we can ensure that there is no overlap between outside contributors and internal development work.
+
+When ready to contribute, fork the Synthesis repository, make your changes, and submit a pull request. When contributing to Synthesis, please branch from and submit to our `dev` branch. The `prod` branch is intended to be a copy of either exactly what is in production, or what is ready for production. We like to keep changes to the dev branch so they have time to simmer and be distributed via beta releases.
+
+Be sure to fill out the pull request template accordingly to make reviewing your work as smooth as possible.
+
 # Why Contribute? Benefits to Contributing
 
 - Prepare for an internship - share your contributions when applying to the [Synthesis Summer Internship.](https://synthesis.autodesk.com/internship.html)
