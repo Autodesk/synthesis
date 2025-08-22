@@ -42,7 +42,7 @@ import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel
 import CommandRegistry from "@/ui/components/CommandRegistry"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
-CommandRegistry.get().registerCommand({
+CommandRegistry.get().registerCommands([{
     id: "spawn-asset-robots",
     label: "Spawn Asset (Robots)",
     description: "Open asset spawn panel scoped to robots.",
@@ -50,8 +50,7 @@ CommandRegistry.get().registerCommand({
     perform: () => {
         globalOpenPanel<void, ImportMirabufPanelCustomProps>(ImportMirabufPanel, { configurationType: "ROBOTS" })
     },
-})
-CommandRegistry.get().registerCommand({
+}, {
     id: "spawn-asset-fields",
     label: "Spawn Asset (Fields)",
     description: "Open asset spawn panel scoped to fields.",
@@ -59,7 +58,7 @@ CommandRegistry.get().registerCommand({
     perform: () => {
         globalOpenPanel<void, ImportMirabufPanelCustomProps>(ImportMirabufPanel, { configurationType: "FIELDS" })
     },
-})
+}])
 
 interface ItemCardProps {
     id: string
