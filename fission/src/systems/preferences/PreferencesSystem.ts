@@ -232,7 +232,7 @@ class PreferencesSystem {
         }
 
         try {
-            this._preferences = JSON.parse(loadedPrefs)
+            this._preferences = { ...defaultGlobalPreferences, ...JSON.parse(loadedPrefs) }
         } catch (e) {
             console.error(e)
             this._preferences = {}

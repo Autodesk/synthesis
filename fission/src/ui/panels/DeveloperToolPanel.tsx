@@ -43,6 +43,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const [keys, setKeys] = useState<string[]>([])
     const [fieldLoaded, setFieldLoaded] = useState<boolean>(false)
     const prevFieldObj = useRef<MirabufSceneObject | undefined>(undefined)
+
     // Effect: Watch for field changes and update editor/keys only if field changes
     useEffect(() => {
         const updateEditor = () => {
@@ -93,7 +94,8 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }, [selectedKey, editor])
 
     const handleSave = async () => {
-        if (!editor || !selectedKey) return
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        if (!editor || !selectedKey || !field) return
         try {
             setError("")
             const parsed = JSON.parse(jsonValue) as unknown
@@ -107,8 +109,8 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
             // Persist changes to cache
             await saveToCache()
-            const field = World.sceneRenderer.mirabufSceneObjects.getField()
-            if (!field?.fieldPreferences) {
+
+            if (!field.fieldPreferences) {
                 globalAddToast?.("error", "Devtool Error", "Field preferences not available.")
                 return
             }
@@ -121,7 +123,9 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }
 
     const handleRemove = async () => {
-        if (!editor || !selectedKey) return
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        if (!editor || !selectedKey || !field) return
+
         editor.removeUserData(selectedKey)
         setKeys(editor.getAllDevtoolKeys())
         setSelectedKey(undefined)
@@ -131,8 +135,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         // Persist removal to cache
         await saveToCache()
 
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!field?.fieldPreferences) return
+        if (!field.fieldPreferences) return
 
         devtoolHandlers[selectedKey].set(field, null)
         PreferencesSystem.savePreferences?.()
