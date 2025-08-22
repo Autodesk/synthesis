@@ -39,7 +39,9 @@ Follow the above links to the respective READMEs on how to build, run, and test 
 > [!NOTE]
 > As Fusion is not officially supported on Linux, we do not provide an installer for the Fusion Exporter on Linux.
 
-## [Contributing Guidelines](/CONTRIBUTING.md)
+## Contributing
+
+See [CONTRIBUTING.md](/CONTRIBUTING.MD) for information on how you can help build synthesis
 
 ## Other Components
 
