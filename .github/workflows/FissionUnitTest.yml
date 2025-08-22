@@ -56,7 +56,7 @@ jobs:
         run: npm install
 
       - name: Run Tests
-        run: HOME=/root npm run test
+        run: HOME=/root npm run test --bail=1
 
   runAssetpackTests:
     name: Assetpack Tests
@@ -92,6 +92,6 @@ jobs:
             ${{runner.os}}-npm
 
       - name: Run Assetpack Tests
-        run: HOME=/root npm run test src/test/mirabuf/DefaultAssets.test.ts
+        run: HOME=/root npm run test src/test/mirabuf/DefaultAssets.test.ts --bail=1
         env:
           VITE_RUN_ASSETPACK_TEST: true
