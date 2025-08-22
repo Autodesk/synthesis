@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest"
+import { mirabuf } from "@/proto/mirabuf"
 import MirabufCachingService, { MiraType } from "../../mirabuf/MirabufLoader.ts"
 import MirabufParser, { type RigidNodeReadOnly } from "../../mirabuf/MirabufParser.ts"
 import type { mirabuf } from "../../proto/mirabuf"
@@ -9,7 +10,7 @@ describe("Mirabuf Parser Tests", () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/robots/Dozer_v9.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
+        ).then(x => MirabufCachingService.get(x!.hash))
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
@@ -33,7 +34,7 @@ describe("Mirabuf Parser Tests", () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
+        ).then(x => MirabufCachingService.get(x!.hash))
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
@@ -48,10 +49,10 @@ describe("Mirabuf Parser Tests", () => {
 
     test("Generate Rigid Nodes (FRC Field 2018_v13.mira)", async () => {
         const field = await MirabufCachingService.cacheRemote(
-            "/api/mira/Fields/FRC Field 2018_v13.mira",
+            "/api/mira/fields/FRC Field 2018_v13.mira",
             MiraType.FIELD
-        ).then(x => MirabufCachingService.get(x!.id, MiraType.FIELD))
-
+        ).then(x => MirabufCachingService.get(x!.hash))
+        
         const t = new MirabufParser(field!)
         const physicsNodes = filterNonPhysicsNodes([...t.rigidNodes.values()], field!)
 
