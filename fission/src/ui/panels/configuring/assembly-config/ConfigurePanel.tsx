@@ -32,7 +32,7 @@ import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
-import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -61,27 +61,6 @@ CommandRegistry.get().registerCommands([
             import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "INPUTS" })),
     },
 ])
-
-// Register command: Configure Robots (module-scope)
-CommandRegistry.get().registerCommand({
-    id: "configure-robots",
-    label: "Configure Robots",
-    description: "Open the configuration panel scoped to spawned robots.",
-    keywords: ["configure", "robot", "robots", "config"],
-    perform: () => {
-        const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
-        if (!robots || robots.length === 0) {
-            globalAddToast("warning", "No Robots", "No robots are currently spawned.")
-            return
-        }
-        import("./ConfigurePanel").then(m =>
-            globalOpenPanel(m.default, {
-                configurationType: "ROBOTS",
-                selectedAssembly: robots.length === 1 ? robots[0] : undefined,
-            })
-        )
-    },
-})
 
 // Register dynamic provider: per-assembly configure/remove commands (module-scope)
 const provider: CommandProvider = () => {

@@ -230,6 +230,14 @@ const CommandPalette: React.FC = () => {
                             setQuery(e.target.value)
                         }}
                         onKeyDown={onInputKeyDown}
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                                "&:hover fieldset, &.Mui-focused fieldset": {
+                                    borderColor: "rgba(0, 0, 0, 0.9)",
+                                    borderWidth: "1px",
+                                },
+                            },
+                        }}
                     />
                 </Paper>
             </Stack>
