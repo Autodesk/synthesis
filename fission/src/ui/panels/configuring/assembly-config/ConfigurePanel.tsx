@@ -32,6 +32,8 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import { Tab, Tabs } from "@mui/material"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 interface ConfigInterfaceProps<T, P> {
     panel: UIScreen<T, P>
@@ -299,26 +301,18 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
     return (
         <>
-            <ToggleButtonGroup
+            <Tabs
                 value={configurationType}
-                exclusive
-                onChange={(_e, v) => {
-                    if (v !== null) {
-                        setConfigurationType(v)
-                        if (v === "INPUTS") setGlobalSelectedScheme(undefined)
-                    }
-
-                    setSelectedAssembly(undefined)
-                    new ConfigurationSavedEvent()
-                    setConfigMode(undefined)
-                }}
+                onChange={(_, newValue) => setConfigurationType(newValue)}
+                textColor="inherit"
+                indicatorColor="primary"
+                centered
+                {...SoundPlayer.buttonSoundEffects()}
             >
-                {CONFIG_OPTS.map(opt => (
-                    <ToggleButton key={opt} value={opt}>
-                        {opt}
-                    </ToggleButton>
-                ))}
-            </ToggleButtonGroup>
+                <Tab key="robots" value="ROBOTS" label="ROBOTS" />
+                <Tab key="fields" value="FIELDS" label="FIELDS" />
+                <Tab key="inputs" value="INPUTS" label="INPUTS" />
+            </Tabs>
             {configurationType === "INPUTS" && <ConfigureInputsInterface />}
             {configurationType !== "INPUTS" && (
                 <>

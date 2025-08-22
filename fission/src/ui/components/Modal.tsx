@@ -41,6 +41,8 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                     minWidth: "20vw",
                     bgcolor: "background.default",
                     flexDirection: "column",
+                    backgroundColor: "#2e2e2e",
+                    boxShadow: 6,
                 }}
             >
                 {props.title && (
@@ -49,13 +51,14 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                         className="select-none"
                         titleTypographyProps={{ variant: "h5" }}
                         sx={{
+                            cursor: "move",
+                            py: 1,
+                            px: 2,
+                            borderBottom: theme => `1px solid ${theme.palette.divider}`,
                             position: "sticky",
                             top: 0,
                             zIndex: 1,
-                            bgcolor: "inherit",
-                            borderBottom: theme => `1px solid ${theme.palette.divider}`,
-                            py: 1,
-                            px: 2,
+                            backgroundColor: "inherit",
                         }}
                     />
                 )}

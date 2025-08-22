@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material"
+import { Box, ButtonGroup, ButtonProps, Stack } from "@mui/material"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"
@@ -23,43 +23,22 @@ import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import UserIcon from "./UserIcon"
 
-type ButtonProps = {
-    value: string
-    icon: React.ReactNode
-    onClick?: () => void
-    larger?: boolean
-}
-
-const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) => {
-    if (larger == null) larger = false
+const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => {
     return (
         <Button
-            onClick={onClick}
-            className={`relative flex flex-row
-                cursor-pointer
-                w-full m-auto px-2 py-1 border-none rounded-md ${larger ? "justify-center" : ""}
-                items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0
-                transform
-                transition-transform
-                hover:scale-[1.015]
-                active:scale-[1.03]`}
-            color="primary"
+            {...props}
+            startIcon={props.size === "large" ? startIcon : null}
+            className="relative flex flex-row"
+            variant="contained"
             sx={{
-                borderRadius: "8px",
+                '&:focus': {
+                    outline: 'none'
+                }
             }}
         >
-            {larger && icon}
-            {!larger && <span className="absolute left-3">{icon}</span>}
-            <span
-                className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} cursor-pointer`}
-                style={{
-                    userSelect: "none",
-                    MozUserSelect: "none",
-                    msUserSelect: "none",
-                    WebkitUserSelect: "none",
-                }}
-            >
-                {value}
+            {props.size !== "large" && <span className="absolute left-3">{startIcon}</span>}
+            <span className={props.size === "large" ? "py-1" : "py-0.5 ml-6"}>
+                {children}
             </span>
         </Button>
     )
@@ -203,35 +182,36 @@ const MainHUD: React.FC = () => {
                     </IconButton>
                 </div>
                 <MainHUDButton
-                    value={"Spawn Asset"}
-                    icon={SynthesisIcons.ADD}
-                    larger={true}
+                    startIcon={SynthesisIcons.ADD}
+                    size="large"
                     onClick={() =>
                         openPanel(ImportMirabufPanel, {
                             configurationType: "ROBOTS" as ConfigurationType,
                         })
                     }
-                />
-                <Stack direction="column" sx={{ borderRadius: "7px", padding: "4px" }} bgcolor="primary.main" gap={0.5}>
+                >
+                    Spawn Asset
+                </MainHUDButton>
+                <ButtonGroup orientation="vertical" variant="contained">
+                    <MainHUDButton startIcon={SynthesisIcons.WRENCH} onClick={() => openPanel(ConfigurePanel, {})}>
+                        Configure Assets
+                    </MainHUDButton>
                     <MainHUDButton
-                        value={"Configure Assets"}
-                        icon={SynthesisIcons.WRENCH}
-                        onClick={() => openPanel(ConfigurePanel, {})}
-                    />
-                    <MainHUDButton
-                        value={"General Settings"}
-                        icon={SynthesisIcons.GEAR}
+                        startIcon={SynthesisIcons.GEAR}
                         onClick={() =>
                             openModal(SettingsModal, undefined, undefined, {
                                 allowClickAway: false,
                             })
                         }
-                    />
+                    >
+                        General Settings
+                    </MainHUDButton>
                     <MainHUDButton
-                        value={"Developer Tool"}
-                        icon={SynthesisIcons.CODE_SQUARE}
+                        startIcon={SynthesisIcons.CODE_SQUARE}
                         onClick={() => openPanel(DeveloperToolPanel, undefined)}
-                    />
+                    >
+                        Developer Tool
+                    </MainHUDButton>
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
                         value={"View"}
@@ -239,55 +219,55 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal(<ViewModal />, undefined)}
                     /> */}
                     <MainHUDButton
-                        value={"Debug Tools"}
-                        icon={SynthesisIcons.BUG}
+                        startIcon={SynthesisIcons.BUG}
                         onClick={() => {
                             openPanel(DebugPanel, undefined)
                         }}
-                    />
+                    >
+                        Debug Tools
+                    </MainHUDButton>
                     {touchCompatibility && (
                         <MainHUDButton
-                            value={"Touch Controls"}
-                            icon={SynthesisIcons.GAMEPAD}
+                            startIcon={SynthesisIcons.GAMEPAD}
                             onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
-                        />
+                        >
+                            Touch Controls
+                        </MainHUDButton>
                     )}
-                </Stack>
+                </ButtonGroup>
                 {userInfo ? (
                     <MainHUDButton
-                        value={`Hi, ${userInfo.givenName}`}
-                        icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
-                        larger={true}
+                        startIcon={<UserIcon className="h-6 rounded-full" />}
+                        size="large"
                         onClick={() => openModal(APSManagementModal, undefined)}
-                    />
+                    >{`Hi, ${userInfo.givenName}`}</MainHUDButton>
                 ) : (
-                    <MainHUDButton
-                        value={"APS Login"}
-                        icon={SynthesisIcons.PEOPLE}
-                        larger={true}
-                        onClick={() => APS.requestAuthCode()}
-                    />
+                    <MainHUDButton startIcon={SynthesisIcons.PEOPLE} onClick={() => APS.requestAuthCode()} size="large">
+                        APS Login
+                    </MainHUDButton>
                 )}
                 {!matchModeRunning ? (
                     <MainHUDButton
-                        value={"Start Match Mode"}
-                        icon={SynthesisIcons.GAMEPAD}
-                        larger={true}
+                        startIcon={SynthesisIcons.GAMEPAD}
+                        size="large"
                         onClick={() => {
                             openPanel(MatchModeConfigPanel, undefined)
                             setIsOpen(false)
                         }}
-                    />
+                    >
+                        Start Match Mode
+                    </MainHUDButton>
                 ) : (
                     <MainHUDButton
-                        value={"Abort Match Mode"}
-                        icon={SynthesisIcons.XMARK_LARGE}
-                        larger={true}
+                        startIcon={SynthesisIcons.XMARK_LARGE}
+                        size="large"
                         onClick={() => {
                             MatchMode.getInstance().sandboxModeStart()
                             globalAddToast("info", "Match Mode Cancelled")
                         }}
-                    />
+                    >
+                        Abort Match Mode
+                    </MainHUDButton>
                 )}
             </Box>
         </>

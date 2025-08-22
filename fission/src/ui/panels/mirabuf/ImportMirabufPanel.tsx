@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Stack, Tooltip } from "@mui/material"
+import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
@@ -26,8 +26,6 @@ import {
     PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
-    ToggleButton,
-    ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -39,6 +37,7 @@ import {
     miraTypeToConfigType,
 } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 interface ItemCardProps {
     id: string
@@ -369,21 +368,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     }, [configurationType])
     return (
         <Stack direction="column" gap={2} className="overflow-y-auto">
-            <ToggleButtonGroup
+            <Tabs
                 value={viewType}
-                exclusive
-                onChange={(_, v) => {
-                    if (v != null) {
-                        setViewType(v)
-                    }
-                }}
-                sx={{
-                    alignSelf: "center",
-                }}
+                onChange={(_, newValue) => setViewType(newValue)}
+                textColor="inherit"
+                indicatorColor="primary"
+                centered
+                {...SoundPlayer.buttonSoundEffects()}
             >
-                <ToggleButton value={MiraType.ROBOT}>Robots</ToggleButton>
-                <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
-            </ToggleButtonGroup>
+                <Tab key="robots" value={MiraType.ROBOT} label="ROBOTS" />
+                <Tab key="fields" value={MiraType.FIELD} label="FIELDS" />
+            </Tabs>
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
                     {viewType === MiraType.ROBOT ? (
@@ -439,7 +434,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 </Tooltip>
                             )}
                         </Label>
-                        {hubElements && filesStatus.isDone && RefreshButton(() => requestMirabufFiles())}
+                        {hubElements && RefreshButton(() => requestMirabufFiles())}
                     </Stack>
                 </AccordionSummary>
                 <AccordionDetails>
