@@ -51,7 +51,7 @@ async function handleMatchModeState(data: MatchModeStateData) {
     console.log(data)
     if (data.event == "start") {
         MatchMode.getInstance().setMatchModeConfig(data.config)
-        await MatchMode.getInstance().start(false)
+        await MatchMode.getInstance().start(false, data.moveRobots)
     }
     if (data.event == "cancel") {
         MatchMode.getInstance().sandboxModeStart()

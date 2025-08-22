@@ -107,13 +107,16 @@ class MatchMode {
         this._endgame = true
     }
 
-    async start(broadcast = true) {
+    async start(broadcast = true, useSpawnPositions: boolean) {
         if (broadcast) {
             await World.multiplayerSystem?.broadcast({
                 type: "matchModeState",
-                data: { event: "start", config: this._matchModeConfig, moveRobots: false },
+                data: { event: "start", config: this._matchModeConfig, moveRobots: useSpawnPositions },
             })
             console.log("sent multiplayer")
+        }
+        if (useSpawnPositions) {
+            World.getOwnRobots().forEach(obj => obj.moveToSpawnLocation())
         }
         this.autonomousModeStart()
         ScoreTracker.resetScores()
