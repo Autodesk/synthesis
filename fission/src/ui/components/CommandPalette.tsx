@@ -29,6 +29,7 @@ const CommandPalette: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState<number>(0)
     const inputRef = useRef<HTMLInputElement | null>(null)
     const containerRef = useRef<HTMLDivElement | null>(null)
+    const listItemRefs = useRef<(HTMLDivElement | null)[]>([])
 
     const closePalette = useCallback(() => {
         setIsOpen(false)
@@ -102,7 +103,7 @@ const CommandPalette: React.FC = () => {
     }, [commands, fuse, query])
 
     const visible = useMemo(() => {
-        return filtered.slice(0, 5).reverse()
+        return [...filtered].reverse()
     }, [filtered])
 
     const execute = useCallback(
@@ -152,6 +153,10 @@ const CommandPalette: React.FC = () => {
     }, [isOpen, visible.length])
 
     useEffect(() => {
+        listItemRefs.current = listItemRefs.current.slice(0, visible.length)
+    }, [visible.length])
+
+    useEffect(() => {
         if (!isOpen) return
         const onPointerDown = (e: PointerEvent) => {
             const target = e.target as Node | null
@@ -162,6 +167,14 @@ const CommandPalette: React.FC = () => {
         document.addEventListener("pointerdown", onPointerDown)
         return () => document.removeEventListener("pointerdown", onPointerDown)
     }, [isOpen, closePalette])
+
+    useEffect(() => {
+        if (!isOpen) return
+        const activeItem = listItemRefs.current[activeIndex]
+        if (activeItem) {
+            activeItem.scrollIntoView({ block: "nearest" })
+        }
+    }, [isOpen, activeIndex])
 
     const onInputKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -207,13 +220,23 @@ const CommandPalette: React.FC = () => {
             <Stack direction="column" alignItems="center" sx={{ mb: 2, pointerEvents: "auto" }}>
                 <Paper elevation={8} sx={{ width: "min(800px, 95vw)" }} ref={containerRef}>
                     {visible.length > 0 && (
-                        <List dense disablePadding>
+                        <List
+                            dense
+                            disablePadding
+                            sx={{
+                                maxHeight: "300px",
+                                overflowY: "auto",
+                            }}
+                        >
                             {visible.map((c, i) => (
                                 <ListItemButton
                                     key={c.id}
                                     selected={i === activeIndex}
                                     onMouseEnter={() => setActiveIndex(i)}
                                     onClick={() => execute(i)}
+                                    ref={_element => {
+                                        listItemRefs.current[i] = _element
+                                    }}
                                 >
                                     <ListItemText primary={c.label} secondary={c.description} />
                                 </ListItemButton>
