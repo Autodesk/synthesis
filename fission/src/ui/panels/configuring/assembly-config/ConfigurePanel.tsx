@@ -283,6 +283,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
+            selectedAssembly?.sendPreferences()
             new ConfigurationSavedEvent()
         }
         const onCancel = () => {

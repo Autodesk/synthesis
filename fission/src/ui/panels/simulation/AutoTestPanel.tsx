@@ -133,14 +133,13 @@ export const RedAllianceToggleButton = styled(ToggleButton)({
 function captureBodies(): BodyCapture[] {
     const captures: BodyCapture[] = []
     World.sceneRenderer.mirabufSceneObjects.getAll().forEach(sceneObj => {
-        sceneObj.mechanism.nodeToBody.forEach(bodyId => {
-            const body = World.physicsSystem.getBody(bodyId)
+        sceneObj.getAllBodies().forEach(body => {
             const transform = body.GetWorldTransform()
             const translation = new THREE.Vector3(0, 0, 0)
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             convertJoltMat44ToThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
             captures.push({
-                id: bodyId,
+                id: body.GetID(),
                 pos: convertThreeVector3ToJoltRVec3(translation),
                 rot: convertThreeQuaternionToJoltQuat(rotation),
             })
