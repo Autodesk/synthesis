@@ -42,7 +42,7 @@ if (useSsl) {
 }
 
 const localAssetsExist = await fs
-    .access("./public/Downloadables/Mira", fs.constants.R_OK)
+    .access("./public/Downloadables/mira", fs.constants.R_OK)
     .then(() => true)
     .catch(() => false)
 
@@ -66,9 +66,6 @@ export default defineConfig(async ({ mode }) => {
               rewrite: path =>
                   path
                       .replace(/^\/api/, "/Downloadables")
-                      .replace("mira", "Mira")
-                      .replace("robots", "Robots")
-                      .replace("fields", "Fields"),
           }
         : {
               target: `https://synthesis.autodesk.com/`,
