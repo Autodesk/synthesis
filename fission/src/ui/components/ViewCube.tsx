@@ -17,6 +17,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     position = { top: 20, right: 20 },
     scaleWithWindow = true,
 }) => {
+    const CLICK_THRESHOLD_PIXELS = 10 // Pixel threshold for distinguishing clicks from drags
     const containerRef = useRef<HTMLDivElement>(null)
     const sceneRef = useRef<THREE.Scene>()
     const rendererRef = useRef<THREE.WebGLRenderer>()
@@ -27,10 +28,11 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     const [isDragging, setIsDragging] = useState(false)
     const [lastMousePos, setLastMousePos] = useState<{ x: number; y: number } | null>(null)
     const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number } | null>(null)
-    const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null)
+
     const [dragStartElement, setDragStartElement] = useState<{ type: string; index: number } | null>(null)
     const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight })
     const [isPointerLocked, setIsPointerLocked] = useState(false)
+    const [totalDragMovement, setTotalDragMovement] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
     const calculateResponsiveSize = () => {
         if (!scaleWithWindow) return size
@@ -60,8 +62,18 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             if (isDragging) {
                 setIsDragging(false)
                 setLastMousePos(null)
-                setDragStartPos(null)
+
+                if (dragStartElement) {
+                    const totalDistance = Math.sqrt(
+                        totalDragMovement.x * totalDragMovement.x + totalDragMovement.y * totalDragMovement.y
+                    )
+                    if (totalDistance < CLICK_THRESHOLD_PIXELS) {
+                        handleElementClick(dragStartElement)
+                    }
+                }
+
                 setDragStartElement(null)
+                setTotalDragMovement({ x: 0, y: 0 })
 
                 if (document.pointerLockElement) {
                     document.exitPointerLock()
@@ -88,6 +100,12 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
             if (deltaX === 0 && deltaY === 0) return
 
+            // Track total movement for click detection
+            setTotalDragMovement(prev => ({
+                x: prev.x + Math.abs(deltaX),
+                y: prev.y + Math.abs(deltaY),
+            }))
+
             const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
             const controls = World.sceneRenderer.currentCameraControls
@@ -105,8 +123,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             if (document.hidden && isDragging) {
                 setIsDragging(false)
                 setLastMousePos(null)
-                setDragStartPos(null)
                 setDragStartElement(null)
+                setTotalDragMovement({ x: 0, y: 0 })
 
                 if (document.pointerLockElement) {
                     document.exitPointerLock()
@@ -128,8 +146,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             if (event.key === "Escape" && isDragging) {
                 setIsDragging(false)
                 setLastMousePos(null)
-                setDragStartPos(null)
                 setDragStartElement(null)
+                setTotalDragMovement({ x: 0, y: 0 })
                 document.exitPointerLock()
             }
         }
@@ -151,7 +169,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             document.removeEventListener("pointerlockerror", handlePointerLockError)
             document.removeEventListener("keydown", handleKeyDown)
         }
-    }, [isDragging, lastMousePos, isPointerLocked])
+    }, [isDragging, lastMousePos, isPointerLocked, dragStartElement, totalDragMovement])
+
     const updateHighlights = useCallback((element: { type: string; index: number } | null) => {
         if (!cubeRef.current) return
 
@@ -788,6 +807,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         const cornerHighlights = cubeRef.current.children.filter(
             child => child.userData.type === "corner-visual-highlight"
         )
+
         const cornerIntersects = raycaster.intersectObjects(cornerHighlights, false)
         if (cornerIntersects.length > 0) {
             const cornerIndex = cornerIntersects[0].object.userData.index
@@ -875,8 +895,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             setIsDragging(true)
             const mousePos = { x: event.clientX, y: event.clientY }
             setLastMousePos(mousePos)
-            setDragStartPos(mousePos)
             setDragStartElement(getClickedElement(event))
+            setTotalDragMovement({ x: 0, y: 0 })
 
             // Request pointer lock for better cursor control
             if (containerRef.current) {
@@ -884,29 +904,6 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             }
 
             event.preventDefault()
-        }
-    }
-
-    const handleMouseUp = (event: React.MouseEvent) => {
-        if (isDragging) {
-            setIsDragging(false)
-            setLastMousePos(null)
-
-            const startElement = dragStartElement
-            const startPos = dragStartPos
-
-            if (startElement && startPos) {
-                const dragDistance = Math.sqrt(
-                    Math.pow(event.clientX - startPos.x, 2) + Math.pow(event.clientY - startPos.y, 2)
-                )
-
-                if (dragDistance < 3) {
-                    handleElementClick(startElement)
-                }
-            }
-
-            setDragStartPos(null)
-            setDragStartElement(null)
         }
     }
 
@@ -1046,7 +1043,6 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 }}
                 onMouseMove={handleMouseMove}
                 onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
                 onMouseEnter={handleMouseEnter}
             />

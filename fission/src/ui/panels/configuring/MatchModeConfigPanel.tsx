@@ -2,7 +2,6 @@ import { Box, Divider } from "@mui/material"
 import { Stack } from "@mui/system"
 import type React from "react"
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import World from "@/systems/World.ts"
@@ -211,7 +210,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                         key={config.id}
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
-                        primaryOnClick={() => {
+                        primaryOnClick={async () => {
                             if (MatchMode.getInstance().isMatchEnabled()) {
                                 globalAddToast(
                                     "error",
@@ -220,14 +219,9 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                                 )
                                 return
                             }
-                            if (useSpawnPositions) {
-                                World.sceneRenderer.sceneObjects.forEach(
-                                    obj => obj instanceof MirabufSceneObject && obj.moveToSpawnLocation()
-                                )
-                            }
                             MatchMode.getInstance().setMatchModeConfig(config)
 
-                            MatchMode.getInstance().start()
+                            await MatchMode.getInstance().start(true, useSpawnPositions)
                             closePanel(panel!.id, CloseType.Accept)
                         }}
                         secondaryOnClick={

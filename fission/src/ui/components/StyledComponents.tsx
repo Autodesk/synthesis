@@ -108,7 +108,7 @@ export const Spacer = (heightPx?: number, widthPx?: number) => {
 
 export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
     return (
-        <MuiButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+        <MuiButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
             {children}
         </MuiButton>
     )
@@ -116,7 +116,7 @@ export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, 
 
 export const IconButton: React.FC<IconButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
     return (
-        <MuiIconButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+        <MuiIconButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
             {children}
         </MuiIconButton>
     )
@@ -124,7 +124,7 @@ export const IconButton: React.FC<IconButtonProps> = ({ children, onClick, onMou
 
 export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
     return (
-        <MuiToggleButton onClick={onClick} {...SoundPlayer.buttonSoundEffects()} {...props}>
+        <MuiToggleButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
             {children}
         </MuiToggleButton>
     )
@@ -132,7 +132,7 @@ export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, o
 
 export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, onMouseDown, onMouseUp, ...props }) => {
     return (
-        <MuiToggleButtonGroup {...SoundPlayer.buttonSoundEffects()} {...props}>
+        <MuiToggleButtonGroup {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
             {children}
         </MuiToggleButtonGroup>
     )

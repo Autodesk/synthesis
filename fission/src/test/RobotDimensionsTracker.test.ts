@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import RobotDimensionTracker from "@/systems/match_mode/RobotDimensionTracker"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
 import World from "@/systems/World"
 
 interface MockDimensions {
@@ -50,7 +50,7 @@ vi.mock("@/systems/match_mode/MatchMode", () => ({
     },
 }))
 
-vi.mock("@/systems/simulation/SimulationSystem", () => ({
+vi.mock("@/systems/match_mode/ScoreTracker", () => ({
     default: {
         robotPenalty: vi.fn(),
     },
@@ -148,12 +148,8 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, expect.any(String))
-        expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
-            mockRobot1,
-            expect.any(Number),
-            expect.any(String)
-        )
+        expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, expect.any(String))
+        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should penalize robot if it exceeds side max extension (width)", () => {
@@ -171,12 +167,8 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 2, expect.any(String))
-        expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
-            mockRobot1,
-            expect.any(Number),
-            expect.any(String)
-        )
+        expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 2, expect.any(String))
+        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should penalize robot if it exceeds side max extension (depth)", () => {
@@ -194,12 +186,8 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 3, expect.any(String))
-        expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
-            mockRobot1,
-            expect.any(Number),
-            expect.any(String)
-        )
+        expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 3, expect.any(String))
+        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should not penalize a robot for side extension if initial dimensions were not recorded", () => {
@@ -210,7 +198,7 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(SimulationSystem.robotPenalty).not.toHaveBeenCalled()
+        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalled()
     })
 
     test("should not penalize robot every frame", () => {
@@ -221,7 +209,7 @@ describe("RobotDimensionTracker", () => {
         RobotDimensionTracker.update()
         RobotDimensionTracker.update()
 
-        expect(SimulationSystem.robotPenalty).toHaveBeenCalledTimes(1)
+        expect(ScoreTracker.robotPenalty).toHaveBeenCalledTimes(1)
     })
 
     test("should penalize multiple robots", () => {
@@ -232,7 +220,7 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(SimulationSystem.robotPenalty).toHaveBeenCalledTimes(2)
+        expect(ScoreTracker.robotPenalty).toHaveBeenCalledTimes(2)
     })
 
     test("should not penalize robot if it is not a robot", () => {
@@ -242,6 +230,6 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(SimulationSystem.robotPenalty).not.toHaveBeenCalled()
+        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalled()
     })
 })
