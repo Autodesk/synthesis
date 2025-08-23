@@ -41,7 +41,7 @@ const ProtectedZoneRow: React.FC<ProtectedZoneRowProps> = ({ zone, save, deleteZ
                     </Label>
                 </Stack>
             </Stack>
-            <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
+            <Stack direction="row-reverse" gap={"0.5rem"} justifyContent={"center"} alignItems={"center"}>
                 {EditButton(() => {
                     selectZone(zone)
                     save()

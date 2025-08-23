@@ -80,11 +80,11 @@ interface ThemeTabConfig extends TabConfigBase {
 
 type TabConfig = GeneralTabConfig | GraphicsTabConfig | ThemeTabConfig
 
-const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: string) => void }> = ({
-    label,
-    color,
-    setColor,
-}) => {
+const ColorEditor: React.FC<{
+    label: string
+    color: string
+    setColor: (_c: string) => void
+}> = ({ label, color, setColor }) => {
     return (
         <Stack direction="row" gap={2}>
             <TextField
@@ -119,6 +119,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             onChange={value => writePreference("SceneRotationSensitivity", value)}
             step={0.1}
             tooltip="Controls how fast the scene rotates when dragging with the mouse."
+            showValue={false}
         />
         {Spacer(5)}
         <StatefulSlider
@@ -129,6 +130,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
             step={0.06}
             tooltip="Controls how fast the view changes when dragging on the view cube."
+            showValue={false}
         />
         <Checkbox
             label="Show View Cube"
@@ -137,7 +139,9 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
         />
         {Spacer(10)}
-        <Label size="sm">Preferences</Label>
+        <Label size="md" sx={{ fontWeight: 600 }}>
+            Preferences
+        </Label>
         <Stack direction="column">
             <Checkbox
                 label="Report Analytics"
@@ -342,7 +346,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                     </Box>
                 </>
             )}
-            <Label size="sm">Requires Browser Refresh</Label>
             <Checkbox
                 label="Anti-Aliasing"
                 checked={antiAliasing}
@@ -350,6 +353,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                     setAntiAliasing(checked)
                     setReload(true)
                 }}
+                tooltip={"Requires browser refresh to fully apply"}
             />
         </Stack>
     )

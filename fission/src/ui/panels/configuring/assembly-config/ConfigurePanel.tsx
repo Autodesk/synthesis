@@ -12,11 +12,11 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
+import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
-import { CONFIG_OPTS, ConfigMode, type ConfigurationType } from "./ConfigTypes"
+import { ConfigMode, type ConfigurationType } from "./ConfigTypes"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
@@ -31,6 +31,8 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import { Tab, Tabs } from "@mui/material"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 
@@ -397,26 +399,19 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
     return (
         <>
-            <ToggleButtonGroup
+            <Tabs
                 value={configurationType}
-                exclusive
-                onChange={(_e, v) => {
-                    if (v !== null) {
-                        setConfigurationType(v)
-                    }
-
-                    setSelectedAssembly(undefined)
-                    new ConfigurationSavedEvent()
-                    setConfigMode(undefined)
-                }}
+                onChange={(_, newValue) => setConfigurationType(newValue)}
+                textColor="inherit"
+                indicatorColor="primary"
+                centered
+                {...SoundPlayer.getInstance().buttonSoundEffects()}
             >
-                {CONFIG_OPTS.map(opt => (
-                    <ToggleButton key={opt} value={opt}>
-                        {opt}
-                    </ToggleButton>
-                ))}
-            </ToggleButtonGroup>
-            {configurationType === "INPUTS" && <ConfigureInputsInterface panel={panel!} />}
+                <Tab key="robots" value="ROBOTS" label="ROBOTS" />
+                <Tab key="fields" value="FIELDS" label="FIELDS" />
+                <Tab key="inputs" value="INPUTS" label="INPUTS" />
+            </Tabs>
+            {configurationType === "INPUTS" && <ConfigureInputsInterface />}
             {configurationType !== "INPUTS" && (
                 <>
                     <AssemblySelection

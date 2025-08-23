@@ -118,7 +118,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             }}
                         >
                             {input.inputName === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : transformKeyName(input.keyCode, input.keyModifiers)}
                         </Button>
                     </Box>
@@ -148,7 +148,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             }}
                         >
                             {`pos${input.inputName}` === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : transformKeyName(input.posKeyCode, input.posKeyModifiers)}
                         </Button>
                         {SynthesisIcons.MINUS}
@@ -161,7 +161,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             }}
                         >
                             {`neg${input.inputName}` === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : transformKeyName(input.negKeyCode, input.negKeyModifiers)}
                         </Button>
                     </Stack>
@@ -182,7 +182,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         key={input.inputName}
                         value={
                             input.inputName === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : input.gamepadButton === -1
                                   ? "N/A"
                                   : gamepadButtons[input.gamepadButton]
@@ -237,7 +237,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         key={`pos${input.inputName}`}
                         value={
                             `pos${input.inputName}` === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : input.posGamepadButton === -1
                                   ? "N/A"
                                   : gamepadButtons[input.posGamepadButton]
@@ -252,7 +252,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         key={`neg${input.inputName}`}
                         value={
                             `neg${input.inputName}` === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : input.negGamepadButton === -1
                                   ? "N/A"
                                   : gamepadButtons[input.negGamepadButton]

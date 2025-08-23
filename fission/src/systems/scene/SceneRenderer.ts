@@ -551,7 +551,7 @@ class SceneRenderer extends WorldSystem {
         )
 
         // Use any associations to determine ContextData.
-        let miraSupplierData: ContextData | undefined = undefined
+        let miraSupplierData: ContextData | undefined
         if (res) {
             const assoc = World.physicsSystem.getBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
             const sceneObject = assoc?.sceneObject
@@ -574,7 +574,9 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
+                    globalOpenPanel(ImportMirabufPanel, {
+                        configurationType: "ROBOTS" as ConfigurationType,
+                    })
                 },
             })
         }
