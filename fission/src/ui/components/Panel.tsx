@@ -1,6 +1,5 @@
 import { Card, CardActions, CardContent, CardHeader } from "@mui/material"
-import { Button } from "./StyledComponents"
-import React, { type ReactElement } from "react"
+import React, { type ReactElement, useRef } from "react"
 import Draggable from "react-draggable"
 import {
     CloseType,
@@ -9,6 +8,7 @@ import {
     type Panel as PanelType,
     useUIContext,
 } from "../helpers/UIProviderHelpers"
+import { Button } from "./StyledComponents"
 
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 export type PanelImplProps<T, P> = Partial<{
@@ -57,21 +57,57 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
     const { closePanel } = useUIContext()
 
     const props = panel.props
+    const nodeRef = useRef<HTMLDivElement | null>(null)
 
     // FIXME: sliders show up as <span> so want to cancel drag on those
     // however still can drag on dropdown but menu elements are left behind
     return (
-        <Draggable cancel="span, input" positionOffset={getPositionOffset(props.position)}>
+        <Draggable
+            handle=".panel-drag-handle"
+            cancel={"input, textarea, select, .MuiSlider-root, .MuiMenuItem-root, .no-drag"}
+            positionOffset={getPositionOffset(props.position)}
+            nodeRef={nodeRef}
+        >
             <Card
+                elevation={8}
                 sx={{
-                    display: panel.props.configured ? "" : "none",
+                    display: panel.props.configured ? "flex" : "none",
                     position: "absolute",
                     pointerEvents: "auto",
-                    p: 4,
+                    p: 0,
+                    backgroundColor: "#2e2e2e",
+                    boxShadow: 6,
+                    maxHeight: "85vh",
+                    flexDirection: "column",
                 }}
+                ref={nodeRef}
             >
-                {props.title && <CardHeader title={props.title} className="select-none" />}
-                <CardContent>
+                {props.title && (
+                    <CardHeader
+                        title={props.title}
+                        className="panel-drag-handle select-none hover:cursor-grab active:cursor-grabbing"
+                        sx={{
+                            cursor: "move",
+                            py: 1,
+                            px: 2,
+                            borderBottom: theme => `1px solid ${theme.palette.divider}`,
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 1,
+                            backgroundColor: "inherit",
+                        }}
+                        titleTypographyProps={{ variant: "h5" }}
+                    />
+                )}
+                <CardContent
+                    sx={{
+                        p: 2,
+                        flex: "1 1 auto",
+                        overflowY: "auto",
+                        "&:last-child": { pb: 2 },
+                        backgroundColor: "inherit",
+                    }}
+                >
                     <div className="panel-contents">
                         {React.Children.map(children, child => {
                             if (React.isValidElement(child)) return React.cloneElement(child, { panel, parent })
@@ -79,7 +115,16 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     </div>
                 </CardContent>
                 {(!props.hideCancel || !props.hideAccept) && (
-                    <CardActions>
+                    <CardActions
+                        sx={{
+                            position: "sticky",
+                            bottom: 0,
+                            zIndex: 1,
+                            bgcolor: "inherit",
+                            borderTop: theme => `1px solid ${theme.palette.divider}`,
+                            p: 2,
+                        }}
+                    >
                         {!props.hideCancel && (
                             <Button
                                 onClick={() => closePanel(panel.id, CloseType.Cancel)}

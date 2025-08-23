@@ -101,7 +101,7 @@ export const KeyboardButtonSelection: React.FC<InputSelectionProps> = ({ input, 
                         }}
                     >
                         {input.inputName === selectedInput
-                            ? "Press anything"
+                            ? "..."
                             : transformKeyName(input.keyCode, input.keyModifiers)}
                     </Button>
                 </Box>
@@ -130,7 +130,7 @@ export const KeyboardAxisSelection: React.FC<InputSelectionProps> = ({ input, se
                         }}
                     >
                         {`pos${input.inputName}` === selectedInput
-                            ? "Press anything"
+                            ? "..."
                             : transformKeyName(input.posKeyCode, input.posKeyModifiers)}
                     </Button>
                     {SynthesisIcons.MINUS}
@@ -143,7 +143,7 @@ export const KeyboardAxisSelection: React.FC<InputSelectionProps> = ({ input, se
                         }}
                     >
                         {`neg${input.inputName}` === selectedInput
-                            ? "Press anything"
+                            ? "..."
                             : transformKeyName(input.negKeyCode, input.negKeyModifiers)}
                     </Button>
                 </Stack>
@@ -164,7 +164,7 @@ export const JoystickButtonSelection: React.FC<InputSelectionProps> = ({ input, 
                     key={input.inputName}
                     value={
                         input.inputName === selectedInput
-                            ? "Press anything"
+                            ? "..."
                             : input.gamepadButton === -1
                               ? "N/A"
                               : gamepadButtons[input.gamepadButton]
@@ -227,7 +227,7 @@ export const GamepadButtonAxisSelection: React.FC<InputSelectionProps> = ({
                     key={`pos${input.inputName}`}
                     value={
                         `pos${input.inputName}` === selectedInput
-                            ? "Press anything"
+                            ? "..."
                             : input.posGamepadButton === -1
                               ? "N/A"
                               : gamepadButtons[input.posGamepadButton]
@@ -242,7 +242,7 @@ export const GamepadButtonAxisSelection: React.FC<InputSelectionProps> = ({
                     key={`neg${input.inputName}`}
                     value={
                         `neg${input.inputName}` === selectedInput
-                            ? "Press anything"
+                            ? "..."
                             : input.negGamepadButton === -1
                               ? "N/A"
                               : gamepadButtons[input.negGamepadButton]

@@ -35,10 +35,6 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         input instanceof AxisInput ? input.useGamepadButtons : false
     )
 
-    /** Select any key on the keyboard */
-
-    /** Select an axis between two keyboard keys */
-
     /** Show the correct selection mode based on input type and how it's configured */
     const inputConfig = () => {
         if (useGamepad) {

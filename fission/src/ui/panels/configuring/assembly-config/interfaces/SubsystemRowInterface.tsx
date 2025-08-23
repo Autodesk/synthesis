@@ -90,7 +90,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
     return (
         <>
             <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-                <Stack direction="row" gap={8}>
+                <Stack direction="column">
                     <Label size="sm">
                         {driver instanceof WheelDriver ? "Drive" : (driver.info?.name ?? "UnnamedMotor")}
                     </Label>

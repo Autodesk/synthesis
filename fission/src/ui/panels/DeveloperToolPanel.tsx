@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material"
+import { Alert, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
@@ -11,6 +11,28 @@ import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
+
+async function saveToCache() {
+    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+    if (!field) return
+    const assembly = field.mirabufInstance.parser.assembly
+    const newName = assembly.info?.name != null ? `Edited ${assembly.info.name}` : undefined
+    const existing = MirabufCachingService.getAll().find(info => info.name == newName)
+    const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
+        miraType: MiraType.FIELD,
+        name: newName,
+    })
+
+    if (cacheInfo != null) {
+        globalAddToast("info", "Devtool Saved", "Changes have been persisted to cache.")
+    } else {
+        globalAddToast("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+    }
+
+    if (existing) {
+        await MirabufCachingService.remove(existing.hash)
+    }
+}
 
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
@@ -71,8 +93,9 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         setError("")
     }, [selectedKey, editor])
 
-    const handleSave = () => {
-        if (!editor || !selectedKey) return
+    const handleSave = async () => {
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        if (!editor || !selectedKey || !field) return
         try {
             setError("")
             const parsed = JSON.parse(jsonValue) as unknown
@@ -85,31 +108,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             setKeys(editor.getAllDevtoolKeys())
 
             // Persist changes to cache
-            const field = World.sceneRenderer.mirabufSceneObjects.getField()
-            if (!field) {
-                globalAddToast?.("error", "Devtool Error", "No field loaded to apply changes.")
-                return
-            }
-
-            const assembly = field.mirabufInstance.parser.assembly
-            const cacheId = field.cacheId // add to MirabufSceneObject
-            if (cacheId) {
-                MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-                    .then(success => {
-                        if (success) {
-                            globalAddToast?.("info", "Devtool Saved", "Changes have been persisted to cache.")
-                        } else {
-                            globalAddToast?.(
-                                "warning",
-                                "Devtool Warning",
-                                "Changes saved but failed to persist to cache."
-                            )
-                        }
-                    })
-                    .catch(() => {
-                        globalAddToast?.("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
-                    })
-            }
+            await saveToCache()
 
             if (!field.fieldPreferences) {
                 globalAddToast?.("error", "Devtool Error", "Field preferences not available.")
@@ -123,8 +122,10 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
     }
 
-    const handleRemove = () => {
-        if (!editor || !selectedKey) return
+    const handleRemove = async () => {
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        if (!editor || !selectedKey || !field) return
+
         editor.removeUserData(selectedKey)
         setKeys(editor.getAllDevtoolKeys())
         setSelectedKey(undefined)
@@ -132,24 +133,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         setError("")
 
         // Persist removal to cache
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!field) return
-
-        const assembly = field.mirabufInstance.parser.assembly
-        const cacheId = field.cacheId
-        if (cacheId) {
-            MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-                .then(success => {
-                    if (success) {
-                        globalAddToast?.("info", "Devtool Removed", "Removal has been persisted to cache.")
-                    } else {
-                        globalAddToast?.("warning", "Devtool Warning", "Removal saved but failed to persist to cache.")
-                    }
-                })
-                .catch(() => {
-                    globalAddToast?.("warning", "Devtool Warning", "Removal saved but failed to persist to cache.")
-                })
-        }
+        await saveToCache()
 
         if (!field.fieldPreferences) return
 
@@ -176,7 +160,9 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
         try {
             const encoded = mirabuf.Assembly.encode(assembly).finish()
-            const blob = new Blob([encoded.buffer as ArrayBuffer], { type: "application/octet-stream" })
+            const blob = new Blob([encoded.buffer as ArrayBuffer], {
+                type: "application/octet-stream",
+            })
             const url = URL.createObjectURL(blob)
 
             // Check if assembly has devtool data to determine filename
@@ -209,8 +195,12 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }, [])
 
     return (
-        <Stack gap={4} className="rounded-md p-4 max-h-[60vh] min-h-[350px] overflow-y-auto">
-            {!fieldLoaded && <div className="text-red-600 m-4">No mira field loaded.</div>}
+        <Stack gap={4} className="rounded-md p-4 max-h-[60vh] overflow-y-auto">
+            {!fieldLoaded && (
+                <Alert severity="warning" className="m-2">
+                    No mira field loaded.
+                </Alert>
+            )}
             {editor && (
                 <Stack gap={6} className="md:flex-row items-start">
                     {/* Key List */}
@@ -282,7 +272,11 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                                     onChange={e => setJsonValue(e.target.value)}
                                     placeholder="Enter JSON data for this key"
                                 />
-                                {error && <div className="text-red-400 mt-1">{error}</div>}
+                                {error && (
+                                    <Alert severity="error" className="mt-2">
+                                        {error}
+                                    </Alert>
+                                )}
                                 <div className="mt-3 flex gap-2">
                                     <Button onClick={handleSave}>Save</Button>
                                     <Button onClick={handleRemove}>Remove</Button>
