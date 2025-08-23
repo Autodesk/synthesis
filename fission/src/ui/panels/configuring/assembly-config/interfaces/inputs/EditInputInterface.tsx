@@ -1,6 +1,14 @@
-import { Box, Divider, MenuItem, Stack } from "@mui/material"
+import { Box, Divider } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
+import {
+    GamepadButtonAxisSelection,
+    JoystickAxisSelection,
+    JoystickButtonSelection,
+    KeyboardAxisSelection,
+    KeyboardButtonSelection,
+    TouchControlsAxisSelection,
+} from "@/panels/configuring/assembly-config/interfaces/inputs/InputSelectionComponents.tsx"
 import InputSystem from "@/systems/input/InputSystem"
 import { EMPTY_MODIFIER_STATE, type ModifierState } from "@/systems/input/InputTypes"
 import AxisInput from "@/systems/input/inputs/AxisInput"
@@ -8,80 +16,6 @@ import ButtonInput from "@/systems/input/inputs/ButtonInput"
 import type Input from "@/systems/input/inputs/Input"
 import type { KeyCode } from "@/systems/input/KeyboardTypes"
 import Checkbox from "@/ui/components/Checkbox"
-import Label from "@/ui/components/Label"
-import { Button, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
-
-// Converts camelCase to Title Case for the inputs modal
-const toTitleCase = (camelCase: string) => {
-    const result = camelCase.replace(/([A-Z])/g, " $1")
-    const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
-    return finalResult
-}
-
-// Special characters only
-const codeToCharacterMap: Partial<Record<KeyCode, string>> = {
-    Slash: "/",
-    Comma: ",",
-    Period: ".",
-    BracketLeft: "{",
-    BracketRight: "}",
-    Backquote: "`",
-    Minus: "-",
-    Equal: "=",
-    Backslash: "\\",
-    Semicolon: ";",
-    Quote: '"',
-}
-
-const gamepadButtons: string[] = [
-    "A",
-    "B",
-    "X",
-    "Y",
-    "Left Bumper",
-    "Right Bumper",
-    "Back",
-    "Start",
-    "Left Stick",
-    "Right Stick",
-    "UNKNOWN",
-    "UNKNOWN2",
-    "Dpad Up",
-    "Dpad Down",
-    "Dpad Left",
-    "Dpad Right",
-]
-
-const gamepadAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
-const touchControlsAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
-
-// Converts a key code to displayable character (ex: KeyA -> "A")
-const keyCodeToCharacter = (code: KeyCode) => {
-    if (code.startsWith("Key")) return code.charAt(3)
-
-    if (code.startsWith("Digit")) return code.charAt(5)
-
-    if (code in codeToCharacterMap) return codeToCharacterMap[code]
-
-    if (code.startsWith("Gamepad")) return gamepadButtons[parseInt(code.substring(8))]
-
-    return code
-}
-
-const transformKeyName = (keyCode: KeyCode, keyModifiers: ModifierState) => {
-    let prefix = ""
-    if (keyModifiers) {
-        if (keyModifiers.meta) prefix += "Meta + "
-        if (keyModifiers.shift) prefix += "Shift + "
-        if (keyModifiers.ctrl) prefix += "Ctrl + "
-        if (keyModifiers.alt) prefix += "Alt + "
-    }
-
-    const displayName = prefix + keyCodeToCharacter(keyCode)
-    if (displayName === "") return "N/A"
-
-    return displayName
-}
 
 interface EditInputProps {
     input: Input
@@ -101,201 +35,12 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         input instanceof AxisInput ? input.useGamepadButtons : false
     )
 
-    /** Select any key on the keyboard */
-    const KeyboardButtonSelection = () => {
-        if (!(input instanceof ButtonInput)) throw new Error("Input not button type")
-
-        return (
-            <>
-                <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                    <Label size="md">{toTitleCase(input.inputName)}</Label>
-
-                    <Box>
-                        <Button
-                            key={input.inputName}
-                            onClick={() => {
-                                setSelectedInput(input.inputName)
-                            }}
-                        >
-                            {input.inputName === selectedInput
-                                ? "..."
-                                : transformKeyName(input.keyCode, input.keyModifiers)}
-                        </Button>
-                    </Box>
-                </Stack>
-                <Divider />
-            </>
-        )
-    }
-
-    /** Select an axis between two keyboard keys */
-    const KeyboardAxisSelection = () => {
-        if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
-
-        return (
-            <>
-                <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                    <Label size="md">{toTitleCase(input.inputName)}</Label>
-
-                    <Stack direction="row" gap="10px" alignItems={"center"}>
-                        {SynthesisIcons.ADD}
-                        {/* Positive key */}
-                        <Button
-                            key={`pos${input.inputName}`}
-                            variant="contained"
-                            onClick={() => {
-                                setSelectedInput(`pos${input.inputName}`)
-                            }}
-                        >
-                            {`pos${input.inputName}` === selectedInput
-                                ? "..."
-                                : transformKeyName(input.posKeyCode, input.posKeyModifiers)}
-                        </Button>
-                        {SynthesisIcons.MINUS}
-                        {/* Negative key */}
-                        <Button
-                            key={`neg${input.inputName}`}
-                            variant="contained"
-                            onClick={() => {
-                                setSelectedInput(`neg${input.inputName}`)
-                            }}
-                        >
-                            {`neg${input.inputName}` === selectedInput
-                                ? "..."
-                                : transformKeyName(input.negKeyCode, input.negKeyModifiers)}
-                        </Button>
-                    </Stack>
-                </Stack>
-                <Divider />
-            </>
-        )
-    }
-
-    /** Select any button on a controller */
-    const JoystickButtonSelection = () => {
-        if (!(input instanceof ButtonInput)) throw new Error("Input not button type")
-        return (
-            <>
-                <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                    <Label size="md">{toTitleCase(input.inputName)}</Label>
-                    <Button
-                        key={input.inputName}
-                        value={
-                            input.inputName === selectedInput
-                                ? "..."
-                                : input.gamepadButton === -1
-                                  ? "N/A"
-                                  : gamepadButtons[input.gamepadButton]
-                        }
-                        onClick={() => {
-                            setSelectedInput(input.inputName)
-                        }}
-                    />
-                </Stack>
-                <Divider />
-            </>
-        )
-    }
-
-    /** Dropdown to select a controller axis */
-    const JoystickAxisSelection = () => {
-        if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
-
-        return (
-            <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                <Label size="md">{toTitleCase(input.inputName)}</Label>
-                <Select
-                    key={input.inputName}
-                    value={gamepadAxes[input.gamepadAxisNumber + 1]}
-                    onChange={e => {
-                        setSelectedInput(input.inputName)
-                        setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value as string))
-                    }}
-                >
-                    {gamepadAxes.map(axis => (
-                        <MenuItem key={`axis-${axis}`} value={axis}>
-                            {axis}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </Stack>
-        )
-    }
-
-    /** Select an axis between two controller buttons */
-    const GamepadButtonAxisSelection = () => {
-        if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
-
-        return (
-            <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                <Label size="md">{toTitleCase(input.inputName)}</Label>
-
-                <Stack direction="row" gap="10px" alignItems={"center"}>
-                    {/* Positive gamepad button */}
-                    {SynthesisIcons.ADD}
-                    <Button
-                        key={`pos${input.inputName}`}
-                        value={
-                            `pos${input.inputName}` === selectedInput
-                                ? "..."
-                                : input.posGamepadButton === -1
-                                  ? "N/A"
-                                  : gamepadButtons[input.posGamepadButton]
-                        }
-                        onClick={() => {
-                            setSelectedInput(`pos${input.inputName}`)
-                        }}
-                    />
-                    {/* // Negative gamepad button */}
-                    {SynthesisIcons.MINUS}
-                    <Button
-                        key={`neg${input.inputName}`}
-                        value={
-                            `neg${input.inputName}` === selectedInput
-                                ? "..."
-                                : input.negGamepadButton === -1
-                                  ? "N/A"
-                                  : gamepadButtons[input.negGamepadButton]
-                        }
-                        onClick={() => {
-                            setSelectedInput(`neg${input.inputName}`)
-                        }}
-                    />
-                </Stack>
-            </Stack>
-        )
-    }
-
-    const TouchControlsAxisSelection = () => {
-        if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
-
-        return (
-            <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                <Label size="md">{toTitleCase(input.inputName)}</Label>
-                <Select
-                    key={input.inputName}
-                    value={touchControlsAxes[input.touchControlAxis]}
-                    onChange={e => {
-                        setSelectedInput(input.inputName)
-                        setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value as string))
-                    }}
-                >
-                    {touchControlsAxes.map(axis => (
-                        <MenuItem key={`touch-axis-${axis}`} value={axis}>
-                            {axis}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </Stack>
-        )
-    }
-
     /** Show the correct selection mode based on input type and how it's configured */
     const inputConfig = () => {
         if (useGamepad) {
             // Joystick Button
             if (input instanceof ButtonInput) {
-                return JoystickButtonSelection()
+                return JoystickButtonSelection({ input, setSelectedInput, selectedInput })
             }
 
             // Gamepad axis
@@ -303,9 +48,9 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                 return (
                     <div key={input.inputName}>
                         {input.useGamepadButtons
-                            ? GamepadButtonAxisSelection()
+                            ? GamepadButtonAxisSelection({ input, setSelectedInput, selectedInput })
                             : // Gamepad joystick axis
-                              JoystickAxisSelection()}
+                              JoystickAxisSelection({ input, setSelectedInput, selectedInput, setChosenGamepadAxis })}
 
                         {/* // Button to switch between two buttons and a joystick axis */}
                         <Checkbox
@@ -333,7 +78,12 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
             if (input instanceof AxisInput) {
                 return (
                     <div key={input.inputName}>
-                        {TouchControlsAxisSelection()}
+                        {TouchControlsAxisSelection({
+                            input,
+                            setSelectedInput,
+                            selectedInput,
+                            setChosenTouchControlsAxis,
+                        })}
                         {/* // Button to invert the joystick axis */}
                         <Checkbox
                             label="Invert Joystick"
@@ -349,11 +99,11 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         } else {
             // Keyboard button
             if (input instanceof ButtonInput) {
-                return KeyboardButtonSelection()
+                return KeyboardButtonSelection({ input, setSelectedInput, selectedInput })
             }
             // Keyboard Axis
             else if (input instanceof AxisInput) {
-                return KeyboardAxisSelection()
+                return KeyboardAxisSelection({ input, setSelectedInput, selectedInput })
             }
         }
     }

@@ -53,7 +53,7 @@ describe("React Mounting", async () => {
     test("App fully mounts through main.tsx", async ({ annotate, skip }) => {
         skip(server.browser == "firefox", "WebGL bug in Github Actions on Firefox")
 
-        // biome-ignore lint/nursery/noTsIgnore: ts-expect-error doesn't work here for some reason
+        // biome-ignore lint/suspicious/noTsIgnore: ts-expect-error doesn't work here for some reason
         // @ts-ignore funky dynamic import
         await import("@/main.tsx")
 
