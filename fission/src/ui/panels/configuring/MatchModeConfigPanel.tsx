@@ -71,7 +71,11 @@ export interface MatchModeConfig {
     readonly sideExtensionPenalty: number
 }
 
-const props: Readonly<{ id: keyof MatchModeConfig; expectedType: string; required: boolean }>[] = [
+const props: Readonly<{
+    id: keyof MatchModeConfig
+    expectedType: string
+    required: boolean
+}>[] = [
     { id: "id", expectedType: "string", required: true },
     { id: "name", expectedType: "string", required: true },
     { id: "autonomousTime", expectedType: "number", required: false },
@@ -144,14 +148,21 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
     return (
-        <Stack direction="row" key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+        <Stack
+            direction="row"
+            key={id}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            gap={"1rem"}
+            sx={{ px: 1, py: 0.5 }}
+        >
             <Label size="sm" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
             </Label>
             <Stack
                 key={`button-box-${id}`}
                 direction="row-reverse"
-                gap={"0.25rem"}
+                gap={"0.5rem"}
                 justifyContent={"center"}
                 alignItems={"center"}
             >
@@ -333,7 +344,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             <Divider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
-            <Box alignSelf={"center"}>
+            <Box alignSelf={"center"} sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
                 <Button
                     onClick={() => {
                         createNewMatchModeConfig()
@@ -341,8 +352,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                 >
                     Create Match Mode Config
                 </Button>
-            </Box>
-            <Box alignSelf={"center"}>
                 <Button onClick={uploadClicked}>Upload File</Button>
             </Box>
         </>

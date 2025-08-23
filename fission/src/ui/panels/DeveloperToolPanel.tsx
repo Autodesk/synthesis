@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material"
+import { Alert, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
@@ -160,7 +160,9 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
         try {
             const encoded = mirabuf.Assembly.encode(assembly).finish()
-            const blob = new Blob([encoded.buffer as ArrayBuffer], { type: "application/octet-stream" })
+            const blob = new Blob([encoded.buffer as ArrayBuffer], {
+                type: "application/octet-stream",
+            })
             const url = URL.createObjectURL(blob)
 
             // Check if assembly has devtool data to determine filename
@@ -193,8 +195,12 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }, [])
 
     return (
-        <Stack gap={4} className="rounded-md p-4 max-h-[60vh] min-h-[350px] overflow-y-auto">
-            {!fieldLoaded && <div className="text-red-600 m-4">No mira field loaded.</div>}
+        <Stack gap={4} className="rounded-md p-4 max-h-[60vh] overflow-y-auto">
+            {!fieldLoaded && (
+                <Alert severity="warning" className="m-2">
+                    No mira field loaded.
+                </Alert>
+            )}
             {editor && (
                 <Stack gap={6} className="md:flex-row items-start">
                     {/* Key List */}
@@ -266,7 +272,11 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                                     onChange={e => setJsonValue(e.target.value)}
                                     placeholder="Enter JSON data for this key"
                                 />
-                                {error && <div className="text-red-400 mt-1">{error}</div>}
+                                {error && (
+                                    <Alert severity="error" className="mt-2">
+                                        {error}
+                                    </Alert>
+                                )}
                                 <div className="mt-3 flex gap-2">
                                     <Button onClick={handleSave}>Save</Button>
                                     <Button onClick={handleRemove}>Remove</Button>

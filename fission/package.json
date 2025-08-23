@@ -45,6 +45,7 @@
     "colord": "^2.9.3",
     "electron-squirrel-startup": "^1.0.1",
     "framer-motion": "^10.18.0",
+    "fuse.js": "^7.1.0",
     "lygia": "^1.3.3",
     "peerjs": "^1.5.5",
     "msw": "^2.10.4",
