@@ -1,5 +1,5 @@
-import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
-import World from "@/systems/World.ts"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
+import World from "@/systems/World"
 import MatchMode from "./MatchMode"
 
 const BUFFER_HEIGHT = 0.1

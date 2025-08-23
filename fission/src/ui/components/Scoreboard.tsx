@@ -5,7 +5,7 @@ import Draggable from "react-draggable"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import MatchMode, { UpdateTimeLeft } from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import Label from "./Label"
 
 const showTime = () => {
