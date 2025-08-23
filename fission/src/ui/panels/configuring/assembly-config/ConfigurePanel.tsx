@@ -185,6 +185,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalInputSchemes.current = null
 
             selectedAssembly?.sendPreferences()
+            console.log("GET", selectedAssembly?.getPreferenceData())
+            setTimeout(() => console.log("GET2", selectedAssembly?.getPreferenceData(), 1000))
             new ConfigurationSavedEvent()
         }
         const onCancel = () => {

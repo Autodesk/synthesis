@@ -100,6 +100,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
 
                             const message: Message = {
                                 type: "newObject",
+                                timestamp: Date.now(),
                                 data: {
                                     sceneObjectKey: mirabufSceneObject.id,
                                     assembly: encodedAssembly,

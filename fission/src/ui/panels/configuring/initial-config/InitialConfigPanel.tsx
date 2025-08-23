@@ -59,7 +59,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                 setSelectedScheme(scheme)
             }
-            World.multiplayerSystem?.broadcast({ type: "metadataUpdate", data: targetAssembly.multiplayerInfo })
         }
         new ConfigurationSavedEvent()
     }, [alliance, targetAssembly, station, setSelectedScheme])

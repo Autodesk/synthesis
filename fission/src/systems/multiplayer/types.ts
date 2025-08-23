@@ -7,14 +7,13 @@ import type PhysicsSystem from "../physics/PhysicsSystem"
 export interface MessageType {
     info: ClientInfo
     update: UpdateObjectData[]
-    metadataUpdate: MetadataUpdateData
     collision: UpdateObjectData[] // just a comprehensive list instead
     newObject: InitObjectData
     needAssembly: AssemblyRequestData
-    deleteObject: number // sceneObjectKey
+    deleteObject: RemoteSceneObjectId // sceneObjectKey
     configureObject: ObjectPreferences // sceneObjectKey
-    disableObjectPhysics: number // sceneObjectKey
-    enableObjectPhysics: number // sceneObjectKey
+    disableObjectPhysics: RemoteSceneObjectId // sceneObjectKey
+    enableObjectPhysics: RemoteSceneObjectId // sceneObjectKey
     ping: PingData
     pong: PingData
     matchModeState: MatchModeStateData
@@ -22,7 +21,7 @@ export interface MessageType {
 }
 
 export interface MatchModePenalty {
-    objectId: number
+    objectId: RemoteSceneObjectId
     points: number
     description: string
 }
@@ -34,11 +33,14 @@ export type MatchModeStateData =
       }
     | { event: "cancel" }
 
-export type Message = { [K in keyof MessageType]: { type: K; data: MessageType[K] } }[keyof MessageType]
+export type MessageWithTimestamp = {
+    [K in keyof MessageType]: { type: K; data: MessageType[K]; timestamp: number }
+}[keyof MessageType]
+export type Message = Omit<MessageWithTimestamp, "timestamp"> & Partial<Pick<MessageWithTimestamp, "timestamp">>
 
-// biome-ignore lint: We're using this for type safety
 export type EncodedAssembly = Uint8Array & { __: "encodedassembly" }
-export type EncodedRootBody = string
+export type RemoteSceneObjectId = number & { __: "remotesceneobject" | "sceneobjectkey" }
+export type LocalSceneObjectId = number & { __: "localsceneobject" | "sceneobjectkey" }
 
 export type ClientInfo = {
     displayName: string
@@ -48,7 +50,7 @@ export type ClientInfo = {
 }
 
 export type InitObjectData = {
-    sceneObjectKey: number
+    sceneObjectKey: RemoteSceneObjectId
     assembly?: EncodedAssembly
     assemblyHash: string
     miraType: MiraType
@@ -59,28 +61,24 @@ export type InitObjectData = {
 export type RobotConfiguration = {
     intakePreferences: string // IntakePreferences
     ejectorPreferences: string // EjectorPreferences
+    alliance?: Alliance
+    station?: Station
 }
 export type FieldConfiguration = {
     fieldPreferences: string // FieldPreferences
 }
 export type ObjectPreferences = {
-    sceneObjectKey: number
+    sceneObjectKey: RemoteSceneObjectId
     objectConfigurationData: RobotConfiguration | FieldConfiguration
 }
 
 export type AssemblyRequestData = {
-    sceneObjectKey: number
+    sceneObjectKey: RemoteSceneObjectId
     assemblyHash: string
 }
 
-export type MetadataUpdateData = {
-    sceneObjectKey: number
-    alliance?: Alliance
-    station?: Station
-}
-
 export type UpdateObjectData = {
-    sceneObjectKey: number
+    sceneObjectKey: RemoteSceneObjectId
     gamePiecesControlled: number[] // BodyID
     // {x, y, z, w?}
     bodies: {

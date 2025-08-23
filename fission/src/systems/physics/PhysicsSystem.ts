@@ -1296,6 +1296,7 @@ class PhysicsSystem extends WorldSystem {
 
                 if (clientSceneObject == null) {
                     console.warn("Could not find multiplayer robot") // happens when you delete
+                    World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
                     return
                 }
                 const touchedBodies = clientSceneObject.mechanism.touchedObjects

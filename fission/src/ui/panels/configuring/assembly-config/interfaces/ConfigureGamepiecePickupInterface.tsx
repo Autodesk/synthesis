@@ -92,7 +92,6 @@ function save(
 
     selectedRobot.intakePreferences.maxPieces = maxPieces!
     selectedRobot.intakePreferences.animationDuration = animationDuration!
-
     PreferencesSystem.savePreferences()
 }
 

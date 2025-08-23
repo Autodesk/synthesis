@@ -28,6 +28,7 @@ class IntakeSensorSceneObject extends SceneObject {
     }
 
     public setup(): void {
+        console.log(this._parentAssembly.intakePreferences)
         if (this._parentAssembly.intakePreferences) {
             this._parentBodyId = this._parentAssembly.mechanism.nodeToBody.get(
                 this._parentAssembly.intakePreferences.parentNode ?? this._parentAssembly.rootNodeId
