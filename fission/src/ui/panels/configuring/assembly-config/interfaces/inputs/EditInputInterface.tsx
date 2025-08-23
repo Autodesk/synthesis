@@ -1,4 +1,4 @@
-import { Box, Divider, MenuItem, Select, Stack } from "@mui/material"
+import { Box, Divider, MenuItem, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import InputSystem from "@/systems/input/InputSystem"
@@ -9,7 +9,7 @@ import type Input from "@/systems/input/inputs/Input"
 import type { KeyCode } from "@/systems/input/KeyboardTypes"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
-import { Button, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {
@@ -209,7 +209,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     value={gamepadAxes[input.gamepadAxisNumber + 1]}
                     onChange={e => {
                         setSelectedInput(input.inputName)
-                        setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value))
+                        setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value as string))
                     }}
                 >
                     {gamepadAxes.map(axis => (
@@ -277,7 +277,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     value={touchControlsAxes[input.touchControlAxis]}
                     onChange={e => {
                         setSelectedInput(input.inputName)
-                        setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value))
+                        setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value as string))
                     }}
                 >
                     {touchControlsAxes.map(axis => (

@@ -9,6 +9,14 @@ import {
     ToggleButtonGroup as MuiToggleButtonGroup,
     Stack,
     type ToggleButtonGroupProps,
+    Select as MuiSelect,
+    type SelectProps,
+    Accordion as MuiAccordion,
+    type AccordionProps,
+    AccordionSummary as MuiAccordionSummary,
+    type AccordionSummaryProps,
+    AccordionDetails as MuiAccordionDetails,
+    type AccordionDetailsProps,
     type ToggleButtonProps,
     Tooltip,
 } from "@mui/material"
@@ -128,6 +136,30 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, 
             {children}
         </MuiToggleButtonGroup>
     )
+}
+
+export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
+    return (
+        <MuiSelect {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
+            {children}
+        </MuiSelect>
+    )
+}
+
+export const Accordion: React.FC<AccordionProps> = ({ children, ...props }) => {
+    return <MuiAccordion {...props}>{children}</MuiAccordion>
+}
+
+export const AccordionSummary: React.FC<AccordionSummaryProps> = ({ children, ...props }) => {
+    return (
+        <MuiAccordionSummary {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
+            {children}
+        </MuiAccordionSummary>
+    )
+}
+
+export const AccordionDetails: React.FC<AccordionDetailsProps> = ({ children, ...props }) => {
+    return <MuiAccordionDetails {...props}>{children}</MuiAccordionDetails>
 }
 
 export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => {
@@ -257,4 +289,4 @@ export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
 }
 
 // Export the raw MUI components for cases where sound effects are not wanted
-export { MuiButton, MuiIconButton, MuiToggleButton, MuiToggleButtonGroup }
+export { MuiButton, MuiIconButton, MuiToggleButton, MuiToggleButtonGroup, MuiSelect }

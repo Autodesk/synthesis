@@ -1,4 +1,5 @@
-import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
+import { FormControl, InputLabel, MenuItem, TextField } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"

@@ -1,4 +1,5 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
+import { FormControl, InputLabel, MenuItem } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
 import type { ModalImplProps } from "../components/Modal"

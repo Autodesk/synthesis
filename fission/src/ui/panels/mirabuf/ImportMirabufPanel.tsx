@@ -1,14 +1,4 @@
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    CircularProgress,
-    Stack,
-    Tab,
-    Tabs,
-    Tooltip,
-} from "@mui/material"
+import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
@@ -39,6 +29,9 @@ import {
     PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
