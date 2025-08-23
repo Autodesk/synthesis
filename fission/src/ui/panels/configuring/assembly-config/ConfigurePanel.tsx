@@ -15,7 +15,6 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
 import { ConfigMode, type ConfigurationType } from "./ConfigTypes"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
@@ -224,7 +223,6 @@ export interface ConfigurePanelCustomProps {
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const { setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
 
     const {
         configMode: initialConfigMode,

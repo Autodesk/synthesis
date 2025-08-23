@@ -31,15 +31,13 @@ const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ..
             className="relative flex flex-row"
             variant="contained"
             sx={{
-                '&:focus': {
-                    outline: 'none'
-                }
+                "&:focus": {
+                    outline: "none",
+                },
             }}
         >
             {props.size !== "large" && <span className="absolute left-3">{startIcon}</span>}
-            <span className={props.size === "large" ? "py-1" : "py-0.5 ml-6"}>
-                {children}
-            </span>
+            <span className={props.size === "large" ? "py-1" : "py-0.5 ml-6"}>{children}</span>
         </Button>
     )
 }
