@@ -4,7 +4,7 @@ import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject.ts"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes.ts"
 import World from "@/systems/World.ts"
 
-export class ScoreTracker {
+export default class ScoreTracker {
     private static _redScore: number = 0
     private static _blueScore: number = 0
     private static _perRobotScore: Map<MirabufSceneObject, number>
