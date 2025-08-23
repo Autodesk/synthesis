@@ -6,7 +6,7 @@ import { useRef } from "react"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import MatchMode, { UpdateTimeLeft } from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import Label from "./Label"
 
 const showTime = () => {
@@ -16,8 +16,8 @@ const showTime = () => {
 const HALF_W = "calc(50vw - 50%)"
 
 const Scoreboard: React.FC = () => {
-    const [redScore, setRedScore] = useState(SimulationSystem.redScore)
-    const [blueScore, setBlueScore] = useState(SimulationSystem.redScore)
+    const [redScore, setRedScore] = useState(ScoreTracker.redScore)
+    const [blueScore, setBlueScore] = useState(ScoreTracker.blueScore)
     const [time, setTime] = useState("0")
 
     const onScoreChange = useCallback((e: OnScoreChangedEvent) => {

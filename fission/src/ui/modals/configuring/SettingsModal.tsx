@@ -2,7 +2,7 @@ import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
-import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
@@ -15,6 +15,16 @@ import { Button, Spacer } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register command: Open Settings (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "open-settings",
+    label: "Open Settings",
+    description: "Open the Settings modal.",
+    keywords: ["settings", "preferences", "config"],
+    perform: () => import("./SettingsModal").then(m => globalOpenModal(m.default, undefined)),
+})
 
 // Graphics settings constants
 const MIN_LIGHT_INTENSITY = 1
@@ -478,7 +488,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
             themeActions.save()
         }
 
-        SoundPlayer.changeVolume()
+        SoundPlayer.getInstance().changeVolume()
         PreferencesSystem.savePreferences()
         globalAddToast("info", "Settings Saved")
     }, [graphicsActions, themeActions])
@@ -493,7 +503,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
         }
 
         PreferencesSystem.revertPreferences()
-        SoundPlayer.changeVolume()
+        SoundPlayer.getInstance().changeVolume()
     }, [graphicsActions, themeActions])
 
     useEffect(() => {
@@ -530,7 +540,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
                 textColor="inherit"
                 indicatorColor="primary"
                 centered
-                {...SoundPlayer.buttonSoundEffects()}
+                {...SoundPlayer.getInstance().buttonSoundEffects()}
             >
                 {tabs.map(tab => (
                     <Tab key={tab.key} value={tab.key} label={tab.label} />

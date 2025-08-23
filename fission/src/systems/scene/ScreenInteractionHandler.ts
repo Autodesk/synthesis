@@ -126,7 +126,7 @@ class ScreenInteractionHandler {
         this._domElement.addEventListener("pointercancel", this._pointerUp)
         this._domElement.addEventListener("pointerleave", this._pointerUp)
 
-        this._domElement.addEventListener("touchmove", this._touchMove)
+        this._domElement.addEventListener("touchmove", this._touchMove, { passive: false })
     }
 
     /**

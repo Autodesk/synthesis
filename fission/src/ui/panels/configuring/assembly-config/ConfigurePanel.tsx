@@ -12,12 +12,12 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
+import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
-import { CONFIG_OPTS, ConfigMode, type ConfigurationType } from "./ConfigTypes"
+import { ConfigMode, type ConfigurationType } from "./ConfigTypes"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
@@ -34,6 +34,105 @@ import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProt
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import { Tab, Tabs } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
+import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+
+// Register command: Configure Assets (module-scope side effect)
+CommandRegistry.get().registerCommands([
+    {
+        id: "configure-assets-robots",
+        label: "Configure Assets (Robots)",
+        description: "Open the asset configuration panel.",
+        keywords: ["configure", "asset", "config", "robot", "robots"],
+        perform: () =>
+            import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "ROBOTS" })),
+    },
+    {
+        id: "configure-assets-fields",
+        label: "Configure Assets (Fields)",
+        description: "Open the asset configuration panel.",
+        keywords: ["configure", "asset", "config", "field", "fields"],
+        perform: () =>
+            import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "FIELDS" })),
+    },
+    {
+        id: "configure-assets-inputs",
+        label: "Configure Assets (Inputs)",
+        description: "Open the asset configuration panel.",
+        keywords: ["configure", "asset", "config", "input", "inputs"],
+        perform: () =>
+            import("./ConfigurePanel").then(m => globalOpenPanel(m.default, { configurationType: "INPUTS" })),
+    },
+])
+
+// Register dynamic provider: per-assembly configure/remove commands (module-scope)
+const provider: CommandProvider = () => {
+    if (!World.isAlive || !World.sceneRenderer) return []
+    const list: CommandDefinition[] = []
+
+    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots() || []
+    for (const r of robots) {
+        const name = r.assemblyName || "Robot"
+        const nameTokens = String(name)
+            .split(/\s+|[-_]/g)
+            .filter(Boolean)
+        list.push({
+            id: `configure-robot-${r.id}`,
+            label: `Configure ${r.nameTag?.text()} (${name})`,
+            description: `Open configuration for robot ${r.nameTag?.text()} (${name}).`,
+            keywords: ["configure", "robot", ...nameTokens.map(t => t.toLowerCase())],
+            perform: () =>
+                import("./ConfigurePanel").then(m =>
+                    globalOpenPanel(m.default, {
+                        configurationType: "ROBOTS",
+                        selectedAssembly: r,
+                    })
+                ),
+        })
+        list.push({
+            id: `remove-robot-${r.id}`,
+            label: `Remove ${r.nameTag?.text()} (${name})`,
+            description: `Remove the robot ${r.nameTag?.text()} (${name}).`,
+            keywords: ["remove", "delete", "robot", ...nameTokens.map(t => t.toLowerCase())],
+            perform: () => {
+                World.sceneRenderer.removeSceneObject(r.id)
+            },
+        })
+    }
+
+    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+    if (field) {
+        const name = field.assemblyName || "Field"
+        const nameTokens = String(name)
+            .split(/\s+|[-_]/g)
+            .filter(Boolean)
+        list.push({
+            id: `configure-field-${field.id}`,
+            label: `Configure ${name}`,
+            description: `Open configuration for field ${name}.`,
+            keywords: ["configure", "field", ...nameTokens.map(t => t.toLowerCase())],
+            perform: () =>
+                import("./ConfigurePanel").then(m =>
+                    globalOpenPanel(m.default, {
+                        configurationType: "FIELDS",
+                        selectedAssembly: field,
+                    })
+                ),
+        })
+        list.push({
+            id: `remove-field-${field.id}`,
+            label: `Remove ${name}`,
+            description: `Remove the field ${name}.`,
+            keywords: ["remove", "delete", "field", ...nameTokens.map(t => t.toLowerCase())],
+            perform: () => {
+                World.sceneRenderer.removeSceneObject(field.id)
+            },
+        })
+    }
+
+    return list
+}
+CommandRegistry.get().registerProvider(provider)
 
 interface ConfigInterfaceProps<T, P> {
     panel: UIScreen<T, P>
@@ -188,6 +287,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
+            selectedAssembly?.sendPreferences()
             new ConfigurationSavedEvent()
         }
         const onCancel = () => {
@@ -307,7 +407,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 textColor="inherit"
                 indicatorColor="primary"
                 centered
-                {...SoundPlayer.buttonSoundEffects()}
+                {...SoundPlayer.getInstance().buttonSoundEffects()}
             >
                 <Tab key="robots" value="ROBOTS" label="ROBOTS" />
                 <Tab key="fields" value="FIELDS" label="FIELDS" />
