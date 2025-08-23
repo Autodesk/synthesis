@@ -22,6 +22,7 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
+import type { LocalSceneObjectId, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -365,19 +366,19 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(obj: T, idOverride?: number): number {
+    public registerSceneObject<T extends SceneObject>(obj: T, idOverride?: number): LocalSceneObjectId {
         const id = idOverride ?? nextSceneObjectId++
         if (nextSceneObjectId <= id) {
             nextSceneObjectId = id + 1
         }
         if (this._sceneObjects.has(id)) {
             console.error("Trying to add with existing ID!", obj, idOverride)
-            return -1
+            return -1 as LocalSceneObjectId
         }
         obj.id = id
         this._sceneObjects.set(id, obj)
         obj.setup()
-        return id
+        return id as LocalSceneObjectId
     }
 
     /** Registers gizmos that are attached to a parent mirabufsceneobject  */
@@ -399,15 +400,15 @@ class SceneRenderer extends WorldSystem {
         if (obj instanceof MirabufSceneObject) {
             const objGizmo = this._gizmosOnMirabuf.get(id)
             if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
+            World?.multiplayerSystem?.broadcast({
+                type: "deleteObject",
+                data: id as RemoteSceneObjectId,
+            })
         } else if (obj instanceof GizmoSceneObject && obj.hasParent()) {
             this._gizmosOnMirabuf.delete(obj.parentObjectId!)
         }
 
         if (this._sceneObjects.delete(id)) {
-            World?.multiplayerSystem?.broadcast({
-                type: "deleteObject",
-                data: id,
-            })
             obj!.dispose()
         }
     }
