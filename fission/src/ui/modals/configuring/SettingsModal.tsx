@@ -2,7 +2,7 @@ import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
-import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
@@ -15,6 +15,16 @@ import { Button, Spacer } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register command: Open Settings (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "open-settings",
+    label: "Open Settings",
+    description: "Open the Settings modal.",
+    keywords: ["settings", "preferences", "config"],
+    perform: () => import("./SettingsModal").then(m => globalOpenModal(m.default, undefined)),
+})
 
 // Graphics settings constants
 const MIN_LIGHT_INTENSITY = 1

@@ -42,7 +42,30 @@ import {
     miraTypeToConfigType,
 } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import CommandRegistry from "@/ui/components/CommandRegistry"
 import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+
+// Register commands: Open import panel scoped to robots/fields (module-scope side effect)
+CommandRegistry.get().registerCommands([
+    {
+        id: "spawn-asset-robots",
+        label: "Spawn Asset (Robots)",
+        description: "Open asset spawn panel scoped to robots.",
+        keywords: ["spawn", "asset", "robot", "import", "mirabuf"],
+        perform: () => {
+            globalOpenPanel<void, ImportMirabufPanelCustomProps>(ImportMirabufPanel, { configurationType: "ROBOTS" })
+        },
+    },
+    {
+        id: "spawn-asset-fields",
+        label: "Spawn Asset (Fields)",
+        description: "Open asset spawn panel scoped to fields.",
+        keywords: ["spawn", "asset", "field", "import", "mirabuf"],
+        perform: () => {
+            globalOpenPanel<void, ImportMirabufPanelCustomProps>(ImportMirabufPanel, { configurationType: "FIELDS" })
+        },
+    },
+])
 
 interface ItemCardProps {
     id: string
