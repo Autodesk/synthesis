@@ -24,7 +24,7 @@ import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAsse
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
-import type { EncodedAssembly, Message } from "@/systems/multiplayer/types"
+import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
@@ -134,8 +134,9 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
 
                             const message: Message = {
                                 type: "newObject",
+                                timestamp: Date.now(),
                                 data: {
-                                    sceneObjectKey: mirabufSceneObject.id,
+                                    sceneObjectKey: mirabufSceneObject.id as RemoteSceneObjectId,
                                     assembly: encodedAssembly,
                                     assemblyHash: info.hash,
                                     miraType: info.miraType,
@@ -146,7 +147,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                                 },
                             }
                             await World.multiplayerSystem?.broadcast(message)
-                            World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
+                            World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id as LocalSceneObjectId)
                         }
 
                         if (info.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
