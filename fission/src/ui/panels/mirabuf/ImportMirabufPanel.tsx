@@ -1,11 +1,4 @@
-import {
-    Box,
-    CircularProgress,
-    Stack,
-    Tab,
-    Tabs,
-    Tooltip,
-} from "@mui/material"
+import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"

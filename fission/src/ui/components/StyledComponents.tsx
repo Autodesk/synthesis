@@ -140,7 +140,7 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, 
 
 export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
     return (
-        <MuiSelect {...SoundPlayer.dropdownSoundEffects()} {...props}>
+        <MuiSelect {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
             {children}
         </MuiSelect>
     )
@@ -152,7 +152,7 @@ export const Accordion: React.FC<AccordionProps> = ({ children, ...props }) => {
 
 export const AccordionSummary: React.FC<AccordionSummaryProps> = ({ children, ...props }) => {
     return (
-        <MuiAccordionSummary {...SoundPlayer.dropdownSoundEffects()} {...props}>
+        <MuiAccordionSummary {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
             {children}
         </MuiAccordionSummary>
     )
