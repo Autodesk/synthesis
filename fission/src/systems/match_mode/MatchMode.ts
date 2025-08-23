@@ -3,7 +3,7 @@ import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
-import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import World from "@/systems/World.ts"
 import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
@@ -11,6 +11,26 @@ import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPan
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+
+// Register command: Toggle Match Mode
+CommandRegistry.get().registerCommand({
+    id: "toggle-match-mode",
+    label: "Toggle Match Mode",
+    description: "Toggle match mode, allowing you to simulate and run a full match.",
+    keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
+    perform: () => {
+        if (MatchMode.getInstance().isMatchEnabled()) {
+            MatchMode.getInstance().sandboxModeStart()
+            globalAddToast("info", "Match Mode Cancelled")
+        } else {
+            import("@/ui/panels/configuring/MatchModeConfigPanel").then(m => {
+                globalOpenPanel(m.default, undefined)
+            })
+        }
+    },
+})
 
 class MatchMode {
     private static _instance: MatchMode

@@ -1,5 +1,6 @@
 import { AnimatePresence } from "framer-motion"
 import { SnackbarProvider } from "notistack"
+import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import MainHUD from "@/components/MainHUD"
@@ -22,6 +23,7 @@ import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
+import CommandPalette from "@/ui/components/CommandPalette.tsx"
 
 function Synthesis() {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
@@ -95,7 +97,11 @@ function Synthesis() {
     return (
         <AnimatePresence key={"animate-presence"}>
             <ThemeProvider>
-                <SnackbarProvider maxSnack={5} anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
+                <SnackbarProvider
+                    maxSnack={5}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                    TransitionComponent={Slide}
+                >
                     <StateProvider>
                         <UIProvider>
                             <GlobalUIComponent />
@@ -105,6 +111,7 @@ function Synthesis() {
                             <MultiplayerHUD />
                             <MainHUD key={"main-hud"} />
                             <UIRenderer />
+                            <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
                             <WPILibConnectionStatus />
                             <DragModeIndicator />

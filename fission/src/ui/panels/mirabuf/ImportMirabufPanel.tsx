@@ -1,4 +1,14 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Stack, Tooltip } from "@mui/material"
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    CircularProgress,
+    Stack,
+    Tab,
+    Tabs,
+    Tooltip,
+} from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
@@ -29,8 +39,6 @@ import {
     PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
-    ToggleButton,
-    ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -42,7 +50,30 @@ import {
     miraTypeToConfigType,
 } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import CommandRegistry from "@/ui/components/CommandRegistry"
 import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+
+// Register commands: Open import panel scoped to robots/fields (module-scope side effect)
+CommandRegistry.get().registerCommands([
+    {
+        id: "spawn-asset-robots",
+        label: "Spawn Asset (Robots)",
+        description: "Open asset spawn panel scoped to robots.",
+        keywords: ["spawn", "asset", "robot", "import", "mirabuf"],
+        perform: () => {
+            globalOpenPanel<void, ImportMirabufPanelCustomProps>(ImportMirabufPanel, { configurationType: "ROBOTS" })
+        },
+    },
+    {
+        id: "spawn-asset-fields",
+        label: "Spawn Asset (Fields)",
+        description: "Open asset spawn panel scoped to fields.",
+        keywords: ["spawn", "asset", "field", "import", "mirabuf"],
+        perform: () => {
+            globalOpenPanel<void, ImportMirabufPanelCustomProps>(ImportMirabufPanel, { configurationType: "FIELDS" })
+        },
+    },
+])
 
 interface ItemCardProps {
     id: string
@@ -65,7 +96,10 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primar
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                {PositiveIconButton({ children: primaryButtonNode, onClick: primaryOnClick })}
+                {PositiveIconButton({
+                    children: primaryButtonNode,
+                    onClick: primaryOnClick,
+                })}
                 {secondaryOnClick && DeleteButton(secondaryOnClick)}
             </Stack>
         </Stack>
@@ -400,22 +434,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     }, [configurationType])
     return (
         <Stack direction="column" gap={2} className="overflow-y-auto">
-            <ToggleButtonGroup
+            <Tabs
                 value={viewType}
-                exclusive
-                onChange={(_, v) => {
-                    if (v != null) {
-                        setViewType(v)
-                    }
-                }}
+                onChange={(_, newValue) => setViewType(newValue)}
+                textColor="inherit"
+                indicatorColor="primary"
+                centered
                 {...SoundPlayer.getInstance().buttonSoundEffects()}
-                sx={{
-                    alignSelf: "center",
-                }}
             >
-                <ToggleButton value={MiraType.ROBOT}>Robots</ToggleButton>
-                <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
-            </ToggleButtonGroup>
+                <Tab key="robots" value={MiraType.ROBOT} label="ROBOTS" />
+                <Tab key="fields" value={MiraType.FIELD} label="FIELDS" />
+            </Tabs>
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
                     {viewType === MiraType.ROBOT ? (
@@ -433,7 +462,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     )}
                 </AccordionSummary>
                 <AccordionDetails>
-                    {viewType === MiraType.ROBOT ? cachedRobotElements : cachedFieldElements}
+                    {viewType === MiraType.ROBOT ? (
+                        cachedRobotElements && cachedRobotElements.length > 0 ? (
+                            cachedRobotElements
+                        ) : (
+                            <Label size="sm">No Saved Assets</Label>
+                        )
+                    ) : cachedFieldElements && cachedFieldElements.length > 0 ? (
+                        cachedFieldElements
+                    ) : (
+                        <Label size="sm">No Saved Assets</Label>
+                    )}
                 </AccordionDetails>
             </Accordion>
             <Accordion>
@@ -450,9 +489,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 `${hubElements.length} Remote Asset${hubElements.length === 1 ? "" : "s"}`
                             ) : (
                                 <Tooltip title={filesStatus.message}>
-                                    <Stack direction="row" gap={1}>
+                                    <Stack direction="row" gap={1} alignItems="center">
                                         <Label size="md">Loading from APS...</Label>
                                         <CircularProgress
+                                            size="1em"
                                             variant="determinate"
                                             value={filesStatus.isDone ? 100 : filesStatus.progress * 100}
                                         />
@@ -460,10 +500,18 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 </Tooltip>
                             )}
                         </Label>
-                        {hubElements && filesStatus.isDone && RefreshButton(() => requestMirabufFiles())}
+                        {hubElements && RefreshButton(() => requestMirabufFiles())}
                     </Stack>
                 </AccordionSummary>
-                <AccordionDetails>{hubElements}</AccordionDetails>
+                <AccordionDetails>
+                    {hubElements && hubElements.length > 0 ? (
+                        hubElements
+                    ) : filesStatus.isDone ? (
+                        <Label size="sm">No Assets Found</Label>
+                    ) : (
+                        <Label size="sm">Loading from APS...</Label>
+                    )}
+                </AccordionDetails>
             </Accordion>
             <Accordion>
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
@@ -482,7 +530,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     )}
                 </AccordionSummary>
                 <AccordionDetails>
-                    {viewType === MiraType.ROBOT ? remoteRobotElements : remoteFieldElements}
+                    {viewType === MiraType.ROBOT ? (
+                        remoteRobotElements && remoteRobotElements.length > 0 ? (
+                            remoteRobotElements
+                        ) : (
+                            <Label size="sm">No Assets Found</Label>
+                        )
+                    ) : remoteFieldElements && remoteFieldElements.length > 0 ? (
+                        remoteFieldElements
+                    ) : (
+                        <Label size="sm">No Assets Found</Label>
+                    )}
                     <Stack justifyContent="center" mt={1}>
                         <PositiveButton
                             onClick={viewType === MiraType.ROBOT ? downloadAllRemoteRobots : downloadAllRemoteFields}
