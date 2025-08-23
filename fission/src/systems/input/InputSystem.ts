@@ -18,6 +18,9 @@ class InputSystem extends WorldSystem {
     /** The keys currently being pressed. */
     private static _keysPressed: Partial<Record<KeyCode, boolean>> = {}
 
+    /** Whether the command palette is currently open, which blocks robot input */
+    private static _isCommandPaletteOpen: boolean = false
+
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
 
@@ -33,6 +36,13 @@ class InputSystem extends WorldSystem {
             isCustomized: scheme.customized,
             schemeName: scheme.schemeName,
         })
+    }
+
+    /**
+     * Sets whether the command palette is open, which blocks all robot inputs
+     */
+    public static setCommandPaletteOpen(isOpen: boolean) {
+        InputSystem._isCommandPaletteOpen = isOpen
     }
 
     constructor() {
@@ -159,6 +169,11 @@ class InputSystem extends WorldSystem {
      * @returns {number} A number between -1 and 1 based on the current state of the input.
      */
     public static getInput(inputName: InputName, brainIndex: number): number {
+        // Block all robot inputs when command palette is open
+        if (InputSystem._isCommandPaletteOpen) {
+            return 0
+        }
+
         const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input

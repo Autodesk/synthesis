@@ -1,8 +1,10 @@
 import * as THREE from "three"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
 import AnalyticsSystem, { type AccumTimes } from "./analytics/AnalyticsSystem"
 import InputSystem from "./input/InputSystem"
 import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
+import type MultiplayerSystem from "./multiplayer/MultiplayerSystem"
 import PhysicsSystem from "./physics/PhysicsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
@@ -18,6 +20,7 @@ class World {
     private static _physicsSystem: PhysicsSystem
     private static _simulationSystem: SimulationSystem
     private static _inputSystem: InputSystem
+    private static _multiplayerSystem?: MultiplayerSystem
     private static _analyticsSystem: AnalyticsSystem | undefined = undefined
     private static _dragModeSystem: DragModeSystem
     private static _performanceMonitorSystem: PerformanceMonitoringSystem
@@ -51,11 +54,26 @@ class World {
     public static get inputSystem() {
         return World._inputSystem
     }
+    public static get multiplayerSystem() {
+        return World._multiplayerSystem
+    }
     public static get analyticsSystem() {
         return World._analyticsSystem
     }
     public static get dragModeSystem() {
         return World._dragModeSystem
+    }
+
+    public static getOwnRobots() {
+        return World.multiplayerSystem?.getOwnRobots() ?? World.sceneRenderer.mirabufSceneObjects.getRobots()
+    }
+
+    public static getOwnObjects() {
+        return World.multiplayerSystem?.getOwnObjects() ?? World.sceneRenderer.mirabufSceneObjects.getAll()
+    }
+
+    public static set physicsSystem(system: PhysicsSystem) {
+        World.physicsSystem = system
     }
 
     public static resetAccumTimes() {
@@ -69,7 +87,11 @@ class World {
         }
     }
 
-    public static initWorld() {
+    public static setMultiplayerSystem(multiplayerSystem?: MultiplayerSystem) {
+        World._multiplayerSystem = multiplayerSystem
+    }
+
+    public static async initWorld() {
         if (World._isAlive) return
 
         World._clock = new THREE.Clock()
@@ -81,10 +103,17 @@ class World {
         World._inputSystem = new InputSystem()
         World._dragModeSystem = new DragModeSystem()
         World._performanceMonitorSystem = new PerformanceMonitoringSystem()
+
         try {
             World._analyticsSystem = new AnalyticsSystem()
         } catch (_) {
             World._analyticsSystem = undefined
+        }
+
+        ScoreTracker.resetScores()
+
+        if (import.meta.env.DEV) {
+            window.World = World
         }
     }
 
@@ -97,6 +126,7 @@ class World {
         World._sceneRenderer.destroy()
         World._simulationSystem.destroy()
         World._inputSystem.destroy()
+        // World._multiplayerSystem.destroy()
         World._dragModeSystem.destroy()
 
         World._performanceMonitorSystem.destroy()

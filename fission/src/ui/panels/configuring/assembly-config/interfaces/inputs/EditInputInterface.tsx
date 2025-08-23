@@ -1,5 +1,4 @@
-import { Box, Divider, MenuItem, Select, Stack } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
+import { Box, Divider, MenuItem, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import InputSystem from "@/systems/input/InputSystem"
@@ -10,7 +9,7 @@ import type Input from "@/systems/input/inputs/Input"
 import type { KeyCode } from "@/systems/input/KeyboardTypes"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {
@@ -119,7 +118,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             }}
                         >
                             {input.inputName === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : transformKeyName(input.keyCode, input.keyModifiers)}
                         </Button>
                     </Box>
@@ -149,7 +148,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             }}
                         >
                             {`pos${input.inputName}` === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : transformKeyName(input.posKeyCode, input.posKeyModifiers)}
                         </Button>
                         {SynthesisIcons.MINUS}
@@ -162,7 +161,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             }}
                         >
                             {`neg${input.inputName}` === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : transformKeyName(input.negKeyCode, input.negKeyModifiers)}
                         </Button>
                     </Stack>
@@ -183,7 +182,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         key={input.inputName}
                         value={
                             input.inputName === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : input.gamepadButton === -1
                                   ? "N/A"
                                   : gamepadButtons[input.gamepadButton]
@@ -210,7 +209,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     value={gamepadAxes[input.gamepadAxisNumber + 1]}
                     onChange={e => {
                         setSelectedInput(input.inputName)
-                        setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value))
+                        setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value as string))
                     }}
                 >
                     {gamepadAxes.map(axis => (
@@ -238,7 +237,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         key={`pos${input.inputName}`}
                         value={
                             `pos${input.inputName}` === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : input.posGamepadButton === -1
                                   ? "N/A"
                                   : gamepadButtons[input.posGamepadButton]
@@ -253,7 +252,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         key={`neg${input.inputName}`}
                         value={
                             `neg${input.inputName}` === selectedInput
-                                ? "Press anything"
+                                ? "..."
                                 : input.negGamepadButton === -1
                                   ? "N/A"
                                   : gamepadButtons[input.negGamepadButton]
@@ -278,7 +277,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     value={touchControlsAxes[input.touchControlAxis]}
                     onChange={e => {
                         setSelectedInput(input.inputName)
-                        setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value))
+                        setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value as string))
                     }}
                 >
                     {touchControlsAxes.map(axis => (

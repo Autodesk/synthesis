@@ -1,23 +1,29 @@
 import { Box, Stack } from "@mui/material"
-import { Button } from "../components/StyledComponents"
 import type React from "react"
 import { useEffect } from "react"
 import APS from "@/aps/APS"
-import MirabufCachingService, {
-    backUpFields as hashedMiraFields,
-    backUpRobots as hashedMiraRobots,
-    MiraType,
-} from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
+import ConfirmModal from "@/ui/modals/common/ConfirmModal"
 import { random } from "@/util/Random"
-import { globalAddToast } from "../components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "../components/GlobalUIControls"
 import Label from "../components/Label"
 import type { PanelImplProps } from "../components/Panel"
+import { Button } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
-import ConfirmModal from "@/ui/modals/common/ConfirmModal"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register command: Open Debug Panel (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "open-debug-panel",
+    label: "Open Debug Panel",
+    description: "Open the Debug tools panel.",
+    keywords: ["panel", "debug"],
+    perform: () => import("./DebugPanel").then(m => globalOpenPanel(m.default, undefined)),
+})
 
 function toggleDragMode() {
     const dragSystem = World.dragModeSystem
@@ -48,7 +54,7 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             textAlign="center"
             minWidth="290px"
         >
-            <Stack>
+            <Stack gap={1}>
                 <Label size="sm">Generic</Label>
                 <Button
                     onClick={() => {
@@ -133,10 +139,7 @@ const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                 <Label size="sm">Caching Services</Label>
                 <Button
                     onClick={() => {
-                        console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
-                        console.log(MirabufCachingService.getCacheMap(MiraType.FIELD))
-                        console.log(hashedMiraRobots)
-                        console.log(hashedMiraFields)
+                        console.log(MirabufCachingService.getAll(MiraType.ROBOT))
                     }}
                     className="w-full"
                 >
