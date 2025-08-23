@@ -18,7 +18,7 @@ import {
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "../../util/TypeConversions"
-import type { Message } from "../multiplayer/types"
+import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
@@ -1500,7 +1500,7 @@ class PhysicsSystem extends WorldSystem {
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
                 World.multiplayerSystem
                     ?.getOwnSceneObjectIDs()
-                    .includes(this.bodyToMiraSceneObject(body)?.id as number)) ??
+                    .includes(this.bodyToMiraSceneObject(body)?.id as LocalSceneObjectId)) ??
             false
         )
     }

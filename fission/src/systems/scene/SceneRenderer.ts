@@ -22,7 +22,7 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
-import type { LocalSceneObjectId } from "@/systems/multiplayer/types.ts"
+import type { LocalSceneObjectId, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -402,7 +402,7 @@ class SceneRenderer extends WorldSystem {
             if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
             World?.multiplayerSystem?.broadcast({
                 type: "deleteObject",
-                data: id,
+                data: id as RemoteSceneObjectId,
             })
         } else if (obj instanceof GizmoSceneObject && obj.hasParent()) {
             this._gizmosOnMirabuf.delete(obj.parentObjectId!)
