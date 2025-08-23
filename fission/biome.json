@@ -33,7 +33,6 @@
         "noUselessTypeConstraint": "error"
       },
       "correctness": {
-        "useUniqueElementIds": "off",
         "noConstAssign": "error",
         "noConstantCondition": "error",
         "noEmptyCharacterClassInRegex": "error",
@@ -59,7 +58,8 @@
         "useIsNan": "error",
         "useValidForDirection": "error",
         "useValidTypeof": "error",
-        "useYield": "error"
+        "useYield": "error",
+        "useUniqueElementIds": "off"
       },
       "nursery": {},
       "style": {
