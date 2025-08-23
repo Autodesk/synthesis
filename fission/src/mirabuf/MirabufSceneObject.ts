@@ -845,7 +845,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public async sendPreferences() {
         if (!World.multiplayerSystem) return
         const data = this.getPreferenceData()
-        console.log("SENDING", data)
         await World.multiplayerSystem.broadcast({
             type: "configureObject",
             data: {
