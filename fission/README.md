@@ -8,7 +8,7 @@ Fission is Synthesis' web-based robotics simulator. This app is hosted [on our w
 
 1. Bun (v1.2.20 recommended)
    - Yarn, NPM, or any other package managers work just as well.
-2. NodeJS (v20.10.0 recommended)
+2. Node.js (v20.10.0 recommended)
    - Needed for running the development server.
 
 ### Setup

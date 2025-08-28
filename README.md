@@ -41,7 +41,7 @@ Follow the above links to the respective READMEs on how to build, run, and test 
 
 ## Contributing
 
-See [CONTRIBUTING.md](/CONTRIBUTING.MD) for information on how you can help build synthesis
+See [CONTRIBUTING.md](/CONTRIBUTING.md) for information on how you can help build synthesis
 
 ## Other Components
 
@@ -80,7 +80,7 @@ Applications open each year during the spring. For more information about applyi
 
 ## Contact
 
-If you have any questions about Synthesis or the Immersion Program, you can contact us through email ([frc@autodesk.com](mailto:frc@autodesk.com)). Additionally, please reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in touch with not only the community, but Synthesis' current development team.
+If you have any questions about Synthesis or the Immersion Program, you can contact us through email ([frc@autodesk.com](mailto:frc@autodesk.com)). Additionally, please reach out through our [community Discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in touch with not only the community, but Synthesis' current development team.
 
 ## [License](/LICENSE.txt)
 
