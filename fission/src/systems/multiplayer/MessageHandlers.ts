@@ -2,23 +2,23 @@ import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import MirabufCachingService from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
-import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
 import World from "../World"
-import { COLLISION_TIMEOUT, MultiplayerStateEvent, MultiplayerStateEventType } from "./MultiplayerSystem"
+import { MultiplayerStateEvent, MultiplayerStateEventType } from "./MultiplayerSystem"
 import type {
     AssemblyRequestData,
     ClientInfo,
     EncodedAssembly,
     InitObjectData,
+    LocalSceneObjectId,
     MatchModePenalty,
     MatchModeStateData,
-    Message,
     MessageType,
-    MetadataUpdateData,
     ObjectPreferences,
+    RemoteSceneObjectId,
     UpdateObjectData,
 } from "./types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -33,7 +33,6 @@ export const peerMessageHandlers = {
     configureObject: handleObjectConfiguration,
     disableObjectPhysics: disableObjectPhysics,
     enableObjectPhysics: enableObjectPhysics,
-    metadataUpdate: handleMetadataUpdate,
     matchModeState: handleMatchModeState,
     matchModePenalty: handleMatchModePenalty,
     ping: () => {
@@ -42,7 +41,9 @@ export const peerMessageHandlers = {
     pong: () => {
         console.warn("unhandled event")
     },
-} as const satisfies { [K in keyof MessageType]: (data: MessageType[K], peerId: string) => Promise<void> | void }
+} as const satisfies {
+    [K in keyof MessageType]: (data: MessageType[K], peerId: string, timestamp: number) => Promise<void> | void
+}
 
 const pendingOperations: (() => void)[] = []
 const progressHandles: Map<number, ProgressHandle> = new Map()
@@ -65,12 +66,21 @@ function handlePeerInfo(data: ClientInfo) {
     globalAddToast("success", "Multiplayer Peer Connected", data.displayName)
     MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
 }
-
-function handlePeerUpdate(data: UpdateObjectData[], peerId: string) {
+const clientToUpdateMap = new Map<string, number>()
+function handlePeerUpdate(data: UpdateObjectData[], peerId: string, timestamp: number) {
     const bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)!
 
+    const lastTimestamp = clientToUpdateMap.get(peerId)
+    if (lastTimestamp != null && lastTimestamp > timestamp) {
+        console.warn("ignoring old update")
+        return
+    }
+    clientToUpdateMap.set(peerId, timestamp)
+
     data.forEach(({ sceneObjectKey, gamePiecesControlled, bodies }) => {
-        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
+        const sceneObject = World.sceneRenderer.sceneObjects.get(
+            World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
+        )
         if (sceneObject == null) {
             console.warn(
                 `Multiplayer SceneObject: ${sceneObjectKey} not found in sceneObjects map. Multiplayer SceneObjects must be initialized before being updated.`
@@ -137,11 +147,8 @@ function handlePeerUpdate(data: UpdateObjectData[], peerId: string) {
     })
 }
 
-function handleCollision(data: UpdateObjectData[], peerId: string) {
-    // TODO Expand on this logic
-    if (World.multiplayerSystem?.lastSentCollisionTimestamp ?? 0 < COLLISION_TIMEOUT) return
-
-    handlePeerUpdate(data, peerId)
+function handleCollision() {
+    return // TODO Expand on this logic
 }
 
 async function handleNewObject(data: InitObjectData, peerId: string) {
@@ -177,7 +184,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
         return
     }
 
-    const object = await createMirabuf(assembly, handle)
+    const object = await createMirabuf(assembly, handle, peerId)
     if (object == null) return
 
     const clientToObjectMap = World.multiplayerSystem?._clientToObjectMap
@@ -194,16 +201,19 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     object.nameOverride = clientToInfoMap.get(peerId)?.displayName ?? peerId
 
     console.log("Registering object", object, data)
-    World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
+    const localSceneObjectKey = World.sceneRenderer.registerSceneObject(object)
+    console.log("linking object", data.sceneObjectKey, "->", localSceneObjectKey)
 
-    clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
+    World.multiplayerSystem?.setSceneObjectIdMapping(peerId, data.sceneObjectKey, localSceneObjectKey)
+
+    clientToObjectMap.get(peerId)?.push(object.id as LocalSceneObjectId) ||
+        clientToObjectMap.set(peerId, [object.id as LocalSceneObjectId])
 
     // Sets bodyMap
     const clientBodyIds = object.getAllBodyIds()
     console.assert(data.bodyIds.length === clientBodyIds.length)
     data.bodyIds.forEach((id, i) => bodyMap.set(id, clientBodyIds[i]))
 
-    object.multiplayerOwningClientId = peerId
     handle.done("Loaded")
 
     // Run all messages that arrived before the assembly fully spawned
@@ -227,7 +237,7 @@ async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) 
     const encodedAssembly = new Uint8Array(buffer) as EncodedAssembly
 
     const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
-    const message: Message = {
+    await World.multiplayerSystem?.send(peerId, {
         type: "newObject",
         data: {
             sceneObjectKey,
@@ -237,70 +247,83 @@ async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) 
             initialPreferences: sceneObject.getPreferenceData(),
             bodyIds: sceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
         },
-    }
-
-    await World.multiplayerSystem?.send(peerId, message)
+    })
 }
 
-function handleDeleteObject(sceneObjectKey: number) {
+function handleDeleteObject(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
     if (!World.multiplayerSystem) return
     const clientToObjectMap = World.multiplayerSystem._clientToObjectMap
+    const localKey = World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
 
-    const peerClient = [...clientToObjectMap.entries()].find(([_id, keys]) => keys.includes(sceneObjectKey))
+    const peerClient = [...clientToObjectMap.entries()].find(([_id, keys]) => keys.includes(localKey))
     if (peerClient != null) {
         const keys = clientToObjectMap.get(peerClient[0])
-        const index = keys?.indexOf(sceneObjectKey) ?? -1
+        const index = keys?.indexOf(World.multiplayerSystem.convertSceneObjectId(peerId, sceneObjectKey)) ?? -1
         if (index != -1) {
             keys?.splice(index)
         }
     }
 
-    World.sceneRenderer.removeSceneObject(sceneObjectKey)
+    if (!World.sceneRenderer.sceneObjects.has(localKey)) {
+        pendingOperations.push(() => handleDeleteObject(sceneObjectKey, peerId))
+    }
+
+    World.sceneRenderer.removeSceneObject(localKey)
 }
 
-function handleObjectConfiguration(data: ObjectPreferences) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
+function handleObjectConfiguration(data: ObjectPreferences, peerId: string) {
+    const sceneObject = World.sceneRenderer.sceneObjects.get(
+        World.multiplayerSystem!.convertSceneObjectId(peerId, data.sceneObjectKey)
+    )
     if (sceneObject instanceof MirabufSceneObject) {
+        if (sceneObject.isOwnObject) {
+            console.warn("received config for own object")
+            return
+        }
         sceneObject.setPreferenceData(data.objectConfigurationData)
         PreferencesSystem.savePreferences()
     } else {
-        pendingOperations.push(() => handleObjectConfiguration(data))
+        pendingOperations.push(() => handleObjectConfiguration(data, peerId))
     }
 }
 
-function disableObjectPhysics(sceneObjectKey: number) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
+function disableObjectPhysics(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
+    const sceneObject = World.sceneRenderer.sceneObjects.get(
+        World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
+    )
     if (sceneObject instanceof MirabufSceneObject) {
+        if (sceneObject.isOwnObject) {
+            console.warn("received disable for own object")
+            return
+        }
         sceneObject.disablePhysics()
     } else {
-        pendingOperations.push(() => disableObjectPhysics(sceneObjectKey))
+        pendingOperations.push(() => disableObjectPhysics(sceneObjectKey, peerId))
     }
 }
 
-function enableObjectPhysics(sceneObjectKey: number) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
+function enableObjectPhysics(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
+    const sceneObject = World.sceneRenderer.sceneObjects.get(
+        World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
+    )
     if (sceneObject instanceof MirabufSceneObject) {
+        if (sceneObject.isOwnObject) {
+            console.warn("received enablephysics for own object")
+            return
+        }
         sceneObject.enablePhysics()
     } else {
-        pendingOperations.push(() => enableObjectPhysics(sceneObjectKey))
+        pendingOperations.push(() => enableObjectPhysics(sceneObjectKey, peerId))
     }
 }
 
-function handleMetadataUpdate(data: MetadataUpdateData) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
-    if (!(sceneObject instanceof MirabufSceneObject)) {
-        pendingOperations.push(() => handleMetadataUpdate(data))
-        return
-    }
-
-    sceneObject.multiplayerInfo = data
-}
-
-function handleMatchModePenalty(data: MatchModePenalty) {
-    const obj = World.sceneRenderer.sceneObjects.get(data.objectId)
+function handleMatchModePenalty(data: MatchModePenalty, peerId: string) {
+    const obj = World.sceneRenderer.sceneObjects.get(
+        World.multiplayerSystem!.convertSceneObjectId(peerId, data.objectId)
+    )
     if (!(obj instanceof MirabufSceneObject)) {
         console.warn("can't handle penalty for object", data.objectId, obj)
-        pendingOperations.push(() => handleMatchModePenalty(data))
+        pendingOperations.push(() => handleMatchModePenalty(data, peerId))
         return
     }
     ScoreTracker.robotPenalty(obj, data.points, data.description, false)

@@ -30,11 +30,14 @@ const DragModeIndicator: React.FC = () => {
             direction="row"
             onClick={handleClick}
             sx={{
-                bgcolor: "background.default",
+                bgcolor: "background.paper",
+                boxShadow: 6,
             }}
         >
             <FaHandPaper className="self-center" />
-            <Label size="sm">Drag Mode</Label>
+            <Label size="sm" color="text.primary">
+                Drag Mode
+            </Label>
         </Stack>
     ) : (
         <></>

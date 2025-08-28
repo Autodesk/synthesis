@@ -103,6 +103,10 @@ export interface AnalyticsEvents {
     "Mode Selected": {
         mode: string
     }
+
+    "Command Executed": {
+        command: string
+    }
 }
 
 class AnalyticsSystem extends WorldSystem {
@@ -127,6 +131,7 @@ class AnalyticsSystem extends WorldSystem {
     }
 
     public event<K extends keyof AnalyticsEvents>(name: K, params?: AnalyticsEvents[K]) {
+        console.log("AnalyticsEvent", name, params)
         event({ name: name, params: params ?? {} })
     }
 

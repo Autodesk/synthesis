@@ -1,6 +1,6 @@
 # Synthesis Simulation
 
-A collection of simulation tools and samples to help enchance the use of code simulation inside of Synthesis.
+A collection of simulation tools and samples to help enhance the use of code simulation inside of Synthesis.
 
 ## SyntheSim
 

@@ -6,9 +6,9 @@ These are the markdown files for the codelabs.
 
 ### Dependencies
 
-1. [go](https://go.dev/doc/install)
-2. [claat](https://pkg.go.dev/github.com/googlecodelabs/tools/claat#section-readme)
-3. [nodejs](https://nodejs.org/en/download/)
+1. [Go](https://go.dev/doc/install)
+2. [Claat](https://pkg.go.dev/github.com/googlecodelabs/tools/claat#section-readme)
+3. [Nodejs](https://nodejs.org/en/download/)
 
 ### Create Codelabs
 
@@ -28,4 +28,4 @@ Using the make script will dump all the resulting codelabs into an `out/` direct
 
 ## Usage
 
-Upload these to their correct locations on the webserver. Ask [@KyroVibe](https://github.com/KyroVibe) or contact a subteam lead.
+Upload these to their correct locations on the web server. Ask [@KyroVibe](https://github.com/KyroVibe) or contact a subteam lead.
