@@ -5,11 +5,13 @@ The **mirabuf** folder is a pointer to a submodule which needs to be pulled down
 ## Fetching
 
 To pull down the submodule:
+
 ```
 $ git submodule update --init --recursive
 ```
 
 to sync with new changes:
+
 ```
 $ git submodule sync --recursive
 ```
@@ -21,13 +23,13 @@ To run the following files or commands make sure that you are in the `synthesis/
 ### Windows
 
 - Run `proto_compile.bat` while in the protocols directory
-    ```
-    $ proto_compile.bat
-    ``` 
+  ```
+  $ proto_compile.bat
+  ```
 
 ### Linux / MacOS
 
 - Run `proto_compile.sh` while in the protocols directory
-    ```
-    $ ./proto_compile.sh
-    ```
+  ```
+  $ ./proto_compile.sh
+  ```
