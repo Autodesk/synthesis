@@ -45,6 +45,33 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                         variant: "contained",
                     },
                 },
+                MuiPopover: {
+                    defaultProps: {
+                        elevation: 8,
+                    },
+                    styleOverrides: {
+                        paper: {
+                            boxShadow: "0 4px 8px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.2)",
+                        },
+                    },
+                },
+                MuiPaper: {
+                    styleOverrides: {
+                        root: {
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.24), 0 1px 3px rgba(0,0,0,0.18)",
+                        },
+                    },
+                },
+                MuiMenu: {
+                    defaultProps: {
+                        elevation: 8,
+                    },
+                    styleOverrides: {
+                        paper: {
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.18)",
+                        },
+                    },
+                },
             },
         })
 

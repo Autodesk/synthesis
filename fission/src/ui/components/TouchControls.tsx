@@ -36,7 +36,7 @@ const TouchControls: React.FC = () => {
             {/* Left Joystick */}
             <div
                 id="joystick-base-left"
-                className={`fixed bottom-[5vh] left-[5vw] w-[35vmin] h-[35vmin] max-w-[15rem] max-h-[15rem] touch-none ${
+                className={`fixed bottom-[5vh] left-[5vw] w-[35vmin] h-[35vmin] max-w-60 max-h-60 touch-none ${
                     isJoystickVisible ? "" : "hidden"
                 }`}
             >
@@ -53,7 +53,7 @@ const TouchControls: React.FC = () => {
             {/* Right Joystick */}
             <div
                 id="joystick-base-right"
-                className={`fixed bottom-[5vh] right-[5vw] w-[35vmin] h-[35vmin] max-w-[15rem] max-h-[15rem] touch-none ${
+                className={`fixed bottom-[5vh] right-[5vw] w-[35vmin] h-[35vmin] max-w-60 max-h-60 touch-none ${
                     isJoystickVisible ? "" : "hidden"
                 }`}
             >

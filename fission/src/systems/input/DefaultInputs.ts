@@ -91,7 +91,7 @@ class DefaultInputs {
                 ButtonInput.onKeyboard("eject", "KeyL"),
                 ButtonInput.onKeyboard("unstick", "KeyK"),
 
-                AxisInput.onKeyboardSingleKey("joint 1", "Slash", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 1", "Quote", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 2", "Period", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 3", "Comma", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 4", "KeyM", negativeModifierKeys),

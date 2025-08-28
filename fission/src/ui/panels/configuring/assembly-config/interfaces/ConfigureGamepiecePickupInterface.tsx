@@ -92,7 +92,6 @@ function save(
 
     selectedRobot.intakePreferences.maxPieces = maxPieces!
     selectedRobot.intakePreferences.animationDuration = animationDuration!
-
     PreferencesSystem.savePreferences()
 }
 
@@ -264,19 +263,6 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     setZoneSize(vel as number)
                 }}
                 step={0.01}
-            />
-            <StatefulSlider
-                min={MIN_ANIMATION_DURATION}
-                max={MAX_ANIMATION_DURATION}
-                defaultValue={animationDuration ?? 0.5}
-                onChange={v => {
-                    setAnimationDuration(v as number)
-                    EjectableSceneObject.setAnimationDuration(v as number)
-                }}
-                step={ANIMATION_DURATION_STEP}
-                label="Intake Animation Duration (s)"
-                // TODO:
-                // format={{ maximumFractionDigits: 2 }}
             />
             <StatefulSlider
                 label="Intake Animation Duration (s)"
