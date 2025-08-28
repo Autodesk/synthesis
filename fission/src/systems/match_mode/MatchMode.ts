@@ -8,6 +8,7 @@ import World from "@/systems/World.ts"
 import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import { createMatchEventFromConfig } from "./MatchModeAnalyticsUtils"
 import { SoundPlayer } from "../sound/SoundPlayer"
 import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
@@ -141,12 +142,18 @@ class MatchMode {
         this.autonomousModeStart()
         ScoreTracker.resetScores()
         RobotDimensionTracker.matchStart()
+
+        const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
+        World.analyticsSystem?.event("Match Start", matchEvent)
     }
 
     matchEnded() {
         void SoundPlayer.getInstance().play(MatchEnd)
         clearInterval(this._intervalId as number)
         this.setMatchModeType(MatchModeType.MATCH_ENDED)
+
+        const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
+        World.analyticsSystem?.event("Match End", matchEvent)
         globalOpenModal(MatchResultsModal, undefined)
     }
 

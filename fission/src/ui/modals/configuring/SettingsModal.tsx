@@ -228,6 +228,16 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 PreferencesSystem.getGraphicsPreferences().cascades = cascades
                 PreferencesSystem.getGraphicsPreferences().shadowMapSize = shadowMapSize
                 PreferencesSystem.getGraphicsPreferences().antiAliasing = antiAliasing
+
+                World.analyticsSystem?.event("Graphics Settings", {
+                    lightIntensity,
+                    fancyShadows,
+                    maxFar,
+                    cascades,
+                    shadowMapSize,
+                    antiAliasing,
+                })
+
                 if (reload) window.location.reload()
             },
             reset: () => {
