@@ -1,5 +1,5 @@
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import World from "@/systems/World.ts"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
+import World from "@/systems/World"
 import MatchMode from "./MatchMode"
 
 const BUFFER_HEIGHT = 0.1
@@ -31,12 +31,12 @@ class RobotDimensionTracker {
     public static update(): void {
         if (!MatchMode.getInstance().isMatchEnabled()) return
 
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
+        World.getOwnRobots().forEach(robot => {
             const dimensions = this._ignoreRotation ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
 
             if (this._maxHeight !== -1 && dimensions.height > this._maxHeight + BUFFER_HEIGHT) {
                 if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
-                    SimulationSystem.robotPenalty(robot, this._heightLimitPenalty, "Height Expansion Limit")
+                    ScoreTracker.robotPenalty(robot, this._heightLimitPenalty, "Height Expansion Limit")
                 }
                 this._robotLastFramePenalty.set(robot.id, true)
                 return
@@ -49,7 +49,7 @@ class RobotDimensionTracker {
                     dimensions.depth > startingRobotSize.depth + this._sideMaxExtension + SIDE_BUFFER)
             ) {
                 if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
-                    SimulationSystem.robotPenalty(robot, this._sideExtensionPenalty, "Side Expansion Limit")
+                    ScoreTracker.robotPenalty(robot, this._sideExtensionPenalty, "Side Expansion Limit")
                 }
                 this._robotLastFramePenalty.set(robot.id, true)
                 return
@@ -63,7 +63,7 @@ class RobotDimensionTracker {
         this._robotSize.clear()
         this._robotLastFramePenalty.clear()
 
-        World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(robot => {
+        World.getOwnRobots().forEach(robot => {
             this._robotSize.set(robot.id, robot.getDimensions())
         })
     }

@@ -25,14 +25,20 @@ export class AssemblySelectionOption extends SelectMenuOption {
     assemblyObject: MirabufSceneObject
 
     constructor(name: string, assemblyObject: MirabufSceneObject) {
-        super(assemblyObject.id.toString(), name)
+        const isDisabled = !assemblyObject.isOwnObject
+        super(
+            assemblyObject.id.toString(),
+            name,
+            isDisabled ? `Object belongs to ${assemblyObject.multiplayerOwnerName}` : undefined,
+            isDisabled
+        )
         this.assemblyObject = assemblyObject
     }
 }
 
 function makeSelectionOption(configurationType: ConfigurationType, assembly: MirabufSceneObject) {
     return new AssemblySelectionOption(
-        `${configurationType === "ROBOTS" ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
+        `${configurationType === "ROBOTS" ? `[${assembly.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
         assembly
     )
 }
@@ -87,8 +93,9 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
                 update()
             }}
             onAddClicked={() => {
-                openPanel(ImportMirabufPanel, { configurationType })
-                closePanel(panel!.id, CloseType.Overwrite)
+                // Save current configuration first, then open Spawn panel next tick
+                closePanel(panel!.id, CloseType.Accept)
+                setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
             defaultSelectedOption={

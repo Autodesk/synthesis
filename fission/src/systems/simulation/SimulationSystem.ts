@@ -1,7 +1,4 @@
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import World from "@/systems/World.ts"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type Mechanism from "../physics/Mechanism"
 import WorldSystem from "../WorldSystem"
@@ -22,10 +19,6 @@ import WheelRotationStimulus from "./stimulus/WheelStimulus"
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
-    public static perRobotScore: Map<MirabufSceneObject, number> = new Map()
-
-    public static redScore = 0
-    public static blueScore = 0
 
     constructor() {
         super()
@@ -60,36 +53,6 @@ class SimulationSystem extends WorldSystem {
         } else {
             return false
         }
-    }
-
-    public static resetScores(): void {
-        SimulationSystem.redScore = 0
-        SimulationSystem.blueScore = 0
-        this.perRobotScore = new Map()
-        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).dispatch()
-    }
-
-    public static addPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
-        const currentRobotScore = this.perRobotScore.get(robot) ?? 0
-        this.perRobotScore.set(robot, currentRobotScore + scoreToAdd)
-    }
-
-    public static robotPenalty(robot: MirabufSceneObject, penaltyPoints: number, penaltyInfo: string): void {
-        // Display a toast showing that a penalty was committed
-        globalAddToast(
-            "warning",
-            "PENALTY COMMITTED",
-            `Robot ${robot.nameTag?.text()} (${robot.assemblyName}), Committed Penalty: ${penaltyInfo}`
-        )
-        // Update match score
-        if (robot.alliance == "red") {
-            SimulationSystem.blueScore += penaltyPoints
-        } else {
-            SimulationSystem.redScore += penaltyPoints
-        }
-        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).dispatch()
-        // Update per robot score
-        this.addPerRobotScore(robot, -penaltyPoints)
     }
 }
 
