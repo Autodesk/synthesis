@@ -21,7 +21,23 @@ Start typing the command you're looking for, and a list of suggested commands wi
 
 You can either click on the desired command or use the arrow keys to navigate through the list. Press Enter to run the selected command. Press Esc to exit the pallete without running any commands. 
 
-## All Commands
+## Synthesis Commands (v7.2.0)
+
+### Match & Drag
+- **Toggle Drag Mode** — Enable/disable drag mode to move robots and game pieces  
+- **Toggle Match Mode** — Start or stop a match  
+
+### Assets
+- **Spawn Asset Robots** — Open robot spawn panel  
+- **Spawn Asset Fields** — Open field spawn panel  
+- **Configure Assets** — Open configure assets panel  
+- **Configure Robots** — Open configure assets panel (robot tab)  
+- **Configure [NAME]** — Configure a spawned robot/field with the given name  
+- **Remove [NAME]** — Remove a spawned robot/field with the given name  
+
+### Panels
+- **Open Debug Panel** — Open the debug panel  
+- **Open Settings** — Open the settings panel  
 
 As of version 7.2.0 of Synthesis, here is a list of all supported commands 
 
