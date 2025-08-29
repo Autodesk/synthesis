@@ -24,7 +24,7 @@ The graphics settings allows you to increase and decrease the shadow quality for
 - Light intensity: changes the brightness
 - Fancy Shadows: enables cascading shadows
   - Max Far: how far the camera has to zoom out before the shadows stop rendering
-  - Cascade Count: How many cascades of shadow qualities their are
+  - Cascade Count: How many cascades of shadow qualities there are
   - Shadow Map Size: Texture Quality
 
 If enabling Anti-Aliasing, your browser will force refresh when you click "Accept" causing any currently spawned assets to disappear.
@@ -38,4 +38,4 @@ Configure the Synthesis theme colors and alliance colors. This will save to your
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our
-[discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
+[Discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.

@@ -12,6 +12,7 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 The Multiplayer mode will allow you to host a simulation world to access across multiple devices
 
 ### Requirements
+
 - All players must be on the same network and able to communicate directly to one another
   - Note that some school/company networks block this kind of communication
   - This limitation may be resolved in future releases
@@ -24,11 +25,11 @@ The Multiplayer mode will allow you to host a simulation world to access across 
 
 <img src="img/multiplayer/create-game.png" alt="Creating a multiplayer game session" width="300">
 
-  - Click "Create Game" to generate a room code to share with the other players
+- Click "Create Game" to generate a room code to share with the other players
 
 <img src="img/multiplayer/room-code.png" alt="The room code displays in the corner of the screen with a list of the users in the current session" width="300">
 
-  - Enter a room code from another player and click "Join Game"
+- Enter a room code from another player and click "Join Game"
 
 <img src="img/multiplayer/join-game.png" alt="Type the session code on other devices to join another computer's session" width="300">
 
@@ -44,10 +45,11 @@ The Multiplayer mode will allow you to host a simulation world to access across 
 - A list of other players will be shown below the room code in the bottom left corner
 
 ### Match Mode
+
 - Just like in Singleplayer, Match Mode will keep track of scores, time remaining, and penalties.
 - Any user can start a match and it will also be started for all other users in the room.
 
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our
-[discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
+[Discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.

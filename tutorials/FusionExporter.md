@@ -80,25 +80,24 @@ This is where you will do most of your configuring. Here is a basic overview of 
 ### Joints Tab
 ![image_caption](img/fusion/joint-tab.png)
 
-  - This is where you will select all moving joints on your robot, including those that are a part of your drivetrain.
-    - All joints are added to this list by default. 
-    - If you want to remove a joint, either suppress it in Fusion or manually remove it from the list.
-  - Indicate which joints are part of the drivetrain by checking the "Is Wheel" box.
-    - This will cause them to appear in the wheels table below
-  - You can also change the signal type of the joint (PWM and CAN for simulation. Passive to not be controlled). This is not used when controlling the robot through Synthesis, but determines how code simulation mappings work
-  - Joint speed and force are default values for importing, these can be adjusted in the simulator.
+- This is where you will select all moving joints on your robot, including those that are a part of your drivetrain.
+  - All joints are added to this list by default.
+  - If you want to remove a joint, either suppress it in Fusion or manually remove it from the list.
+- Indicate which joints are part of the drivetrain by checking the "Is Wheel" box.
+  - This will cause them to appear in the wheels table below
+- You can also change the signal type of the joint (PWM and CAN for simulation. Passive to not be controlled). This is not used when controlling the robot through Synthesis, but determines how code simulation mappings work
+- Joint speed and force are default values for importing, these can be adjusted in the simulator.
 
 Notes:
 
 - All parts of your robot that you want to be movable must have their joints configured in the exporter. Otherwise the exporter will automatically attempt to ground the part. This is the cause for many problems relating to robots not moving expectedly.
 - When selecting your joints it is important that your robot is structured correctly. See [Design Hierarchy](#design-hierarchy) for more information.
 
-
 Note that some of these features are currently still experimental and may not be working or behave as expected.
 
 ## Design Hierarchy
 
-Synthesis not only relies on the joints between parts to determine structure of your robot or field, but also the hierarchy of all the parts in the design. If you look at the browser, you can see the parent child relation ship between all our your parts, and it is important that you have them set correctly in order to ensure Synthesis knows your intentions.
+Synthesis not only relies on the joints between parts to determine structure of your robot or field, but also the hierarchy of all the parts in the design. If you look at the browser, you can see the parent child relationship between all our your parts, and it is important that you have them set correctly in order to ensure Synthesis knows your intentions.
 
 Problems associated with incorrect design hierarchy account for the majority of issues users have with the exporter. It's extremely important to plan out your robot structure before you begin.
 
@@ -134,4 +133,4 @@ Watch the video below to walk through exporting the Dozer model.
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our
-[discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
+[Discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.

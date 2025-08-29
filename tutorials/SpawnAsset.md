@@ -12,7 +12,8 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 <img src="img/spawnasset/panel-view.png" alt="Spawn Asset panel" width="300">
 
 The spawn asset button on the Main HUD allows you to add robots or fields into the simulation world. There are three ways to spawn assets:
-- Default remote assets provided by the Synthesis team 
+
+- Default remote assets provided by the Synthesis team
 - Exported assemblies from Fusion through APS
 - Importing local .mira file
 
@@ -36,7 +37,7 @@ This section details how to spawn an uploaded Fusion assembly through the APS (A
 
 ### Logging into APS
 
-Navigate to the Main HUD where you will see the button "APS Login". 
+Navigate to the Main HUD where you will see the button "APS Login".
 
 <img src="img/spawnasset/mainhud-login.png" alt="Login button on the Main HUD for APS login" width="300">
 
@@ -54,11 +55,11 @@ Ensure that when exporting the robot, you click "Upload" as the export type & en
 
 ## Spawning local assembly
 
-In the "Spawn Asset Panel", click the "Import from File" button. 
+In the "Spawn Asset Panel", click the "Import from File" button.
 
 <img src="img/spawnasset/import-file.png" alt="Import from File panel view" width="300">
 
-In the Import File panel, select whether you are importing a Robot or Field. 
+In the Import File panel, select whether you are importing a Robot or Field.
 
 Click the Upload File button and select the local .mira file using your device's file explorer.
 
@@ -105,4 +106,4 @@ Watch the video below to walk through spawning local .mira files and the default
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our
-[discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
+[Discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.

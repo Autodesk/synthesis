@@ -309,4 +309,4 @@ When the timer elapses or the test is manually stopped, you're provided the opti
 ## Need More Help?
 
 If you need help with anything regarding Synthesis or it's related features please reach out through our
-[Discord server](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
+[Discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in contact with the community and our current developers.
