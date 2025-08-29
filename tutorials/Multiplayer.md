@@ -35,7 +35,7 @@ The Multiplayer mode will allow you to host a simulation world to access across 
 - Anyone can spawn in robots or the field, and will have exclusive control of the robots they spawn in
   - Select a control scheme and configure your robot as you typically would
   - It may take a few seconds for assets to load in for other users, depending on how large they are and if the other user has them cached
-  - Configuration (scoring zones, intakes, ejectors, etc) will be sent along with the assets and when it changes
+  - Configuration (scoring zones, intakes, ejectors, etc.) is sent along with the assets and whenever it changes
 
 ## Additional
 
