@@ -15,7 +15,7 @@ Match mode in Synthesis simulates competitive robotics matches with autonomous a
 
 To get started with running a match, first spawn and configure the field and robot(s) you want to use as you normally would (link to spawning robot tutorial). 
 
-Next open up the MainHUD and press start match mode.
+Next, open up the MainHUD and press start match mode.
 
 This will open up the Match Mode Config panel, where you can configure the match mode parameters. 
 
