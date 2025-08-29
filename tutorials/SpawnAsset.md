@@ -68,7 +68,7 @@ Click the Upload File button and select the local .mira file using your device's
 
 Each robot will have it's own unique `Input Scheme` to dictate which keys control it.
 
-Pressing the "Enter key will automatically assign the topmost scheme to your robot and place it at its current position.
+Pressing the Enter key will automatically assign the topmost scheme to your robot and place it at its current position.
 
 ### Setting Alliance
 
