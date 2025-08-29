@@ -76,7 +76,7 @@ The Alliance and Station selection will tell the simulator where to spawn your r
 
 ### Positioning the robot
 
-Using the transform gizmos, drag the robot to your desired location in the simulation world & rotate it before pressing "Finish". With the transform gizmos attached the robot will not be affected by Physics and will phase through objects.
+Using the transform gizmos, drag the robot to your desired location in the simulation world & rotate it before pressing "Finish". With the transform gizmos attached, the robot will not be affected by Physics and will phase through objects.
 
 ### Custom Input Schemes
 
