@@ -109,7 +109,7 @@ Below is a basic overview of the design hierarchy rules that the exporter expect
 
 #### 1. Grounded Node
 
-You must ground one of your parts in the design. To do this, you must pin a component.
+In order for our exporter to properly parse your design, you need to choose a component for the exporter to start at. To do this, you must pin a component. This is what we refer to internally as the 'grounded' or 'root' node of your design. Note that this conflicts with Fusion's language of grounded components.
 
 ![image_caption](img/fusion/ground_component.png)
 

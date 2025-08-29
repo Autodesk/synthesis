@@ -23,6 +23,8 @@ You can either click on the desired command or use the arrow keys to navigate th
 
 ## All Synthesis Commands (v7.2.0)
 
+Note this this list is subject to change with each new release of Synthesis.
+
 ### Match & Drag
 
 - **Toggle Drag Mode** — Enable/disable drag mode to move robots and game pieces  
