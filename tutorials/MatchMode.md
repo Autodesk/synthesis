@@ -9,7 +9,7 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 
 ## Introduction
 
-Match mode in Synthesis simulates competitive robotics matches with autonomous and teleoperated periods, mimicking real competition environments. It also keeps track of individual robot scores, and penalties, giving a breakdown at the end. 
+Match mode in Synthesis simulates competitive robotics matches with autonomous and teleoperated periods, mimicking real competition environments. It also keeps track of individual robot scores and penalties, giving a breakdown at the end. 
 
 ## Starting a Match
 
