@@ -38,13 +38,13 @@ For information regarding the manual install process visit the [Synthesis Fusion
 ![image_caption](img/fusion/fusion-empty.png)
 - Click on `Scripts and Add-ins` in the toolbar.
 ![image_caption](img/fusion/fusion-addins-highlight.png)
-- Navigate to `Add-ins` and select the green plus icon.
+- Navigate to `Add-ins`, click on the plus at the top and navigate to `Script or add-in from device`.
 ![image_caption](img/fusion/fusion-addins-panel.png)
 - Now navigate to wherever you extracted the original `.zip` source code file you downloaded.
   - Make sure to select the folder that contains the `Synthesis.py` file, this is the entry point to the Exporter.
 ![image_caption](img/fusion/fusion-add-addin.png)
-- Once the extension is added you should be able to see it under `My Add-Ins`.
-- Select `Synthesis` from the `My Add-Ins` drop down and click `Run` in the bottom right.
+- Select `Synthesis` from the addins panel and check `Run`.
+- Optionally select `Run on Startup` (this may already be checked in some builds of the Exporter).
 ![image_caption](img/fusion/fusion-addin-synthesis.png)
 - The first time you run the extension it may prompt you to restart Fusion, this is totally normal.
 - Once you restart Fusion the extension will run on startup, you will be able to find it on the right side of the toolbar
