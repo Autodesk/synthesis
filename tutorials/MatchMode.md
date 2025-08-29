@@ -21,7 +21,7 @@ This will open up the Match Mode Config panel, where you can configure the match
 
 <img src="img/matchmode/match-mode-panel.png" alt="View of panel to select which year's match mode configuration you would like to use" width="300">
 
-There are already multiple preconfigured match modes to use, and if you are simulating a match for that corresponding year, you can just select a preconfigured ruleset. This will start the match. You can always stop the match by opening the MainHUD and pressing the abort match mode button that appears in place of start match. 
+There are multiple pre-configured match modes. If you’re simulating a match for a specific year, simply select the corresponding ruleset. This will start the match. You can always stop the match by opening the MainHUD and pressing the abort match mode button that appears in place of start match. 
 
 ## Creating Custom Configuration
 
