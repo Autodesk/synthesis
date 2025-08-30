@@ -7,6 +7,7 @@ import { Button } from "../components/StyledComponents"
 import { useStateContext } from "../helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { spawnCachedMira } from "../panels/mirabuf/ImportMirabufPanel"
+import World from "@/systems/World"
 
 interface MainMenuCustomProps {
     startSingleplayerCallback: () => void
@@ -32,6 +33,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
             <Button
                 onClick={() => {
                     closeModal(CloseType.Accept)
+                    World.analyticsSystem?.event("Mode Selected", { mode: "Singleplayer" })
                     startSingleplayerCallback()
                 }}
                 fullWidth={true}
@@ -43,6 +45,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
             <Button
                 onClick={() => {
                     closeModal(CloseType.Accept)
+                    World.analyticsSystem?.event("Mode Selected", { mode: "Multiplayer" })
                     startMultiplayerCallback()
                 }}
                 fullWidth={true}
@@ -54,6 +57,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
             <Button
                 onClick={async () => {
                     closeModal(CloseType.Accept)
+                    World.analyticsSystem?.event("Mode Selected", { mode: "Load Default" })
                     startSingleplayerCallback()
                     await Promise.all([
                         MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD),

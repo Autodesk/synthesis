@@ -7,10 +7,10 @@ import {
     ListItemText,
     MenuItem,
     OutlinedInput,
-    Select,
     Stack,
     TextField,
 } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
@@ -304,7 +304,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                     }}
                     value={activeDuring}
                     input={<OutlinedInput label="Contact Type" />}
-                    renderValue={selected => selected.join(", ")}
+                    renderValue={selected => (selected as MatchModeType[]).join(", ")}
                     multiple
                 >
                     {MATCH_MODE_OPTIONS.map(opt => (

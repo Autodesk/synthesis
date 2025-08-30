@@ -3,7 +3,8 @@ import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
 import type {
     FieldConfiguration,
-    MetadataUpdateData,
+    LocalSceneObjectId,
+    RemoteSceneObjectId,
     RobotConfiguration,
     UpdateObjectData,
 } from "@/systems/multiplayer/types"
@@ -118,19 +119,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _collisionUnsubscriber?: () => void
 
-    public get multiplayerInfo(): MetadataUpdateData {
-        return {
-            sceneObjectKey: this.id,
-            alliance: this._alliance,
-            station: this._station,
-        }
-    }
-
-    public set multiplayerInfo(info: MetadataUpdateData) {
-        this._alliance = info.alliance
-        this._station = info.station
-    }
-
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
         return this._scoringZones
     }
@@ -242,10 +230,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._station = station
     }
 
-    public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
+    public constructor(
+        mirabufInstance: MirabufInstance,
+        assemblyName: string,
+        progressHandle?: ProgressHandle,
+        multiplayerOwnerId?: string
+    ) {
         super()
         this._mirabufInstance = mirabufInstance
         this._assemblyName = assemblyName
+        this._multiplayerOwningClientId = multiplayerOwnerId
 
         progressHandle?.update("Creating mechanism...", 0.9)
 
@@ -341,7 +335,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.updateScoringZones()
         this.updateProtectedZones()
 
-        setSpotlightAssembly(this)
+        if (this.isOwnObject) {
+            setSpotlightAssembly(this)
+        }
 
         this.updateBatches()
 
@@ -351,7 +347,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
 
-        if (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
+        if (this.isOwnObject && (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider)) {
             cameraControls.focusProvider = this
         }
 
@@ -847,12 +843,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public async sendPreferences() {
         if (!World.multiplayerSystem) return
-
+        const data = this.getPreferenceData()
         await World.multiplayerSystem.broadcast({
             type: "configureObject",
             data: {
-                sceneObjectKey: this.id,
-                objectConfigurationData: this.getPreferenceData(),
+                sceneObjectKey: this.id as RemoteSceneObjectId,
+                objectConfigurationData: data,
             },
         })
     }
@@ -895,6 +891,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             : {
                   intakePreferences: JSON.stringify(this._intakePreferences),
                   ejectorPreferences: JSON.stringify(this._ejectorPreferences),
+                  alliance: this._alliance,
+                  station: this.station,
               }
     }
 
@@ -902,13 +900,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType === MiraType.FIELD) {
             const config = preferences as FieldConfiguration
             this._fieldPreferences = JSON.parse(config.fieldPreferences)
-            // this.updateScoringZones()
-            // this.updateProtectedZones()
         } else {
             const config = preferences as RobotConfiguration
             this._intakePreferences = JSON.parse(config.intakePreferences)
             this._ejectorPreferences = JSON.parse(config.ejectorPreferences)
+            this._alliance = config.alliance
+            this._station = config.station
         }
+        this.updateScoringZones()
+        this.updateProtectedZones()
+        this.updateIntakeSensor()
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {
@@ -922,8 +923,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public enablePhysics() {
-        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
-            World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id })
+        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id as LocalSceneObjectId)) {
+            World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id as RemoteSceneObjectId })
         }
 
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
@@ -933,8 +934,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public disablePhysics() {
-        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
-            World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id })
+        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id as LocalSceneObjectId)) {
+            World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id as RemoteSceneObjectId })
         }
 
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
@@ -1033,7 +1034,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         data.items.push({
             name: "Remove",
             func: () => {
-                World.multiplayerSystem?.broadcast({ type: "deleteObject", data: this.id })
                 World.sceneRenderer.removeSceneObject(this.id)
             },
         })
@@ -1062,7 +1062,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             .filter(n => n != null)
 
         return {
-            sceneObjectKey: this.id,
+            sceneObjectKey: this.id as RemoteSceneObjectId,
             gamePiecesControlled,
             bodies,
         }
@@ -1087,7 +1087,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
 export async function createMirabuf(
     assembly: mirabuf.Assembly,
-    progressHandle?: ProgressHandle
+    progressHandle?: ProgressHandle,
+    multiplayerOwnerId?: string
 ): Promise<MirabufSceneObject | null | undefined> {
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
@@ -1095,7 +1096,7 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle)
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle, multiplayerOwnerId)
 }
 
 /**

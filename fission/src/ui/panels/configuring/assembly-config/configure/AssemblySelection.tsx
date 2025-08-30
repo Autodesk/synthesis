@@ -90,8 +90,9 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
                 update()
             }}
             onAddClicked={() => {
-                openPanel(ImportMirabufPanel, { configurationType })
-                closePanel(panel!.id, CloseType.Overwrite)
+                // Save current configuration first, then open Spawn panel next tick
+                closePanel(panel!.id, CloseType.Accept)
+                setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
             defaultSelectedOption={

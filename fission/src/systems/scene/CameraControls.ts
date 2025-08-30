@@ -171,7 +171,7 @@ export class CustomOrbitControls extends CameraControls {
      * Prioritizes robots first, then fields, then any other MirabufSceneObject.
      */
     private findFallbackFocus(mirabufObjects?: MirabufSceneObject[]): MirabufSceneObject | undefined {
-        mirabufObjects ??= World.sceneRenderer.mirabufSceneObjects.getAll()
+        mirabufObjects ??= World.getOwnObjects()
 
         const robots = mirabufObjects.filter(obj => obj.miraType === MiraType.ROBOT)
         const fields = mirabufObjects.filter(obj => obj.miraType === MiraType.FIELD)

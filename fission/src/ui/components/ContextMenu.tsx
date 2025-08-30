@@ -52,13 +52,14 @@ const ContextMenu: React.FC = () => {
                     top: state.location[1],
                     padding: "1rem",
                     borderRadius: "0.5rem",
-                    bgcolor: "background.default",
+                    bgcolor: "background.paper",
+                    boxShadow: 6,
                 }}
                 // Why, why, why do I need to do this. This is absurd
                 onPointerDown={e => e.stopPropagation()}
             >
                 <Stack key="CONTEXT-HEADER" component="div" direction="column">
-                    <Label key="context-title" size="md">
+                    <Label key="context-title" size="md" color="text.primary">
                         {state.data.title}
                     </Label>
                     <Divider />

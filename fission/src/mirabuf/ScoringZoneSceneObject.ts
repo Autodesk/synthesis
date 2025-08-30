@@ -1,6 +1,6 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"

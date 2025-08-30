@@ -17,7 +17,7 @@ import {
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { Message } from "../multiplayer/types"
+import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
@@ -1289,6 +1289,7 @@ class PhysicsSystem extends WorldSystem {
 
                 if (clientSceneObject == null || !(clientSceneObject instanceof MirabufSceneObject)) {
                     console.warn("Could not find multiplayer robot") // happens when you delete
+                    World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
                     return
                 }
                 const touchedBodies = clientSceneObject.mechanism.touchedObjects
@@ -1492,7 +1493,7 @@ class PhysicsSystem extends WorldSystem {
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
                 World.multiplayerSystem
                     ?.getOwnSceneObjectIDs()
-                    .includes(this.bodyToMiraSceneObject(body)?.id as number)) ??
+                    .includes(this.bodyToMiraSceneObject(body)?.id as LocalSceneObjectId)) ??
             false
         )
     }

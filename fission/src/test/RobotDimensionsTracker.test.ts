@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import RobotDimensionTracker from "@/systems/match_mode/RobotDimensionTracker"
-import { ScoreTracker } from "@/systems/match_mode/ScoreTracker.ts"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import World from "@/systems/World"
 
 interface MockDimensions {
@@ -62,11 +62,7 @@ type RecursivePartial<T> = {
 
 vi.mock("@/systems/World", (): { default: RecursivePartial<typeof World> } => ({
     default: {
-        sceneRenderer: {
-            mirabufSceneObjects: {
-                getRobots: vi.fn(),
-            },
-        },
+        getOwnRobots: vi.fn(),
     },
 }))
 
@@ -122,10 +118,7 @@ describe("RobotDimensionTracker", () => {
             update: vi.fn(),
             dispose: vi.fn(),
         }
-        ;(World.sceneRenderer.mirabufSceneObjects.getRobots as ReturnType<typeof vi.fn>).mockReturnValue([
-            mockRobot1,
-            mockRobot2,
-        ])
+        ;(World.getOwnRobots as ReturnType<typeof vi.fn>).mockReturnValue([mockRobot1, mockRobot2])
     })
 
     afterEach(() => {

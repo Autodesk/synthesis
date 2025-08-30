@@ -4,7 +4,7 @@ import type { Alliance } from "@/systems/preferences/PreferenceTypes.ts"
 import World from "@/systems/World.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 
-export class ScoreTracker {
+export default class ScoreTracker {
     private static _redScore: number = 0
     private static _blueScore: number = 0
     private static _perRobotScore: Map<MirabufSceneObject, number>

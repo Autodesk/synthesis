@@ -2,7 +2,7 @@ import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
-import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
@@ -15,6 +15,16 @@ import { Button, Spacer } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register command: Open Settings (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "open-settings",
+    label: "Open Settings",
+    description: "Open the Settings modal.",
+    keywords: ["settings", "preferences", "config"],
+    perform: () => import("./SettingsModal").then(m => globalOpenModal(m.default, undefined)),
+})
 
 // Graphics settings constants
 const MIN_LIGHT_INTENSITY = 1
@@ -70,11 +80,11 @@ interface ThemeTabConfig extends TabConfigBase {
 
 type TabConfig = GeneralTabConfig | GraphicsTabConfig | ThemeTabConfig
 
-const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: string) => void }> = ({
-    label,
-    color,
-    setColor,
-}) => {
+const ColorEditor: React.FC<{
+    label: string
+    color: string
+    setColor: (_c: string) => void
+}> = ({ label, color, setColor }) => {
     return (
         <Stack direction="row" gap={2}>
             <TextField
@@ -109,6 +119,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             onChange={value => writePreference("SceneRotationSensitivity", value)}
             step={0.1}
             tooltip="Controls how fast the scene rotates when dragging with the mouse."
+            showValue={false}
         />
         {Spacer(5)}
         <StatefulSlider
@@ -119,6 +130,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
             step={0.06}
             tooltip="Controls how fast the view changes when dragging on the view cube."
+            showValue={false}
         />
         <Checkbox
             label="Show View Cube"
@@ -127,7 +139,9 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
         />
         {Spacer(10)}
-        <Label size="sm">Preferences</Label>
+        <Label size="md" sx={{ fontWeight: 600 }}>
+            Preferences
+        </Label>
         <Stack direction="column">
             <Checkbox
                 label="Report Analytics"
@@ -214,6 +228,16 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 PreferencesSystem.getGraphicsPreferences().cascades = cascades
                 PreferencesSystem.getGraphicsPreferences().shadowMapSize = shadowMapSize
                 PreferencesSystem.getGraphicsPreferences().antiAliasing = antiAliasing
+
+                World.analyticsSystem?.event("Graphics Settings", {
+                    lightIntensity,
+                    fancyShadows,
+                    maxFar,
+                    cascades,
+                    shadowMapSize,
+                    antiAliasing,
+                })
+
                 if (reload) window.location.reload()
             },
             reset: () => {
@@ -332,7 +356,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                     </Box>
                 </>
             )}
-            <Label size="sm">Requires Browser Refresh</Label>
             <Checkbox
                 label="Anti-Aliasing"
                 checked={antiAliasing}
@@ -340,6 +363,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                     setAntiAliasing(checked)
                     setReload(true)
                 }}
+                tooltip={"Requires browser refresh to fully apply"}
             />
         </Stack>
     )

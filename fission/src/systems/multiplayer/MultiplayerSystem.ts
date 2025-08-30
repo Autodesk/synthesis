@@ -7,7 +7,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
-import type { ClientInfo, Message, MessageType } from "./types"
+import type { ClientInfo, LocalSceneObjectId, Message, MessageWithTimestamp, RemoteSceneObjectId } from "./types"
 import { hashBuffer } from "@/util/Utility"
 import EventSystem from "@/systems/EventSystem.ts"
 
@@ -21,11 +21,12 @@ class MultiplayerSystem {
     private readonly _initializationPromise: Promise<boolean>
 
     public readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
-    public readonly _clientToObjectMap: Map<string, number[]> = new Map() // sceneObjectKey -> Jolt.BodyId.GetIndexAndSequenceNumber()
+
+    public readonly _clientToObjectMap: Map<string, LocalSceneObjectId[]> = new Map()
     public readonly _clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map() // Each Map is: peerBodyId -> clientBodyId
+    public readonly _clientToSceneObjectIdMap: Map<string, Map<RemoteSceneObjectId, LocalSceneObjectId>> = new Map() // Each Map is: peerObjectId -> clientObjectId
 
     readonly info: ClientInfo
-    public lastSentCollisionTimestamp: number = Date.now()
     private _onDestroyHooks: (() => void)[] = []
 
     public static async setup(roomId: string, displayName: string, isHost: boolean): Promise<boolean> {
@@ -112,7 +113,7 @@ class MultiplayerSystem {
         this._onDestroyHooks.push(
             EventSystem.listen("ConfigurationSavedEvent", () => {
                 World.getOwnObjects().forEach(obj => {
-                    this.broadcast({ type: "metadataUpdate", data: obj.multiplayerInfo }).catch(console.error)
+                setTimeout(() => obj.sendPreferences().catch(console.error), 100)
                 })
             })
         )
@@ -169,11 +170,10 @@ class MultiplayerSystem {
             await this.send(conn.peer, { type: "info", data: this.info })
 
             for (const obj of this.getOwnObjects()) {
-                await this.send(conn.peer, { type: "metadataUpdate", data: obj.multiplayerInfo })
                 await this.send(conn.peer, {
                     type: "newObject",
                     data: {
-                        sceneObjectKey: obj.id,
+                        sceneObjectKey: obj.id as RemoteSceneObjectId,
                         assemblyHash: await hashBuffer(
                             mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
                         ),
@@ -186,7 +186,7 @@ class MultiplayerSystem {
         })
 
         conn.on("data", async (data: unknown) => {
-            await this.handlePeerMessage(data as Message, conn.peer)
+            await this.handlePeerMessage(data as MessageWithTimestamp, conn.peer)
         })
 
         conn.on("close", () => {
@@ -194,11 +194,13 @@ class MultiplayerSystem {
                 this.handlePeerMessage(
                     {
                         type: "deleteObject",
-                        data: obj,
+                        data: this.convertSceneObjectIdReverse(conn.peer, obj)!,
+                        timestamp: Date.now(),
                     },
                     conn.peer
                 ).catch(console.error) // TODO Get actual sceneObjectKey
             })
+            this._clientToSceneObjectIdMap.delete(conn.peer)
 
             this._connections.delete(conn.peer)
             // TODO: handle host transition
@@ -218,12 +220,16 @@ class MultiplayerSystem {
         })
     }
 
-    async handlePeerMessage(message: Message, peerId: string) {
+    async handlePeerMessage(message: MessageWithTimestamp, peerId: string) {
+        if (message.type != "update") {
+            console.debug(`Recieving Message ${message.type}`)
+        }
         const handler = peerMessageHandlers[message.type].bind(this) as (
-            data: MessageType[typeof message.type],
-            peerId: string
+            data: unknown,
+            peerid: string,
+            time: number
         ) => Promise<void> | void
-        await handler(message.data, peerId)
+        await handler(message.data, peerId, message.timestamp)
     }
 
     async send(peer: string, message: Message) {
@@ -232,6 +238,7 @@ class MultiplayerSystem {
             console.warn("Couldn't find peer: ", peer)
             return
         }
+        message.timestamp ??= Date.now()
         await conn.send(message)
     }
 
@@ -239,10 +246,11 @@ class MultiplayerSystem {
         if (message.type != "update") {
             console.debug(`Sending Message: ${message.type}`)
         }
+        message.timestamp ??= Date.now()
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
-    getOwnSceneObjectIDs(): number[] {
+    getOwnSceneObjectIDs() {
         return this._clientToObjectMap.get(this.clientId) ?? []
     }
 
@@ -256,13 +264,21 @@ class MultiplayerSystem {
             .filter(obj => obj instanceof MirabufSceneObject)
     }
 
-    registerOwnSceneObject(objectId: number) {
+    registerOwnSceneObject(objectId: LocalSceneObjectId) {
         const list = this._clientToObjectMap.get(this.clientId)
+        this.setSceneObjectIdMapping(this.clientId, objectId as RemoteSceneObjectId, objectId)
         if (list != null) {
             list.push(objectId)
         } else {
             this._clientToObjectMap.set(this.clientId, [objectId])
         }
+    }
+    unregisterOwnSceneObject(objectId: LocalSceneObjectId) {
+        const list = this._clientToObjectMap.get(this.clientId)
+        if (!list) return
+        const index = list.indexOf(objectId)
+        if (index == -1) return
+        list.splice(index, 1)
     }
 
     get peerIDs(): string[] {
@@ -293,10 +309,28 @@ class MultiplayerSystem {
         this._connections.forEach(conn => conn.close())
         this._connections.clear()
         this._client.destroy()
+        this._clientToSceneObjectIdMap.clear()
         this._onDestroyHooks.forEach(hook => {
             hook()
         })
         World.setMultiplayerSystem(undefined)
+    }
+
+    public convertSceneObjectId(peerId: string, objectId: RemoteSceneObjectId): LocalSceneObjectId {
+        return this._clientToSceneObjectIdMap.get(peerId)?.get(objectId) ?? (-1 as LocalSceneObjectId)
+    }
+
+    public convertSceneObjectIdReverse(peerId: string, objectId: LocalSceneObjectId): RemoteSceneObjectId | undefined {
+        return [...this._clientToSceneObjectIdMap.get(peerId)!.entries()].find(([_, l]) => objectId == l)?.[0]
+    }
+
+    public setSceneObjectIdMapping(peerId: string, remoteId: RemoteSceneObjectId, localId: LocalSceneObjectId) {
+        let peerMap = World.multiplayerSystem?._clientToSceneObjectIdMap.get(peerId)
+        if (peerMap == null) {
+            peerMap = new Map()
+            World.multiplayerSystem?._clientToSceneObjectIdMap.set(peerId, peerMap)
+        }
+        peerMap.set(remoteId, localId)
     }
 }
 
