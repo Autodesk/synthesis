@@ -38,7 +38,7 @@ import {
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
-import {SoundPlayer} from "@/systems/sound/SoundPlayer.ts";
+import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
 CommandRegistry.get().registerCommands([

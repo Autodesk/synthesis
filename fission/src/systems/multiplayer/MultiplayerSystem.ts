@@ -113,7 +113,7 @@ class MultiplayerSystem {
         this._onDestroyHooks.push(
             EventSystem.listen("ConfigurationSavedEvent", () => {
                 World.getOwnObjects().forEach(obj => {
-                setTimeout(() => obj.sendPreferences().catch(console.error), 100)
+                    setTimeout(() => obj.sendPreferences().catch(console.error), 100)
                 })
             })
         )

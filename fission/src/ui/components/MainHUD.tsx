@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, ButtonProps, Stack } from "@mui/material"
+import { Box, ButtonGroup, type ButtonProps, Stack } from "@mui/material"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"

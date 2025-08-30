@@ -3,9 +3,10 @@ import { Panel } from "@/components/Panel"
 import { Modal } from "./components/Modal"
 import Scoreboard from "./components/Scoreboard"
 import { useUIContext } from "./helpers/UIProviderHelpers"
-import MatchMode, { MatchStateChangeEvent } from "@/systems/match_mode/MatchMode"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import EventSystem from "@/systems/EventSystem"
 
 export const UIRenderer: React.FC = () => {
     const { modal, panels } = useUIContext()
@@ -16,17 +17,16 @@ export const UIRenderer: React.FC = () => {
     const [inMatchMode, setInMatchMode] = useState(MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX)
 
     useEffect(() => {
-        const onMatchStateChange = (e: MatchStateChangeEvent) => {
-            setInMatchMode(e.matchModeType !== MatchModeType.SANDBOX)
-        }
-        MatchStateChangeEvent.addListener(onMatchStateChange)
+        const removeMatchStateListener = EventSystem.listen("MatchStateChangedEvent", info => {
+            setInMatchMode(info.mode !== MatchModeType.SANDBOX)
+        })
 
         const removePrefListener = PreferencesSystem.addPreferenceEventListener("RenderScoreboard", e => {
             setPrefRenderScoreboard(e.prefValue)
         })
 
         return () => {
-            MatchStateChangeEvent.removeListener(onMatchStateChange)
+            removeMatchStateListener()
             removePrefListener()
         }
     }, [])
