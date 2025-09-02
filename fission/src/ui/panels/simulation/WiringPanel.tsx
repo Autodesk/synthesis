@@ -1,5 +1,4 @@
 import { Grid, Stack } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
 import {
     type Connection,
     type FinalConnectionState,
@@ -33,6 +32,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import ScrollView from "@/ui/components/ScrollView"
+import { Button } from "@/ui/components/StyledComponents"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"

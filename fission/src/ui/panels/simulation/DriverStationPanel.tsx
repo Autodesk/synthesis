@@ -1,8 +1,8 @@
-import { MenuItem, Select, Stack } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
+import { MenuItem, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import { Button, Select } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 const DriverStationPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {

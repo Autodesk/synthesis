@@ -1,4 +1,5 @@
-import { FormControlLabel, Slider, Tooltip } from "@mui/material"
+import { Slider, Stack, Tooltip, Typography } from "@mui/material"
+import Label from "./Label"
 import { useState } from "react"
 
 const StatefulSlider: React.FC<
@@ -7,25 +8,46 @@ const StatefulSlider: React.FC<
         defaultValue: number
         onChange: (val: number) => void
         tooltip?: string
+        showValue?: boolean
     }
 > = props => {
     const [value, setValue] = useState(props.defaultValue)
     return (
         <Tooltip title={props.tooltip ?? ""}>
-            <FormControlLabel
-                label={props.label}
-                labelPlacement="top"
-                control={
-                    <Slider
-                        {...props}
-                        value={value}
-                        onChange={(_, value) => {
-                            setValue(value as number)
-                            props.onChange?.(value as number)
-                        }}
-                    ></Slider>
-                }
-            />
+            <Stack
+                direction="column"
+                gap={0.5}
+                className="no-drag"
+                sx={{
+                    px: 2,
+                    py: 0.5,
+                    overflow: "hidden",
+                    boxSizing: "border-box",
+                    width: "100%",
+                }}
+            >
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Label size="sm" className="mr-12 whitespace-nowrap">
+                        {props.label}
+                    </Label>
+                    {props.showValue !== false && <Typography variant="caption">{value.toFixed(2)}</Typography>}
+                </Stack>
+                <Slider
+                    {...props}
+                    value={value}
+                    onChange={(_, value) => {
+                        setValue(value as number)
+                        props.onChange?.(value as number)
+                    }}
+                    sx={{
+                        mx: 0,
+                        width: "100%",
+                        "& .MuiSlider-thumb": {
+                            boxShadow: 2,
+                        },
+                    }}
+                />
+            </Stack>
         </Tooltip>
     )
 }

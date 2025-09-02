@@ -142,7 +142,7 @@ def getPhysicalMaterialData(
     mechanicalProperties.damping_coefficient = materialProperties.itemById("structural_Damping_coefficient").value
 
     missingProperties: list[str] = [
-        k for k, v in vars(mechanicalProperties).items() if v is None and not k.startswith("__")
+        k for k, v in mechanicalProperties.ListFields() if v is None and not k.startswith("__")
     ]  # ignore: type
     if missingProperties.__len__() > 0:
         _: Err[None] = Err(f"Missing Mechanical Properties {missingProperties}", ErrorSeverity.Warning)
@@ -153,7 +153,7 @@ def getPhysicalMaterialData(
     strengthProperties.yield_strength = materialProperties.itemById("structural_Minimum_yield_stress").value
     strengthProperties.tensile_strength = materialProperties.itemById("structural_Minimum_tensile_strength").value
 
-    missingStrengthProperties: list[str] = [k for k, v in vars(strengthProperties).items() if v is None]  # ignore: type
+    missingStrengthProperties: list[str] = [k for k, v in strengthProperties.ListFields() if v is None]  # ignore: type
     if missingStrengthProperties.__len__() > 0:
         __: Err[None] = Err(f"Missing Strength Properties {missingProperties}", ErrorSeverity.Warning)
 

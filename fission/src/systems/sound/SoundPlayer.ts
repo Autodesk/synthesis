@@ -12,19 +12,22 @@ type SoundEffect = {
     onMouseUp?: () => void
 }
 export class SoundPlayer {
-    private static _audioElements: Map<string, HTMLAudioElement> = new Map()
-
-    constructor() {}
-    static {
+    private _audioElements: Map<string, HTMLAudioElement> = new Map()
+    private static _instance: SoundPlayer | undefined
+    public static getInstance() {
+        SoundPlayer._instance ??= new SoundPlayer()
+        return SoundPlayer._instance
+    }
+    constructor() {
         preloadSounds.forEach(sound => {
-            setTimeout(() => SoundPlayer.loadSound(sound))
+            this.loadSound(sound).catch(e => console.warn("failed to load sound", sound, e))
         })
     }
-    private static async loadSound(filePath: string): Promise<HTMLAudioElement> {
+    private async loadSound(filePath: string): Promise<HTMLAudioElement> {
         let audio = this._audioElements.get(filePath)
         if (audio == null) {
             audio = new Audio(filePath)
-            SoundPlayer._audioElements.set(filePath, audio)
+            this._audioElements.set(filePath, audio)
             audio.volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
                 ? 0
                 : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
@@ -32,8 +35,8 @@ export class SoundPlayer {
         return audio
     }
 
-    public static async play(filePath: string): Promise<void> {
-        const audio = await SoundPlayer.loadSound(filePath)
+    public async play(filePath: string): Promise<void> {
+        const audio = await this.loadSound(filePath)
         if (!audio.ended) {
             audio.pause()
             audio.currentTime = 0
@@ -43,37 +46,37 @@ export class SoundPlayer {
         })
     }
 
-    public static buttonSoundEffects(): SoundEffect {
+    public buttonSoundEffects(): SoundEffect {
         return {
-            onMouseDown: () => SoundPlayer.play(clickdownSound),
+            onMouseDown: () => this.play(clickdownSound),
             onMouseUp: () => {
-                if (SoundPlayer._audioElements.get(clickdownSound)?.ended) {
-                    return SoundPlayer.play(clickupSound)
+                if (this._audioElements.get(clickdownSound)?.ended) {
+                    return this.play(clickupSound)
                 }
             },
         }
     }
-    public static checkboxSoundEffects(): SoundEffect {
+    public checkboxSoundEffects(): SoundEffect {
         return {
-            onMouseDown: () => SoundPlayer.play(checkdownSound),
+            onMouseDown: () => this.play(checkdownSound),
             onMouseUp: () => {
-                if (SoundPlayer._audioElements.get(checkdownSound)?.ended) {
-                    return SoundPlayer.play(checkupSound)
+                if (this._audioElements.get(checkdownSound)?.ended) {
+                    return this.play(checkupSound)
                 }
             },
         }
     }
-    public static dropdownSoundEffects(): SoundEffect {
+    public dropdownSoundEffects(): SoundEffect {
         return {
-            onMouseDown: () => SoundPlayer.play(dropdownMenuSound),
+            onMouseDown: () => this.play(dropdownMenuSound),
         }
     }
 
-    public static changeVolume(): void {
+    public changeVolume(): void {
         const volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
             ? 0
             : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
-        SoundPlayer._audioElements.forEach(audio => {
+        this._audioElements.forEach(audio => {
             audio.volume = volume
         })
     }

@@ -1,0 +1,76 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Mirabuf Parser Tests > Generate Rigid Nodes (Dozer_v9.mira) 1`] = `
+ArrayBuffer [
+  -58,
+  -101,
+  -32,
+  -101,
+  92,
+  42,
+  -22,
+  108,
+  -77,
+  -90,
+  109,
+  -121,
+  89,
+  84,
+  126,
+  112,
+  6,
+  119,
+  -56,
+  -86,
+]
+`;
+
+exports[`Mirabuf Parser Tests > Generate Rigid Nodes (FRC Field 2018_v13.mira) 1`] = `
+ArrayBuffer [
+  49,
+  4,
+  -64,
+  -119,
+  117,
+  107,
+  -68,
+  77,
+  91,
+  87,
+  -110,
+  83,
+  -6,
+  -64,
+  -126,
+  34,
+  -12,
+  -107,
+  -22,
+  -39,
+]
+`;
+
+exports[`Mirabuf Parser Tests > Generate Rigid Nodes (Multi-Joint Wheels) 1`] = `
+ArrayBuffer [
+  82,
+  -89,
+  54,
+  -8,
+  77,
+  -99,
+  -32,
+  48,
+  -87,
+  -65,
+  12,
+  95,
+  81,
+  73,
+  126,
+  2,
+  -24,
+  39,
+  -15,
+  51,
+]
+`;

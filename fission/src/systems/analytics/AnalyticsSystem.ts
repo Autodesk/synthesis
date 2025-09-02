@@ -27,6 +27,23 @@ type MiraEvent = {
      */
     fileSize?: number
 }
+export type MatchEvent = {
+    matchName: string
+    isDefault?: boolean
+    autonomousTime: number
+    teleopTime: number
+    endgameTime: number
+    // Height penalty configuration
+    hasHeightPenalty?: boolean
+    maxHeight?: number
+    heightLimitPenalty?: number
+    ignoreRotation?: boolean
+    // Side extension penalty configuration
+    hasSideExtensionPenalty?: boolean
+    sideMaxExtension?: number
+    sideExtensionPenalty?: number
+}
+
 export interface AnalyticsEvents {
     "Performance Sample": {
         frames: number
@@ -36,22 +53,59 @@ export interface AnalyticsEvents {
         avgInput: number
         avgSimulation: number
     }
+
+    // APS Events
     "APS Calls per Minute": unknown
     "APS Login": unknown
     "APS Download": MiraEvent
 
+    // Cache Events
     "Cache Get": MiraEvent
     "Cache Store": MiraEvent
     "Cache Remove": MiraEvent
 
+    // Remote Download Events
     "Remote Download": MiraEvent
     "Local Upload": MiraEvent
 
+    // Devtool Cache Events
     "Devtool Cache Persist": MiraEvent
 
+    // Scheme Events
     "Scheme Applied": {
         isCustomized: boolean
         schemeName: string
+    }
+
+    // Match Mode Events
+    "Match Start": MatchEvent
+    "Match End": MatchEvent
+    "Match Mode Config Created": MatchEvent
+    "Match Mode Config Uploaded": MatchEvent
+
+    // Graphics Settings Event
+    "Graphics Settings": {
+        lightIntensity: number
+        fancyShadows: boolean
+        maxFar: number
+        cascades: number
+        shadowMapSize: number
+        antiAliasing: boolean
+    }
+
+    // Scene Interaction Events
+    "Drag Mode Enabled": unknown
+    "Drag Mode Disabled": {
+        durationSeconds: number
+    }
+
+    // Main Menu Events
+    "Mode Selected": {
+        mode: string
+    }
+
+    "Command Executed": {
+        command: string
     }
 }
 
@@ -77,6 +131,7 @@ class AnalyticsSystem extends WorldSystem {
     }
 
     public event<K extends keyof AnalyticsEvents>(name: K, params?: AnalyticsEvents[K]) {
+        console.log("AnalyticsEvent", name, params)
         event({ name: name, params: params ?? {} })
     }
 

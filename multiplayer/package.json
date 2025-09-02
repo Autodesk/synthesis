@@ -1,0 +1,16 @@
+{
+  "name": "multiplayer",
+  "private": true,
+  "scripts": {
+    "start": "bun server.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "peer": "^1.0.2"
+  }
+}

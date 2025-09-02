@@ -1,11 +1,13 @@
+import { Box, Button, Divider, FormControlLabel, Stack, TextField, Typography } from "@mui/material"
+import { useCallback, useEffect, useState } from "react"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
+import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { Box, TextField, FormControlLabel, Stack, Divider, Button, Typography } from "@mui/material"
-import Checkbox from "@/ui/components/Checkbox"
-import { useEffect, useState, useCallback } from "react"
 import type { MatchModeConfig } from "./MatchModeConfigPanel"
-import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { validateAndNormalizeMatchModeConfig } from "./MatchModeConfigPanel"
+import { createMatchEventFromConfig } from "@/systems/match_mode/MatchModeAnalyticsUtils"
+import World from "@/systems/World"
 
 interface ValidationRule {
     validate: (value: unknown) => boolean
@@ -91,7 +93,7 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     maxHeight: {
-        defaultValue: fallbackConfig.maxHeight === Number.MAX_SAFE_INTEGER ? 1.2 : fallbackConfig.maxHeight,
+        defaultValue: fallbackConfig.maxHeight === -1 ? 1.2 : fallbackConfig.maxHeight,
         rules: [VALIDATION_RULES.nonNegativeNumber("Max height must be a non-negative number")],
         type: "decimal",
     },
@@ -106,8 +108,7 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     sideMaxExtension: {
-        defaultValue:
-            fallbackConfig.sideMaxExtension === Number.MAX_SAFE_INTEGER ? 0.5 : fallbackConfig.sideMaxExtension,
+        defaultValue: fallbackConfig.sideMaxExtension === -1 ? 0.5 : fallbackConfig.sideMaxExtension,
         rules: [VALIDATION_RULES.nonNegativeNumber("Side max extension must be a non-negative number")],
         type: "decimal",
     },
@@ -260,15 +261,13 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             teleopTime: parseInt(formState.teleopTime.value as string, 10),
             endgameTime: parseInt(formState.endgameTime.value as string, 10),
             ignoreRotation: formState.ignoreRotation.value as boolean,
-            maxHeight: formState.enableHeightPenalty.value
-                ? parseFloat(formState.maxHeight.value as string)
-                : Number.MAX_SAFE_INTEGER,
+            maxHeight: formState.enableHeightPenalty.value ? parseFloat(formState.maxHeight.value as string) : -1,
             heightLimitPenalty: formState.enableHeightPenalty.value
                 ? parseFloat(formState.heightLimitPenalty.value as string)
                 : 0,
             sideMaxExtension: formState.enableSideExtensionPenalty.value
                 ? parseFloat(formState.sideMaxExtension.value as string)
-                : Number.MAX_SAFE_INTEGER,
+                : -1,
             sideExtensionPenalty: formState.enableSideExtensionPenalty.value
                 ? parseFloat(formState.sideExtensionPenalty.value as string)
                 : 0,
@@ -327,6 +326,9 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                         openPanel(MatchModeConfigPanelComponent, undefined)
                         closePanel(panel!.id, CloseType.Overwrite)
                     }, 0)
+
+                    const matchEvent = createMatchEventFromConfig(validatedConfig, { isDefault: undefined })
+                    World.analyticsSystem?.event("Match Mode Config Created", matchEvent)
 
                     return validatedConfig
                 },
