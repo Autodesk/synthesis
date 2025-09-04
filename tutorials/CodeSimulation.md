@@ -203,7 +203,12 @@ public void autonomousPeriodic() {
 }
 ```
 
-#### Acceleromoter simulation
+#### Accelerometer simulation
+
+#### Disclaimer
+
+Accelerometer Simulation is still under development. Check [GH-1234](https://github.com/Autodesk/synthesis/pull/1234) to see the current status.
+
 For detecting impacts, measuring tilt, or monitoring acceleration:
 
 ```java
@@ -224,6 +229,10 @@ public void robotPeriodic() {
 ```
 
 ### Cameras and Vision
+
+#### Disclaimer
+
+Camera Simulation is still under development. Check [GH-1250](https://github.com/Autodesk/synthesis/pull/1250) to see the current status.
 
 **Camera simulation** in Synthesis uses a WebSocket bridge to stream real-time 3D rendered frames from the simulator to your robot code. The example code allows camera stream in Shuffleboard:
 
