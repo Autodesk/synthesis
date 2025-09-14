@@ -9,7 +9,9 @@ from src import gm
 from src.Types import OString
 
 
-def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | os.PathLike[str] | None:
+def saveFileDialog(
+    defaultPath: str | os.PathLike[str] | None = None, defaultName: str | None = None
+) -> str | os.PathLike[str] | None:
     """Function to generate the Save File Dialog for the Hellion Data files
 
     Args:
@@ -75,7 +77,7 @@ def generateFilePath() -> str:
     """
     # Transition: AARD-1765
     # Ignoring the type for now, will revisit in the OString refactor
-    tempPath = OString.TempPath("").getPath()  # type: ignore
+    tempPath = OString.tempPath("").getPath()  # type: ignore
     return str(tempPath)
 
 
@@ -98,4 +100,4 @@ def generateFileName() -> str:
     return "{0}_{1}.mira".format(name, version)
 
 
-def OpenFileDialog() -> None: ...
+def openFileDialog() -> None: ...

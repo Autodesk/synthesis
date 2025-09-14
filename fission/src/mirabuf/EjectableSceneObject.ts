@@ -1,25 +1,40 @@
+import type Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
 import SceneObject from "@/systems/scene/SceneObject"
-import MirabufSceneObject from "./MirabufSceneObject"
-import Jolt from "@barclah/jolt-physics"
 import World from "@/systems/World"
 import {
-    Array_ThreeMatrix4,
-    JoltMat44_ThreeMatrix4,
-    JoltQuat_ThreeQuaternion,
-    ThreeQuaternion_JoltQuat,
-    ThreeVector3_JoltRVec3,
-    ThreeVector3_JoltVec3,
+    convertArrayToThreeMatrix4,
+    convertJoltMat44ToThreeMatrix4,
+    convertJoltQuatToThreeQuaternion,
+    convertThreeQuaternionToJoltQuat,
+    convertThreeVector3ToJoltRVec3,
+    convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
-import * as THREE from "three"
+import type MirabufSceneObject from "./MirabufSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 class EjectableSceneObject extends SceneObject {
-    private _parentAssembly: MirabufSceneObject
+    private _parentSceneObject: MirabufSceneObject
     private _gamePieceBodyId?: Jolt.BodyID
 
     private _parentBodyId?: Jolt.BodyID
     private _deltaTransformation?: THREE.Matrix4
     private _ejectVelocity?: number
+
+    // Animation state
+    private _animationStartTime = 0
+    private _animationDuration = EjectableSceneObject._defaultAnimationDuration
+    private _startTranslation?: THREE.Vector3
+    private _startRotation?: THREE.Quaternion
+
+    private static _defaultAnimationDuration = 0.5
+
+    public static setAnimationDuration(duration: number) {
+        EjectableSceneObject._defaultAnimationDuration = duration
+    }
+    public static getAnimationDuration() {
+        return EjectableSceneObject._defaultAnimationDuration
+    }
 
     public get gamePieceBodyId() {
         return this._gamePieceBodyId
@@ -29,101 +44,146 @@ class EjectableSceneObject extends SceneObject {
         return this._parentBodyId
     }
 
+    public get parentSceneObject(): MirabufSceneObject {
+        return this._parentSceneObject
+    }
+
     public constructor(parentAssembly: MirabufSceneObject, gamePieceBody: Jolt.BodyID) {
         super()
 
         console.debug("Trying to create ejectable...")
 
-        this._parentAssembly = parentAssembly
+        this._parentSceneObject = parentAssembly
         this._gamePieceBodyId = gamePieceBody
     }
 
-    public Setup(): void {
-        if (this._parentAssembly.ejectorPreferences && this._gamePieceBodyId) {
-            this._parentBodyId = this._parentAssembly.mechanism.nodeToBody.get(
-                this._parentAssembly.ejectorPreferences.parentNode ?? this._parentAssembly.rootNodeId
+    public setup(): void {
+        if (this._parentSceneObject.ejectorPreferences && this._gamePieceBodyId) {
+            this._parentBodyId = this._parentSceneObject.mechanism.nodeToBody.get(
+                this._parentSceneObject.ejectorPreferences.parentNode ?? this._parentSceneObject.rootNodeId
             )
 
-            this._deltaTransformation = Array_ThreeMatrix4(this._parentAssembly.ejectorPreferences.deltaTransformation)
-            this._ejectVelocity = this._parentAssembly.ejectorPreferences.ejectorVelocity
+            this._deltaTransformation = convertArrayToThreeMatrix4(
+                this._parentSceneObject.ejectorPreferences.deltaTransformation
+            )
+            this._ejectVelocity = this._parentSceneObject.ejectorPreferences.ejectorVelocity
 
-            World.PhysicsSystem.DisablePhysicsForBody(this._gamePieceBodyId)
+            // Record start transform at the game piece center of mass
+            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            this._startTranslation = new THREE.Vector3(0, 0, 0)
+            this._startRotation = new THREE.Quaternion(0, 0, 0, 1)
+            convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).decompose(
+                this._startTranslation,
+                this._startRotation,
+                new THREE.Vector3(1, 1, 1)
+            )
 
-            // Checks if the gamepiece comes from a zone for persistent point score updates
-            // because gamepieces removed by intake are not detected in the collision listener
-            const zones = [...World.SceneRenderer.sceneObjects.entries()]
-                .filter(x => {
-                    const y = x[1] instanceof ScoringZoneSceneObject
-                    return y
-                })
-                .map(x => x[1]) as ScoringZoneSceneObject[]
+            this._animationDuration = EjectableSceneObject._defaultAnimationDuration
+            this._animationStartTime = performance.now()
 
+            World.physicsSystem.disablePhysicsForBody(this._gamePieceBodyId)
+
+            // Remove from any scoring zones
+            const zones = World.sceneRenderer.filterSceneObjects(x => x instanceof ScoringZoneSceneObject)
             zones.forEach(x => {
-                if (this._gamePieceBodyId) ScoringZoneSceneObject.RemoveGamepiece(x, this._gamePieceBodyId)
+                if (this._gamePieceBodyId) ScoringZoneSceneObject.removeGamepiece(x, this._gamePieceBodyId)
             })
 
             console.debug("Ejectable created successfully!")
         }
     }
 
-    public Update(): void {
+    public update(): void {
+        const now = performance.now()
+        const elapsed = (now - this._animationStartTime) / 1000
+        const tRaw = elapsed / this._animationDuration
+        const t = Math.min(tRaw, 1)
+
+        // ease-in curve for gradual acceleration
+        const easedT = t * t
+
         if (this._parentBodyId && this._deltaTransformation && this._gamePieceBodyId) {
-            if (!World.PhysicsSystem.IsBodyAdded(this._gamePieceBodyId)) {
+            if (!World.physicsSystem.isBodyAdded(this._gamePieceBodyId)) {
                 this._gamePieceBodyId = undefined
                 return
             }
 
-            // I had a think and free wrote this matrix math on a whim. It worked first try and I honestly can't quite remember how it works... -Hunter
-            const gpBody = World.PhysicsSystem.GetBody(this._gamePieceBodyId)
-            const posToCOM = JoltMat44_ThreeMatrix4(gpBody.GetCenterOfMassTransform()).premultiply(
-                JoltMat44_ThreeMatrix4(gpBody.GetWorldTransform()).invert()
+            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            const posToCOM = convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).premultiply(
+                convertJoltMat44ToThreeMatrix4(gpBody.GetWorldTransform()).invert()
             )
 
-            const body = World.PhysicsSystem.GetBody(this._parentBodyId)
-            const bodyTransform = posToCOM
-                .invert()
-                .premultiply(
-                    this._deltaTransformation.clone().premultiply(JoltMat44_ThreeMatrix4(body.GetWorldTransform()))
-                )
+            const body = World.physicsSystem.getBody(this._parentBodyId)
+            let desiredPosition = new THREE.Vector3(0, 0, 0)
+            let desiredRotation = new THREE.Quaternion(0, 0, 0, 1)
+
+            // Compute target world transform
+            const desiredTransform = this._deltaTransformation
+                .clone()
+                .premultiply(convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()))
+
+            desiredTransform.decompose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
+
+            if (t < 1 && this._startTranslation && this._startRotation) {
+                // gradual acceleration via easedT
+                desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
+                desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, easedT)
+            }
+            // } else if (t >= 1) {
+            //     // snap instantly and re-enable physics
+            //     World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
+            // }
+
+            // apply the transform
+            desiredTransform.identity().compose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
+
+            const bodyTransform = posToCOM.clone().invert().premultiply(desiredTransform)
+
             const position = new THREE.Vector3(0, 0, 0)
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-            World.PhysicsSystem.SetBodyPosition(this._gamePieceBodyId, ThreeVector3_JoltRVec3(position), false)
-            World.PhysicsSystem.SetBodyRotation(this._gamePieceBodyId, ThreeQuaternion_JoltQuat(rotation), false)
+            World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position), false)
+            World.physicsSystem.setBodyRotation(
+                this._gamePieceBodyId,
+                convertThreeQuaternionToJoltQuat(rotation),
+                false
+            )
         }
     }
 
-    public Eject() {
+    public eject() {
         if (!this._parentBodyId || !this._ejectVelocity || !this._gamePieceBodyId) {
             return
         }
 
-        if (!World.PhysicsSystem.IsBodyAdded(this._gamePieceBodyId)) {
+        if (!World.physicsSystem.isBodyAdded(this._gamePieceBodyId)) {
             this._gamePieceBodyId = undefined
             return
         }
 
-        const parentBody = World.PhysicsSystem.GetBody(this._parentBodyId)
-        const gpBody = World.PhysicsSystem.GetBody(this._gamePieceBodyId)
+        const parentBody = World.physicsSystem.getBody(this._parentBodyId)
+        const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
         const ejectDir = new THREE.Vector3(0, 0, 1)
-            .applyQuaternion(JoltQuat_ThreeQuaternion(gpBody.GetRotation()))
+            .applyQuaternion(convertJoltQuatToThreeQuaternion(gpBody.GetRotation()))
             .normalize()
 
-        World.PhysicsSystem.EnablePhysicsForBody(this._gamePieceBodyId)
+        World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
         gpBody.SetLinearVelocity(
-            parentBody.GetLinearVelocity().Add(ThreeVector3_JoltVec3(ejectDir.multiplyScalar(this._ejectVelocity)))
+            parentBody
+                .GetLinearVelocity()
+                .Add(convertThreeVector3ToJoltVec3(ejectDir.multiplyScalar(this._ejectVelocity)))
         )
         gpBody.SetAngularVelocity(parentBody.GetAngularVelocity())
 
         this._parentBodyId = undefined
     }
 
-    public Dispose(): void {
+    public dispose(): void {
         console.debug("Destroying ejectable")
 
         if (this._gamePieceBodyId) {
-            World.PhysicsSystem.EnablePhysicsForBody(this._gamePieceBodyId)
+            World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
         }
     }
 }

@@ -1,5 +1,10 @@
-import Driver from "@/systems/simulation/driver/Driver"
-import Stimulus from "@/systems/simulation/stimulus/Stimulus"
+import type Driver from "@/systems/simulation/driver/Driver"
+import type Stimulus from "@/systems/simulation/stimulus/Stimulus"
+
+export enum DriveType {
+    ARCADE = "Arcade",
+    TANK = "Tank",
+}
 
 abstract class Behavior {
     private _drivers: Driver[]
@@ -17,7 +22,7 @@ abstract class Behavior {
         this._stimuli = stimuli
     }
 
-    public abstract Update(deltaT: number): void
+    public abstract update(deltaT: number): void
 }
 
 export default Behavior

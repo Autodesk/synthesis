@@ -1,0 +1,48 @@
+name: Fission - Biome Format and Lint Validation
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [prod, dev]
+  pull_request:
+    branches: [prod, dev]
+
+jobs:
+  runBiomeValidationScript:
+    name: Biome Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Bun Runtime Setup
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
+          path: "fission/node_modules"
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
+
+      - name: Install Dependencies
+        run: |
+          cd fission
+          bun install
+
+      - name: Lint
+        id: lint-validation
+        if: ${{ always() }}
+        run: |
+          cd fission
+          bun run lint --diagnostic-level=error
+
+      - name: Format
+        id: format-validation
+        if: ${{ always() }}
+        run: |
+          cd fission
+          bun run fmt

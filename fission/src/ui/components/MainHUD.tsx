@@ -1,46 +1,43 @@
-import React, { useEffect, useState } from "react"
-import { FaXmark } from "react-icons/fa6"
-import { useModalControlContext } from "@/ui/ModalContext"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { Box, ButtonGroup, ButtonProps, Stack } from "@mui/material"
 import { motion } from "framer-motion"
-import logo from "@/assets/autodesk_logo.png"
-import { useToastContext } from "@/ui/ToastContext"
+import type React from "react"
+import { useEffect, useState } from "react"
+import { FaXmark } from "react-icons/fa6"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
-import { UserIcon } from "./UserIcon"
-import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
-import { Button } from "@mui/base"
-import { Box } from "@mui/material"
-import { setAddToast } from "./GlobalUIControls"
+import logo from "@/assets/autodesk_logo.png"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import MatchMode, { MatchStateChangeEvent } from "@/systems/match_mode/MatchMode"
+import { deobf } from "@/util/Utility"
+import { useThemeContext } from "../helpers/ThemeProviderHelpers"
+import { useUIContext } from "../helpers/UIProviderHelpers"
+import APSManagementModal from "../modals/APSManagementModal"
+import SettingsModal from "../modals/configuring/SettingsModal"
+import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
+import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel"
+import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
+import DebugPanel from "../panels/DebugPanel"
+import DeveloperToolPanel from "../panels/DeveloperToolPanel"
+import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
+import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
+import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
+import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
+import UserIcon from "./UserIcon"
 
-type ButtonProps = {
-    value: string
-    icon: React.ReactNode
-    onClick?: () => void
-    larger?: boolean
-}
-
-const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) => {
-    if (larger == null) larger = false
+const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => {
     return (
         <Button
-            onClick={onClick}
-            className={`relative flex flex-row
-                cursor-pointer
-                bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
-                items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0
-                transform
-                transition-transform
-                hover:scale-[1.015]
-                active:scale-[1.03]`}
+            {...props}
+            startIcon={props.size === "large" ? startIcon : null}
+            className="relative flex flex-row"
+            variant="contained"
+            sx={{
+                "&:focus": {
+                    outline: "none",
+                },
+            }}
         >
-            {larger && icon}
-            {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
-            <span
-                className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} text-main-text cursor-pointer`}
-                style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
-            >
-                {value}
-            </span>
+            {props.size !== "large" && <span className="absolute left-3">{startIcon}</span>}
+            <span className={props.size === "large" ? "py-1" : "py-0.5 ml-6"}>{children}</span>
         </Button>
     )
 }
@@ -51,26 +48,55 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-    const { openModal } = useModalControlContext()
-    const { openPanel } = usePanelControlContext()
-    const { addToast } = useToastContext()
+    const { mode } = useThemeContext()
+    const { openModal, openPanel, addToast } = useUIContext()
     const [isOpen, setIsOpen] = useState(false)
 
+    const touchCompatibility = matchMedia("(hover: none)").matches
+
     setAddToast(addToast)
+    setOpenPanel(openPanel)
+    setOpenModal(openModal)
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
+    const [matchModeRunning, setMatchModeRunning] = useState(MatchMode.getInstance().isMatchEnabled())
 
     useEffect(() => {
         document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
             setUserInfo(APS.userInfo)
+        })
+
+        // biome-ignore-start lint/suspicious/noExplicitAny: allow any
+        try {
+            const k: string[] = deobf("NmM2ZjYzNjE2YzUzNzQ2ZjcyNjE2NzY1MmU3NDY4NjU2ZDY1").split(String.fromCharCode(46))
+            const v = JSON.parse((window as any)[k[0]][k[1]])[deobf("NjM2ZjZmNmM0ZDZmNjQ2NQ==")]
+            if (v === deobf("Nzk2NTcz")) {
+                const r = (document as any)[deobf("Njc2NTc0NDU2YzY1NmQ2NTZlNzQ0Mjc5NDk2NA==")](deobf("NzI2ZjZmNzQ="))
+                if (r) {
+                    const w = (document as any)[deobf("NjM3MjY1NjE3NDY1NDU2YzY1NmQ2NTZlNzQ=")](
+                        deobf("NmQ2MTcyNzE3NTY1NjU=")
+                    )
+                    r[deobf("NzA2MTcyNjU2ZTc0NGU2ZjY0NjU=")][deobf("Njk2ZTczNjU3Mjc0NDI2NTY2NmY3MjY1")](w, r)
+                    w[deobf("NjE3MDcwNjU2ZTY0NDM2ODY5NmM2NA==")](r)
+                }
+            }
+        } catch (_e) {
+            // noop
+        }
+        // biome-ignore-end lint/suspicious/noExplicitAny: disallow any
+    }, [])
+
+    useEffect(() => {
+        MatchStateChangeEvent.addListener(() => {
+            setMatchModeRunning(MatchMode.getInstance().isMatchEnabled())
         })
     }, [])
 
     return (
         <>
             {!isOpen && (
-                <Box
-                    display="flex"
+                <Stack
+                    direction="row"
                     alignItems={"center"}
                     height="100%"
                     position={"absolute"}
@@ -82,7 +108,8 @@ const MainHUD: React.FC = () => {
                         minWidth={"50px"}
                         maxWidth={"60px"}
                         style={{ aspectRatio: " 1 / 1.5" }}
-                        className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
+                        className="transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
+                        bgcolor="secondary.dark"
                         sx={{
                             borderTopRightRadius: "100px",
                             borderBottomRightRadius: "100px",
@@ -90,89 +117,157 @@ const MainHUD: React.FC = () => {
                             borderBottomLeftRadius: "0",
                         }}
                     >
-                        <Box className="flex w-full h-full items-center justify-center">
-                            <ButtonIcon
+                        <Stack className="w-full h-full" alignItems="center" justifyContent="center">
+                            <IconButton
                                 onClick={() => setIsOpen(!isOpen)}
-                                value={SynthesisIcons.OpenHudIcon}
-                                className=""
-                            />
-                        </Box>
+                                color="primary"
+                                disableRipple
+                                sx={{
+                                    "&:focus": {
+                                        borderColor: "transparent !important",
+                                        outline: "none",
+                                    },
+                                    "&:selected": {
+                                        outline: "none",
+                                        borderColor: "transparent",
+                                    },
+                                }}
+                            >
+                                {SynthesisIcons.OPEN_HUD_ICON}
+                            </IconButton>
+                        </Stack>
                     </Box>
-                </Box>
+                </Stack>
             )}
-            <motion.div
+            <Box
+                component={motion.div}
                 initial="closed"
                 animate={isOpen ? "open" : "closed"}
                 variants={variants}
-                className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
+                className="fixed flex flex-col gap-2 w-min p-4 rounded-3xl ml-4 top-1/2"
+                bgcolor="background.default"
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img
+                        alt="Autodesk"
                         src={logo}
-                        className="w-[80%] h-[100%] object-contain"
+                        className="w-[80%] h-full object-contain"
                         style={{
                             userSelect: "none",
                             MozUserSelect: "none",
                             msUserSelect: "none",
                             WebkitUserSelect: "none",
+                            filter: mode === "dark" ? "invert(1)" : "none",
                         }}
+                        draggable={false}
+                        onDragStart={e => e.preventDefault()}
                     />
-                    <ButtonIcon
-                        value={<FaXmark color="bg-icon" size={23} className="text-main-hud-close-icon" />}
+                    <IconButton
+                        sx={{
+                            "&:focus": {
+                                borderColor: "transparent !important",
+                                outline: "none",
+                            },
+                            "&:selected": {
+                                outline: "none",
+                                borderColor: "transparent",
+                            },
+                            color: "text.primary",
+                        }}
                         onClick={() => setIsOpen(false)}
-                    />
+                    >
+                        <FaXmark size={23} />
+                    </IconButton>
                 </div>
                 <MainHUDButton
-                    value={"Spawn Asset"}
-                    icon={SynthesisIcons.Add}
-                    larger={true}
-                    onClick={() => openPanel("import-mirabuf")}
-                />
-                <Box
-                    display="flex"
-                    flexDirection={"column"}
-                    sx={{ backgroundColor: "black", borderRadius: "7px", padding: "3px" }}
+                    startIcon={SynthesisIcons.ADD}
+                    size="large"
+                    onClick={() =>
+                        openPanel(ImportMirabufPanel, {
+                            configurationType: "ROBOTS" as ConfigurationType,
+                        })
+                    }
                 >
+                    Spawn Asset
+                </MainHUDButton>
+                <ButtonGroup orientation="vertical" variant="contained">
+                    <MainHUDButton startIcon={SynthesisIcons.WRENCH} onClick={() => openPanel(ConfigurePanel, {})}>
+                        Configure Assets
+                    </MainHUDButton>
                     <MainHUDButton
-                        value={"Configure Assets"}
-                        icon={SynthesisIcons.Wrench}
-                        onClick={() => openPanel("configure")}
-                    />
+                        startIcon={SynthesisIcons.GEAR}
+                        onClick={() =>
+                            openModal(SettingsModal, undefined, undefined, {
+                                allowClickAway: false,
+                            })
+                        }
+                    >
+                        General Settings
+                    </MainHUDButton>
                     <MainHUDButton
-                        value={"General Settings"}
-                        icon={SynthesisIcons.Gear}
-                        onClick={() => openModal("settings")}
-                    />
+                        startIcon={SynthesisIcons.CODE_SQUARE}
+                        onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                    >
+                        Developer Tool
+                    </MainHUDButton>
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
                         value={"View"}
-                        icon={SynthesisIcons.MagnifyingGlass}
-                        onClick={() => openModal("view")}
+                        icon={SynthesisIcons.MAGNIFYING_GLASS}
+                        onClick={() => openModal(<ViewModal />, undefined)}
                     /> */}
                     <MainHUDButton
-                        value={"Debug Tools"}
-                        icon={SynthesisIcons.Bug}
+                        startIcon={SynthesisIcons.BUG}
                         onClick={() => {
-                            openPanel("debug")
+                            openPanel(DebugPanel, undefined)
                         }}
-                    />
-                </Box>
+                    >
+                        Debug Tools
+                    </MainHUDButton>
+                    {touchCompatibility && (
+                        <MainHUDButton
+                            startIcon={SynthesisIcons.GAMEPAD}
+                            onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
+                        >
+                            Touch Controls
+                        </MainHUDButton>
+                    )}
+                </ButtonGroup>
                 {userInfo ? (
                     <MainHUDButton
-                        value={`Hi, ${userInfo.givenName}`}
-                        icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
-                        larger={true}
-                        onClick={() => openModal("aps-management")}
-                    />
+                        startIcon={<UserIcon className="h-6 rounded-full" />}
+                        size="large"
+                        onClick={() => openModal(APSManagementModal, undefined)}
+                    >{`Hi, ${userInfo.givenName}`}</MainHUDButton>
+                ) : (
+                    <MainHUDButton startIcon={SynthesisIcons.PEOPLE} onClick={() => APS.requestAuthCode()} size="large">
+                        APS Login
+                    </MainHUDButton>
+                )}
+                {!matchModeRunning ? (
+                    <MainHUDButton
+                        startIcon={SynthesisIcons.GAMEPAD}
+                        size="large"
+                        onClick={() => {
+                            openPanel(MatchModeConfigPanel, undefined)
+                            setIsOpen(false)
+                        }}
+                    >
+                        Start Match Mode
+                    </MainHUDButton>
                 ) : (
                     <MainHUDButton
-                        value={`APS Login`}
-                        icon={SynthesisIcons.People}
-                        larger={true}
-                        onClick={() => APS.requestAuthCode()}
-                    />
+                        startIcon={SynthesisIcons.XMARK_LARGE}
+                        size="large"
+                        onClick={() => {
+                            MatchMode.getInstance().sandboxModeStart()
+                            globalAddToast("info", "Match Mode Cancelled")
+                        }}
+                    >
+                        Abort Match Mode
+                    </MainHUDButton>
                 )}
-            </motion.div>
+            </Box>
         </>
     )
 }

@@ -3,10 +3,10 @@ import pathlib
 
 import adsk.core
 import adsk.fusion
-from google.protobuf.json_format import MessageToJson
 
 from src import gm
 from src.APS.APS import getAuth, upload_mirabuf
+from src.ErrorHandling import Err, ErrorSeverity, Result
 from src.Logging import getLogger, logFailure, timed
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser import (
@@ -24,6 +24,16 @@ from src.UI.Camera import captureThumbnail, clearIconCache
 logger = getLogger()
 
 
+def reload() -> None:
+    """Reloads the Parser module"""
+    import importlib
+
+    importlib.reload(Components)
+    importlib.reload(Joints)
+    importlib.reload(Materials)
+    importlib.reload(PDMessage)
+
+
 class Parser:
     def __init__(self, options: ExporterOptions):
         """Creates a new parser with the supplied options
@@ -33,9 +43,9 @@ class Parser:
         """
         self.exporterOptions = options
 
-    @logFailure(messageBox=True)
     @timed
     def export(self) -> None:
+        getLogger().info(f"Exporting with options {self.exporterOptions}")
         app = adsk.core.Application.get()
         design: adsk.fusion.Design = app.activeDocument.design
 
@@ -44,10 +54,13 @@ class Parser:
             return
 
         assembly_out = assembly_pb2.Assembly()
-        fill_info(
-            assembly_out,
-            design.rootComponent,
-            override_guid=design.parentDocument.name,
+        # This can't use the wrapper because there are lower level calls of this utility function
+        handle_err_top(
+            fill_info(
+                assembly_out,
+                design.rootComponent,
+                override_guid=design.parentDocument.name,
+            )
         )
 
         # set int to 0 in dropdown selection for dynamic
@@ -77,21 +90,21 @@ class Parser:
             progressDialog,
         )
 
-        Materials._MapAllAppearances(
+        Materials.mapAllAppearances(
             design.appearances,
             assembly_out.data.materials,
             self.exporterOptions,
             self.pdMessage,
         )
 
-        Materials._MapAllPhysicalMaterials(
+        Materials.mapAllPhysicalMaterials(
             design.materials,
             assembly_out.data.materials,
             self.exporterOptions,
             self.pdMessage,
         )
 
-        Components._MapAllComponents(
+        Components.mapAllComponents(
             design,
             self.exporterOptions,
             self.pdMessage,
@@ -101,7 +114,7 @@ class Parser:
 
         rootNode = types_pb2.Node()
 
-        Components._ParseComponentRoot(
+        Components.parseComponentRoot(
             design.rootComponent,
             self.pdMessage,
             self.exporterOptions,
@@ -110,7 +123,7 @@ class Parser:
             rootNode,
         )
 
-        Components._MapRigidGroups(design.rootComponent, assembly_out.data.joints)
+        Components.mapRigidGroups(design.rootComponent, assembly_out.data.joints)
 
         assembly_out.design_hierarchy.nodes.append(rootNode)
 
@@ -135,7 +148,12 @@ class Parser:
             self.pdMessage,
         )
 
-        JointHierarchy.BuildJointPartHierarchy(design, assembly_out.data.joints, self.exporterOptions, self.pdMessage)
+        try:
+            JointHierarchy.buildJointPartHierarchy(
+                design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
+            )
+        except RuntimeError as e:
+            raise e
 
         # These don't have an effect, I forgot how this is suppose to work
         # progressDialog.message = "Taking Photo for thumbnail..."
@@ -179,12 +197,18 @@ class Parser:
             logger.debug("Uploading file to APS")
             project = app.data.activeProject
             if not project.isValid:
-                raise RuntimeError("Project is invalid")
+                app.userInterface.messageBox(f"Project is invalid")
+                return
             project_id = project.id
             folder_id = project.rootFolder.id
             file_name = f"{self.exporterOptions.fileLocation}.mira"
-            if upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString()) is None:
-                raise RuntimeError("Could not upload to APS")
+
+            # Can't use decorator because it returns a value
+            upload_result = upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString())
+            if upload_result.is_err():
+                message = upload_result.unwrap_err()[0]
+                app.userInterface.messageBox(f"Fatal Error Encountered: {message}")
+                return
         else:
             assert self.exporterOptions.exportLocation == ExportLocation.DOWNLOAD
             # check if entire path exists and create if not since gzip doesn't do that.
@@ -195,10 +219,10 @@ class Parser:
             if self.exporterOptions.compressOutput:
                 logger.debug("Compressing file")
                 with gzip.open(str(self.exporterOptions.fileLocation), "wb", 9) as f:
-                    f.write(assembly_out.SerializeToString())
+                    _ = f.write(assembly_out.SerializeToString())
             else:
                 with open(str(self.exporterOptions.fileLocation), "wb") as f:
-                    f.write(assembly_out.SerializeToString())
+                    _ = f.write(assembly_out.SerializeToString())
 
         _ = progressDialog.hide()
 
@@ -249,3 +273,11 @@ class Parser:
         )
 
         logger.debug(debug_output.strip())
+
+
+def handle_err_top[T](result: Result[T]) -> None:
+    if result.is_err():
+        message, severity = result.unwrap_err()
+        if severity == ErrorSeverity.Fatal:
+            app = adsk.core.Application.get()
+            app.userInterface.messageBox(f"Fatal Error Encountered: {message}")

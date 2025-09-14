@@ -1,24 +1,32 @@
 import {
-    DefaultFieldPreferences,
-    DefaultGlobalPreferences,
-    DefaultRobotPreferences,
-    FieldPreferences,
-    FieldPreferencesKey,
-    GlobalPreference,
-    RobotPreferences,
-    RobotPreferencesKey,
+    defaultFieldPreferences,
+    defaultGlobalPreferences,
+    defaultGraphicsPreferences,
+    defaultMotorPreferences,
+    defaultRobotPreferences,
+    FIELD_PREFERENCE_KEY,
+    type FieldPreferences,
+    type GlobalPreference,
+    type GlobalPreferences,
+    GRAPHICS_PREFERENCE_KEY,
+    type GraphicsPreferences,
+    MOTOR_PREFERENCES_KEY,
+    type MotorPreferences,
+    type Preferences,
+    ROBOT_PREFERENCE_KEY,
+    type RobotPreferences,
 } from "./PreferenceTypes"
 
 /** An event that's triggered when a preference is changed. */
-export class PreferenceEvent extends Event {
-    public prefName: GlobalPreference
-    public prefValue: unknown
+export class PreferenceEvent<K extends GlobalPreference> extends Event {
+    public prefName: K
+    public prefValue: GlobalPreferences[K]
 
     /**
      * @param {GlobalPreference} prefName - The name of the preference that has just been updated.
      * @param {unknown} prefValue - The new value this preference was set to.
      */
-    constructor(prefName: GlobalPreference, prefValue: unknown) {
+    constructor(prefName: K, prefValue: GlobalPreferences[K]) {
         super("preferenceChanged")
         this.prefName = prefName
         this.prefValue = prefValue
@@ -27,19 +35,30 @@ export class PreferenceEvent extends Event {
 
 /** The preference system handles loading, saving, and updating all user managed data saved in local storage. */
 class PreferencesSystem {
-    private static _preferences: { [key: string]: unknown }
+    private static _preferences: Partial<Preferences>
     private static _localStorageKey = "Preferences"
 
-    /** Event dispatched when any global preference is updated */
-    public static addEventListener(callback: (e: PreferenceEvent) => void) {
-        window.addEventListener("preferenceChanged", callback as EventListener)
+    /** Event dispatched when a specific global preference is updated, returns a function to unsubscribe */
+    public static addPreferenceEventListener<P extends GlobalPreference>(
+        preference: P,
+        callback: (e: PreferenceEvent<P>) => void
+    ) {
+        const cb: EventListener = event => {
+            if ((event as PreferenceEvent<GlobalPreference>).prefName == preference) {
+                callback(event as PreferenceEvent<P>)
+            }
+        }
+        window.addEventListener("preferenceChanged", cb)
+        return () => {
+            window.removeEventListener("preferenceChanged", cb)
+        }
     }
 
     /** Gets any preference from the preferences map */
-    private static getPreference<T>(key: string): T | undefined {
+    private static getPreference<K extends keyof Preferences>(key: K): Preferences[K] | undefined {
         if (this._preferences == undefined) this.loadPreferences()
 
-        return this._preferences[key] as T
+        return this._preferences[key]
     }
 
     /**
@@ -48,12 +67,12 @@ class PreferencesSystem {
      * @param {GlobalPreference} key - The name of the preference to get.
      * @returns {T} The value of this preference casted to type T.
      */
-    public static getGlobalPreference<T>(key: GlobalPreference): T {
-        const customPref = this.getPreference<T>(key)
+    public static getGlobalPreference<K extends GlobalPreference>(key: K): GlobalPreferences[K] {
+        const customPref = this.getPreference(key)
         if (customPref != undefined) return customPref
 
-        const defaultPref = DefaultGlobalPreferences[key]
-        if (defaultPref != undefined) return defaultPref as T
+        const defaultPref = defaultGlobalPreferences[key]
+        if (defaultPref != undefined) return defaultPref
 
         throw new Error("Preference '" + key + "' is not assigned a default!")
     }
@@ -64,9 +83,8 @@ class PreferencesSystem {
      * @param {GlobalPreference} key - The name of the preference to set.
      * @param {T} value - The value to set the preference to.
      */
-    public static setGlobalPreference<T>(key: GlobalPreference, value: T) {
+    public static setGlobalPreference<K extends GlobalPreference>(key: K, value: GlobalPreferences[K]) {
         if (this._preferences == undefined) this.loadPreferences()
-
         window.dispatchEvent(new PreferenceEvent(key, value))
         this._preferences[key] = value
     }
@@ -79,12 +97,16 @@ class PreferencesSystem {
         const allRoboPrefs = this.getAllRobotPreferences()
 
         if (allRoboPrefs[miraName] == undefined) {
-            const defaultPrefs = DefaultRobotPreferences()
+            const defaultPrefs = defaultRobotPreferences()
             allRoboPrefs[miraName] = defaultPrefs
             return defaultPrefs
         }
 
-        return allRoboPrefs[miraName]
+        const defaultPrefs = defaultRobotPreferences()
+        const mergedPrefs = { ...defaultPrefs, ...allRoboPrefs[miraName] }
+        allRoboPrefs[miraName] = mergedPrefs
+
+        return mergedPrefs
     }
 
     /** Sets the RobotPreferences object for the robot of a specific mira name */
@@ -93,13 +115,25 @@ class PreferencesSystem {
         allRoboPrefs[miraName] = value
     }
 
+    /** Sets the FieldPreferences object for the field of a specific mira name */
+    public static setFieldPreferences(miraName: string, value: FieldPreferences) {
+        const allFieldPrefs = this.getAllFieldPreferences()
+        allFieldPrefs[miraName] = value
+    }
+
+    /** Sets the MotorPreferences object for the motor of a specific mira name */
+    public static setMotorPreferences(miraName: string, value: MotorPreferences) {
+        const allMotorPrefs = this.getAllMotorPreferences()
+        allMotorPrefs[miraName] = value
+    }
+
     /** @returns Preferences for every robot that was found in local storage. */
     public static getAllRobotPreferences(): { [key: string]: RobotPreferences } {
-        let allRoboPrefs = this.getPreference<{ [key: string]: RobotPreferences }>(RobotPreferencesKey)
+        let allRoboPrefs = this.getPreference(ROBOT_PREFERENCE_KEY)
 
         if (allRoboPrefs == undefined) {
             allRoboPrefs = {}
-            this._preferences[RobotPreferencesKey] = allRoboPrefs
+            this._preferences[ROBOT_PREFERENCE_KEY] = allRoboPrefs
         }
 
         return allRoboPrefs
@@ -113,24 +147,79 @@ class PreferencesSystem {
         const allFieldPrefs = this.getAllFieldPreferences()
 
         if (allFieldPrefs[miraName] == undefined) {
-            const defaultPrefs = DefaultFieldPreferences()
+            const defaultPrefs = defaultFieldPreferences()
             allFieldPrefs[miraName] = defaultPrefs
             return defaultPrefs
         }
 
-        return allFieldPrefs[miraName]
+        const defaultPrefs = defaultFieldPreferences()
+        const mergedPrefs = { ...defaultPrefs, ...allFieldPrefs[miraName] }
+        allFieldPrefs[miraName] = mergedPrefs
+
+        return mergedPrefs
     }
 
     /** @returns Preferences for every field that was found in local storage. */
     public static getAllFieldPreferences(): { [key: string]: FieldPreferences } {
-        let allFieldPrefs = this.getPreference<{ [key: string]: FieldPreferences }>(FieldPreferencesKey)
+        let allFieldPrefs = this.getPreference(FIELD_PREFERENCE_KEY)
 
         if (allFieldPrefs == undefined) {
             allFieldPrefs = {}
-            this._preferences[FieldPreferencesKey] = allFieldPrefs
+            this._preferences[FIELD_PREFERENCE_KEY] = allFieldPrefs
         }
 
         return allFieldPrefs
+    }
+
+    /**
+     * @param {string} miraName - The name of the motor assembly to get preference for.
+     * @returns {MotorPreferences} Motor preferences found for the given motor, or default motor preferences if none are found.
+     */
+    public static getMotorPreferences(miraName: string): MotorPreferences {
+        const allMotorPrefs = this.getAllMotorPreferences()
+
+        if (allMotorPrefs[miraName] == undefined) {
+            allMotorPrefs[miraName] = defaultMotorPreferences(miraName)
+        } else {
+            const defaultPrefs = defaultMotorPreferences(miraName)
+            allMotorPrefs[miraName] = { ...defaultPrefs, ...allMotorPrefs[miraName] }
+        }
+
+        return allMotorPrefs[miraName]
+    }
+
+    /** @returns Preferences for every motor that was found in local storage. */
+    public static getAllMotorPreferences(): { [key: string]: MotorPreferences } {
+        let motorPrefs = this.getPreference(MOTOR_PREFERENCES_KEY)
+
+        if (motorPrefs == undefined) {
+            motorPrefs = {}
+            this._preferences[MOTOR_PREFERENCES_KEY] = motorPrefs
+        }
+
+        return motorPrefs
+    }
+
+    /** Gets simulation quality preferences */
+    public static getGraphicsPreferences(): GraphicsPreferences {
+        let graphicsPrefs = this.getPreference(GRAPHICS_PREFERENCE_KEY)
+
+        if (graphicsPrefs == undefined) {
+            graphicsPrefs = defaultGraphicsPreferences()
+            this._preferences[GRAPHICS_PREFERENCE_KEY] = graphicsPrefs
+        } else {
+            const defaultPrefs = defaultGraphicsPreferences()
+            graphicsPrefs = { ...defaultPrefs, ...graphicsPrefs }
+            this._preferences[GRAPHICS_PREFERENCE_KEY] = graphicsPrefs
+        }
+
+        return graphicsPrefs
+    }
+
+    /** Resets simulation quality preferences to default values */
+    public static resetGraphicsPreferences() {
+        this._preferences[GRAPHICS_PREFERENCE_KEY] = defaultGraphicsPreferences()
+        this.savePreferences()
     }
 
     /** Loads all preferences from local storage. */
@@ -143,7 +232,7 @@ class PreferencesSystem {
         }
 
         try {
-            this._preferences = JSON.parse(loadedPrefs)
+            this._preferences = { ...defaultGlobalPreferences, ...JSON.parse(loadedPrefs) }
         } catch (e) {
             console.error(e)
             this._preferences = {}
@@ -167,11 +256,19 @@ class PreferencesSystem {
         window.localStorage.setItem(this._localStorageKey, prefsString)
     }
 
+    public static revertPreferences() {
+        PreferencesSystem.loadPreferences()
+        Object.entries(this._preferences).forEach(([key, value]) => {
+            window.dispatchEvent(
+                new PreferenceEvent(key as GlobalPreference, value as GlobalPreferences[GlobalPreference])
+            )
+        })
+    }
+
     /** Removes all preferences from local storage. */
     public static clearPreferences() {
         window.localStorage.removeItem(this._localStorageKey)
         this._preferences = {}
-        console.log("Cleared all preferences")
     }
 }
 

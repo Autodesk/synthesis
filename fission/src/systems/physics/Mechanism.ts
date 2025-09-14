@@ -1,7 +1,8 @@
-import Jolt from "@barclah/jolt-physics"
-import { LayerReserve } from "./PhysicsSystem"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { mirabuf } from "@/proto/mirabuf"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { mirabuf } from "@/proto/mirabuf"
+import type { LayerReserve } from "./PhysicsSystem"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID
@@ -16,11 +17,12 @@ export interface MechanismConstraint {
 class Mechanism {
     public rootBody: string
     public nodeToBody: Map<RigidNodeId, Jolt.BodyID>
-    public constraints: Array<MechanismConstraint>
-    public stepListeners: Array<Jolt.PhysicsStepListener>
-    public layerReserve: LayerReserve | undefined
+    public constraints: MechanismConstraint[] = []
+    public stepListeners: Jolt.PhysicsStepListener[] = []
+    public layerReserve?: LayerReserve
     public controllable: boolean
-    public ghostBodies: Array<Jolt.BodyID>
+    public ghostBodies: Jolt.BodyID[] = []
+    public touchedObjects: MirabufSceneObject[] = [] // [SceneObjectKey, rootBodyId]
 
     public constructor(
         rootBody: string,
@@ -30,26 +32,23 @@ class Mechanism {
     ) {
         this.rootBody = rootBody
         this.nodeToBody = bodyMap
-        this.constraints = []
-        this.stepListeners = []
         this.controllable = controllable
-        this.ghostBodies = []
         this.layerReserve = layerReserve
     }
 
-    public AddConstraint(mechConstraint: MechanismConstraint) {
+    public addConstraint(mechConstraint: MechanismConstraint) {
         this.constraints.push(mechConstraint)
     }
 
-    public AddStepListener(listener: Jolt.PhysicsStepListener) {
+    public addStepListener(listener: Jolt.PhysicsStepListener) {
         this.stepListeners.push(listener)
     }
 
-    public GetBodyByNodeId(nodeId: string) {
+    public getBodyByNodeId(nodeId: string) {
         return this.nodeToBody.get(nodeId)
     }
 
-    public DisablePhysics() {}
+    public disablePhysics() {}
 }
 
 export default Mechanism

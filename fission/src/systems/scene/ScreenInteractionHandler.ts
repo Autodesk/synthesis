@@ -46,6 +46,9 @@ class ScreenInteractionHandler {
 
     private _domElement: HTMLElement
 
+    private _globalPointerUp: (ev: PointerEvent) => void
+    private _isInteracting: boolean = false
+
     public interactionStart: ((i: InteractionStart) => void) | undefined
     public interactionEnd: ((i: InteractionEnd) => void) | undefined
     public interactionMove: ((i: InteractionMove) => void) | undefined
@@ -99,6 +102,12 @@ class ScreenInteractionHandler {
         this._contextMenu = e => e.preventDefault()
         this._touchMove = e => e.preventDefault()
 
+        this._globalPointerUp = e => {
+            if (this._isInteracting) {
+                this.pointerUp(e)
+            }
+        }
+
         this._domElement.addEventListener("pointermove", this._pointerMove)
         this._domElement.addEventListener(
             "wheel",
@@ -117,7 +126,7 @@ class ScreenInteractionHandler {
         this._domElement.addEventListener("pointercancel", this._pointerUp)
         this._domElement.addEventListener("pointerleave", this._pointerUp)
 
-        this._domElement.addEventListener("touchmove", this._touchMove)
+        this._domElement.addEventListener("touchmove", this._touchMove, { passive: false })
     }
 
     /**
@@ -133,6 +142,11 @@ class ScreenInteractionHandler {
         this._domElement.removeEventListener("pointerleave", this._pointerUp)
 
         this._domElement.removeEventListener("touchmove", this._touchMove)
+
+        if (this._isInteracting) {
+            document.removeEventListener("pointerup", this._globalPointerUp)
+            this._isInteracting = false
+        }
     }
 
     /**
@@ -166,7 +180,10 @@ class ScreenInteractionHandler {
 
             this._pointerPosition = [e.movementX, e.movementY]
 
-            this.interactionMove({ interactionType: e.button as InteractionType, movement: [e.movementX, e.movementY] })
+            this.interactionMove({
+                interactionType: e.button as InteractionType,
+                movement: [e.movementX, e.movementY],
+            })
         } else {
             if (e.pointerId == this._primaryTouch) {
                 if (!this._movementThresholdMet) {
@@ -248,6 +265,11 @@ class ScreenInteractionHandler {
             return
         }
 
+        if (!this._isInteracting) {
+            this._isInteracting = true
+            document.addEventListener("pointerup", this._globalPointerUp)
+        }
+
         if (e.pointerType == "touch") {
             if (this._primaryTouch == undefined) {
                 this._primaryTouch = e.pointerId
@@ -327,7 +349,19 @@ class ScreenInteractionHandler {
                 if (e.button == SECONDARY_MOUSE_INTERACTION && !this._movementThresholdMet && this.contextMenu) {
                     this.contextMenu(end)
                 }
+
+                this._pointerPosition = undefined
             }
+        }
+
+        if (
+            this._isInteracting &&
+            this._primaryTouch === undefined &&
+            this._secondaryTouch === undefined &&
+            this._pointerPosition === undefined
+        ) {
+            this._isInteracting = false
+            document.removeEventListener("pointerup", this._globalPointerUp)
         }
     }
 

@@ -3,10 +3,11 @@
 
 <br/>
 
-[![Fission - Unit Test](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml)
-[![Fission - Packaging](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml)
-[![Fission - Lint/Format](https://github.com/Autodesk/synthesis/actions/workflows/FissionESLintFormat.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionESLintFormat.yml)
-[![Fusion - Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/FissionUnitTest.yml?branch=prod&style=for-the-badge&logoSize=auto&label=Fission%20Unit%20Tests&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FFissionUnitTest.yml)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/FissionPackage.yml?branch=prod&style=for-the-badge&logoSize=auto&label=Fission%20-%20Packaging&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FFissionPackage.yml)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/FissionBiome.yml?branch=prod&style=for-the-badge&logoSize=auto&label=Fission%20Lint%2FFormat&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FFissionBiome.yml)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/BlackFormat.yml?branch=prod&style=for-the-badge&logoSize=auto&label=Fusion%20Exporter%20Format&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FBlackFormat.yml)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Autodesk/synthesis/FusionWebUI.yml?branch=prod&style=for-the-badge&logoSize=auto&label=Fusion%20Exporter%20WebUI%20Build&link=https%3A%2F%2Fgithub.com%2FAutodesk%2Fsynthesis%2Factions%2Fworkflows%2FFusionWebUI.yml)
 
 Synthesis is a robotics simulator designed by and for [FIRST®](https://www.firstinspires.org/) robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion Exporter](/exporter/) or use the pre-made ones available within Synthesis.
 
@@ -14,90 +15,74 @@ For more information on the product itself or the team, visit [http://synthesis.
 
 ## Goals
 
-Synthesis is built with a direct focus on the FIRST® community. Every single one of our developers is a FIRST® student. We've also made the project completely open source in order to better involve the community. This way contributors can help make Synthesis better or modify Synthesis to better suit their team’s needs.
+Synthesis is built with a direct focus on the FIRST® community. Every single one of our developers is or was a FIRST® student. We've also made the project completely open source in order to better involve the community. This way contributors can help improve Synthesis broadly or adapt it to their team’s needs.
 
 Here are some of our primary goals for Synthesis:
 
-- **Ease of Use**: It's important for us that Synthesis is out of the box ready for teams to use. We want to make sure that teams can get up and running with Synthesis as quickly as possible. To that end, Synthesis comes ready with a variety of robots and fields; in addition to the ability to export and import your own.
+- **Ease of Use**: It's important for us that Synthesis is out of the box ready for teams to use. We want to make sure that teams can get up and running with Synthesis as quickly as possible. To that end, Synthesis comes ready with a variety of robots and fields in addition to the ability to export and import your own.
 - **Testing Robot Designs**: Synthesis is designed to be a tool for teams to quickly test their robot designs in a semi-realistic environment. Are you a builder who wants to use some crazy virtual four-bar linkage and your team says it's a waste of time? Well now you can prove them wrong by testing it in Synthesis!
 - **Exploring the Field Environment**: Every year on kickoff, for both FTC and FRC FIRST® competitions, Synthesis has the newest field available immediately. This allows teams to explore the field through a 3D model, drive a robot around, and begin to strategize for the upcoming season's game.
-- **Driver Practice & Strategy**: Not getting enough driver practice or don't have a full field available to you? Synthesis has you covered with the ability to drive your robot around with a gamepad from a first-person view at the driver station; allowing you to get a feel for potential control scheme layouts and any line-of-sight challenges that may arise. This also allows the drive team and the programmers to communicate about what control layouts work best for each driver.
+- **Driver Practice & Strategy**: Not getting enough driver practice or don't have a full field available to you? Synthesis has you covered with the ability to play full simulated matches, controlling your robot with a gamepad from a first-person view at the driver station. This allows you to get a feel for potential control scheme layouts and any line-of-sight challenges that may arise. This also allows the drive team and the programmers to communicate about what control layouts work best for each driver.
 
 ## Getting Started
 
-If you are a FIRST robotics student who just wants to use Synthesis, you *don't* need this repo. Simply **install the latest release of Synthesis from [synthesis.autodesk.com/download](https://synthesis.autodesk.com/download.html)**.
+If you are a FIRST robotics student who just wants to use Synthesis, you _don't_ need this repo. Simply go follow [this link](https://synthesis.autodesk.com/fission) to the simulator and start spawning in robots!
 
-> [!IMPORTANT]
-> Moving to [synthesis.autodesk.com](http://synthesis.autodesk.com/).
-
-If you're a developer who wants to contribute to Synthesis, you're in the right place. Synthesis is comprised of 3 main components that can be developed separately. These components include:
+If you're a developer who wants to contribute to Synthesis, you're in the right place. Synthesis is comprised of 2 main components that can be developed separately:
 
 - [Fission (Core Web App)](/fission/README.md)
 - [Fusion Exporter (Fusion exporter to Mirabuf file format)](/exporter/SynthesisFusionAddin/README.md)
-- [Fusion Exporter Installer](/installer/)
+<!-- - [Fusion Exporter Installer](/installer/) -->
 
-Follow the above links to the respective READMEs on how to build and run each component.
+Follow the above links to the respective READMEs on how to build, run, and test each component.
 
-### Compatibility Notes
-
-As Fusion is not officially supported on Linux, we do not provide an installer for the Fusion Exporter on Linux.
+> [!NOTE]
+> As Fusion is not officially supported on Linux, we do not provide an installer for the Fusion Exporter on Linux.
 
 ## Contributing
 
-This project welcomes community suggestions and contributions. Synthesis is nearly 100% open source and relies on the FIRST® community to help make it better. The [Synthesis Contribution Guide](/CONTRIBUTING.md) suggests ways in which you can get involved through development and non-development avenues.
-
-Before you contribute to this repository, please first discuss the change you wish to make via a GitHub issue, email us ([frc@autodesk.com](mailto:frc@autodesk.com)), or reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). This way we can ensure that there is no overlap between outside contributors and internal development work.
-
-When ready to contribute, fork the synthesis repository, make your changes, and submit a pull request. When contributing to Synthesis, please branch from our `dev` branch and submit pull requests to that branch. The `prod` branch is intended to be a copy of either exactly what is in production, or what is ready for production. We like to keep changes to the dev branch so they have time to simmer and be distributed via beta releases. Be sure to fill out the pull request template accordingly to make reviewing your work as smooth as possible. Feel free to check out our [contributing guidelines](/CONTRIBUTING.md) to learn more.
-
-## Code Formatting And Style
-
-All code is under a configured formatting utility. See each component for more details.
+See [CONTRIBUTING.md](/CONTRIBUTING.md) for information on how you can help build synthesis
 
 ## Other Components
 
-### Mirabuf
+### [Mirabuf](https://github.com/HiceS/mirabuf/)
 
-Mirabuf is a file format we use to store physical data from Fusion to load into the Synthesis simulator (Fission). This is a separate project that is a submodule of Synthesis. [See Mirabuf](https://github.com/HiceS/mirabuf/)
+Mirabuf is a file format we use to store physical data from Fusion to load into the Synthesis simulator (Fission). This is a separate project that is a submodule of Synthesis.
 
-### Jolt Physics
+### [Jolt Physics](https://github.com/HunterBarclay/JoltPhysics.js)
 
-Jolt is the core physics engine for our web biased simulator. [See JoltPhysics.js](https://github.com/HunterBarclay/JoltPhysics.js) for more information.
-
-### Tutorials
-
-Our source code for the tutorials featured on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html).
+Jolt is the core physics engine for our web-based simulator.
 
 ### Protocols
 
 Additional protobuf files that we use in addition to Mirabuf. [See Protocols](/protocols/README.md)
 
-## Tutorials
+## [Tutorials](https://synthesis.autodesk.com/tutorials.html)
 
-We have a variety of tutorials available to help you get started with Synthesis. These tutorials can be found on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html) on our website. Additionally, you can view these same tutorials as Markdown files in the [tutorials](/tutorials/) directory of this repository.
+We have a variety of tutorials available to help you get started with Synthesis. Additionally, you can view these same tutorials as Markdown files in the [tutorials](/tutorials/) directory of this repository.
 
-Updating our tutorials is a ongoing process. If you are at all interested in helping, checkout the [Synthesis Contribution Guide](/CONTRIBUTING.md) for more information on how to get started.
+Updating our tutorials is an ongoing process. If you are at all interested in helping, check out the [Synthesis Contribution Guide](/CONTRIBUTING.md) for more information on how to get started.
 
-## Immersion Program
+## [Immersion Program](https://synthesis.autodesk.com/internship.html)
 
-Annually, since 2014, Autodesk has sponsored the Synthesis Immersion Program for FIRST robotics students to develop Synthesis. The immersion program is a 10 week paid work experience at the Portland, Oregon Autodesk office from June 20th to August 25th. The immersion program focuses on not only developing Synthesis, but also allowing for opportunities to meet and collaborate with other Autodesk employees. For more information about the immersion program, visit our website at [synthesis.autodesk.com/internship](https://synthesis.autodesk.com/internship.html).
+Annually, since 2014, Autodesk has sponsored the Synthesis Immersion Program for FIRST robotics students to develop Synthesis. The immersion program is a 10 week paid work experience at the Portland, Oregon Autodesk office from June 16th to August 22nd. The immersion program focuses on not only developing Synthesis, but also allowing for opportunities to meet and collaborate with other Autodesk employees.
 
 ### Want To Be A Part Of The Team?
 
 If you're a FIRST robotics student who wants to be a part of the Synthesis development team here is some basic information about applying.
 
-Applicants must be:
+Applicants must:
 
-- At least 16 years of age
-- Been a member of a FIRST Robotics team for at least one full season
+- Be at least 16 years of age (at the start of the internship)
+- Have been a member of a FIRST Robotics team for at least one full season
 
-Applications open each year during the spring. For more information about applying, exceptions to these requirements or for more info about specific positions offered, please visit the [Synthesis Immersion Program](https://synthesis.autodesk.com/internship.html) website.
+Applications open each year during the spring. For more information about applying, exceptions to these requirements or for more info about specific positions offered, please visit [Synthesis Immersion Program](https://synthesis.autodesk.com/internship.html).
 
 ## Contact
 
-If you have any questions about Synthesis or the Immersion Program, you can contact us through email ([frc@autodesk.com](mailto:frc@autodesk.com)). Additionally please reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in touch with not only the community, but Synthesis' current development team.
+If you have any questions about Synthesis or the Immersion Program, you can contact us through email ([frc@autodesk.com](mailto:frc@autodesk.com)). Additionally, please reach out through our [community Discord](https://www.discord.gg/hHcF9AVgZA). It's the best way to get in touch with not only the community, but Synthesis' current development team.
 
-## License
+## [License](/LICENSE.txt)
 
 Copyright (c) Autodesk
 

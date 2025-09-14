@@ -1,37 +1,40 @@
-import { Box } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
+import type React from "react"
 import { useEffect, useState } from "react"
-import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
-import { colorNameToVar } from "../ThemeContext"
-import Button, { ButtonSize } from "./Button"
-import Label, { LabelSize } from "./Label"
-import { SectionDivider } from "./StyledComponents"
+import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
+import { globalOpenModal, globalOpenPanel } from "./GlobalUIControls"
+import Label from "./Label"
+import { Button } from "./StyledComponents"
 
 interface ContextMenuStateData {
     data: ContextData
     location: [number, number]
 }
 
-function ContextMenu() {
+const ContextMenu: React.FC = () => {
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
     useEffect(() => {
         const func = (e: ContextSupplierEvent) => {
-            setState({ data: e.data, location: [e.mousePosition[0], e.mousePosition[1]] })
+            setState({
+                data: e.data,
+                location: [e.mousePosition[0], e.mousePosition[1]],
+            })
         }
 
-        ContextSupplierEvent.Listen(func)
+        ContextSupplierEvent.listen(func)
         return () => {
-            ContextSupplierEvent.RemoveListener(func)
+            ContextSupplierEvent.removeListener(func)
         }
     }, [])
 
     return !state ? (
         <></>
     ) : (
-        <Box
+        <Stack
             key="CANCEL"
             component="div"
-            display="flex"
+            direction="column"
             sx={{
                 position: "fixed",
                 left: "0pt",
@@ -42,51 +45,50 @@ function ContextMenu() {
             onPointerDown={() => setState(undefined)}
             onContextMenu={e => e.preventDefault()}
         >
-            <Box
+            <Stack
                 key="MENU"
                 component="div"
-                display="flex"
+                direction="column"
                 sx={{
                     gap: "0.5rem",
-                    flexDirection: "column",
                     position: "fixed",
                     left: state.location[0],
                     top: state.location[1],
                     padding: "1rem",
                     borderRadius: "0.5rem",
-                    backgroundColor: colorNameToVar("Background"),
-                    color: colorNameToVar("InteractiveElementText"),
+                    bgcolor: "background.paper",
+                    boxShadow: 6,
                 }}
                 // Why, why, why do I need to do this. This is absurd
                 onPointerDown={e => e.stopPropagation()}
             >
-                <Box
-                    key="CONTEXT-HEADER"
-                    component="div"
-                    display="flex"
-                    sx={{
-                        flexDirection: "column",
-                    }}
-                >
-                    <Label key={"context-title"} size={LabelSize.Small}>
+                <Stack key="CONTEXT-HEADER" component="div" direction="column">
+                    <Label key="context-title" size="md" color="text.primary">
                         {state.data.title}
                     </Label>
-                    <SectionDivider />
-                </Box>
+                    <Divider />
+                </Stack>
                 {state.data.items.map(x => (
                     <Button
                         key={x.name}
-                        size={ButtonSize.Small}
                         className={"w-full text-sm"}
-                        value={x.name}
                         onClick={() => {
                             setState(undefined)
-                            x.func()
+                            if (x.screen) {
+                                if (x.type === "modal") {
+                                    globalOpenModal(x.screen, x.customProps)
+                                } else {
+                                    globalOpenPanel(x.screen, x.customProps)
+                                }
+                            }
+                            x.func?.()
                         }}
-                    />
+                    >
+                        {x.name}
+                    </Button>
                 ))}
-            </Box>
-        </Box>
+            </Stack>
+        </Stack>
     )
 }
 

@@ -1,6 +1,7 @@
 import adsk.core
 import adsk.fusion
 
+from src.lib.Util import convertMassUnitsFrom, convertMassUnitsTo, getFusionUnitSystem
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Utilities import guid_occurrence
@@ -10,7 +11,6 @@ from src.UI.CreateCommandInputsHelper import (
     createTableInput,
     createTextBoxInput,
 )
-from src.Util import convertMassUnitsFrom, convertMassUnitsTo, getFusionUnitSystem
 
 
 class GamepieceConfigTab:
@@ -274,7 +274,7 @@ class GamepieceConfigTab:
     @logFailure
     def handleSelectionEvent(self, args: adsk.core.SelectionEventArgs, selectedOcc: adsk.fusion.Occurrence) -> None:
         selectionInput = args.activeInput
-        rootComponent = adsk.core.Application.get().activeDocument.design.rootComponent
+        rootComponent = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct).rootComponent
         occurrenceList: list[adsk.fusion.Occurrence] = rootComponent.allOccurrencesByComponent(selectedOcc.component)
         for occ in occurrenceList:
             if not self.addGamepiece(occ):

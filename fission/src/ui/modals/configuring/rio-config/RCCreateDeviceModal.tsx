@@ -1,62 +1,68 @@
-import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/ModalContext"
-import Dropdown from "@/components/Dropdown"
+import { FormControl, InputLabel, MenuItem } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
+import type React from "react"
+import { useEffect, useState } from "react"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import type { ModalImplProps } from "@/ui/components/Modal"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import RoboRIOModal from "../RoboRIOModal"
+import RCConfigCANGroupModal from "./RCConfigCANGroupModal"
+import RCConfigEncoderModal from "./RCConfigEncoderModal"
+import RCConfigPWMGroupModal from "./RCConfigPWMGroupModal"
 
 type DeviceType = "PWM" | "CAN" | "Encoder"
 
-const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext()
+const RCCreateDeviceModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { openModal, configureScreen } = useUIContext()
     const [type, setType] = useState<DeviceType>("PWM")
 
+    useEffect(() => {
+        const onBeforeAccept = () => {
+            console.log(type)
+            const miraObj = World.sceneRenderer.mirabufSceneObjects.getRobots()[0]
+            if (miraObj != null) {
+                const mechanism = miraObj.mechanism
+                const simLayer = World.simulationSystem.getSimulationLayer(mechanism)
+                console.log("simlayer", simLayer)
+                if (!(simLayer?.brain instanceof WPILibBrain)) simLayer?.setBrain(new WPILibBrain(miraObj))
+            }
+            switch (type) {
+                case "PWM":
+                    openModal(RCConfigPWMGroupModal, undefined, modal)
+                    break
+                case "CAN":
+                    openModal(RCConfigCANGroupModal, undefined, modal)
+                    break
+                case "Encoder":
+                    openModal(RCConfigEncoderModal, undefined, modal)
+                    break
+                default:
+                    break
+            }
+        }
+        const onCancel = () => openModal(RoboRIOModal, undefined, modal)
+
+        configureScreen(modal!, { title: "Create Device", acceptText: "Next" }, { onBeforeAccept, onCancel })
+    }, [])
+
     return (
-        <Modal
-            name="Create Device"
-            icon={SynthesisIcons.Add}
-            modalId={modalId}
-            acceptName="Next"
-            onAccept={() => {
-                console.log(type)
-                const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
-                    x => x[1] instanceof MirabufSceneObject
-                )
-                if (miraObjs.length > 0) {
-                    const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-                    const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
-                    console.log("simlayer", simLayer)
-                    if (!(simLayer?.brain instanceof WPILibBrain))
-                        simLayer?.SetBrain(new WPILibBrain(miraObjs[0][1] as MirabufSceneObject))
-                }
-                switch (type) {
-                    case "PWM":
-                        openModal("config-pwm")
-                        break
-                    case "CAN":
-                        openModal("config-can")
-                        break
-                    case "Encoder":
-                        openModal("config-encoder")
-                        break
-                    default:
-                        break
-                }
-            }}
-            onCancel={() => {
-                openModal("roborio")
-            }}
-        >
-            <Dropdown
+        <FormControl fullWidth>
+            <InputLabel id="device-type">Type</InputLabel>
+            <Select
+                labelId="device-type"
                 label={"Type"}
-                options={["PWM", "CAN", "Encoder"] as DeviceType[]}
-                onSelect={selected => {
-                    setType(selected as DeviceType)
+                onChange={e => {
+                    setType(e.target.value as DeviceType)
                 }}
-            />
-        </Modal>
+            >
+                {["PWM", "CAN", "Encoder"].map(t => (
+                    <MenuItem key={t} value={t}>
+                        {t}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
     )
 }
 

@@ -1,19 +1,18 @@
-import { test, expect, describe } from "vitest"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import {
-    Array_ThreeMatrix4,
-    JoltMat44_ThreeMatrix4,
-    MirabufTransform_ThreeMatrix4,
-    ThreeEuler_JoltQuat,
-    ThreeMatrix4_Array,
-    ThreeMatrix4_JoltMat44,
-    ThreeQuaternion_JoltQuat,
-    ThreeVector3_JoltVec3,
-    _JoltQuat,
-} from "../../util/TypeConversions"
+import { describe, expect, test } from "vitest"
 import { mirabuf } from "../../proto/mirabuf"
 import JOLT from "../../util/loading/JoltSyncLoader"
-import Jolt from "@barclah/jolt-physics"
+import {
+    convertArrayToThreeMatrix4,
+    convertJoltMat44ToThreeMatrix4,
+    convertMirabufTransformToThreeMatrix,
+    convertThreeMatrix4ToArray,
+    convertThreeMatrix4ToJoltMat44,
+    convertThreeQuaternionToJoltQuat,
+    convertThreeToJoltQuat,
+    convertThreeVector3ToJoltVec3,
+} from "../../util/TypeConversions"
 
 describe("Three to Jolt Conversions", async () => {
     function compareMat(tM: THREE.Matrix4, jM: Jolt.Mat44) {
@@ -53,7 +52,7 @@ describe("Three to Jolt Conversions", async () => {
 
     test("THREE.Vector3 -> Jolt.Vec3", () => {
         const a = new THREE.Vector3(2, 4, 1)
-        const joltVec = ThreeVector3_JoltVec3(a)
+        const joltVec = convertThreeVector3ToJoltVec3(a)
 
         expect(joltVec.GetX()).toBe(a.x)
         expect(joltVec.GetY()).toBe(a.y)
@@ -63,63 +62,63 @@ describe("Three to Jolt Conversions", async () => {
 
     test("THREE.Euler -> Jolt.Quat", () => {
         const a = new THREE.Euler(30, 60, 15)
-        const joltQuat = ThreeEuler_JoltQuat(a)
+        const myJoltQuat = convertThreeToJoltQuat(a)
         const threeQuat = new THREE.Quaternion()
         threeQuat.setFromEuler(a)
 
-        expect(joltQuat.GetX() - threeQuat.x).toBeLessThan(0.0001)
-        expect(joltQuat.GetY() - threeQuat.y).toBeLessThan(0.0001)
-        expect(joltQuat.GetZ() - threeQuat.z).toBeLessThan(0.0001)
-        expect(joltQuat.GetW() - threeQuat.w).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetX() - threeQuat.x).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetY() - threeQuat.y).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetZ() - threeQuat.z).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetW() - threeQuat.w).toBeLessThan(0.0001)
     })
 
     test("THREE.Quaternion -> Jolt.Quat", () => {
         const a = new THREE.Quaternion(0.285, 0.45, 0.237, 0.812)
         a.normalize()
-        const joltQuat = ThreeQuaternion_JoltQuat(a)
+        const myJoltQuat = convertThreeQuaternionToJoltQuat(a)
 
-        expect(joltQuat.GetX() - a.x).toBeLessThan(0.0001)
-        expect(joltQuat.GetY() - a.y).toBeLessThan(0.0001)
-        expect(joltQuat.GetZ() - a.z).toBeLessThan(0.0001)
-        expect(joltQuat.GetW() - a.w).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetX() - a.x).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetY() - a.y).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetZ() - a.z).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetW() - a.w).toBeLessThan(0.0001)
     })
 
     test("THREE.Quaterion -> Jolt.Quat (General Func)", () => {
         const a = new THREE.Quaternion(0.285, 0.45, 0.237, 0.812)
         a.normalize()
-        const joltQuat = _JoltQuat(a)
+        const myJoltQuat = convertThreeToJoltQuat(a)
 
-        expect(joltQuat.GetX() - a.x).toBeLessThan(0.0001)
-        expect(joltQuat.GetY() - a.y).toBeLessThan(0.0001)
-        expect(joltQuat.GetZ() - a.z).toBeLessThan(0.0001)
-        expect(joltQuat.GetW() - a.w).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetX() - a.x).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetY() - a.y).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetZ() - a.z).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetW() - a.w).toBeLessThan(0.0001)
     })
 
     test("THREE.Euler -> Jolt.Quat (General Func)", () => {
         const a = new THREE.Euler(30, 60, 15)
-        const joltQuat = _JoltQuat(a)
+        const myJoltQuat = convertThreeToJoltQuat(a)
         const threeQuat = new THREE.Quaternion()
         threeQuat.setFromEuler(a)
 
-        expect(joltQuat.GetX() - threeQuat.x).toBeLessThan(0.0001)
-        expect(joltQuat.GetY() - threeQuat.y).toBeLessThan(0.0001)
-        expect(joltQuat.GetZ() - threeQuat.z).toBeLessThan(0.0001)
-        expect(joltQuat.GetW() - threeQuat.w).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetX() - threeQuat.x).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetY() - threeQuat.y).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetZ() - threeQuat.z).toBeLessThan(0.0001)
+        expect(myJoltQuat.GetW() - threeQuat.w).toBeLessThan(0.0001)
     })
 
     test("undefined -> Jolt.Quat (General Func)", () => {
-        const joltQuat = _JoltQuat(undefined)
+        const myJoltQuat = convertThreeToJoltQuat(undefined)
 
-        expect(joltQuat.GetX()).toBe(0.0)
-        expect(joltQuat.GetY()).toBe(0.0)
-        expect(joltQuat.GetZ()).toBe(0.0)
-        expect(joltQuat.GetW()).toBe(1.0)
+        expect(myJoltQuat.GetX()).toBe(0.0)
+        expect(myJoltQuat.GetY()).toBe(0.0)
+        expect(myJoltQuat.GetZ()).toBe(0.0)
+        expect(myJoltQuat.GetW()).toBe(1.0)
     })
 
     test("THREE.Matrix4 [Identity] -> Jolt.Mat44", () => {
         const threeMat = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
 
-        const jMat = ThreeMatrix4_JoltMat44(threeMat)
+        const jMat = convertThreeMatrix4ToJoltMat44(threeMat)
 
         compareMat(threeMat, jMat)
     })
@@ -127,7 +126,7 @@ describe("Three to Jolt Conversions", async () => {
     test("THREE.Matrix4 [+X Axis Rotation] -> Jolt.Mat44", () => {
         const threeMat = new THREE.Matrix4(1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1)
 
-        const jMat = ThreeMatrix4_JoltMat44(threeMat)
+        const jMat = convertThreeMatrix4ToJoltMat44(threeMat)
 
         compareMat(threeMat, jMat)
     })
@@ -135,7 +134,7 @@ describe("Three to Jolt Conversions", async () => {
     test("THREE.Matrix4 [-X Axis Rotation] -> Jolt.Mat44", () => {
         const threeMat = new THREE.Matrix4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1)
 
-        const jMat = ThreeMatrix4_JoltMat44(threeMat)
+        const jMat = convertThreeMatrix4ToJoltMat44(threeMat)
 
         compareMat(threeMat, jMat)
     })
@@ -143,7 +142,7 @@ describe("Three to Jolt Conversions", async () => {
     test("THREE.Matrix4 [XY Translation] -> Jolt.Mat44", () => {
         const threeMat = new THREE.Matrix4(1, 0, 0, 3, 0, 1, 0, 5, 0, 0, 1, 0, 0, 0, 0, 1)
 
-        const jMat = ThreeMatrix4_JoltMat44(threeMat)
+        const jMat = convertThreeMatrix4ToJoltMat44(threeMat)
 
         compareMat(threeMat, jMat)
     })
@@ -153,8 +152,8 @@ describe("Three Storage Conversion", () => {
     test("Array -> THREE.Matrix4 -> Array", () => {
         const originalArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
-        const threeMat = Array_ThreeMatrix4(originalArr)
-        const arr = ThreeMatrix4_Array(threeMat)
+        const threeMat = convertArrayToThreeMatrix4(originalArr)
+        const arr = convertThreeMatrix4ToArray(threeMat)
 
         expect(arr.length).toBe(originalArr.length)
         for (let i = 0; i < arr.length; ++i) {
@@ -170,7 +169,7 @@ describe("Mirabuf to Three Conversions", () => {
 
         // console.debug(`Mira: ${miraMatToString(miraMat)}`);
 
-        const threeMat = MirabufTransform_ThreeMatrix4(miraMat)
+        const threeMat = convertMirabufTransformToThreeMatrix(miraMat)
         // console.debug(`Three: ${matToString(threeMat)}`);
 
         const miraArr = miraMat.spatialMatrix
@@ -187,7 +186,7 @@ describe("Mirabuf to Three Conversions", () => {
 
         // console.debug(`Mira: ${miraMatToString(miraMat)}`);
 
-        const threeMat = MirabufTransform_ThreeMatrix4(miraMat)
+        const threeMat = convertMirabufTransformToThreeMatrix(miraMat)
         // console.debug(`Three: ${matToString(threeMat)}`);
 
         const miraArr = miraMat.spatialMatrix
@@ -204,7 +203,7 @@ describe("Mirabuf to Three Conversions", () => {
 
         // console.debug(`Mira: ${miraMatToString(miraMat)}`);
 
-        const threeMat = MirabufTransform_ThreeMatrix4(miraMat)
+        const threeMat = convertMirabufTransformToThreeMatrix(miraMat)
         // console.debug(`Three: ${matToString(threeMat)}`);
 
         const miraArr = miraMat.spatialMatrix
@@ -255,7 +254,7 @@ describe("Jolt to Three Conversions", () => {
     test("Jolt.Mat44 [Identity] -> THREE.Matrix4", () => {
         const tmp = new JOLT.RMat44()
         const joltMat = tmp.sIdentity()
-        const threeMat = JoltMat44_ThreeMatrix4(joltMat)
+        const threeMat = convertJoltMat44ToThreeMatrix4(joltMat)
 
         compareMat(joltMat, threeMat)
 
@@ -277,7 +276,7 @@ describe("Jolt to Three Conversions", () => {
         JOLT.destroy(c2)
         JOLT.destroy(c3)
 
-        const threeMat = JoltMat44_ThreeMatrix4(joltMat)
+        const threeMat = convertJoltMat44ToThreeMatrix4(joltMat)
 
         compareMat(joltMat, threeMat)
 
@@ -299,7 +298,7 @@ describe("Jolt to Three Conversions", () => {
         JOLT.destroy(c2)
         JOLT.destroy(c3)
 
-        const threeMat = JoltMat44_ThreeMatrix4(joltMat)
+        const threeMat = convertJoltMat44ToThreeMatrix4(joltMat)
 
         compareMat(joltMat, threeMat)
 
@@ -321,7 +320,7 @@ describe("Jolt to Three Conversions", () => {
         JOLT.destroy(c2)
         JOLT.destroy(c3)
 
-        const threeMat = JoltMat44_ThreeMatrix4(joltMat)
+        const threeMat = convertJoltMat44ToThreeMatrix4(joltMat)
 
         compareMat(joltMat, threeMat)
 

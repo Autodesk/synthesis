@@ -1,7 +1,7 @@
-import { mirabuf } from "@/proto/mirabuf"
-import { NoraNumber, NoraTypes } from "../Nora"
-import Driver, { DriverID } from "./Driver"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { mirabuf } from "@/proto/mirabuf"
+import { type NoraNumber, NoraTypes } from "../Nora"
+import Driver, { type DriverID } from "./Driver"
 
 class IntakeDriver extends Driver {
     public value: number
@@ -15,7 +15,7 @@ class IntakeDriver extends Driver {
         this.value = 0.0
     }
 
-    public Update(_deltaT: number): void {
+    public update(_deltaT: number): void {
         this._assembly.intakeActive = this.value > 0.5
     }
 
@@ -23,9 +23,9 @@ class IntakeDriver extends Driver {
         this.value = val
     }
     public getReceiverType(): NoraTypes {
-        return NoraTypes.Number
+        return NoraTypes.NUMBER
     }
-    public DisplayName(): string {
+    public displayName(): string {
         return "Intake"
     }
 }

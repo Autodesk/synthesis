@@ -1,20 +1,25 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { FaInfinity, FaRobot } from "react-icons/fa6"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import World from "@/systems/World"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { usePanelControlContext } from "@/ui/PanelContext"
-import Label from "@/ui/components/Label"
-import Button from "@/ui/components/Button"
-import Jolt from "@barclah/jolt-physics"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { JoltMat44_ThreeMatrix4, ThreeQuaternion_JoltQuat, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { TextField } from "@mui/material"
+import { Stack, styled } from "@mui/system"
+import type React from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
-import { AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { styled } from "@mui/system"
-import Input from "@/ui/components/Input"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
+import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
+import World from "@/systems/World"
+import Label from "@/ui/components/Label"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import {
+    convertJoltMat44ToThreeMatrix4,
+    convertThreeQuaternionToJoltQuat,
+    convertThreeVector3ToJoltRVec3,
+} from "@/util/TypeConversions"
 
 type StagingProps = {
     state: "Staging"
@@ -46,13 +51,13 @@ type BodyCapture = {
 const AUTO_TEST_PAUSE_REF = "auto-testing"
 
 export const BlueAllianceToggleButton = styled(ToggleButton)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": "#5f60ff",
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: "#5f60ff",
     "&.Mui-selected": {
         color: "black",
-        backgroundImage: `linear-gradient(to right, #5f60ff, #5f60ff)`,
+        backgroundImage: "linear-gradient(to right, #5f60ff, #5f60ff)",
         borderColor: "transparent",
     },
     ".MuiTouchRipple-ripple": {
@@ -86,13 +91,13 @@ export const BlueAllianceToggleButton = styled(ToggleButton)({
 })
 
 export const RedAllianceToggleButton = styled(ToggleButton)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": "#d74e26",
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: "#d74e26",
     "&.Mui-selected": {
         color: "black",
-        backgroundImage: `linear-gradient(to right, #d74e26, #d74e26)`,
+        backgroundImage: "linear-gradient(to right, #d74e26, #d74e26)",
         borderColor: "transparent",
     },
     ".MuiTouchRipple-ripple": {
@@ -127,21 +132,18 @@ export const RedAllianceToggleButton = styled(ToggleButton)({
 
 function captureBodies(): BodyCapture[] {
     const captures: BodyCapture[] = []
-    World.SceneRenderer.sceneObjects.forEach(sceneObj => {
-        if (sceneObj instanceof MirabufSceneObject) {
-            sceneObj.mechanism.nodeToBody.forEach(bodyId => {
-                const body = World.PhysicsSystem.GetBody(bodyId)
-                const transform = body.GetWorldTransform()
-                const translation = new THREE.Vector3(0, 0, 0)
-                const rotation = new THREE.Quaternion(0, 0, 0, 1)
-                JoltMat44_ThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
-                captures.push({
-                    id: bodyId,
-                    pos: ThreeVector3_JoltRVec3(translation),
-                    rot: ThreeQuaternion_JoltQuat(rotation),
-                })
+    World.sceneRenderer.mirabufSceneObjects.getAll().forEach(sceneObj => {
+        sceneObj.getAllBodies().forEach(body => {
+            const transform = body.GetWorldTransform()
+            const translation = new THREE.Vector3(0, 0, 0)
+            const rotation = new THREE.Quaternion(0, 0, 0, 1)
+            convertJoltMat44ToThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
+            captures.push({
+                id: body.GetID(),
+                pos: convertThreeVector3ToJoltRVec3(translation),
+                rot: convertThreeQuaternionToJoltQuat(rotation),
             })
-        }
+        })
     })
     return captures
 }
@@ -149,47 +151,47 @@ function captureBodies(): BodyCapture[] {
 function resetBodies(captures: BodyCapture[]) {
     const zero = new JOLT.Vec3(0, 0, 0)
     captures.forEach(x => {
-        World.PhysicsSystem.SetBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
+        World.physicsSystem.setBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
     })
     JOLT.destroy(zero)
 }
 
-function End({ assembly, setStaging, captures }: EndProps) {
+const End: React.FC<EndProps> = ({ assembly, setStaging, captures }) => {
     useEffect(() => {
-        SimDriverStation.SetMode(RobotSimMode.Disabled)
+        SimDriverStation.setMode(RobotSimMode.DISABLED)
     }, [])
 
     const reset = useCallback(() => {
         resetBodies(captures)
-        setStaging?.({ state: "Staging", assembly: assembly })
+        setStaging?.({ state: "Staging", assembly })
     }, [assembly, captures, setStaging])
 
     return (
-        <>
-            <Button className="self-center" value="Reset" onClick={reset} />
-        </>
+        <Button className="self-center" onClick={reset}>
+            Reset
+        </Button>
     )
 }
 
-function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
+const Playing: React.FC<PlayingProps> = ({ assembly, setEnd, countdown, captures }) => {
     const [remaining, setRemaining] = useState<number>(countdown)
 
     useEffect(() => {
-        World.PhysicsSystem.ReleasePause(AUTO_TEST_PAUSE_REF)
-        SimDriverStation.SetMode(RobotSimMode.Auto)
+        World.physicsSystem.releasePause(AUTO_TEST_PAUSE_REF)
+        SimDriverStation.setMode(RobotSimMode.AUTO)
     }, [])
 
     const end = useCallback(() => {
-        SimDriverStation.SetMode(RobotSimMode.Disabled)
-        World.PhysicsSystem.HoldPause(AUTO_TEST_PAUSE_REF)
+        SimDriverStation.setMode(RobotSimMode.DISABLED)
+        World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
         setEnd?.({ assembly: assembly, captures: captures, state: "End" })
     }, [assembly, captures, setEnd])
 
     useEffect(() => {
-        let handle: number | undefined = undefined
+        let handle: number | undefined
         const endTime = Date.now() / 1000.0 + countdown
         const func = () => {
-            if (handle != undefined) cancelAnimationFrame(handle)
+            if (handle !== undefined) cancelAnimationFrame(handle)
 
             setRemaining(endTime - Date.now() / 1000.0)
 
@@ -200,7 +202,7 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
         }
 
         return () => {
-            if (handle != undefined) cancelAnimationFrame(handle)
+            if (handle !== undefined) cancelAnimationFrame(handle)
         }
     }, [countdown])
 
@@ -212,35 +214,39 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
 
     return (
         <>
-            <Label className="text-center">{Math.max(remaining, 0).toFixed(1)}s</Label>
-            <Button className="self-center" value="Stop" onClick={end} />
+            <Label size="md" className="text-center">
+                {Math.max(remaining, 0).toFixed(1)}s
+            </Label>
+            <Button className="self-center" onClick={end}>
+                Stop
+            </Button>
         </>
     )
 }
 
-function Staging({ assembly, setPlaying }: StagingProps) {
+const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
     const [countdown, setCountdown] = useState<number>(15)
     const [station, setStation] = useState<AllianceStation>("red1")
     const [gameData, setGameData] = useState<string>("")
 
     const next = useCallback(() => {
-        SimDriverStation.SetGameData(gameData)
-        SimDriverStation.SetStation(station)
+        SimDriverStation.setGameData(gameData)
+        SimDriverStation.setStation(station)
 
         const captures = captureBodies()
-        setPlaying?.({ assembly: assembly, captures: captures, countdown: countdown, state: "Playing" })
+        setPlaying?.({ assembly, captures, countdown, state: "Playing" })
     }, [assembly, countdown, gameData, setPlaying, station])
 
     return (
         <>
-            <div className="flex flex-col gap-1">
-                <Label className="text-center">Countdown</Label>
+            <Stack>
+                <Label size="md" textAlign="center">
+                    Countdown
+                </Label>
                 <ToggleButtonGroup
                     value={countdown}
                     exclusive
-                    onChange={(_, v) => {
-                        setCountdown(v)
-                    }}
+                    onChange={(_, v) => setCountdown(v)}
                     className="self-center"
                 >
                     <ToggleButton value={5}>5</ToggleButton>
@@ -252,59 +258,67 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                         <FaInfinity />
                     </ToggleButton>
                 </ToggleButtonGroup>
-            </div>
-            <div className="flex flex-col gap-1">
-                <Label className="text-center">Alliance Station</Label>
-                <ToggleButtonGroup
-                    value={station}
-                    exclusive
-                    onChange={(_, v) => {
-                        setStation(v)
-                    }}
-                    className="self-center"
-                >
-                    <RedAllianceToggleButton value={"red1"}>1</RedAllianceToggleButton>
-                    <RedAllianceToggleButton value={"red2"}>2</RedAllianceToggleButton>
-                    <RedAllianceToggleButton value={"red3"}>3</RedAllianceToggleButton>
-                    <BlueAllianceToggleButton value={"blue1"}>1</BlueAllianceToggleButton>
-                    <BlueAllianceToggleButton value={"blue2"}>2</BlueAllianceToggleButton>
-                    <BlueAllianceToggleButton value={"blue3"}>3</BlueAllianceToggleButton>
+            </Stack>
+            <Stack>
+                <Label size="md" textAlign="center">
+                    Alliance Station
+                </Label>
+                <ToggleButtonGroup value={station} exclusive onChange={(_, v) => setStation(v)} className="self-center">
+                    <RedAllianceToggleButton value="red1">1</RedAllianceToggleButton>
+                    <RedAllianceToggleButton value="red2">2</RedAllianceToggleButton>
+                    <RedAllianceToggleButton value="red3">3</RedAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue1">1</BlueAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue2">2</BlueAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue3">3</BlueAllianceToggleButton>
                 </ToggleButtonGroup>
-            </div>
-            <div className="flex flex-col gap-1">
-                <Input label="Game Data" placeholder="..." defaultValue={gameData} onInput={setGameData} />
-            </div>
-            <div className="flex flex-col gap-1">
-                <Label className="text-center">Placement</Label>
-                <TransformGizmoControl parent={assembly} size={3} defaultMode={"translate"} scaleDisabled />
-            </div>
-            <Button className="self-center" value="Test" onClick={next} />
+            </Stack>
+            <Stack>
+                <TextField
+                    label="Game Data"
+                    placeholder="..."
+                    defaultValue={gameData}
+                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => setGameData(e.target.value)}
+                />
+            </Stack>
+            <Stack>
+                <Label size="md" textAlign="center">
+                    Placement
+                </Label>
+                <TransformGizmoControl parent={assembly} size={3} defaultMode="translate" scaleDisabled />
+            </Stack>
+            <Button className="self-center" onClick={next}>
+                Test
+            </Button>
         </>
     )
 }
 
-const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
-    const { closePanel } = usePanelControlContext()
+const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
+    const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
-        () =>
-            [...World.SceneRenderer.sceneObjects.values()].find(
-                x => (x as MirabufSceneObject).brain?.brainType == "wpilib"
-            ) as MirabufSceneObject,
+        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
         []
     )
 
     useEffect(() => {
-        SimDriverStation.SetMode(RobotSimMode.Disabled)
+        configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})
+    }, [])
+
+    useEffect(() => {
+        SimDriverStation.setMode(RobotSimMode.DISABLED)
         return () => {
-            SimDriverStation.SetMode(RobotSimMode.Disabled)
+            SimDriverStation.setMode(RobotSimMode.DISABLED)
         }
     }, [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(AUTO_TEST_PAUSE_REF)
-
+        World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
+        if (assembly == null) {
+            console.warn("Couldn't find assembly with wpilib brain")
+            return
+        }
         setActiveProps({
             state: "Staging",
             assembly: assembly,
@@ -312,52 +326,34 @@ const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
         })
 
         return () => {
-            World.PhysicsSystem.ReleasePause(AUTO_TEST_PAUSE_REF)
+            World.physicsSystem.releasePause(AUTO_TEST_PAUSE_REF)
         }
     }, [assembly])
 
-    useEffect(() => {
-        closePanel("configure")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
     return (
-        <Panel
-            name="Auto Testing"
-            icon={<FaRobot />}
-            panelId={panelId}
-            openLocation={"right"}
-            sidePadding={sidePadding}
-            cancelEnabled={false}
-            acceptName="Done"
-        >
-            <div className="flex flex-col bg-background-secondary rounded-md p-2 gap-4">
-                {activeProps != undefined ? (
-                    activeProps.state == "Staging" ? (
-                        <Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
-                    ) : activeProps.state == "Playing" ? (
-                        <Playing
-                            assembly={activeProps.assembly}
-                            captures={activeProps.captures}
-                            countdown={activeProps.countdown}
-                            setEnd={setActiveProps}
-                            state="Playing"
-                        />
-                    ) : activeProps.state == "End" ? (
-                        <End
-                            assembly={activeProps.assembly}
-                            setStaging={setActiveProps}
-                            captures={activeProps.captures}
-                            state="End"
-                        />
-                    ) : (
-                        <></>
-                    )
+        <Stack gap={4}>
+            {activeProps !== undefined &&
+                (activeProps.state === "Staging" ? (
+                    <Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
+                ) : activeProps.state === "Playing" ? (
+                    <Playing
+                        assembly={activeProps.assembly}
+                        captures={activeProps.captures}
+                        countdown={activeProps.countdown}
+                        setEnd={setActiveProps}
+                        state="Playing"
+                    />
+                ) : activeProps.state === "End" ? (
+                    <End
+                        assembly={activeProps.assembly}
+                        setStaging={setActiveProps}
+                        captures={activeProps.captures}
+                        state="End"
+                    />
                 ) : (
                     <></>
-                )}
-            </div>
-        </Panel>
+                ))}
+        </Stack>
     )
 }
 

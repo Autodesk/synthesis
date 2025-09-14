@@ -1,7 +1,7 @@
-import JOLT from "../loading/JoltSyncLoader.ts"
-import Jolt from "@barclah/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from "../TypeConversions.ts"
+import JOLT from "../loading/JoltSyncLoader.ts"
+import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "../TypeConversions.ts"
 
 export const LAYER_NOT_MOVING = 0
 export const LAYER_MOVING = 1
@@ -44,7 +44,7 @@ export function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
     switch (shape.GetSubType()) {
         case JOLT.EShapeSubType_Box: {
             const boxShape = JOLT.castObject(shape, JOLT.BoxShape)
-            const extent = JoltVec3_ThreeVector3(boxShape.GetHalfExtent()).multiplyScalar(2)
+            const extent = convertJoltVec3ToThreeVector3(boxShape.GetHalfExtent()).multiplyScalar(2)
             threeObj = new THREE.Mesh(new THREE.BoxGeometry(extent.x, extent.y, extent.z, 1, 1, 1), material)
             threeObj.receiveShadow = true
             threeObj.castShadow = true
@@ -68,8 +68,8 @@ export function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
 
     if (!threeObj) return undefined
 
-    threeObj.position.copy(JoltVec3_ThreeVector3(body.GetPosition()))
-    threeObj.quaternion.copy(JoltQuat_ThreeQuaternion(body.GetRotation()))
+    threeObj.position.copy(convertJoltVec3ToThreeVector3(body.GetPosition()))
+    threeObj.quaternion.copy(convertJoltQuatToThreeQuaternion(body.GetRotation()))
 
     return threeObj
 }
@@ -115,7 +115,7 @@ export interface VisualProperties {
     scale: THREE.Vector3
 }
 
-export function DeltaFieldTransforms_PhysicalProp(
+export function deltaFieldTransformsPhysicalProp(
     deltaTransform: THREE.Matrix4,
     fieldTransform: THREE.Matrix4
 ): VisualProperties {

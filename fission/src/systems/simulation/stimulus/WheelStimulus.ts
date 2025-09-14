@@ -1,8 +1,8 @@
-import Jolt from "@barclah/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { mirabuf } from "@/proto/mirabuf"
+import { type NoraNumber2, NoraTypes } from "../Nora"
 import EncoderStimulus from "./EncoderStimulus"
-import { mirabuf } from "@/proto/mirabuf"
-import { StimulusID } from "./Stimulus"
-import { NoraTypes, NoraNumber2 } from "../Nora"
+import type { StimulusID } from "./Stimulus"
 
 /**
  *
@@ -37,7 +37,7 @@ class WheelRotationStimulus extends EncoderStimulus {
         this._wheel = wheel
     }
 
-    public Update(deltaT: number): void {
+    public update(deltaT: number): void {
         if (this._accum) {
             this._wheelRotationAccum += this._wheel.GetAngularVelocity() * deltaT
         }
@@ -48,12 +48,12 @@ class WheelRotationStimulus extends EncoderStimulus {
     }
 
     public getSupplierType(): NoraTypes {
-        return NoraTypes.Number2
+        return NoraTypes.NUMBER2
     }
     public getSupplierValue(): NoraNumber2 {
         return [this.positionValue, this.velocityValue]
     }
-    public DisplayName(): string {
+    public displayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`
     }
 }
