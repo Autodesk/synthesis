@@ -1,8 +1,9 @@
-import { Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
-import React, { type ReactElement } from "react"
+import { Box, Card, CardActions, CardContent, CardHeader, IconButton, Modal as MUIModal, Typography } from "@mui/material"
+import React, { useMemo, type ReactElement } from "react"
 import type { Modal as ModalType, Panel as PanelType } from "../helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { Button } from "./StyledComponents"
+import { IoHelpCircle } from "react-icons/io5"
 
 export type ModalImplProps<T, P> = Partial<{
     modal: ModalType<T, P>
@@ -21,6 +22,17 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
     const { closeModal } = useUIContext()
 
     const props = modal.props
+
+    const header = useMemo(() => {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography>{props.title}</Typography>
+                <IconButton>
+                    <IoHelpCircle />
+                </IconButton>
+            </Box>
+        )
+    }, [props.title])
 
     return (
         <MUIModal
@@ -47,7 +59,7 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
             >
                 {props.title && (
                     <CardHeader
-                        title={props.title}
+                        title={header}
                         className="select-none"
                         titleTypographyProps={{ variant: "h5" }}
                         sx={{
