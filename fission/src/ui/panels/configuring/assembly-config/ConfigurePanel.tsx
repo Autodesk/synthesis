@@ -35,6 +35,7 @@ import { Tab, Tabs } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { HELP_OPTION_CONFIGURE_YOUTUBE } from "@/util/HelpOption"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -314,7 +315,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
+            { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel", helpOptions: [ HELP_OPTION_CONFIGURE_YOUTUBE ] },
             { onBeforeAccept, onCancel }
         )
     }, [selectedAssembly, pendingDeletes])

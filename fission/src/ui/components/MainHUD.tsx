@@ -22,6 +22,17 @@ import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import UserIcon from "./UserIcon"
+import { HelpPopover } from "./HelpPopover"
+import { HELP_OPTION_ALL_TUTORIALS, HELP_OPTION_DISCORD, HELP_OPTION_EXPORT_CODELAB, HELP_OPTION_SPAWN_ASSET_YOUTUBE, HelpOption } from "@/util/HelpOption"
+
+const HELP_OPTIONS: HelpOption[] = [
+    HELP_OPTION_SPAWN_ASSET_YOUTUBE,
+    HELP_OPTION_EXPORT_CODELAB,
+    HELP_OPTION_ALL_TUTORIALS,
+    HELP_OPTION_DISCORD
+]
+
+export const EVENT_KEY_OPEN_MAIN_HUD = "openMainHud"
 
 const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => {
     return (
@@ -60,6 +71,18 @@ const MainHUD: React.FC = () => {
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
     const [matchModeRunning, setMatchModeRunning] = useState(MatchMode.getInstance().isMatchEnabled())
+
+    useEffect(() => {
+        const handler = (event: Event) => {
+            if (event.type === EVENT_KEY_OPEN_MAIN_HUD)
+                setIsOpen(true)
+        }
+
+        document.addEventListener(EVENT_KEY_OPEN_MAIN_HUD, handler)
+        return () => {
+            document.removeEventListener(EVENT_KEY_OPEN_MAIN_HUD, handler)
+        }
+    }, [])
 
     useEffect(() => {
         document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
@@ -267,6 +290,7 @@ const MainHUD: React.FC = () => {
                         Abort Match Mode
                     </MainHUDButton>
                 )}
+                <HelpPopover id="main-hud-help" helpOptions={HELP_OPTIONS} />
             </Box>
         </>
     )

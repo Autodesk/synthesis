@@ -21,6 +21,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
+import { HELP_OPTION_SPAWN_ASSET_YOUTUBE } from "@/util/HelpOption"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
@@ -76,7 +77,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
         configureScreen(
             panel!,
-            { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
+            { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove", helpOptions: [ HELP_OPTION_SPAWN_ASSET_YOUTUBE ] },
             {
                 onBeforeAccept: () => {
                     closeFinish()

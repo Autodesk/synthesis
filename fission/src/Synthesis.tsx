@@ -3,7 +3,7 @@ import { SnackbarProvider } from "notistack"
 import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import MainHUD from "@/components/MainHUD"
+import MainHUD, { EVENT_KEY_OPEN_MAIN_HUD } from "@/components/MainHUD"
 import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
 import Scene from "@/components/Scene.tsx"
 import MultiplayerStartModal from "@/modals/MultiplayerStartModal.tsx"
@@ -39,6 +39,8 @@ function Synthesis() {
             mainLoopHandle.current = requestAnimationFrame(mainLoop)
             World.updateWorld()
         }
+
+        document.dispatchEvent(new Event(EVENT_KEY_OPEN_MAIN_HUD))
 
         mainLoop()
     }

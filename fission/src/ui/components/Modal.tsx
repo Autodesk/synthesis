@@ -4,6 +4,7 @@ import type { Modal as ModalType, Panel as PanelType } from "../helpers/UIProvid
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { Button } from "./StyledComponents"
 import { IoHelpCircle } from "react-icons/io5"
+import { HelpPopover } from "./HelpPopover"
 
 export type ModalImplProps<T, P> = Partial<{
     modal: ModalType<T, P>
@@ -27,9 +28,7 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
         return (
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography>{props.title}</Typography>
-                <IconButton>
-                    <IoHelpCircle />
-                </IconButton>
+                <HelpPopover id={`model-help-${modal.id}`} helpOptions={modal.props.helpOptions} />
             </Box>
         )
     }, [props.title])

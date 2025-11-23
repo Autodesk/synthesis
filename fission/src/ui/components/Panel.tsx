@@ -1,5 +1,5 @@
-import { Box, Card, CardActions, CardContent, CardHeader, IconButton, Popover, Typography } from "@mui/material"
-import React, { type ReactElement, useCallback, useMemo, useRef, useState } from "react"
+import { Box, Card, CardActions, CardContent, CardHeader, Typography } from "@mui/material"
+import React, { type ReactElement, useMemo, useRef } from "react"
 import Draggable from "react-draggable"
 import {
     CloseType,
@@ -9,7 +9,7 @@ import {
     useUIContext,
 } from "../helpers/UIProviderHelpers"
 import { Button } from "./StyledComponents"
-import { IoHelpCircle } from "react-icons/io5"
+import { HelpPopover } from "./HelpPopover"
 
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 export type PanelImplProps<T, P> = Partial<{
@@ -57,29 +57,14 @@ const getPositionOffset = (position: PanelPosition) => {
 export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>) => {
     const { closePanel } = useUIContext()
 
-    const [helpPopoverAnchor, setHelpPopoverAnchor] = useState<HTMLButtonElement | null>(null);
-
     const props = panel.props
     const nodeRef = useRef<HTMLDivElement | null>(null)
 
-    const handleHelpButton = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-        setHelpPopoverAnchor(event.currentTarget)
-    }, [])
-
-    const handleCloseHelpPopover = useCallback(() => {
-        setHelpPopoverAnchor(null)
-    }, [])
-
-    const helpPopoverOpen = Boolean(helpPopoverAnchor);
-    const helpPopoverId = helpPopoverOpen ? `panel-help-${panel.id}` : undefined
-
     const header = useMemo(() => {
         return (
-            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
                 <Typography variant="h5">{props.title}</Typography>
-                <Button variant="outlined" startIcon={<IoHelpCircle />} onClick={handleHelpButton}>
-                    Help
-                </Button>
+                <HelpPopover id={`panel-help-${panel.id}`} helpOptions={panel.props.helpOptions} />
             </Box>
         )
     }, [props.title])
@@ -171,18 +156,6 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                         )}
                     </CardActions>
                 )}
-                <Popover
-                    id={helpPopoverId}
-                    open={helpPopoverOpen}
-                    anchorEl={helpPopoverAnchor}
-                    onClose={handleCloseHelpPopover}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'right',
-                    }}
-                >
-                    <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
-                </Popover>
             </Card>
         </Draggable>
     )

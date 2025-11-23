@@ -45,6 +45,7 @@ import {
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { HELP_OPTION_SPAWN_ASSET_YOUTUBE } from "@/util/HelpOption"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -192,7 +193,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const [files, setFiles] = useState<Data[] | undefined>(undefined)
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back" }, {})
+        configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back", helpOptions: [ HELP_OPTION_SPAWN_ASSET_YOUTUBE ] }, {})
     }, [])
 
     useEffect(() => {
