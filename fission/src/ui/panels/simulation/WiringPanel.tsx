@@ -1,4 +1,5 @@
-import { Grid, Stack } from "@mui/material"
+import "@xyflow/react/dist/style.css"
+import { Box, Stack, useTheme } from "@mui/material"
 import {
     type Connection,
     type FinalConnectionState,
@@ -36,7 +37,7 @@ import { Button } from "@/ui/components/StyledComponents"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
-import WiringNode from "./WiringNode"
+import { WiringNode } from "./WiringNode"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -142,6 +143,8 @@ function generateGraph(
 }
 
 const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
+    const theme = useTheme()
+
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
     for (const [_k, v] of Object.entries(simConfig.handles)) {
@@ -152,11 +155,17 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
     }
 
     return (
-        <Stack gap={4}>
-            <Label size="md">Configure the Simulation's IO Modules</Label>
-            <Grid>
+        <Stack gap={4} direction={"column"} sx={{ width: "stretch" }}>
+            <Label size="lg">Configure the Simulation's IO Modules</Label>
+            <Box
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1px 1fr",
+                    columnGap: "0.5rem",
+                }}
+            >
                 <Stack>
-                    <Label size="sm">Output</Label>
+                    <Label size="md">Output</Label>
                     <ScrollView>
                         {simOut.sort(handleInfoDisplayCompare).map(handle => (
                             <Checkbox
@@ -170,8 +179,9 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
                         ))}
                     </ScrollView>
                 </Stack>
+                <Box sx={{ backgroundColor: theme.palette.text.primary, height: "100%" }} />
                 <Stack>
-                    <Label size="sm">Input</Label>
+                    <Label size="md">Input</Label>
                     <ScrollView>
                         {simIn.sort(handleInfoDisplayCompare).map(handle => (
                             <Checkbox
@@ -185,13 +195,17 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
                         ))}
                     </ScrollView>
                 </Stack>
-            </Grid>
-            <Button onClick={() => setConfigState("wiring")}>Back to wiring view</Button>
+            </Box>
+            <Button sx={{ width: "fit-content", alignSelf: "center" }} onClick={() => setConfigState("wiring")}>
+                Back to wiring view
+            </Button>
         </Stack>
     )
 }
 
 const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
+    const theme = useTheme()
+
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
@@ -233,10 +247,16 @@ const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
 
     return (
         <Stack gap={4}>
-            <Label size="md">Configure your Robot's IO Module</Label>
-            <Grid>
+            <Label size="lg">Configure your Robot's IO Module</Label>
+            <Box
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1px 1fr",
+                    columnGap: "0.5rem",
+                }}
+            >
                 <Stack>
-                    <Label size="sm">Input</Label>
+                    <Label size="md">Input</Label>
                     <ScrollView>
                         <Label size="md">CAN Encoders</Label>
                         {canEncoders}
@@ -244,8 +264,9 @@ const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
                         {accelerometers}
                     </ScrollView>
                 </Stack>
+                <Box sx={{ backgroundColor: theme.palette.text.primary, height: "100%" }} />
                 <Stack>
-                    <Label size="sm">Output</Label>
+                    <Label size="md">Output</Label>
                     <ScrollView>
                         <Label size="md">CAN Motors</Label>
                         {canMotors}
@@ -253,8 +274,10 @@ const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
                         {pwmDevices}
                     </ScrollView>
                 </Stack>
-            </Grid>
-            <Button onClick={() => setConfigState("wiring")}>Back to wiring view</Button>
+            </Box>
+            <Button sx={{ width: "fit-content", alignSelf: "center" }} onClick={() => setConfigState("wiring")}>
+                Back to wiring view
+            </Button>
         </Stack>
     )
 }
@@ -263,14 +286,14 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])
-    const [_refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
+    const [refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
 
     // Essentially a callback, but it can use itself
     useEffect(() => {
         const [nodes, edges] = generateGraph(simConfig, refreshGraph, setConfigState)
         setNodes(nodes)
         setEdges(edges)
-    }, [setConfigState, setEdges, setNodes, simConfig])
+    }, [setConfigState, setEdges, setNodes, simConfig, refreshHook])
 
     const onEdgeDoubleClick = useCallback(
         (_: React.MouseEvent, edge: FlowEdge) => {
@@ -411,7 +434,13 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     return (
         <>
             {selectedAssembly && simConfig ? (
-                <div className="flex grow">
+                <Box
+                    sx={{
+                        display: "flex",
+                        width: "70vw",
+                        height: "70vh",
+                    }}
+                >
                     {configState === "wiring" && (
                         <ReactFlowProvider>
                             <WiringComponent
@@ -436,7 +465,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                             setConfigState={setConfigState}
                         />
                     )}
-                </div>
+                </Box>
             ) : (
                 "ERRR"
             )}
@@ -444,4 +473,4 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     )
 }
 
-export default WiringPanel
+export { WiringPanel }
