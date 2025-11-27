@@ -77,7 +77,12 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
         configureScreen(
             panel!,
-            { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove", helpOptions: [ HELP_OPTION_SPAWN_ASSET_YOUTUBE ] },
+            {
+                title: "Assembly Setup",
+                acceptText: "Finish",
+                cancelText: "Remove",
+                helpOptions: [HELP_OPTION_SPAWN_ASSET_YOUTUBE],
+            },
             {
                 onBeforeAccept: () => {
                     closeFinish()

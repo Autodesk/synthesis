@@ -1,4 +1,4 @@
-import { Box, ButtonGroup, ButtonProps, Stack } from "@mui/material"
+import { Box, ButtonGroup, type ButtonProps, Stack } from "@mui/material"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"
@@ -23,13 +23,19 @@ import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import UserIcon from "./UserIcon"
 import { HelpPopover } from "./HelpPopover"
-import { HELP_OPTION_ALL_TUTORIALS, HELP_OPTION_DISCORD, HELP_OPTION_EXPORT_CODELAB, HELP_OPTION_SPAWN_ASSET_YOUTUBE, HelpOption } from "@/util/HelpOption"
+import {
+    HELP_OPTION_ALL_TUTORIALS,
+    HELP_OPTION_DISCORD,
+    HELP_OPTION_EXPORT_CODELAB,
+    HELP_OPTION_SPAWN_ASSET_YOUTUBE,
+    type HelpOption,
+} from "@/util/HelpOption"
 
 const HELP_OPTIONS: HelpOption[] = [
     HELP_OPTION_SPAWN_ASSET_YOUTUBE,
     HELP_OPTION_EXPORT_CODELAB,
     HELP_OPTION_ALL_TUTORIALS,
-    HELP_OPTION_DISCORD
+    HELP_OPTION_DISCORD,
 ]
 
 export const EVENT_KEY_OPEN_MAIN_HUD = "openMainHud"
@@ -74,8 +80,7 @@ const MainHUD: React.FC = () => {
 
     useEffect(() => {
         const handler = (event: Event) => {
-            if (event.type === EVENT_KEY_OPEN_MAIN_HUD)
-                setIsOpen(true)
+            if (event.type === EVENT_KEY_OPEN_MAIN_HUD) setIsOpen(true)
         }
 
         document.addEventListener(EVENT_KEY_OPEN_MAIN_HUD, handler)

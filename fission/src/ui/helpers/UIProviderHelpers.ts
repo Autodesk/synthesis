@@ -3,7 +3,7 @@ import { createContext, type FunctionComponent, type ReactNode, useContext } fro
 import type { ModalImplProps } from "../components/Modal"
 import type { PanelImplProps } from "../components/Panel"
 import type { UICallback } from "../UICallbacks"
-import { HelpOption } from "@/util/HelpOption"
+import type { HelpOption } from "@/util/HelpOption"
 
 export enum CloseType {
     Accept = 0,

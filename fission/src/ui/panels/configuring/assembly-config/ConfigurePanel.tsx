@@ -315,7 +315,12 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel", helpOptions: [ HELP_OPTION_CONFIGURE_YOUTUBE ] },
+            {
+                title: "Configure Assets",
+                acceptText: "Save",
+                cancelText: "Cancel",
+                helpOptions: [HELP_OPTION_CONFIGURE_YOUTUBE],
+            },
             { onBeforeAccept, onCancel }
         )
     }, [selectedAssembly, pendingDeletes])

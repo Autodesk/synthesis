@@ -62,7 +62,15 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
 
     const header = useMemo(() => {
         return (
-            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "1rem",
+                }}
+            >
                 <Typography variant="h5">{props.title}</Typography>
                 <HelpPopover id={`panel-help-${panel.id}`} helpOptions={panel.props.helpOptions} />
             </Box>

@@ -1,9 +1,8 @@
-import { Box, Card, CardActions, CardContent, CardHeader, IconButton, Modal as MUIModal, Typography } from "@mui/material"
+import { Box, Card, CardActions, CardContent, CardHeader, Modal as MUIModal, Typography } from "@mui/material"
 import React, { useMemo, type ReactElement } from "react"
 import type { Modal as ModalType, Panel as PanelType } from "../helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { Button } from "./StyledComponents"
-import { IoHelpCircle } from "react-icons/io5"
 import { HelpPopover } from "./HelpPopover"
 
 export type ModalImplProps<T, P> = Partial<{
@@ -26,7 +25,7 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
 
     const header = useMemo(() => {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography>{props.title}</Typography>
                 <HelpPopover id={`model-help-${modal.id}`} helpOptions={modal.props.helpOptions} />
             </Box>

@@ -193,7 +193,16 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const [files, setFiles] = useState<Data[] | undefined>(undefined)
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back", helpOptions: [ HELP_OPTION_SPAWN_ASSET_YOUTUBE ] }, {})
+        configureScreen(
+            panel!,
+            {
+                title: "Spawn Asset",
+                hideAccept: true,
+                cancelText: "Back",
+                helpOptions: [HELP_OPTION_SPAWN_ASSET_YOUTUBE],
+            },
+            {}
+        )
     }, [])
 
     useEffect(() => {
