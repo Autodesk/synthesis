@@ -37,7 +37,12 @@ import { Button } from "@/ui/components/StyledComponents"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
-import { WiringNode } from "./WiringNode"
+import WiringNode from "./WiringNode"
+
+/**
+ * WARNING: Please test *thoroughly* when making changes. React Flow is very tempermental with how nodes
+ * and object references are maintained.
+ */
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -56,7 +61,7 @@ type NodeType = ComponentType<
 const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
     [k: string]: NodeType
 }>((prev, next) => {
-    prev[next.name] = next as NodeType
+    prev[next.name] = next
     return prev
 }, {})
 
@@ -68,7 +73,7 @@ function generateGraph(
     const nodes: Map<string, FlowNode> = new Map()
     const edges: FlowEdge[] = []
 
-    for (const [_k, v] of Object.entries(simConfig.nodes)) {
+    Object.entries(simConfig.nodes).forEach(([_k, v]) => {
         let onEdit: (() => void) | undefined
         let onRefresh: (() => void) | undefined
         let onDelete: (() => void) | undefined
@@ -99,32 +104,34 @@ function generateGraph(
         }
 
         nodes.set(v.id, {
-            ...v,
+            id: v.id,
+            type: v.type,
+            position: v.position,
             data: {
-                title,
-                onEdit,
-                onRefresh,
-                onDelete,
-                simConfig,
+                title: title,
+                onEdit: onEdit,
+                onRefresh: onRefresh,
+                onDelete: onDelete,
+                simConfig: simConfig,
                 input: [],
                 output: [],
                 tooltip: v.tooltip,
             },
         })
-    }
+    })
 
-    for (const [_k, v] of Object.entries(simConfig.handles)) {
-        if (!v.enabled) break
+    Object.entries(simConfig.handles).forEach(([_k, v]) => {
+        if (!v.enabled) return
         const node = nodes.get(v.nodeId)
         if (!node) {
             console.warn("Orphaned handle found")
-            break
+            return
         }
         const list = (v.isSource ? node.data.output : node.data.input) as unknown[]
-        list.push(v)
-    }
+        list.push({ ...v })
+    })
 
-    for (const [k, v] of Object.entries(simConfig.edges)) {
+    Object.entries(simConfig.edges).forEach(([k, v]) => {
         const sourceHandle = simConfig.handles[v.sourceId]
         const targetHandle = simConfig.handles[v.targetId]
 
@@ -137,7 +144,7 @@ function generateGraph(
                 targetHandle: targetHandle.id,
             })
         }
-    }
+    })
 
     return [[...nodes.values()], edges]
 }
@@ -145,14 +152,20 @@ function generateGraph(
 const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const theme = useTheme()
 
-    const simOut: HandleInfo[] = []
-    const simIn: HandleInfo[] = []
-    for (const [_k, v] of Object.entries(simConfig.handles)) {
-        if (v.nodeId === NODE_ID_SIM_OUT || v.nodeId === NODE_ID_SIM_IN) {
-            const list = v.isSource ? simOut : simIn
-            list.push(v)
+    const [simOut, setSimOut] = useState<Record<string, HandleInfo>>({})
+    const [simIn, setSimIn] = useState<Record<string, HandleInfo>>({})
+
+    useEffect(() => {
+        const simOut: Record<string, HandleInfo> = {}
+        const simIn: Record<string, HandleInfo> = {}
+        for (const [_k, v] of Object.entries(simConfig.handles)) {
+            if (v.nodeId === NODE_ID_SIM_OUT || v.nodeId === NODE_ID_SIM_IN) {
+                v.isSource ? (simOut[v.id] = v) : (simIn[v.id] = v)
+            }
         }
-    }
+        setSimOut(simOut)
+        setSimIn(simIn)
+    }, [simConfig])
 
     return (
         <Stack gap={4} direction={"column"} sx={{ width: "stretch" }}>
@@ -167,13 +180,14 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
                 <Stack>
                     <Label size="md">Output</Label>
                     <ScrollView>
-                        {simOut.sort(handleInfoDisplayCompare).map(handle => (
+                        {Object.values(simOut).sort(handleInfoDisplayCompare).map(handle => (
                             <Checkbox
                                 label={`${handle.displayName}`}
                                 key={handle.id}
                                 checked={handle.enabled}
                                 onClick={checked => {
                                     handle.enabled = checked
+                                    setSimOut({ ...simOut, [handle.id]: handle })
                                 }}
                             />
                         ))}
@@ -183,13 +197,14 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
                 <Stack>
                     <Label size="md">Input</Label>
                     <ScrollView>
-                        {simIn.sort(handleInfoDisplayCompare).map(handle => (
+                        {Object.values(simIn).sort(handleInfoDisplayCompare).map(handle => (
                             <Checkbox
                                 label={`${handle.displayName}`}
                                 key={handle.id}
                                 checked={handle.enabled}
                                 onClick={checked => {
                                     handle.enabled = checked
+                                    setSimIn({ ...simIn, [handle.id]: handle })
                                 }}
                             />
                         ))}
@@ -206,14 +221,18 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
 const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const theme = useTheme()
 
+    const [refreshHook, refreshCheckboxes] = useReducer(x => !x, false)
+
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
         const pwmDevices: JSX.Element[] = []
         const accelerometers: JSX.Element[] = []
 
-        for (const [_k, v] of Object.entries(simConfig.handles)) {
+        Object.entries(simConfig.handles).forEach(([_k, v]) => {
             if (v.nodeId !== NODE_ID_ROBOT_IO) return []
+
+            console.debug(v)
 
             const checkbox = (
                 <Checkbox
@@ -222,6 +241,7 @@ const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
                     checked={v.enabled}
                     onClick={enabled => {
                         v.enabled = enabled
+                        refreshCheckboxes()
                     }}
                 />
             )
@@ -234,16 +254,16 @@ const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
                     pwmDevices.push(checkbox)
                     break
                 case SimType.CAN_ENCODER:
-                    pwmDevices.push(checkbox)
+                    canEncoders.push(checkbox)
                     break
                 case SimType.ACCELEROMETER:
-                    pwmDevices.push(checkbox)
+                    accelerometers.push(checkbox)
                     break
             }
-        }
+        })
 
         return [canEncoders, canMotors, pwmDevices, accelerometers]
-    }, [simConfig])
+    }, [simConfig, refreshHook])
 
     return (
         <Stack gap={4}>
@@ -360,7 +380,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     const onCreateJunction = useCallback(() => {
         SimConfig.AddJunctionNode(simConfig)
         refreshGraph()
-    }, [simConfig])
+    }, [refreshGraph, simConfig])
 
     return (
         <ReactFlow
@@ -402,8 +422,10 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
         const existingConfig = selectedAssembly.simConfigData
         if (existingConfig) {
+            console.debug('Existing SimConfig found')
             setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
         } else {
+            console.debug('No SimConfig found, creating default...')
             setSimConfig(SimConfig.Default(selectedAssembly))
         }
     }, [selectedAssembly])
@@ -418,6 +440,8 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             console.debug(`${flows.length} Flows Successfully Compiled!`)
 
             selectedAssembly.updateSimConfig(simConfig)
+        } else {
+            console.warn('Failed to save SimConfig', simConfig, selectedAssembly)
         }
     }, [selectedAssembly, simConfig])
 
@@ -429,7 +453,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "Wiring Panel" }, { onBeforeAccept: save })
-    }, [])
+    }, [save])
 
     return (
         <>
@@ -473,4 +497,4 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     )
 }
 
-export { WiringPanel }
+export default WiringPanel

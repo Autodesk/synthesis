@@ -7,7 +7,7 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import { Button } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
-import { WiringPanel } from "@/ui/panels/simulation/WiringPanel"
+import WiringPanel from "@/ui/panels/simulation/WiringPanel"
 import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
 
 type SimulationInterfaceProps = {

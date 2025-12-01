@@ -11,14 +11,14 @@ import {
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
 
 const WiringNode = ({ data, isConnectable }: NodeProps) => {
-    const robotInput = data.input as HandleInfo[] | undefined
-    const robotOutput = data.output as HandleInfo[] | undefined
-    const onEdit = data.onEdit as (() => void) | undefined
-    const onRefresh = data.onRefresh as (() => void) | undefined
-    const onDelete = data.onDelete as (() => void) | undefined
-    const simConfig = data.simConfig as SimConfigData
-    const title = data.title as string
-    const tooltip = data.tooltip as string | undefined
+    const robotInput = useMemo(() => data.input as HandleInfo[] | undefined, [data])
+    const robotOutput = useMemo(() => data.output as HandleInfo[] | undefined, [data])
+    const onEdit = useMemo(() => data.onEdit as (() => void) | undefined, [data])
+    const onRefresh = useMemo(() => data.onRefresh as (() => void) | undefined, [data])
+    const onDelete = useMemo(() => data.onDelete as (() => void) | undefined, [data])
+    const simConfig = useMemo(() => data.simConfig as SimConfigData, [data])
+    const title = useMemo(() => data.title as string, [data])
+    const tooltip = useMemo(() => data.tooltip as string | undefined, [data])
 
     const validateConnection = useCallback(
         (edge: Edge | Connection) => {
@@ -151,4 +151,4 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
     )
 }
 
-export { WiringNode }
+export default WiringNode
