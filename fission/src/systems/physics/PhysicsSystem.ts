@@ -968,7 +968,7 @@ class PhysicsSystem extends WorldSystem {
                     rn: rn.id,
                     partId,
                     defRef: partInstance.partDefinitionReference,
-                    name: (partDefinition as any).name ?? (partInstance as any).name ?? "(unnamed)",
+                    name: partDefinition.info?.name ?? partInstance.info?.name ?? "(unnamed)",
                 }
 
                 const partShapeResult = rn.isDynamic
@@ -1151,7 +1151,7 @@ class PhysicsSystem extends WorldSystem {
      */
     private createConcaveShapeSettingsFromPart(
         partDefinition: mirabuf.IPartDefinition,
-        debugLabel?: any
+        debugLabel?: Record<string, unknown>
     ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined {
         const settings = new JOLT.MeshShapeSettings()
 
