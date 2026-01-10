@@ -511,7 +511,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         let totalMass = 0
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
-            const body = World.physicsSystem.getBody(this._mechanism.getBodyByNodeId(rn.id)!)
+            const bodyId = this._mechanism.getBodyByNodeId(rn.id)!
+            const body = World.physicsSystem.getBody(bodyId)
+            if (!body) return
             const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
             this.updateNodeParts(rn, transform)
 
