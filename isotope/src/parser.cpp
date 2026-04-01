@@ -83,5 +83,5 @@ void export_design(const GlobalContext& gctx) {
         return;
     }
 
-    gctx.app->userInterface()->messageBox("Exported assembly:\n" + json_output);
+    gctx.app->userInterface()->messageBox("Exported assembly!");
 }

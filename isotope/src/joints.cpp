@@ -16,6 +16,10 @@
 #include <Fusion/FusionAll.h>
 #include <Fusion/FusionTypeDefs.h>
 
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <stack>
@@ -497,7 +501,7 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
     assert(design);
     mirabuf::joint::Joints joints;
     joints.mutable_info()->set_name("");
-    joints.mutable_info()->set_guid("joints-guid");
+    joints.mutable_info()->set_guid(uuid4());
     joints.mutable_info()->set_version(1);
 
     mirabuf::signal::Signals signals;
@@ -505,12 +509,12 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
     auto& joint_definition_ground = (*joints.mutable_joint_definitions())["grounded"];
     joint_definition_ground.mutable_info()->set_name("grounded");
     // TODO: Add comment
-    joint_definition_ground.mutable_info()->set_guid("grounded");
+    joint_definition_ground.mutable_info()->set_guid(uuid4());
     joint_definition_ground.mutable_info()->set_version(1);
 
     auto& joint_instance_ground = (*joints.mutable_joint_instances())["grounded"];
     joint_instance_ground.mutable_info()->set_name("grounded");
-    joint_instance_ground.mutable_info()->set_guid("grounded-inst-guid");
+    joint_instance_ground.mutable_info()->set_guid(uuid4());
     joint_instance_ground.mutable_info()->set_version(1);
 
     joint_instance_ground.set_joint_reference(joint_definition_ground.info().guid());
@@ -528,25 +532,25 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
             if (!rigidGroup.occurrences().empty()) {
                 joints.mutable_rigid_groups()->Add()->CopyFrom(rigidGroup);
             }
+            return;
         }
 
-        auto& signal = (*signals.mutable_signal_map())[joint->entityToken()];
-        signal.mutable_info()->CopyFrom(create_info_from_fus_obj(joint));
-        signal.set_io(mirabuf::signal::IOType::OUTPUT);
-        signal.set_device_type(mirabuf::signal::DeviceType::PWM);
+        const std::string signal_guid = uuid4();
+        auto& signal = (*signals.mutable_signal_map())[signal_guid];
+        signal.mutable_info()->CopyFrom(create_info_from_fus_obj(joint, signal_guid));
+        signal.set_io(mirabuf::signal::OUTPUT);
+        signal.set_device_type(mirabuf::signal::PWM);
+
+        auto& joint_definition = (*joints.mutable_joint_definitions())[joint->entityToken()];
+        joint_definition.mutable_info()->CopyFrom(create_info_from_fus_obj(joint));
+        joint_definition.set_motor_reference(joint->entityToken());
 
         auto& joint_instance = (*joints.mutable_joint_instances())[joint->entityToken()];
         joint_instance.mutable_info()->CopyFrom(create_info_from_fus_obj(joint));
         joint_instance.set_signal_reference(signal.info().guid());
-        joint_instance.set_joint_reference(joint_instance.info().guid());
+        joint_instance.set_joint_reference(joint_definition.info().guid());
         joint_instance.set_parent_part(guid_occurrence(joint->occurrenceOne()));
         joint_instance.set_child_part(guid_occurrence(joint->occurrenceTwo()));
-
-        // TODO: Wheel logic should go here
-
-        auto& joint_definition = (*joints.mutable_joint_definitions())[joint->entityToken()];
-        joint_definition.set_motor_reference(signal.info().guid());
-        joint_definition.mutable_info()->CopyFrom(create_info_from_fus_obj(joint));
 
         auto joint_origin = get_joint_origin(joint);
 

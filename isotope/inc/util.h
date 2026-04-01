@@ -116,4 +116,6 @@ mirabuf::Info create_info_from_fus_obj(const FusObjPtr& obj, const std::string& 
 std::string guid_component(const adsk::core::Ptr<adsk::fusion::Component>& component);
 std::string guid_occurrence(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence);
 
+std::string uuid4();
+
 #endif // ISOTOPE_UTILITY_H_
