@@ -95,7 +95,7 @@ const ProtectedZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField
                         const {
                             target: { value },
                         } = e
-                        setActiveDuring(typeof value === "string" ? (value.split(",") as MatchModeType[]) : value)
+                        setActiveDuring(typeof value === "string" ? (value.split(",") as MatchModeType[]) : (value as MatchModeType[]))
                     }}
                     value={activeDuring}
                     input={<OutlinedInput label="Contact Type" />}
