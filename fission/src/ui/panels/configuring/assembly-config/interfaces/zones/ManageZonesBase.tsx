@@ -42,7 +42,15 @@ function saveZonesGeneric<TZone extends BaseZonePreferences>(
 }
 
 export default function ManageZonesBase<TZone extends BaseZonePreferences>(props: ManageZonesBaseProps<TZone>) {
-    const { selectedField, initialZones, selectZone, getListItem, persistZones, createNewZone, emptyLabel = "No zones" } = props
+    const {
+        selectedField,
+        initialZones,
+        selectZone,
+        getListItem,
+        persistZones,
+        createNewZone,
+        emptyLabel = "No zones",
+    } = props
     const [zones, setZones] = useState<TZone[]>(initialZones)
 
     const saveEvent = useCallback(() => {
@@ -72,7 +80,12 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                         {zones.map((zonePrefs: TZone, i: number) => {
                             const item = getListItem(zonePrefs)
                             return (
-                                <Stack key={`${item.name}-${item.alliance}-${i}`} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+                                <Stack
+                                    key={`${item.name}-${item.alliance}-${i}`}
+                                    justifyContent={"space-between"}
+                                    alignItems={"center"}
+                                    gap={"1rem"}
+                                >
                                     <Stack direction="row" gap={8}>
                                         <Box
                                             className={`w-12 h-12 rounded-lg`}
