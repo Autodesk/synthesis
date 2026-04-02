@@ -181,7 +181,7 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
     const postGizmoCreation = useCallback(
         (gizmo: GizmoSceneObject) => {
             const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
-            material.depthTest = true
+            material.depthTest = false
 
             const deltaTransformation = convertArrayToThreeMatrix4(selectedZone.deltaTransformation)
             let nodeBodyId = selectedField.mechanism.nodeToBody.get(selectedZone.parentNode ?? selectedField.rootNodeId)

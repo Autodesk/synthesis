@@ -1,10 +1,12 @@
 import { Box, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
+import { Button, SynthesisIcons } from "@/ui/components/StyledComponents"
 import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
 import ProtectedZoneConfigInterface from "./ProtectedZoneConfigInterface"
 
@@ -38,6 +40,15 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                 <>
                     <Stack textAlign="center" minHeight="30px" key="selected-item">
                         <Box width={`60px`} />
+
+                        {/** Back arrow button when an option is selected */}
+                        <Button
+                            startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
+                            onClick={() => {
+                                new ConfigurationSavedEvent()
+                                setSelectedZone(undefined)
+                            }}
+                        />
 
                         {/** Label with either the header text, or the name of the selected option if an option is selected */}
                         <Stack alignSelf={"center"}>

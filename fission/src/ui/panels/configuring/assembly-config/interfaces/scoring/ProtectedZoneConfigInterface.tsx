@@ -84,7 +84,7 @@ const ProtectedZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField
                 label="Penalty Points"
                 placeholder="Zone penalty points"
                 defaultValue={selectedZone.penaltyPoints}
-                onChange={v => setPenaltyPoints(parseInt(v.target.value) || 1)}
+                onChange={v => setPenaltyPoints(parseInt(v.target.value) || 0)}
             />
             <FormControl fullWidth>
                 <InputLabel id="active-during-label">Active During</InputLabel>

@@ -52,7 +52,7 @@ const ScoringZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, 
                 label="Points"
                 placeholder="Zone points"
                 defaultValue={selectedZone.points}
-                onChange={v => setPoints(parseInt(v.target.value) || 1)}
+                onChange={v => setPoints(parseInt(v.target.value) || 0)}
             />
             <Checkbox label="Persistent Points" checked={persistent} onClick={checked => setPersistent(checked)} />
         </ZoneConfigBase>

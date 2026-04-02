@@ -9,6 +9,7 @@ import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import type { BaseZonePreferences } from "./ZoneConfigBase"
 
 export type ZoneListItem = {
     name: string
@@ -16,7 +17,7 @@ export type ZoneListItem = {
     pointsLabel?: string
 }
 
-export type ManageZonesBaseProps<TZone> = {
+export type ManageZonesBaseProps<TZone extends BaseZonePreferences> = {
     selectedField: MirabufSceneObject
     initialZones: TZone[]
     selectZone: (zone: TZone) => void
@@ -26,9 +27,11 @@ export type ManageZonesBaseProps<TZone> = {
     persistZones: (zones: TZone[], field: MirabufSceneObject) => void
     /** Create a sensible default new zone */
     createNewZone: () => TZone
+    /** Label shown when the zones list is empty */
+    emptyLabel?: string
 }
 
-function saveZonesGeneric<TZone>(
+function saveZonesGeneric<TZone extends BaseZonePreferences>(
     zones: TZone[] | undefined,
     field: MirabufSceneObject | undefined,
     persistZones: (zones: TZone[], field: MirabufSceneObject) => void
@@ -38,8 +41,8 @@ function saveZonesGeneric<TZone>(
     PreferencesSystem.savePreferences()
 }
 
-export default function ManageZonesBase<TZone>(props: ManageZonesBaseProps<TZone>) {
-    const { selectedField, initialZones, selectZone, getListItem, persistZones, createNewZone } = props
+export default function ManageZonesBase<TZone extends BaseZonePreferences>(props: ManageZonesBaseProps<TZone>) {
+    const { selectedField, initialZones, selectZone, getListItem, persistZones, createNewZone, emptyLabel = "No zones" } = props
     const [zones, setZones] = useState<TZone[]>(initialZones)
 
     const saveEvent = useCallback(() => {
@@ -69,7 +72,7 @@ export default function ManageZonesBase<TZone>(props: ManageZonesBaseProps<TZone
                         {zones.map((zonePrefs: TZone, i: number) => {
                             const item = getListItem(zonePrefs)
                             return (
-                                <Stack key={i} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+                                <Stack key={`${item.name}-${item.alliance}-${i}`} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
                                     <Stack direction="row" gap={8}>
                                         <Box
                                             className={`w-12 h-12 rounded-lg`}
@@ -105,11 +108,13 @@ export default function ManageZonesBase<TZone>(props: ManageZonesBaseProps<TZone
                     </Stack>
                 </ScrollView>
             ) : (
-                <Label size="md">No zones</Label>
+                <Label size="md">{emptyLabel}</Label>
             )}
             {AddButton(() => {
                 const newZone = createNewZone()
-                saveZonesGeneric(zones, selectedField, persistZones)
+                const newZones = [...zones, newZone]
+                setZones(newZones)
+                saveZonesGeneric(newZones, selectedField, persistZones)
                 selectZone(newZone)
             })}
         </>

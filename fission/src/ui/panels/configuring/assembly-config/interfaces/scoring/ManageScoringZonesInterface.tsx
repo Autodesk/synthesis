@@ -29,11 +29,12 @@ const ManageScoringZonesInterface: React.FC<ScoringZonesProps> = ({ selectedFiel
             name: "New Scoring Zone",
             alliance: "blue",
             parentNode: undefined,
-            points: 5,
+            points: 0,
             destroyGamepiece: false,
             persistentPoints: false,
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         }),
+        emptyLabel: "No scoring zones",
     }
 
     return <ManageZonesBase {...baseProps} />

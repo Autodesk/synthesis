@@ -36,6 +36,7 @@ const ManageProtectedZonesInterface: React.FC<ProtectedZonesProps> = ({ selected
             activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME],
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         }),
+        emptyLabel: "No protected zones",
     }
 
     return <ManageZonesBase {...baseProps} />
