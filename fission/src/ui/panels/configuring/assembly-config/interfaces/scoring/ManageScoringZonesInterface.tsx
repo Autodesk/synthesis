@@ -8,6 +8,7 @@ function persistScoringZones(zones: ScoringZonePreferences[], field: MirabufScen
     field.updateScoringZones()
 }
 
+
 interface ScoringZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ScoringZonePreferences[]

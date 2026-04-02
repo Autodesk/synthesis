@@ -10,6 +10,7 @@ function persistProtectedZones(zones: ProtectedZonePreferences[], field: Mirabuf
     field.updateProtectedZones()
 }
 
+
 interface ProtectedZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ProtectedZonePreferences[]

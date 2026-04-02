@@ -19,13 +19,14 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                 position: "fixed",
                 right: "0.5rem",
                 bottom: "0.5rem",
-                bgcolor: "background.default",
+                bgcolor: "background.paper",
                 padding: "1rem",
                 borderRadius: "0.5rem",
                 gap: "0.5rem",
+                boxShadow: 6,
             }}
         >
-            <Label size="sm">
+            <Label size="sm" color="text.primary">
                 Synthesis uses cookies to improve the performance and quality of our app. Do you consent to the usage of
                 cookies for tracking analytics data?
             </Label>
@@ -47,7 +48,25 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                 }}
             >
                 <Button onClick={() => onConsent()}>I consent</Button>
-                <Button startIcon={<AiOutlineClose />} onClick={() => onClose()} color="secondary" />
+                <Button
+                    onClick={() => onClose()}
+                    color="error"
+                    sx={{
+                        minWidth: 0,
+                        width: 36,
+                        height: 36,
+                        borderRadius: "50%",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        display: "flex",
+                        p: 0,
+                        bgcolor: theme => theme.palette.action.hover,
+                        "&:hover": { bgcolor: theme => theme.palette.action.selected },
+                        color: theme => theme.palette.error.main,
+                    }}
+                >
+                    <AiOutlineClose />
+                </Button>
             </Box>
         </Box>
     )

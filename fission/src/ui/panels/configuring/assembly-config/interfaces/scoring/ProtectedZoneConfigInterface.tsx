@@ -5,9 +5,9 @@ import {
     ListItemText,
     MenuItem,
     OutlinedInput,
-    Select,
     TextField,
 } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
 import { useState, useCallback, useMemo } from "react"
 import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
 import { ContactType } from "@/mirabuf/ZoneTypes"
@@ -99,7 +99,7 @@ const ProtectedZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField
                     }}
                     value={activeDuring}
                     input={<OutlinedInput label="Contact Type" />}
-                    renderValue={selected => selected.join(", ")}
+                    renderValue={selected => (selected as MatchModeType[]).join(", ")}
                     multiple
                 >
                     {MATCH_MODE_OPTIONS.map(opt => (

@@ -1,37 +1,36 @@
 import http from "node:http"
 import path from "node:path"
-import sirv from "sirv"
+import express from "express"
+import { ExpressPeerServer } from "peer"
 
 let server: http.Server | undefined
-const PORT = 3001
-const serveDirectory = path.join(process.cwd(), "public")
+const ASSET_PORT = 3001
+const serveDirectory = path.join(process.cwd(), "public/Downloadables")
 export async function setup() {
     if (server) {
         return
     }
-
-    console.log("Starting static file server...")
-
-    const assets = sirv(serveDirectory)
-
-    server = http.createServer((req, res) => {
-        res.setHeader("Access-Control-Allow-Origin", "*")
-        res.setHeader("Access-Control-Allow-Methods", "GET")
-        assets(req, res)
+    console.log("Starting testing server...")
+    const expressApp = express()
+    server = http.createServer(expressApp)
+    const peerjsServer = ExpressPeerServer(server, {
+        allow_discovery: true,
+        path: "/",
     })
+    expressApp.use("/Downloadables/", express.static(serveDirectory))
+    expressApp.use("/", peerjsServer)
 
     await new Promise<void>((resolve, reject) => {
         if (!server) {
             console.warn("no server")
             return
         }
-        server.listen(PORT, "127.0.0.1", () => {
-            console.log(`Serving files from ${serveDirectory} on port ${PORT} `)
+        server.listen(ASSET_PORT, "127.0.0.1", () => {
+            console.log(`Started testing server on port ${ASSET_PORT}`)
             resolve()
         })
-
         server.once("error", err => {
-            console.error("Failed to start static file server:", err)
+            console.error("Failed to start testing server:", err)
             server = undefined
             reject(err)
         })
@@ -43,14 +42,14 @@ export async function teardown() {
         await new Promise<void>((resolve, reject) => {
             server!.close(err => {
                 if (err) {
-                    console.error("Error stopping static file server:", err)
+                    console.error("Error stopping testing server:", err)
                     reject(err)
                     return
                 }
-
-                console.log("Static file server stopped.")
+                console.log("testing server stopped.")
                 server = undefined
                 resolve()
+                process.exit(0)
             })
         })
     }

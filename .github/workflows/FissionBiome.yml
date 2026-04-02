@@ -38,11 +38,11 @@ jobs:
         if: ${{ always() }}
         run: |
           cd fission
-          bun run lint && echo "Biome Linting Validation Passed" || (echo "Biome Linting Validation Failed" && exit 1)
+          bun run lint --diagnostic-level=error
 
       - name: Format
         id: format-validation
         if: ${{ always() }}
         run: |
           cd fission
-          bun run fmt && echo "Biome Formatting Validation Passed" || (echo "Biome Formatting Validation Failed" && exit 1)
+          bun run fmt

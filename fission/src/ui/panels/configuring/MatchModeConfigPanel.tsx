@@ -2,7 +2,6 @@ import { Box, Divider } from "@mui/material"
 import { Stack } from "@mui/system"
 import type React from "react"
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import World from "@/systems/World.ts"
@@ -13,6 +12,7 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import { Button, NegativeButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CreateNewMatchModeConfigPanel from "./CreateNewMatchModeConfigPanel"
+import { createMatchEventFromConfig } from "@/systems/match_mode/MatchModeAnalyticsUtils"
 
 /**
  * Configuration for match mode rules and timing.
@@ -72,7 +72,11 @@ export interface MatchModeConfig {
     readonly sideExtensionPenalty: number
 }
 
-const props: Readonly<{ id: keyof MatchModeConfig; expectedType: string; required: boolean }>[] = [
+const props: Readonly<{
+    id: keyof MatchModeConfig
+    expectedType: string
+    required: boolean
+}>[] = [
     { id: "id", expectedType: "string", required: true },
     { id: "name", expectedType: "string", required: true },
     { id: "autonomousTime", expectedType: "number", required: false },
@@ -145,14 +149,21 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
     return (
-        <Stack direction="row" key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+        <Stack
+            direction="row"
+            key={id}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            gap={"1rem"}
+            sx={{ px: 1, py: 0.5 }}
+        >
             <Label size="sm" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
             </Label>
             <Stack
                 key={`button-box-${id}`}
                 direction="row-reverse"
-                gap={"0.25rem"}
+                gap={"0.5rem"}
                 justifyContent={"center"}
                 alignItems={"center"}
             >
@@ -211,7 +222,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                         key={config.id}
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
-                        primaryOnClick={() => {
+                        primaryOnClick={async () => {
                             if (MatchMode.getInstance().isMatchEnabled()) {
                                 globalAddToast(
                                     "error",
@@ -220,14 +231,9 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                                 )
                                 return
                             }
-                            if (useSpawnPositions) {
-                                World.sceneRenderer.sceneObjects.forEach(
-                                    obj => obj instanceof MirabufSceneObject && obj.moveToSpawnLocation()
-                                )
-                            }
                             MatchMode.getInstance().setMatchModeConfig(config)
 
-                            MatchMode.getInstance().start()
+                            await MatchMode.getInstance().start(true, useSpawnPositions)
                             closePanel(panel!.id, CloseType.Accept)
                         }}
                         secondaryOnClick={
@@ -297,6 +303,9 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             const customConfigs = [...matchModeConfigs.filter(c => !c.isDefault), normalizedConfig]
             window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
 
+            const matchEvent = createMatchEventFromConfig(normalizedConfig, { isDefault: undefined })
+            World.analyticsSystem?.event("Match Mode Config Uploaded", matchEvent)
+
             globalAddToast("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
         } catch (_error) {
             globalAddToast("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
@@ -339,7 +348,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             <Divider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
-            <Box alignSelf={"center"}>
+            <Box alignSelf={"center"} sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
                 <Button
                     onClick={() => {
                         createNewMatchModeConfig()
@@ -347,8 +356,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                 >
                     Create Match Mode Config
                 </Button>
-            </Box>
-            <Box alignSelf={"center"}>
                 <Button onClick={uploadClicked}>Upload File</Button>
             </Box>
         </>

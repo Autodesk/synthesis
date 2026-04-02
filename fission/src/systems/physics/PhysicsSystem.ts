@@ -1,5 +1,7 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
@@ -16,7 +18,9 @@ import {
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "../../util/TypeConversions"
+import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
+import World from "../World"
 import WorldSystem from "../WorldSystem"
 import {
     type CurrentContactData,
@@ -960,12 +964,22 @@ class PhysicsSystem extends WorldSystem {
                 const partDefinition =
                     parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
 
+                const debugLabel = {
+                    rn: rn.id,
+                    partId,
+                    defRef: partInstance.partDefinitionReference,
+                    name: partDefinition.info?.name ?? partInstance.info?.name ?? "(unnamed)",
+                }
+
                 const partShapeResult = rn.isDynamic
                     ? this.createConvexShapeSettingsFromPart(partDefinition)
-                    : this.createConcaveShapeSettingsFromPart(partDefinition)
+                    : this.createConcaveShapeSettingsFromPart(partDefinition, debugLabel)
                 // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
-                if (!partShapeResult) return
+                if (!partShapeResult) {
+                    console.warn("Skipping collider (no valid shape settings)", debugLabel)
+                    return
+                }
 
                 const [shapeSettings, partMin, partMax] = partShapeResult
 
@@ -1035,7 +1049,11 @@ class PhysicsSystem extends WorldSystem {
                 const shapeResult = compoundShapeSettings.Create()
 
                 if (!shapeResult.IsValid || shapeResult.HasError()) {
+                    // May want to consider crashing here.
+                    // Unclear if the whole import is impossible if we reach this control step.
                     console.error(`Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`)
+                    JOLT.destroy(compoundShapeSettings)
+                    return
                 }
 
                 const shape = shapeResult.Get()
@@ -1132,7 +1150,8 @@ class PhysicsSystem extends WorldSystem {
      * @returns If successful, the created convex hull shape settings from the given Part Definition.
      */
     private createConcaveShapeSettingsFromPart(
-        partDefinition: mirabuf.IPartDefinition
+        partDefinition: mirabuf.IPartDefinition,
+        debugLabel?: Record<string, unknown>
     ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined {
         const settings = new JOLT.MeshShapeSettings()
 
@@ -1147,10 +1166,12 @@ class PhysicsSystem extends WorldSystem {
         const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
 
+        let maxIndex = -1
         partDefinition.bodies!.forEach(body => {
             const vertArr = body.triangleMesh?.mesh?.verts
             const indexArr = body.triangleMesh?.mesh?.indices
             if (!vertArr || !indexArr) return
+            if (indexArr.length < 3 || indexArr.length % 3 !== 0) return
 
             for (let i = 0; i < vertArr.length; i += 3) {
                 const vert = convertMirabufFloatToArrJoltFloat3(vertArr, i)
@@ -1158,14 +1179,31 @@ class PhysicsSystem extends WorldSystem {
                 this.updateMinMaxBounds(new JOLT.Vec3(vert), min, max)
                 JOLT.destroy(vert)
             }
+
             for (let i = 0; i < indexArr.length; i += 3) {
-                settings.mIndexedTriangles.push_back(
-                    new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0)
-                )
+                const a = indexArr.at(i)!
+                const b = indexArr.at(i + 1)!
+                const c = indexArr.at(i + 2)!
+                if (a > maxIndex) maxIndex = a
+                if (b > maxIndex) maxIndex = b
+                if (c > maxIndex) maxIndex = c
+                settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(a, b, c, 0))
             }
         })
 
-        if (settings.mTriangleVertices.size() < 4) {
+        const vertCount = settings.mTriangleVertices.size()
+        const triCountBeforeSanitize = settings.mIndexedTriangles.size()
+
+        if (vertCount < 3 || triCountBeforeSanitize === 0 || maxIndex >= vertCount) {
+            if (debugLabel) {
+                console.warn("Concave collider invalid (no triangles or bad indices)", {
+                    ...debugLabel,
+                    vertCount,
+                    triCount: triCountBeforeSanitize,
+                    maxIndex,
+                })
+            }
+
             JOLT.destroy(settings)
             JOLT.destroy(min)
             JOLT.destroy(max)
@@ -1173,6 +1211,22 @@ class PhysicsSystem extends WorldSystem {
         }
 
         settings.Sanitize()
+        const triCount = settings.mIndexedTriangles.size()
+        if (triCount === 0) {
+            if (debugLabel) {
+                console.warn("Concave collider sanitized to zero triangles (degenerate)", {
+                    ...debugLabel,
+                    vertCount,
+                    triCountBeforeSanitize,
+                })
+            }
+
+            JOLT.destroy(settings)
+            JOLT.destroy(min)
+            JOLT.destroy(max)
+            return
+        }
+
         return [settings, min, max]
     }
 
@@ -1261,7 +1315,7 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    public getBody(bodyId: Jolt.BodyID) {
+    public getBody(bodyId: Jolt.BodyID): Jolt.Body {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
 
@@ -1280,8 +1334,52 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltInterface.Step(lastDeltaT, substeps)
 
+        if (World.multiplayerSystem != null) {
+            const interObjectCollisions = this._physicsEventQueue.filter(
+                x => x instanceof OnContactAddedEvent && this.onSameLayer(x.message.body1, x.message.body2)
+            )
+
+            World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
+                const clientSceneObject = World.sceneRenderer.sceneObjects.get(
+                    clientSceneObjectId
+                ) as MirabufSceneObject
+
+                if (clientSceneObject == null) {
+                    console.warn("Could not find multiplayer robot") // happens when you delete
+                    World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
+                    return
+                }
+                const touchedBodies = clientSceneObject.mechanism.touchedObjects
+
+                const message: Message =
+                    interObjectCollisions.length > 0
+                        ? {
+                              type: "collision",
+                              data: World.sceneRenderer.mirabufSceneObjects
+                                  .getAll()
+                                  .map(object => object.getUpdateData())
+                                  .filter(n => n != null),
+                          }
+                        : {
+                              type: "update",
+                              data: [clientSceneObject, ...touchedBodies]
+                                  .map(object => object.getUpdateData())
+                                  .filter(n => n != null),
+                          }
+                World.multiplayerSystem?.broadcast(message)
+
+                if (clientSceneObjectId != null) {
+                    clientSceneObject.mechanism.touchedObjects = []
+                }
+            })
+        }
+
         this._physicsEventQueue.forEach(x => x.dispatch())
         this._physicsEventQueue = []
+    }
+
+    private onSameLayer(body1: Jolt.BodyID, body2: Jolt.BodyID): boolean {
+        return this.getBody(body1).GetObjectLayer() === this.getBody(body2).GetObjectLayer()
     }
 
     /*
@@ -1431,6 +1529,47 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Finds the MirabufSceneObject containing the mechanism containing the body referenced by the given id
+     */
+    private bodyToMiraSceneObject(body: Jolt.Body): MirabufSceneObject | null {
+        const id = body.GetID()
+        return (
+            World.sceneRenderer.mirabufSceneObjects.findWhere(obj =>
+                [...obj.mechanism.nodeToBody].some(n => n[1] == id)
+            ) ?? null
+        )
+    }
+
+    /**
+     * In multiplayer, returns whether the given jolt body is on the client's robot
+     *
+     * In singleplayer returns false
+     */
+    private isClient(body: Jolt.Body): boolean {
+        return (
+            (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
+                World.multiplayerSystem
+                    ?.getOwnSceneObjectIDs()
+                    .includes(this.bodyToMiraSceneObject(body)?.id as LocalSceneObjectId)) ??
+            false
+        )
+    }
+
+    /**
+     * Records the robot body as having touched another body
+     * This is used for tracking which bodies the client needs to send the state of to peers
+     */
+    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body) {
+        if (other == null || robot == null) return
+
+        const robotSceneObject = this.bodyToMiraSceneObject(robot)
+        const otherSceneObject = this.bodyToMiraSceneObject(other)
+        if (robotSceneObject == null || otherSceneObject == null) return
+
+        robotSceneObject.mechanism.touchedObjects.push(otherSceneObject)
+    }
+
+    /**
      * Creates and assigns Jolt contact listener that dispatches events.
      *
      * @param physSystem The physics system the contact listener will attach to
@@ -1451,6 +1590,14 @@ class PhysicsSystem extends WorldSystem {
                 manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
                 settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
             }
+
+            // Detect if a robot is touching a gp, then push to the robot's touched list
+            const [clientBody, otherBody] = this.isClient(body1)
+                ? [body1, body2]
+                : this.isClient(body2)
+                  ? [body2, body1]
+                  : [undefined, undefined]
+            this.recordOtherBodyCollision(clientBody, otherBody)
 
             this._physicsEventQueue.push(new OnContactAddedEvent(message))
         }
@@ -1603,17 +1750,6 @@ export type RayCastHit = {
     data: Jolt.RayCastResult
     point: Jolt.Vec3
     ray: Jolt.RRayCast
-}
-
-/**
- * An interface to create an association between a body and anything.
- */
-export class BodyAssociate {
-    readonly associatedBody: JoltBodyIndexAndSequence
-
-    public constructor(bodyId: Jolt.BodyID) {
-        this.associatedBody = bodyId.GetIndexAndSequenceNumber()
-    }
 }
 
 export default PhysicsSystem

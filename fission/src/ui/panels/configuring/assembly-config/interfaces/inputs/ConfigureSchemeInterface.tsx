@@ -104,7 +104,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
             />
             <Divider />
 
-            {/* Scroll view for inputs */}
+            {/* Inputs list (let parent panel handle scrolling to avoid double scrollbars) */}
             <Stack ref={scrollRef} gap={2}>
                 {selectedScheme.inputs.map((i: Input) => {
                     return (

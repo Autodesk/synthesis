@@ -16,6 +16,7 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -74,14 +75,16 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                             if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                                 openPanel(InitialConfigPanel, undefined, modal)
                             }
+                            const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+                            if (miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
+                                cameraControls.focusProvider = mirabufSceneObject
+                            }
                             closeModal(CloseType.Overwrite)
                         }
                     })
                     .finally(() => setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500))
             }
         }
-
-        console.log("HIDE ACCEPT IN IMPL?", selectedFile === undefined || miraType === undefined)
 
         configureScreen(
             modal!,
