@@ -125,9 +125,7 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
             )}
             {AddButton(() => {
                 const newZone = createNewZone()
-                const newZones = [...zones, newZone]
-                setZones(newZones)
-                saveZonesGeneric(newZones, selectedField, persistZones)
+                saveZonesGeneric(zones, selectedField, persistZones)
                 selectZone(newZone)
             })}
         </>
