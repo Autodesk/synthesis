@@ -7,14 +7,27 @@ OUTPUT_DIRECTORY := ./out/
 FusionExporter:
 	claat export -o $(OUTPUT_DIRECTORY) FusionExporter.md
 
-CodeSimulation:
-	claat export -o $(OUTPUT_DIRECTORY) CodeSimulation.md
-
-APS:
-	claat export -o $(OUTPUT_DIRECTORY) APS.md
+SpawnAsset:
+	claat export -o $(OUTPUT_DIRECTORY) SpawnAsset.md
 
 ConfigureAssets:
 	claat export -o $(OUTPUT_DIRECTORY) ConfigureAssets.md
 
-Utilities:
-	claat export -o $(OUTPUT_DIRECTORY) Utilities.md
+MatchMode:
+	claat export -o $(OUTPUT_DIRECTORY) MatchMode.md
+
+CodeSimulation:
+	claat export -o $(OUTPUT_DIRECTORY) CodeSimulation.md
+
+Multiplayer:
+	claat export -o $(OUTPUT_DIRECTORY) Multiplayer.md
+
+TouchControls:
+	claat export -o $(OUTPUT_DIRECTORY) TouchControls.md
+
+Settings:
+	claat export -o $(OUTPUT_DIRECTORY) Settings.md
+
+CommandPalette:
+	claat export -o $(OUTPUT_DIRECTORY) CommandPalette.md
+

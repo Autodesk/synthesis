@@ -959,12 +959,22 @@ class PhysicsSystem extends WorldSystem {
                 const partDefinition =
                     parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
 
+                const debugLabel = {
+                    rn: rn.id,
+                    partId,
+                    defRef: partInstance.partDefinitionReference,
+                    name: partDefinition.info?.name ?? partInstance.info?.name ?? "(unnamed)",
+                }
+
                 const partShapeResult = rn.isDynamic
                     ? this.createConvexShapeSettingsFromPart(partDefinition)
-                    : this.createConcaveShapeSettingsFromPart(partDefinition)
+                    : this.createConcaveShapeSettingsFromPart(partDefinition, debugLabel)
                 // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
-                if (!partShapeResult) return
+                if (!partShapeResult) {
+                    console.warn("Skipping collider (no valid shape settings)", debugLabel)
+                    return
+                }
 
                 const [shapeSettings, partMin, partMax] = partShapeResult
 
@@ -1034,7 +1044,11 @@ class PhysicsSystem extends WorldSystem {
                 const shapeResult = compoundShapeSettings.Create()
 
                 if (!shapeResult.IsValid || shapeResult.HasError()) {
+                    // May want to consider crashing here.
+                    // Unclear if the whole import is impossible if we reach this control step.
                     console.error(`Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`)
+                    JOLT.destroy(compoundShapeSettings)
+                    return
                 }
 
                 const shape = shapeResult.Get()
@@ -1131,7 +1145,8 @@ class PhysicsSystem extends WorldSystem {
      * @returns If successful, the created convex hull shape settings from the given Part Definition.
      */
     private createConcaveShapeSettingsFromPart(
-        partDefinition: mirabuf.IPartDefinition
+        partDefinition: mirabuf.IPartDefinition,
+        debugLabel?: Record<string, unknown>
     ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined {
         const settings = new JOLT.MeshShapeSettings()
 
@@ -1146,10 +1161,12 @@ class PhysicsSystem extends WorldSystem {
         const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
 
+        let maxIndex = -1
         partDefinition.bodies!.forEach(body => {
             const vertArr = body.triangleMesh?.mesh?.verts
             const indexArr = body.triangleMesh?.mesh?.indices
             if (!vertArr || !indexArr) return
+            if (indexArr.length < 3 || indexArr.length % 3 !== 0) return
 
             for (let i = 0; i < vertArr.length; i += 3) {
                 const vert = convertMirabufFloatToArrJoltFloat3(vertArr, i)
@@ -1157,14 +1174,31 @@ class PhysicsSystem extends WorldSystem {
                 this.updateMinMaxBounds(new JOLT.Vec3(vert), min, max)
                 JOLT.destroy(vert)
             }
+
             for (let i = 0; i < indexArr.length; i += 3) {
-                settings.mIndexedTriangles.push_back(
-                    new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0)
-                )
+                const a = indexArr.at(i)!
+                const b = indexArr.at(i + 1)!
+                const c = indexArr.at(i + 2)!
+                if (a > maxIndex) maxIndex = a
+                if (b > maxIndex) maxIndex = b
+                if (c > maxIndex) maxIndex = c
+                settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(a, b, c, 0))
             }
         })
 
-        if (settings.mTriangleVertices.size() < 4) {
+        const vertCount = settings.mTriangleVertices.size()
+        const triCountBeforeSanitize = settings.mIndexedTriangles.size()
+
+        if (vertCount < 3 || triCountBeforeSanitize === 0 || maxIndex >= vertCount) {
+            if (debugLabel) {
+                console.warn("Concave collider invalid (no triangles or bad indices)", {
+                    ...debugLabel,
+                    vertCount,
+                    triCount: triCountBeforeSanitize,
+                    maxIndex,
+                })
+            }
+
             JOLT.destroy(settings)
             JOLT.destroy(min)
             JOLT.destroy(max)
@@ -1172,6 +1206,22 @@ class PhysicsSystem extends WorldSystem {
         }
 
         settings.Sanitize()
+        const triCount = settings.mIndexedTriangles.size()
+        if (triCount === 0) {
+            if (debugLabel) {
+                console.warn("Concave collider sanitized to zero triangles (degenerate)", {
+                    ...debugLabel,
+                    vertCount,
+                    triCountBeforeSanitize,
+                })
+            }
+
+            JOLT.destroy(settings)
+            JOLT.destroy(min)
+            JOLT.destroy(max)
+            return
+        }
+
         return [settings, min, max]
     }
 

@@ -8,9 +8,9 @@ import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTyp
 import Label from "@/ui/components/Label"
 import { Button, SynthesisIcons } from "@/ui/components/StyledComponents"
 import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
-import ZoneConfigInterface from "./ScoringZoneConfigInterface"
+import ScoringZoneConfigInterface from "./ScoringZoneConfigInterface"
 
-const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+const saveScoringZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
 
     const fieldPrefs = field.fieldPreferences
@@ -59,11 +59,11 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                         </Stack>
                     </Stack>
                     <Divider />
-                    <ZoneConfigInterface
+                    <ScoringZoneConfigInterface
                         selectedField={selectedField}
                         selectedZone={selectedZone}
                         saveAllZones={() => {
-                            saveZones(selectedField.fieldPreferences?.scoringZones, selectedField)
+                            saveScoringZones(selectedField.fieldPreferences?.scoringZones, selectedField)
                         }}
                     />
                 </>
