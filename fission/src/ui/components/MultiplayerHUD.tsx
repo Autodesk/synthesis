@@ -3,9 +3,9 @@ import { Stack } from "@mui/system"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Label from "@/components/Label.tsx"
-import { MultiplayerStateEvent, MultiplayerStateEventType } from "@/systems/multiplayer/MultiplayerSystem.ts"
 import type { ClientInfo } from "@/systems/multiplayer/types.ts"
 import World from "@/systems/World.ts"
+import EventSystem from "@/systems/EventSystem.ts"
 
 const MultiplayerHUD: React.FC = () => {
     const [roomCode, setRoomCode] = useState("")
@@ -13,14 +13,14 @@ const MultiplayerHUD: React.FC = () => {
     useEffect(() => {
         const unsubscribers: (() => void)[] = []
         unsubscribers.push(
-            MultiplayerStateEvent.addEventListener(MultiplayerStateEventType.JOIN_ROOM, () => {
+            EventSystem.listen("MultiplayerStateJoinRoom", () => {
                 if (!World.multiplayerSystem) return
                 setRoomCode(World.multiplayerSystem.roomId)
                 setPeers([World.multiplayerSystem.info])
             })
         )
         unsubscribers.push(
-            MultiplayerStateEvent.addEventListener(MultiplayerStateEventType.PEER_CHANGE, () => {
+            EventSystem.listen("MultiplayerStatePeerChange", () => {
                 if (!World.multiplayerSystem) return
                 setPeers([World.multiplayerSystem.info, ...World.multiplayerSystem.peerInfo])
             })

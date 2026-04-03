@@ -1,5 +1,6 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const TouchControls: React.FC = () => {
@@ -9,24 +10,21 @@ const TouchControls: React.FC = () => {
     const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
 
     useEffect(() => {
-        const handlePlaceButtonEvent = (e: Event) => {
-            setIsPlaceButtonVisible((e as TouchControlsEvent).value!)
-        }
+        const placeButtonUnsubscriber = EventSystem.listen("SetPlaceAssetButtonVisibleEvent", visible => {
+            setIsPlaceButtonVisible(visible)
+        })
 
-        const handleJoystickEvent = () => {
+        const visibilityUnsubscriber = EventSystem.listen("ToggleTouchControlsVisibilityEvent", () => {
             PreferencesSystem.setGlobalPreference("TouchControls", !isJoystickVisible)
             PreferencesSystem.savePreferences()
             setIsJoystickVisible(!isJoystickVisible)
-        }
+        })
 
-        TouchControlsEvent.listen(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
-        TouchControlsEvent.listen(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
-
-        window.dispatchEvent(new Event("touchcontrolsloaded"))
+        EventSystem.dispatch("TouchControlsLoaded")
 
         return () => {
-            TouchControlsEvent.removeListener(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
-            TouchControlsEvent.removeListener(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
+            placeButtonUnsubscriber()
+            visibilityUnsubscriber()
         }
     }, [isJoystickVisible])
 
@@ -74,31 +72,6 @@ const TouchControls: React.FC = () => {
 export default TouchControls
 
 export const MAX_JOYSTICK_RADIUS: number = 55
-
-export const enum TouchControlsEventKeys {
-    PLACE_BUTTON = "PlaceButtonEvent",
-    JOYSTICK = "JoystickEvent",
-}
-
-export class TouchControlsEvent extends Event {
-    public value: boolean | undefined
-
-    constructor(eventKey: TouchControlsEventKeys, value?: boolean) {
-        super(eventKey)
-
-        if (value) this.value = value
-
-        window.dispatchEvent(this)
-    }
-
-    public static listen(eventKey: TouchControlsEventKeys, func: (e: Event) => void) {
-        window.addEventListener(eventKey, func)
-    }
-
-    public static removeListener(eventKey: TouchControlsEventKeys, func: (e: Event) => void) {
-        window.removeEventListener(eventKey, func)
-    }
-}
 
 /** Notates the left and right joysticks with their x and y axis */
 export const enum TouchControlsAxes {

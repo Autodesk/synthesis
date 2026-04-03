@@ -1,8 +1,6 @@
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { MirabufObjectChangeEvent } from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import World from "@/systems/World.ts"
@@ -12,6 +10,7 @@ import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import type { ConfigurationType } from "../ConfigTypes"
 import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
+import EventSystem from "@/systems/EventSystem.ts"
 
 interface AssemblySelectionProps {
     configurationType: ConfigurationType
@@ -71,16 +70,14 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
         setOptions(newOptions)
     }, [getRobots, getFields, configurationType])
 
-    MirabufObjectChangeEvent.addEventListener(() => {
-        update()
-    })
-
-    ConfigurationSavedEvent.listen(() => {
-        update()
-    })
-
     useEffect(() => {
         update()
+        const mirabufChangeUnsubscribe = EventSystem.listen("MirabufObjectChangeEvent", () => update())
+        const configEventUnsubscribe = EventSystem.listen("ConfigurationSavedEvent", () => update())
+        return () => {
+            mirabufChangeUnsubscribe()
+            configEventUnsubscribe()
+        }
     }, [update])
 
     return (

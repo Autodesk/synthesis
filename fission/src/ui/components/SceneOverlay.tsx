@@ -1,15 +1,10 @@
 import { Stack } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { useStateContext } from "../helpers/StateProviderHelpers"
 import Label from "./Label"
-import {
-    SceneOverlayEvent,
-    SceneOverlayEventKey,
-    type SceneOverlayTag,
-    SceneOverlayTagEvent,
-    SceneOverlayTagEventKey,
-} from "./SceneOverlayEvents"
+import type { SceneOverlayTag } from "./SceneOverlayEvents"
 import ViewCube from "./ViewCube"
 
 const tagMap = new Map<number, SceneOverlayTag>()
@@ -48,37 +43,26 @@ const SceneOverlay: React.FC = () => {
 
     /* Creating listener for tag events to update tagMap and rerender overlay */
     useEffect(() => {
-        const onTagAdd = (e: Event) => {
-            tagMap.set((e as SceneOverlayTagEvent).tag.id, (e as SceneOverlayTagEvent).tag)
-        }
-
-        const onTagRemove = (e: Event) => {
-            tagMap.delete((e as SceneOverlayTagEvent).tag.id)
-        }
-
-        const onUpdate = (_: Event) => {
-            updateComponents()
-        }
+        const unsubscribers: (() => void)[] = []
 
         // listening for tags being added and removed
-        SceneOverlayTagEvent.listen(SceneOverlayTagEventKey.ADD, onTagAdd)
-        SceneOverlayTagEvent.listen(SceneOverlayTagEventKey.REMOVE, onTagRemove)
+        unsubscribers.push(EventSystem.listen("SceneOverlayTagAddEvent", tag => tagMap.set(tag.id, tag)))
+        unsubscribers.push(EventSystem.listen("SceneOverlayTagRemoveEvent", tag => tagMap.delete(tag.id)))
 
         // listening for updates to the overlay every frame
-        SceneOverlayEvent.listen(SceneOverlayEventKey.UPDATE, onUpdate)
+        unsubscribers.push(EventSystem.listen("SceneOverlayUpdateEvent", () => updateComponents()))
 
         // listening for disabling and enabling scene tags
-        const unsubscribe = PreferencesSystem.addPreferenceEventListener("RenderSceneTags", e => {
-            setIsDisabled(!e.prefValue)
-            updateComponents()
-        })
+        unsubscribers.push(
+            PreferencesSystem.addPreferenceEventListener("RenderSceneTags", e => {
+                setIsDisabled(!e.prefValue)
+                updateComponents()
+            })
+        )
 
         // disposing all the tags and listeners when the scene is destroyed
         return () => {
-            SceneOverlayTagEvent.removeListener(SceneOverlayTagEventKey.ADD, onTagAdd)
-            SceneOverlayTagEvent.removeListener(SceneOverlayTagEventKey.REMOVE, onTagRemove)
-            SceneOverlayEvent.removeListener(SceneOverlayEventKey.UPDATE, onUpdate)
-            unsubscribe()
+            unsubscribers.forEach(func => func())
             tagMap.clear()
         }
     }, [])

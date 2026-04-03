@@ -1,8 +1,8 @@
 import { Box, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
@@ -45,7 +45,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                         <Button
                             startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
                             onClick={() => {
-                                new ConfigurationSavedEvent()
+                                EventSystem.dispatch("ConfigurationSavedEvent")
                                 setSelectedZone(undefined)
                             }}
                         />

@@ -1,8 +1,8 @@
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
-import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject.ts"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes.ts"
 import World from "@/systems/World.ts"
+import EventSystem from "@/systems/EventSystem.ts"
 
 export default class ScoreTracker {
     private static _redScore: number = 0
@@ -45,7 +45,7 @@ export default class ScoreTracker {
     }
 
     private static notifyChange() {
-        new OnScoreChangedEvent(ScoreTracker.redScore, ScoreTracker.blueScore).dispatch()
+        EventSystem.dispatch("ScoreChangedEvent", { red: this.redScore, blue: this.blueScore })
     }
 
     public static robotPenalty(

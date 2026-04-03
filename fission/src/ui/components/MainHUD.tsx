@@ -1,12 +1,13 @@
-import { Box, ButtonGroup, ButtonProps, Stack } from "@mui/material"
+import { Box, ButtonGroup, type ButtonProps, Stack } from "@mui/material"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { FaXmark } from "react-icons/fa6"
-import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
+import APS from "@/aps/APS"
 import logo from "@/assets/autodesk_logo.png"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import MatchMode, { MatchStateChangeEvent } from "@/systems/match_mode/MatchMode"
+import EventSystem from "@/systems/EventSystem.ts"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { deobf } from "@/util/Utility"
 import { useThemeContext } from "../helpers/ThemeProviderHelpers"
 import { useUIContext } from "../helpers/UIProviderHelpers"
@@ -20,7 +21,6 @@ import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
-import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import UserIcon from "./UserIcon"
 
 const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => {
@@ -62,10 +62,6 @@ const MainHUD: React.FC = () => {
     const [matchModeRunning, setMatchModeRunning] = useState(MatchMode.getInstance().isMatchEnabled())
 
     useEffect(() => {
-        document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
-            setUserInfo(APS.userInfo)
-        })
-
         // biome-ignore-start lint/suspicious/noExplicitAny: allow any
         try {
             const k: string[] = deobf("NmM2ZjYzNjE2YzUzNzQ2ZjcyNjE2NzY1MmU3NDY4NjU2ZDY1").split(String.fromCharCode(46))
@@ -84,10 +80,14 @@ const MainHUD: React.FC = () => {
             // noop
         }
         // biome-ignore-end lint/suspicious/noExplicitAny: disallow any
+
+        return EventSystem.listen("APSUserInfoUpdate", () => {
+            setUserInfo(APS.userInfo)
+        })
     }, [])
 
     useEffect(() => {
-        MatchStateChangeEvent.addListener(() => {
+        return EventSystem.listen("MatchStateChangedEvent", () => {
             setMatchModeRunning(MatchMode.getInstance().isMatchEnabled())
         })
     }, [])
@@ -227,7 +227,7 @@ const MainHUD: React.FC = () => {
                     {touchCompatibility && (
                         <MainHUDButton
                             startIcon={SynthesisIcons.GAMEPAD}
-                            onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
+                            onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
                         >
                             Touch Controls
                         </MainHUDButton>

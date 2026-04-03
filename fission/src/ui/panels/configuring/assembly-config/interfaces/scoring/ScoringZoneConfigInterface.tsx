@@ -1,8 +1,8 @@
+import { TextField } from "@mui/material"
+import { useState, useCallback } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import ZoneConfigBase from "../zones/ZoneConfigBase"
-import { TextField } from "@mui/material"
-import { useState, useCallback } from "react"
 import Checkbox from "@/ui/components/Checkbox"
 
 /**

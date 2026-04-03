@@ -9,7 +9,7 @@ import type {
     UpdateObjectData,
 } from "@/systems/multiplayer/types"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
-import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
+import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
 import type { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -117,7 +117,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _lastEjectableToastTime = 0
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
-    private _collision?: (event: OnContactAddedEvent) => void
+    private _collisionUnsubscriber?: () => void
 
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
         return this._scoringZones
@@ -267,17 +267,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             })
 
             // Detects when something collides with the robot
-            this._collision = (event: OnContactAddedEvent) => {
-                const body1 = event.message.body1
-                const body2 = event.message.body2
+            this._collisionUnsubscriber = EventSystem.listen("OnContactAddedEvent", data => {
+                const { body1, body2 } = data
 
                 if (body1.GetIndexAndSequenceNumber() === this.getRootNodeId()?.GetIndexAndSequenceNumber()) {
                     this.recordRobotCollision(body2)
                 } else if (body2.GetIndexAndSequenceNumber() === this.getRootNodeId()?.GetIndexAndSequenceNumber()) {
                     this.recordRobotCollision(body1)
                 }
-            }
-            OnContactAddedEvent.addListener(this._collision)
+            })
 
             // Center of Mass Indicator
             const material = new THREE.MeshBasicMaterial({
@@ -353,7 +351,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             cameraControls.focusProvider = this
         }
 
-        MirabufObjectChangeEvent.dispatch(this)
+        EventSystem.dispatch("MirabufObjectChangeEvent", this)
     }
 
     // Centered in xz plane, bottom surface of object
@@ -462,6 +460,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             ;(x.colliderMesh.material as THREE.Material).dispose()
             ;(x.comMesh.material as THREE.Material).dispose()
         })
+        this._collisionUnsubscriber?.()
         this._debugBodies?.clear()
         this._physicsLayerReserve?.release()
         if (this._centerOfMassIndicator) {
@@ -472,7 +471,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
         }
-        MirabufObjectChangeEvent.dispatch(null)
+        EventSystem.dispatch("MirabufObjectChangeEvent", null)
     }
 
     public eject() {
@@ -1127,29 +1126,3 @@ export class RigidNodeAssociate extends BodyAssociate {
 }
 
 export default MirabufSceneObject
-
-export class MirabufObjectChangeEvent extends Event {
-    private static _eventKey = "MirabufObjectChange"
-    private _obj: MirabufSceneObject | null
-
-    private constructor(obj: MirabufSceneObject | null) {
-        super(MirabufObjectChangeEvent._eventKey)
-        this._obj = obj
-    }
-
-    public static addEventListener(cb: (object: MirabufSceneObject | null) => void): () => void {
-        const listener = (event: Event) => {
-            if (event instanceof MirabufObjectChangeEvent) {
-                cb(event._obj)
-            } else {
-                cb(null)
-            }
-        }
-        window.addEventListener(this._eventKey, listener)
-        return () => window.removeEventListener(this._eventKey, listener)
-    }
-
-    public static dispatch(obj: MirabufSceneObject | null) {
-        window.dispatchEvent(new MirabufObjectChangeEvent(obj))
-    }
-}

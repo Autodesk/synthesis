@@ -1,6 +1,5 @@
 import type React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -31,6 +30,7 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import EventSystem from "@/systems/EventSystem.ts"
 import { Tab, Tabs } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
@@ -257,20 +257,12 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         }
 
         // Listen for input scheme changes from other panels
-        const handleExternalSchemeChange = (event: Event) => {
-            const customEvent = event as CustomEvent
-
-            if (customEvent.detail?.panelId === panel?.id) return
+        return EventSystem.listen("InputSchemeChanged", ({ panelId }) => {
+            if (panelId === panel?.id) return
 
             const currentSchemes: InputScheme[] = InputSchemeManager.allInputSchemes
             originalInputSchemes.current = structuredClone(currentSchemes)
-        }
-
-        window.addEventListener("inputSchemeChanged", handleExternalSchemeChange)
-
-        return () => {
-            window.removeEventListener("inputSchemeChanged", handleExternalSchemeChange)
-        }
+        })
     }, [])
 
     useEffect(() => {
@@ -286,7 +278,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalInputSchemes.current = null
 
             selectedAssembly?.sendPreferences()
-            new ConfigurationSavedEvent()
+            EventSystem.dispatch("ConfigurationSavedEvent")
         }
         const onCancel = () => {
             setPendingDeletes([])
@@ -418,7 +410,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         panel={panel!}
                         configurationType={configurationType}
                         onAssemblySelected={a => {
-                            if (configMode !== undefined) new ConfigurationSavedEvent()
+                            if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
                             setConfigMode(undefined)
                             setSelectedAssembly(a as MirabufSceneObject)
                         }}
@@ -434,7 +426,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             modes={modes}
                             configMode={configMode}
                             onModeSelected={mode => {
-                                if (configMode !== undefined) new ConfigurationSavedEvent()
+                                if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
                                 setConfigMode(mode)
                             }}
                         />

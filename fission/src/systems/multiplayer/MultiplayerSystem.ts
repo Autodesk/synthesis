@@ -1,7 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent.ts"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
@@ -10,6 +9,7 @@ import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
 import type { ClientInfo, LocalSceneObjectId, Message, MessageWithTimestamp, RemoteSceneObjectId } from "./types"
 import { hashBuffer } from "@/util/Utility"
+import EventSystem from "@/systems/EventSystem.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -27,6 +27,7 @@ class MultiplayerSystem {
     public readonly _clientToSceneObjectIdMap: Map<string, Map<RemoteSceneObjectId, LocalSceneObjectId>> = new Map() // Each Map is: peerObjectId -> clientObjectId
 
     readonly info: ClientInfo
+    private _onDestroyHooks: (() => void)[] = []
 
     public static async setup(roomId: string, displayName: string, isHost: boolean): Promise<boolean> {
         const clientId = await generateId(roomId)
@@ -63,7 +64,7 @@ class MultiplayerSystem {
                     globalAddToast("warning", `Could not find room`, this.roomId)
                     this.destroy()
                     World.setMultiplayerSystem(undefined)
-                    MultiplayerStateEvent.dispatch(MultiplayerStateEventType.JOIN_ROOM)
+                    EventSystem.dispatch("MultiplayerStateJoinRoom")
                     resolve(false)
                 }
                 resolve(true)
@@ -109,11 +110,13 @@ class MultiplayerSystem {
             this.setupConnectionHandlers(conn)
         })
 
-        ConfigurationSavedEvent.listen(() => {
-            World.getOwnObjects().forEach(obj => {
-                setTimeout(() => obj.sendPreferences().catch(console.error), 100)
+        this._onDestroyHooks.push(
+            EventSystem.listen("ConfigurationSavedEvent", () => {
+                World.getOwnObjects().forEach(obj => {
+                    setTimeout(() => obj.sendPreferences().catch(console.error), 100)
+                })
             })
-        })
+        )
     }
 
     async connectToRoom() {
@@ -151,7 +154,7 @@ class MultiplayerSystem {
                 })
         ).then(res => res.filter(success => success).length)
 
-        MultiplayerStateEvent.dispatch(MultiplayerStateEventType.JOIN_ROOM)
+        EventSystem.dispatch("MultiplayerStateJoinRoom")
         return peerCount
     }
 
@@ -163,7 +166,7 @@ class MultiplayerSystem {
         conn.on("open", async () => {
             console.debug("Connection opened", conn.peer)
             this._connections.set(conn.peer, conn)
-            MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
+            EventSystem.dispatch("MultiplayerStatePeerChange")
             await this.send(conn.peer, { type: "info", data: this.info })
 
             for (const obj of this.getOwnObjects()) {
@@ -202,7 +205,7 @@ class MultiplayerSystem {
             this._connections.delete(conn.peer)
             // TODO: handle host transition
 
-            MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
+            EventSystem.dispatch("MultiplayerStatePeerChange")
             globalAddToast(
                 "warning",
                 "Multiplayer Peer Disconnected",
@@ -307,6 +310,9 @@ class MultiplayerSystem {
         this._connections.clear()
         this._client.destroy()
         this._clientToSceneObjectIdMap.clear()
+        this._onDestroyHooks.forEach(hook => {
+            hook()
+        })
         World.setMultiplayerSystem(undefined)
     }
 
@@ -356,30 +362,6 @@ async function createSha256Hash({ roomId, establishedClientId, newClientId }: Ha
         .slice(0, 8)
         .map(b => b.toString(16).padStart(2, "0"))
         .join("")
-}
-
-export enum MultiplayerStateEventType {
-    INIT,
-    JOIN_ROOM,
-    PEER_CHANGE,
-}
-
-export class MultiplayerStateEvent extends Event {
-    private constructor(event: MultiplayerStateEventType) {
-        super(`MultiplayerStateChange${event}`)
-    }
-
-    public static dispatch(eventType: MultiplayerStateEventType) {
-        const event = new MultiplayerStateEvent(eventType)
-        window.dispatchEvent(event)
-    }
-
-    public static addEventListener(eventType: MultiplayerStateEventType, cb: EventListenerOrEventListenerObject) {
-        window.addEventListener(`MultiplayerStateChange${eventType}`, cb)
-        return () => {
-            window.removeEventListener(`MultiplayerStateChange${eventType}`, cb)
-        }
-    }
 }
 
 export default MultiplayerSystem

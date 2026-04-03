@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
 import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
 import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
@@ -95,31 +96,19 @@ describe("DragModeSystem Integration Tests", () => {
 
     describe("Event Handling", () => {
         test("calls dispatchEvent when toggling drag mode", () => {
-            const dispatchEventSpy = vi.spyOn(window, "dispatchEvent")
-
+            const dispatchEventSpy = vi.fn<SynthesisEventListener<"DragModeToggled">>()
+            EventSystem.listen("DragModeToggled", dispatchEventSpy)
             dragModeSystem.enabled = true
-            expect(dispatchEventSpy).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    type: "dragModeToggled",
-                    detail: { enabled: true },
-                })
-            )
+            expect(dispatchEventSpy).toHaveBeenLastCalledWith(expect.objectContaining({ enabled: true }))
 
             dragModeSystem.enabled = false
-            expect(dispatchEventSpy).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    type: "dragModeToggled",
-                    detail: { enabled: false },
-                })
-            )
-
-            dispatchEventSpy.mockRestore()
+            expect(dispatchEventSpy).toHaveBeenLastCalledWith(expect.objectContaining({ enabled: false }))
         })
 
         test("should handle disable drag mode event", () => {
             dragModeSystem.enabled = true
 
-            window.dispatchEvent(new CustomEvent("disableDragMode"))
+            EventSystem.dispatch("DragModeToggled", { enabled: false })
 
             expect(dragModeSystem.enabled).toBe(false)
         })
@@ -133,7 +122,7 @@ describe("DragModeSystem Integration Tests", () => {
             dragModeSystem.destroy()
 
             expect(dragModeSystem.enabled).toBe(false)
-            expect(removeEventListenerSpy).toHaveBeenCalledWith("disableDragMode", expect.any(Function))
+            expect(removeEventListenerSpy).toHaveBeenCalledWith("DragModeToggled", expect.any(Function))
 
             removeEventListenerSpy.mockRestore()
         })

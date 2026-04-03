@@ -3,6 +3,7 @@ import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
@@ -90,14 +91,10 @@ class DragModeSystem extends WorldSystem {
         targetSceneObject: undefined,
     }
 
-    private _handleDisableDragMode: () => void
+    private readonly _unsubscriber: () => void
 
     public constructor() {
         super()
-
-        this._handleDisableDragMode = () => {
-            this.enabled = false
-        }
 
         // Create wheel event handler for Z-axis dragging
         this._wheelEventHandler = (event: WheelEvent) => {
@@ -106,8 +103,9 @@ class DragModeSystem extends WorldSystem {
                 this.handleWheelDuringDrag(event)
             }
         }
-
-        window.addEventListener("disableDragMode", this._handleDisableDragMode)
+        this._unsubscriber = EventSystem.listen("DragModeToggled", ({ enabled }) => {
+            this.enabled = enabled
+        })
     }
 
     public get enabled(): boolean {
@@ -143,7 +141,7 @@ class DragModeSystem extends WorldSystem {
             }
         }
 
-        window.dispatchEvent(new CustomEvent("dragModeToggled", { detail: { enabled } }))
+        EventSystem.dispatch("DragModeToggled", { enabled })
     }
 
     public update(deltaT: number): void {
@@ -169,7 +167,7 @@ class DragModeSystem extends WorldSystem {
         // Clean up debug sphere
         this.removeDebugSphere()
 
-        window.removeEventListener("disableDragMode", this._handleDisableDragMode)
+        this._unsubscriber?.()
     }
 
     private createDebugSphere(position: THREE.Vector3): void {

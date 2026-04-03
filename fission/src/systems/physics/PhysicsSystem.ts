@@ -1,11 +1,7 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
+import EventSystem, { type SynthesisEvent } from "@/systems/EventSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
-import { mirabuf } from "../../proto/mirabuf"
 import {
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToJoltRVec3,
@@ -17,22 +13,19 @@ import {
     convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
-} from "../../util/TypeConversions"
+} from "@/util/TypeConversions.ts"
+import type MirabufParser from "../../mirabuf/MirabufParser"
+import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import { mirabuf } from "@/proto/mirabuf"
 import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
-import {
-    type CurrentContactData,
-    OnContactAddedEvent,
-    OnContactPersistedEvent,
-    OnContactRemovedEvent,
-    type OnContactValidateData,
-    OnContactValidateEvent,
-    type PhysicsEvent,
-} from "./ContactEvents"
+import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -97,7 +90,9 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
-    private _physicsEventQueue: PhysicsEvent[] = []
+    private _physicsEventQueue: SynthesisEvent<
+        "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
+    >[] = []
 
     private _pauseSet = new Set<string>()
 
@@ -1335,16 +1330,14 @@ class PhysicsSystem extends WorldSystem {
         this._joltInterface.Step(lastDeltaT, substeps)
 
         if (World.multiplayerSystem != null) {
-            const interObjectCollisions = this._physicsEventQueue.filter(
-                x => x instanceof OnContactAddedEvent && this.onSameLayer(x.message.body1, x.message.body2)
-            )
+            const interObjectCollisions = this._physicsEventQueue
+                .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
+                .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
 
             World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
-                const clientSceneObject = World.sceneRenderer.sceneObjects.get(
-                    clientSceneObjectId
-                ) as MirabufSceneObject
+                const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)
 
-                if (clientSceneObject == null) {
+                if (clientSceneObject == null || !(clientSceneObject instanceof MirabufSceneObject)) {
                     console.warn("Could not find multiplayer robot") // happens when you delete
                     World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
                     return
@@ -1599,7 +1592,7 @@ class PhysicsSystem extends WorldSystem {
                   : [undefined, undefined]
             this.recordOtherBodyCollision(clientBody, otherBody)
 
-            this._physicsEventQueue.push(new OnContactAddedEvent(message))
+            this._physicsEventQueue.push(EventSystem.create("OnContactAddedEvent", message))
         }
 
         contactListener.OnContactPersisted = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
@@ -1616,13 +1609,13 @@ class PhysicsSystem extends WorldSystem {
                 settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
             }
 
-            this._physicsEventQueue.push(new OnContactPersistedEvent(message))
+            this._physicsEventQueue.push(EventSystem.create("OnContactPersistedEvent", message))
         }
 
         contactListener.OnContactRemoved = subShapePairPtr => {
             const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
 
-            new OnContactRemovedEvent(shapePair)
+            EventSystem.dispatch("OnContactRemovedEvent", { message: shapePair })
         }
 
         contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {
@@ -1636,7 +1629,7 @@ class PhysicsSystem extends WorldSystem {
                 ) as Jolt.CollideShapeResult,
             }
 
-            this._physicsEventQueue.push(new OnContactValidateEvent(message))
+            this._physicsEventQueue.push(EventSystem.create("OnContactValidateEvent", message))
 
             return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
         }

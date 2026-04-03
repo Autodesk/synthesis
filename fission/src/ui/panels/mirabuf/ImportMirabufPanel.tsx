@@ -2,21 +2,14 @@ import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { MdExpandMore } from "react-icons/md"
-import {
-    type Data,
-    getMirabufFiles,
-    hasMirabufFiles,
-    MirabufFilesStatusUpdateEvent,
-    MirabufFilesUpdateEvent,
-    requestMirabufFiles,
-} from "@/aps/APSDataManagement"
+import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
@@ -38,13 +31,14 @@ import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
 import {
-    type ConfigurationType,
     configTypeToMiraType,
+    type ConfigurationType,
     miraTypeToConfigType,
 } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -196,20 +190,12 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     }, [])
 
     useEffect(() => {
-        const updateFilesStatus = (e: Event) => {
-            setFilesStatus((e as MirabufFilesStatusUpdateEvent).status)
-        }
-
-        const updateFiles = (e: Event) => {
-            setFiles((e as MirabufFilesUpdateEvent).data)
-        }
-
-        window.addEventListener(MirabufFilesStatusUpdateEvent.EVENT_KEY, updateFilesStatus)
-        window.addEventListener(MirabufFilesUpdateEvent.EVENT_KEY, updateFiles)
+        const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", v => setFilesStatus(v))
+        const unsubscribeUpdate = EventSystem.listen("MirabufFilesUpdateEvent", v => setFiles(v))
 
         return () => {
-            window.removeEventListener(MirabufFilesStatusUpdateEvent.EVENT_KEY, updateFilesStatus)
-            window.removeEventListener(MirabufFilesUpdateEvent.EVENT_KEY, updateFiles)
+            unsubscribeStatus()
+            unsubscribeUpdate()
         }
     })
 

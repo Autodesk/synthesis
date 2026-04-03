@@ -1,10 +1,10 @@
 import { Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Draggable from "react-draggable"
 import { useRef } from "react"
-import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
-import MatchMode, { UpdateTimeLeft } from "@/systems/match_mode/MatchMode"
+import EventSystem from "@/systems/EventSystem.ts"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import Label from "./Label"
@@ -20,23 +20,18 @@ const Scoreboard: React.FC = () => {
     const [blueScore, setBlueScore] = useState(ScoreTracker.blueScore)
     const [time, setTime] = useState("0")
 
-    const onScoreChange = useCallback((e: OnScoreChangedEvent) => {
-        setRedScore(e.red)
-        setBlueScore(e.blue)
-    }, [])
-
-    const onTimeLeftChange = useCallback((e: UpdateTimeLeft) => {
-        // TODO: should this change?
-        setTime(e.time)
-    }, [])
-
     useEffect(() => {
-        OnScoreChangedEvent.addListener(onScoreChange)
-        UpdateTimeLeft.addListener(onTimeLeftChange)
+        const scoreUnsubscriber = EventSystem.listen("ScoreChangedEvent", ({ red, blue }) => {
+            setRedScore(red)
+            setBlueScore(blue)
+        })
+        const timeUnsubscriber = EventSystem.listen("TimeChangedEvent", ({ time }) => {
+            setTime(time.toFixed())
+        })
 
         return () => {
-            OnScoreChangedEvent.removeListener(onScoreChange)
-            UpdateTimeLeft.removeListener(onTimeLeftChange)
+            scoreUnsubscriber()
+            timeUnsubscriber()
         }
     }, [])
 

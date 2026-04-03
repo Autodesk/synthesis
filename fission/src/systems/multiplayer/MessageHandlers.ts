@@ -7,7 +7,6 @@ import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
 import World from "../World"
-import { MultiplayerStateEvent, MultiplayerStateEventType } from "./MultiplayerSystem"
 import type {
     AssemblyRequestData,
     ClientInfo,
@@ -22,6 +21,7 @@ import type {
     UpdateObjectData,
 } from "./types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
+import EventSystem from "@/systems/EventSystem.ts"
 
 export const peerMessageHandlers = {
     info: handlePeerInfo,
@@ -64,7 +64,7 @@ function handlePeerInfo(data: ClientInfo) {
     World.multiplayerSystem?._clientToObjectMap.set(data.clientId, [])
     World.multiplayerSystem?._clientToInfoMap.set(data.clientId, data)
     globalAddToast("success", "Multiplayer Peer Connected", data.displayName)
-    MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
+    EventSystem.dispatch("MultiplayerStatePeerChange")
 }
 const clientToUpdateMap = new Map<string, number>()
 function handlePeerUpdate(data: UpdateObjectData[], peerId: string, timestamp: number) {

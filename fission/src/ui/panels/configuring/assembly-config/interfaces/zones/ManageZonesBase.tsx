@@ -1,7 +1,7 @@
 import { Box, Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
@@ -58,10 +58,7 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
     }, [zones, selectedField, persistZones])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-        return () => {
-            ConfigurationSavedEvent.removeListener(saveEvent)
-        }
+        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
 
     useEffect(() => {
