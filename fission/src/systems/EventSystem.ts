@@ -26,8 +26,6 @@ interface EventDataMap {
     // Scene Overlay Tags
     SceneOverlayTagAddEvent: SceneOverlayTag
     SceneOverlayTagRemoveEvent: SceneOverlayTag
-    SceneOverlayEnableEvent: never
-    SceneOverlayDisableEvent: never
     SceneOverlayUpdateEvent: never
 
     ConfigurationSavedEvent: never
