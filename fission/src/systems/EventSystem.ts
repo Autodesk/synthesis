@@ -101,7 +101,6 @@ class EventSystem {
                 console.warn("Incorrect event type dispatched", event, key)
                 return
             }
-            // console.log("Listening event", event.type)
             listener(event.data)
         }
         window.addEventListener(key, cb)

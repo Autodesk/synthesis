@@ -1,6 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { afterEach, beforeAll, beforeEach, describe, expect, test } from "vitest"
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from "vitest"
 import EventSystem from "@/systems/EventSystem.ts"
 import type { CurrentContactData, OnContactValidateData } from "@/systems/physics/ContactEvents.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -17,11 +17,17 @@ describe("Contact Event Integration Tests", () => {
     let contactRemovedEvents: { message: Jolt.SubShapeIDPair }[] = []
     let contactValidateEvents: OnContactValidateData[] = []
 
+    let unsubscribers: (() => void)[] = []
+
     beforeAll(() => {
-        EventSystem.listen("OnContactAddedEvent", v => contactAddedEvents.push(v))
-        EventSystem.listen("OnContactPersistedEvent", v => contactPersistedEvents.push(v))
-        EventSystem.listen("OnContactRemovedEvent", v => contactRemovedEvents.push(v))
-        EventSystem.listen("OnContactValidateEvent", v => contactValidateEvents.push(v))
+        unsubscribers.push(EventSystem.listen("OnContactAddedEvent", v => contactAddedEvents.push(v)))
+        unsubscribers.push(EventSystem.listen("OnContactPersistedEvent", v => contactPersistedEvents.push(v)))
+        unsubscribers.push(EventSystem.listen("OnContactRemovedEvent", v => contactRemovedEvents.push(v)))
+        unsubscribers.push(EventSystem.listen("OnContactValidateEvent", v => contactValidateEvents.push(v)))
+    })
+
+    afterAll(() => {
+        unsubscribers.forEach(unsub => unsub())
     })
 
     beforeEach(() => {
