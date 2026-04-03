@@ -18,22 +18,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
-      - name: Setup Isort
-        run: python3 -m pip install isort
+      - name: Setup Dependencies
+        run: python3 -m pip install -r ./exporter/SynthesisFusionAddin/requirements-dev.txt
       - name: Validate Isort Formatting
         run: python3 ./exporter/SynthesisFusionAddin/tools/verifyIsortFormatting.py
-        id: isort-format-validation
-        continue-on-error: true
-      - name: Check Isort Formatting Validation
-        run: |
-          if [ ${{ steps.isort-format-validation.outcome }} == "success" ]; then
-            echo "Isort Formatting Validation Passed"
-          else
-            echo "Isort Formatting Validation Failed"
-            exit 1
-          fi
       - name: Validate Black Formatting
-        uses: psf/black@stable
-        with:
-          options: "--check"
-          src: "./exporter/SynthesisFusionAddin/"
+        run: python3 -m black --check --config ./exporter/SynthesisFusionAddin/pyproject.toml ./exporter/SynthesisFusionAddin/
