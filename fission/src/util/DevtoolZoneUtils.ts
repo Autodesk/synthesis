@@ -76,7 +76,9 @@ export async function removeZoneFromDevtools(
     }
 
     if (field.fieldPreferences) {
-        field.fieldPreferences.scoringZones = filteredZones
+        field.fieldPreferences.scoringZones = field.fieldPreferences.scoringZones.filter(
+            z => !zonesEqual(z, zone)
+        )
         PreferencesSystem.savePreferences?.()
         field.updateScoringZones()
     }
@@ -136,7 +138,9 @@ export async function modifyZoneInDevtools(
     editor.setUserData("devtool:scoring_zones", updatedZones)
 
     if (field.fieldPreferences) {
-        field.fieldPreferences.scoringZones = updatedZones
+        field.fieldPreferences.scoringZones = field.fieldPreferences.scoringZones.map(z =>
+            zonesEqual(z, originalZone) ? (modifiedZone as ScoringZonePreferences) : z
+        )
         PreferencesSystem.savePreferences?.()
         field.updateScoringZones()
     }
@@ -202,12 +206,8 @@ export async function addUserZoneToDevtools(
 
     editor.setUserData("devtool:scoring_zones", devtoolZones)
 
-    if (field.fieldPreferences) {
-        field.fieldPreferences.scoringZones = devtoolZones
-        PreferencesSystem.savePreferences?.()
-        field.updateScoringZones()
-    }
-
+    // fieldPreferences.scoringZones is already up to date from save() — overwriting it here
+    // with only devtool zones would drop any user zones not yet in the cache.
     const assembly = field.mirabufInstance.parser.assembly
     const cacheId = field.cacheId
     if (cacheId) {

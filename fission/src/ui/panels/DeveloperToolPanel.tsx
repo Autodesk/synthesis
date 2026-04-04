@@ -59,9 +59,6 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 )
             }
         }
-        const allKeys = editor?.getAllDevtoolKeys()
-        console.log("devtool keys (poll):", allKeys)
-
         updateEditor()
         const interval = setInterval(updateEditor, 1000)
         return () => clearInterval(interval)

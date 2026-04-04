@@ -8,6 +8,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
 import ZoneConfigInterface from "./ScoringZoneConfigInterface"
 
@@ -20,8 +21,6 @@ const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSc
     PreferencesSystem.savePreferences()
     field.updateScoringZones()
 }
-
-import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 
 interface ConfigureZonesProps {
     selectedField: MirabufSceneObject

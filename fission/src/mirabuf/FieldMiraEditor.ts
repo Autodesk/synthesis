@@ -1,4 +1,4 @@
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import {
     defaultFieldPreferences,
@@ -12,13 +12,6 @@ export interface DevtoolMiraData {
     "devtool:protected_zones": ProtectedZonePreferences[]
     "devtool:camera_locations": unknown
     "devtool:spawn_locations": FieldPreferences["spawnLocations"]
-    "devtool:a": unknown
-    "devtool:b": unknown
-    "devtool:test": unknown
-    "devtool:keep": unknown
-    "devtool:drop": unknown
-    "devtool:bad": unknown
-    "devtool:foo": unknown
     // additional devtool keys to be added in future
 }
 

@@ -321,7 +321,9 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     }
 
     const handlePermanentModification = async () => {
+        // Let errors propagate so the modal's catch block can show the error toast.
         try {
+            await handleSave()
             const modifiedZone: ScoringZonePreferences = {
                 name,
                 alliance,
@@ -331,13 +333,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 persistentPoints: persistent,
                 deltaTransformation: selectedZone.deltaTransformation,
             }
-
-            handleSave()
-            modifiedZone.deltaTransformation = selectedZone.deltaTransformation
-
             await modifyZoneInDevtools(originalZoneRef.current, modifiedZone, "scoring")
-        } catch (error) {
-            console.error("Failed to permanently modify zone:", error)
         } finally {
             setConfirmationModal({ isOpen: false, pendingSave: false })
             if (panel) closePanel(panel.id, CloseType.Accept)

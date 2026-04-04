@@ -89,13 +89,15 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
     }, [saveEvent])
 
     useEffect(() => {
-        saveZones(zones, selectedField)
-
         World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
             World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
+    }, [])
+
+    useEffect(() => {
+        saveZones(zones, selectedField)
     }, [selectedField, zones])
 
     return (
@@ -106,9 +108,7 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
                         {zones.map((zonePrefs: ProtectedZonePreferences, i: number) => (
                             <ProtectedZoneRow
                                 key={i}
-                                zone={(() => {
-                                    return zonePrefs
-                                })()}
+                                zone={zonePrefs}
                                 save={() => saveZones(zones, selectedField)}
                                 deleteZone={() => {
                                     setZones(zones.filter((_, idx) => idx !== i))
