@@ -12,6 +12,13 @@ import type { PanelImplProps } from "../components/Panel"
 import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
+// biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
+function getValidDevtoolKeys(editor: FieldMiraEditor): DevtoolKey[] {
+    return editor
+        .getAllDevtoolKeys()
+        .filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)) as DevtoolKey[]
+}
+
 async function saveToCache() {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
     if (!field) return
@@ -55,12 +62,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     if (parts) {
                         const newEditor = new FieldMiraEditor(parts)
                         setEditor(newEditor)
-                        setKeys(
-                            newEditor
-                                .getAllDevtoolKeys()
-                                // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
-                                .filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k))
-                        )
+                        setKeys(getValidDevtoolKeys(newEditor))
                         setFieldLoaded(true)
                     } else {
                         setEditor(undefined)
@@ -76,10 +78,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 setJsonValue("")
                 setError("")
             } else if (currentField && editor) {
-                setKeys(
-                    // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
-                    editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k))
-                )
+                setKeys(getValidDevtoolKeys(editor))
             }
         }
         updateEditor()
@@ -112,8 +111,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             }
             editor.setUserData(selectedKey, parsed)
 
-            // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
-            setKeys(editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)))
+            setKeys(getValidDevtoolKeys(editor))
 
             // Persist changes to cache
             await saveToCache()
@@ -135,8 +133,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         if (!editor || !selectedKey || !field) return
 
         editor.removeUserData(selectedKey)
-        // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
-        setKeys(editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)))
+        setKeys(getValidDevtoolKeys(editor))
         setSelectedKey(undefined)
         setJsonValue("")
         setError("")

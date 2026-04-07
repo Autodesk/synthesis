@@ -182,13 +182,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
             }
             // biome-ignore lint/suspicious/noExplicitAny: Panel generics are intentionally widened
             const scoringPanel = panel as Panel<any, any>
-            return (
-                <ConfigureScoringZonesInterface
-                    panel={scoringPanel}
-                    selectedField={assembly}
-                    initialZones={zones}
-                />
-            )
+            return <ConfigureScoringZonesInterface panel={scoringPanel} selectedField={assembly} initialZones={zones} />
         }
         case ConfigMode.PROTECTED_ZONES: {
             const zones = assembly.fieldPreferences?.protectedZones ?? []
