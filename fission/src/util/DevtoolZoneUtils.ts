@@ -76,9 +76,7 @@ export async function removeZoneFromDevtools(
     }
 
     if (field.fieldPreferences) {
-        field.fieldPreferences.scoringZones = field.fieldPreferences.scoringZones.filter(
-            z => !zonesEqual(z, zone)
-        )
+        field.fieldPreferences.scoringZones = field.fieldPreferences.scoringZones.filter(z => !zonesEqual(z, zone))
         PreferencesSystem.savePreferences?.()
         field.updateScoringZones()
     }
