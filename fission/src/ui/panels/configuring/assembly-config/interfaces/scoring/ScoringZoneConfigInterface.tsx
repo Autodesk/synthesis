@@ -105,6 +105,7 @@ interface ZoneConfigProps {
     selectedField: MirabufSceneObject
     selectedZone: ScoringZonePreferences
     saveAllZones: () => void
+    // biome-ignore lint/suspicious/noExplicitAny: Panel generics are intentionally widened
     panel?: Panel<any, any>
 }
 

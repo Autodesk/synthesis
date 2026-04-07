@@ -24,6 +24,7 @@ const saveProtectedZones = (zones: ProtectedZonePreferences[] | undefined, field
 interface ConfigureZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ProtectedZonePreferences[]
+    // biome-ignore lint/suspicious/noExplicitAny: Panel generics are intentionally widened
     panel?: Panel<any, any>
 }
 

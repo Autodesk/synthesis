@@ -75,6 +75,7 @@ interface ScoringZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ScoringZonePreferences[]
     selectZone: (zone: ScoringZonePreferences) => void
+    // biome-ignore lint/suspicious/noExplicitAny: Panel generics are intentionally widened
     panel?: Panel<any, any>
 }
 

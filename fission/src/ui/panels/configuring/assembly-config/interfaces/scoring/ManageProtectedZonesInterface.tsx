@@ -61,6 +61,7 @@ interface ProtectedZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ProtectedZonePreferences[]
     selectZone: (zone: ProtectedZonePreferences) => void
+    // biome-ignore lint/suspicious/noExplicitAny: Panel generics are intentionally widened
     panel?: Panel<any, any>
 }
 

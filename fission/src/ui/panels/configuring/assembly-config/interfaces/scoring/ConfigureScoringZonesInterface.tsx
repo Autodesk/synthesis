@@ -24,6 +24,7 @@ const saveScoringZones = (zones: ScoringZonePreferences[] | undefined, field: Mi
 interface ConfigureZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ScoringZonePreferences[]
+    // biome-ignore lint/suspicious/noExplicitAny: Panel generics are intentionally widened
     panel?: Panel<any, any>
 }
 

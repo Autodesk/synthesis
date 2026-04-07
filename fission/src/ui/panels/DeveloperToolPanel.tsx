@@ -58,6 +58,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                         setKeys(
                             newEditor
                                 .getAllDevtoolKeys()
+                                // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
                                 .filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k))
                         )
                         setFieldLoaded(true)
@@ -76,6 +77,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 setError("")
             } else if (currentField && editor) {
                 setKeys(
+                    // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
                     editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k))
                 )
             }
@@ -88,6 +90,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     // Load value when key changes
     useEffect(() => {
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
         if (!editor || !field || !selectedKey || !Object.prototype.hasOwnProperty.call(devtoolHandlers, selectedKey))
             return
 
@@ -109,6 +112,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             }
             editor.setUserData(selectedKey, parsed)
 
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
             setKeys(editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)))
 
             // Persist changes to cache
@@ -131,6 +135,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         if (!editor || !selectedKey || !field) return
 
         editor.removeUserData(selectedKey)
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
         setKeys(editor.getAllDevtoolKeys().filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)))
         setSelectedKey(undefined)
         setJsonValue("")

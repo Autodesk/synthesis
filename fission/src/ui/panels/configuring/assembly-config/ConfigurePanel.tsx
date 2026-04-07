@@ -180,9 +180,11 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                 console.error("Field does not contain scoring zone preferences!")
                 return <Label size="md">ERROR: Field does not contain scoring zone configuration!</Label>
             }
+            // biome-ignore lint/suspicious/noExplicitAny: Panel generics are intentionally widened
+            const scoringPanel = panel as Panel<any, any>
             return (
                 <ConfigureScoringZonesInterface
-                    panel={panel as Panel<any, any>}
+                    panel={scoringPanel}
                     selectedField={assembly}
                     initialZones={zones}
                 />
