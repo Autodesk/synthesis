@@ -12,10 +12,10 @@ import type { PanelImplProps } from "../components/Panel"
 import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
-// biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
 function getValidDevtoolKeys(editor: FieldMiraEditor): DevtoolKey[] {
     return editor
         .getAllDevtoolKeys()
+        // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
         .filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)) as DevtoolKey[]
 }
 
