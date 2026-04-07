@@ -1,6 +1,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
-import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
+import APS from "@/aps/APS"
+import EventSystem from "@/systems/EventSystem.ts"
 import { SynthesisIcons } from "./StyledComponents"
 
 interface UserIconProps {
@@ -11,7 +12,9 @@ const UserIcon: React.FC<UserIconProps> = ({ className }) => {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
 
     useEffect(() => {
-        document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => setUserInfo(APS.userInfo))
+        return EventSystem.listen("APSUserInfoUpdate", () => {
+            setUserInfo(APS.userInfo)
+        })
     }, [])
 
     if (!userInfo) {

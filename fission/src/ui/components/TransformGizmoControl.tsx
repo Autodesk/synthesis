@@ -1,11 +1,9 @@
-import { Button, ToggleButton, ToggleButtonGroup } from "./StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
-import * as THREE from "three"
 import InputSystem from "@/systems/input/InputSystem"
 import GizmoSceneObject, { type GizmoMode } from "@/systems/scene/GizmoSceneObject"
-
 import World from "@/systems/World"
+import { ToggleButton, ToggleButtonGroup } from "./StyledComponents"
 import type TransformGizmoControlProps from "./TransformGizmoControlProps"
 
 /**
@@ -111,20 +109,12 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
                 sx={{
                     ...(sx ?? {}),
                     alignSelf: "center",
+                    display: "flex",
+                    justifyContent: "center",
                 }}
             >
                 {buttons}
             </ToggleButtonGroup>
-            {!rotateDisabled && (
-                <Button
-                    className="self-center"
-                    onClick={() => {
-                        gizmo?.setRotation(new THREE.Quaternion(0, 0, 0, 1))
-                    }}
-                >
-                    Reset Orientation
-                </Button>
-            )}
         </>
     )
 }

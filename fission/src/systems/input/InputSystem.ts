@@ -1,3 +1,4 @@
+import EventSystem from "@/systems/EventSystem.ts"
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
@@ -13,10 +14,15 @@ const LOG_GAMEPAD_EVENTS = false
  *  It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.
  */
 class InputSystem extends WorldSystem {
+    private _unsubscribeTouchControls: () => void
+
     public static currentModifierState: ModifierState
 
     /** The keys currently being pressed. */
     private static _keysPressed: Partial<Record<KeyCode, boolean>> = {}
+
+    /** Whether the command palette is currently open, which blocks robot input */
+    private static _isCommandPaletteOpen: boolean = false
 
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
@@ -35,6 +41,13 @@ class InputSystem extends WorldSystem {
         })
     }
 
+    /**
+     * Sets whether the command palette is open, which blocks all robot inputs
+     */
+    public static setCommandPaletteOpen(isOpen: boolean) {
+        InputSystem._isCommandPaletteOpen = isOpen
+    }
+
     constructor() {
         super()
 
@@ -51,7 +64,7 @@ class InputSystem extends WorldSystem {
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this)
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
 
-        window.addEventListener("touchcontrolsloaded", () => {
+        this._unsubscribeTouchControls = EventSystem.listen("TouchControlsLoaded", () => {
             InputSystem._leftJoystick = new Joystick(
                 document.getElementById("joystick-base-left")!,
                 document.getElementById("joystick-stick-left")!
@@ -100,6 +113,7 @@ class InputSystem extends WorldSystem {
         document.removeEventListener("keyup", this.handleKeyUp)
         window.removeEventListener("gamepadconnected", this.gamepadConnected)
         window.removeEventListener("gamepaddisconnected", this.gamepadDisconnected)
+        this._unsubscribeTouchControls()
     }
 
     /** Called when any key is first pressed */
@@ -159,6 +173,11 @@ class InputSystem extends WorldSystem {
      * @returns {number} A number between -1 and 1 based on the current state of the input.
      */
     public static getInput(inputName: InputName, brainIndex: number): number {
+        // Block all robot inputs when command palette is open
+        if (InputSystem._isCommandPaletteOpen) {
+            return 0
+        }
+
         const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input

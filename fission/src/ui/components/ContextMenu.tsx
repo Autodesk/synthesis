@@ -1,10 +1,11 @@
 import { Divider, Stack } from "@mui/material"
-import { Button } from "./StyledComponents"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
+import EventSystem from "@/systems/EventSystem.ts"
+import type { ContextData } from "./ContextMenuData"
 import { globalOpenModal, globalOpenPanel } from "./GlobalUIControls"
 import Label from "./Label"
+import { Button } from "./StyledComponents"
 
 interface ContextMenuStateData {
     data: ContextData
@@ -15,17 +16,12 @@ const ContextMenu: React.FC = () => {
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
     useEffect(() => {
-        const func = (e: ContextSupplierEvent) => {
+        return EventSystem.listen("ContextSupplierEvent", e => {
             setState({
                 data: e.data,
                 location: [e.mousePosition[0], e.mousePosition[1]],
             })
-        }
-
-        ContextSupplierEvent.listen(func)
-        return () => {
-            ContextSupplierEvent.removeListener(func)
-        }
+        })
     }, [])
 
     return !state ? (
@@ -56,13 +52,14 @@ const ContextMenu: React.FC = () => {
                     top: state.location[1],
                     padding: "1rem",
                     borderRadius: "0.5rem",
-                    bgcolor: "background.default",
+                    bgcolor: "background.paper",
+                    boxShadow: 6,
                 }}
                 // Why, why, why do I need to do this. This is absurd
                 onPointerDown={e => e.stopPropagation()}
             >
                 <Stack key="CONTEXT-HEADER" component="div" direction="column">
-                    <Label key="context-title" size="md">
+                    <Label key="context-title" size="md" color="text.primary">
                         {state.data.title}
                     </Label>
                     <Divider />

@@ -1,70 +1,44 @@
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { convertFeetToMeters } from "@/util/UnitConversions"
+import { API_URL } from "@/util/Consts.ts"
+
+type ManifestMatchModeConfig = Omit<MatchModeConfig, "id"> & { id: string }
+interface MatchConfigManifest {
+    private: Record<string, ManifestMatchModeConfig>
+    public: Record<string, ManifestMatchModeConfig>
+}
 
 /** The purpose of this class is to store any defaults related to match mode configurations. */
 class DefaultMatchModeConfigs {
-    static frcReefscape2025 = (): MatchModeConfig => {
-        return {
-            id: "FRC-Reefscape-2025",
-            name: "FRC Reefscape 2025",
-            isDefault: true,
-            autonomousTime: 15,
-            teleopTime: 135,
-            endgameTime: 20,
-            ignoreRotation: true,
-            maxHeight: Infinity,
-            heightLimitPenalty: 0,
-            sideMaxExtension: convertFeetToMeters(1.5),
-            sideExtensionPenalty: 0,
+    private static readonly MANIFEST_LOCATION = `${API_URL}/match_configs/manifest.json`
+    private static _configs: MatchModeConfig[] = []
+
+    static {
+        setTimeout(() => this.reload())
+    }
+    static async reload() {
+        const manifest = await fetch(this.MANIFEST_LOCATION)
+        const json: MatchConfigManifest | undefined = await manifest.json().catch(e => {
+            console.error(e)
+            return undefined
+        })
+        if (json == null) {
+            console.error("Could not load match mode manifest")
+            return undefined
+        }
+        const keys: (keyof MatchConfigManifest)[] = import.meta.env.DEV
+            ? (["public", "private"] as const)
+            : (["public"] as const)
+        for (const key of keys) {
+            const configs = json[key as keyof MatchConfigManifest]
+            Object.entries(configs).forEach(([key, value]) => {
+                value.id = key
+                this._configs.push(value)
+            })
         }
     }
 
-    static frcCrescendo2024 = (): MatchModeConfig => {
-        return {
-            id: "FRC-Crescendo-2024",
-            name: "FRC Crescendo 2024",
-            isDefault: true,
-            autonomousTime: 15,
-            teleopTime: 135,
-            endgameTime: 20,
-            ignoreRotation: true,
-            maxHeight: convertFeetToMeters(4),
-            heightLimitPenalty: 2,
-            sideMaxExtension: convertFeetToMeters(1),
-            sideExtensionPenalty: 2,
-        }
-    }
-
-    static frcPowerUp2023 = (): MatchModeConfig => {
-        return {
-            id: "FRC-Power-Up-2023",
-            name: "FRC Power Up 2023",
-            isDefault: true,
-            autonomousTime: 15,
-            teleopTime: 135,
-            endgameTime: 30,
-            ignoreRotation: true,
-            maxHeight: convertFeetToMeters(6.5),
-            heightLimitPenalty: 5,
-            sideMaxExtension: convertFeetToMeters(4),
-            sideExtensionPenalty: 5,
-        }
-    }
-
-    static matchTest = (): MatchModeConfig => {
-        return {
-            id: "Match-Test",
-            name: "Match Test",
-            isDefault: true,
-            autonomousTime: 5,
-            teleopTime: 15,
-            endgameTime: 5,
-            ignoreRotation: true,
-            maxHeight: Infinity,
-            heightLimitPenalty: 0,
-            sideMaxExtension: Infinity,
-            sideExtensionPenalty: 0,
-        }
+    public static get configs(): MatchModeConfig[] {
+        return this._configs
     }
 
     static fallbackValues = (): MatchModeConfig => {
@@ -76,21 +50,11 @@ class DefaultMatchModeConfigs {
             teleopTime: 135,
             endgameTime: 20,
             ignoreRotation: true,
-            maxHeight: Infinity,
+            maxHeight: -1,
             heightLimitPenalty: 2,
-            sideMaxExtension: Infinity,
+            sideMaxExtension: -1,
             sideExtensionPenalty: 2,
         }
-    }
-
-    /** @returns {MatchModeConfig[]} New copies of the default match mode configs without reference to any others. */
-    public static get defaultMatchModeConfigCopies(): MatchModeConfig[] {
-        return [
-            DefaultMatchModeConfigs.frcReefscape2025(),
-            DefaultMatchModeConfigs.frcCrescendo2024(),
-            DefaultMatchModeConfigs.frcPowerUp2023(),
-            DefaultMatchModeConfigs.matchTest(),
-        ]
     }
 }
 

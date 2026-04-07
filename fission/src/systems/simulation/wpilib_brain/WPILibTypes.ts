@@ -56,19 +56,3 @@ export const CANENCODER_POSITION = ">position"
 export const CANENCODER_VELOCITY = ">velocity"
 
 export const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
-
-export class SimMapUpdateEvent extends Event {
-    public static readonly TYPE: string = "ws/sim-map-update"
-
-    private _internalUpdate: boolean
-
-    public get internalUpdate(): boolean {
-        return this._internalUpdate
-    }
-
-    public constructor(internalUpdate: boolean) {
-        super(SimMapUpdateEvent.TYPE)
-
-        this._internalUpdate = internalUpdate
-    }
-}

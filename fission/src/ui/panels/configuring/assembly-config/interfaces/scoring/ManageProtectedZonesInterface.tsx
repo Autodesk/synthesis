@@ -1,12 +1,12 @@
 import { Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { ContactType } from "@/mirabuf/ZoneTypes"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
@@ -81,11 +81,7 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
     }, [zones, selectedField])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-
-        return () => {
-            ConfigurationSavedEvent.removeListener(saveEvent)
-        }
+        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
 
     useEffect(() => {

@@ -1,6 +1,6 @@
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
@@ -60,16 +60,15 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
     }, [panel])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-        window.addEventListener("inputSchemeChanged", handleSchemeChange)
-
+        const unsubscribeConfig = EventSystem.listen("ConfigurationSavedEvent", saveEvent)
+        const unsubscribeInput = EventSystem.listen("InputSchemeChanged", handleSchemeChange)
         return () => {
             setSelectedScheme(undefined)
             setGlobalSelectedScheme(undefined)
-            ConfigurationSavedEvent.removeListener(saveEvent)
-            window.removeEventListener("inputSchemeChanged", handleSchemeChange)
+            unsubscribeConfig()
+            unsubscribeInput()
         }
-    }, [saveEvent, setGlobalSelectedScheme, handleSchemeChange])
+    }, [saveEvent, handleSchemeChange])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()
@@ -86,7 +85,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                     onOptionSelected={val => {
                         setSelectedScheme((val as SchemeSelectionOption)?.scheme)
                         if (val == undefined) {
-                            new ConfigurationSavedEvent()
+                            EventSystem.dispatch("ConfigurationSavedEvent")
                         }
                     }}
                     defaultHeaderText={"Select an Input Scheme"}
@@ -115,13 +114,8 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                         PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
                         PreferencesSystem.savePreferences()
 
-                        // Fire event to notify of input scheme changes
-                        window.dispatchEvent(
-                            new CustomEvent("inputSchemeChanged", {
-                                detail: { panelId: panel?.id },
-                            })
-                        )
-
+                        // TODO: use preference event instead?
+                        EventSystem.dispatch("InputSchemeChanged", { panelId: panel?.id })
                         // Update UI with new schemes
                         setSchemes(InputSchemeManager.allInputSchemes)
                     }}

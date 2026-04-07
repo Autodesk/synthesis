@@ -57,7 +57,7 @@ describe("ScreenInteractionHandler", () => {
         expect(mockElement.addEventListener).toHaveBeenCalledWith("pointerup", expect.any(Function))
         expect(mockElement.addEventListener).toHaveBeenCalledWith("pointercancel", expect.any(Function))
         expect(mockElement.addEventListener).toHaveBeenCalledWith("pointerleave", expect.any(Function))
-        expect(mockElement.addEventListener).toHaveBeenCalledWith("touchmove", expect.any(Function))
+        expect(mockElement.addEventListener).toHaveBeenCalledWith("touchmove", expect.any(Function), expect.any(Object))
     })
 
     test("dispose removes event listeners", () => {

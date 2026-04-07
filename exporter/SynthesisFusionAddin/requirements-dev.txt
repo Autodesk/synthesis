@@ -1,3 +1,2 @@
-black
-isort
-pyminifier
+black==24.10.0
+isort==5.13.2

@@ -1,10 +1,10 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { OnContactAddedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
+import ScoreTracker from "@/systems/match_mode/ScoreTracker"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
@@ -47,8 +47,7 @@ class ScoringZoneSceneObject extends SceneObject {
     private _prefs?: ScoringZonePreferences
     private _joltBodyId?: Jolt.BodyID
     private _mesh?: THREE.Mesh
-    private _collision?: (event: OnContactAddedEvent) => void
-    private _collisionRemoved?: (event: OnContactRemovedEvent) => void
+    private _unsubscribers: (() => void)[] = []
 
     private _gpContacted: Jolt.BodyID[] = []
     private _prevGP: Jolt.BodyID[] = []
@@ -108,35 +107,36 @@ class ScoringZoneSceneObject extends SceneObject {
                 }
 
                 // Detect new gamepiece listener
-                this._collision = (event: OnContactAddedEvent) => {
-                    const body1 = event.message.body1
-                    const body2 = event.message.body2
-
-                    if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollision(body2)
-                    } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollision(body1)
-                    }
-                }
-                OnContactAddedEvent.addListener(this._collision)
+                this._unsubscribers.push(
+                    EventSystem.listen("OnContactAddedEvent", ({ body1, body2 }) => {
+                        if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                            this.zoneCollision(body2)
+                        } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                            this.zoneCollision(body1)
+                        }
+                    })
+                )
 
                 // If persistent, detect gamepiece removed listener
                 if (this._prefs.persistentPoints) {
-                    this._collisionRemoved = (event: OnContactRemovedEvent) => {
-                        if (this._prefs?.persistentPoints) {
-                            const body1 = event.message.GetBody1ID()
-                            const body2 = event.message.GetBody2ID()
+                    this._unsubscribers.push(
+                        EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
+                            if (this._prefs?.persistentPoints) {
+                                const body1 = message.GetBody1ID()
+                                const body2 = message.GetBody2ID()
 
-                            if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                                this.zoneCollisionRemoved(body2)
-                            } else if (
-                                body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
-                            ) {
-                                this.zoneCollisionRemoved(body1)
+                                if (
+                                    body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
+                                ) {
+                                    this.zoneCollisionRemoved(body2)
+                                } else if (
+                                    body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
+                                ) {
+                                    this.zoneCollisionRemoved(body1)
+                                }
                             }
-                        }
-                    }
-                    OnContactRemovedEvent.addListener(this._collisionRemoved)
+                        })
+                    )
                 }
             }
         }
@@ -179,13 +179,7 @@ class ScoringZoneSceneObject extends SceneObject {
                     const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
                     const points = this._prefs.points
 
-                    if (this._prefs.alliance == "red") {
-                        SimulationSystem.redScore += (gpAdded.length - gpRemoved.length) * points
-                    } else {
-                        SimulationSystem.blueScore += (gpAdded.length - gpRemoved.length) * points
-                    }
-                    const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
-                    event.dispatch()
+                    ScoreTracker.addPoints(this._prefs.alliance, (gpAdded.length - gpRemoved.length) * points)
 
                     // Per robot score calculations
                     gpAdded.forEach(gpID => {
@@ -193,14 +187,14 @@ class ScoringZoneSceneObject extends SceneObject {
                         const robotAlliancePoints =
                             associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
-                            SimulationSystem.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
+                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
                     })
                     gpRemoved.forEach(gpID => {
                         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
                         const robotAlliancePoints =
                             associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
-                            SimulationSystem.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
+                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
                     })
 
                     this._prevGP = Object.assign([], this._gpContacted)
@@ -208,6 +202,10 @@ class ScoringZoneSceneObject extends SceneObject {
         } else {
             console.debug("Failed to update scoring zone")
         }
+    }
+
+    public reset() {
+        this._prevGP = []
     }
 
     public dispose(): void {
@@ -220,8 +218,7 @@ class ScoringZoneSceneObject extends SceneObject {
             }
         }
 
-        if (this._collision) OnContactAddedEvent.removeListener(this._collision)
-        if (this._collisionRemoved) OnContactRemovedEvent.removeListener(this._collisionRemoved)
+        this._unsubscribers.forEach(unsubscribe => unsubscribe())
     }
 
     private zoneCollision(gpID: Jolt.BodyID) {
@@ -231,20 +228,13 @@ class ScoringZoneSceneObject extends SceneObject {
             if (this._prefs.persistentPoints) {
                 this._gpContacted.push(gpID)
             } else {
-                if (this._prefs.alliance == "red") {
-                    SimulationSystem.redScore += this._prefs.points
-                } else {
-                    SimulationSystem.blueScore += this._prefs.points
-                }
-                const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
-                event.dispatch()
-
+                ScoreTracker.addPoints(this._prefs.alliance, this._prefs.points)
                 const robotAlliancePoints =
                     associate.robotLastInContactWith?.alliance !== this._prefs?.alliance
                         ? -this._prefs.points
                         : this._prefs.points
                 associate.robotLastInContactWith &&
-                    SimulationSystem.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
+                    ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
             }
         }
     }
@@ -271,32 +261,6 @@ class ScoringZoneSceneObject extends SceneObject {
             })
             if (zone._gpContacted != temp) zone._gpContacted = Object.assign([], temp)
         }
-    }
-}
-
-export class OnScoreChangedEvent extends Event {
-    public static readonly EVENT_KEY = "OnScoreChangedEvent"
-
-    public red: number
-    public blue: number
-
-    public constructor(redScore: number, blueScore: number) {
-        super(OnScoreChangedEvent.EVENT_KEY)
-
-        this.red = redScore
-        this.blue = blueScore
-    }
-
-    public dispatch(): void {
-        window.dispatchEvent(this)
-    }
-
-    public static addListener(func: (e: OnScoreChangedEvent) => void) {
-        window.addEventListener(OnScoreChangedEvent.EVENT_KEY, func as (e: Event) => void)
-    }
-
-    public static removeListener(func: (e: OnScoreChangedEvent) => void) {
-        window.removeEventListener(OnScoreChangedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
 

@@ -1,4 +1,5 @@
-import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
+import { FormControl, InputLabel, MenuItem, TextField } from "@mui/material"
+import { Select } from "@/ui/components/StyledComponents"
 import { Stack } from "@mui/system"
 import type React from "react"
 import { useEffect, useMemo, useState } from "react"
@@ -44,12 +45,6 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
             if (brainIndex !== undefined) {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
             }
-
-            window.dispatchEvent(
-                new CustomEvent("inputSchemeChanged", {
-                    detail: { modalId: modal?.id },
-                })
-            )
 
             setSelectedScheme(scheme)
             openPanel(

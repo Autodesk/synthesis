@@ -7,11 +7,11 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
+import EventSystem from "@/systems/EventSystem.ts"
 import { type CameraControls, type CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import { type ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
+import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import { type PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
@@ -22,6 +22,7 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
+import type { LocalSceneObjectId, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -54,6 +55,9 @@ class SceneRenderer extends WorldSystem {
     public get sceneObjects() {
         return this._sceneObjects
     }
+    public set sceneObjects(objects: Map<number, SceneObject>) {
+        this._sceneObjects = objects
+    }
 
     public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
         return [...this._sceneObjects.values()].filter(predicate)
@@ -61,7 +65,7 @@ class SceneRenderer extends WorldSystem {
 
     public readonly mirabufSceneObjects = {
         getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
-        findWhere: (predicate: Parameters<(typeof Array<MirabufSceneObject>)["prototype"]["find"]>[0]) =>
+        findWhere: (predicate: (obj: MirabufSceneObject) => boolean) =>
             this.mirabufSceneObjects.getAll().find(predicate),
         getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD),
         getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT),
@@ -84,7 +88,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     public set isPlacingAssembly(value: boolean) {
-        new TouchControlsEvent(TouchControlsEventKeys.PLACE_BUTTON, value)
+        EventSystem.dispatch("SetPlaceAssetButtonVisibleEvent", value)
         this._isPlacingAssembly = value
     }
 
@@ -242,7 +246,7 @@ class SceneRenderer extends WorldSystem {
         this._skybox.position.copy(this._mainCamera.position)
 
         // Update the tags each frame if they are enabled in preferences
-        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
+        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
 
         this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)
@@ -362,12 +366,19 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(obj: T): number {
-        const id = nextSceneObjectId++
+    public registerSceneObject<T extends SceneObject>(obj: T, idOverride?: number): LocalSceneObjectId {
+        const id = idOverride ?? nextSceneObjectId++
+        if (nextSceneObjectId <= id) {
+            nextSceneObjectId = id + 1
+        }
+        if (this._sceneObjects.has(id)) {
+            console.error("Trying to add with existing ID!", obj, idOverride)
+            return -1 as LocalSceneObjectId
+        }
         obj.id = id
         this._sceneObjects.set(id, obj)
         obj.setup()
-        return id
+        return id as LocalSceneObjectId
     }
 
     /** Registers gizmos that are attached to a parent mirabufsceneobject  */
@@ -389,6 +400,10 @@ class SceneRenderer extends WorldSystem {
         if (obj instanceof MirabufSceneObject) {
             const objGizmo = this._gizmosOnMirabuf.get(id)
             if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
+            World?.multiplayerSystem?.broadcast({
+                type: "deleteObject",
+                data: id as RemoteSceneObjectId,
+            })
         } else if (obj instanceof GizmoSceneObject && obj.hasParent()) {
             this._gizmosOnMirabuf.delete(obj.parentObjectId!)
         }
@@ -537,26 +552,37 @@ class SceneRenderer extends WorldSystem {
         )
 
         // Use any associations to determine ContextData.
-        let miraSupplierData: ContextData | undefined = undefined
+        let miraSupplierData: ContextData | undefined
         if (res) {
             const assoc = World.physicsSystem.getBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
-            if (assoc?.sceneObject) {
-                miraSupplierData = assoc.sceneObject.getSupplierData()
+            const sceneObject = assoc?.sceneObject
+            if (sceneObject) {
+                if (
+                    !World.multiplayerSystem ||
+                    (sceneObject.miraType === MiraType.ROBOT &&
+                        World.multiplayerSystem
+                            ?.getOwnRobots()
+                            .map(obj => obj.id)
+                            .includes(sceneObject.id))
+                ) {
+                    miraSupplierData = assoc.sceneObject.getSupplierData()
+                }
             }
         }
-
         // All else fails, present default options.
         if (!miraSupplierData) {
             miraSupplierData = { title: "The Scene", items: [] }
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
+                    globalOpenPanel(ImportMirabufPanel, {
+                        configurationType: "ROBOTS" as ConfigurationType,
+                    })
                 },
             })
         }
 
-        ContextSupplierEvent.dispatch(miraSupplierData, e.position)
+        EventSystem.dispatch("ContextSupplierEvent", { data: miraSupplierData, mousePosition: e.position })
     }
 }
 

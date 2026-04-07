@@ -1,15 +1,14 @@
 import { Divider, Stack } from "@mui/material"
-import { Button, IconButton } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import AxisInput from "@/systems/input/inputs/AxisInput.ts"
 import type Input from "@/systems/input/inputs/Input"
 import Label from "@/ui/components/Label"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, IconButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {
@@ -28,11 +27,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
     }, [panelId])
 
     useEffect(() => {
-        ConfigurationSavedEvent.listen(saveEvent)
-
-        return () => {
-            ConfigurationSavedEvent.removeListener(saveEvent)
-        }
+        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
 
     /** Disable scrolling with arrow keys to stop accidentally scrolling when binding keys */
@@ -105,7 +100,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
             />
             <Divider />
 
-            {/* Scroll view for inputs */}
+            {/* Inputs list (let parent panel handle scrolling to avoid double scrollbars) */}
             <Stack ref={scrollRef} gap={2}>
                 {selectedScheme.inputs.map((i: Input) => {
                     return (

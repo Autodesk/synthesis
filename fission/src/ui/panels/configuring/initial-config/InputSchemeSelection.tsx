@@ -1,6 +1,6 @@
-import { Box, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
+import { Box, Divider, FormControl, InputLabel, MenuItem, Stack, Tooltip } from "@mui/material"
 import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
@@ -8,8 +8,14 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
-import { DeleteButton, EditButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import {
+    Button,
+    DeleteButton,
+    EditButton,
+    PositiveButton,
+    SynthesisIcons,
+    Select,
+} from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
 interface InputSchemeSelectionProps {
@@ -42,13 +48,7 @@ export default function InputSchemeSelection({
         // Initial load and when robotDriveType changes
         refreshAvailableSchemes()
 
-        // Set up event listener for external scheme changes
-        const handleSchemeChange = () => {
-            refreshAvailableSchemes()
-        }
-
-        window.addEventListener("inputSchemeChanged", handleSchemeChange)
-        return () => window.removeEventListener("inputSchemeChanged", handleSchemeChange)
+        return EventSystem.listen("InputSchemeChanged", () => refreshAvailableSchemes())
     }, [refreshAvailableSchemes])
 
     const SchemeSelector = (
@@ -80,13 +80,9 @@ export default function InputSchemeSelection({
                                     InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                                     // TODO: if touch controls, then ensure that they are enabled.
                                     if (scheme.usesTouchControls) {
-                                        new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
+                                        EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")
                                     }
-                                    window.dispatchEvent(
-                                        new CustomEvent("inputSchemeChanged", {
-                                            detail: { panelId },
-                                        })
-                                    )
+                                    EventSystem.dispatch("InputSchemeChanged", { panelId })
                                     onSelect?.()
                                     update()
                                 }}
@@ -119,11 +115,7 @@ export default function InputSchemeSelection({
                                 PreferencesSystem.savePreferences()
 
                                 // Update the available schemes list to reflect the deletion
-                                window.dispatchEvent(
-                                    new CustomEvent("inputSchemeChanged", {
-                                        detail: { panelId },
-                                    })
-                                )
+                                EventSystem.dispatch("InputSchemeChanged", { panelId })
                                 update()
                             })
                         ) : (

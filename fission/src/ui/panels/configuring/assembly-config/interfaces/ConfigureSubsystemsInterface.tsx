@@ -1,7 +1,7 @@
 import type React from "react"
 import { useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
@@ -91,7 +91,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
             <SelectMenu
                 options={getSubsystemOptions()}
                 onOptionSelected={val => {
-                    if (val !== undefined) new ConfigurationSavedEvent()
+                    if (val !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
                     setSelectedConfigMode(val as ConfigModeSelectionOption)
                 }}
                 defaultHeaderText="Select a Subsystem"

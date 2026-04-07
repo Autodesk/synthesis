@@ -1,18 +1,17 @@
 import { Box, Divider, Stack } from "@mui/material"
-import { Button } from "@/ui/components/StyledComponents"
 import type React from "react"
 import { useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, SynthesisIcons } from "@/ui/components/StyledComponents"
 import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
-import ZoneConfigInterface from "./ScoringZoneConfigInterface"
+import ScoringZoneConfigInterface from "./ScoringZoneConfigInterface"
 
-const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+const saveScoringZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
 
     const fieldPrefs = field.fieldPreferences
@@ -49,7 +48,7 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                         <Button
                             startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
                             onClick={() => {
-                                new ConfigurationSavedEvent()
+                                EventSystem.dispatch("ConfigurationSavedEvent")
                                 setSelectedZone(undefined)
                             }}
                         />
@@ -63,11 +62,11 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                         </Stack>
                     </Stack>
                     <Divider />
-                    <ZoneConfigInterface
+                    <ScoringZoneConfigInterface
                         selectedField={selectedField}
                         selectedZone={selectedZone}
                         saveAllZones={() => {
-                            saveZones(selectedField.fieldPreferences?.scoringZones, selectedField)
+                            saveScoringZones(selectedField.fieldPreferences?.scoringZones, selectedField)
                         }}
                         panel={panel}
                     />

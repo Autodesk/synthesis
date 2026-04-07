@@ -1,6 +1,7 @@
 import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import { FaHandPaper } from "react-icons/fa"
+import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "./GlobalUIControls"
 import Label from "./Label"
 
@@ -8,19 +9,11 @@ const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
 
     useEffect(() => {
-        const handleDragModeToggle = (event: CustomEvent) => {
-            setEnabled(event.detail.enabled)
-        }
-
-        window.addEventListener("dragModeToggled", handleDragModeToggle as EventListener)
-
-        return () => {
-            window.removeEventListener("dragModeToggled", handleDragModeToggle as EventListener)
-        }
+        return EventSystem.listen("DragModeToggled", ({ enabled }) => setEnabled(enabled))
     }, [])
 
     const handleClick = () => {
-        window.dispatchEvent(new CustomEvent("disableDragMode"))
+        EventSystem.dispatch("DragModeToggled", { enabled: false })
         globalAddToast("info", "Drag Mode", "Drag mode has been disabled")
     }
 
@@ -30,11 +23,14 @@ const DragModeIndicator: React.FC = () => {
             direction="row"
             onClick={handleClick}
             sx={{
-                bgcolor: "background.default",
+                bgcolor: "background.paper",
+                boxShadow: 6,
             }}
         >
             <FaHandPaper className="self-center" />
-            <Label size="sm">Drag Mode</Label>
+            <Label size="sm" color="text.primary">
+                Drag Mode
+            </Label>
         </Stack>
     ) : (
         <></>
