@@ -13,10 +13,12 @@ import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
 function getValidDevtoolKeys(editor: FieldMiraEditor): DevtoolKey[] {
-    return editor
-        .getAllDevtoolKeys()
-        // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
-        .filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)) as DevtoolKey[]
+    return (
+        editor
+            .getAllDevtoolKeys()
+            // biome-ignore lint/suspicious/noPrototypeBuiltins: Object.hasOwn unavailable at ES2020 target
+            .filter(k => Object.prototype.hasOwnProperty.call(devtoolHandlers, k)) as DevtoolKey[]
+    )
 }
 
 async function saveToCache() {
