@@ -30,6 +30,14 @@
             PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
           };
         };
+        exporter = pkgs.mkShell {
+          packages = with pkgs; [
+            python3
+            black
+            isort
+            bun
+          ];
+        };
       });
 
       formatter = forEachSupportedSystem (pkgs: pkgs.nixfmt-tree);
