@@ -41,5 +41,8 @@
       });
 
       formatter = forEachSupportedSystem (pkgs: pkgs.nixfmt-tree);
+
+      # Build all devShells, instead of just verifying they are deviations
+      checks = forEachSupportedSystem (pkgs: inputs.self.devShells.${pkgs.stdenv.hostPlatform.system});
     };
 }
