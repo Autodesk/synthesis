@@ -19,6 +19,9 @@
       devShells = forEachSupportedSystem (pkgs: {
         default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
+            nodejs
+            bun
+            git-lfs
             playwright-driver.browsers
           ];
 
