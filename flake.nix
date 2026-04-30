@@ -17,7 +17,7 @@
     in
     {
       devShells = forEachSupportedSystem (pkgs: {
-        default = pkgs.mkShell {
+        fission = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
             nodejs
             bun
