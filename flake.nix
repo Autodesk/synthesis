@@ -4,7 +4,7 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
   outputs =
-    inputs:
+    { self, nixpkgs }:
     let
       supportedSystems = [
         "x86_64-linux"
@@ -13,10 +13,11 @@
         "aarch64-darwin"
       ];
       forEachSupportedSystem =
-        f: inputs.nixpkgs.lib.genAttrs supportedSystems (system: f inputs.nixpkgs.legacyPackages.${system});
+        f: nixpkgs.lib.genAttrs supportedSystems (system: f nixpkgs.legacyPackages.${system});
     in
     {
       devShells = forEachSupportedSystem (pkgs: {
+        default = self.devShells.${pkgs.stdenv.hostPlatform.system}.fission;
         fission = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
             nodejs
@@ -43,6 +44,6 @@
       formatter = forEachSupportedSystem (pkgs: pkgs.nixfmt-tree);
 
       # Build all devShells, instead of just verifying they are deviations
-      checks = forEachSupportedSystem (pkgs: inputs.self.devShells.${pkgs.stdenv.hostPlatform.system});
+      checks = forEachSupportedSystem (pkgs: self.devShells.${pkgs.stdenv.hostPlatform.system});
     };
 }
