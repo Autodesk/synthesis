@@ -1,3 +1,5 @@
+# https://nixos.org/download/
+# https://wiki.nixos.org/wiki/Flakes#Setup
 {
   description = "Synthesis' Web-Based Robotics Simulator";
 
@@ -19,7 +21,7 @@
       devShells = forEachSupportedSystem (pkgs: {
         default = self.devShells.${pkgs.stdenv.hostPlatform.system}.fission;
         fission = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [
+          packages = with pkgs; [
             nodejs
             bun
             git-lfs
@@ -39,11 +41,16 @@
             bun
           ];
         };
+        multiplayer = pkgs.mkShell {
+          packages = with pkgs; [
+            bun
+          ];
+        };
       });
 
       formatter = forEachSupportedSystem (pkgs: pkgs.nixfmt-tree);
 
-      # Build all devShells, instead of just verifying they are deviations
+      # Build all devShells, instead of just verifying they are derivations
       checks = forEachSupportedSystem (pkgs: self.devShells.${pkgs.stdenv.hostPlatform.system});
     };
 }
