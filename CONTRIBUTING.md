@@ -23,14 +23,6 @@ Be sure to fill out the pull request template accordingly to make reviewing your
 
 # How to Contribute
 
-### Development with Nix
-
-It's entirely possible to contribute to Synthesis without using Nix, but some may
-prefer to use it. In order to use Nix with synthesis, you must first [install nix](https://nixos.org/download/),
-[enable flakes](https://wiki.nixos.org/wiki/Flakes#Setup), then you can enter
-one of shells with `nix develop` (e.g. `nix develop .#syntehsis`). You can also
-use [direnv](https://direnv.net/) to automatically enter into the relevant dev-shell.
-
 ### Found a bug? Have an idea for a feature?
 
 Please [contact us](#Contact-Us) to let us know about the issue or feature!
