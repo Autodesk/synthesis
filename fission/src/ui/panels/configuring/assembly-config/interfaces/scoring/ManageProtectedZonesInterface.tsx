@@ -1,61 +1,10 @@
-import { Stack } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { ContactType } from "@/mirabuf/ZoneTypes"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import EventSystem from "@/systems/EventSystem.ts"
-import World from "@/systems/World"
-import Label from "@/ui/components/Label"
-import ScrollView from "@/ui/components/ScrollView"
-import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import type { Panel } from "@/ui/helpers/UIProviderHelpers"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-
-const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
-    if (!zones || !field) return
-
-    const fieldPrefs = field.fieldPreferences
-    if (fieldPrefs) fieldPrefs.protectedZones = zones
-
-    PreferencesSystem.savePreferences()
-    field.updateProtectedZones()
-}
-
-type ProtectedZoneRowProps = {
-    zone: ProtectedZonePreferences
-    save: () => void
-    deleteZone: () => void
-    selectZone: (zone: ProtectedZonePreferences) => void
-}
-
-const ProtectedZoneRow: React.FC<ProtectedZoneRowProps> = ({ zone, save, deleteZone, selectZone }) => {
-    return (
-        <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-            <Stack direction="row" gap={8}>
-                <div className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`} />
-                <Stack gap={4} className="w-max">
-                    <Label size="sm">{zone.name}</Label>
-                    <Label size="sm">
-                        {zone.penaltyPoints} {zone.penaltyPoints === 1 ? "penalty point" : "penalty points"}
-                    </Label>
-                </Stack>
-            </Stack>
-            <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
-                {EditButton(() => {
-                    selectZone(zone)
-                    save()
-                })}
-
-                {DeleteButton(() => {
-                    deleteZone()
-                })}
-            </Stack>
-        </Stack>
-    )
-}
+import ManageZonesBase from "../zones/ManageZonesBase"
 
 interface ProtectedZonesProps {
     selectedField: MirabufSceneObject
@@ -66,80 +15,35 @@ interface ProtectedZonesProps {
 }
 
 const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, initialZones, selectZone, panel }) => {
-    const [zones, setZones] = useState<ProtectedZonePreferences[]>(initialZones)
-
-    const { configureScreen } = useUIContext()
-
-    // Show the panel's default footer buttons when this interface is active
-    useEffect(() => {
-        if (panel) {
-            configureScreen(panel, { hideAccept: false, hideCancel: false }, {})
-        }
-    }, [panel, configureScreen])
-
-    const saveEvent = useCallback(() => {
-        saveZones(zones, selectedField)
-    }, [zones, selectedField])
-
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
-
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
+    const persistZones = useCallback((zones: ProtectedZonePreferences[], field: MirabufSceneObject) => {
+        const prefs = field.fieldPreferences
+        if (prefs) prefs.protectedZones = zones
+        field.updateProtectedZones()
     }, [])
 
-    useEffect(() => {
-        saveZones(zones, selectedField)
-    }, [selectedField, zones])
-
     return (
-        <>
-            {zones?.length > 0 ? (
-                <ScrollView>
-                    <Stack gap={4}>
-                        {zones.map((zonePrefs: ProtectedZonePreferences, i: number) => (
-                            <ProtectedZoneRow
-                                key={i}
-                                zone={zonePrefs}
-                                save={() => saveZones(zones, selectedField)}
-                                deleteZone={() => {
-                                    setZones(zones.filter((_, idx) => idx !== i))
-                                    saveZones(
-                                        zones.filter((_, idx) => idx !== i),
-                                        selectedField
-                                    )
-                                }}
-                                selectZone={selectZone}
-                            />
-                        ))}
-                    </Stack>
-                </ScrollView>
-            ) : (
-                <Label size="md">No protected zones</Label>
-            )}
-            {AddButton(() => {
-                if (zones === undefined) return
-
-                const newZone: ProtectedZonePreferences = {
-                    name: "New Protected Zone",
-                    alliance: "blue",
-                    penaltyPoints: 5,
-                    parentNode: undefined,
-                    contactType: ContactType.ROBOT_ENTERS,
-                    activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME],
-                    deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-                }
-
-                saveZones(zones, selectedField)
-
-                selectZone(newZone)
+        <ManageZonesBase
+            selectedField={selectedField}
+            initialZones={initialZones}
+            selectZone={selectZone}
+            getListItem={zone => ({
+                name: zone.name,
+                alliance: zone.alliance,
+                pointsLabel: `${zone.penaltyPoints} ${zone.penaltyPoints === 1 ? "penalty point" : "penalty points"}`,
             })}
-        </>
+            persistZones={persistZones}
+            createNewZone={() => ({
+                name: "New Protected Zone",
+                alliance: "blue",
+                penaltyPoints: 5,
+                parentNode: undefined,
+                contactType: ContactType.ROBOT_ENTERS,
+                activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME],
+                deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            })}
+            emptyLabel="No protected zones"
+            panel={panel}
+        />
     )
 }
 

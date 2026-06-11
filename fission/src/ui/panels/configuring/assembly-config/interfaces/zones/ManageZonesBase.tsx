@@ -9,6 +9,8 @@ import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import type { Panel } from "@/ui/helpers/UIProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type { BaseZonePreferences } from "./ZoneConfigBase"
 
 export type ZoneListItem = {
@@ -29,6 +31,14 @@ export type ManageZonesBaseProps<TZone extends BaseZonePreferences> = {
     createNewZone: () => TZone
     /** Label shown when the zones list is empty */
     emptyLabel?: string
+    /**
+     * If provided, called instead of immediate deletion.
+     * Implementation must call confirmDelete() when and if deletion should proceed.
+     * If not provided, deletion is immediate.
+     */
+    onBeforeDelete?: (zone: TZone, confirmDelete: () => void) => void
+    // biome-ignore lint/suspicious/noExplicitAny: Panel generics are intentionally widened
+    panel?: Panel<any, any>
 }
 
 function saveZonesGeneric<TZone extends BaseZonePreferences>(
@@ -50,8 +60,15 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
         persistZones,
         createNewZone,
         emptyLabel = "No zones",
+        onBeforeDelete,
+        panel,
     } = props
     const [zones, setZones] = useState<TZone[]>(initialZones)
+    const { configureScreen } = useUIContext()
+
+    useEffect(() => {
+        if (panel) configureScreen(panel, { hideAccept: false, hideCancel: false }, {})
+    }, [panel, configureScreen])
 
     const saveEvent = useCallback(() => {
         saveZonesGeneric(zones, selectedField, persistZones)
@@ -107,9 +124,12 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                                             saveZonesGeneric(zones, selectedField, persistZones)
                                         })}
                                         {DeleteButton(() => {
-                                            const newZones = zones.filter((_, idx) => idx !== i)
-                                            setZones(newZones)
-                                            saveZonesGeneric(newZones, selectedField, persistZones)
+                                            const doDelete = () => {
+                                                const newZones = zones.filter((_, idx) => idx !== i)
+                                                setZones(newZones)
+                                                saveZonesGeneric(newZones, selectedField, persistZones)
+                                            }
+                                            onBeforeDelete ? onBeforeDelete(zonePrefs, doDelete) : doDelete()
                                         })}
                                     </Stack>
                                 </Stack>

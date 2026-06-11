@@ -8,8 +8,9 @@ interface DevtoolZoneModificationModalProps {
     onClose: () => void
     zoneType: "scoring" | "protected"
     zoneName: string
-    onTemporaryModification: () => void
-    onPermanentModification: () => void
+    mode: "remove" | "modify"
+    onTemporaryAction: () => void
+    onPermanentAction: () => Promise<void>
 }
 
 const DevtoolZoneModificationModal: React.FC<DevtoolZoneModificationModalProps> = ({
@@ -17,71 +18,79 @@ const DevtoolZoneModificationModal: React.FC<DevtoolZoneModificationModalProps> 
     onClose,
     zoneType,
     zoneName,
-    onTemporaryModification,
-    onPermanentModification,
+    mode,
+    onTemporaryAction,
+    onPermanentAction,
 }) => {
-    const [isModifying, setIsModifying] = useState(false)
+    const [isPending, setIsPending] = useState(false)
 
-    const handleTemporaryModification = () => {
-        onTemporaryModification()
+    const isRemove = mode === "remove"
+    const zoneLabel = zoneType === "scoring" ? "Scoring" : "Protected"
+    const actionLabel = isRemove ? "Removal" : "Modification"
+
+    const handleTemporaryAction = () => {
+        onTemporaryAction()
         onClose()
     }
 
-    const handlePermanentModification = async () => {
-        setIsModifying(true)
+    const handlePermanentAction = async () => {
+        setIsPending(true)
         try {
-            await onPermanentModification()
-            globalAddToast?.("info", "Zone Modified", `${zoneName} has been permanently modified in the field file.`)
+            await onPermanentAction()
+            globalAddToast?.(
+                "info",
+                isRemove ? "Zone Removed" : "Zone Modified",
+                `${zoneName} has been permanently ${isRemove ? "removed from" : "modified in"} the field file.`
+            )
         } catch (error) {
             globalAddToast?.(
                 "error",
-                "Modification Failed",
-                "Failed to permanently modify zone in the field file cache."
+                isRemove ? "Removal Failed" : "Modification Failed",
+                `Failed to permanently ${isRemove ? "remove" : "modify"} zone in the field file cache.`
             )
-            console.error("Failed to modify zone in field file:", error)
+            console.error(`Failed to ${isRemove ? "remove" : "modify"} zone in field file:`, error)
         } finally {
-            setIsModifying(false)
+            setIsPending(false)
             onClose()
         }
     }
 
     return (
         <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Modify {zoneType === "scoring" ? "Scoring" : "Protected"} Zone</DialogTitle>
+            <DialogTitle>
+                {isRemove ? "Remove" : "Modify"} {zoneLabel} Zone
+            </DialogTitle>
             <DialogContent>
                 <Stack spacing={2}>
                     <Typography variant="body1">
-                        The {zoneType} zone "{zoneName}" was defined in the field file and is cached.
+                        The {zoneType} zone &quot;{zoneName}&quot; was defined in the field file and is cached.
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Choose how you'd like to save your modifications:
+                        Choose how you&apos;d like to {isRemove ? "remove" : "save"} it:
                     </Typography>
                     <Stack spacing={1}>
                         <Typography variant="body2">
-                            <strong>Temporary modification:</strong> Save changes until next field reload. Original zone
-                            will reappear when you refresh the page.
+                            <strong>Temporary {actionLabel}:</strong>{" "}
+                            {isRemove
+                                ? "Remove until next field reload. The zone will reappear when you refresh."
+                                : "Save changes until next field reload. The original zone will reappear when you refresh."}
                         </Typography>
                         <Typography variant="body2">
-                            <strong>Permanent modification:</strong> Save changes to the local asset file. This will
-                            persist your modifications until you remove it from the cache.
+                            <strong>Permanent {actionLabel}:</strong> Commits immediately to the local asset file.
+                            This action cannot be undone by clicking Cancel in this panel.
                         </Typography>
                     </Stack>
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} disabled={isModifying}>
+                <Button onClick={onClose} disabled={isPending}>
                     Cancel
                 </Button>
-                <Button onClick={handleTemporaryModification} disabled={isModifying} variant="outlined" color="warning">
-                    Temporary Modification
+                <Button onClick={handleTemporaryAction} disabled={isPending} variant="outlined" color="warning">
+                    Temporary {actionLabel}
                 </Button>
-                <Button
-                    onClick={handlePermanentModification}
-                    disabled={isModifying}
-                    variant="contained"
-                    color="primary"
-                >
-                    {isModifying ? "Modifying..." : "Permanent Modification"}
+                <Button onClick={handlePermanentAction} disabled={isPending} variant="contained" color="primary">
+                    {isPending ? `${isRemove ? "Removing" : "Modifying"}...` : `Permanent ${actionLabel}`}
                 </Button>
             </DialogActions>
         </Dialog>

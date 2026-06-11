@@ -11,16 +11,6 @@ import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
 import ProtectedZoneConfigInterface from "./ProtectedZoneConfigInterface"
 
-const saveProtectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
-    if (!zones || !field) return
-
-    const fieldPrefs = field.fieldPreferences
-    if (fieldPrefs) fieldPrefs.protectedZones = zones
-
-    PreferencesSystem.savePreferences()
-    field.updateProtectedZones()
-}
-
 interface ConfigureZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ProtectedZonePreferences[]
@@ -67,7 +57,8 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                         selectedField={selectedField}
                         selectedZone={selectedZone}
                         saveAllZones={() => {
-                            saveProtectedZones(selectedField.fieldPreferences?.protectedZones, selectedField)
+                            PreferencesSystem.savePreferences()
+                            selectedField.updateProtectedZones()
                         }}
                     />
                 </>

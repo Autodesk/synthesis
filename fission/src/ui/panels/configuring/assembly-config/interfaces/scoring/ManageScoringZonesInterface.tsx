@@ -1,75 +1,10 @@
-import { Box, Stack } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import EventSystem from "@/systems/EventSystem.ts"
-import World from "@/systems/World"
-import Label from "@/ui/components/Label"
-import ScrollView from "@/ui/components/ScrollView"
-import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import DevtoolZoneModificationModal from "@/ui/modals/DevtoolZoneModificationModal"
-import { isZoneFromDevtools, removeZoneFromDevtools } from "@/util/DevtoolZoneUtils"
 import type { Panel } from "@/ui/helpers/UIProviderHelpers"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-
-const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
-    if (!zones || !field) return
-
-    const fieldPrefs = field.fieldPreferences
-    if (fieldPrefs) fieldPrefs.scoringZones = zones
-
-    PreferencesSystem.savePreferences()
-    field.updateScoringZones()
-}
-
-type ScoringZoneRowProps = {
-    zone: ScoringZonePreferences
-    save: () => void
-    deleteZone: () => void
-    selectZone: (zone: ScoringZonePreferences) => void
-    onShowConfirmation: (zone: ScoringZonePreferences) => void
-}
-
-const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone, selectZone, onShowConfirmation }) => {
-    const handleDeleteClick = () => {
-        if (isZoneFromDevtools(zone, "scoring")) {
-            onShowConfirmation(zone)
-        } else {
-            deleteZone()
-        }
-    }
-
-    return (
-        <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-            <Stack direction="row" gap={8}>
-                <Box
-                    className={`w-12 h-12 rounded-lg`}
-                    sx={{
-                        bgcolor: zone.alliance === "red" ? "redAlliance.main" : "blueAlliance.main",
-                    }}
-                />
-                <Stack direction="row" gap={4} className="w-max">
-                    <Label size="sm">{zone.name}</Label>
-                    <Label size="sm">
-                        {zone.points} {zone.points === 1 ? "point" : "points"}
-                    </Label>
-                </Stack>
-            </Stack>
-            <Stack direction={"row-reverse"} gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
-                {EditButton(() => {
-                    selectZone(zone)
-                    save()
-                })}
-
-                {DeleteButton(() => {
-                    handleDeleteClick()
-                })}
-            </Stack>
-        </Stack>
-    )
-}
+import { isZoneFromDevtools, removeZoneFromDevtools } from "@/util/DevtoolZoneUtils"
+import ManageZonesBase from "../zones/ManageZonesBase"
 
 interface ScoringZonesProps {
     selectedField: MirabufSceneObject
@@ -80,97 +15,56 @@ interface ScoringZonesProps {
 }
 
 const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, initialZones, selectZone, panel }) => {
-    const [zones, setZones] = useState<ScoringZonePreferences[]>(initialZones)
-    const [confirmationModal, setConfirmationModal] = useState<{
+    // refreshKey forces ManageZonesBase to remount after a permanent removal.
+    // ManageZonesBase initializes local zone state from initialZones once on mount;
+    // permanent removal updates fieldPreferences externally, so a remount is required
+    // to pick up the updated zone list.
+    const [refreshKey, setRefreshKey] = useState(0)
+    const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean
         zone: ScoringZonePreferences | null
-        zoneIndex: number
-    }>({ isOpen: false, zone: null, zoneIndex: -1 })
+        confirmDelete: (() => void) | null
+    }>({ isOpen: false, zone: null, confirmDelete: null })
 
-    const { configureScreen } = useUIContext()
+    const closeConfirmModal = useCallback(() => {
+        setConfirmModal({ isOpen: false, zone: null, confirmDelete: null })
+    }, [])
 
-    // Show the panel's default footer buttons when this interface is active
-    useEffect(() => {
-        if (panel) {
-            configureScreen(panel, { hideAccept: false, hideCancel: false }, {})
-        }
-    }, [panel, configureScreen])
+    const persistZones = useCallback((zones: ScoringZonePreferences[], field: MirabufSceneObject) => {
+        const prefs = field.fieldPreferences
+        if (prefs) prefs.scoringZones = zones
+        field.updateScoringZones()
+    }, [])
 
-    const saveEvent = useCallback(() => {
-        saveZones(zones, selectedField)
-    }, [zones, selectedField])
-
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
-
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+    const handleBeforeDelete = useCallback((zone: ScoringZonePreferences, confirmDelete: () => void) => {
+        if (isZoneFromDevtools(zone, "scoring")) {
+            setConfirmModal({ isOpen: true, zone, confirmDelete })
+        } else {
+            confirmDelete()
         }
     }, [])
 
-    useEffect(() => {
-        saveZones(zones, selectedField)
-    }, [selectedField, zones])
-
-    const handleShowConfirmation = (zone: ScoringZonePreferences) => {
-        const zoneIndex = zones.indexOf(zone)
-        setConfirmationModal({ isOpen: true, zone, zoneIndex })
-    }
-
-    const handleTemporaryRemoval = () => {
-        if (confirmationModal.zoneIndex >= 0) {
-            const newZones = zones.filter((_, idx) => idx !== confirmationModal.zoneIndex)
-            setZones(newZones)
-            saveZones(newZones, selectedField)
-        }
-    }
-
     const handlePermanentRemoval = async () => {
-        if (confirmationModal.zone) {
-            await removeZoneFromDevtools(confirmationModal.zone, "scoring")
-            const updatedZones = selectedField.fieldPreferences?.scoringZones ?? []
-            setZones(updatedZones)
-        }
-    }
-
-    const handleCloseConfirmation = () => {
-        setConfirmationModal({ isOpen: false, zone: null, zoneIndex: -1 })
+        if (!confirmModal.zone) return
+        await removeZoneFromDevtools(confirmModal.zone, "scoring")
+        closeConfirmModal()
+        setRefreshKey(k => k + 1)
     }
 
     return (
         <>
-            {zones?.length > 0 ? (
-                <ScrollView>
-                    <Stack gap={4}>
-                        {zones.map((zonePrefs: ScoringZonePreferences, i: number) => (
-                            <ScoringZoneRow
-                                key={i}
-                                zone={zonePrefs}
-                                save={() => saveZones(zones, selectedField)}
-                                deleteZone={() => {
-                                    setZones(zones.filter((_, idx) => idx !== i))
-                                    saveZones(
-                                        zones.filter((_, idx) => idx !== i),
-                                        selectedField
-                                    )
-                                }}
-                                selectZone={selectZone}
-                                onShowConfirmation={handleShowConfirmation}
-                            />
-                        ))}
-                    </Stack>
-                </ScrollView>
-            ) : (
-                <Label size="md">No scoring zones</Label>
-            )}
-            {AddButton(() => {
-                if (zones === undefined) return
-
-                const newZone: ScoringZonePreferences = {
+            <ManageZonesBase
+                key={refreshKey}
+                selectedField={selectedField}
+                initialZones={selectedField.fieldPreferences?.scoringZones ?? initialZones}
+                selectZone={selectZone}
+                getListItem={zone => ({
+                    name: zone.name,
+                    alliance: zone.alliance,
+                    pointsLabel: `${zone.points} ${zone.points === 1 ? "point" : "points"}`,
+                })}
+                persistZones={persistZones}
+                createNewZone={() => ({
                     name: "New Scoring Zone",
                     alliance: "blue",
                     parentNode: undefined,
@@ -178,20 +72,22 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
                     destroyGamepiece: false,
                     persistentPoints: false,
                     deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-                }
-
-                saveZones(zones, selectedField)
-
-                selectZone(newZone)
-            })}
-
+                })}
+                emptyLabel="No scoring zones"
+                onBeforeDelete={handleBeforeDelete}
+                panel={panel}
+            />
             <DevtoolZoneModificationModal
-                isOpen={confirmationModal.isOpen}
-                onClose={handleCloseConfirmation}
+                isOpen={confirmModal.isOpen}
+                onClose={closeConfirmModal}
+                mode="remove"
                 zoneType="scoring"
-                zoneName={confirmationModal.zone?.name ?? ""}
-                onTemporaryModification={handleTemporaryRemoval}
-                onPermanentModification={handlePermanentRemoval}
+                zoneName={confirmModal.zone?.name ?? ""}
+                onTemporaryAction={() => {
+                    confirmModal.confirmDelete?.()
+                    closeConfirmModal()
+                }}
+                onPermanentAction={handlePermanentRemoval}
             />
         </>
     )

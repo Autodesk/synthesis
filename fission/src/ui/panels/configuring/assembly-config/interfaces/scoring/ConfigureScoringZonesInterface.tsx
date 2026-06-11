@@ -11,16 +11,6 @@ import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
 import ScoringZoneConfigInterface from "./ScoringZoneConfigInterface"
 
-const saveScoringZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
-    if (!zones || !field) return
-
-    const fieldPrefs = field.fieldPreferences
-    if (fieldPrefs) fieldPrefs.scoringZones = zones
-
-    PreferencesSystem.savePreferences()
-    field.updateScoringZones()
-}
-
 interface ConfigureZonesProps {
     selectedField: MirabufSceneObject
     initialZones: ScoringZonePreferences[]
@@ -67,7 +57,8 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                         selectedField={selectedField}
                         selectedZone={selectedZone}
                         saveAllZones={() => {
-                            saveScoringZones(selectedField.fieldPreferences?.scoringZones, selectedField)
+                            PreferencesSystem.savePreferences()
+                            selectedField.updateScoringZones()
                         }}
                         panel={panel}
                     />

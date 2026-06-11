@@ -11,14 +11,35 @@ import World from "@/systems/World"
 export type ZoneType = "scoring" | "protected"
 
 /**
- * Checks if two zones are equal by comparing their common base properties
+ * Checks if two zones share the same origin (name, alliance, parent, position).
+ * Epsilon-tolerant for float drift from protobuf round-trips.
+ * Use only for origin detection (isZoneFromDevtools), not for destructive targeting.
  */
-export function zonesEqual(zone1: BaseZonePreferences, zone2: BaseZonePreferences): boolean {
+export function sameZoneOrigin(zone1: BaseZonePreferences, zone2: BaseZonePreferences): boolean {
+    if (zone1.name !== zone2.name) return false
+    if (zone1.alliance !== zone2.alliance) return false
+    if (zone1.parentNode !== zone2.parentNode) return false
+    const d1 = zone1.deltaTransformation
+    const d2 = zone2.deltaTransformation
+    if (d1.length !== d2.length) return false
+    for (let i = 0; i < d1.length; i++) {
+        if (Math.abs(d1[i] - d2[i]) > 1e-6) return false
+    }
+    return true
+}
+
+/**
+ * Full equality check for scoring zones, including zone-specific fields.
+ * Use for destructive targeting (remove/modify) and deduplication.
+ * originalZone in addUserZoneToDevtools is a pre-edit clone; sameScoringZone is intentional
+ * there; do not weaken to sameZoneOrigin, which could match a different zone sharing position.
+ */
+export function sameScoringZone(a: ScoringZonePreferences, b: ScoringZonePreferences): boolean {
     return (
-        zone1.name === zone2.name &&
-        zone1.alliance === zone2.alliance &&
-        zone1.parentNode === zone2.parentNode &&
-        JSON.stringify(zone1.deltaTransformation) === JSON.stringify(zone2.deltaTransformation)
+        sameZoneOrigin(a, b) &&
+        a.points === b.points &&
+        a.destroyGamepiece === b.destroyGamepiece &&
+        a.persistentPoints === b.persistentPoints
     )
 }
 
@@ -41,11 +62,12 @@ export function isZoneFromDevtools(zone: BaseZonePreferences, zoneType: ZoneType
     const devtoolZones = editor.getUserData("devtool:scoring_zones")
     if (!devtoolZones) return false
 
-    return devtoolZones.some(devZone => zonesEqual(devZone, zone))
+    return devtoolZones.some(devZone => sameZoneOrigin(devZone, zone))
 }
 
 /**
  * Removes a zone from the field file cache permanently.
+ * Fails before mutating any state if preconditions are not met.
  */
 export async function removeZoneFromDevtools(zone: ScoringZonePreferences, zoneType: "scoring"): Promise<void>
 export async function removeZoneFromDevtools(zone: ProtectedZonePreferences, zoneType: "protected"): Promise<void>
@@ -55,6 +77,9 @@ export async function removeZoneFromDevtools(
 ): Promise<void> {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
     if (!field) throw new Error("No field loaded")
+
+    const cacheId = field.cacheId
+    if (!cacheId) throw new Error("Field has no cacheId; cannot persist removal")
 
     const parts = field.mirabufInstance.parser.assembly.data?.parts
     if (!parts) throw new Error("No field parts found")
@@ -66,9 +91,13 @@ export async function removeZoneFromDevtools(
     }
 
     const devtoolZones = editor.getUserData("devtool:scoring_zones")
-    if (!devtoolZones) return
+    if (!devtoolZones) throw new Error("No devtool zones in cache; nothing to remove")
 
-    const filteredZones = devtoolZones.filter(devZone => !zonesEqual(devZone, zone))
+    const scoringZone = zone as ScoringZonePreferences
+    const targetExists = devtoolZones.some(dz => sameScoringZone(dz, scoringZone))
+    if (!targetExists) throw new Error(`Zone "${zone.name}" not found in devtool cache`)
+
+    const filteredZones = devtoolZones.filter(devZone => !sameScoringZone(devZone, scoringZone))
     if (filteredZones.length === 0) {
         editor.removeUserData("devtool:scoring_zones")
     } else {
@@ -76,23 +105,23 @@ export async function removeZoneFromDevtools(
     }
 
     if (field.fieldPreferences) {
-        field.fieldPreferences.scoringZones = field.fieldPreferences.scoringZones.filter(z => !zonesEqual(z, zone))
+        field.fieldPreferences.scoringZones = field.fieldPreferences.scoringZones.filter(
+            z => !sameScoringZone(z, scoringZone)
+        )
         PreferencesSystem.savePreferences?.()
         field.updateScoringZones()
     }
 
     const assembly = field.mirabufInstance.parser.assembly
-    const cacheId = field.cacheId
-    if (cacheId) {
-        const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-        if (!success) {
-            throw new Error("Failed to persist changes to cache")
-        }
+    const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+    if (!success) {
+        throw new Error("Failed to persist changes to cache")
     }
 }
 
 /**
  * Modifies a zone in the field file cache permanently by replacing it with updated data.
+ * Fails before mutating any state if preconditions are not met.
  */
 export async function modifyZoneInDevtools(
     originalZone: ScoringZonePreferences,
@@ -112,6 +141,9 @@ export async function modifyZoneInDevtools(
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
     if (!field) throw new Error("No field loaded")
 
+    const cacheId = field.cacheId
+    if (!cacheId) throw new Error("Field has no cacheId; cannot persist modification")
+
     const parts = field.mirabufInstance.parser.assembly.data?.parts
     if (!parts) throw new Error("No field parts found")
 
@@ -122,39 +154,37 @@ export async function modifyZoneInDevtools(
     }
 
     const devtoolZones = editor.getUserData("devtool:scoring_zones")
-    if (!devtoolZones) return
+    if (!devtoolZones) throw new Error("No devtool zones in cache; nothing to modify")
 
-    // Find and replace the zone in field file data
-    // Since we're in the scoring branch, we know modifiedZone is ScoringZonePreferences
-    const updatedZones = devtoolZones.map(devZone => {
-        if (zonesEqual(devZone, originalZone)) {
-            return modifiedZone as ScoringZonePreferences
-        }
-        return devZone
-    })
+    const scoringOriginal = originalZone as ScoringZonePreferences
+    const scoringModified = modifiedZone as ScoringZonePreferences
 
+    const targetExists = devtoolZones.some(dz => sameScoringZone(dz, scoringOriginal))
+    if (!targetExists) throw new Error(`Zone "${originalZone.name}" not found in devtool cache`)
+
+    const updatedZones = devtoolZones.map(devZone =>
+        sameScoringZone(devZone, scoringOriginal) ? scoringModified : devZone
+    )
     editor.setUserData("devtool:scoring_zones", updatedZones)
 
     if (field.fieldPreferences) {
         field.fieldPreferences.scoringZones = field.fieldPreferences.scoringZones.map(z =>
-            zonesEqual(z, originalZone) ? (modifiedZone as ScoringZonePreferences) : z
+            sameScoringZone(z, scoringOriginal) ? scoringModified : z
         )
         PreferencesSystem.savePreferences?.()
         field.updateScoringZones()
     }
 
     const assembly = field.mirabufInstance.parser.assembly
-    const cacheId = field.cacheId
-    if (cacheId) {
-        const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-        if (!success) {
-            throw new Error("Failed to persist changes to cache")
-        }
+    const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+    if (!success) {
+        throw new Error("Failed to persist changes to cache")
     }
 }
 
 /**
  * Automatically caches user-created or modified zones to the field file for persistence across reloads.
+ * Fails before mutating any state if preconditions are not met.
  */
 export async function addUserZoneToDevtools(
     zone: ScoringZonePreferences,
@@ -174,6 +204,9 @@ export async function addUserZoneToDevtools(
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
     if (!field) throw new Error("No field loaded")
 
+    const cacheId = field.cacheId
+    if (!cacheId) throw new Error("Field has no cacheId; cannot persist zone addition")
+
     const parts = field.mirabufInstance.parser.assembly.data?.parts
     if (!parts) throw new Error("No field parts found")
 
@@ -183,36 +216,37 @@ export async function addUserZoneToDevtools(
         throw new Error("Protected zone field file addition not yet implemented")
     }
 
+    const scoringZone = zone as ScoringZonePreferences
     const devtoolZones = editor.getUserData("devtool:scoring_zones") || []
 
     let updated = false
 
     if (originalZone) {
-        const existingIndex = devtoolZones.findIndex(devZone => zonesEqual(devZone, originalZone))
+        // originalZone is a pre-edit clone; sameScoringZone matches the exact cached entry
+        const existingIndex = devtoolZones.findIndex(devZone =>
+            sameScoringZone(devZone, originalZone as ScoringZonePreferences)
+        )
         if (existingIndex >= 0) {
-            devtoolZones[existingIndex] = zone as ScoringZonePreferences
+            devtoolZones[existingIndex] = scoringZone
             updated = true
         }
     }
 
     if (!updated) {
-        const zoneExists = devtoolZones.some(devZone => zonesEqual(devZone, zone))
+        const zoneExists = devtoolZones.some(devZone => sameScoringZone(devZone, scoringZone))
         if (!zoneExists) {
-            devtoolZones.push(zone as ScoringZonePreferences)
+            devtoolZones.push(scoringZone)
         }
     }
 
     editor.setUserData("devtool:scoring_zones", devtoolZones)
 
-    // fieldPreferences.scoringZones is already up to date from save() — overwriting it here
+    // fieldPreferences.scoringZones is already up to date from save(); overwriting it here
     // with only devtool zones would drop any user zones not yet in the cache.
     const assembly = field.mirabufInstance.parser.assembly
-    const cacheId = field.cacheId
-    if (cacheId) {
-        const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
-        if (!success) {
-            throw new Error("Failed to persist changes to cache")
-        }
+    const success = await MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+    if (!success) {
+        throw new Error("Failed to persist changes to cache")
     }
 }
 

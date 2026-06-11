@@ -5,6 +5,7 @@ import * as THREE from "three"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -17,7 +18,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import type { Panel } from "@/ui/helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import DevtoolZoneModificationModal from "@/ui/modals/DevtoolZoneModificationModal"
-import { addUserZoneToDevtools, isZoneFromDevtools, modifyZoneInDevtools, zonesEqual } from "@/util/DevtoolZoneUtils"
+import { addUserZoneToDevtools, isZoneFromDevtools, modifyZoneInDevtools, sameScoringZone } from "@/util/DevtoolZoneUtils"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
@@ -138,8 +139,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
     const [confirmationModal, setConfirmationModal] = useState<{
         isOpen: boolean
-        pendingSave: boolean
-    }>({ isOpen: false, pendingSave: false })
+    }>({ isOpen: false })
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
     const originalZoneRef = useRef<ScoringZonePreferences>(structuredClone(selectedZone))
@@ -168,7 +168,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
             // Auto-cache user-created zones for persistence
             const isExistingZone = selectedField.fieldPreferences?.scoringZones.some(
-                z => z === originalZoneRef.current || zonesEqual(z, originalZoneRef.current)
+                z => z === originalZoneRef.current || sameScoringZone(z, originalZoneRef.current)
             )
 
             if (!isZoneFromDevtools(originalZoneRef.current, "scoring")) {
@@ -186,6 +186,12 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             saveAllZones()
         }
     }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
+
+    useEffect(() => {
+        return EventSystem.listen("ConfigurationSavedEvent", () => {
+            handleSave()
+        })
+    }, [handleSave])
 
     /** Holds a pause for the duration of the interface component */
     useEffect(() => {
@@ -291,13 +297,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             const fieldZones = selectedField.fieldPreferences?.scoringZones
             if (fieldZones) {
                 const zoneIndex = fieldZones.findIndex(
-                    z =>
-                        z === selectedZone ||
-                        (z.name === originalZoneRef.current.name &&
-                            z.alliance === originalZoneRef.current.alliance &&
-                            z.parentNode === originalZoneRef.current.parentNode &&
-                            JSON.stringify(z.deltaTransformation) ===
-                                JSON.stringify(originalZoneRef.current.deltaTransformation))
+                    z => z === selectedZone || sameScoringZone(z, originalZoneRef.current)
                 )
 
                 if (zoneIndex >= 0) {
@@ -317,7 +317,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             selectedField.updateScoringZones()
         }
 
-        setConfirmationModal({ isOpen: false, pendingSave: false })
+        setConfirmationModal({ isOpen: false })
         if (panel) closePanel(panel.id, CloseType.Accept)
     }
 
@@ -336,13 +336,13 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             }
             await modifyZoneInDevtools(originalZoneRef.current, modifiedZone, "scoring")
         } finally {
-            setConfirmationModal({ isOpen: false, pendingSave: false })
+            setConfirmationModal({ isOpen: false })
             if (panel) closePanel(panel.id, CloseType.Accept)
         }
     }
 
     const handleCloseConfirmation = () => {
-        setConfirmationModal({ isOpen: false, pendingSave: false })
+        setConfirmationModal({ isOpen: false })
     }
 
     return (
@@ -398,10 +398,11 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             <DevtoolZoneModificationModal
                 isOpen={confirmationModal.isOpen}
                 onClose={handleCloseConfirmation}
+                mode="modify"
                 zoneType="scoring"
                 zoneName={selectedZone.name}
-                onTemporaryModification={handleTemporaryModification}
-                onPermanentModification={handlePermanentModification}
+                onTemporaryAction={handleTemporaryModification}
+                onPermanentAction={handlePermanentModification}
             />
 
             {/** Custom Save/Cancel buttons that replace the panel's default buttons */}
@@ -420,7 +421,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                     color="primary"
                     onClick={async () => {
                         if (isZoneFromDevtools(selectedZone, "scoring")) {
-                            setConfirmationModal({ isOpen: true, pendingSave: true })
+                            setConfirmationModal({ isOpen: true })
                         } else {
                             await handleSave()
                             if (panel) closePanel(panel.id, CloseType.Accept)
