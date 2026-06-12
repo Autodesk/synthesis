@@ -1,6 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
-import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { type NoraNumber, NoraTypes } from "../Nora"
@@ -22,6 +21,7 @@ class SliderDriver extends Driver {
     }
 
     private _prevPos: number = 0.0
+    private _lastWrittenTarget: number | undefined = undefined
 
     public get targetPosition(): number {
         return this._targetPosition
@@ -48,6 +48,7 @@ class SliderDriver extends Driver {
 
     public set controlMode(mode: DriverControlMode) {
         this._controlMode = mode
+        this._lastWrittenTarget = undefined
         switch (mode) {
             case DriverControlMode.VELOCITY:
                 this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
@@ -69,7 +70,7 @@ class SliderDriver extends Driver {
 
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
-        springSettings.mFrequency = 20 * (1.0 / getLastDeltaT())
+        springSettings.mFrequency = 20
         springSettings.mDamping = 0.999
         motorSettings.mSpringSettings = springSettings
 
@@ -96,14 +97,21 @@ class SliderDriver extends Driver {
 
     public update(_: number): void {
         if (this._controlMode == DriverControlMode.VELOCITY) {
-            this._constraint.SetTargetVelocity(this.accelerationDirection * this.maxVelocity)
+            const target = this.accelerationDirection * this.maxVelocity
+            if (target !== this._lastWrittenTarget) {
+                this._constraint.SetTargetVelocity(target)
+                this._lastWrittenTarget = target
+            }
         } else if (this._controlMode == DriverControlMode.POSITION) {
             let pos = this._targetPosition
 
             if (pos - this._prevPos < -this.maxVelocity) pos = this._prevPos - this.maxVelocity
             if (pos - this._prevPos > this.maxVelocity) pos = this._prevPos + this.maxVelocity
 
-            this._constraint.SetTargetPosition(pos)
+            if (pos !== this._lastWrittenTarget) {
+                this._constraint.SetTargetPosition(pos)
+                this._lastWrittenTarget = pos
+            }
         }
     }
 

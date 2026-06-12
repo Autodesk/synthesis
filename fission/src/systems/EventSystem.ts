@@ -61,6 +61,14 @@ type EventKeyWithValue = {
 }[EventKey]
 type EventKeyWithoutValue = Exclude<EventKey, EventKeyWithValue>
 
+const FAST_PATH_KEYS = new Set<EventKey>([
+    "OnContactAddedEvent",
+    "OnContactPersistedEvent",
+    "OnContactValidateEvent",
+    "OnContactRemovedEvent",
+])
+const fastListeners = new Map<EventKey, Set<(data: unknown) => void>>()
+
 class CustomEvent<K extends EventKey, T extends EventDataMap[K]> extends Event {
     public readonly data: T
     public readonly type: K
@@ -71,6 +79,13 @@ class CustomEvent<K extends EventKey, T extends EventDataMap[K]> extends Event {
     }
 
     public dispatch() {
+        if (FAST_PATH_KEYS.has(this.type)) {
+            const listeners = fastListeners.get(this.type)
+            if (listeners) {
+                for (const fn of listeners) fn(this.data)
+            }
+            return
+        }
         window.dispatchEvent(this)
     }
 }
@@ -94,6 +109,18 @@ class EventSystem {
     }
 
     public static listen<K extends EventKey>(key: K, listener: SynthesisEventListener<K>) {
+        if (FAST_PATH_KEYS.has(key)) {
+            let set = fastListeners.get(key)
+            if (!set) {
+                set = new Set()
+                fastListeners.set(key, set)
+            }
+            const fn = (data: unknown) => listener(data as EventDataMap[K])
+            set.add(fn)
+            return () => {
+                fastListeners.get(key)?.delete(fn)
+            }
+        }
         const cb = (event: Event) => {
             if (!(event instanceof CustomEvent)) {
                 console.warn("Incorrect event type dispatched", event, key)

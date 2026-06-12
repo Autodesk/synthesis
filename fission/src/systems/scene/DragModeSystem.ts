@@ -93,8 +93,22 @@ class DragModeSystem extends WorldSystem {
 
     private readonly _unsubscriber: () => void
 
+    // Scratch JOLT.Vec3 objects created once in the constructor and reused every frame.
+    // AddForce/AddTorque/SetAngularVelocity copy the value so scratch reuse is safe.
+    private _scratchForce: Jolt.Vec3
+    private _scratchYawTorque: Jolt.Vec3
+    private _scratchPitchTorque: Jolt.Vec3
+    private _scratchBraking: Jolt.Vec3
+    private _scratchAngularVel: Jolt.Vec3
+
     public constructor() {
         super()
+
+        this._scratchForce = new JOLT.Vec3(0, 0, 0)
+        this._scratchYawTorque = new JOLT.Vec3(0, 0, 0)
+        this._scratchPitchTorque = new JOLT.Vec3(0, 0, 0)
+        this._scratchBraking = new JOLT.Vec3(0, 0, 0)
+        this._scratchAngularVel = new JOLT.Vec3(0, 0, 0)
 
         // Create wheel event handler for Z-axis dragging
         this._wheelEventHandler = (event: WheelEvent) => {
@@ -168,6 +182,12 @@ class DragModeSystem extends WorldSystem {
         this.removeDebugSphere()
 
         this._unsubscriber?.()
+
+        JOLT.destroy(this._scratchForce)
+        JOLT.destroy(this._scratchYawTorque)
+        JOLT.destroy(this._scratchPitchTorque)
+        JOLT.destroy(this._scratchBraking)
+        JOLT.destroy(this._scratchAngularVel)
     }
 
     private createDebugSphere(position: THREE.Vector3): void {
@@ -365,21 +385,21 @@ class DragModeSystem extends WorldSystem {
                 const currentVel = body.GetLinearVelocity()
                 const mass = this._dragTarget.mass
                 const stopBrakingStrength = Math.min(mass * 10.0, 300.0)
-                const stopBrakingForce = new JOLT.Vec3(
+                this._scratchBraking.Set(
                     -currentVel.GetX() * stopBrakingStrength,
                     -currentVel.GetY() * stopBrakingStrength,
                     -currentVel.GetZ() * stopBrakingStrength
                 )
-                body.AddForce(stopBrakingForce)
+                body.AddForce(this._scratchBraking)
 
                 const angularVel = body.GetAngularVelocity()
                 const angularStopBraking = Math.min(mass * 8.0, 200.0)
-                const angularStopTorque = new JOLT.Vec3(
+                this._scratchPitchTorque.Set(
                     -angularVel.GetX() * angularStopBraking,
                     -angularVel.GetY() * angularStopBraking,
                     -angularVel.GetZ() * angularStopBraking
                 )
-                body.AddTorque(angularStopTorque)
+                body.AddTorque(this._scratchPitchTorque)
             }
         }
 
@@ -575,27 +595,25 @@ class DragModeSystem extends WorldSystem {
 
             // Apply force at the center of mass and calculate the torque manually
             // to simulate applying force at the drag point
-            const joltForce = convertThreeVector3ToJoltVec3(forceNeeded)
-            body.AddForce(joltForce)
+            this._scratchForce.Set(forceNeeded.x, forceNeeded.y, forceNeeded.z)
+            body.AddForce(this._scratchForce)
 
             const inertia = body.GetMotionProperties().GetInverseInertiaDiagonal()
             const moi = 1.0 / inertia.Length()
-            const yawRotation = new JOLT.Vec3(
-                0,
+            const yawScalar =
                 moi *
-                    DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
-                    (InputSystem.isKeyPressed("ArrowRight") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowLeft") ? 1 : 0)),
-                0
-            )
+                DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
+                (InputSystem.isKeyPressed("ArrowRight") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowLeft") ? 1 : 0))
+            this._scratchYawTorque.Set(0, yawScalar, 0)
             const cameraVector = World.sceneRenderer.mainCamera.getWorldDirection(new THREE.Vector3(0, 0, 0))
-            const pitchRotation = new JOLT.Vec3(cameraVector.z, 0, -cameraVector.x).Mul(
+            const pitchScalar =
                 moi *
-                    DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
-                    (InputSystem.isKeyPressed("ArrowUp") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowDown") ? 1 : 0))
-            )
+                DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
+                (InputSystem.isKeyPressed("ArrowUp") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowDown") ? 1 : 0))
+            this._scratchPitchTorque.Set(cameraVector.z * pitchScalar, 0, -cameraVector.x * pitchScalar)
 
-            body.AddTorque(yawRotation)
-            body.AddTorque(pitchRotation)
+            body.AddTorque(this._scratchYawTorque)
+            body.AddTorque(this._scratchPitchTorque)
         } else {
             // When close to target, apply braking forces and gravity compensation
             const currentVel = body.GetLinearVelocity()
@@ -604,7 +622,7 @@ class DragModeSystem extends WorldSystem {
                 mass * DragModeSystem.DRAG_FORCE_CONSTANTS.LINEAR_BRAKING_BASE,
                 DragModeSystem.DRAG_FORCE_CONSTANTS.LINEAR_BRAKING_MAX
             )
-            const brakingForce = new JOLT.Vec3(
+            this._scratchBraking.Set(
                 -currentVel.GetX() * brakingStrength,
                 -currentVel.GetY() * brakingStrength,
                 -currentVel.GetZ() * brakingStrength
@@ -613,11 +631,12 @@ class DragModeSystem extends WorldSystem {
             // Add gravity compensation to prevent falling when stationary
             if (DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_COMPENSATION) {
                 const gravityCompensationY = mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE
-                brakingForce.SetY(brakingForce.GetY() + gravityCompensationY)
+                this._scratchBraking.SetY(this._scratchBraking.GetY() + gravityCompensationY)
             }
-            body.AddForce(brakingForce)
+            body.AddForce(this._scratchBraking)
         }
-        body.SetAngularVelocity(new JOLT.Vec3())
+        this._scratchAngularVel.Set(0, 0, 0)
+        body.SetAngularVelocity(this._scratchAngularVel)
     }
 
     private handleWheelDuringDrag(event: WheelEvent): void {

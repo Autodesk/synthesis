@@ -1,4 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
@@ -79,9 +80,7 @@ describe("IntakeSensorSceneObject", () => {
         const mockBodyId = {} as unknown as Jolt.BodyID
         Reflect.set(instance, "_joltBodyId", mockBodyId)
         Reflect.set(instance, "_parentBodyId", mockBodyId)
-        Reflect.set(instance, "_deltaTransformation", {
-            clone: vi.fn(() => ({ premultiply: vi.fn(() => ({ decompose: vi.fn() })) })),
-        })
+        Reflect.set(instance, "_deltaTransformation", new THREE.Matrix4())
         Reflect.set(instance, "_visualIndicator", { position: { copy: vi.fn() }, quaternion: { copy: vi.fn() } })
         instance.update()
         expect(mockPhysicsSystem.setBodyPosition).toHaveBeenCalled()

@@ -42,6 +42,7 @@ import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
+    convertJoltMat44ToThreeMatrix4Into,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToJoltRVec3,
     convertJoltVec3ToThreeVector3,
@@ -59,6 +60,11 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 const DEBUG_BODIES = false
+
+// Module-level scratch matrices to avoid per-frame allocations in updateMeshTransforms/updateNodeParts
+const scratchTransform = new THREE.Matrix4()
+const scratchPartTransform = new THREE.Matrix4()
+const scratchBoundsVec = new THREE.Vector3()
 
 interface RnDebugMeshes {
     colliderMesh: THREE.Mesh
@@ -340,6 +346,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         this.updateBatches()
+        this._mirabufInstance.batches.forEach(b => {
+            b.frustumCulled = false
+        })
 
         this._basePositionTransform = this.getPositionTransform(new THREE.Vector3())
 
@@ -427,7 +436,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         this.updateMeshTransforms()
-        this.updateBatches()
         this.updateNameTag()
     }
 
@@ -506,15 +514,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * Matches mesh transforms to their Jolt counterparts.
      */
     public updateMeshTransforms() {
-        let weightedCOM = new JOLT.RVec3(0, 0, 0)
+        const showCOM =
+            this._centerOfMassIndicator && PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+        let comX = 0
+        let comY = 0
+        let comZ = 0
         let totalMass = 0
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const bodyId = this._mechanism.getBodyByNodeId(rn.id)!
             const body = World.physicsSystem.getBody(bodyId)
             if (!body) return
-            const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
-            this.updateNodeParts(rn, transform)
+            convertJoltMat44ToThreeMatrix4Into(body.GetWorldTransform(), scratchTransform)
+            this.updateNodeParts(rn, scratchTransform)
 
             if (Number.isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
@@ -526,40 +538,46 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
             if (this._debugBodies) {
                 const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
-                colliderMesh.position.setFromMatrixPosition(transform)
-                colliderMesh.rotation.setFromRotationMatrix(transform)
+                colliderMesh.position.setFromMatrixPosition(scratchTransform)
+                colliderMesh.rotation.setFromRotationMatrix(scratchTransform)
 
                 const comTransform = convertJoltMat44ToThreeMatrix4(body.GetCenterOfMassTransform())
 
                 comMesh.position.setFromMatrixPosition(comTransform)
                 comMesh.rotation.setFromRotationMatrix(comTransform)
             }
-            if (this._centerOfMassIndicator) {
+            if (showCOM) {
                 const inverseMass = body.GetMotionProperties().GetInverseMass()
 
                 if (inverseMass > 0) {
                     const mass = 1 / inverseMass
-                    weightedCOM = weightedCOM.AddRVec3(body.GetCenterOfMassPosition().Mul(mass))
+                    const com = body.GetCenterOfMassPosition()
+                    comX += com.GetX() * mass
+                    comY += com.GetY() * mass
+                    comZ += com.GetZ() * mass
                     totalMass += mass
                 }
             }
         })
         if (this._centerOfMassIndicator) {
-            const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
-            this._centerOfMassIndicator.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
-            this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+            if (showCOM) {
+                if (totalMass > 0) {
+                    this._centerOfMassIndicator.position.set(comX / totalMass, comY / totalMass, comZ / totalMass)
+                }
+                this._centerOfMassIndicator.visible = true
+            } else {
+                this._centerOfMassIndicator.visible = false
+            }
         }
     }
 
     public updateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
         rn.parts.forEach(part => {
-            const partTransform = this._mirabufInstance.parser.globalTransforms
-                .get(part)!
-                .clone()
-                .premultiply(transform)
+            const globalTransform = this._mirabufInstance.parser.globalTransforms.get(part)!
+            scratchPartTransform.copy(globalTransform).premultiply(transform)
             const meshes = this._mirabufInstance.meshes.get(part) ?? []
             meshes.forEach(([mesh, index]) => {
-                mesh.setMatrixAt(index, partTransform)
+                mesh.setMatrixAt(index, scratchPartTransform)
                 // Only update instanceMatrix for InstancedMesh
                 if ("instanceMatrix" in mesh) {
                     mesh.instanceMatrix.needsUpdate = true
@@ -709,8 +727,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      */
     private computeBoundingBox(): THREE.Box3 {
         const box = new THREE.Box3()
-        this._mirabufInstance.batches.forEach(batch => {
-            if (batch.boundingBox) box.union(batch.boundingBox)
+        this._mechanism.nodeToBody.forEach(bodyId => {
+            const body = World.physicsSystem.getBody(bodyId)
+            if (!body) return
+            const bounds = body.GetWorldSpaceBounds()
+            const min = bounds.mMin
+            const max = bounds.mMax
+            scratchBoundsVec.set(min.GetX(), min.GetY(), min.GetZ())
+            box.expandByPoint(scratchBoundsVec)
+            scratchBoundsVec.set(max.GetX(), max.GetY(), max.GetZ())
+            box.expandByPoint(scratchBoundsVec)
         })
 
         return box
@@ -722,7 +748,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * @returns An object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
     public getDimensions(): { width: number; height: number; depth: number } {
-        const boundingBox = this.computeBoundingBox()
+        // Mesh-based bounds, computed on demand. The render meshes are the
+        // source of truth for size limits, and this only runs during match mode.
+        const boundingBox = new THREE.Box3()
+        this._mirabufInstance.batches.forEach(batch => {
+            batch.computeBoundingBox()
+            if (batch.boundingBox) boundingBox.union(batch.boundingBox)
+        })
         const size = new THREE.Vector3()
         boundingBox.getSize(size)
 
@@ -1098,7 +1130,11 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle, multiplayerOwnerId)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const instance = new MirabufInstance(parser)
+
+    await new Promise(resolve => setTimeout(resolve, 0))
+    return new MirabufSceneObject(instance, assembly.info!.name!, progressHandle, multiplayerOwnerId)
 }
 
 /**

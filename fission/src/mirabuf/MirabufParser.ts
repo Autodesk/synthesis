@@ -35,6 +35,7 @@ class MirabufParser {
 
     protected _partToNodeMap: Map<string, RigidNode> = new Map()
     protected _rigidNodes: Array<RigidNode> = []
+    private _rigidNodesReadOnly?: Map<RigidNodeId, RigidNodeReadOnly>
     private _globalTransforms: Map<string, THREE.Matrix4>
 
     private _groundedNode: RigidNode | undefined
@@ -64,7 +65,10 @@ class MirabufParser {
         return this._groundedNode ? new RigidNodeReadOnly(this._groundedNode) : undefined
     }
     public get rigidNodes(): Map<RigidNodeId, RigidNodeReadOnly> {
-        return new Map(this._rigidNodes.map(x => [x.id, new RigidNodeReadOnly(x)]))
+        if (!this._rigidNodesReadOnly) {
+            this._rigidNodesReadOnly = new Map(this._rigidNodes.map(x => [x.id, new RigidNodeReadOnly(x)]))
+        }
+        return this._rigidNodesReadOnly
     }
     public get directedGraph() {
         return this._directedGraph

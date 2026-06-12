@@ -56,9 +56,14 @@ export function createBodyMock() {
         })),
         GetTranslation: vi.fn(() => createVec3Mock()),
         GetQuaternion: vi.fn(() => createQuatMock()),
+        GetPosition: vi.fn(() => createVec3Mock()),
         GetCenterOfMassTransform: vi.fn(() => ({
             GetTranslation: vi.fn(() => createVec3Mock()),
             GetQuaternion: vi.fn(() => createQuatMock()),
+        })),
+        GetWorldSpaceBounds: vi.fn(() => ({
+            mMin: createVec3Mock(),
+            mMax: createVec3Mock(),
         })),
         GetRotation: vi.fn(() => ({
             ...createQuatMock(),

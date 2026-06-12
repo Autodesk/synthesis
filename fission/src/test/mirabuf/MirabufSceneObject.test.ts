@@ -19,6 +19,7 @@ const mockPhysicsSystem = {
     destroyMechanism: vi.fn(),
     setBodyPosition: vi.fn(),
     setBodyRotation: vi.fn(),
+    setBodyPositionRotationAndVelocity: vi.fn(),
     setShape: vi.fn(),
     createSensor: vi.fn(),
 }

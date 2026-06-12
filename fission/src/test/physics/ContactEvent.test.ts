@@ -2,7 +2,7 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from "vitest"
 import EventSystem from "@/systems/EventSystem.ts"
-import type { CurrentContactData, OnContactValidateData } from "@/systems/physics/ContactEvents.ts"
+import type { CurrentContactData } from "@/systems/physics/ContactEvents.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem from "../../systems/physics/PhysicsSystem"
 
@@ -15,7 +15,6 @@ describe("Contact Event Integration Tests", () => {
     let contactAddedEvents: CurrentContactData[] = []
     let contactPersistedEvents: CurrentContactData[] = []
     let contactRemovedEvents: { message: Jolt.SubShapeIDPair }[] = []
-    let contactValidateEvents: OnContactValidateData[] = []
 
     let unsubscribers: (() => void)[] = []
 
@@ -23,7 +22,6 @@ describe("Contact Event Integration Tests", () => {
         unsubscribers.push(EventSystem.listen("OnContactAddedEvent", v => contactAddedEvents.push(v)))
         unsubscribers.push(EventSystem.listen("OnContactPersistedEvent", v => contactPersistedEvents.push(v)))
         unsubscribers.push(EventSystem.listen("OnContactRemovedEvent", v => contactRemovedEvents.push(v)))
-        unsubscribers.push(EventSystem.listen("OnContactValidateEvent", v => contactValidateEvents.push(v)))
     })
 
     afterAll(() => {
@@ -35,7 +33,6 @@ describe("Contact Event Integration Tests", () => {
         contactAddedEvents = []
         contactPersistedEvents = []
         contactRemovedEvents = []
-        contactValidateEvents = []
 
         // Set up physics system
         physicsSystem = new PhysicsSystem()
@@ -193,19 +190,5 @@ describe("Contact Event Integration Tests", () => {
         }
 
         expect(contactRemovedEvents.length).toBeGreaterThan(0)
-    })
-
-    test("Contact validate events are fired when objects are colliding", async () => {
-        // Run simulation until collision occurs
-        let simulationSteps = 0
-        const maxSteps = 300 // Prevent infinite loop, usually takes 82 steps
-        const deltaTime = 1 / 60 // 60 FPS
-
-        while (simulationSteps < maxSteps && contactValidateEvents.length === 0) {
-            physicsSystem.update(deltaTime)
-            simulationSteps++
-        }
-
-        expect(contactValidateEvents.length).toBeGreaterThan(0)
     })
 })

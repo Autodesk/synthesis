@@ -7,12 +7,7 @@ import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTyp
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import {
-    convertArrayToThreeMatrix4,
-    convertJoltMat44ToThreeMatrix4,
-    convertThreeQuaternionToJoltQuat,
-    convertThreeVector3ToJoltRVec3,
-} from "@/util/TypeConversions"
+import { convertArrayToThreeMatrix4, convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { findListDifference } from "@/util/Utility"
 import type MirabufSceneObject from "./MirabufSceneObject"
@@ -52,6 +47,19 @@ class ScoringZoneSceneObject extends SceneObject {
     private _gpContacted: Jolt.BodyID[] = []
     private _prevGP: Jolt.BodyID[] = []
 
+    // Scratch WASM objects reused each frame (avoid per-frame heap allocation)
+    private _scratchRVec3: Jolt.RVec3
+    private _scratchQuat: Jolt.Quat
+
+    // Cache of last written parent transform (7 numbers: tx,ty,tz,rx,ry,rz,rw)
+    private _lastTx = NaN
+    private _lastTy = NaN
+    private _lastTz = NaN
+    private _lastRx = NaN
+    private _lastRy = NaN
+    private _lastRz = NaN
+    private _lastRw = NaN
+
     public get gpContacted() {
         return this._gpContacted
     }
@@ -62,6 +70,9 @@ class ScoringZoneSceneObject extends SceneObject {
         this._parentAssembly = parentAssembly
         this._prefs = this._parentAssembly.fieldPreferences?.scoringZones[index]
         this._toRender = render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
+
+        this._scratchRVec3 = new JOLT.RVec3(0, 0, 0)
+        this._scratchQuat = new JOLT.Quat(0, 0, 0, 1)
     }
 
     public setup(): void {
@@ -72,7 +83,11 @@ class ScoringZoneSceneObject extends SceneObject {
 
             if (this._parentBodyId) {
                 // Create a default sensor
-                this._joltBodyId = World.physicsSystem.createSensor(new JOLT.BoxShapeSettings(new JOLT.Vec3(1, 1, 1)))
+                const initVec = new JOLT.Vec3(1, 1, 1)
+                const initSettings = new JOLT.BoxShapeSettings(initVec)
+                this._joltBodyId = World.physicsSystem.createSensor(initSettings)
+                JOLT.destroy(initSettings)
+                JOLT.destroy(initVec)
                 if (!this._joltBodyId) {
                     console.log("Failed to create scoring zone. No Jolt Body")
                     return
@@ -85,12 +100,15 @@ class ScoringZoneSceneObject extends SceneObject {
                 )
                 const props = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
 
-                World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(props.translation))
-                World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(props.rotation))
-                const shapeSettings = new JOLT.BoxShapeSettings(
-                    new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
-                )
+                this._scratchRVec3.Set(props.translation.x, props.translation.y, props.translation.z)
+                this._scratchQuat.Set(props.rotation.x, props.rotation.y, props.rotation.z, props.rotation.w)
+                World.physicsSystem.setBodyPosition(this._joltBodyId, this._scratchRVec3)
+                World.physicsSystem.setBodyRotation(this._joltBodyId, this._scratchQuat)
+                const shapeVec = new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
+                const shapeSettings = new JOLT.BoxShapeSettings(shapeVec)
                 const shape = shapeSettings.Create()
+                JOLT.destroy(shapeSettings)
+                JOLT.destroy(shapeVec)
                 World.physicsSystem.setShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
 
                 // Mesh for the user to visualize sensor
@@ -144,34 +162,63 @@ class ScoringZoneSceneObject extends SceneObject {
 
     public update(): void {
         if (this._parentBodyId && this._deltaTransformation && this._joltBodyId && this._prefs) {
-            // Update translation, rotation, and scale
+            // Update translation and rotation only when the parent transform has changed
             const fieldTransformation = convertJoltMat44ToThreeMatrix4(
                 World.physicsSystem.getBody(this._parentBodyId).GetWorldTransform()
             )
             const props = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
 
-            World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(props.translation))
-            World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(props.rotation))
-            const shapeSettings = new JOLT.BoxShapeSettings(
-                new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
-            )
-            const shape = shapeSettings.Create()
-            World.physicsSystem.setShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
+            const tx = props.translation.x,
+                ty = props.translation.y,
+                tz = props.translation.z
+            const rx = props.rotation.x,
+                ry = props.rotation.y,
+                rz = props.rotation.z,
+                rw = props.rotation.w
+
+            const transformChanged =
+                tx !== this._lastTx ||
+                ty !== this._lastTy ||
+                tz !== this._lastTz ||
+                rx !== this._lastRx ||
+                ry !== this._lastRy ||
+                rz !== this._lastRz ||
+                rw !== this._lastRw
+
+            const toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")
+            const renderChanged = toRender !== this._toRender
+            this._toRender = toRender
+
+            if (transformChanged) {
+                this._lastTx = tx
+                this._lastTy = ty
+                this._lastTz = tz
+                this._lastRx = rx
+                this._lastRy = ry
+                this._lastRz = rz
+                this._lastRw = rw
+
+                this._scratchRVec3.Set(tx, ty, tz)
+                this._scratchQuat.Set(rx, ry, rz, rw)
+                World.physicsSystem.setBodyPosition(this._joltBodyId, this._scratchRVec3)
+                World.physicsSystem.setBodyRotation(this._joltBodyId, this._scratchQuat)
+            }
 
             // Mesh for visualization
-            this._toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")
-            if (this._mesh)
-                if (this._toRender) {
-                    this._mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
-                    this._mesh.rotation.setFromQuaternion(props.rotation)
-                    this._mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
-                    this._mesh.material =
-                        this._prefs.alliance == "red"
-                            ? ScoringZoneSceneObject.redMaterial
-                            : ScoringZoneSceneObject.blueMaterial
-                } else {
-                    this._mesh.material = ScoringZoneSceneObject.transparentMaterial
-                }
+            if (transformChanged || renderChanged) {
+                if (this._mesh)
+                    if (this._toRender) {
+                        this._mesh.position.set(tx, ty, tz)
+                        this._mesh.rotation.setFromQuaternion(props.rotation)
+                        this._mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
+                        this._mesh.material =
+                            this._prefs.alliance == "red"
+                                ? ScoringZoneSceneObject.redMaterial
+                                : ScoringZoneSceneObject.blueMaterial
+                    } else {
+                        this._mesh.material = ScoringZoneSceneObject.transparentMaterial
+                    }
+            }
 
             // If persistent points, update points based on how many gamepieces in zone
             if (this._prefs.persistentPoints)
@@ -217,6 +264,9 @@ class ScoringZoneSceneObject extends SceneObject {
                 World.sceneRenderer.scene.remove(this._mesh)
             }
         }
+
+        JOLT.destroy(this._scratchRVec3)
+        JOLT.destroy(this._scratchQuat)
 
         this._unsubscribers.forEach(unsubscribe => unsubscribe())
     }

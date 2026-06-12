@@ -4,14 +4,15 @@ import EventSystem from "@/systems/EventSystem.ts"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import {
-    convertArrayToThreeMatrix4,
-    convertJoltMat44ToThreeMatrix4,
-    convertThreeQuaternionToJoltQuat,
-    convertThreeVector3ToJoltRVec3,
-} from "@/util/TypeConversions"
+import { convertArrayToThreeMatrix4, convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
+
+// Module-level scratch THREE objects reused each frame
+const scratchBodyTransform = new THREE.Matrix4()
+const scratchPosition = new THREE.Vector3()
+const scratchRotation = new THREE.Quaternion()
+const scratchScale = new THREE.Vector3(1, 1, 1)
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -22,9 +23,15 @@ class IntakeSensorSceneObject extends SceneObject {
     private _collisionUnsubscriber?: () => void
     private _visualIndicator?: THREE.Mesh
 
+    // Scratch WASM objects reused each frame
+    private _scratchRVec3: Jolt.RVec3
+    private _scratchQuat: Jolt.Quat
+
     public constructor(parentAssembly: MirabufSceneObject) {
         super()
         this._parentAssembly = parentAssembly
+        this._scratchRVec3 = new JOLT.RVec3(0, 0, 0)
+        this._scratchQuat = new JOLT.Quat(0, 0, 0, 1)
     }
 
     public setup(): void {
@@ -94,20 +101,20 @@ class IntakeSensorSceneObject extends SceneObject {
     public update(): void {
         if (this._joltBodyId && this._parentBodyId && this._deltaTransformation) {
             const parentBody = World.physicsSystem.getBody(this._parentBodyId)
-            const bodyTransform = this._deltaTransformation
-                .clone()
+            scratchBodyTransform
+                .copy(this._deltaTransformation)
                 .premultiply(convertJoltMat44ToThreeMatrix4(parentBody.GetWorldTransform()))
-            const position = new THREE.Vector3(0, 0, 0)
-            const rotation = new THREE.Quaternion(0, 0, 0, 1)
-            bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
+            scratchBodyTransform.decompose(scratchPosition, scratchRotation, scratchScale)
 
-            World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(position))
-            World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(rotation))
+            this._scratchRVec3.Set(scratchPosition.x, scratchPosition.y, scratchPosition.z)
+            this._scratchQuat.Set(scratchRotation.x, scratchRotation.y, scratchRotation.z, scratchRotation.w)
+            World.physicsSystem.setBodyPosition(this._joltBodyId, this._scratchRVec3)
+            World.physicsSystem.setBodyRotation(this._joltBodyId, this._scratchQuat)
 
             // Update visual indicator position if it exists
             if (this._visualIndicator) {
-                this._visualIndicator.position.copy(position)
-                this._visualIndicator.quaternion.copy(rotation)
+                this._visualIndicator.position.copy(scratchPosition)
+                this._visualIndicator.quaternion.copy(scratchRotation)
             }
         }
     }
@@ -118,6 +125,9 @@ class IntakeSensorSceneObject extends SceneObject {
         }
 
         this._collisionUnsubscriber?.()
+
+        JOLT.destroy(this._scratchRVec3)
+        JOLT.destroy(this._scratchQuat)
 
         // Clean up visual indicator
         if (this._visualIndicator) {

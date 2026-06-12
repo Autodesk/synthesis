@@ -9,6 +9,8 @@ import ViewCube from "./ViewCube"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
+const EMPTY_COMPONENTS: JSX.Element[] = Object.freeze([]) as unknown as JSX.Element[]
+
 const SceneOverlay: React.FC = () => {
     const { isMainMenuOpen } = useStateContext()
     /* State to determine if the overlay is disabled */
@@ -18,8 +20,10 @@ const SceneOverlay: React.FC = () => {
     const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getGlobalPreference("ShowViewCube"))
 
     /* h1 text for each tagMap tag */
-    const [components, updateComponents] = useReducer(() => {
-        if (isDisabled) return <></> // if the overlay is disabled, return nothing
+    const [components, updateComponents] = useReducer((prev: JSX.Element[]) => {
+        if (isDisabled || tagMap.size === 0) {
+            return prev === EMPTY_COMPONENTS ? prev : EMPTY_COMPONENTS
+        }
 
         return [...tagMap.values()].map(x => (
             <div
@@ -39,7 +43,7 @@ const SceneOverlay: React.FC = () => {
                 <Label size="md">{x.text()}</Label>
             </div>
         ))
-    }, [])
+    }, EMPTY_COMPONENTS)
 
     /* Creating listener for tag events to update tagMap and rerender overlay */
     useEffect(() => {

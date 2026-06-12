@@ -52,11 +52,17 @@ class SceneRenderer extends WorldSystem {
     private _light: THREE.DirectionalLight | CSM | undefined
     private _screenInteractionHandler: ScreenInteractionHandler
 
+    private _overlayFrameCounter: number = 0
+    private _mirabufObjectsCache: MirabufSceneObject[] | null = null
+    private _robotsCache: MirabufSceneObject[] | null = null
+
     public get sceneObjects() {
         return this._sceneObjects
     }
     public set sceneObjects(objects: Map<number, SceneObject>) {
         this._sceneObjects = objects
+        this._mirabufObjectsCache = null
+        this._robotsCache = null
     }
 
     public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
@@ -64,11 +70,23 @@ class SceneRenderer extends WorldSystem {
     }
 
     public readonly mirabufSceneObjects = {
-        getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
+        getAll: (): MirabufSceneObject[] => {
+            if (this._mirabufObjectsCache === null) {
+                this._mirabufObjectsCache = this.filterSceneObjects(
+                    (obj): obj is MirabufSceneObject => obj instanceof MirabufSceneObject
+                )
+            }
+            return this._mirabufObjectsCache
+        },
         findWhere: (predicate: (obj: MirabufSceneObject) => boolean) =>
             this.mirabufSceneObjects.getAll().find(predicate),
         getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD),
-        getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT),
+        getRobots: (): MirabufSceneObject[] => {
+            if (this._robotsCache === null) {
+                this._robotsCache = this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT)
+            }
+            return this._robotsCache
+        },
     } as const
 
     public get mainCamera() {
@@ -245,8 +263,9 @@ class SceneRenderer extends WorldSystem {
 
         this._skybox.position.copy(this._mainCamera.position)
 
-        // Update the tags each frame if they are enabled in preferences
-        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
+        // Update the tags every 4th frame (~15 Hz) if they are enabled in preferences
+        if (PreferencesSystem.getGlobalPreference("RenderSceneTags") && ++this._overlayFrameCounter % 4 === 0)
+            EventSystem.dispatch("SceneOverlayUpdateEvent")
 
         this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)
@@ -377,6 +396,8 @@ class SceneRenderer extends WorldSystem {
         }
         obj.id = id
         this._sceneObjects.set(id, obj)
+        this._mirabufObjectsCache = null
+        this._robotsCache = null
         obj.setup()
         return id as LocalSceneObjectId
     }
@@ -391,6 +412,8 @@ class SceneRenderer extends WorldSystem {
         this._sceneObjects.forEach(obj => obj.dispose())
         this._gizmosOnMirabuf.clear()
         this._sceneObjects.clear()
+        this._mirabufObjectsCache = null
+        this._robotsCache = null
     }
 
     public removeSceneObject(id: number) {
@@ -410,6 +433,8 @@ class SceneRenderer extends WorldSystem {
 
         if (this._sceneObjects.delete(id)) {
             obj!.dispose()
+            this._mirabufObjectsCache = null
+            this._robotsCache = null
         }
     }
 

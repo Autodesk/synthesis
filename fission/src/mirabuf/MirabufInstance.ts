@@ -103,8 +103,8 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
     const newVerts = transformVerts(mesh)
     const newNorms = transformNorms(mesh)
 
-    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(newVerts), 3))
-    geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(newNorms), 3))
+    geometry.setAttribute("position", new THREE.BufferAttribute(newVerts, 3))
+    geometry.setAttribute("normal", new THREE.BufferAttribute(newNorms, 3))
     geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(mesh.uv!), 2))
     geometry.setIndex(mesh.indices!)
 }
@@ -193,6 +193,9 @@ class MirabufInstance {
         const assembly = this._mirabufParser.assembly
         const instances = assembly.data!.parts!.partInstances!
 
+        // Group instances by (definition, body) so we can share geometry+material across identical parts
+        const bodyGroupMap = new Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>()
+
         Object.values(instances).forEach(instance => {
             const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]
             const bodies = definition?.bodies ?? []
@@ -201,34 +204,48 @@ class MirabufInstance {
                 const mesh = body?.triangleMesh?.mesh
                 if (!mesh?.verts || !mesh.normals || !mesh.uv || !mesh.indices) return
 
-                const appearanceOverride = body.appearanceOverride
-                const material = WIREFRAME
-                    ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
-                    : appearanceOverride && this._materials.has(appearanceOverride)
-                      ? this._materials.get(appearanceOverride)!
-                      : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
+                const partBodyGuid = this.getPartBodyGuid(definition, body)
+                let group = bodyGroupMap.get(partBodyGuid)
+                if (!group) {
+                    group = [body, []]
+                    bodyGroupMap.set(partBodyGuid, group)
+                }
+                group[1].push(instance)
+            })
+        })
 
-                const geometry = new THREE.BufferGeometry()
-                transformGeometry(geometry, mesh)
+        // Build one InstancedMesh per (definition, body) group
+        bodyGroupMap.forEach(([body, groupInstances]) => {
+            const mesh = body.triangleMesh!.mesh!
 
-                // Create InstancedMesh with count of 1 for this body
-                const instancedMesh = new THREE.InstancedMesh(geometry, material, 1)
-                instancedMesh.castShadow = true
-                instancedMesh.receiveShadow = true
+            const appearanceOverride = body.appearanceOverride
+            const material = WIREFRAME
+                ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
+                : appearanceOverride && this._materials.has(appearanceOverride)
+                  ? this._materials.get(appearanceOverride)!
+                  : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
 
+            const geometry = new THREE.BufferGeometry()
+            transformGeometry(geometry, mesh)
+
+            const instancedMesh = new THREE.InstancedMesh(geometry, material, groupInstances.length)
+            instancedMesh.castShadow = true
+            instancedMesh.receiveShadow = true
+
+            groupInstances.forEach((instance, i) => {
                 const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!
-                instancedMesh.setMatrixAt(0, mat)
-                instancedMesh.instanceMatrix.needsUpdate = true
-
-                this._batches.push(instancedMesh)
+                instancedMesh.setMatrixAt(i, mat)
 
                 let bodies = this._meshes.get(instance.info!.GUID!)
                 if (!bodies) {
                     bodies = []
                     this._meshes.set(instance.info!.GUID!, bodies)
                 }
-                bodies.push([instancedMesh, 0])
+                bodies.push([instancedMesh, i])
             })
+
+            instancedMesh.instanceMatrix.needsUpdate = true
+            this._batches.push(instancedMesh)
         })
     }
 

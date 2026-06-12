@@ -76,6 +76,17 @@ export function convertJoltMat44ToThreeMatrix4(m: Jolt.RMat44): THREE.Matrix4 {
     )
 }
 
+const scratchConvVec3 = new THREE.Vector3()
+const scratchConvQuat = new THREE.Quaternion()
+const scratchConvScale = new THREE.Vector3(1, 1, 1)
+export function convertJoltMat44ToThreeMatrix4Into(m: Jolt.RMat44, target: THREE.Matrix4): THREE.Matrix4 {
+    const t = m.GetTranslation()
+    const q = m.GetQuaternion()
+    scratchConvVec3.set(t.GetX(), t.GetY(), t.GetZ())
+    scratchConvQuat.set(q.GetX(), q.GetY(), q.GetZ(), q.GetW())
+    return target.compose(scratchConvVec3, scratchConvQuat, scratchConvScale)
+}
+
 export function convertJoltVec3ToJoltRVec3(m: Jolt.Vec3): Jolt.RVec3 {
     return new JOLT.RVec3(m.GetX(), m.GetY(), m.GetZ())
 }

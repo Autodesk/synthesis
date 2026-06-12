@@ -1,6 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
-import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { type NoraNumber, NoraTypes } from "../Nora"
@@ -22,6 +21,7 @@ class HingeDriver extends Driver {
     }
 
     private _prevAng: number = 0.0
+    private _lastWrittenTarget: number | undefined = undefined
 
     public get targetAngle(): number {
         return this._targetAngle
@@ -46,6 +46,7 @@ class HingeDriver extends Driver {
 
     public set controlMode(mode: DriverControlMode) {
         this._controlMode = mode
+        this._lastWrittenTarget = undefined
         switch (mode) {
             case DriverControlMode.VELOCITY:
                 this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
@@ -70,7 +71,7 @@ class HingeDriver extends Driver {
         const springSettings = motorSettings.mSpringSettings
 
         // These values were selected based on the suggestions of the documentation for stiff control.
-        springSettings.mFrequency = 20 * (1.0 / getLastDeltaT())
+        springSettings.mFrequency = 20
         springSettings.mDamping = 0.995
         motorSettings.mSpringSettings = springSettings
 
@@ -96,13 +97,20 @@ class HingeDriver extends Driver {
 
     public update(_: number): void {
         if (this._controlMode == DriverControlMode.VELOCITY) {
-            this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
+            const target = this.accelerationDirection * this.maxVelocity
+            if (target !== this._lastWrittenTarget) {
+                this._constraint.SetTargetAngularVelocity(target)
+                this._lastWrittenTarget = target
+            }
         } else if (this._controlMode == DriverControlMode.POSITION) {
             let ang = this._targetAngle
 
             if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this.maxVelocity
             if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this.maxVelocity
-            this._constraint.SetTargetAngle(ang)
+            if (ang !== this._lastWrittenTarget) {
+                this._constraint.SetTargetAngle(ang)
+                this._lastWrittenTarget = ang
+            }
         }
     }
 

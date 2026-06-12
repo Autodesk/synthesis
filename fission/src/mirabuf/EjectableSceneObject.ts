@@ -2,16 +2,27 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertJoltQuatToThreeQuaternion,
-    convertThreeQuaternionToJoltQuat,
-    convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+
+// Module-level scratch THREE objects — reused every frame to avoid GC pressure.
+// Use separate matrices for values that are alive simultaneously.
+const scratchMatPosToCOM = new THREE.Matrix4()
+const scratchMatDesiredTransform = new THREE.Matrix4()
+const scratchMatBodyTransform = new THREE.Matrix4()
+const scratchMatInvWorld = new THREE.Matrix4()
+const scratchDesiredPos = new THREE.Vector3()
+const scratchDesiredRot = new THREE.Quaternion()
+const scratchPosition = new THREE.Vector3()
+const scratchRotation = new THREE.Quaternion()
+const scratchScale = new THREE.Vector3(1, 1, 1)
 
 class EjectableSceneObject extends SceneObject {
     private _parentSceneObject: MirabufSceneObject
@@ -28,6 +39,10 @@ class EjectableSceneObject extends SceneObject {
     private _startRotation?: THREE.Quaternion
 
     private static _defaultAnimationDuration = 0.5
+
+    // Scratch WASM objects reused each frame
+    private _scratchRVec3: Jolt.RVec3
+    private _scratchQuat: Jolt.Quat
 
     public static setAnimationDuration(duration: number) {
         EjectableSceneObject._defaultAnimationDuration = duration
@@ -55,6 +70,9 @@ class EjectableSceneObject extends SceneObject {
 
         this._parentSceneObject = parentAssembly
         this._gamePieceBodyId = gamePieceBody
+
+        this._scratchRVec3 = new JOLT.RVec3(0, 0, 0)
+        this._scratchQuat = new JOLT.Quat(0, 0, 0, 1)
     }
 
     public setup(): void {
@@ -109,25 +127,24 @@ class EjectableSceneObject extends SceneObject {
             }
 
             const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
-            const posToCOM = convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).premultiply(
-                convertJoltMat44ToThreeMatrix4(gpBody.GetWorldTransform()).invert()
-            )
+            // posToCOM = CenterOfMassTransform * inverse(WorldTransform)
+            scratchMatInvWorld.copy(convertJoltMat44ToThreeMatrix4(gpBody.GetWorldTransform())).invert()
+            scratchMatPosToCOM.copy(convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()))
+            scratchMatPosToCOM.premultiply(scratchMatInvWorld)
 
             const body = World.physicsSystem.getBody(this._parentBodyId)
-            let desiredPosition = new THREE.Vector3(0, 0, 0)
-            let desiredRotation = new THREE.Quaternion(0, 0, 0, 1)
 
             // Compute target world transform
-            const desiredTransform = this._deltaTransformation
-                .clone()
+            scratchMatDesiredTransform
+                .copy(this._deltaTransformation)
                 .premultiply(convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()))
 
-            desiredTransform.decompose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
+            scratchMatDesiredTransform.decompose(scratchDesiredPos, scratchDesiredRot, scratchScale)
 
             if (t < 1 && this._startTranslation && this._startRotation) {
                 // gradual acceleration via easedT
-                desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
-                desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, easedT)
+                scratchDesiredPos.lerpVectors(this._startTranslation, scratchDesiredPos, easedT)
+                scratchDesiredRot.copy(this._startRotation).slerp(scratchDesiredRot, easedT)
             }
             // } else if (t >= 1) {
             //     // snap instantly and re-enable physics
@@ -135,20 +152,17 @@ class EjectableSceneObject extends SceneObject {
             // }
 
             // apply the transform
-            desiredTransform.identity().compose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
+            scratchMatDesiredTransform.identity().compose(scratchDesiredPos, scratchDesiredRot, scratchScale)
 
-            const bodyTransform = posToCOM.clone().invert().premultiply(desiredTransform)
+            // bodyTransform = inverse(posToCOM) * desiredTransform
+            scratchMatBodyTransform.copy(scratchMatPosToCOM).invert().premultiply(scratchMatDesiredTransform)
 
-            const position = new THREE.Vector3(0, 0, 0)
-            const rotation = new THREE.Quaternion(0, 0, 0, 1)
-            bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
+            scratchMatBodyTransform.decompose(scratchPosition, scratchRotation, scratchScale)
 
-            World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position), false)
-            World.physicsSystem.setBodyRotation(
-                this._gamePieceBodyId,
-                convertThreeQuaternionToJoltQuat(rotation),
-                false
-            )
+            this._scratchRVec3.Set(scratchPosition.x, scratchPosition.y, scratchPosition.z)
+            this._scratchQuat.Set(scratchRotation.x, scratchRotation.y, scratchRotation.z, scratchRotation.w)
+            World.physicsSystem.setBodyPosition(this._gamePieceBodyId, this._scratchRVec3, false)
+            World.physicsSystem.setBodyRotation(this._gamePieceBodyId, this._scratchQuat, false)
         }
     }
 
@@ -185,6 +199,9 @@ class EjectableSceneObject extends SceneObject {
         if (this._gamePieceBodyId) {
             World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
         }
+
+        JOLT.destroy(this._scratchRVec3)
+        JOLT.destroy(this._scratchQuat)
     }
 }
 

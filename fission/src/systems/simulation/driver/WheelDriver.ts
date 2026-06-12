@@ -66,6 +66,8 @@ class WheelDriver extends Driver {
 
     public update(_: number): void {
         const vel = this._targetVelocity()
+        // Unlike motor targets, wheel angular velocity is state the simulation
+        // mutates each step, so it must be re-asserted every frame.
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
     }

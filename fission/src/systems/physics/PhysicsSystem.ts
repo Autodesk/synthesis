@@ -5,8 +5,6 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToJoltRVec3,
-    convertMirabufFloatToArrJoltFloat3,
-    convertMirabufFloatToArrJoltVec3,
     convertMirabufVector3ToJoltRVec3,
     convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
@@ -21,10 +19,10 @@ import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
-import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
+import type { CurrentContactData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 
 /**
@@ -47,9 +45,9 @@ const COUNT_OBJECT_LAYERS = 11
 export const STANDARD_SIMULATION_PERIOD = 1.0 / 60.0
 const MIN_SIMULATION_PERIOD = 1.0 / 120.0
 const MAX_SIMULATION_PERIOD = 1.0 / 10.0
-const MIN_SUBSTEPS = 12
-const MAX_SUBSTEPS = 20
-const STANDARD_SUB_STEPS = 20
+const MIN_SUBSTEPS = 1
+const MAX_SUBSTEPS = 2
+const STANDARD_SUB_STEPS = 2
 const TIMESTEP_ADJUSTMENT = 0.0001
 
 const SIGNIFICANT_FRICTION_THRESHOLD = 0.05
@@ -90,13 +88,18 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
-    private _physicsEventQueue: SynthesisEvent<
-        "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
-    >[] = []
+    private _physicsEventQueue: SynthesisEvent<"OnContactAddedEvent" | "OnContactPersistedEvent">[] = []
 
     private _pauseSet = new Set<string>()
 
     private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
+
+    private _rayCastSettings: Jolt.RayCastSettings
+    private _rayCastCollector: Jolt.CastRayClosestHitCollisionCollector
+    private _rayCastBpFilter: Jolt.BroadPhaseLayerFilter
+    private _rayCastObjectFilter: Jolt.ObjectLayerFilter
+    private _rayCastBodyFilter: Jolt.IgnoreMultipleBodiesFilter
+    private _rayCastShapeFilter: Jolt.ShapeFilter
 
     public get isPaused(): boolean {
         return this._pauseSet.size > 0
@@ -136,6 +139,14 @@ class PhysicsSystem extends WorldSystem {
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
 
         this._bodyAssociations = new Map()
+
+        this._rayCastSettings = new JOLT.RayCastSettings()
+        this._rayCastSettings.mTreatConvexAsSolid = false
+        this._rayCastCollector = new JOLT.CastRayClosestHitCollisionCollector()
+        this._rayCastBpFilter = new JOLT.BroadPhaseLayerFilter()
+        this._rayCastObjectFilter = new JOLT.ObjectLayerFilter()
+        this._rayCastBodyFilter = new JOLT.IgnoreMultipleBodiesFilter()
+        this._rayCastShapeFilter = new JOLT.ShapeFilter()
     }
 
     /**
@@ -1071,7 +1082,7 @@ class PhysicsSystem extends WorldSystem {
                 )
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
-                body.SetAllowSleeping(false)
+                if (!rn.isGamePiece) body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Set Friction Here
@@ -1116,17 +1127,18 @@ class PhysicsSystem extends WorldSystem {
         const max = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
         const points = settings.mPoints
+        const scratchVert = new JOLT.Vec3()
         partDefinition.bodies!.forEach(body => {
             const verts = body.triangleMesh?.mesh?.verts
             if (!verts) return
 
             for (let i = 0; i < verts.length; i += 3) {
-                const vert = convertMirabufFloatToArrJoltVec3(verts, i)
-                points.push_back(vert)
-                this.updateMinMaxBounds(vert, min, max)
-                JOLT.destroy(vert)
+                scratchVert.Set(verts[i] / 100.0, verts[i + 1] / 100.0, verts[i + 2] / 100.0)
+                points.push_back(scratchVert)
+                this.updateMinMaxBounds(scratchVert, min, max)
             }
         })
+        JOLT.destroy(scratchVert)
 
         if (points.size() < 4) {
             JOLT.destroy(settings)
@@ -1162,6 +1174,10 @@ class PhysicsSystem extends WorldSystem {
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
 
         let maxIndex = -1
+        const scratchFloat3 = new JOLT.Float3(0, 0, 0)
+        const scratchVec3 = new JOLT.Vec3()
+        const scratchTri = new JOLT.IndexedTriangle()
+        scratchTri.set_mMaterialIndex(0)
         partDefinition.bodies!.forEach(body => {
             const vertArr = body.triangleMesh?.mesh?.verts
             const indexArr = body.triangleMesh?.mesh?.indices
@@ -1169,10 +1185,12 @@ class PhysicsSystem extends WorldSystem {
             if (indexArr.length < 3 || indexArr.length % 3 !== 0) return
 
             for (let i = 0; i < vertArr.length; i += 3) {
-                const vert = convertMirabufFloatToArrJoltFloat3(vertArr, i)
-                settings.mTriangleVertices.push_back(vert)
-                this.updateMinMaxBounds(new JOLT.Vec3(vert), min, max)
-                JOLT.destroy(vert)
+                scratchFloat3.x = vertArr[i] / 100.0
+                scratchFloat3.y = vertArr[i + 1] / 100.0
+                scratchFloat3.z = vertArr[i + 2] / 100.0
+                settings.mTriangleVertices.push_back(scratchFloat3)
+                scratchVec3.Set(scratchFloat3.x, scratchFloat3.y, scratchFloat3.z)
+                this.updateMinMaxBounds(scratchVec3, min, max)
             }
 
             for (let i = 0; i < indexArr.length; i += 3) {
@@ -1182,9 +1200,15 @@ class PhysicsSystem extends WorldSystem {
                 if (a > maxIndex) maxIndex = a
                 if (b > maxIndex) maxIndex = b
                 if (c > maxIndex) maxIndex = c
-                settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(a, b, c, 0))
+                scratchTri.set_mIdx(0, a)
+                scratchTri.set_mIdx(1, b)
+                scratchTri.set_mIdx(2, c)
+                settings.mIndexedTriangles.push_back(scratchTri)
             }
         })
+        JOLT.destroy(scratchFloat3)
+        JOLT.destroy(scratchVec3)
+        JOLT.destroy(scratchTri)
 
         const vertCount = settings.mTriangleVertices.size()
         const triCountBeforeSanitize = settings.mIndexedTriangles.size()
@@ -1235,24 +1259,26 @@ class PhysicsSystem extends WorldSystem {
     public rayCast(from: Jolt.Vec3, dir: Jolt.Vec3, ...ignoreBodies: Jolt.BodyID[]): RayCastHit | undefined {
         const ray = new JOLT.RRayCast(convertJoltVec3ToJoltRVec3(from), dir)
 
-        const raySettings = new JOLT.RayCastSettings()
-        raySettings.mTreatConvexAsSolid = false
-        const collector = new JOLT.CastRayClosestHitCollisionCollector()
-        const bpFilter = new JOLT.BroadPhaseLayerFilter()
-        const objectFilter = new JOLT.ObjectLayerFilter()
-        const bodyFilter = new JOLT.IgnoreMultipleBodiesFilter()
-        const shapeFilter = new JOLT.ShapeFilter() // We don't want to filter out any shapes
-
-        ignoreBodies.forEach(x => bodyFilter.IgnoreBody(x))
+        this._rayCastCollector.Reset()
+        this._rayCastBodyFilter.Clear()
+        ignoreBodies.forEach(x => this._rayCastBodyFilter.IgnoreBody(x))
 
         this._joltPhysSystem
             .GetNarrowPhaseQuery()
-            .CastRay(ray, raySettings, collector, bpFilter, objectFilter, bodyFilter, shapeFilter)
+            .CastRay(
+                ray,
+                this._rayCastSettings,
+                this._rayCastCollector,
+                this._rayCastBpFilter,
+                this._rayCastObjectFilter,
+                this._rayCastBodyFilter,
+                this._rayCastShapeFilter
+            )
 
-        if (!collector.HadHit()) return undefined
+        if (!this._rayCastCollector.HadHit()) return undefined
 
-        const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
-        return { data: collector.mHit, point: convertJoltRVec3ToJoltVec3(hitPoint), ray: ray }
+        const hitPoint = ray.GetPointOnRay(this._rayCastCollector.mHit.mFraction)
+        return { data: this._rayCastCollector.mHit, point: convertJoltRVec3ToJoltVec3(hitPoint), ray: ray }
     }
 
     /**
@@ -1330,9 +1356,12 @@ class PhysicsSystem extends WorldSystem {
         this._joltInterface.Step(lastDeltaT, substeps)
 
         if (World.multiplayerSystem != null) {
-            const interObjectCollisions = this._physicsEventQueue
-                .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
-                .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
+            const interObjectCollisions =
+                this._physicsEventQueue.length === 0
+                    ? []
+                    : this._physicsEventQueue
+                          .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
+                          .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
 
             World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
                 const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)
@@ -1522,30 +1551,14 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Finds the MirabufSceneObject containing the mechanism containing the body referenced by the given id
-     */
-    private bodyToMiraSceneObject(body: Jolt.Body): MirabufSceneObject | null {
-        const id = body.GetID()
-        return (
-            World.sceneRenderer.mirabufSceneObjects.findWhere(obj =>
-                [...obj.mechanism.nodeToBody].some(n => n[1] == id)
-            ) ?? null
-        )
-    }
-
-    /**
      * In multiplayer, returns whether the given jolt body is on the client's robot
      *
      * In singleplayer returns false
      */
     private isClient(body: Jolt.Body): boolean {
-        return (
-            (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
-                World.multiplayerSystem
-                    ?.getOwnSceneObjectIDs()
-                    .includes(this.bodyToMiraSceneObject(body)?.id as LocalSceneObjectId)) ??
-            false
-        )
+        if (!ROBOT_LAYERS.includes(body.GetObjectLayer())) return false
+        const sceneObject = (this.getBodyAssociation(body.GetID()) as RigidNodeAssociate)?.sceneObject ?? null
+        return World.multiplayerSystem?.getOwnSceneObjectIDs().includes(sceneObject?.id as LocalSceneObjectId) ?? false
     }
 
     /**
@@ -1555,8 +1568,8 @@ class PhysicsSystem extends WorldSystem {
     private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body) {
         if (other == null || robot == null) return
 
-        const robotSceneObject = this.bodyToMiraSceneObject(robot)
-        const otherSceneObject = this.bodyToMiraSceneObject(other)
+        const robotSceneObject = (this.getBodyAssociation(robot.GetID()) as RigidNodeAssociate)?.sceneObject ?? null
+        const otherSceneObject = (this.getBodyAssociation(other.GetID()) as RigidNodeAssociate)?.sceneObject ?? null
         if (robotSceneObject == null || otherSceneObject == null) return
 
         robotSceneObject.mechanism.touchedObjects.push(otherSceneObject)
@@ -1574,8 +1587,8 @@ class PhysicsSystem extends WorldSystem {
             const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
             const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
 
-            const body1Id = new JOLT.BodyID(body1.GetID().GetIndexAndSequenceNumber())
-            const body2Id = new JOLT.BodyID(body2.GetID().GetIndexAndSequenceNumber())
+            const body1Id = body1.GetID()
+            const body2Id = body2.GetID()
 
             const message: CurrentContactData = {
                 body1: body1Id,
@@ -1585,12 +1598,14 @@ class PhysicsSystem extends WorldSystem {
             }
 
             // Detect if a robot is touching a gp, then push to the robot's touched list
-            const [clientBody, otherBody] = this.isClient(body1)
-                ? [body1, body2]
-                : this.isClient(body2)
-                  ? [body2, body1]
-                  : [undefined, undefined]
-            this.recordOtherBodyCollision(clientBody, otherBody)
+            if (World.multiplayerSystem != null) {
+                const [clientBody, otherBody] = this.isClient(body1)
+                    ? [body1, body2]
+                    : this.isClient(body2)
+                      ? [body2, body1]
+                      : [undefined, undefined]
+                this.recordOtherBodyCollision(clientBody, otherBody)
+            }
 
             this._physicsEventQueue.push(EventSystem.create("OnContactAddedEvent", message))
         }
@@ -1618,19 +1633,7 @@ class PhysicsSystem extends WorldSystem {
             EventSystem.dispatch("OnContactRemovedEvent", { message: shapePair })
         }
 
-        contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {
-            const message: OnContactValidateData = {
-                body1: JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body,
-                body2: JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body,
-                baseOffset: JOLT.wrapPointer(inBaseOffsetPtr, JOLT.RVec3) as Jolt.RVec3,
-                collisionResult: JOLT.wrapPointer(
-                    inCollisionResultPtr,
-                    JOLT.CollideShapeResult
-                ) as Jolt.CollideShapeResult,
-            }
-
-            this._physicsEventQueue.push(EventSystem.create("OnContactValidateEvent", message))
-
+        contactListener.OnContactValidate = (_bodyPtr1, _bodyPtr2, _inBaseOffsetPtr, _inCollisionResultPtr) => {
             return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
         }
 

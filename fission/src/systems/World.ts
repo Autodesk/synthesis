@@ -138,13 +138,27 @@ class World {
 
         this._accumTimes.frames++
 
-        this._accumTimes.totalTime += this.time(() => {
-            this._accumTimes.simulationTime += this.time(() => World._simulationSystem.update(this._currentDeltaT))
-            this._accumTimes.physicsTime += this.time(() => World._physicsSystem.update(this._currentDeltaT))
-            this._accumTimes.inputTime += this.time(() => World._inputSystem.update(this._currentDeltaT))
-            this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.update(this._currentDeltaT))
-            World._dragModeSystem.update(this._currentDeltaT)
-        })
+        const totalStart = performance.now()
+
+        let t0 = performance.now()
+        World._simulationSystem.update(this._currentDeltaT)
+        this._accumTimes.simulationTime += performance.now() - t0
+
+        t0 = performance.now()
+        World._physicsSystem.update(this._currentDeltaT)
+        this._accumTimes.physicsTime += performance.now() - t0
+
+        t0 = performance.now()
+        World._inputSystem.update(this._currentDeltaT)
+        this._accumTimes.inputTime += performance.now() - t0
+
+        t0 = performance.now()
+        World._sceneRenderer.update(this._currentDeltaT)
+        this._accumTimes.sceneTime += performance.now() - t0
+
+        World._dragModeSystem.update(this._currentDeltaT)
+
+        this._accumTimes.totalTime += performance.now() - totalStart
 
         World._analyticsSystem?.update(this._currentDeltaT)
         World._performanceMonitorSystem?.update(this._currentDeltaT)
@@ -155,12 +169,6 @@ class World {
 
     public static get currentDeltaT(): number {
         return this._currentDeltaT
-    }
-
-    private static time(func: () => void): number {
-        const start = Date.now()
-        func()
-        return Date.now() - start
     }
 }
 

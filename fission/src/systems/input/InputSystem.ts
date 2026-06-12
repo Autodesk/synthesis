@@ -9,6 +9,12 @@ import type Input from "./inputs/Input"
 
 const LOG_GAMEPAD_EVENTS = false
 
+let inputLookupCache = new WeakMap<InputScheme, Map<InputName, Input>>()
+
+EventSystem.listen("InputSchemeChanged", () => {
+    inputLookupCache = new WeakMap()
+})
+
 /**
  *  The input system listens for and records key presses and joystick positions to be used by robots.
  *  It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.
@@ -179,10 +185,19 @@ class InputSystem extends WorldSystem {
         }
 
         const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        if (targetScheme == null) return 0
 
-        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
+        let inputMap = inputLookupCache.get(targetScheme)
+        if (!inputMap) {
+            inputMap = new Map<InputName, Input>()
+            for (const input of targetScheme.inputs) {
+                inputMap.set(input.inputName, input as Input)
+            }
+            inputLookupCache.set(targetScheme, inputMap)
+        }
 
-        if (targetScheme == null || targetInput == null) return 0
+        const targetInput = inputMap.get(inputName)
+        if (targetInput == null) return 0
 
         return targetInput.getValue(targetScheme.usesGamepad, targetScheme.usesTouchControls)
     }
