@@ -1,4 +1,4 @@
-package com.autodesk.synthesis.kauailabs;
+package com.autodesk.synthesis.studica;
 
 import com.autodesk.synthesis.Gyro;
 
@@ -7,16 +7,15 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SerialPort;
 
 /**
- * Outline for a NavX AHRS class.
- * TODO
+ * NavX AHRS wrapper to add proper WPILib HALSim support.
  */
-public class AHRS extends com.kauailabs.navx.frc.AHRS {
+public class AHRS extends com.studica.frc.AHRS {
     private Gyro m_gyro;
 
     public AHRS() {
         this(SPI.Port.kMXP);
     }
-    
+
     public AHRS(I2C.Port port) {
         super(port);
         init("I2C", port.value);
