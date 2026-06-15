@@ -17,7 +17,7 @@ class World {
     private static _currentDeltaT: number = 0
 
     private static _sceneRenderer: SceneRenderer
-    private static _physicsSystem: PhysicsSystem
+    public static physicsSystem: PhysicsSystem
     private static _simulationSystem: SimulationSystem
     private static _inputSystem: InputSystem
     private static _multiplayerSystem?: MultiplayerSystem
@@ -45,9 +45,7 @@ class World {
     public static get sceneRenderer() {
         return World._sceneRenderer
     }
-    public static get physicsSystem() {
-        return World._physicsSystem
-    }
+
     public static get simulationSystem() {
         return World._simulationSystem
     }
@@ -72,10 +70,6 @@ class World {
         return World.multiplayerSystem?.getOwnObjects() ?? World.sceneRenderer.mirabufSceneObjects.getAll()
     }
 
-    public static set physicsSystem(system: PhysicsSystem) {
-        World.physicsSystem = system
-    }
-
     public static resetAccumTimes() {
         this._accumTimes = {
             frames: 0,
@@ -98,7 +92,7 @@ class World {
         World._isAlive = true
 
         World._sceneRenderer = new SceneRenderer()
-        World._physicsSystem = new PhysicsSystem()
+        World.physicsSystem = new PhysicsSystem()
         World._simulationSystem = new SimulationSystem()
         World._inputSystem = new InputSystem()
         World._dragModeSystem = new DragModeSystem()
@@ -122,7 +116,7 @@ class World {
 
         World._isAlive = false
 
-        World._physicsSystem.destroy()
+        World.physicsSystem.destroy()
         World._sceneRenderer.destroy()
         World._simulationSystem.destroy()
         World._inputSystem.destroy()
@@ -140,7 +134,7 @@ class World {
 
         this._accumTimes.totalTime += this.time(() => {
             this._accumTimes.simulationTime += this.time(() => World._simulationSystem.update(this._currentDeltaT))
-            this._accumTimes.physicsTime += this.time(() => World._physicsSystem.update(this._currentDeltaT))
+            this._accumTimes.physicsTime += this.time(() => World.physicsSystem.update(this._currentDeltaT))
             this._accumTimes.inputTime += this.time(() => World._inputSystem.update(this._currentDeltaT))
             this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.update(this._currentDeltaT))
             World._dragModeSystem.update(this._currentDeltaT)
