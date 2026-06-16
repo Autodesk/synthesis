@@ -10,6 +10,7 @@
 #include <Core/Memory.h>
 #include <Fusion/FusionAll.h>
 
+#include <algorithm>
 #include <unordered_map>
 #include <vector>
 
@@ -74,7 +75,6 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
                 base_color = color->value();
                 base_color->opacity(255);
             }
-
             break;
         }
         case 1: {
@@ -85,7 +85,6 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
                 base_color = color->value();
                 base_color->opacity(255);
             }
-
             break;
         }
         case 2: {
@@ -94,7 +93,6 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
                 base_color = color->value();
                 base_color->opacity(255);
             }
-
             break;
         }
         case 3: {
@@ -105,11 +103,7 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
             constexpr float OPACITY_RAMPING_CONSTANT = 14.0f;
             float opacity =
                 (255.0f * transparent_distance->value()) / (transparent_distance->value() + OPACITY_RAMPING_CONSTANT);
-            if (opacity > 255) {
-                opacity = 255;
-            } else if (opacity < 0) {
-                opacity = 0;
-            }
+            opacity = std::clamp(opacity, 0.0f, 255.0f);
 
             if (color && color->value()) {
                 base_color = color->value();
@@ -167,11 +161,11 @@ mirabuf::material::PhysicalMaterial default_physical_material() {
 
 // Friction coefficients by Fusion material name, matching the Python exporter's lookup table.
 static const std::unordered_map<std::string, float> FRICTION_COEFFS = {
-    {"Aluminum",        1.1f},
-    {"Steel, Cast",     0.75f},
-    {"Steel, Mild",     0.75f},
+    {"Aluminum", 1.1f},
+    {"Steel, Cast", 0.75f},
+    {"Steel, Mild", 0.75f},
     {"Rubber, Nitrile", 1.0f},
-    {"ABS Plastic",     0.7f},
+    {"ABS Plastic", 0.7f},
 };
 
 mirabuf::material::PhysicalMaterial map_physical_material(const adsk::core::Ptr<adsk::core::Material>& material) {

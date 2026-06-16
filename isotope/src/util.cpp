@@ -4,25 +4,17 @@
 #include <Fusion/Components/Occurrence.h>
 
 #include <array>
+#include <iomanip>
 #include <random>
 #include <sstream>
-#include <iomanip>
 #include <string>
 
 std::string guid_component(const adsk::core::Ptr<adsk::fusion::Component>& component) {
-    std::string output;
-    output += component->entityToken();
-    output += "_";
-    output += component->id();
-    return output;
+    return component->entityToken() + "_" + component->id();
 }
 
 std::string guid_occurrence(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
-    std::string output;
-    output += occurrence->entityToken();
-    output += "_";
-    output += guid_component(occurrence->component());
-    return output;
+    return occurrence->entityToken() + "_" + guid_component(occurrence->component());
 }
 
 std::string uuid4() {

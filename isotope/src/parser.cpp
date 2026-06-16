@@ -75,9 +75,9 @@ void export_design(const GlobalContext& gctx) {
     // Write to a temp path and atomically rename on success so that the final
     // path only appears once all bytes are on disk (avoids truncated reads if
     // another process polls for the file while we are still writing).
-    std::string home        = std::getenv("HOME");
-    std::string final_path  = home + "/Desktop/test_dozer.mira";
-    std::string temp_path   = home + "/Desktop/.test_dozer.mira.tmp";
+    std::string home       = std::getenv("HOME");
+    std::string final_path = home + "/Desktop/test_dozer.mira";
+    std::string temp_path  = home + "/Desktop/.test_dozer.mira.tmp";
 
     std::ofstream binary_output(temp_path, std::ios::out | std::ios::binary | std::ios::trunc);
     if (!binary_output.is_open()) {
@@ -104,6 +104,5 @@ void export_design(const GlobalContext& gctx) {
         return;
     }
 
-    gctx.app->userInterface()->messageBox(
-        "Exported assembly! (" + std::to_string(binary_data.size()) + " bytes)");
+    gctx.app->userInterface()->messageBox("Exported assembly! (" + std::to_string(binary_data.size()) + " bytes)");
 }
