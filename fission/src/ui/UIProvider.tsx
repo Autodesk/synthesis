@@ -23,6 +23,7 @@ import {
     type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
 export type UIProviderProps = {
     children?: ReactNode
@@ -33,6 +34,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
     const [_, refresh] = useReducer(x => !x, false)
+
+    const { unconfirmedImport } = useStateContext()
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
@@ -173,7 +176,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setPanels([...nextPanels, panel as Panel<any, any>])
             return id
         },
-        [panels]
+        [panels, unconfirmedImport]
     )
 
     const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
