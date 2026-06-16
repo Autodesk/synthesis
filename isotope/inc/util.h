@@ -66,26 +66,14 @@ struct overloaded : Ts... {
     using Ts::operator()...;
 };
 
-template <class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
+template <typename T>
+concept HasName = requires(T t) { t->name(); };
 
-template <class, class = void>
-struct has_name : std::false_type {};
+template <typename T>
+concept HasEntityToken = requires(T t) { t->entityToken(); };
 
-template <class T>
-struct has_name<T, std::void_t<decltype(std::declval<T>()->name())>> : std::true_type {};
-
-template <class, class = void>
-struct has_entity_token : std::false_type {};
-
-template <class T>
-struct has_entity_token<T, std::void_t<decltype(std::declval<T>()->entityToken())>> : std::true_type {};
-
-template <class, class = void>
-struct has_id : std::false_type {};
-
-template <class T>
-struct has_id<T, std::void_t<decltype(std::declval<T>()->id())>> : std::true_type {};
+template <typename T>
+concept HasId = requires(T t) { t->id(); };
 
 template <typename FusObjPtr>
 mirabuf::Info create_info_from_fus_obj(const FusObjPtr& obj, const std::string& override_guid = "") {
@@ -96,14 +84,14 @@ mirabuf::Info create_info_from_fus_obj(const FusObjPtr& obj, const std::string& 
     // the C++ and python exporters respectively.
     info.set_version(1);
 
-    if constexpr (has_name<FusObjPtr>::value) {
+    if constexpr (HasName<FusObjPtr>) {
         info.set_name(obj->name());
     }
 
     if (!override_guid.length()) {
-        if constexpr (has_entity_token<FusObjPtr>::value) {
+        if constexpr (HasEntityToken<FusObjPtr>) {
             info.set_guid(obj->entityToken());
-        } else if constexpr (has_id<FusObjPtr>::value) {
+        } else if constexpr (HasId<FusObjPtr>) {
             info.set_guid(obj->id());
         }
     } else {
