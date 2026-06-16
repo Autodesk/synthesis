@@ -262,10 +262,10 @@ void map_rigid_groups(const adsk::core::Ptr<adsk::fusion::Component>& root, mira
                 continue;
             }
 
-            mira_group.mutable_occurrences()->Add(occurrence->entityToken());
+            mira_group.mutable_occurrences()->Add(guid_occurrence(occurrence));
         }
 
-        if (mira_group.occurrences().size()) {
+        if (mira_group.occurrences().size() > 1) {
             joints->mutable_rigid_groups()->Add()->CopyFrom(mira_group);
         }
     }
