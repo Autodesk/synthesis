@@ -336,7 +336,10 @@ std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<ad
 
 std::optional<mirabuf::Node> create_tree_parts(
     std::shared_ptr<GraphNode> occurrence_node, OccurrenceRelationship relationship) {
-    if (relationship == NEXT || !occurrence_node->data->isLightBulbOn()) {
+    // NONE edges link occurrence nodes to joint-axis simulation nodes; they are
+    // joint-level connections and must not be traversed as part of the occurrence
+    // tree (that is populate_joint's job).
+    if (relationship == NEXT || relationship == NONE || !occurrence_node->data->isLightBulbOn()) {
         return std::nullopt;
     }
 
@@ -367,8 +370,13 @@ void populate_joint(std::shared_ptr<GraphNode> sim_node, mirabuf::joint::Joints*
         joint->mutable_parts()->mutable_nodes()->Add()->CopyFrom(root.value());
     }
 
+    // Only follow NONE edges — those are the joint-level links inserted by
+    // recurse_link_node_axis.  TRANSFORM/CONNECTION/NEXT edges are occurrence-
+    // level relationships that belong to the occurrence tree, not the joint tree.
     for (auto edge : sim_node->edges) {
-        populate_joint(edge->node, joints);
+        if (edge->relationship == NONE) {
+            populate_joint(edge->node, joints);
+        }
     }
 }
 
@@ -593,27 +601,26 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
 }
 
 mirabuf::GraphContainer create_joint_graph(const mirabuf::joint::Joints& joints) {
-    std::unordered_map<std::string, mirabuf::Node> nodes;
-    auto ground_node = mirabuf::Node();
+    // "ground" is a synthetic root node.  The "grounded" joint definition is a
+    // metadata entry for the fixed/world joint and is intentionally excluded from
+    // the hierarchy (matches Python exporter behaviour).
+    mirabuf::Node ground_node;
     ground_node.set_value("ground");
-    nodes[ground_node.value()] = ground_node;
 
-    for (const auto& [_, joint] : joints.joint_definitions()) {
-        if (joint.info().guid().length()) {
-            auto new_node = mirabuf::Node();
-            new_node.set_value(joint.info().guid());
-            nodes[new_node.value()] = new_node;
+    std::vector<mirabuf::Node> def_nodes;
+    for (const auto& [key, joint] : joints.joint_definitions()) {
+        if (key == "grounded" || joint.info().guid().empty()) {
+            continue;
         }
-    }
-
-    for (const auto& [_, joint] : joints.joint_definitions()) {
-        if (joint.info().guid().length()) {
-            nodes["ground"].mutable_children()->Add()->CopyFrom(nodes[joint.info().guid()]);
-        }
+        mirabuf::Node def_node;
+        def_node.set_value(joint.info().guid());
+        ground_node.mutable_children()->Add()->CopyFrom(def_node);
+        def_nodes.push_back(std::move(def_node));
     }
 
     mirabuf::GraphContainer joint_tree;
-    for (const auto& [_, node] : nodes) {
+    joint_tree.mutable_nodes()->Add()->CopyFrom(ground_node);
+    for (const auto& node : def_nodes) {
         joint_tree.mutable_nodes()->Add()->CopyFrom(node);
     }
 

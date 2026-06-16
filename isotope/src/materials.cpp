@@ -10,6 +10,7 @@
 #include <Core/Memory.h>
 #include <Fusion/FusionAll.h>
 
+#include <unordered_map>
 #include <vector>
 
 #include "material.pb.h"
@@ -164,6 +165,15 @@ mirabuf::material::PhysicalMaterial default_physical_material() {
         }                                                                      \
     } while (0)
 
+// Friction coefficients by Fusion material name, matching the Python exporter's lookup table.
+static const std::unordered_map<std::string, float> FRICTION_COEFFS = {
+    {"Aluminum",        1.1f},
+    {"Steel, Cast",     0.75f},
+    {"Steel, Mild",     0.75f},
+    {"Rubber, Nitrile", 1.0f},
+    {"ABS Plastic",     0.7f},
+};
+
 mirabuf::material::PhysicalMaterial map_physical_material(const adsk::core::Ptr<adsk::core::Material>& material) {
     mirabuf::material::PhysicalMaterial new_physical_material = default_physical_material();
     new_physical_material.mutable_info()->CopyFrom(create_info_from_fus_obj(material));
@@ -171,8 +181,10 @@ mirabuf::material::PhysicalMaterial map_physical_material(const adsk::core::Ptr<
     new_physical_material.set_deformable(false);
     new_physical_material.set_mattype(mirabuf::material::PhysicalMaterial_MaterialType_METAL);
 
-    new_physical_material.set_dynamic_friction(0.5f);
-    new_physical_material.set_static_friction(0.5f);
+    auto friction_it = FRICTION_COEFFS.find(material->name());
+    float friction   = friction_it != FRICTION_COEFFS.end() ? friction_it->second : 0.5f;
+    new_physical_material.set_dynamic_friction(friction);
+    new_physical_material.set_static_friction(friction);
     new_physical_material.set_restitution(0.5f);
 
     auto mat_props             = material->materialProperties();
