@@ -16,7 +16,7 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
@@ -25,7 +25,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
     const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
-    const { openModal, openPanel, configureScreen } = useUIContext()
+    const { openModal, openPanel, configureScreen, closePanel } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -144,7 +144,12 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     scaleDisabled={true}
                     size={3.0}
                     parent={targetAssembly}
-                    onAccept={() => closeFinish()}
+                    onAccept={
+                        () => { 
+                            closeFinish()
+                            closePanel(panel!.id, CloseType.Accept)
+                        } 
+                    }
                     onCancel={closeDelete}
                 />
             )}
