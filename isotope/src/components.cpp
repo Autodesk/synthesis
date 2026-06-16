@@ -249,10 +249,8 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
 
 } // namespace
 
-std::pair<mirabuf::Parts, mirabuf::Node> map_parts(
-    const adsk::core::Ptr<adsk::fusion::Components>& components,
-    const adsk::core::Ptr<adsk::fusion::Component>& root,
-    const mirabuf::material::Materials& materials) {
+std::pair<mirabuf::Parts, mirabuf::Node> map_parts(const adsk::core::Ptr<adsk::fusion::Components>& components,
+    const adsk::core::Ptr<adsk::fusion::Component>& root, const mirabuf::material::Materials& materials) {
     auto parts     = build_part_definitions(components, materials.appearances());
     auto root_node = parse_component_root(root, &parts);
     return {std::move(parts), std::move(root_node)};

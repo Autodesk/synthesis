@@ -41,9 +41,9 @@ adsk::core::Ptr<adsk::fusion::Occurrence> search_for_grounded(const adsk::core::
 }
 
 enum class OccurrenceRelationship {
-    TRANSFORM,  // Hierarchy parenting
+    TRANSFORM, // Hierarchy parenting
     CONNECTION, // A rigid joint or other designator
-    NEXT,       // The next joint in a list
+    NEXT, // The next joint in a list
     NONE,
 };
 
@@ -79,26 +79,26 @@ adsk::core::Ptr<adsk::fusion::Occurrence> joint_connection(
     return joint->occurrenceOne() != occurrence ? joint->occurrenceOne() : nullptr;
 }
 
-std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence,
+std::shared_ptr<GraphNode> populate_node(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence,
     std::shared_ptr<GraphNode> prev, OccurrenceRelationship relationship, bool is_ground,
     std::unordered_set<std::string>& visited_occurrence_entity_tokens,
     const std::unordered_map<std::string, AnyJointPtr>& dynamic_joints) {
     if (occurrence->isGrounded() && !is_ground) {
-        return std::nullopt;
+        return nullptr;
     }
 
     if (relationship == NEXT && prev) {
         prev->edges.push_back(
             std::make_shared<GraphEdge>(GraphEdge{relationship, std::make_shared<GraphNode>(GraphNode{occurrence})}));
-        return std::nullopt;
+        return nullptr;
     }
 
     if (prev && dynamic_joints.contains(occurrence->entityToken())) {
-        return std::nullopt;
+        return nullptr;
     }
 
     if (visited_occurrence_entity_tokens.contains(occurrence->entityToken())) {
-        return std::nullopt;
+        return nullptr;
     }
 
     visited_occurrence_entity_tokens.insert(occurrence->entityToken());
@@ -225,17 +225,17 @@ void populate_axis(const adsk::core::Ptr<adsk::fusion::Design>& design,
     if (result.empty() || !result.at(0)) {
         return;
     }
-
-    auto occurrence = static_cast<adsk::core::Ptr<adsk::fusion::Occurrence>>(result[0]);
-    if (!occurrence) {
+    if (std::string_view(result[0]->objectType()) != FusionTypeName<adsk::fusion::Occurrence>::value) {
         return;
     }
+
+    auto occurrence = static_cast<adsk::core::Ptr<adsk::fusion::Occurrence>>(result[0]);
 
     std::unordered_set<std::string> visited;
     auto node = populate_node(occurrence, nullptr, NONE, false, visited, dynamic_joints);
     if (node) {
-        node.value()->joint                = joint;
-        simulation_nodes[occurrence_token] = node.value();
+        node->joint                        = joint;
+        simulation_nodes[occurrence_token] = node;
     }
 }
 
@@ -306,8 +306,8 @@ void build_joint_part_hierarchy(mirabuf::joint::Joints* joints, const adsk::core
 
     get_all_joints(design->rootComponent(), grounded, grounded_connections, dynamic_joints);
 
-    auto root_node =
-        populate_node(grounded, nullptr, NONE, true, visited_occurrence_entity_tokens, dynamic_joints).value();
+    auto root_node = populate_node(grounded, nullptr, NONE, true, visited_occurrence_entity_tokens, dynamic_joints);
+    assert(root_node);
     simulation_nodes["ground"] = root_node;
 
     look_for_grounded_joints(grounded_connections, dynamic_joints, root_node);

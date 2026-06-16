@@ -67,9 +67,19 @@ void fill_revolute_joint_motion(
     } else {
         auto rotation_axis = motion->rotationAxis();
         assert(rotation_axis);
-        dof->mutable_axis()->set_x((int) rotation_axis == 0);
-        dof->mutable_axis()->set_y((int) rotation_axis == 2);
-        dof->mutable_axis()->set_z((int) rotation_axis == 1);
+        switch (rotation_axis) {
+            case adsk::fusion::JointDirections::XAxisJointDirection:
+                dof->mutable_axis()->set_x(true);
+                break;
+            case adsk::fusion::JointDirections::YAxisJointDirection:
+                dof->mutable_axis()->set_y(true);
+                break;
+            case adsk::fusion::JointDirections::ZAxisJointDirection:
+                dof->mutable_axis()->set_z(true);
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -150,20 +160,21 @@ adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_geometry(
         return adsk::core::Point3D::create();
     }
 
-    // clang-format off
-    auto visitor = overloaded{
-        [&](std::monostate)                     { return geometry->origin(); },
-        [&](const adsk::fusion::BRepEdge* edge) {
-            if (edge->assemblyContext()) return geometry->origin();
-            return bounding_box_center(edge->createForAssemblyContext(occurrence));
-        },
-        [&](const adsk::fusion::BRepFace* face) {
-            if (face->assemblyContext()) return geometry->origin();
-            return face->createForAssemblyContext(occurrence)->centroid();
-        }};
-    // clang-format on
-    return std::visit(visitor,
-        fusion_base_to_variant<adsk::fusion::BRepEdge, adsk::fusion::BRepFace>(entity_one.get()));
+    if (auto edge = fusion_try_cast<adsk::fusion::BRepEdge>(entity_one.get())) {
+        if (edge->assemblyContext()) {
+            return geometry->origin();
+        }
+
+        return bounding_box_center(edge->createForAssemblyContext(occurrence));
+    } else if (auto face = fusion_try_cast<adsk::fusion::BRepFace>(entity_one.get())) {
+        if (face->assemblyContext()) {
+            return geometry->origin();
+        }
+
+        return face->createForAssemblyContext(occurrence)->centroid();
+    }
+
+    return geometry->origin();
 }
 
 adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_origin(const adsk::fusion::JointOrigin* joint_origin) {
@@ -180,15 +191,14 @@ adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_origin(const adsk::fusion
 
 adsk::core::Ptr<adsk::core::Point3D> get_joint_origin(const adsk::fusion::Joint* fusion_joint) {
     assert(fusion_joint);
-    // clang-format off
-    auto visitor = overloaded{
-        [](std::monostate)                               { return adsk::core::Point3D::create(); },
-        [&](const adsk::fusion::JointGeometry* geometry) { return origin_from_joint_geometry(geometry, fusion_joint->occurrenceOne()); },
-        [](const adsk::fusion::JointOrigin* origin)      { return origin_from_joint_origin(origin); }};
-    // clang-format on
-    return std::visit(visitor,
-        fusion_base_to_variant<adsk::fusion::JointGeometry, adsk::fusion::JointOrigin>(
-            fusion_joint->geometryOrOriginOne().get()));
+    auto geo_or_origin = fusion_joint->geometryOrOriginOne();
+    if (auto geometry = fusion_try_cast<adsk::fusion::JointGeometry>(geo_or_origin.get())) {
+        return origin_from_joint_geometry(geometry, fusion_joint->occurrenceOne());
+    } else if (auto origin = fusion_try_cast<adsk::fusion::JointOrigin>(geo_or_origin.get())) {
+        return origin_from_joint_origin(origin);
+    }
+
+    return adsk::core::Point3D::create();
 }
 
 // AsBuiltJoint always provides a JointGeometry directly, no JointOrigin variant.
@@ -198,6 +208,7 @@ adsk::core::Ptr<adsk::core::Point3D> get_joint_origin(const adsk::fusion::AsBuil
     if (!geometry) {
         return adsk::core::Point3D::create();
     }
+
     return origin_from_joint_geometry(geometry.get(), joint->occurrenceOne());
 }
 
@@ -237,6 +248,7 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
             if (!rigidGroup.occurrences().empty()) {
                 joints.mutable_rigid_groups()->Add()->CopyFrom(rigidGroup);
             }
+
             return;
         }
 
@@ -307,6 +319,7 @@ mirabuf::GraphContainer create_joint_graph(const mirabuf::joint::Joints& joints)
         if (key == "grounded" || joint.info().guid().empty()) {
             continue;
         }
+
         mirabuf::Node def_node;
         def_node.set_value(joint.info().guid());
         ground_entry->mutable_children()->Add()->CopyFrom(def_node);

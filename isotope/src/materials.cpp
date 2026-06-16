@@ -38,102 +38,79 @@ mirabuf::material::Appearance default_appearance() {
 }
 
 mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::Appearance>& appearance) {
-    mirabuf::material::Appearance new_appearance = default_appearance();
-    new_appearance.mutable_info()->CopyFrom(create_info_from_fus_obj(appearance));
-
-    new_appearance.set_roughness(0.9f);
-    new_appearance.set_metallic(0.3f);
-    new_appearance.set_specular(0.5f);
-
-    new_appearance.mutable_albedo()->set_r(10);
-    new_appearance.mutable_albedo()->set_g(10);
-    new_appearance.mutable_albedo()->set_b(10);
-    new_appearance.mutable_albedo()->set_a(127);
+    mirabuf::material::Appearance result = default_appearance();
+    result.mutable_info()->CopyFrom(create_info_from_fus_obj(appearance));
+    result.set_roughness(0.9f);
+    result.set_metallic(0.3f);
+    result.set_specular(0.5f);
+    result.mutable_albedo()->set_r(10);
+    result.mutable_albedo()->set_g(10);
+    result.mutable_albedo()->set_b(10);
+    result.mutable_albedo()->set_a(127);
 
     auto properties = appearance->appearanceProperties();
-    if (auto roughness_property = properties->itemById("surface_roughness")) {
-        new_appearance.set_roughness(dynamic_cast<adsk::core::FloatProperty*>(roughness_property.get())->value());
+    if (auto p = properties->itemById("surface_roughness")) {
+        result.set_roughness(dynamic_cast<adsk::core::FloatProperty*>(p.get())->value());
     }
 
     adsk::core::Ptr<adsk::core::IntegerProperty> model_item = properties->itemById("interior_model");
     if (!model_item) {
-        return new_appearance;
+        return result;
     }
 
-    adsk::core::Ptr<adsk::core::Color> base_color = nullptr;
+    const int model_type = model_item->value();
 
-    int mat_model_type = model_item->value();
-    switch (mat_model_type) {
-        case 0: {
-            if (auto reflectance_property = properties->itemById("opaque_f0")) {
-                new_appearance.set_metallic(
-                    dynamic_cast<adsk::core::FloatProperty*>(reflectance_property.get())->value());
-            }
-
-            adsk::core::Ptr<adsk::core::ColorProperty> color = properties->itemById("opaque_albedo");
-            if (color && color->value()) {
-                base_color = color->value();
-                base_color->opacity(255);
-            }
-            break;
+    if (model_type == 0) {
+        if (auto p = properties->itemById("opaque_f0")) {
+            result.set_metallic(dynamic_cast<adsk::core::FloatProperty*>(p.get())->value());
         }
-        case 1: {
-            new_appearance.set_metallic(0.8);
+    } else if (model_type == 1) {
+        result.set_metallic(0.8f);
+    }
 
-            adsk::core::Ptr<adsk::core::ColorProperty> color = properties->itemById("opaque_albedo");
-            if (color && color->value()) {
-                base_color = color->value();
-                base_color->opacity(255);
-            }
-            break;
-        }
-        case 2: {
-            adsk::core::Ptr<adsk::core::ColorProperty> color = properties->itemById("layered_diffuse");
-            if (color && color->value()) {
-                base_color = color->value();
-                base_color->opacity(255);
-            }
-            break;
-        }
-        case 3: {
-            adsk::core::Ptr<adsk::core::ColorProperty> color = properties->itemById("layered_diffuse");
-            adsk::core::Ptr<adsk::core::FloatProperty> transparent_distance =
-                properties->itemById("transparent_distance");
+    int16_t opacity = 255;
+    if (model_type == 3) {
+        adsk::core::Ptr<adsk::core::FloatProperty> dist = properties->itemById("transparent_distance");
+        constexpr float OPACITY_RAMPING_CONSTANT        = 14.0f;
 
-            constexpr float OPACITY_RAMPING_CONSTANT = 14.0f;
-            float opacity =
-                (255.0f * transparent_distance->value()) / (transparent_distance->value() + OPACITY_RAMPING_CONSTANT);
-            opacity = std::clamp(opacity, 0.0f, 255.0f);
+        const float dist_val = static_cast<float>(dist->value());
+        opacity =
+            static_cast<int16_t>(std::clamp((255.0f * dist_val) / (dist_val + OPACITY_RAMPING_CONSTANT), 0.0f, 255.0f));
+    }
 
-            if (color && color->value()) {
-                base_color = color->value();
-                base_color->opacity(static_cast<int16_t>(opacity));
+    const char* color_key = (model_type <= 1) ? "opaque_albedo" : "layered_diffuse";
+
+    adsk::core::Ptr<adsk::core::Color> base_color         = nullptr;
+    adsk::core::Ptr<adsk::core::ColorProperty> color_prop = properties->itemById(color_key);
+    if (color_prop && color_prop->value()) {
+        base_color = color_prop->value();
+        base_color->opacity(opacity);
+    }
+
+    if (!base_color) {
+        for (const auto& prop : appearance->appearanceProperties()) {
+            if (prop->name() != "Color") {
+                continue;
             }
+
+            auto cp = dynamic_cast<adsk::core::ColorProperty*>(prop.get());
+            if (!cp->value() || cp->id() == "surface_albedo") {
+                continue;
+            }
+
+            base_color = cp->value();
             break;
         }
     }
 
     if (base_color) {
-        new_appearance.mutable_albedo()->set_r(base_color->red());
-        new_appearance.mutable_albedo()->set_g(base_color->green());
-        new_appearance.mutable_albedo()->set_b(base_color->blue());
-        new_appearance.mutable_albedo()->set_a(base_color->opacity());
-    } else {
-        for (auto prop : appearance->appearanceProperties()) {
-            if (prop->name() == "Color") {
-                auto color_property = dynamic_cast<adsk::core::ColorProperty*>(prop.get());
-                if (color_property->value() && color_property->id() != "surface_albedo") {
-                    new_appearance.mutable_albedo()->set_r(color_property->value()->red());
-                    new_appearance.mutable_albedo()->set_g(color_property->value()->green());
-                    new_appearance.mutable_albedo()->set_b(color_property->value()->blue());
-                    new_appearance.mutable_albedo()->set_a(color_property->value()->opacity());
-                    break;
-                }
-            }
-        }
+        result.mutable_albedo()->set_r(base_color->red());
+        result.mutable_albedo()->set_g(base_color->green());
+        result.mutable_albedo()->set_b(base_color->blue());
+        result.mutable_albedo()->set_a(base_color->opacity());
     }
 
-    return new_appearance;
+    return result;
 }
 
 mirabuf::material::PhysicalMaterial default_physical_material() {
@@ -150,14 +127,13 @@ mirabuf::material::PhysicalMaterial default_physical_material() {
     return physical_material;
 }
 
-#define SET_FROM_PROP(props, id, obj, method)                                  \
-    do {                                                                       \
-        if (auto p = (props)->itemById(id)) {                                  \
-            if (auto fp = dynamic_cast<adsk::core::FloatProperty*>(p.get())) { \
-                (obj)->method(fp->value());                                    \
-            }                                                                  \
-        }                                                                      \
-    } while (0)
+void set_from_prop(const auto& props, const std::string& id, auto callback) {
+    if (auto p = props->itemById(id)) {
+        if (auto fp = dynamic_cast<adsk::core::FloatProperty*>(p.get())) {
+            callback(fp->value());
+        }
+    }
+}
 
 // Friction coefficients by Fusion material name, matching the Python exporter's lookup table.
 static const std::unordered_map<std::string, float> FRICTION_COEFFS = {
@@ -185,13 +161,15 @@ mirabuf::material::PhysicalMaterial map_physical_material(const adsk::core::Ptr<
     auto mechanical_properties = new_physical_material.mutable_mechanical();
     auto strength_properties   = new_physical_material.mutable_strength();
 
-    SET_FROM_PROP(mat_props, "structural_Young_modulus", mechanical_properties, set_young_mod);
-    SET_FROM_PROP(mat_props, "structural_Poisson_ratio", mechanical_properties, set_poisson_ratio);
-    SET_FROM_PROP(mat_props, "structural_Shear_modulus", mechanical_properties, set_shear_mod);
-    SET_FROM_PROP(mat_props, "structural_Density", mechanical_properties, set_density);
-    SET_FROM_PROP(mat_props, "structural_Damping_coefficient", mechanical_properties, set_damping_coefficient);
-    SET_FROM_PROP(mat_props, "structural_Minimum_yield_stress", strength_properties, set_yield_strength);
-    SET_FROM_PROP(mat_props, "structural_Minimum_tensile_strength", strength_properties, set_tensile_strength);
+    // clang-format off
+    set_from_prop(mat_props, "structural_Young_modulus",            [&](float v) { mechanical_properties->set_young_mod(v); });
+    set_from_prop(mat_props, "structural_Poisson_ratio",            [&](float v) { mechanical_properties->set_poisson_ratio(v); });
+    set_from_prop(mat_props, "structural_Shear_modulus",            [&](float v) { mechanical_properties->set_shear_mod(v); });
+    set_from_prop(mat_props, "structural_Density",                  [&](float v) { mechanical_properties->set_density(v); });
+    set_from_prop(mat_props, "structural_Damping_coefficient",      [&](float v) { mechanical_properties->set_damping_coefficient(v); });
+    set_from_prop(mat_props, "structural_Minimum_yield_stress",     [&](float v) { strength_properties->set_yield_strength(v); });
+    set_from_prop(mat_props, "structural_Minimum_tensile_strength", [&](float v) { strength_properties->set_tensile_strength(v); });
+    // clang-format on
 
     return new_physical_material;
 }
