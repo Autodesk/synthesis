@@ -2,11 +2,12 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
+import { rayCastForRigidBody } from "@/util/RaycastUtils"
+import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { CustomOrbitControls, SphericalCoords } from "./CameraControls"
@@ -256,25 +257,9 @@ class DragModeSystem extends WorldSystem {
     }
 
     private findDragTarget(mousePos: [number, number]): { bodyId: Jolt.BodyID; hitPoint: THREE.Vector3 } | undefined {
-        const ignoredBodies: Jolt.BodyID[] = []
-        let hit = this.raycastFromMouse(mousePos, ignoredBodies)
-
-        while (hit && this.isPassThroughZone(hit.data.mBodyID)) {
-            ignoredBodies.push(hit.data.mBodyID)
-            hit = this.raycastFromMouse(mousePos, ignoredBodies)
-        }
-
-        if (!hit) return undefined
-
-        const association = World.physicsSystem.getBodyAssociation(hit.data.mBodyID) as RigidNodeAssociate
-        if (!this.isDraggable(association)) return undefined
-
-        return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point) }
-    }
-
-    /** Transparent objects such as scoring zones should be ignored by raycasting [SYNTH-106] */
-    private shouldIgnoreRaycast(bodyId: Jolt.BodyID): boolean {
-        return !(World.physicsSystem.getBodyAssociation(bodyId) instanceof RigidNodeAssociate)
+        const result = rayCastForRigidBody(mousePos)
+        if (!result || !this.isDraggable(result.association)) return undefined
+        return { bodyId: result.bodyId, hitPoint: result.hitPoint }
     }
 
     private isDraggable(association: RigidNodeAssociate): boolean {
@@ -301,19 +286,6 @@ class DragModeSystem extends WorldSystem {
         } else {
             this._originalInteractionEnd?.(interaction)
         }
-    }
-
-    private raycastFromMouse(mousePos: [number, number], ignoreBodies: Jolt.BodyID[] = []) {
-        const camera = World.sceneRenderer.mainCamera
-        const origin = camera.position
-        const worldSpace = World.sceneRenderer.pixelToWorldSpace(mousePos[0], mousePos[1])
-        const direction = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
-
-        return World.physicsSystem.rayCast(
-            convertThreeVector3ToJoltVec3(origin),
-            convertThreeVector3ToJoltVec3(direction),
-            ...ignoreBodies
-        )
     }
 
     private startDragging(bodyId: Jolt.BodyID, mousePos: [number, number], hitPoint: THREE.Vector3): void {
