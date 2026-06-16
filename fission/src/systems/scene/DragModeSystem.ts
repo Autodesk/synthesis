@@ -272,7 +272,8 @@ class DragModeSystem extends WorldSystem {
         return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point) }
     }
 
-    private isPassThroughZone(bodyId: Jolt.BodyID): boolean {
+    /** Transparent objects such as scoring zones should be ignored by raycasting [SYNTH-106] */
+    private shouldIgnoreRaycast(bodyId: Jolt.BodyID): boolean {
         return !(World.physicsSystem.getBodyAssociation(bodyId) instanceof RigidNodeAssociate)
     }
 
