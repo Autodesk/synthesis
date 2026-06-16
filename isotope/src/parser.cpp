@@ -8,6 +8,7 @@
 #include <Fusion/Fusion/Design.h>
 #include <Fusion/Fusion/FusionDocument.h>
 
+#include <cstdio>
 #include <fstream>
 
 #include <google/protobuf/util/json_util.h>
@@ -71,17 +72,38 @@ void export_design(const GlobalContext& gctx) {
     output_file << json_output;
     output_file.close();
 
-    std::ofstream binary_output(
-        std::getenv("HOME") + std::string("/Desktop/test_dozer.mira"), std::ios::out | std::ios::binary);
+    // Write to a temp path and atomically rename on success so that the final
+    // path only appears once all bytes are on disk (avoids truncated reads if
+    // another process polls for the file while we are still writing).
+    std::string home        = std::getenv("HOME");
+    std::string final_path  = home + "/Desktop/test_dozer.mira";
+    std::string temp_path   = home + "/Desktop/.test_dozer.mira.tmp";
+
+    std::ofstream binary_output(temp_path, std::ios::out | std::ios::binary | std::ios::trunc);
     if (!binary_output.is_open()) {
         gctx.app->userInterface()->messageBox("Failed to open output file for writing.");
         return;
     }
 
-    if (!assembly.SerializeToOstream(&binary_output)) {
-        gctx.app->userInterface()->messageBox("Failed to write binary.");
+    std::string binary_data;
+    if (!assembly.SerializeToString(&binary_data)) {
+        gctx.app->userInterface()->messageBox("Failed to serialize assembly.");
         return;
     }
 
-    gctx.app->userInterface()->messageBox("Exported assembly!");
+    binary_output.write(binary_data.data(), static_cast<std::streamsize>(binary_data.size()));
+    binary_output.close();
+
+    if (binary_output.fail()) {
+        gctx.app->userInterface()->messageBox("Failed to write binary data.");
+        return;
+    }
+
+    if (std::rename(temp_path.c_str(), final_path.c_str()) != 0) {
+        gctx.app->userInterface()->messageBox("Failed to rename output file.");
+        return;
+    }
+
+    gctx.app->userInterface()->messageBox(
+        "Exported assembly! (" + std::to_string(binary_data.size()) + " bytes)");
 }
