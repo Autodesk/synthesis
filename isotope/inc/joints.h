@@ -14,6 +14,4 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
 
 mirabuf::GraphContainer create_joint_graph(const mirabuf::joint::Joints& joints);
 
-void build_joint_part_hierarchy(mirabuf::joint::Joints* joints, const adsk::core::Ptr<adsk::fusion::Design>& design);
-
 #endif // ISOTOPE_JOINTS_H_

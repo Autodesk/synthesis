@@ -31,7 +31,6 @@ mirabuf::PhysicalProperties map_physical_properties(
 }
 
 mirabuf::TriangleMesh map_b_rep_body(const adsk::core::Ptr<adsk::fusion::BRepBody>& body) {
-    // auto calc = body->meshManager()->createMeshCalculator();
     auto mesh_mgr = body->meshManager();
     if (!mesh_mgr) {
         return {};
@@ -122,7 +121,7 @@ mirabuf::Node parse_child_occurrence(
     auto& part = (*parts->mutable_part_instances())[map_constant];
     part.mutable_info()->CopyFrom(create_info_from_fus_obj(occurrence, map_constant));
     if (occurrence->appearance()) {
-        part.set_appearance(occurrence->appearance()->id()); // TODO: Check if this is correct.
+        part.set_appearance(occurrence->appearance()->id());
     } else {
         part.set_appearance("default");
     }
@@ -158,10 +157,8 @@ mirabuf::Node parse_child_occurrence(
     return node;
 }
 
-} // namespace
-
-mirabuf::Parts map_all_parts(
-    const adsk::core::Ptr<adsk::fusion::Components>& components, const mirabuf::material::Materials& materials) {
+mirabuf::Parts build_part_definitions(const adsk::core::Ptr<adsk::fusion::Components>& components,
+    const google::protobuf::Map<std::string, mirabuf::material::Appearance>& appearances) {
     mirabuf::Parts parts;
 
     std::vector<adsk::core::Ptr<adsk::fusion::Component>> fusion_components;
@@ -191,8 +188,7 @@ mirabuf::Parts map_all_parts(
             part_body.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
             part_body.mutable_triangle_mesh()->CopyFrom(map_b_rep_body(body));
 
-            if (auto appearances = materials.appearances(); // TODO: Replace the parameter
-                appearances.find(body->appearance()->id()) != appearances.end()) {
+            if (appearances.find(body->appearance()->id()) != appearances.end()) {
                 part_body.set_appearance_override(body->appearance()->id());
             } else {
                 part_body.set_appearance_override("default");
@@ -210,8 +206,7 @@ mirabuf::Parts map_all_parts(
             part_body.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
             part_body.mutable_triangle_mesh()->CopyFrom(map_mesh_body(body));
 
-            if (auto appearances = materials.appearances(); // TODO: Replace the parameter
-                appearances.find(body->appearance()->id()) != appearances.end()) {
+            if (appearances.find(body->appearance()->id()) != appearances.end()) {
                 part_body.set_appearance_override(body->appearance()->id());
             } else {
                 part_body.set_appearance_override("default");
@@ -227,7 +222,6 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
     const std::string map_constant = guid_component(component);
     root_node.set_value(map_constant);
 
-    // TODO: Info stuff
     if (parts->part_instances().find(map_constant) != parts->part_instances().end()) {
         assert(false);
     }
@@ -251,6 +245,17 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
     }
 
     return root_node;
+}
+
+} // namespace
+
+std::pair<mirabuf::Parts, mirabuf::Node> map_parts(
+    const adsk::core::Ptr<adsk::fusion::Components>& components,
+    const adsk::core::Ptr<adsk::fusion::Component>& root,
+    const mirabuf::material::Materials& materials) {
+    auto parts     = build_part_definitions(components, materials.appearances());
+    auto root_node = parse_component_root(root, &parts);
+    return {std::move(parts), std::move(root_node)};
 }
 
 void map_rigid_groups(const adsk::core::Ptr<adsk::fusion::Component>& root, mirabuf::joint::Joints* joints) {

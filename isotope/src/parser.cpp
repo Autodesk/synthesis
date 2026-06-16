@@ -17,6 +17,7 @@
 #include "types.pb.h"
 
 #include "components.h"
+#include "joint_hierarchy.h"
 #include "joints.h"
 #include "materials.h"
 #include "util.h"
@@ -37,14 +38,11 @@ void export_design(const GlobalContext& gctx) {
     // design is a robot or field assembly.
     assembly.set_dynamic(true);
 
-    auto appearances = design->appearances();
-    auto materials   = design->materials();
-    assembly.mutable_data()->mutable_materials()->CopyFrom(map_all_materials(appearances, materials));
+    const auto materials = map_all_materials(design->appearances(), design->materials());
+    assembly.mutable_data()->mutable_materials()->CopyFrom(materials);
 
-    auto components = design->allComponents();
-    assembly.mutable_data()->mutable_parts()->CopyFrom(map_all_parts(components, assembly.data().materials()));
-
-    mirabuf::Node root_node = parse_component_root(design->rootComponent(), assembly.mutable_data()->mutable_parts());
+    const auto [parts, root_node] = map_parts(design->allComponents(), design->rootComponent(), materials);
+    assembly.mutable_data()->mutable_parts()->CopyFrom(parts);
     assembly.mutable_design_hierarchy()->mutable_nodes()->Add()->CopyFrom(root_node);
 
     const auto [joints, signals] = populate_joints(design);
