@@ -17,7 +17,7 @@ class World {
     private static _currentDeltaT: number = 0
 
     private static _sceneRenderer: SceneRenderer
-    public static physicsSystem: PhysicsSystem
+    private static _physicsSystem: PhysicsSystem
     private static _simulationSystem: SimulationSystem
     private static _inputSystem: InputSystem
     private static _multiplayerSystem?: MultiplayerSystem
@@ -44,6 +44,10 @@ class World {
 
     public static get sceneRenderer() {
         return World._sceneRenderer
+    }
+
+    public static get physicsSystem() {
+        return World._physicsSystem
     }
 
     public static get simulationSystem() {
@@ -92,7 +96,7 @@ class World {
         World._isAlive = true
 
         World._sceneRenderer = new SceneRenderer()
-        World.physicsSystem = new PhysicsSystem()
+        World._physicsSystem = new PhysicsSystem()
         World._simulationSystem = new SimulationSystem()
         World._inputSystem = new InputSystem()
         World._dragModeSystem = new DragModeSystem()
