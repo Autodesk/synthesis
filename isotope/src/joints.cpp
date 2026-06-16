@@ -17,7 +17,6 @@
 #include <Fusion/FusionAll.h>
 #include <Fusion/FusionTypeDefs.h>
 
-#include <array>
 #include <memory>
 #include <optional>
 #include <stack>
@@ -177,8 +176,8 @@ adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_geometry(
             return face->createForAssemblyContext(occurrence)->centroid();
         }};
     // clang-format on
-    return std::visit(visitor,
-        fusion_base_to_variant<adsk::fusion::BRepEdge, adsk::fusion::BRepFace>(entity_one.get()));
+    return std::visit(
+        visitor, fusion_base_to_variant<adsk::fusion::BRepEdge, adsk::fusion::BRepFace>(entity_one.get()));
 }
 
 adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_origin(const adsk::fusion::JointOrigin* joint_origin) {
@@ -201,9 +200,8 @@ adsk::core::Ptr<adsk::core::Point3D> get_joint_origin(const adsk::fusion::Joint*
         [&](const adsk::fusion::JointGeometry* geometry){ return origin_from_joint_geometry(geometry, fusion_joint->occurrenceOne()); },
         [](const adsk::fusion::JointOrigin* origin)     { return origin_from_joint_origin(origin); }};
     // clang-format on
-    return std::visit(visitor,
-        fusion_base_to_variant<adsk::fusion::JointGeometry, adsk::fusion::JointOrigin>(
-            fusion_joint->geometryOrOriginOne().get()));
+    return std::visit(visitor, fusion_base_to_variant<adsk::fusion::JointGeometry, adsk::fusion::JointOrigin>(
+                                   fusion_joint->geometryOrOriginOne().get()));
 }
 
 // AsBuiltJoint always provides a JointGeometry directly, no JointOrigin variant.
@@ -216,41 +214,19 @@ adsk::core::Ptr<adsk::core::Point3D> get_joint_origin(const adsk::fusion::AsBuil
     return origin_from_joint_geometry(geometry.get(), joint->occurrenceOne());
 }
 
-adsk::core::Ptr<adsk::fusion::Occurrence> search_for_grounded(
-    const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
-    if (occurrence->isGrounded()) {
-        return occurrence;
-    }
-
-    for (const auto occ : occurrence->childOccurrences()) {
-        auto searched = search_for_grounded(occ);
-
-        if (searched) {
-            return searched;
-        }
-    }
-
-    return nullptr;
-}
-
 adsk::core::Ptr<adsk::fusion::Occurrence> search_for_grounded(const adsk::core::Ptr<adsk::fusion::Component>& root) {
-    for (const auto occ : root->allOccurrences()) {
-        auto searched = search_for_grounded(occ);
-
-        if (searched) {
-            return searched;
+    for (const auto& occ : root->allOccurrences()) {
+        if (occ->isGrounded()) {
+            return occ;
         }
     }
-
     return nullptr;
 }
 
 enum class OccurrenceRelationship {
     TRANSFORM, // Hierarchy parenting
     CONNECTION, // A rigid joint or other designator
-    GROUP, // A rigid grouping
     NEXT, // The next joint in a list
-    END, // Orphaned child relationship
     NONE,
 };
 
@@ -258,13 +234,9 @@ using enum OccurrenceRelationship;
 
 struct GraphEdge;
 
-// TODO: Should maybe separate this out into multiple structs
-// overlapping purpose
 struct GraphNode {
     adsk::core::Ptr<adsk::fusion::Occurrence> data = nullptr;
-    std::shared_ptr<GraphNode> previous            = nullptr;
     std::vector<std::shared_ptr<GraphEdge>> edges{};
-
     std::optional<AnyJointPtr> joint = std::nullopt;
 };
 
@@ -313,7 +285,7 @@ std::optional<std::shared_ptr<GraphNode>> populate_node(const adsk::core::Ptr<ad
     }
 
     visited_occurrence_entity_tokens.insert(occurrence->entityToken());
-    auto node = std::make_shared<GraphNode>(GraphNode{occurrence, prev});
+    auto node = std::make_shared<GraphNode>(GraphNode{occurrence});
 
     for (const auto& occ : occurrence->childOccurrences()) {
         populate_node(occ, node, TRANSFORM, is_ground, visited_occurrence_entity_tokens, dynamic_joints);
@@ -355,8 +327,7 @@ std::optional<mirabuf::Node> create_tree_parts(
     mirabuf::Node node;
     node.set_value(guid_occurrence(occurrence_node->data));
     for (auto edge : occurrence_node->edges) {
-        auto dyn_node   = std::dynamic_pointer_cast<GraphNode>(edge->node);
-        auto child_node = create_tree_parts(dyn_node, edge->relationship);
+        auto child_node = create_tree_parts(edge->node, edge->relationship);
         if (child_node) {
             node.mutable_children()->Add()->CopyFrom(child_node.value());
         }
@@ -490,21 +461,6 @@ void recurse_link_node_axis(std::shared_ptr<GraphNode> root_node,
             continue;
         }
 
-        // The original python exporter has separate enums for tracking
-        // both occurrence relationships and joint relationships.
-        //
-        // This, when transitioning to C++, made the types very complex as each
-        // node would contain either a occurrence relationship or a joint
-        // relationship label.
-        //
-        // Within this rewrite of the exporter this was omitted as the original
-        // functionality and necessity for these two distinct label types was
-        // unclear.
-        //
-        // Joint relationships are not tracked, only occurrence relationships are.
-        //
-        // For more information visit:
-        // https://github.com/Autodesk/synthesis/blob/f9bc9be63e21a705d7c8f5be9607f912764e0aa0/exporter/SynthesisFusionAddin/src/Parser/SynthesisParser/JointHierarchy.py#L54-L67
         root_node->edges.push_back(std::make_shared<GraphEdge>(GraphEdge{NONE, it->second}));
         recurse_link_node_axis(it->second, simulation_nodes);
     }
@@ -609,24 +565,18 @@ mirabuf::GraphContainer create_joint_graph(const mirabuf::joint::Joints& joints)
     // "ground" is a synthetic root node.  The "grounded" joint definition is a
     // metadata entry for the fixed/world joint and is intentionally excluded from
     // the hierarchy (matches Python exporter behaviour).
-    mirabuf::Node ground_node;
-    ground_node.set_value("ground");
+    mirabuf::GraphContainer joint_tree;
+    auto* ground_entry = joint_tree.mutable_nodes()->Add();
+    ground_entry->set_value("ground");
 
-    std::vector<mirabuf::Node> def_nodes;
     for (const auto& [key, joint] : joints.joint_definitions()) {
         if (key == "grounded" || joint.info().guid().empty()) {
             continue;
         }
         mirabuf::Node def_node;
         def_node.set_value(joint.info().guid());
-        ground_node.mutable_children()->Add()->CopyFrom(def_node);
-        def_nodes.push_back(std::move(def_node));
-    }
-
-    mirabuf::GraphContainer joint_tree;
-    joint_tree.mutable_nodes()->Add()->CopyFrom(ground_node);
-    for (const auto& node : def_nodes) {
-        joint_tree.mutable_nodes()->Add()->CopyFrom(node);
+        ground_entry->mutable_children()->Add()->CopyFrom(def_node);
+        joint_tree.mutable_nodes()->Add()->CopyFrom(def_node);
     }
 
     return joint_tree;
