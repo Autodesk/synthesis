@@ -144,12 +144,10 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     scaleDisabled={true}
                     size={3.0}
                     parent={targetAssembly}
-                    onAccept={
-                        () => { 
-                            closeFinish()
-                            closePanel(panel!.id, CloseType.Accept)
-                        } 
-                    }
+                    onAccept={() => {
+                        closeFinish()
+                        closePanel(panel!.id, CloseType.Accept)
+                    }}
                     onCancel={closeDelete}
                 />
             )}
