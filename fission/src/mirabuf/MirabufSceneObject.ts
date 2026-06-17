@@ -16,11 +16,13 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     type Alliance,
     defaultFieldSpawnLocation,
+    defaultRobotPreferences,
     defaultRobotSpawnLocation,
     type EjectorPreferences,
     type FieldPreferences,
     type IntakePreferences,
     type ProtectedZonePreferences,
+    type RobotPreferences,
     type ScoringZonePreferences,
     type SpawnLocation,
     type Station,
@@ -57,6 +59,7 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import InputSystem from "@/systems/input/InputSystem.ts"
 
 const DEBUG_BODIES = false
 
@@ -94,11 +97,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
 
-    private _intakePreferences: IntakePreferences | undefined
-    private _ejectorPreferences: EjectorPreferences | undefined
-    private _simConfigData: SimConfigData | undefined
-
     private _fieldPreferences: FieldPreferences | undefined
+    private _robotPreferences: RobotPreferences | undefined
 
     private _ejectables: EjectableSceneObject[] = []
     private _intakeSensor?: IntakeSensorSceneObject
@@ -125,6 +125,22 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public set nameOverride(name: string | undefined) {
         this._nameOverride = name
+    }
+
+    public get intakePreferences(): IntakePreferences | undefined {
+        return this._robotPreferences?.intake
+    }
+    public set intakePreferences(val: IntakePreferences) {
+        this._robotPreferences ??= defaultRobotPreferences()
+        this._robotPreferences.intake = val
+    }
+
+    public get ejectorPreferences(): EjectorPreferences | undefined {
+        return this._robotPreferences?.ejector
+    }
+    public set ejectorPreferences(val: EjectorPreferences) {
+        this._robotPreferences ??= defaultRobotPreferences()
+        this._robotPreferences.ejector = val
     }
 
     public set multiplayerOwningClientId(id: string | undefined) {
@@ -168,16 +184,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._assemblyName
     }
 
-    get intakePreferences() {
-        return this._intakePreferences
-    }
-
-    get ejectorPreferences() {
-        return this._ejectorPreferences
-    }
-
     get simConfigData() {
-        return this._simConfigData
+        return this._robotPreferences?.simConfig
     }
 
     get fieldPreferences() {
@@ -230,6 +238,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._station = station
     }
 
+    public get descriptiveName(): string {
+        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
+    }
     public constructor(
         mirabufInstance: MirabufInstance,
         assemblyName: string,
@@ -477,7 +488,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public eject() {
         if (this._ejectables.length === 0) return
 
-        const order = this._ejectorPreferences?.ejectOrder
+        const order = this.ejectorPreferences?.ejectOrder
         let ejectable: EjectableSceneObject | undefined
 
         if (order === "FIFO") ejectable = this._ejectables.shift()
@@ -598,7 +609,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         // Do we have an intake, and is it something other than the default. Config will default to root node at least.
-        if (this._intakePreferences && this._intakePreferences.parentNode) {
+        if (this.intakePreferences && this.intakePreferences.parentNode) {
             this._intakeSensor = new IntakeSensorSceneObject(this)
             World.sceneRenderer.registerSceneObject(this._intakeSensor)
         }
@@ -615,7 +626,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             return false
         }
 
-        if (!this._ejectorPreferences?.parentNode) {
+        if (!this.ejectorPreferences?.parentNode) {
             console.log(bodyId)
             const now = Date.now()
             if (
@@ -631,7 +642,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         // 2) don’t exceed your configured maxPieces
-        const max = this._intakePreferences?.maxPieces ?? 1
+        const max = this.intakePreferences?.maxPieces ?? 1
         if (this._ejectables.length >= max) return false
 
         // 3) avoid duplicates
@@ -856,32 +867,28 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public getPreferences(): void {
-        const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
-        if (robotPrefs) {
-            this._intakePreferences = robotPrefs.intake
-            // Ensure backwards compatibility for showZoneAlways field
-            if (this._intakePreferences && this._intakePreferences.showZoneAlways === undefined) {
-                this._intakePreferences.showZoneAlways = false
-            }
-            this._ejectorPreferences = robotPrefs.ejector
-            this._simConfigData = robotPrefs.simConfig
-
-            this.sendPreferences()
-        }
-
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
+        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)
+
+        // Ensure backwards compatibility for showZoneAlways field
+        this._robotPreferences.intake.showZoneAlways ??= false
+
+        setTimeout(() => this.sendPreferences())
 
         // For fields, sync devtool data with field preferences
-        if (this.miraType === MiraType.FIELD) {
-            const parts = this._mirabufInstance.parser.assembly.data?.parts
-            if (parts) {
-                const editor = new FieldMiraEditor(parts)
-                devtoolKeys.forEach(key => {
-                    devtoolHandlers[key].set(this, editor.getUserData(key))
-                })
+
+        const parts = this._mirabufInstance.parser.assembly.data?.parts
+        if (parts) {
+            const editor = new FieldMiraEditor(parts)
+            devtoolKeys.forEach(key => {
+                devtoolHandlers[key].set(this, editor.getUserData(key))
+            })
+            if (this.miraType === MiraType.FIELD) {
                 PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
-                PreferencesSystem.savePreferences()
+            } else {
+                PreferencesSystem.setRobotPreferences(this.assemblyName, this._robotPreferences)
             }
+            PreferencesSystem.savePreferences()
         }
     }
 
@@ -891,8 +898,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                   fieldPreferences: JSON.stringify(this._fieldPreferences),
               }
             : {
-                  intakePreferences: JSON.stringify(this._intakePreferences),
-                  ejectorPreferences: JSON.stringify(this._ejectorPreferences),
+                  intakePreferences: JSON.stringify(this.intakePreferences),
+                  ejectorPreferences: JSON.stringify(this.ejectorPreferences),
                   alliance: this._alliance,
                   station: this.station,
               }
@@ -904,8 +911,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._fieldPreferences = JSON.parse(config.fieldPreferences)
         } else {
             const config = preferences as RobotConfiguration
-            this._intakePreferences = JSON.parse(config.intakePreferences)
-            this._ejectorPreferences = JSON.parse(config.ejectorPreferences)
+            this.intakePreferences = JSON.parse(config.intakePreferences)
+            this.ejectorPreferences = JSON.parse(config.ejectorPreferences)
             this._alliance = config.alliance
             this._station = config.station
         }
@@ -915,13 +922,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {
-        const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
-        if (robotPrefs) {
-            this._simConfigData = robotPrefs.simConfig = config
-            PreferencesSystem.setRobotPreferences(this.assemblyName, robotPrefs)
-            PreferencesSystem.savePreferences()
-            ;(this._brain as WPILibBrain)?.loadSimConfig?.()
-        }
+        this._robotPreferences ??= defaultRobotPreferences()
+        this._robotPreferences.simConfig = config
+        PreferencesSystem.setRobotPreferences(this.assemblyName, this._robotPreferences)
+        PreferencesSystem.savePreferences()
+        ;(this._brain as WPILibBrain)?.loadSimConfig?.()
     }
 
     public enablePhysics() {
@@ -1069,6 +1074,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             bodies,
         }
     }
+
     public getAllBodyIds(): Jolt.BodyID[] {
         return [...this.mechanism.nodeToBody.values()]
     }
