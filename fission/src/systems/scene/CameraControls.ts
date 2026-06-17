@@ -14,6 +14,12 @@ import {
 
 export type CameraControlsType = "Orbit"
 
+export enum CameraMode {
+    Follow = "Follow",
+    Locked = "Locked",
+    Face = "Face",
+}
+
 export abstract class CameraControls {
     private _controlsType: CameraControlsType
 
@@ -68,7 +74,6 @@ function augmentMovement(
     originalMovement: [number, number]
 ): [number, number] {
     const aspect = (camera as THREE.PerspectiveCamera)?.aspect ?? 1.0
-    // const aspect = 1.0
     const fov: number | undefined = (camera as THREE.PerspectiveCamera)?.getEffectiveFOV()
     if (fov) {
         const res: [number, number] = [
@@ -97,31 +102,56 @@ export class CustomOrbitControls extends CameraControls {
 
     private _focusProvider: MirabufSceneObject | undefined
     private _isExplicitlyUnfocused: boolean = false
-    private _locked: boolean = false
 
-    public get locked(): boolean {
-        return this._locked
+    private _mode: CameraMode = CameraMode.Follow
+    private _focusPosition: THREE.Vector3 = new THREE.Vector3()
+
+    public get mode(): CameraMode {
+        return this._mode
+    }
+
+    public set mode(val: CameraMode) {
+        if (val === this._mode) return
+
+        if (val === CameraMode.Face) {
+            this._focusPosition.copy(this._mainCamera.position)
+        } else if (this._mode === CameraMode.Face) {
+            this.syncCoordsFromFocusPosition()
+            if (val === CameraMode.Locked && this._focusProvider) {
+                const focusRotation = new THREE.Matrix4().extractRotation(this._focus)
+                this.remapOrbitCoords(focusRotation.invert()) // world to local
+            }
+        } else if (this._focusProvider) {
+            const focusRotation = new THREE.Matrix4().extractRotation(this._focus)
+            if (this._mode === CameraMode.Follow && val === CameraMode.Locked) {
+                this.remapOrbitCoords(focusRotation.invert()) // world to local
+            } else if (this._mode === CameraMode.Locked && val === CameraMode.Follow) {
+                this.remapOrbitCoords(focusRotation) // local to world
+            }
+        }
+
+        this._mode = val
+    }
+
+    private syncCoordsFromFocusPosition(): void {
+        const focusPos = new THREE.Vector3().setFromMatrixPosition(this._focus)
+        const offset = this._focusPosition.clone().sub(focusPos)
+        const r = offset.length()
+        if (r < 0.001) return
+        const phi = -Math.asin(offset.y / r)
+        const theta = Math.atan2(offset.x, offset.z)
+        this.setImmediateCoordinates({ theta, phi, r })
     }
 
     private remapOrbitCoords(transform: THREE.Matrix4): void {
-        const orbit = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ"))
+        const orbit = new THREE.Matrix4().makeRotationFromEuler(
+            new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ")
+        )
         const euler = new THREE.Euler().setFromRotationMatrix(transform.multiply(orbit), "YXZ")
         this._coords.theta = euler.y
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, euler.x))
         this._nextCoords.theta = this._coords.theta
         this._nextCoords.phi = this._coords.phi
-    }
-
-    public set locked(val: boolean) {
-        if (this._focusProvider) {
-            const focusRotation = new THREE.Matrix4().extractRotation(this._focus)
-            if (val && !this._locked) {
-                this.remapOrbitCoords(focusRotation.invert()) // world to local
-            } else if (!val && this._locked) {
-                this.remapOrbitCoords(focusRotation) // local to world
-            }
-        }
-        this._locked = val
     }
 
     private _interactionHandler: ScreenInteractionHandler
@@ -168,8 +198,6 @@ export class CustomOrbitControls extends CameraControls {
 
         this._mainCamera = mainCamera
         this._interactionHandler = interactionHandler
-
-        this._locked = false
 
         this._nextCoords = {
             theta: CO_DEFAULT_THETA,
@@ -251,12 +279,14 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public interactionMove(move: InteractionMove) {
+        if (this._mode === CameraMode.Face) return
+
         if (move.movement) {
             if (this._activePointerType == PRIMARY_MOUSE_INTERACTION) {
                 // Add the movement of the mouse to the _currentPos
                 this._nextCoords.theta -= move.movement[0]
                 this._nextCoords.phi -= move.movement[1]
-            } else if (this._activePointerType == SECONDARY_MOUSE_INTERACTION && !this.locked) {
+            } else if (this._activePointerType == SECONDARY_MOUSE_INTERACTION && this._mode !== CameraMode.Locked) {
                 this._focusProvider = undefined
 
                 const orientation = new THREE.Quaternion().setFromEuler(this._mainCamera.rotation)
@@ -278,6 +308,13 @@ export class CustomOrbitControls extends CameraControls {
         if (move.scale) {
             this._nextCoords.r += move.scale
         }
+    }
+
+    // Fixed camera position, always faces towards robot
+    private focusMode() {
+        const robotPos = new THREE.Vector3().setFromMatrixPosition(this._focus)
+        this._mainCamera.position.copy(this._focusPosition)
+        this._mainCamera.lookAt(robotPos)
     }
 
     public getCurrentCoordinates(): SphericalCoords {
@@ -331,6 +368,11 @@ export class CustomOrbitControls extends CameraControls {
 
         if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
 
+        if (this._mode === CameraMode.Face && this._focusProvider) {
+            this.focusMode()
+            return
+        }
+
         // Generate delta of spherical coordinates
         const omega: SphericalCoords = this.enabled
             ? {
@@ -355,7 +397,7 @@ export class CustomOrbitControls extends CameraControls {
                 )
             )
 
-        if (this.locked && this._focusProvider) {
+        if (this._mode === CameraMode.Locked && this._focusProvider) {
             deltaTransform.premultiply(this._focus)
         } else {
             const focusPosition = new THREE.Matrix4().copyPosition(this._focus)

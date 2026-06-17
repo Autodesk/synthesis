@@ -25,7 +25,7 @@ import {
     type SpawnLocation,
     type Station,
 } from "@/systems/preferences/PreferenceTypes"
-import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { CameraMode, type CustomOrbitControls } from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
@@ -1028,18 +1028,27 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     },
                 })
 
-                if (cameraControls.locked) {
+                if (cameraControls.mode !== CameraMode.Follow) {
                     data.items.push({
-                        name: "Camera: Unlock",
+                        name: "Camera: Follow Robot",
                         func: () => {
-                            cameraControls.locked = false
+                            cameraControls.mode = CameraMode.Follow
                         },
                     })
-                } else {
+                }
+                if (cameraControls.mode !== CameraMode.Locked) {
                     data.items.push({
-                        name: "Camera: Lock",
+                        name: "Camera: Lock to Robot",
                         func: () => {
-                            cameraControls.locked = true
+                            cameraControls.mode = CameraMode.Locked
+                        },
+                    })
+                }
+                if (cameraControls.mode !== CameraMode.Face) {
+                    data.items.push({
+                        name: "Camera: Face Robot",
+                        func: () => {
+                            cameraControls.mode = CameraMode.Face
                         },
                     })
                 }

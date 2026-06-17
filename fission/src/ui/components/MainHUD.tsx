@@ -22,6 +22,7 @@ import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import UserIcon from "./UserIcon"
+import CameraSelectionPanel from "../panels/configuring/CameraSelectionPanel"
 
 const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => {
     return (
@@ -203,6 +204,12 @@ const MainHUD: React.FC = () => {
                         }
                     >
                         General Settings
+                    </MainHUDButton>
+                    <MainHUDButton
+                        startIcon={SynthesisIcons.CAMERA}
+                        onClick={() => openPanel(CameraSelectionPanel, undefined)}
+                    >
+                        Configure Camera
                     </MainHUDButton>
                     <MainHUDButton
                         startIcon={SynthesisIcons.CODE_SQUARE}

@@ -28,6 +28,7 @@ import {
     FaArrowLeft,
     FaBasketball,
     FaBug,
+    FaCamera,
     FaCar,
     FaChessBoard,
     FaFileImport,
@@ -72,6 +73,7 @@ export class SynthesisIcons {
     public static readonly INFO = <AiOutlineInfoCircle />
     public static readonly BUG = <FaBug />
     public static readonly PLAY = <IoPlayOutline />
+    public static readonly CAMERA = <FaCamera />
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />

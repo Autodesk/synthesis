@@ -1,26 +1,46 @@
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
-import type { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { CameraMode, type CameraControlsType, type CustomOrbitControls } from "@/systems/scene/CameraControls"
 import World from "@/systems/World"
-import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
 }
 
+CommandRegistry.get().registerCommand({
+    id: "open-camera-selection",
+    label: "Open Camera Selection",
+    description: "Open the Camera Selection panel",
+    keywords: ["camera", "config", "open"],
+    perform: () => import("./CameraSelectionPanel").then(m => globalOpenPanel(m.default, undefined)),
+})
+
 const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
-    const [locked, setLocked] = useState<boolean>(controls.locked)
+    const [mode, setMode] = useState<CameraMode>(controls.mode)
 
     useEffect(() => {
-        controls.locked = locked
-    }, [controls, locked])
+        controls.mode = mode
+    }, [controls, mode])
 
-    return <Checkbox label="Lock to Robot" checked={locked} onClick={setLocked} />
+    return (
+        <ToggleButtonGroup
+            orientation="vertical"
+            value={mode}
+            exclusive
+            onChange={(_, v) => {
+                if (v !== null) setMode(v as CameraMode)
+            }}
+        >
+            <ToggleButton value={CameraMode.Follow}>Follow</ToggleButton>
+            <ToggleButton value={CameraMode.Locked}>Locked</ToggleButton>
+            <ToggleButton value={CameraMode.Face}>Face</ToggleButton>
+        </ToggleButtonGroup>
+    )
 }
 
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
@@ -42,7 +62,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     }, [])
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Choose a Camera", hideAccept: true, cancelText: "Close" }, {})
+        configureScreen(panel!, { title: "Camera Configuration", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     return (
@@ -52,11 +72,10 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                 value={cameraControlType}
                 exclusive
                 onChange={(_, v) => {
-                    if (v !== null) return
+                    if (v === null) return
 
                     setCameraControls(v)
                 }}
-                onMouseDown={() => SoundPlayer.getInstance().play(buttonPressSound)}
             >
                 <ToggleButton value="Orbit">Orbit</ToggleButton>
             </ToggleButtonGroup>
