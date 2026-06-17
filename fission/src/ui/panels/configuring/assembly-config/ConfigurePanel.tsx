@@ -6,8 +6,12 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { Alliance, FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
-import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import type {
+    Alliance,
+    FieldPreferences,
+    MotorPreferences,
+    RobotPreferences,
+} from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -35,6 +39,9 @@ import { Tab, Tabs } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import type Brain from "@/systems/simulation/Brain"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import type { DriveType } from "@/systems/simulation/behavior/Behavior"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -243,12 +250,13 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const originalAlliance = useRef<Alliance | undefined>(selectedAssembly?.alliance)
     const originalStation = useRef<MirabufSceneObject["station"]>(selectedAssembly?.station)
 
+    const originalBrain = useRef<Brain | undefined>(undefined)
+
+    const originalDriveType = useRef<DriveType | undefined>(undefined)
+
     useEffect(() => {
         const allSchemes: InputScheme[] = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
-
-        originalAlliance.current = selectedAssembly?.alliance
-        originalStation.current = selectedAssembly?.station
 
         if (selectedAssembly) {
             const name = selectedAssembly.assemblyName
@@ -263,8 +271,14 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
             originalAlliance.current = selectedAssembly.alliance
             originalStation.current = selectedAssembly.station
-        }
 
+            originalBrain.current = selectedAssembly.brain
+            if (selectedAssembly.brain instanceof SynthesisBrain) {
+                originalDriveType.current = selectedAssembly.brain.driveType
+            } else {
+                originalDriveType.current = undefined
+            }
+        }
 
         // Listen for input scheme changes from other panels
         return EventSystem.listen("InputSchemeChanged", ({ panelId }) => {
@@ -303,6 +317,11 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 selectedAssembly.alliance = originalAlliance.current
                 selectedAssembly.station = originalStation.current
 
+                selectedAssembly.brain = originalBrain.current
+                if (originalBrain.current instanceof SynthesisBrain && originalDriveType.current !== undefined) {
+                    originalBrain.current.configureDriveBehavior(originalDriveType.current)
+                }
+
                 selectedAssembly.getPreferences()
             }
 
@@ -319,6 +338,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
             originalAlliance.current = undefined
             originalStation.current = undefined
+            originalBrain.current = undefined
+            originalDriveType.current = undefined
         }
 
         configureScreen(
