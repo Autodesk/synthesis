@@ -22,7 +22,7 @@
     "style": "bunx biome check src",
     "style:fix": "bunx biome check src --write",
     "assetpack": "git lfs pull && (rm -rf public/Downloadables;tar -xf public/assetpack.zip -C public/)",
-    "assetpack:update": "bun update_manifest.ts && cd public && zip -FS -r assetpack.zip Downloadables",
+    "assetpack:update": "bun update_manifest.ts && cd public && zip -FS -r assetpack.zip Downloadables -x '**/.*' -x '**/__MACOSX'",
     "playwright:install": "bun x playwright install",
     "electron:make": "electron-forge make",
     "electron:start": "electron-forge start",
