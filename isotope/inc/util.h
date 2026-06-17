@@ -56,7 +56,7 @@ mirabuf::Info create_info_from_fus_obj(const FusObjPtr& obj, const std::string& 
     // The python exporter sets all version numbers to 5.
     // This version number can be used to differentiate between robot exports from
     // the C++ and python exporters respectively.
-    info.set_version(1);
+    info.set_version(6);
 
     if constexpr (HasName<FusObjPtr>) {
         info.set_name(obj->name());
