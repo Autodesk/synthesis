@@ -580,14 +580,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private updateNameTag() {
         if (this._nameTag && PreferencesSystem.getGlobalPreference("RenderSceneTags")) {
             this._nameTag.color = this._alliance
+
             const boundingBox = this.computeBoundingBox()
-            this._nameTag.position = World.sceneRenderer.worldToPixelSpace(
-                new THREE.Vector3(
-                    (boundingBox.max.x + boundingBox.min.x) / 2,
-                    boundingBox.max.y + 0.1,
-                    (boundingBox.max.z + boundingBox.min.z) / 2
+
+            const rootNodeId = this.getRootNodeId()
+            if (rootNodeId) {
+                const centerOfMass = World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition()
+                this._nameTag.position = World.sceneRenderer.worldToPixelSpace(
+                    new THREE.Vector3(centerOfMass.GetX(), boundingBox.max.y + 0.1, centerOfMass.GetZ())
                 )
-            )
+            }
         }
     }
 
@@ -957,8 +959,26 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public loadFocusTransform(mat: THREE.Matrix4) {
         const bounds = this.computeBoundingBox()
-        const center = bounds.getCenter(new THREE.Vector3())
-        mat.makeTranslation(center.x, center.y, center.z)
+        let center = bounds.getCenter(new THREE.Vector3())
+        const rotation = new THREE.Quaternion()
+
+        const rootNodeId = this.getRootNodeId()
+        if (rootNodeId) {
+            const rootTransform = convertJoltMat44ToThreeMatrix4(
+                World.physicsSystem.getBody(rootNodeId).GetWorldTransform()
+            )
+            rootTransform.decompose(new THREE.Vector3(), rotation, new THREE.Vector3())
+
+            // Prioritize center of mass for smooth rotations
+            const rootBody = World.physicsSystem.getBody(rootNodeId)
+            if (!rootBody.IsStatic()) {
+                const pos = rootBody.GetCenterOfMassPosition()
+                center = new THREE.Vector3(pos.GetX(), pos.GetY(), pos.GetZ())
+            }
+        }
+
+        mat.makeRotationFromQuaternion(rotation)
+        mat.setPosition(center)
     }
 
     public getSupplierData(): ContextData {
