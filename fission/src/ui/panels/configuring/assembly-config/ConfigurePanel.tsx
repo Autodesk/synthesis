@@ -6,7 +6,7 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
+import type { Alliance, FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
@@ -240,9 +240,15 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const originalMotorPrefs = useRef<MotorPreferences | null>(null)
     const originalInputSchemes = useRef<InputScheme[] | null>(null)
 
+    const originalAlliance = useRef<Alliance | undefined>(selectedAssembly?.alliance)
+    const originalStation = useRef<MirabufSceneObject["station"]>(selectedAssembly?.station)
+
     useEffect(() => {
         const allSchemes: InputScheme[] = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
+
+        originalAlliance.current = selectedAssembly?.alliance
+        originalStation.current = selectedAssembly?.station
 
         if (selectedAssembly) {
             const name = selectedAssembly.assemblyName
@@ -254,7 +260,11 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
             if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
             if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
+
+            originalAlliance.current = selectedAssembly.alliance
+            originalStation.current = selectedAssembly.station
         }
+
 
         // Listen for input scheme changes from other panels
         return EventSystem.listen("InputSchemeChanged", ({ panelId }) => {
@@ -289,6 +299,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
                 if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
                 if (originalMotorPrefs.current) PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
+
+                selectedAssembly.alliance = originalAlliance.current
+                selectedAssembly.station = originalStation.current
+
                 selectedAssembly.getPreferences()
             }
 
@@ -302,6 +316,9 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalFieldPrefs.current = null
             originalMotorPrefs.current = null
             originalInputSchemes.current = null
+
+            originalAlliance.current = undefined
+            originalStation.current = undefined
         }
 
         configureScreen(
