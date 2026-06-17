@@ -222,6 +222,11 @@ class PreferencesSystem {
         this.savePreferences()
     }
 
+    public static setGraphicsPreferences(g : GraphicsPreferences) {
+        this._preferences[GRAPHICS_PREFERENCE_KEY] = g
+        this.savePreferences()
+    }
+
     /** Loads all preferences from local storage. */
     public static loadPreferences() {
         const loadedPrefs = window.localStorage.getItem(this._localStorageKey)

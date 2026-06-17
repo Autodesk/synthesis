@@ -16,6 +16,8 @@ import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
 import CommandRegistry from "@/ui/components/CommandRegistry"
+import {mediumGraphicsPreferences, lowGraphicsPreferences, highGraphicsPreferences, ultraGraphicsPreferences, defaultGraphicsPreferences, GraphicsPreferences} from "@/systems/preferences/PreferenceTypes"
+import { Select, MenuItem } from "@mui/material"
 
 // Register command: Open Settings (module-scope side effect)
 CommandRegistry.get().registerCommand({
@@ -209,6 +211,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
 
 const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [reload, setReload] = useState<boolean>(false)
+    const [selectedPreset, setSelectedPreset] = useState<string>("medium")
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
     )
@@ -217,6 +220,17 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [cascades, setCascades] = useState<number>(PreferencesSystem.getGraphicsPreferences().cascades)
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
+
+    const applyGraphicsPreferences = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
+        PreferencesSystem.setGraphicsPreferences(prefs)
+        setLightIntensity(prefs.lightIntensity)
+        setFancyShadows(prefs.fancyShadows)
+        setMaxFar(prefs.maxFar)
+        setCascades(prefs.cascades)
+        setShadowMapSize(prefs.shadowMapSize)
+        setAntiAliasing(prefs.antiAliasing)
+        World.sceneRenderer.changeLighting(prefs.fancyShadows)
+    }
 
     // Create actions object and notify parent
     useEffect(() => {
@@ -258,6 +272,27 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
 
     return (
         <Stack gap={2}>
+            <Label size="md">Graphics Presets</Label>
+            <Select
+                value={selectedPreset}
+                onChange={(e) => {
+                    const preset = e.target.value
+                    setSelectedPreset(preset)
+                    if (preset === "low") applyGraphicsPreferences(lowGraphicsPreferences())
+                    else if (preset === "medium") applyGraphicsPreferences(mediumGraphicsPreferences())
+                    else if (preset === "high") applyGraphicsPreferences(highGraphicsPreferences())
+                    else if (preset === "ultra") applyGraphicsPreferences(ultraGraphicsPreferences())
+                }}
+                sx={{ width: "100%" }}
+            >
+                <MenuItem value="low">Low Graphics</MenuItem>
+                <MenuItem value="medium">Medium Graphics (Default)</MenuItem>
+                <MenuItem value="high">High Graphics</MenuItem>
+                <MenuItem value="ultra">Ultra Graphics</MenuItem>
+            </Select>
+
+            <Label size="md">Customize Graphics</Label>
+
             <StatefulSlider
                 label="Light Intensity"
                 min={MIN_LIGHT_INTENSITY}
