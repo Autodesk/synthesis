@@ -97,7 +97,32 @@ export class CustomOrbitControls extends CameraControls {
 
     private _focusProvider: MirabufSceneObject | undefined
     private _isExplicitlyUnfocused: boolean = false
-    public locked: boolean
+    private _locked: boolean = false
+
+    public get locked(): boolean {
+        return this._locked
+    }
+
+    private remapOrbitCoords(transform: THREE.Matrix4): void {
+        const orbit = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ"))
+        const euler = new THREE.Euler().setFromRotationMatrix(transform.multiply(orbit), "YXZ")
+        this._coords.theta = euler.y
+        this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, euler.x))
+        this._nextCoords.theta = this._coords.theta
+        this._nextCoords.phi = this._coords.phi
+    }
+
+    public set locked(val: boolean) {
+        if (this._focusProvider) {
+            const focusRotation = new THREE.Matrix4().extractRotation(this._focus)
+            if (val && !this._locked) {
+                this.remapOrbitCoords(focusRotation.invert()) // world to local
+            } else if (!val && this._locked) {
+                this.remapOrbitCoords(focusRotation) // local to world
+            }
+        }
+        this._locked = val
+    }
 
     private _interactionHandler: ScreenInteractionHandler
 
@@ -144,7 +169,7 @@ export class CustomOrbitControls extends CameraControls {
         this._mainCamera = mainCamera
         this._interactionHandler = interactionHandler
 
-        this.locked = false
+        this._locked = false
 
         this._nextCoords = {
             theta: CO_DEFAULT_THETA,
