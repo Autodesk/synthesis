@@ -127,20 +127,23 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._nameOverride = name
     }
 
-    public get intakePreferences(): IntakePreferences | undefined {
-        return this._robotPreferences?.intake
+    public get intakePreferences(): IntakePreferences {
+        return this.robotPreferences.intake
     }
     public set intakePreferences(val: IntakePreferences) {
-        this._robotPreferences ??= defaultRobotPreferences()
-        this._robotPreferences.intake = val
+        this.robotPreferences.intake = val
     }
 
-    public get ejectorPreferences(): EjectorPreferences | undefined {
-        return this._robotPreferences?.ejector
+    public get robotPreferences(): RobotPreferences {
+        this._robotPreferences ??= defaultRobotPreferences()
+        return this._robotPreferences
+    }
+
+    public get ejectorPreferences(): EjectorPreferences {
+        return this.robotPreferences.ejector
     }
     public set ejectorPreferences(val: EjectorPreferences) {
-        this._robotPreferences ??= defaultRobotPreferences()
-        this._robotPreferences.ejector = val
+        this.robotPreferences.ejector = val
     }
 
     public set multiplayerOwningClientId(id: string | undefined) {

@@ -187,38 +187,12 @@ describe("MirabufSceneObject", () => {
     test("SetEjectable returns false if not configured or max reached", () => {
         const bodyId = mockBodyId()
         expect(instance.setEjectable(undefined)).toBe(false)
-        setPrivate(instance, "_ejectorPreferences", {
-            parentNode: "n",
-            deltaTransformation: [1],
-            ejectorVelocity: 1,
-            ejectOrder: "FIFO",
-        })
-        setPrivate(instance, "_intakePreferences", {
-            parentNode: "n",
-            deltaTransformation: [1],
-            zoneDiameter: 1,
-            showZoneAlways: false,
-            maxPieces: 0,
-            animationDuration: 0.5,
-        })
+        instance.robotPreferences.intake.maxPieces = 0
         expect(instance.setEjectable(bodyId)).toBe(false)
     })
 
     test("SetEjectable returns true and registers ejectable if valid", () => {
-        setPrivate(instance, "_ejectorPreferences", {
-            parentNode: "n",
-            deltaTransformation: [1],
-            ejectorVelocity: 1,
-            ejectOrder: "FIFO",
-        })
-        setPrivate(instance, "_intakePreferences", {
-            parentNode: "n",
-            deltaTransformation: [1],
-            zoneDiameter: 1,
-            showZoneAlways: false,
-            maxPieces: 2,
-            animationDuration: 0.5,
-        })
+        instance.robotPreferences.intake.maxPieces = 2
         setPrivate(instance, "_ejectables", [])
         const bodyId = mockBodyId()
         bodyId.GetIndexAndSequenceNumber = () => 123
@@ -229,7 +203,7 @@ describe("MirabufSceneObject", () => {
 
 describe("MirabufSceneObject - Real Systems Integration", () => {
     test("getDimensions returns proper values for Dozer robot", async context => {
-        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
+        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT)
 
         if (!cacheInfo) {
             context.skip()
@@ -248,7 +222,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
             batch.computeBoundingBox()
         })
 
-        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v9", undefined)
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v10", undefined)
 
         const originalDimensions = dozerSceneObject.getDimensions()
 
