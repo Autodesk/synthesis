@@ -168,7 +168,7 @@ void populate_joint(std::shared_ptr<GraphNode> sim_node, mirabuf::joint::Joints*
     }
 
     // Only follow NONE edges, those are the joint-level links inserted by
-    // recurse_link_node_axis.  TRANSFORM/CONNECTION/NEXT edges are occurrence-
+    // recurse_link_node_axis. TRANSFORM/CONNECTION/NEXT edges are occurrence-
     // level relationships that belong to the occurrence tree, not the joint tree.
     for (auto edge : sim_node->edges) {
         if (edge->relationship == NONE) {

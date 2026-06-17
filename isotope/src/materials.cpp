@@ -135,7 +135,6 @@ void set_from_prop(const auto& props, const std::string& id, auto callback) {
     }
 }
 
-// Friction coefficients by Fusion material name, matching the Python exporter's lookup table.
 static const std::unordered_map<std::string, float> FRICTION_COEFFS = {
     {"Aluminum", 1.1f},
     {"Steel, Cast", 0.75f},

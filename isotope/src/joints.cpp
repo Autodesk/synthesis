@@ -287,8 +287,6 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
         motor.mutable_info()->CopyFrom(create_info_from_fus_obj(joint));
         auto simple_motor = motor.mutable_simple_motor();
 
-        // These are values I just chose on a whim, they need to be checked and changed to make sure
-        // everything works correctly.
         simple_motor->set_stall_torque(0.5f);
         simple_motor->set_max_velocity(1.0f);
         simple_motor->set_braking_constant(0.8f);
