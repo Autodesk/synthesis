@@ -158,7 +158,7 @@ class MirabufInstance {
 
     /**
      * Creates BatchedMesh, more efficient than InstancedMeshes
-     * 
+     *
      * Some versions of Chrome broke BatchedMeshes, one solution could be to use InstancedMeshes. See PR
      * https://github.com/Autodesk/synthesis/pull/1262
      */
