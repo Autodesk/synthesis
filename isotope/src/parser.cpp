@@ -3,15 +3,12 @@
 #include <Core/Application/Document.h>
 #include <Core/Application/Product.h>
 #include <Core/Materials/MaterialLibraries.h>
-#include <Core/UserInterface/ProgressDialog.h>
+#include <Core/UserInterface/FileDialog.h>
 #include <Fusion/Components/Component.h>
 #include <Fusion/Fusion/Design.h>
 #include <Fusion/Fusion/FusionDocument.h>
 
-#include <cstdio>
 #include <fstream>
-
-#include <google/protobuf/util/json_util.h>
 
 #include "assembly.pb.h"
 #include "types.pb.h"
@@ -31,11 +28,6 @@ void export_design(const GlobalContext& gctx) {
     assembly.mutable_info()->CopyFrom(create_info_from_fus_obj(design->rootComponent()));
     assembly.mutable_info()->set_guid(design->parentDocument()->name());
 
-    // Determines if the exported design should be treated as a robot or field
-    // assembly. Currently since there is no UI present in Isotope we default to
-    // robot always. This could be changed if either 1) a UI is added to Isotope
-    // or 2) some sort of algorithmic detection is added to determine if the
-    // design is a robot or field assembly.
     assembly.set_dynamic(true);
 
     const auto materials = map_all_materials(design->appearances(), design->materials());
@@ -57,50 +49,41 @@ void export_design(const GlobalContext& gctx) {
 
     build_joint_part_hierarchy(assembly.mutable_data()->mutable_joints(), design);
 
-    // Print assembly as JSON
-    std::string json_output;
-    auto _ = google::protobuf::util::MessageToJsonString(assembly, &json_output);
+    auto file_dialog = gctx.ui->createFileDialog();
+    file_dialog->isMultiSelectEnabled(false);
+    file_dialog->title("Export Robot");
+    file_dialog->filter("Mirabuf Files (*.mira)");
+    file_dialog->filterIndex(0);
+    file_dialog->initialFilename(design->parentDocument()->name());
 
-    std::ofstream output_file(std::getenv("HOME") + std::string("/Desktop/assembly_debug.json"));
-    if (!output_file.is_open()) {
-        gctx.app->userInterface()->messageBox("Failed to open output file for writing.");
+    if (file_dialog->showSave() != adsk::core::DialogResults::DialogOK) {
         return;
     }
 
-    output_file << json_output;
-    output_file.close();
-
-    // Write to a temp path and atomically rename on success so that the final
-    // path only appears once all bytes are on disk (avoids truncated reads if
-    // another process polls for the file while we are still writing).
-    std::string home       = std::getenv("HOME");
-    std::string final_path = home + "/Desktop/test_dozer.mira";
-    std::string temp_path  = home + "/Desktop/.test_dozer.mira.tmp";
-
-    std::ofstream binary_output(temp_path, std::ios::out | std::ios::binary | std::ios::trunc);
-    if (!binary_output.is_open()) {
-        gctx.app->userInterface()->messageBox("Failed to open output file for writing.");
-        return;
+    std::string output_path = file_dialog->filename();
+    if (output_path.size() < 5 || output_path.substr(output_path.size() - 5) != ".mira") {
+        output_path += ".mira";
     }
 
     std::string binary_data;
     if (!assembly.SerializeToString(&binary_data)) {
-        gctx.app->userInterface()->messageBox("Failed to serialize assembly.");
+        gctx.ui->messageBox("Failed to serialize assembly.");
         return;
     }
 
-    binary_output.write(binary_data.data(), static_cast<std::streamsize>(binary_data.size()));
-    binary_output.close();
-
-    if (binary_output.fail()) {
-        gctx.app->userInterface()->messageBox("Failed to write binary data.");
+    std::ofstream output(output_path, std::ios::out | std::ios::binary | std::ios::trunc);
+    if (!output.is_open()) {
+        gctx.ui->messageBox("Failed to open output file for writing.");
         return;
     }
 
-    if (std::rename(temp_path.c_str(), final_path.c_str()) != 0) {
-        gctx.app->userInterface()->messageBox("Failed to rename output file.");
+    output.write(binary_data.data(), static_cast<std::streamsize>(binary_data.size()));
+    output.close();
+
+    if (output.fail()) {
+        gctx.ui->messageBox("Failed to write output file.");
         return;
     }
 
-    gctx.app->userInterface()->messageBox("Exported assembly! (" + std::to_string(binary_data.size()) + " bytes)");
+    gctx.ui->messageBox("Exported robot!");
 }
