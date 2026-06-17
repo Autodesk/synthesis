@@ -16,7 +16,15 @@ import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
 import CommandRegistry from "@/ui/components/CommandRegistry"
-import {mediumGraphicsPreferences, lowGraphicsPreferences, highGraphicsPreferences, veryHighGraphicsPreferences, ultraGraphicsPreferences, defaultGraphicsPreferences, GraphicsPreferences} from "@/systems/preferences/PreferenceTypes"
+import {
+    mediumGraphicsPreferences,
+    lowGraphicsPreferences,
+    highGraphicsPreferences,
+    veryHighGraphicsPreferences,
+    ultraGraphicsPreferences,
+    defaultGraphicsPreferences,
+    type GraphicsPreferences,
+} from "@/systems/preferences/PreferenceTypes"
 import { Select, MenuItem } from "@mui/material"
 
 // Register command: Open Settings (module-scope side effect)
@@ -231,10 +239,9 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
         World.sceneRenderer.changeLighting(prefs.fancyShadows)
     }
 
-
     useEffect(() => {
         const current = PreferencesSystem.getGraphicsPreferences()
-        
+
         const presetMatches = (preset: GraphicsPreferences) => {
             return (
                 current.lightIntensity === preset.lightIntensity &&
@@ -245,7 +252,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 current.antiAliasing === preset.antiAliasing
             )
         }
-        
+
         if (presetMatches(lowGraphicsPreferences())) {
             setSelectedPreset("low")
         } else if (presetMatches(mediumGraphicsPreferences())) {
@@ -301,7 +308,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                         g.antiAliasing === preset.antiAliasing
                     )
                 }
-                
+
                 if (presetMatches(lowGraphicsPreferences())) {
                     setSelectedPreset("low")
                 } else if (presetMatches(mediumGraphicsPreferences())) {
@@ -324,7 +331,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
             <Label size="md">Graphics Presets</Label>
             <Select
                 value={selectedPreset}
-                onChange={(e) => {
+                onChange={e => {
                     const preset = e.target.value
                     setSelectedPreset(preset)
                     if (preset === "low") applyGraphicsPreferencesLocally(lowGraphicsPreferences())
@@ -420,8 +427,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                         }}
                         step={1024}
                     />
-                    
-           
                 </>
             )}
             <Checkbox

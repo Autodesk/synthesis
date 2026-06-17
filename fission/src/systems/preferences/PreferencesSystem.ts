@@ -222,7 +222,7 @@ class PreferencesSystem {
         this.savePreferences()
     }
 
-    public static setGraphicsPreferences(g : GraphicsPreferences) {
+    public static setGraphicsPreferences(g: GraphicsPreferences) {
         this._preferences[GRAPHICS_PREFERENCE_KEY] = g
         this.savePreferences()
     }
