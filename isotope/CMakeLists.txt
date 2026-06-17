@@ -5,11 +5,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(isotope LANGUAGES CXX)
 
-if(NOT APPLE)
-    message(FATAL_ERROR "This project is only supported on macOS.")
+if(NOT APPLE AND NOT WIN32)
+    message(FATAL_ERROR "This project is only supported on macOS and Windows.")
 endif()
 
-set(USER_APP_DATA_DIR "$ENV{HOME}/Library/Application Support")
+if(APPLE)
+    set(USER_APP_DATA_DIR "$ENV{HOME}/Library/Application Support")
+elseif(WIN32)
+    set(USER_APP_DATA_DIR "$ENV{APPDATA}")
+endif()
 set(USER_APP_DATA_RELATIVE_PATH "Autodesk/Autodesk Fusion 360/API")
 set(FUSION_API_DIR "${USER_APP_DATA_DIR}/${USER_APP_DATA_RELATIVE_PATH}")
 set(FUSION_API_INCLUDE_DIR "${FUSION_API_DIR}/CPP/include")
@@ -27,9 +31,14 @@ set(FUSION_API_NAMESPACE "autodesk")
 set(FUSION_API_LIBRARY_TARGETS "core" "fusion")
 
 foreach(target IN LISTS FUSION_API_LIBRARY_TARGETS)
-    set(libpath "${FUSION_API_LIBRARY_DIR}/${target}${CMAKE_SHARED_LIBRARY_SUFFIX}")
     add_library(${target} SHARED IMPORTED)
-    set_target_properties(${target} PROPERTIES IMPORTED_LOCATION ${libpath})
+    if(WIN32)
+        set_target_properties(${target} PROPERTIES
+            IMPORTED_IMPLIB "${FUSION_API_LIBRARY_DIR}/${target}${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+    else()
+        set_target_properties(${target} PROPERTIES
+            IMPORTED_LOCATION "${FUSION_API_LIBRARY_DIR}/${target}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    endif()
 endforeach()
 
 add_library(${FUSION_API_TARGET} INTERFACE)
@@ -49,6 +58,7 @@ set(protobuf_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(protobuf_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(protobuf_BUILD_CONFORMANCE OFF CACHE BOOL "" FORCE)
 set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)
+set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "" FORCE)
 
 set(GOOGLE_PROTOBUF_SUBMODULE_DIR "${CMAKE_CURRENT_LIST_DIR}/../protobuf")
 if(NOT EXISTS "${GOOGLE_PROTOBUF_SUBMODULE_DIR}/.git")
