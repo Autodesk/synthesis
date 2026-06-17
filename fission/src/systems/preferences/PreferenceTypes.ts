@@ -105,6 +105,17 @@ export function mediumGraphicsPreferences(): GraphicsPreferences {
 
 export function highGraphicsPreferences(): GraphicsPreferences {
     return {
+        lightIntensity: 5,
+        fancyShadows: true,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
+        antiAliasing: true,
+    }
+}
+
+export function veryHighGraphicsPreferences(): GraphicsPreferences {
+    return {
         lightIntensity: 6,
         fancyShadows: true,
         maxFar: 50,

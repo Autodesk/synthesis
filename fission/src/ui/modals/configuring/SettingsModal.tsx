@@ -16,7 +16,7 @@ import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
 import CommandRegistry from "@/ui/components/CommandRegistry"
-import {mediumGraphicsPreferences, lowGraphicsPreferences, highGraphicsPreferences, ultraGraphicsPreferences, defaultGraphicsPreferences, GraphicsPreferences} from "@/systems/preferences/PreferenceTypes"
+import {mediumGraphicsPreferences, lowGraphicsPreferences, highGraphicsPreferences, veryHighGraphicsPreferences, ultraGraphicsPreferences, defaultGraphicsPreferences, GraphicsPreferences} from "@/systems/preferences/PreferenceTypes"
 import { Select, MenuItem } from "@mui/material"
 
 // Register command: Open Settings (module-scope side effect)
@@ -221,8 +221,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
 
-    const applyGraphicsPreferences = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
-        PreferencesSystem.setGraphicsPreferences(prefs)
+    const applyGraphicsPreferencesLocally = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
         setLightIntensity(prefs.lightIntensity)
         setFancyShadows(prefs.fancyShadows)
         setMaxFar(prefs.maxFar)
@@ -231,6 +230,34 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
         setAntiAliasing(prefs.antiAliasing)
         World.sceneRenderer.changeLighting(prefs.fancyShadows)
     }
+
+
+    useEffect(() => {
+        const current = PreferencesSystem.getGraphicsPreferences()
+        
+        const presetMatches = (preset: GraphicsPreferences) => {
+            return (
+                current.lightIntensity === preset.lightIntensity &&
+                current.fancyShadows === preset.fancyShadows &&
+                current.maxFar === preset.maxFar &&
+                current.cascades === preset.cascades &&
+                current.shadowMapSize === preset.shadowMapSize &&
+                current.antiAliasing === preset.antiAliasing
+            )
+        }
+        
+        if (presetMatches(lowGraphicsPreferences())) {
+            setSelectedPreset("low")
+        } else if (presetMatches(mediumGraphicsPreferences())) {
+            setSelectedPreset("medium")
+        } else if (presetMatches(highGraphicsPreferences())) {
+            setSelectedPreset("high")
+        } else if (presetMatches(veryHighGraphicsPreferences())) {
+            setSelectedPreset("veryHigh")
+        } else if (presetMatches(ultraGraphicsPreferences())) {
+            setSelectedPreset("ultra")
+        }
+    }, [])
 
     // Create actions object and notify parent
     useEffect(() => {
@@ -264,6 +291,28 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 setAntiAliasing(g.antiAliasing)
                 setReload(false)
                 World.sceneRenderer.changeLighting(g.fancyShadows)
+                const presetMatches = (preset: GraphicsPreferences) => {
+                    return (
+                        g.lightIntensity === preset.lightIntensity &&
+                        g.fancyShadows === preset.fancyShadows &&
+                        g.maxFar === preset.maxFar &&
+                        g.cascades === preset.cascades &&
+                        g.shadowMapSize === preset.shadowMapSize &&
+                        g.antiAliasing === preset.antiAliasing
+                    )
+                }
+                
+                if (presetMatches(lowGraphicsPreferences())) {
+                    setSelectedPreset("low")
+                } else if (presetMatches(mediumGraphicsPreferences())) {
+                    setSelectedPreset("medium")
+                } else if (presetMatches(highGraphicsPreferences())) {
+                    setSelectedPreset("high")
+                } else if (presetMatches(veryHighGraphicsPreferences())) {
+                    setSelectedPreset("veryHigh")
+                } else if (presetMatches(ultraGraphicsPreferences())) {
+                    setSelectedPreset("ultra")
+                }
             },
             requiresReload: reload,
         }
@@ -278,16 +327,18 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 onChange={(e) => {
                     const preset = e.target.value
                     setSelectedPreset(preset)
-                    if (preset === "low") applyGraphicsPreferences(lowGraphicsPreferences())
-                    else if (preset === "medium") applyGraphicsPreferences(mediumGraphicsPreferences())
-                    else if (preset === "high") applyGraphicsPreferences(highGraphicsPreferences())
-                    else if (preset === "ultra") applyGraphicsPreferences(ultraGraphicsPreferences())
+                    if (preset === "low") applyGraphicsPreferencesLocally(lowGraphicsPreferences())
+                    else if (preset === "medium") applyGraphicsPreferencesLocally(mediumGraphicsPreferences())
+                    else if (preset === "high") applyGraphicsPreferencesLocally(highGraphicsPreferences())
+                    else if (preset === "veryHigh") applyGraphicsPreferencesLocally(veryHighGraphicsPreferences())
+                    else if (preset === "ultra") applyGraphicsPreferencesLocally(ultraGraphicsPreferences())
                 }}
                 sx={{ width: "100%" }}
             >
                 <MenuItem value="low">Low Graphics</MenuItem>
                 <MenuItem value="medium">Medium Graphics (Default)</MenuItem>
                 <MenuItem value="high">High Graphics</MenuItem>
+                <MenuItem value="veryHigh">Very High Graphics</MenuItem>
                 <MenuItem value="ultra">Ultra Graphics</MenuItem>
             </Select>
 
@@ -369,26 +420,8 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                         }}
                         step={1024}
                     />
-                    <Box alignSelf="center">
-                        <Button
-                            onClick={() => {
-                                setShadowMapSize(4096)
-                                setMaxFar(30)
-                                setLightIntensity(5)
-                                setCascades(4)
-                                World.sceneRenderer.changeCSMSettings({
-                                    shadowMapSize: 4096,
-                                    maxFar: 30,
-                                    lightIntensity: 5,
-                                    fancyShadows,
-                                    cascades: 4,
-                                    antiAliasing,
-                                })
-                            }}
-                        >
-                            Reset Default
-                        </Button>
-                    </Box>
+                    
+           
                 </>
             )}
             <Checkbox
