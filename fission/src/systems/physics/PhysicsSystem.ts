@@ -1435,8 +1435,10 @@ class PhysicsSystem extends WorldSystem {
      * Exposes the SetPosition method on the _joltBodyInterface
      * Sets the position of the body
      *
-     * @param id The id of the body
-     * @param position The new position of the body
+     * Destroys the `position` Jolt Vector
+     *
+     * @param id The id of the body. Will not be destroyed by this function
+     * @param position The new position of the body. Will be destroyed by this function
      */
     public setBodyPosition(id: Jolt.BodyID, position: Jolt.RVec3, activate: boolean = true): void {
         if (!this.isBodyAdded(id)) {
@@ -1448,62 +1450,98 @@ class PhysicsSystem extends WorldSystem {
             position,
             activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
         )
+
+        JOLT.destroy(position)
     }
 
-    public setBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat, activate: boolean = true): void {
+    /**
+     * Exposes the `SetRotation` method on the `_joltBodyInterface`
+     * Sets the rotation of the body
+     *
+     * Destroys the `rotation` Jolt Quaternion
+     *
+     * @param id The id of the body. Will not be destroyed by this function.
+     * @param rotation The new rotation of the body. Will be destroyed by this function.
+     */
+    public setBodyRotation(
+        id: Jolt.BodyID,
+        rotation: Jolt.Quat,
+        activate: Jolt.EActivation = JOLT.EActivation_Activate
+    ): void {
         if (!this.isBodyAdded(id)) return
 
-        this._joltBodyInterface.SetRotation(
-            id,
-            rotation,
-            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
-        )
+        this._joltBodyInterface.SetRotation(id, rotation, activate)
+
+        JOLT.destroy(rotation)
     }
 
+    /**
+     * Exposes the `SetPositionRotation` method on the `_joltBodyInterface`
+     * Sets the position and rotation of the body
+     *
+     * Destroys the `position` Jolt Vector and the `rotation` Jolt Quaternion
+     *
+     * @param id The id of the body. Will not be destroyed by this function.
+     * @param position The new position of the body. Will be destroyed by this function.
+     * @param rotation The new rotation of the body. Will be destroyed by this function.
+     */
     public setBodyPositionAndRotation(
         id: Jolt.BodyID,
         position: Jolt.RVec3,
         rotation: Jolt.Quat,
-        activate: boolean = true
+        activate: Jolt.EActivation = JOLT.EActivation_Activate
     ): void {
         if (!this.isBodyAdded(id)) {
             return
         }
 
-        this._joltBodyInterface.SetPositionAndRotation(
-            id,
-            position,
-            rotation,
-            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
-        )
+        this._joltBodyInterface.SetPositionAndRotation(id, position, rotation, activate)
+
+        JOLT.destroy(position)
+        JOLT.destroy(rotation)
     }
 
+    /**
+     * Sets the position, rotation, and velocity of the body
+     *
+     * Destroys the `position` Jolt Vector and the `rotation` Jolt Quaternion
+     *
+     * @param id The id of the body. Will not be destroyed by this function.
+     * @param position The new position of the body. Will be destroyed by this function.
+     * @param rotation The new rotation of the body. Will be destroyed by this function.
+     * @param linear The new linear velocity of the body. Will be destroyed by this function.
+     * @param angular The new angular velocity of the body. Will be destroyed by this function.
+     * @param activate TODO
+     */
     public setBodyPositionRotationAndVelocity(
         id: Jolt.BodyID,
         position: Jolt.RVec3,
         rotation: Jolt.Quat,
         linear: Jolt.Vec3,
         angular: Jolt.Vec3,
-        activate: boolean = true
+        activate: Jolt.EActivation = JOLT.EActivation_Activate
     ): void {
         if (!this.isBodyAdded(id)) {
             return
         }
 
-        this._joltBodyInterface.SetPositionAndRotation(
-            id,
-            position,
-            rotation,
-            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
-        )
+        this._joltBodyInterface.SetPositionAndRotation(id, position, rotation, activate)
 
         this._joltBodyInterface.SetLinearVelocity(id, linear)
         this._joltBodyInterface.SetAngularVelocity(id, angular)
+
+        JOLT.destroy(position)
+        JOLT.destroy(rotation)
+
+        JOLT.destroy(linear)
+        JOLT.destroy(angular)
     }
 
     /**
-     * Exposes SetShape method on the _joltBodyInterface
+     * Exposes `SetShape` method on the _joltBodyInterface
      * Sets the shape of the body
+     *
+     * Does not destroy any arguments
      *
      * @param id The id of the body
      * @param shape The new shape of the body
@@ -1526,11 +1564,13 @@ class PhysicsSystem extends WorldSystem {
      */
     private bodyToMiraSceneObject(body: Jolt.Body): MirabufSceneObject | null {
         const id = body.GetID()
-        return (
+
+        const object =
             World.sceneRenderer.mirabufSceneObjects.findWhere(obj =>
                 [...obj.mechanism.nodeToBody].some(n => n[1] == id)
             ) ?? null
-        )
+
+        return object
     }
 
     /**

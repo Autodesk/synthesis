@@ -12,6 +12,7 @@ import {
 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 class EjectableSceneObject extends SceneObject {
     private _parentSceneObject: MirabufSceneObject
@@ -147,7 +148,7 @@ class EjectableSceneObject extends SceneObject {
             World.physicsSystem.setBodyRotation(
                 this._gamePieceBodyId,
                 convertThreeQuaternionToJoltQuat(rotation),
-                false
+                JOLT.EActivation_DontActivate
             )
         }
     }

@@ -396,6 +396,8 @@ class SceneRenderer extends WorldSystem {
     public removeSceneObject(id: number) {
         const obj = this._sceneObjects.get(id)
 
+        if (!obj) return
+
         // If the object is a mirabuf object, remove the gizmo as well
         if (obj instanceof MirabufSceneObject) {
             const objGizmo = this._gizmosOnMirabuf.get(id)
@@ -409,7 +411,7 @@ class SceneRenderer extends WorldSystem {
         }
 
         if (this._sceneObjects.delete(id)) {
-            obj!.dispose()
+            obj.dispose()
         }
     }
 
@@ -446,13 +448,16 @@ class SceneRenderer extends WorldSystem {
         for (let c = 0; c < colors.length; c++) {
             colors[c] = 128 + (c / colors.length) * 128
         }
+
         const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format)
         gradientMap.needsUpdate = true
+
         const material = new THREE.MeshToonMaterial({
             color: color,
             shadowSide: THREE.DoubleSide,
             gradientMap: gradientMap,
         })
+
         if (this._light instanceof CSM) this._light.setupMaterial(material)
         return material
     }
@@ -478,12 +483,15 @@ class SceneRenderer extends WorldSystem {
     /**
      * Convert world space coordinates to screen space coordinates
      *
-     * @param world World space coordinates
+     * @param worldPosition World space coordinates
      * @returns Pixel space coordinates
      */
-    public worldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
+    public worldToPixelSpace(worldPosition: THREE.Vector3): PixelSpaceCoord {
         this._mainCamera.updateMatrixWorld()
-        const screenSpace = world.project(this._mainCamera)
+        const screenSpace = worldPosition.project(this._mainCamera)
+        // TODO
+        // Dispose of three vector
+
         return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
 

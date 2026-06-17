@@ -37,9 +37,10 @@ class IntakeSensorSceneObject extends SceneObject {
                 this._parentAssembly.intakePreferences.deltaTransformation
             )
 
-            this._joltBodyId = World.physicsSystem.createSensor(
-                new JOLT.SphereShapeSettings(this._parentAssembly.intakePreferences.zoneDiameter / 2.0)
-            )
+            const _settings = new JOLT.SphereShapeSettings(this._parentAssembly.intakePreferences.zoneDiameter / 2.0)
+            this._joltBodyId = World.physicsSystem.createSensor(_settings)
+            JOLT.destroy(_settings)
+
             if (!this._joltBodyId) {
                 console.error("Failed to create intake. No Jolt Body")
                 return
