@@ -111,6 +111,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 const existing = panels.find(p => p.content === content)!
                 setPanels(p => [...p.filter(x => x !== existing), existing])
                 return existing.id
+            } else if (unconfirmedImport) {
+                addToast("warning", "You are currenting importing a model!", "Confirm it before opening another panel.")
+                return panels[0].id // NOTE: if the user is configuring, that means Assembly Setup panel is the only one open -- race condition??
             }
             const id = uuidv4()
             const panel = {
