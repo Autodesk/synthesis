@@ -238,10 +238,12 @@ class PhysicsSystem extends WorldSystem {
     ) {
         const size = convertThreeVector3ToJoltVec3(halfExtents)
         const shape = new JOLT.BoxShape(size, 0.1)
+
         JOLT.destroy(size)
 
         const body = this.createBody(shape, mass, position, rotation)
         this._bodies.push(body.GetID())
+
         return body
     }
 
@@ -753,7 +755,7 @@ class PhysicsSystem extends WorldSystem {
         let bodyStart = bodyB
         let bodyNext = bodyA
         if (constraints.length > 1) {
-            bodyNext = this.createGhostBody(anchorPoint)
+            bodyNext = this.createGhostBody(anchorPoint, false)
             this._joltBodyInterface.AddBody(bodyNext.GetID(), JOLT.EActivation_Activate)
             mechanism.ghostBodies.push(bodyNext.GetID())
         }
@@ -761,7 +763,7 @@ class PhysicsSystem extends WorldSystem {
             const c = constraints[i]
             const hingeSettings = new JOLT.HingeConstraintSettings()
             hingeSettings.mMaxFrictionTorque = c.friction
-            hingeSettings.mPoint1 = hingeSettings.mPoint2 = convertJoltVec3ToJoltRVec3(anchorPoint)
+            hingeSettings.mPoint1 = hingeSettings.mPoint2 = convertJoltVec3ToJoltRVec3(anchorPoint, false)
             hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = c.axis.Normalized()
             hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = getPerpendicular(hingeSettings.mHingeAxis1)
 
@@ -785,7 +787,7 @@ class PhysicsSystem extends WorldSystem {
             if (i == constraints.length - 2) {
                 bodyNext = bodyA
             } else {
-                bodyNext = this.createGhostBody(anchorPoint)
+                bodyNext = this.createGhostBody(anchorPoint, false)
                 this._joltBodyInterface.AddBody(bodyNext.GetID(), JOLT.EActivation_Activate)
                 mechanism.ghostBodies.push(bodyNext.GetID())
             }
@@ -794,6 +796,7 @@ class PhysicsSystem extends WorldSystem {
             JOLT.destroy(c.axis)
         }
 
+        JOLT.destroy(anchorPoint)
         JOLT.destroy(jointOrigin)
         JOLT.destroy(jointOriginOffset)
     }
@@ -1174,14 +1177,14 @@ class PhysicsSystem extends WorldSystem {
 
         if (!collector.HadHit()) return undefined
 
-        const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
-
         JOLT.destroy(raySettings)
-        JOLT.destroy(hitPoint)
         JOLT.destroy(bpFilter)
         JOLT.destroy(objectFilter)
         JOLT.destroy(bodyFilter)
         JOLT.destroy(shapeFilter)
+        JOLT.destroy(dir)
+
+        const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
 
         return { data: collector.mHit, point: convertJoltRVec3ToJoltVec3(hitPoint), ray: ray }
     }
@@ -1325,15 +1328,14 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(this._joltPhysSystem.GetContactListener())
     }
 
-    private createGhostBody(position: Jolt.Vec3) {
+    private createGhostBody(position: Jolt.Vec3, destroy: boolean = true) {
         const size = new JOLT.Vec3(0.05, 0.05, 0.05)
         const shape = new JOLT.BoxShape(size)
-        JOLT.destroy(size)
 
         const rot = new JOLT.Quat(0, 0, 0, 1)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
-            convertJoltVec3ToJoltRVec3(position),
+            convertJoltVec3ToJoltRVec3(position, destroy),
             rot,
             JOLT.EMotionType_Dynamic,
             LAYER_GHOST
@@ -1346,19 +1348,25 @@ class PhysicsSystem extends WorldSystem {
 
         JOLT.destroy(rot)
         JOLT.destroy(creationSettings)
+        JOLT.destroy(size)
 
         return body
     }
 
-    public createSensor(shapeSettings: Jolt.ShapeSettings): Jolt.BodyID | undefined {
+    public createSensor(shapeSettings: Jolt.ShapeSettings, destroy: boolean = true): Jolt.BodyID | undefined {
         const shape = shapeSettings.Create()
         if (shape.HasError()) {
             console.error(`Failed to create sensor body\n${shape.GetError().c_str}`)
             return undefined
         }
+
         const body = this.createBody(shape.Get(), undefined, undefined, undefined)
         this._bodies.push(body.GetID())
         body.SetIsSensor(true)
+
+        if (destroy) shapeSettings
+        JOLT.destroy(shape)
+
         this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
         return body.GetID()
     }
@@ -1372,7 +1380,12 @@ class PhysicsSystem extends WorldSystem {
      * @param id The id of the body. Will not be destroyed by this function
      * @param position The new position of the body. Will be destroyed by this function
      */
-    public setBodyPosition(id: Jolt.BodyID, position: Jolt.RVec3, activate: boolean = true): void {
+    public setBodyPosition(
+        id: Jolt.BodyID,
+        position: Jolt.RVec3,
+        activate: boolean = true,
+        destroy: boolean = true
+    ): void {
         if (!this.isBodyAdded(id)) {
             return
         }
@@ -1383,7 +1396,7 @@ class PhysicsSystem extends WorldSystem {
             activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
         )
 
-        JOLT.destroy(position)
+        if (destroy) JOLT.destroy(position)
     }
 
     /**
@@ -1398,13 +1411,14 @@ class PhysicsSystem extends WorldSystem {
     public setBodyRotation(
         id: Jolt.BodyID,
         rotation: Jolt.Quat,
-        activate: Jolt.EActivation = JOLT.EActivation_Activate
+        activate: Jolt.EActivation = JOLT.EActivation_Activate,
+        destroy: boolean = true
     ): void {
         if (!this.isBodyAdded(id)) return
 
         this._joltBodyInterface.SetRotation(id, rotation, activate)
 
-        JOLT.destroy(rotation)
+        if (destroy) JOLT.destroy(rotation)
     }
 
     /**
@@ -1421,7 +1435,8 @@ class PhysicsSystem extends WorldSystem {
         id: Jolt.BodyID,
         position: Jolt.RVec3,
         rotation: Jolt.Quat,
-        activate: Jolt.EActivation = JOLT.EActivation_Activate
+        activate: Jolt.EActivation = JOLT.EActivation_Activate,
+        destroy: boolean = true
     ): void {
         if (!this.isBodyAdded(id)) {
             return
@@ -1429,8 +1444,10 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltBodyInterface.SetPositionAndRotation(id, position, rotation, activate)
 
-        JOLT.destroy(position)
-        JOLT.destroy(rotation)
+        if (destroy) {
+            JOLT.destroy(position)
+            JOLT.destroy(rotation)
+        }
     }
 
     /**
@@ -1451,7 +1468,8 @@ class PhysicsSystem extends WorldSystem {
         rotation: Jolt.Quat,
         linear: Jolt.Vec3,
         angular: Jolt.Vec3,
-        activate: Jolt.EActivation = JOLT.EActivation_Activate
+        activate: Jolt.EActivation = JOLT.EActivation_Activate,
+        destroy: boolean = true
     ): void {
         if (!this.isBodyAdded(id)) {
             return
@@ -1462,11 +1480,12 @@ class PhysicsSystem extends WorldSystem {
         this._joltBodyInterface.SetLinearVelocity(id, linear)
         this._joltBodyInterface.SetAngularVelocity(id, angular)
 
-        JOLT.destroy(position)
-        JOLT.destroy(rotation)
-
-        JOLT.destroy(linear)
-        JOLT.destroy(angular)
+        if (destroy) {
+            JOLT.destroy(position)
+            JOLT.destroy(rotation)
+            JOLT.destroy(linear)
+            JOLT.destroy(angular)
+        }
     }
 
     /**
@@ -1484,11 +1503,17 @@ class PhysicsSystem extends WorldSystem {
         id: Jolt.BodyID,
         shape: Jolt.Shape,
         massProperties: boolean,
-        activationMode: Jolt.EActivation
+        activationMode: Jolt.EActivation,
+        destroy: boolean = false
     ): void {
         if (!this.isBodyAdded(id)) return
 
         this._joltBodyInterface.SetShape(id, shape, massProperties, activationMode)
+
+        if (destroy) {
+            JOLT.destroy(shape)
+        }
+        JOLT.destroy(activationMode)
     }
 
     /**

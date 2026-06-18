@@ -435,11 +435,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             JOLT.destroy(newPos)
         })
 
+        this.updateMeshTransforms()
+
+        JOLT.destroy(bodyCenter)
         JOLT.destroy(_blankVec)
         JOLT.destroy(initialTranslation)
         JOLT.destroy(initialRotation)
-
-        this.updateMeshTransforms()
     }
 
     public update(): void {
@@ -877,11 +878,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const aaBox = jBody.GetWorldSpaceBounds()
             const mat = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
             const center = aaBox.mMin.Add(aaBox.mMax).Div(2.0)
-            mat.compose(
-                convertJoltVec3ToThreeVector3(center),
-                new THREE.Quaternion(0, 0, 0, 1),
-                new THREE.Vector3(1, 1, 1)
-            )
+            const centerVec = convertJoltVec3ToThreeVector3(center)
+
+            mat.compose(centerVec, new THREE.Quaternion(0, 0, 0, 1), new THREE.Vector3(1, 1, 1))
             gizmo.setTransform(mat)
         } else {
             gizmo.setTransform(convertJoltMat44ToThreeMatrix4(jBody.GetCenterOfMassTransform()))

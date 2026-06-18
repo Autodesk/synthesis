@@ -130,10 +130,6 @@ class EjectableSceneObject extends SceneObject {
                 desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
                 desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, easedT)
             }
-            // } else if (t >= 1) {
-            //     // snap instantly and re-enable physics
-            //     World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
-            // }
 
             // apply the transform
             desiredTransform.identity().compose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
@@ -144,7 +140,7 @@ class EjectableSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-            World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position), false)
+            World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position))
             World.physicsSystem.setBodyRotation(
                 this._gamePieceBodyId,
                 convertThreeQuaternionToJoltQuat(rotation),
@@ -170,14 +166,16 @@ class EjectableSceneObject extends SceneObject {
             .normalize()
 
         World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
-        gpBody.SetLinearVelocity(
-            parentBody
-                .GetLinearVelocity()
-                .Add(convertThreeVector3ToJoltVec3(ejectDir.multiplyScalar(this._ejectVelocity)))
-        )
+
+        const ejectVector = convertThreeVector3ToJoltVec3(ejectDir.multiplyScalar(this._ejectVelocity))
+        // NOTE
+        // Don't destroy these because it seems like `gpBody` takes ownership???
+        gpBody.SetLinearVelocity(parentBody.GetLinearVelocity().Add(ejectVector))
         gpBody.SetAngularVelocity(parentBody.GetAngularVelocity())
 
         this._parentBodyId = undefined
+
+        JOLT.destroy(ejectVector)
     }
 
     public dispose(): void {

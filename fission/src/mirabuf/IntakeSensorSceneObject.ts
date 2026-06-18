@@ -93,23 +93,24 @@ class IntakeSensorSceneObject extends SceneObject {
     }
 
     public update(): void {
-        if (this._joltBodyId && this._parentBodyId && this._deltaTransformation) {
-            const parentBody = World.physicsSystem.getBody(this._parentBodyId)
-            const bodyTransform = this._deltaTransformation
-                .clone()
-                .premultiply(convertJoltMat44ToThreeMatrix4(parentBody.GetWorldTransform()))
-            const position = new THREE.Vector3(0, 0, 0)
-            const rotation = new THREE.Quaternion(0, 0, 0, 1)
-            bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
+        if (!this._joltBodyId || !this._parentBodyId || !this._deltaTransformation) return
 
-            World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(position))
-            World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(rotation))
+        const parentBody = World.physicsSystem.getBody(this._parentBodyId)
+        const bodyTransform = this._deltaTransformation
+            .clone()
+            .premultiply(convertJoltMat44ToThreeMatrix4(parentBody.GetWorldTransform()))
 
-            // Update visual indicator position if it exists
-            if (this._visualIndicator) {
-                this._visualIndicator.position.copy(position)
-                this._visualIndicator.quaternion.copy(rotation)
-            }
+        const position = new THREE.Vector3(0, 0, 0)
+        const rotation = new THREE.Quaternion(0, 0, 0, 1)
+        bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
+
+        World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(position))
+        World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(rotation))
+
+        // Update visual indicator position if it exists
+        if (this._visualIndicator) {
+            this._visualIndicator.position.copy(position)
+            this._visualIndicator.quaternion.copy(rotation)
         }
     }
 
