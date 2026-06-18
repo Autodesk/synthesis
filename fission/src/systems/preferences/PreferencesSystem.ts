@@ -222,17 +222,9 @@ class PreferencesSystem {
         this.savePreferences()
     }
 
-    public static graphicsPreferencesAreDefault(): boolean {
+    public static graphicsPreferencesAreLow(): boolean {
         const current = this._preferences[GRAPHICS_PREFERENCE_KEY]
-        const defaults = defaultGraphicsPreferences()
-        return (
-            current!.lightIntensity === defaults.lightIntensity &&
-            current!.fancyShadows === defaults.fancyShadows &&
-            current!.maxFar === defaults.maxFar &&
-            current!.cascades === defaults.cascades &&
-            current!.shadowMapSize === defaults.shadowMapSize &&
-            current!.antiAliasing === defaults.antiAliasing
-        )
+        return current!.fancyShadows === false && current!.antiAliasing === false
     }
 
     /** Loads all preferences from local storage. */
