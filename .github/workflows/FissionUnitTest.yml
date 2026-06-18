@@ -11,7 +11,7 @@ jobs:
   runUnitTests:
     name: Playwright Unit Tests
     container:
-      image: mcr.microsoft.com/playwright:v1.54.2-noble
+      image: mcr.microsoft.com/playwright:v1.61.0-noble
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -22,7 +22,7 @@ jobs:
       - name: JavaScript Setup
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
@@ -62,7 +62,7 @@ jobs:
     name: Assetpack Tests
     needs: runUnitTests
     container:
-      image: mcr.microsoft.com/playwright:v1.54.2-noble
+      image: mcr.microsoft.com/playwright:v1.61.0-noble
     runs-on: ubuntu-latest
     defaults:
       run:

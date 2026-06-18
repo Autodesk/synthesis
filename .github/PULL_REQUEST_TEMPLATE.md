@@ -1,11 +1,11 @@
 ## Task
 
 <!--
-Please include any relevant Jira ticket ID(s) at the end of the PR title, in the form AARD-xxxx, where "AARD" is Jira project.
+Please include any relevant Jira ticket ID(s) at the end of the PR title, in the form SYNTH-xxxx, where "SYNTH" is the Jira project.
 Include the same Jira ticket ID(s) in this section.
 -->
 
-AARD-
+SYNTH-
 
 <!--
 Provide a brief description of what the task was here.
