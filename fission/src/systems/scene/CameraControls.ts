@@ -147,7 +147,7 @@ export class CustomOrbitControls extends CameraControls {
 
     private onFocusProviderChanged(): void {
         if (this._focusProvider && this._mode !== CameraMode.Face) {
-            // Capture the camera's current world position. 
+            // Capture the camera's current world position.
             // The coord re-sync is deferred to update() so it runs after _focus is refreshed
             this._pendingResync = this._mainCamera.position.clone()
         }
