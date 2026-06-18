@@ -339,9 +339,11 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 sx={{ width: "100%" }}
             >
                 <MenuItem value="low">Low Graphics (Default)</MenuItem>
-            <MenuItem value="medium">Medium Graphics</MenuItem>
-            <MenuItem value="high">High Graphics</MenuItem>
-            <MenuItem value="custom" disabled>Custom</MenuItem>
+                <MenuItem value="medium">Medium Graphics</MenuItem>
+                <MenuItem value="high">High Graphics</MenuItem>
+                <MenuItem value="custom" disabled>
+                    Custom
+                </MenuItem>
             </Select>
 
             <Label size="md">Customize Graphics</Label>
