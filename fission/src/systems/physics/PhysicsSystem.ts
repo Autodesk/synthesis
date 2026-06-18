@@ -1469,8 +1469,8 @@ class PhysicsSystem extends WorldSystem {
         rotation: Jolt.Quat,
         linear: Jolt.Vec3,
         angular: Jolt.Vec3,
-        activate: Jolt.EActivation = JOLT.EActivation_Activate,
-        destroy: boolean = true
+        destroy: boolean = true,
+        activate: Jolt.EActivation = JOLT.EActivation_Activate
     ): void {
         if (!this.isBodyAdded(id)) {
             return

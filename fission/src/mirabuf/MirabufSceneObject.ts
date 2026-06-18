@@ -301,9 +301,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
                 const colliderMesh = this.createMeshForShape(body.GetShape())
                 const comMesh = World.sceneRenderer.createSphere(0.05)
+
                 World.sceneRenderer.scene.add(colliderMesh)
                 World.sceneRenderer.scene.add(comMesh)
+
                 ;(comMesh.material as THREE.Material).depthTest = false
+
                 this._debugBodies!.set(rnName, {
                     colliderMesh: colliderMesh,
                     comMesh: comMesh,
@@ -325,6 +328,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType === MiraType.ROBOT) {
             World.simulationSystem.registerMechanism(this._mechanism)
             const simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
+
             this._brain = new SynthesisBrain(this, this._assemblyName)
             simLayer.setBrain(this._brain)
         }
@@ -422,13 +426,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 World.physicsSystem.getBody(jBodyId).GetPosition().Sub(bodyCenter)
             )
 
-            const newPos = convertJoltVec3ToJoltRVec3(initialTranslation)
+            const newPos = convertJoltVec3ToJoltRVec3(initialTranslation, false)
             World.physicsSystem.setBodyPositionRotationAndVelocity(
                 jBodyId,
                 newPos,
                 initialRotation,
                 _blankVec,
-                _blankVec
+                _blankVec,
+                false
             )
 
             JOLT.destroy(offset)
@@ -601,13 +606,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const partTransform = this._mirabufInstance.parser.globalTransforms
                 .get(part)!
                 .clone()
-                // I'm assuming that `premultiply` consumes `self`
                 .premultiply(transform)
-
             const meshes = this._mirabufInstance.meshes.get(part) ?? []
             meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
 
-            JOLT.destroy(partTransform)
+            // JOLT.destroy(partTransform)
         })
     }
 

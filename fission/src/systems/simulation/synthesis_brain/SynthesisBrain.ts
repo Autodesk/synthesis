@@ -79,6 +79,8 @@ class SynthesisBrain extends Brain {
         if (this._assembly.mechanism.controllable) {
             this.configureSkidSteerDriveBehavior(this.driveType == DriveType.ARCADE)
             this.configureArmBehaviors()
+
+            console.log("ahhh")
             this.configureElevatorBehaviors()
             this.configureGamepieceManipBehavior()
         } else {
@@ -177,7 +179,8 @@ class SynthesisBrain extends Brain {
         // Determines which wheels and stimuli belong to which side of the robot
         for (let i = 0; i < wheelDrivers.length; i++) {
             const wheelPos = convertJoltVec3ToJoltRVec3(
-                fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
+                fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation(),
+                false
             )
 
             const robotCOM = World.physicsSystem

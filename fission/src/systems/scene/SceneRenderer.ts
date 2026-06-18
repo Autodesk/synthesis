@@ -371,17 +371,22 @@ class SceneRenderer extends WorldSystem {
         if (nextSceneObjectId <= id) {
             nextSceneObjectId = id + 1
         }
+
         if (this._sceneObjects.has(id)) {
             console.error("Trying to add with existing ID!", obj, idOverride)
             return -1 as LocalSceneObjectId
         }
+
         obj.id = id
         this._sceneObjects.set(id, obj)
+
+        console.log("here")
         obj.setup()
+
         return id as LocalSceneObjectId
     }
 
-    /** Registers gizmos that are attached to a parent mirabufsceneobject  */
+    /** Registers gizmos that are attached to a parent `MirabufSceneObject`  */
     public registerGizmoSceneObject(obj: GizmoSceneObject): number {
         if (obj.hasParent()) this._gizmosOnMirabuf.set(obj.parentObjectId!, obj)
         return this.registerSceneObject(obj)

@@ -110,6 +110,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                 await createMirabuf(assembly, progressHandle).then(async mirabufSceneObject => {
                     if (mirabufSceneObject) {
                         World.sceneRenderer.registerSceneObject(mirabufSceneObject)
+                        console.log("here")
 
                         const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
 
