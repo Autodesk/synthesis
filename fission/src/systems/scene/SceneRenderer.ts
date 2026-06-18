@@ -43,7 +43,9 @@ class SceneRenderer extends WorldSystem {
     private _composer: EffectComposer
 
     private _sceneObjects: Map<number, SceneObject>
-    private _gizmosOnMirabuf: Map<number, GizmoSceneObject> // maps of all the gizmos that are attached to a mirabuf scene object
+
+    // Maps of all the gizmos that are attached to a mirabuf scene object
+    private _gizmosOnMirabuf: Map<number, GizmoSceneObject>
 
     private _cameraControls: CameraControls
 
@@ -54,9 +56,6 @@ class SceneRenderer extends WorldSystem {
 
     public get sceneObjects() {
         return this._sceneObjects
-    }
-    public set sceneObjects(objects: Map<number, SceneObject>) {
-        this._sceneObjects = objects
     }
 
     public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
