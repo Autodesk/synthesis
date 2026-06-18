@@ -311,18 +311,17 @@ class PhysicsSystem extends WorldSystem {
             settings.mPoints.push_back(new JOLT.Vec3(points[i], points[i + 1], points[i + 2]))
         }
 
-        const shapeResult = settings.Create()
-        // JOLT.destroy(settings)
-
-        return shapeResult
+        return settings.Create()
     }
 
     public createMechanismFromParser(parser: MirabufParser): Mechanism {
         const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
         const bodyMap = this.createBodiesFromParser(parser, layer)
         const rootBody = parser.rootNode
+
         const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)
         this.createJointsFromParser(parser, mechanism)
+
         return mechanism
     }
 
@@ -891,7 +890,7 @@ class PhysicsSystem extends WorldSystem {
                 this.updateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
 
                 // TODO
-                // Figure out why this destruction breaks things
+                // Figure out why these destructions break things
                 // JOLT.destroy(minBounds)
                 // JOLT.destroy(maxBounds)
                 JOLT.destroy(partMin)
@@ -1315,7 +1314,6 @@ class PhysicsSystem extends WorldSystem {
     public destroy() {
         this._constraints.forEach(x => {
             this._joltPhysSystem.RemoveConstraint(x)
-            // JOLT.destroy(x);
         })
         this._constraints = []
 

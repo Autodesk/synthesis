@@ -380,7 +380,6 @@ class SceneRenderer extends WorldSystem {
         obj.id = id
         this._sceneObjects.set(id, obj)
 
-        console.log("here")
         obj.setup()
 
         return id as LocalSceneObjectId

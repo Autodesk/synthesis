@@ -364,9 +364,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const transform = box.getCenter(vec)
         transform.setY(box.min.y)
 
-        // TODO
-        // Dispose of THREE objects
-
         return transform
     }
 
@@ -414,11 +411,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             initialPos.pos[2] - rotatedBasePositionTransform.z + referencePosition.z
         )
 
-        const _yUnitVec = new JOLT.Vec3(0, 1, 0)
-        const initialRotation = JOLT.Quat.prototype.sRotation(_yUnitVec, initialPos.yaw)
-        JOLT.destroy(_yUnitVec)
+        const yUnitVec = new JOLT.Vec3(0, 1, 0)
+        const initialRotation = JOLT.Quat.prototype.sRotation(yUnitVec, initialPos.yaw)
 
-        const _blankVec = new JOLT.Vec3()
+        const blankVec = new JOLT.Vec3()
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             const jBodyId = this._mechanism.getBodyByNodeId(rn.id)
             if (!jBodyId) return
@@ -431,8 +427,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 jBodyId,
                 newPos,
                 initialRotation,
-                _blankVec,
-                _blankVec,
+                blankVec,
+                blankVec,
                 false
             )
 
@@ -443,9 +439,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.updateMeshTransforms()
 
         JOLT.destroy(bodyCenter)
-        JOLT.destroy(_blankVec)
         JOLT.destroy(initialTranslation)
         JOLT.destroy(initialRotation)
+        JOLT.destroy(yUnitVec)
+        JOLT.destroy(blankVec)
     }
 
     public update(): void {
@@ -537,58 +534,52 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         let totalMass = 0
 
         // If this.dispose() has been ran then return
-        if (!this._mirabufInstance.meshes.size) return
+        if (this._mirabufInstance.meshes.size) {
+            this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+                const bodyId = this._mechanism.getBodyByNodeId(rn.id)!
+                const body = World.physicsSystem.getBody(bodyId)
+                if (!body) return
 
-        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-            const bodyId = this._mechanism.getBodyByNodeId(rn.id)!
-            const body = World.physicsSystem.getBody(bodyId)
-            if (!body) return
+                const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+                this.updateNodeParts(rn, transform)
 
-            const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
-            this.updateNodeParts(rn, transform)
+                if (Number.isNaN(body.GetPosition().GetX())) {
+                    const vel = body.GetLinearVelocity()
+                    const pos = body.GetPosition()
+                    console.warn(
+                        `Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
+                    )
 
-            if (Number.isNaN(body.GetPosition().GetX())) {
-                const vel = body.GetLinearVelocity()
-                const pos = body.GetPosition()
-                console.warn(
-                    `Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
-                )
-
-                JOLT.destroy(vel)
-                JOLT.destroy(pos)
-            }
-
-            if (this._debugBodies) {
-                const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
-                colliderMesh.position.setFromMatrixPosition(transform)
-                colliderMesh.rotation.setFromRotationMatrix(transform)
-
-                const comTransform = convertJoltMat44ToThreeMatrix4(body.GetCenterOfMassTransform())
-
-                comMesh.position.setFromMatrixPosition(comTransform)
-                comMesh.rotation.setFromRotationMatrix(comTransform)
-            }
-
-            if (this._centerOfMassIndicator) {
-                const inverseMass = body.GetMotionProperties().GetInverseMass()
-
-                if (inverseMass > 0) {
-                    const mass = 1 / inverseMass
-
-                    // NOTE
-                    // We need to hold a reference to this memory so that we can free it.
-                    // I believe Jolt functions that take in objects as arguments won't be freed by that Jolt function
-                    //
-                    // I didn't get this information from the documentation, because it doesn't exist basically D:
-                    // https://github.com/pmndrs/react-three-jolt/issues/38
-                    const _com = body.GetCenterOfMassPosition().Mul(mass)
-                    weightedCOM = weightedCOM.AddRVec3(_com)
-                    JOLT.destroy(_com)
-
-                    totalMass += mass
+                    JOLT.destroy(vel)
+                    JOLT.destroy(pos)
                 }
-            }
-        })
+
+                if (this._debugBodies) {
+                    const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
+                    colliderMesh.position.setFromMatrixPosition(transform)
+                    colliderMesh.rotation.setFromRotationMatrix(transform)
+
+                    const comTransform = convertJoltMat44ToThreeMatrix4(body.GetCenterOfMassTransform())
+
+                    comMesh.position.setFromMatrixPosition(comTransform)
+                    comMesh.rotation.setFromRotationMatrix(comTransform)
+                }
+
+                if (this._centerOfMassIndicator) {
+                    const inverseMass = body.GetMotionProperties().GetInverseMass()
+
+                    if (inverseMass > 0) {
+                        const mass = 1 / inverseMass
+
+                        const com = body.GetCenterOfMassPosition().Mul(mass)
+                        weightedCOM = weightedCOM.AddRVec3(com)
+                        JOLT.destroy(com)
+
+                        totalMass += mass
+                    }
+                }
+            })
+        }
 
         if (this._centerOfMassIndicator) {
             const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
