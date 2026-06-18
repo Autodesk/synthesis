@@ -22,7 +22,6 @@ import {
     highGraphicsPreferences,
     veryHighGraphicsPreferences,
     ultraGraphicsPreferences,
-    defaultGraphicsPreferences,
     type GraphicsPreferences,
 } from "@/systems/preferences/PreferenceTypes"
 import { Select, MenuItem } from "@mui/material"
