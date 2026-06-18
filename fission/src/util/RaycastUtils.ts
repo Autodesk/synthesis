@@ -3,7 +3,6 @@ import type * as THREE from "three"
 import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "./TypeConversions"
-import assert from "assert"
 
 export function rayCastForRigidBody(
     mousePos: [number, number]

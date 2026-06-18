@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { afterEach, assert, beforeEach, describe, expect, test, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
