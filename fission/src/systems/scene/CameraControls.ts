@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import EventSystem from "@/systems/EventSystem"
 import World from "../World"
 import type ScreenInteractionHandler from "./ScreenInteractionHandler"
 import {
@@ -115,6 +116,7 @@ export class CustomOrbitControls extends CameraControls {
         if (val === this._mode) return
 
         this._mode = val
+        EventSystem.dispatch("CameraModeChangedEvent", { mode: val })
 
         if (val === CameraMode.Face) {
             // Face mode drives the camera directly and ignores orbit coords

@@ -1,6 +1,7 @@
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import { CameraMode, type CameraControlsType, type CustomOrbitControls } from "@/systems/scene/CameraControls"
+import EventSystem from "@/systems/EventSystem"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
@@ -22,6 +23,12 @@ CommandRegistry.get().registerCommand({
 
 const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
     const [mode, setMode] = useState<CameraMode>(controls.mode)
+
+    useEffect(() => {
+        return EventSystem.listen("CameraModeChangedEvent", ({ mode: newMode }) => {
+            setMode(newMode as CameraMode)
+        })
+    }, [])
 
     useEffect(() => {
         controls.mode = mode

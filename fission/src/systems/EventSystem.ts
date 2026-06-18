@@ -49,6 +49,8 @@ interface EventDataMap {
 
     DragModeToggled: { enabled: boolean }
 
+    CameraModeChangedEvent: { mode: string }
+
     APSUserInfoUpdate: never
 
     MultiplayerStateJoinRoom: never
