@@ -58,6 +58,11 @@ vi.mock("@/systems/scene/CameraControls", () => ({
         dispose: vi.fn(),
         update: vi.fn(),
     })),
+    CameraMode: {
+        Follow: "Follow",
+        Locked: "Locked",
+        Face: "Face",
+    },
 }))
 
 vi.mock("@/systems/scene/ScreenInteractionHandler", () => ({

@@ -13,10 +13,10 @@ interface OrbitSettingsProps {
 }
 
 CommandRegistry.get().registerCommand({
-    id: "open-camera-selection",
-    label: "Open Camera Selection",
-    description: "Open the Camera Selection panel",
-    keywords: ["camera", "config", "open"],
+    id: "open-camera-config",
+    label: "Open Camera Configuration",
+    description: "Open the Camera Config panel",
+    keywords: ["camera", "config", "orbit", "follow", "locked", "face"],
     perform: () => import("./CameraSelectionPanel").then(m => globalOpenPanel(m.default, undefined)),
 })
 

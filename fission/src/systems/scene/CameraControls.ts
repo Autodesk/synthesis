@@ -102,6 +102,7 @@ export class CustomOrbitControls extends CameraControls {
 
     private _focusProvider: MirabufSceneObject | undefined
     private _isExplicitlyUnfocused: boolean = false
+    private _focusProviderDirty: boolean = false
 
     private _mode: CameraMode = CameraMode.Follow
     private _focusPosition: THREE.Vector3 = new THREE.Vector3()
@@ -113,45 +114,41 @@ export class CustomOrbitControls extends CameraControls {
     public set mode(val: CameraMode) {
         if (val === this._mode) return
 
+        this._mode = val
+
         if (val === CameraMode.Face) {
+            // Face mode drives the camera directly and ignores orbit coords
+            this._focusProviderDirty = false
             this._focusPosition.copy(this._mainCamera.position)
         } else {
-            if (this._mode === CameraMode.Face) {
-                this.syncCoordsFromFocusPosition()
-            }
-
-            if (this._focusProvider) {
-                const focusRotation = new THREE.Matrix4().extractRotation(this._focus)
-                if ((this._mode === CameraMode.Follow || this._mode === CameraMode.Face) && val === CameraMode.Locked) {
-                    this.remapOrbitCoords(focusRotation.invert()) // world to local
-                } else if (this._mode === CameraMode.Locked && val === CameraMode.Follow) {
-                    this.remapOrbitCoords(focusRotation) // local to world
-                }
-            }
+            this.syncCoordsFromWorldPos(this._mainCamera.position)
         }
-
-        this._mode = val
     }
 
-    private syncCoordsFromFocusPosition(): void {
-        const focusPos = new THREE.Vector3().setFromMatrixPosition(this._focus)
-        const offset = this._focusPosition.clone().sub(focusPos)
-        const r = offset.length()
+    /**
+     * Recalculates orbit coords so the camera stays at worldPos after the focus changes.
+     * In Locked mode uses robot-local space. in Follow/Face uses world-space offset from focus.
+     */
+    private syncCoordsFromWorldPos(worldPos: THREE.Vector3): void {
+        const ref =
+            this._mode === CameraMode.Locked && this._focusProvider
+                ? worldPos.clone().applyMatrix4(new THREE.Matrix4().copy(this._focus).invert())
+                : worldPos.clone().sub(new THREE.Vector3().setFromMatrixPosition(this._focus))
+
+        const r = ref.length()
         if (r < 0.01) return
-        const phi = -Math.asin(offset.y / r)
-        const theta = Math.atan2(offset.x, offset.z)
-        this.setImmediateCoordinates({ theta, phi, r })
+
+        this.setImmediateCoordinates({
+            theta: Math.atan2(ref.x, ref.z),
+            phi: -Math.asin(THREE.MathUtils.clamp(ref.y / r, -1, 1)),
+            r,
+        })
     }
 
-    private remapOrbitCoords(transform: THREE.Matrix4): void {
-        const orbit = new THREE.Matrix4().makeRotationFromEuler(
-            new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ")
-        )
-        const euler = new THREE.Euler().setFromRotationMatrix(transform.multiply(orbit), "YXZ")
-        this._coords.theta = euler.y
-        this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, euler.x))
-        this._nextCoords.theta = this._coords.theta
-        this._nextCoords.phi = this._coords.phi
+    private onFocusProviderChanged(): void {
+        if (this._focusProvider && this._mode !== CameraMode.Face) {
+            this._focusProviderDirty = true
+        }
     }
 
     private _interactionHandler: ScreenInteractionHandler
@@ -164,9 +161,11 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public set focusProvider(provider: MirabufSceneObject | undefined) {
+        if (provider === this._focusProvider) return
         this._focusProvider = provider
         if (provider !== undefined) {
             this._isExplicitlyUnfocused = false
+            this.onFocusProviderChanged()
         }
     }
     public get focusProvider() {
@@ -179,6 +178,12 @@ export class CustomOrbitControls extends CameraControls {
     public unfocus(): void {
         this._focusProvider = undefined
         this._isExplicitlyUnfocused = true
+
+        if (this._mode !== CameraMode.Follow) {
+            const worldPos =
+                this._mode === CameraMode.Face ? this._focusPosition.clone() : this._mainCamera.position.clone()
+            this.syncCoordsFromWorldPos(worldPos)
+        }
     }
 
     public get coords(): SphericalCoords {
@@ -242,13 +247,16 @@ export class CustomOrbitControls extends CameraControls {
         }
         const mirabufObjects = World.sceneRenderer.mirabufSceneObjects.getAll()
 
-        if (this._focusProvider) {
-            if (!mirabufObjects.includes(this._focusProvider)) {
-                this._focusProvider = this.findFallbackFocus(mirabufObjects)
+        const currentProviderMissing = this._focusProvider && !mirabufObjects.includes(this._focusProvider)
+        const needsFallback = currentProviderMissing || (!this._focusProvider && !this._isExplicitlyUnfocused)
+
+        if (needsFallback) {
+            const newProvider = this.findFallbackFocus(mirabufObjects)
+            if (newProvider !== undefined) {
+                this._focusProvider = newProvider
                 this._isExplicitlyUnfocused = false
+                this.onFocusProviderChanged()
             }
-        } else if (!this._isExplicitlyUnfocused) {
-            this._focusProvider = this.findFallbackFocus(mirabufObjects)
         }
     }
 
@@ -367,6 +375,11 @@ export class CustomOrbitControls extends CameraControls {
         this.validateFocusProvider()
 
         if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
+
+        if (this._focusProviderDirty) {
+            this._focusProviderDirty = false
+            this.syncCoordsFromWorldPos(this._mainCamera.position)
+        }
 
         if (this._mode === CameraMode.Face && this._focusProvider) {
             this.focusMode()
