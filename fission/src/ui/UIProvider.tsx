@@ -3,7 +3,7 @@ import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type { FunctionComponent, ReactNode } from "react"
 import type React from "react"
-import { useCallback, useEffect, useReducer, useState } from "react"
+import { useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
 import type { PanelImplProps } from "./components/Panel"
@@ -23,6 +23,7 @@ import {
     type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
+import InputSystem from "@/systems/input/InputSystem.ts"
 
 export type UIProviderProps = {
     children?: ReactNode
@@ -32,6 +33,7 @@ export type UIProviderProps = {
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
+
     const [_, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
@@ -53,24 +55,27 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         position: "right",
     } as PanelProps<any>
 
-    useEffect(() => {
-        const listener: (e: KeyboardEvent) => void = e => {
-            if (e.key === "Escape") {
-                if (modal != null) {
-                    if (!modal.props.hideCancel) {
-                        closeModal(CloseType.Cancel)
-                    }
-                } else if (panels.length > 0) {
-                    const panel = panels[panels.length - 1]
-                    if (!panel.props.hideCancel) {
-                        closePanel(panel.id, CloseType.Cancel)
-                    }
-                }
+    InputSystem.escapeKeyListeners[1] = () => {
+        if (modal != null) {
+            if (!modal.props.hideCancel) {
+                closeModal(CloseType.Cancel)
+            }
+            return true
+        }
+        return false
+    }
+
+    InputSystem.escapeKeyListeners[2] = () => {
+        if (panels.length > 0) {
+            const panel = panels[panels.length - 1]
+            if (!panel.props.hideCancel) {
+                closePanel(panel.id, CloseType.Cancel)
+                return true
             }
         }
-        document.addEventListener("keydown", listener)
-        return () => document.removeEventListener("keydown", listener)
-    })
+        return false
+    }
+
     const openModal: OpenModalFn = useCallback(
         <T, P>(
             content: FunctionComponent<ModalImplProps<T, P>>,
