@@ -224,10 +224,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public set alliance(alliance: Alliance | undefined) {
         this._alliance = alliance
+        if (this._nameTag) {
+            this._nameTag.color = alliance
+            EventSystem.dispatch("SceneOverlayUpdateEvent")
+        }
     }
 
     public set station(station: Station | undefined) {
         this._station = station
+        if (this._nameTag) {
+            this.updateNameTag()
+            EventSystem.dispatch("SceneOverlayUpdateEvent")
+        }
     }
 
     public constructor(
@@ -906,8 +914,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const config = preferences as RobotConfiguration
             this._intakePreferences = JSON.parse(config.intakePreferences)
             this._ejectorPreferences = JSON.parse(config.ejectorPreferences)
-            this._alliance = config.alliance
-            this._station = config.station
+            this.alliance = config.alliance
+            this.station = config.station
         }
         this.updateScoringZones()
         this.updateProtectedZones()

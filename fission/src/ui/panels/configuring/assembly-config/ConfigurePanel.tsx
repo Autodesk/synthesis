@@ -325,6 +325,9 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             originalStation.current = undefined
         }
 
+        originalAlliance.current = selectedAssembly?.alliance
+        originalStation.current = selectedAssembly?.station
+
         configureScreen(
             panel!,
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
