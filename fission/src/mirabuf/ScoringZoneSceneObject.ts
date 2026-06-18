@@ -61,6 +61,11 @@ class ScoringZoneSceneObject extends SceneObject {
 
         this._parentAssembly = parentAssembly
         this._prefs = this._parentAssembly.fieldPreferences?.scoringZones[index]
+        if (this._prefs && "persistentPoints" in this._prefs) {
+            this._prefs.shouldPointsAccumulate = !this._prefs.persistentPoints
+            delete this._prefs.persistentPoints
+        }
+
         this._toRender = render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
     }
 
