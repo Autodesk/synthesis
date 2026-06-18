@@ -1,4 +1,3 @@
-import type { PaletteMode } from "@mui/material"
 import { createTheme, ThemeProvider as MUIThemeProvider } from "@mui/material/styles"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -18,7 +17,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }, [])
 
     const [themeOptions, setThemeOptions] = useState<StoredTheme>(loadTheme())
-    const [mode, setMode] = useState<PaletteMode>(themeOptions.mode ?? "dark")
     const [primaryColor, setPrimaryColor] = useState(themeOptions.primary?.main ?? "#90caf9")
     const [secondaryColor, setSecondaryColor] = useState(themeOptions.secondary?.main ?? "#ce93d8")
     const [blueAllianceColor, setBlueAllianceColor] = useState(themeOptions.blueAlliance?.main ?? "#0066b3")
@@ -31,7 +29,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const theme = useMemo(() => {
         const t = createTheme({
             palette: {
-                mode,
+                mode: "dark",
                 primary: {
                     main: primaryColor,
                 },
@@ -91,12 +89,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                 }),
             },
         })
-    }, [mode, primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
+    }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
 
     useEffect(() => {
         setThemeOptions({
             ...themeOptions,
-            mode,
             primary: {
                 main: primaryColor,
             },
@@ -110,14 +107,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                 main: redAllianceColor,
             },
         })
-    }, [mode, primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
+    }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
 
     const themeContextValue = useMemo(
         () => ({
-            setMode,
             setPrimaryColor,
             setSecondaryColor,
-            mode,
             primaryColor,
             secondaryColor,
             blueAllianceColor,
@@ -125,7 +120,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
             redAllianceColor,
             setRedAllianceColor,
         }),
-        [mode, primaryColor, secondaryColor, blueAllianceColor, redAllianceColor]
+        [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor]
     )
 
     return (
