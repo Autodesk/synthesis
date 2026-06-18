@@ -102,7 +102,7 @@ export class CustomOrbitControls extends CameraControls {
 
     private _focusProvider: MirabufSceneObject | undefined
     private _isExplicitlyUnfocused: boolean = false
-    private _focusProviderDirty: boolean = false
+    private _pendingResync: THREE.Vector3 | undefined
 
     private _mode: CameraMode = CameraMode.Follow
     private _focusPosition: THREE.Vector3 = new THREE.Vector3()
@@ -118,7 +118,7 @@ export class CustomOrbitControls extends CameraControls {
 
         if (val === CameraMode.Face) {
             // Face mode drives the camera directly and ignores orbit coords
-            this._focusProviderDirty = false
+            this._pendingResync = undefined
             this._focusPosition.copy(this._mainCamera.position)
         } else {
             this.syncCoordsFromWorldPos(this._mainCamera.position)
@@ -147,7 +147,9 @@ export class CustomOrbitControls extends CameraControls {
 
     private onFocusProviderChanged(): void {
         if (this._focusProvider && this._mode !== CameraMode.Face) {
-            this._focusProviderDirty = true
+            // Capture the camera's current world position. 
+            // The coord re-sync is deferred to update() so it runs after _focus is refreshed
+            this._pendingResync = this._mainCamera.position.clone()
         }
     }
 
@@ -376,9 +378,9 @@ export class CustomOrbitControls extends CameraControls {
 
         if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
 
-        if (this._focusProviderDirty) {
-            this._focusProviderDirty = false
-            this.syncCoordsFromWorldPos(this._mainCamera.position)
+        if (this._pendingResync) {
+            this.syncCoordsFromWorldPos(this._pendingResync)
+            this._pendingResync = undefined
         }
 
         if (this._mode === CameraMode.Face && this._focusProvider) {
