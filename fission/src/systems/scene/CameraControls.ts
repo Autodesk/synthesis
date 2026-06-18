@@ -115,18 +115,18 @@ export class CustomOrbitControls extends CameraControls {
 
         if (val === CameraMode.Face) {
             this._focusPosition.copy(this._mainCamera.position)
-        } else if (this._mode === CameraMode.Face) {
-            this.syncCoordsFromFocusPosition()
-            if (val === CameraMode.Locked && this._focusProvider) {
-                const focusRotation = new THREE.Matrix4().extractRotation(this._focus)
-                this.remapOrbitCoords(focusRotation.invert()) // world to local
+        } else {
+            if (this._mode === CameraMode.Face) {
+                this.syncCoordsFromFocusPosition()
             }
-        } else if (this._focusProvider) {
-            const focusRotation = new THREE.Matrix4().extractRotation(this._focus)
-            if (this._mode === CameraMode.Follow && val === CameraMode.Locked) {
-                this.remapOrbitCoords(focusRotation.invert()) // world to local
-            } else if (this._mode === CameraMode.Locked && val === CameraMode.Follow) {
-                this.remapOrbitCoords(focusRotation) // local to world
+
+            if (this._focusProvider) {
+                const focusRotation = new THREE.Matrix4().extractRotation(this._focus)
+                if ((this._mode === CameraMode.Follow || this._mode === CameraMode.Face) && val === CameraMode.Locked) {
+                    this.remapOrbitCoords(focusRotation.invert()) // world to local
+                } else if (this._mode === CameraMode.Locked && val === CameraMode.Follow) {
+                    this.remapOrbitCoords(focusRotation) // local to world
+                }
             }
         }
 
@@ -137,7 +137,7 @@ export class CustomOrbitControls extends CameraControls {
         const focusPos = new THREE.Vector3().setFromMatrixPosition(this._focus)
         const offset = this._focusPosition.clone().sub(focusPos)
         const r = offset.length()
-        if (r < 0.001) return
+        if (r < 0.01) return
         const phi = -Math.asin(offset.y / r)
         const theta = Math.atan2(offset.x, offset.z)
         this.setImmediateCoordinates({ theta, phi, r })

@@ -62,11 +62,11 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     }, [])
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Camera Configuration", hideAccept: true, cancelText: "Close" }, {})
+        configureScreen(panel!, { title: "Camera Config", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     return (
-        <>
+        <div className="flex gap-2">
             <ToggleButtonGroup
                 orientation="vertical"
                 value={cameraControlType}
@@ -82,7 +82,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             {cameraControlType === "Orbit" && (
                 <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
             )}
-        </>
+        </div>
     )
 }
 
