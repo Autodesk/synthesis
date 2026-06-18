@@ -14,6 +14,7 @@ const StatefulSlider: React.FC<
     const [value, setValue] = useState(props.defaultValue)
 
     useEffect(() => {
+        // when setting the values with a dropdown menu the sliders didn't update
         setValue(props.defaultValue)
     }, [props.defaultValue])
 

@@ -20,8 +20,6 @@ import {
     mediumGraphicsPreferences,
     lowGraphicsPreferences,
     highGraphicsPreferences,
-    veryHighGraphicsPreferences,
-    ultraGraphicsPreferences,
     type GraphicsPreferences,
 } from "@/systems/preferences/PreferenceTypes"
 import { Select, MenuItem } from "@mui/material"
@@ -216,9 +214,11 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
     </Stack>
 )
 
+type GraphicsPreset = "low" | "medium" | "high" | "custom"
+
 const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [reload, setReload] = useState<boolean>(false)
-    const [selectedPreset, setSelectedPreset] = useState<string>("medium")
+    const [selectedPreset, setSelectedPreset] = useState<GraphicsPreset>("custom")
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
     )
@@ -228,6 +228,34 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
 
+    const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
+        return (
+            a.fancyShadows === b.fancyShadows &&
+            a.maxFar === b.maxFar &&
+            a.cascades === b.cascades &&
+            a.shadowMapSize === b.shadowMapSize &&
+            a.antiAliasing === b.antiAliasing
+        )
+    }
+
+    const getPresetForPreferences = (prefs: GraphicsPreferences): GraphicsPreset => {
+        const lowPrefs = lowGraphicsPreferences()
+        if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
+            return "low"
+        }
+
+        const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
+            { key: "medium", prefs: mediumGraphicsPreferences() },
+            { key: "high", prefs: highGraphicsPreferences() },
+        ]
+
+        for (const p of presets) {
+            if (prefsEqual(prefs, p.prefs)) return p.key
+        }
+
+        return "custom"
+    }
+
     const applyGraphicsPreferencesLocally = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
         setLightIntensity(prefs.lightIntensity)
         setFancyShadows(prefs.fancyShadows)
@@ -236,34 +264,26 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
         setShadowMapSize(prefs.shadowMapSize)
         setAntiAliasing(prefs.antiAliasing)
         World.sceneRenderer.changeLighting(prefs.fancyShadows)
+        setSelectedPreset(getPresetForPreferences(prefs))
     }
 
     useEffect(() => {
         const current = PreferencesSystem.getGraphicsPreferences()
-
-        const presetMatches = (preset: GraphicsPreferences) => {
-            return (
-                current.lightIntensity === preset.lightIntensity &&
-                current.fancyShadows === preset.fancyShadows &&
-                current.maxFar === preset.maxFar &&
-                current.cascades === preset.cascades &&
-                current.shadowMapSize === preset.shadowMapSize &&
-                current.antiAliasing === preset.antiAliasing
-            )
-        }
-
-        if (presetMatches(lowGraphicsPreferences())) {
-            setSelectedPreset("low")
-        } else if (presetMatches(mediumGraphicsPreferences())) {
-            setSelectedPreset("medium")
-        } else if (presetMatches(highGraphicsPreferences())) {
-            setSelectedPreset("high")
-        } else if (presetMatches(veryHighGraphicsPreferences())) {
-            setSelectedPreset("veryHigh")
-        } else if (presetMatches(ultraGraphicsPreferences())) {
-            setSelectedPreset("ultra")
-        }
+        setSelectedPreset(getPresetForPreferences(current))
     }, [])
+
+    useEffect(() => {
+        setSelectedPreset(
+            getPresetForPreferences({
+                lightIntensity,
+                fancyShadows,
+                maxFar,
+                cascades,
+                shadowMapSize,
+                antiAliasing,
+            })
+        )
+    }, [lightIntensity, fancyShadows, maxFar, cascades, shadowMapSize, antiAliasing])
 
     // Create actions object and notify parent
     useEffect(() => {
@@ -297,28 +317,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 setAntiAliasing(g.antiAliasing)
                 setReload(false)
                 World.sceneRenderer.changeLighting(g.fancyShadows)
-                const presetMatches = (preset: GraphicsPreferences) => {
-                    return (
-                        g.lightIntensity === preset.lightIntensity &&
-                        g.fancyShadows === preset.fancyShadows &&
-                        g.maxFar === preset.maxFar &&
-                        g.cascades === preset.cascades &&
-                        g.shadowMapSize === preset.shadowMapSize &&
-                        g.antiAliasing === preset.antiAliasing
-                    )
-                }
-
-                if (presetMatches(lowGraphicsPreferences())) {
-                    setSelectedPreset("low")
-                } else if (presetMatches(mediumGraphicsPreferences())) {
-                    setSelectedPreset("medium")
-                } else if (presetMatches(highGraphicsPreferences())) {
-                    setSelectedPreset("high")
-                } else if (presetMatches(veryHighGraphicsPreferences())) {
-                    setSelectedPreset("veryHigh")
-                } else if (presetMatches(ultraGraphicsPreferences())) {
-                    setSelectedPreset("ultra")
-                }
+                setSelectedPreset(getPresetForPreferences(g))
             },
             requiresReload: reload,
         }
@@ -331,21 +330,18 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
             <Select
                 value={selectedPreset}
                 onChange={e => {
-                    const preset = e.target.value
+                    const preset = e.target.value as GraphicsPreset
                     setSelectedPreset(preset)
                     if (preset === "low") applyGraphicsPreferencesLocally(lowGraphicsPreferences())
                     else if (preset === "medium") applyGraphicsPreferencesLocally(mediumGraphicsPreferences())
                     else if (preset === "high") applyGraphicsPreferencesLocally(highGraphicsPreferences())
-                    else if (preset === "veryHigh") applyGraphicsPreferencesLocally(veryHighGraphicsPreferences())
-                    else if (preset === "ultra") applyGraphicsPreferencesLocally(ultraGraphicsPreferences())
                 }}
                 sx={{ width: "100%" }}
             >
-                <MenuItem value="low">Low Graphics</MenuItem>
-                <MenuItem value="medium">Medium Graphics (Default)</MenuItem>
-                <MenuItem value="high">High Graphics</MenuItem>
-                <MenuItem value="veryHigh">Very High Graphics</MenuItem>
-                <MenuItem value="ultra">Ultra Graphics</MenuItem>
+                <MenuItem value="low">Low Graphics (Default)</MenuItem>
+            <MenuItem value="medium">Medium Graphics</MenuItem>
+            <MenuItem value="high">High Graphics</MenuItem>
+            <MenuItem value="custom" disabled>Custom</MenuItem>
             </Select>
 
             <Label size="md">Customize Graphics</Label>

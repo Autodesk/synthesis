@@ -92,7 +92,7 @@ export function defaultGraphicsPreferences(): GraphicsPreferences {
     }
 }
 
-export function mediumGraphicsPreferences(): GraphicsPreferences {
+export function lowGraphicsPreferences(): GraphicsPreferences {
     return {
         lightIntensity: 5,
         fancyShadows: false,
@@ -100,45 +100,23 @@ export function mediumGraphicsPreferences(): GraphicsPreferences {
         cascades: 4,
         shadowMapSize: 4096,
         antiAliasing: false,
+    }
+}
+
+export function mediumGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: true,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
+        antiAliasing: true,
     }
 }
 
 export function highGraphicsPreferences(): GraphicsPreferences {
     return {
         lightIntensity: 5,
-        fancyShadows: true,
-        maxFar: 30,
-        cascades: 4,
-        shadowMapSize: 4096,
-        antiAliasing: true,
-    }
-}
-
-export function veryHighGraphicsPreferences(): GraphicsPreferences {
-    return {
-        lightIntensity: 6,
-        fancyShadows: true,
-        maxFar: 50,
-        cascades: 4,
-        shadowMapSize: 4096,
-        antiAliasing: true,
-    }
-}
-
-export function lowGraphicsPreferences(): GraphicsPreferences {
-    return {
-        lightIntensity: 3,
-        fancyShadows: false,
-        maxFar: 20,
-        cascades: 2,
-        shadowMapSize: 2048,
-        antiAliasing: false,
-    }
-}
-
-export function ultraGraphicsPreferences(): GraphicsPreferences {
-    return {
-        lightIntensity: 7,
         fancyShadows: true,
         maxFar: 100,
         cascades: 6,
