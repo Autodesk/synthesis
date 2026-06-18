@@ -157,7 +157,9 @@ export type ScoringZonePreferences = {
     parentNode: string | undefined
     points: number
     destroyGamepiece: boolean
-    persistentPoints: boolean
+
+    // Replaces "persistentPoints." If true, game pieces that leave the zone will still be counted as scored, otherwise the points are removed when the gamepiece is.
+    shouldPointsAccumulate: boolean
 
     deltaTransformation: number[]
 }

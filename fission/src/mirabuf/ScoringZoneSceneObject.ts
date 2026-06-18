@@ -118,26 +118,22 @@ class ScoringZoneSceneObject extends SceneObject {
                 )
 
                 // If persistent, detect gamepiece removed listener
-                if (this._prefs.persistentPoints) {
-                    this._unsubscribers.push(
-                        EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
-                            if (this._prefs?.persistentPoints) {
-                                const body1 = message.GetBody1ID()
-                                const body2 = message.GetBody2ID()
+                this._unsubscribers.push(
+                    EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
+                        if (!this._prefs?.shouldPointsAccumulate) {
+                            const body1 = message.GetBody1ID()
+                            const body2 = message.GetBody2ID()
 
-                                if (
-                                    body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
-                                ) {
-                                    this.zoneCollisionRemoved(body2)
-                                } else if (
-                                    body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
-                                ) {
-                                    this.zoneCollisionRemoved(body1)
-                                }
+                            if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                                this.zoneCollisionRemoved(body2)
+                            } else if (
+                                body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()
+                            ) {
+                                this.zoneCollisionRemoved(body1)
                             }
-                        })
-                    )
-                }
+                        }
+                    })
+                )
             }
         }
     }
@@ -174,7 +170,7 @@ class ScoringZoneSceneObject extends SceneObject {
                 }
 
             // If persistent points, update points based on how many gamepieces in zone
-            if (this._prefs.persistentPoints)
+            if (!this._prefs.shouldPointsAccumulate)
                 if (this._gpContacted.length != this._prevGP.length) {
                     const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
                     const points = this._prefs.points
@@ -225,7 +221,7 @@ class ScoringZoneSceneObject extends SceneObject {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
         if (associate?.isGamePiece && this._prefs) {
             // If persistent, Update() will handle points
-            if (this._prefs.persistentPoints) {
+            if (!this._prefs.shouldPointsAccumulate) {
                 this._gpContacted.push(gpID)
             } else {
                 ScoreTracker.addPoints(this._prefs.alliance, this._prefs.points)
@@ -241,7 +237,7 @@ class ScoringZoneSceneObject extends SceneObject {
 
     // Private gamepiece removal called anytime collision removed from zone. Score update in Update()
     private zoneCollisionRemoved(gpID: Jolt.BodyID) {
-        if (this._prefs?.persistentPoints) {
+        if (!this._prefs?.shouldPointsAccumulate) {
             const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
             if (associate?.isGamePiece) {
                 const temp = this._gpContacted.filter(x => {
@@ -255,7 +251,7 @@ class ScoringZoneSceneObject extends SceneObject {
     // Public gamepiece removal called anytime EjectableSceneObject created in case gamepiece was in persistent zone
     // Score update in Update()
     public static removeGamepiece(zone: ScoringZoneSceneObject, gpID: Jolt.BodyID) {
-        if (zone._prefs && zone._prefs.persistentPoints) {
+        if (zone._prefs && !zone._prefs.shouldPointsAccumulate) {
             const temp = zone._gpContacted.filter(x => {
                 return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
             })
