@@ -981,6 +981,25 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         mat.setPosition(center)
     }
 
+    private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomOrbitControls) {
+        const modes = [
+            { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
+            { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
+            { mode: CameraMode.Face, name: "Camera: Face Robot" },
+        ]
+
+        modes.forEach(({ mode, name }) => {
+            if (cameraControls.mode !== mode) {
+                data.items.push({
+                    name,
+                    func: () => {
+                        cameraControls.mode = mode
+                    },
+                })
+            }
+        })
+    }
+
     public getSupplierData(): ContextData {
         const data: ContextData = {
             title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
@@ -1028,29 +1047,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     },
                 })
 
-                if (cameraControls.mode !== CameraMode.Follow) {
-                    data.items.push({
-                        name: "Camera: Follow Robot",
-                        func: () => {
-                            cameraControls.mode = CameraMode.Follow
-                        },
-                    })
-                }
-                if (cameraControls.mode !== CameraMode.Locked) {
-                    data.items.push({
-                        name: "Camera: Lock to Robot",
-                        func: () => {
-                            cameraControls.mode = CameraMode.Locked
-                        },
-                    })
-                }
-                if (cameraControls.mode !== CameraMode.Face) {
-                    data.items.push({
-                        name: "Camera: Face Robot",
-                        func: () => {
-                            cameraControls.mode = CameraMode.Face
-                        },
-                    })
+                if (this.miraType === MiraType.ROBOT) {
+                    this.addRobotCameraMenuItems(data, cameraControls)
                 }
             } else {
                 data.items.push({

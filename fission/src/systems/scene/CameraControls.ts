@@ -169,6 +169,11 @@ export class CustomOrbitControls extends CameraControls {
         this._focusProvider = provider
         if (provider !== undefined) {
             this._isExplicitlyUnfocused = false
+
+            if (provider.miraType === MiraType.FIELD && this._mode === CameraMode.Face) {
+                this.mode = CameraMode.Follow
+            }
+
             this.onFocusProviderChanged()
         }
     }
