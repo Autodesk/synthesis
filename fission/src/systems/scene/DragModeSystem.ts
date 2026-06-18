@@ -17,6 +17,7 @@ import {
     type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import assert from "assert"
 
 interface DragTarget {
     bodyId: Jolt.BodyID

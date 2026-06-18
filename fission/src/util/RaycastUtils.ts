@@ -3,6 +3,7 @@ import type * as THREE from "three"
 import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "./TypeConversions"
+import assert from "assert"
 
 export function rayCastForRigidBody(
     mousePos: [number, number]
@@ -13,6 +14,7 @@ export function rayCastForRigidBody(
     function performRayCast() {
         const worldSpace = World.sceneRenderer.pixelToWorldSpace(mousePos[0], mousePos[1])
         const direction = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
+
         return World.physicsSystem.rayCast(
             convertThreeVector3ToJoltVec3(origin),
             convertThreeVector3ToJoltVec3(direction),
@@ -21,7 +23,7 @@ export function rayCastForRigidBody(
     }
 
     let hit = performRayCast()
-    /** Transparent objects such as scoring zones should be ignored by raycasting [SYNTH-106] */
+    /** Transparent objects such as scoring zones should be ignored by `raycasting` [SYNTH-106] */
     while (hit && !(World.physicsSystem.getBodyAssociation(hit.data.mBodyID) instanceof RigidNodeAssociate)) {
         ignoredBodies.push(hit.data.mBodyID)
         hit = performRayCast()
@@ -30,5 +32,8 @@ export function rayCastForRigidBody(
     if (!hit) return undefined
 
     const association = World.physicsSystem.getBodyAssociation(hit.data.mBodyID) as RigidNodeAssociate
-    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point), association }
+
+    // TODO
+    // Destroy results of this function
+    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point, false), association }
 }

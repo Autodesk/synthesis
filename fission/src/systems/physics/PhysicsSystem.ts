@@ -26,6 +26,7 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
+import { assert } from "vitest"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -312,7 +313,7 @@ class PhysicsSystem extends WorldSystem {
         }
 
         const shapeResult = settings.Create()
-        JOLT.destroy(settings)
+        // JOLT.destroy(settings)
 
         return shapeResult
     }

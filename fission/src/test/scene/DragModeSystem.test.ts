@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import { afterEach, assert, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
@@ -144,7 +144,7 @@ describe("DragModeSystem Integration Tests", () => {
             const bodyId = body.GetID()
             physicsSystem.addBodyToSystem(bodyId, true)
 
-            // Create a mock MirabufSceneObject that properly passes instanceof checks
+            // Create a mock MirabufSceneObject that properly passes `instanceof` checks
             const mockSceneObject = Object.create(MirabufSceneObject.prototype)
             mockSceneObject.loadFocusTransform = vi.fn()
             vi.spyOn(mockSceneObject, "miraType", "get").mockReturnValue(MiraType.FIELD)
