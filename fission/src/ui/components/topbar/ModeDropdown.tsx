@@ -1,4 +1,5 @@
 import { MenuItem, Stack } from "@mui/material"
+import { IoMdArrowDropdown } from "react-icons/io";
 import type React from "react"
 import { APP_MODES, type AppMode } from "@/systems/AppMode"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
@@ -26,7 +27,7 @@ const ModeDropdown: React.FC = () => {
             value={appMode}
             onChange={e => setAppMode(e.target.value as AppMode)}
             renderValue={value => <ModeLabel mode={value as AppMode} />}
-            IconComponent={props => <TopBarIcon name="carat-down" size={22} className={props.className} />}
+            IconComponent={_ => <IoMdArrowDropdown color="topBarText.main" fontSize="1.5em" />}
             sx={{
                 bgcolor: "surface.main",
                 color: "topBarText.main",
