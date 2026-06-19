@@ -8,7 +8,7 @@ import World from "@/systems/World"
 
 interface ViewCubeProps {
     size?: number
-    position?: { top?: number; left?: number; right?: number; bottom?: number }
+    position?: { top?: number | string; left?: number | string; right?: number | string; bottom?: number | string }
     scaleWithWindow?: boolean
 }
 

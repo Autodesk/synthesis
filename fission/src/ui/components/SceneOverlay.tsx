@@ -93,7 +93,9 @@ const SceneOverlay: React.FC = () => {
             }}
         >
             {components}
-            {showViewCube && !isMainMenuOpen && <ViewCube position={{ top: 20, right: 20 }} />}
+            {showViewCube && !isMainMenuOpen && (
+                <ViewCube position={{ top: "calc(20px + var(--top-bar-height, 0px))", right: 20 }} />
+            )}
         </Stack>
     )
 }

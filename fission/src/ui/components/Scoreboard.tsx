@@ -38,7 +38,7 @@ const Scoreboard: React.FC = () => {
     const nodeRef = useRef<HTMLDivElement | null>(null)
 
     return (
-        <Draggable positionOffset={{ x: HALF_W, y: 0 }} nodeRef={nodeRef}>
+        <Draggable positionOffset={{ x: HALF_W, y: "var(--top-bar-height, 0px)" }} nodeRef={nodeRef}>
             <Stack
                 direction="column"
                 sx={{ bgcolor: "background.paper", position: "absolute", boxShadow: 6 }}
