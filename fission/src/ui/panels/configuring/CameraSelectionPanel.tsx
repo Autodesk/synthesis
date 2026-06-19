@@ -1,14 +1,16 @@
 import type React from "react"
-import { useCallback, useEffect, useState } from "react"
-import { CameraMode, type CameraControlsType, type CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { useEffect, useState } from "react"
+import { CameraMode, type CustomOrbitControls } from "@/systems/scene/CameraControls"
 import EventSystem from "@/systems/EventSystem"
 import { MiraType } from "@/mirabuf/MirabufLoader"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
+import { Select, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { MenuItem } from "@mui/material"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
@@ -21,6 +23,58 @@ CommandRegistry.get().registerCommand({
     keywords: ["camera", "config", "orbit", "follow", "locked", "face"],
     perform: () => import("./CameraSelectionPanel").then(m => globalOpenPanel(m.default, undefined)),
 })
+
+const UNFOCUSED_ID = -1
+
+function getFocusTargets(): MirabufSceneObject[] {
+    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
+    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+    return [...robots, ...(field ? [field] : [])]
+}
+
+const FocusSelector: React.FC<{ controls: CustomOrbitControls }> = ({ controls }) => {
+    const [targets, setTargets] = useState<MirabufSceneObject[]>(getFocusTargets)
+    const [focusedId, setFocusedId] = useState<number>(controls.focusProvider?.id ?? UNFOCUSED_ID)
+
+    useEffect(() => {
+        return EventSystem.listen("MirabufObjectChangeEvent", () => {
+            setTargets(getFocusTargets())
+        })
+    }, [])
+
+    useEffect(() => {
+        return EventSystem.listen("CameraFocusChangedEvent", ({ focusProvider }) => {
+            setFocusedId(focusProvider?.id ?? UNFOCUSED_ID)
+        })
+    }, [])
+
+    return (
+        <div className="flex flex-col gap-1 w-full">
+            <span className="text-xs opacity-70">Focus Target</span>
+            <Select
+                value={focusedId}
+                onChange={e => {
+                    const id = e.target.value as number
+                    if (id === UNFOCUSED_ID) {
+                        controls.unfocus()
+                    } else {
+                        const target = targets.find(t => t.id === id)
+                        if (target) controls.focusProvider = target
+                    }
+                }}
+                size="small"
+                fullWidth
+            >
+                <MenuItem value={UNFOCUSED_ID}>None</MenuItem>
+                {targets.map(t => (
+                    <MenuItem key={t.id} value={t.id}>
+                        {t.assemblyName}
+                    </MenuItem>
+                ))}
+            </Select>
+        </div>
+    )
+}
 
 const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
     const [mode, setMode] = useState<CameraMode>(controls.mode)
@@ -44,7 +98,7 @@ const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
 
     return (
         <ToggleButtonGroup
-            orientation="vertical"
+            orientation="horizontal"
             value={mode}
             exclusive
             onChange={(_, v) => {
@@ -60,43 +114,31 @@ const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
 
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
-        World.sceneRenderer.currentCameraControls.controlsType
-    )
-
-    const setCameraControls = useCallback((t: CameraControlsType) => {
-        switch (t) {
-            case "Orbit":
-                World.sceneRenderer.setCameraControls(t)
-                setCameraControlType(t)
-                break
-            default:
-                console.error("Unrecognized camera control option detected")
-                break
-        }
-    }, [])
+    // const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
+    //     World.sceneRenderer.currentCameraControls.controlsType
+    // )
+    
+    // TODO add toggle button groups once more control types are available
+    // const setCameraControls = useCallback((t: CameraControlsType) => {
+    //     switch (t) {
+    //         case "Orbit":
+    //             World.sceneRenderer.setCameraControls(t)
+    //             setCameraControlType(t)
+    //             break
+    //         default:
+    //             console.error("Unrecognized camera control option detected")
+    //             break
+    //     }
+    // }, [])
 
     useEffect(() => {
         configureScreen(panel!, { title: "Camera Config", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     return (
-        <div className="flex gap-2">
-            <ToggleButtonGroup
-                orientation="vertical"
-                value={cameraControlType}
-                exclusive
-                onChange={(_, v) => {
-                    if (v === null) return
-
-                    setCameraControls(v)
-                }}
-            >
-                <ToggleButton value="Orbit">Orbit</ToggleButton>
-            </ToggleButtonGroup>
-            {cameraControlType === "Orbit" && (
-                <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
-            )}
+        <div className="flex flex-col gap-2">
+            <FocusSelector controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
+            <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
         </div>
     )
 }
