@@ -91,6 +91,34 @@ function augmentMovement(
     }
 }
 
+function easeInOutCubic(t: number): number {
+    return t < 0.5 ? 4 * Math.pow(t, 3) : 1 - Math.pow(2 - 2 * t, 3) / 2
+}
+
+/**
+ * Interpolates between two rotation/translation matrices
+ * Position is lerped and rotation is slerped
+ */
+function blendTransforms(out: THREE.Matrix4, start: THREE.Matrix4, end: THREE.Matrix4, t: number): void {
+    const startPos = new THREE.Vector3()
+    const startRot = new THREE.Quaternion()
+    const endPos = new THREE.Vector3()
+    const endRot = new THREE.Quaternion()
+    const scratch = new THREE.Vector3()
+
+    start.decompose(startPos, startRot, scratch)
+    end.decompose(endPos, endRot, scratch)
+
+    out.compose(startPos.lerp(endPos, t), startRot.slerp(endRot, t), new THREE.Vector3(1, 1, 1))
+}
+
+/** Tracks an in-progress smooth re-settle of the camera onto its focus provider. */
+interface FocusBlend {
+    progress: number
+    duration: number
+    startFocus: THREE.Matrix4
+}
+
 export class CustomOrbitControls extends CameraControls {
     private _enabled = true
 
@@ -104,6 +132,7 @@ export class CustomOrbitControls extends CameraControls {
     private _focusProvider: MirabufSceneObject | undefined
     private _isExplicitlyUnfocused: boolean = false
     private _pendingResync: THREE.Vector3 | undefined
+    private _focusBlend: FocusBlend | undefined
 
     private _mode: CameraMode = CameraMode.Follow
     private _focusPosition: THREE.Vector3 = new THREE.Vector3()
@@ -210,6 +239,31 @@ export class CustomOrbitControls extends CameraControls {
         return this._coords
     }
 
+    public get isBlendingFocus(): boolean {
+        return this._focusBlend !== undefined
+    }
+
+    /**
+     * Smoothly re-settles the camera onto a focus provider after that object has moved
+     *  - Follow: the focus point pans to the object's new position.
+     *  - Locked: position and rotation blend together, so the camera ends locked at the
+     *    same relative orientation it had before.
+     *  - Face: no blend is needed because the camera already tracks the object every frame.
+     */
+    public settleOntoFocus(target: MirabufSceneObject | undefined, duration: number = 1.0): void {
+        if (!target) return
+
+        // Attach directly (rather than via the focusProvider setter) so we skip the coord
+        // resync that would otherwise snap the camera and fight the blend.
+        this._focusProvider = target
+        this._isExplicitlyUnfocused = false
+        EventSystem.dispatch("CameraFocusChangedEvent", { focusProvider: target })
+
+        if (this._mode === CameraMode.Face) return
+
+        this._focusBlend = { progress: 0, duration, startFocus: this._focus.clone() }
+    }
+
     public get focus(): THREE.Matrix4 {
         return this._focus
     }
@@ -262,7 +316,7 @@ export class CustomOrbitControls extends CameraControls {
      * If not, automatically finds a suitable replacement.
      */
     private validateFocusProvider(): void {
-        if (!World.sceneRenderer?.sceneObjects || World.dragModeSystem.isTransitioning) {
+        if (!World.sceneRenderer?.sceneObjects || this.isBlendingFocus) {
             return
         }
         const mirabufObjects = World.sceneRenderer.mirabufSceneObjects.getAll()
@@ -390,12 +444,30 @@ export class CustomOrbitControls extends CameraControls {
         requestAnimationFrame(animate)
     }
 
+    private updateFocusTransform(deltaT: number): void {
+        if (!this._focusProvider) return
+
+        if (!this._focusBlend) {
+            this._focusProvider.loadFocusTransform(this._focus)
+            return
+        }
+
+        const target = new THREE.Matrix4()
+        this._focusProvider.loadFocusTransform(target)
+
+        this._focusBlend.progress += deltaT / this._focusBlend.duration
+        const t = easeInOutCubic(Math.min(this._focusBlend.progress, 1))
+        blendTransforms(this._focus, this._focusBlend.startFocus, target, t)
+
+        if (this._focusBlend.progress >= 1) this._focusBlend = undefined
+    }
+
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 
         this.validateFocusProvider()
 
-        if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
+        if (this.enabled) this.updateFocusTransform(deltaT)
 
         if (this._pendingResync) {
             this.syncCoordsFromWorldPos(this._pendingResync)
