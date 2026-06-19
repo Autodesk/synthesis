@@ -14,7 +14,7 @@ export const ENDPOINT_SYNTHESIS_CHALLENGE = `/api/aps/challenge`
 const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
 const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
 const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = "https://developer.api.autodesk.com/authentication/v2/revoke"
-const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
+const ENDPOINT_AUTODESK_USERINFO = "https://developer.api.autodesk.com/userinfo"
 
 // biome-ignore-start lint/style/useNamingConvention: returned from api
 export interface APSAuth {
@@ -190,7 +190,7 @@ class APS {
                     response_type: "code",
                     client_id: CLIENT_ID,
                     redirect_uri: callbackUrl,
-                    scope: "data:read",
+                    scope: "data:read openid profapi:core-std-profile:read profapi:img-profile:read",
                     nonce: Date.now().toString(),
                     prompt: "login",
                     code_challenge: challenge,
@@ -323,7 +323,8 @@ class APS {
             const res = await fetch(ENDPOINT_AUTODESK_USERINFO, {
                 method: "GET",
                 headers: {
-                    Authorization: auth.access_token,
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + auth.access_token,
                 },
             })
             const json = await res.json()
@@ -334,14 +335,12 @@ class APS {
                 await this.requestAuthCode()
                 return
             }
-            const info: APSUserInfo = {
+            this.userInfo = {
                 name: json.name,
                 givenName: json.given_name,
                 picture: json.picture,
                 email: json.email,
             }
-
-            this.userInfo = info
         } catch (e) {
             console.error(e)
             World.analyticsSystem?.exception("APS Login Failure: User Info")
