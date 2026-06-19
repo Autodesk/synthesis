@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import ScreenInteractionHandler, {
+    type InteractionEnd,
+    type InteractionMove,
+    type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,
 } from "../../systems/scene/ScreenInteractionHandler"
@@ -8,10 +11,10 @@ describe("ScreenInteractionHandler", () => {
     let handler: ScreenInteractionHandler
     let mockElement: HTMLElement
     let mockCallbacks: {
-        interactionStart: ReturnType<typeof vi.fn>
-        interactionMove: ReturnType<typeof vi.fn>
-        interactionEnd: ReturnType<typeof vi.fn>
-        contextMenu: ReturnType<typeof vi.fn>
+        interactionStart: ReturnType<typeof vi.fn<(i: InteractionStart) => void>>
+        interactionMove: ReturnType<typeof vi.fn<(i: InteractionMove) => void>>
+        interactionEnd: ReturnType<typeof vi.fn<(i: InteractionEnd) => void>>
+        contextMenu: ReturnType<typeof vi.fn<(i: InteractionEnd) => void>>
     }
 
     const getEventHandler = (eventType: string): ((event: unknown) => void) => {

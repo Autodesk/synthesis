@@ -7,8 +7,8 @@ import World from "@/systems/World.ts"
 const { readFile } = server.commands
 
 let screen: RenderResult | null
-const renderMock = vi.fn((children: ReactElement) => {
-    screen = render(children)
+const renderMock = vi.fn(async (children: ReactElement) => {
+    screen = await render(children)
 })
 vi.mock("react-dom/client", () => ({
     createRoot: vi.fn(() => ({ render: renderMock })),

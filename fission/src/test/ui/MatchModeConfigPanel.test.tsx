@@ -1,6 +1,7 @@
-import { act, fireEvent, getByText, render } from "@testing-library/react"
+import { userEvent } from "@vitest/browser/context"
 import React from "react"
-import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
+import { afterEach, assert, beforeEach, describe, expect, test, vi } from "vitest"
+import { render } from "vitest-browser-react"
 import { Panel } from "@/ui/components/Panel"
 import type { CloseType, PanelPosition, UIScreen } from "@/ui/helpers/UIProviderHelpers"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
@@ -13,7 +14,7 @@ describe("MatchModeConfigPanel", () => {
     const originalConsoleLog = console.log
     const originalConsoleWarn = console.warn
 
-    let container: HTMLElement
+    let screen: Awaited<ReturnType<typeof render>>
 
     beforeEach(async () => {
         // Suppress console output during tests
@@ -24,7 +25,7 @@ describe("MatchModeConfigPanel", () => {
         // Clear local storage
         window.localStorage.setItem("match-mode-configs", JSON.stringify([]))
 
-        container = createTestContainer()
+        screen = await createTestContainer()
     })
 
     afterEach(() => {
@@ -32,12 +33,9 @@ describe("MatchModeConfigPanel", () => {
         console.error = originalConsoleError
         console.warn = originalConsoleWarn
         console.log = originalConsoleLog
-
-        if (container) container.remove()
     })
 
-    function createTestContainer() {
-        // Create mock context provider
+    async function createTestContainer() {
         const panel = {
             id: "match-mode",
             content: MatchModeConfigPanel,
@@ -53,18 +51,18 @@ describe("MatchModeConfigPanel", () => {
             onAccept: new UICallback<[unknown], void>(),
             onBeforeAccept: new UICallback<[void], unknown>(),
         }
-        return render(
+        return await render(
             <UIProvider>
                 <Panel panel={panel} parent={undefined}>
                     {React.createElement(panel.content)}
                 </Panel>
             </UIProvider>
-        ).container
+        )
     }
 
-    function getMatchModeCount(container: HTMLElement): number {
+    function getMatchModeCount(baseElement: HTMLElement): number {
         // Find the element that contains the count by looking for text that matches pattern "X Match Mode"
-        const elements = container.querySelectorAll("*")
+        const elements = baseElement.querySelectorAll("*")
         for (const element of elements) {
             const text = element.textContent?.trim()
             if (text && /^\d+\s+Match\s+Mode/.test(text)) {
@@ -76,22 +74,19 @@ describe("MatchModeConfigPanel", () => {
     }
 
     async function testUploadMatchModeConfig(json: unknown, validJSON: boolean) {
-        const initialCount = getMatchModeCount(container)
+        const initialCount = getMatchModeCount(screen.baseElement)
 
         const testJsonString = JSON.stringify(json)
         const testFile = new File([testJsonString], "test.json", { type: "application/json" })
 
-        const fileInput = container.querySelector("input[type='file']")
+        const fileInput = screen.baseElement.querySelector("input[type='file']")
         assert(fileInput != undefined)
 
-        // Upload the file (wrapped in act to handle React state updates)
-        act(() => {
-            fireEvent.change(fileInput, { target: { files: [testFile] } })
-        })
+        await userEvent.upload(fileInput, testFile)
 
         await new Promise(resolve => setTimeout(resolve, 100))
 
-        const finalCount = getMatchModeCount(container)
+        const finalCount = getMatchModeCount(screen.baseElement)
         if (validJSON) {
             assert(
                 finalCount === initialCount + 1,
@@ -102,12 +97,10 @@ describe("MatchModeConfigPanel", () => {
         }
     }
 
-    test("Render MatchModeConfigPanel", () => {
-        const container = createTestContainer()
-        const matchModeConfigTitle = getByText(container, "Match Mode Config")
-        const matchModeConfigButton = getByText(container, "Upload File")
-        assert(matchModeConfigTitle != undefined)
-        assert(matchModeConfigButton != undefined)
+    test("Render MatchModeConfigPanel", async () => {
+        const localScreen = await createTestContainer()
+        await expect.element(localScreen.getByText("Match Mode Config")).toBeInTheDocument()
+        await expect.element(localScreen.getByText("Upload File")).toBeInTheDocument()
     })
 
     test("Upload Valid MatchModeConfig", async () => {

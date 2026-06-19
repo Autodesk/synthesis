@@ -22,12 +22,12 @@ class EjectableSceneObject extends SceneObject {
     private _ejectVelocity?: number
 
     // Animation state
+    private static _defaultAnimationDuration = 0.5
+
     private _animationStartTime = 0
     private _animationDuration = EjectableSceneObject._defaultAnimationDuration
     private _startTranslation?: THREE.Vector3
     private _startRotation?: THREE.Quaternion
-
-    private static _defaultAnimationDuration = 0.5
 
     public static setAnimationDuration(duration: number) {
         EjectableSceneObject._defaultAnimationDuration = duration

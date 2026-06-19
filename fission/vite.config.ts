@@ -6,6 +6,7 @@ import {loadEnv, type ProxyOptions} from "vite"
 import glsl from "vite-plugin-glsl"
 import {defineConfig} from "vitest/config"
 import type {TestCase, TestSuite} from "vitest/node";
+import {playwright} from "@vitest/browser-playwright";
 
 const basePath = "/fission/"
 const serverPort = 3000
@@ -98,12 +99,14 @@ export default defineConfig(async ({mode}) => {
         define: {
             GIT_COMMIT: JSON.stringify(await getCommitHash()),
         },
+        optimizeDeps: {
+            include: ['@emotion/react', '@emotion/styled', '@mui/material', '@mui/system', '@mui/icons-material']
+        },
         test: {
             setupFiles: ["src/test/TestSetup.browser.ts"],
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
-            environment: "jsdom",
             reporters: (process.env.GITHUB_ACTIONS
                 ? ["github-actions", "default", {
                     onTestCaseResult(test:TestCase) {
@@ -120,7 +123,7 @@ export default defineConfig(async ({mode}) => {
             ,
             browser: {
                 enabled: true,
-                provider: "playwright",
+                provider: playwright(),
                 instances: [
                     {
                         name: "chromium",

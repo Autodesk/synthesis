@@ -10,9 +10,10 @@ import {
     useEdgesState,
     useNodesState,
     useReactFlow,
+    type OnNodeDrag,
 } from "@xyflow/react"
 import type React from "react"
-import { type ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
+import { type ComponentType, type JSX, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import { isNoraDeconstructable } from "@/systems/simulation/Nora"
@@ -281,8 +282,8 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         [simConfig]
     )
 
-    const onNodeDragStop = useCallback(
-        (_event: React.MouseEvent, node: FlowNode, _nodes: FlowNode[]) => {
+    const onNodeDragStop: OnNodeDrag<FlowNode> = useCallback(
+        (_event, node: FlowNode, _nodes: FlowNode[]) => {
             const nodeInfo = simConfig.nodes[node.id]
             if (!nodeInfo) {
                 console.warn(`Unregistered Node detected: ${node.id}`)
