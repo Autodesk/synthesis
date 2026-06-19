@@ -2,6 +2,7 @@ import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import { CameraMode, type CameraControlsType, type CustomOrbitControls } from "@/systems/scene/CameraControls"
 import EventSystem from "@/systems/EventSystem"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
@@ -23,10 +24,17 @@ CommandRegistry.get().registerCommand({
 
 const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
     const [mode, setMode] = useState<CameraMode>(controls.mode)
+    const [focusedOnField, setFocusedOnField] = useState<boolean>(controls.isFocusedOnField)
 
     useEffect(() => {
         return EventSystem.listen("CameraModeChangedEvent", ({ mode: newMode }) => {
             setMode(newMode as CameraMode)
+        })
+    }, [])
+
+    useEffect(() => {
+        return EventSystem.listen("CameraFocusChangedEvent", ({ focusProvider }) => {
+            setFocusedOnField(focusProvider?.miraType === MiraType.FIELD)
         })
     }, [])
 
@@ -45,7 +53,7 @@ const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
         >
             <ToggleButton value={CameraMode.Follow}>Follow</ToggleButton>
             <ToggleButton value={CameraMode.Locked}>Locked</ToggleButton>
-            <ToggleButton value={CameraMode.Face}>Face</ToggleButton>
+            <ToggleButton value={CameraMode.Face} disabled={focusedOnField}>Face</ToggleButton>
         </ToggleButtonGroup>
     )
 }

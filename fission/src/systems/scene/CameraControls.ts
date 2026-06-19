@@ -108,12 +108,18 @@ export class CustomOrbitControls extends CameraControls {
     private _mode: CameraMode = CameraMode.Follow
     private _focusPosition: THREE.Vector3 = new THREE.Vector3()
 
+    public get isFocusedOnField(): boolean {
+        return this._focusProvider?.miraType === MiraType.FIELD
+    }
+
     public get mode(): CameraMode {
         return this._mode
     }
 
     public set mode(val: CameraMode) {
         if (val === this._mode) return
+
+        if (val === CameraMode.Face && this._focusProvider?.miraType === MiraType.FIELD) return
 
         this._mode = val
         EventSystem.dispatch("CameraModeChangedEvent", { mode: val })
@@ -148,7 +154,16 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     private onFocusProviderChanged(): void {
-        if (this._focusProvider && this._mode !== CameraMode.Face) {
+        EventSystem.dispatch("CameraFocusChangedEvent", { focusProvider: this._focusProvider })
+
+        if (!this._focusProvider) return
+
+        if (this._focusProvider.miraType === MiraType.FIELD && this._mode === CameraMode.Face) {
+            // Don't allow Face mode for fields, default back to Follow mode
+            this.mode = CameraMode.Follow
+        }
+
+        if (this._mode !== CameraMode.Face) {
             // Capture the camera's current world position.
             // The coord re-sync is deferred to update() so it runs after _focus is refreshed
             this._pendingResync = this._mainCamera.position.clone()
@@ -169,13 +184,8 @@ export class CustomOrbitControls extends CameraControls {
         this._focusProvider = provider
         if (provider !== undefined) {
             this._isExplicitlyUnfocused = false
-
-            if (provider.miraType === MiraType.FIELD && this._mode === CameraMode.Face) {
-                this.mode = CameraMode.Follow
-            }
-
-            this.onFocusProviderChanged()
         }
+        this.onFocusProviderChanged()
     }
     public get focusProvider() {
         return this._focusProvider
@@ -187,6 +197,7 @@ export class CustomOrbitControls extends CameraControls {
     public unfocus(): void {
         this._focusProvider = undefined
         this._isExplicitlyUnfocused = true
+        this.onFocusProviderChanged()
 
         if (this._mode !== CameraMode.Follow) {
             const worldPos =
@@ -264,6 +275,7 @@ export class CustomOrbitControls extends CameraControls {
             if (newProvider !== undefined) {
                 this._focusProvider = newProvider
                 this._isExplicitlyUnfocused = false
+
                 this.onFocusProviderChanged()
             }
         }
