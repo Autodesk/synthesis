@@ -53,7 +53,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                     : undefined
                 wheelDrivers?.forEach(x => {
                     x.maxVelocity = vel
-                    x.maxForce = force
+                    x.maxAcceleration = force
                 })
 
                 // Preferences

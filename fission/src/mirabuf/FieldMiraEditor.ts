@@ -54,7 +54,7 @@ export const devtoolHandlers = {
                     (typeof z.parentNode === "string" || z.parentNode === undefined) &&
                     typeof z.points === "number" &&
                     typeof z.destroyGamepiece === "boolean" &&
-                    typeof z.persistentPoints === "boolean" &&
+                    (typeof z.shouldPointsAccumulate === "boolean" || typeof z.persistentPoints === "boolean") &&
                     Array.isArray(z.deltaTransformation)
             )
         },
