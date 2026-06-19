@@ -29,8 +29,11 @@ const Scene: React.FC<SceneProps> = ({ useStats }) => {
 
             if (useStats && !stats) {
                 stats = new Stats()
-                stats.dom.style.position = "absolute"
-                stats.dom.style.top = "0px"
+                stats.dom.style.position = "fixed"
+                stats.dom.style.top = "auto"
+                stats.dom.style.left = "auto"
+                stats.dom.style.bottom = "16px"
+                stats.dom.style.right = "16px"
                 refContainer.current.appendChild(stats.dom)
             }
 
@@ -49,7 +52,7 @@ const Scene: React.FC<SceneProps> = ({ useStats }) => {
 
     return (
         <div>
-            <div ref={refContainer}></div>
+            <div ref={refContainer} className="scene-container"></div>
         </div>
     )
 }
