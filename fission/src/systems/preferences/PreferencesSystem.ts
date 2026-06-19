@@ -223,8 +223,8 @@ class PreferencesSystem {
     }
 
     public static graphicsPreferencesAreLow(): boolean {
-        const current = this._preferences[GRAPHICS_PREFERENCE_KEY]
-        return current!.fancyShadows === false && current!.antiAliasing === false
+        const current = this.getGraphicsPreferences()
+        return current.fancyShadows === false && current.antiAliasing === false
     }
 
     /** Loads all preferences from local storage. */
