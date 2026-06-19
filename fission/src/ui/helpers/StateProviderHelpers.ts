@@ -1,4 +1,5 @@
 import { createContext, type ReactNode, useContext } from "react"
+import type { AppMode } from "@/systems/AppMode"
 import type { InputScheme } from "@/systems/input/InputTypes"
 
 export interface StateProviderProps {
@@ -15,6 +16,9 @@ export interface AppState {
     // View Cube
     isMainMenuOpen: boolean
     setIsMainMenuOpen: (_state: boolean) => void
+    // Top bar mode selector
+    appMode: AppMode
+    setAppMode: (_mode: AppMode) => void
 }
 
 export const StateContext = createContext<AppState>({
@@ -24,6 +28,8 @@ export const StateContext = createContext<AppState>({
     setSelectedScheme: () => {},
     isMainMenuOpen: true,
     setIsMainMenuOpen: () => {},
+    appMode: "Configure",
+    setAppMode: () => {},
 })
 
 export const useStateContext = () => useContext(StateContext)

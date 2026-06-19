@@ -3,9 +3,9 @@ import { SnackbarProvider } from "notistack"
 import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import MainHUD from "@/components/MainHUD"
 import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
 import Scene from "@/components/Scene.tsx"
+import TopBar from "@/components/TopBar.tsx"
 import MultiplayerStartModal from "@/modals/MultiplayerStartModal.tsx"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import World from "@/systems/World.ts"
@@ -109,7 +109,7 @@ function Synthesis() {
                             <SceneOverlay />
                             <ContextMenu />
                             <MultiplayerHUD />
-                            <MainHUD key={"main-hud"} />
+                            <TopBar key={"top-bar"} />
                             <UIRenderer />
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
