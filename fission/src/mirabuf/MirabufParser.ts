@@ -38,6 +38,7 @@ class MirabufParser {
     private _globalTransforms: Map<string, THREE.Matrix4>
 
     private _groundedNode: RigidNode | undefined
+    private _rigidNodesCache: Map<RigidNodeId, RigidNodeReadOnly> | null = null
 
     public get errors() {
         return [...this._errors]
@@ -63,8 +64,11 @@ class MirabufParser {
     public get groundedNode() {
         return this._groundedNode ? new RigidNodeReadOnly(this._groundedNode) : undefined
     }
-    public get rigidNodes(): Map<RigidNodeId, RigidNodeReadOnly> {
-        return new Map(this._rigidNodes.map(x => [x.id, new RigidNodeReadOnly(x)]))
+    public get rigidNodes(): ReadonlyMap<RigidNodeId, RigidNodeReadOnly> {
+        if (!this._rigidNodesCache) {
+            this._rigidNodesCache = new Map(this._rigidNodes.map(x => [x.id, new RigidNodeReadOnly(x)]))
+        }
+        return this._rigidNodesCache
     }
     public get directedGraph() {
         return this._directedGraph
@@ -248,6 +252,7 @@ class MirabufParser {
     }
 
     private mergeRigidNodes(rnA: RigidNode, rnB: RigidNode) {
+        this._rigidNodesCache = null
         const newRn = this.newRigidNode("merged")
         const allParts = new Set<string>([...rnA.parts, ...rnB.parts])
         allParts.forEach(x => this.movePartToRigidNode(x, newRn))

@@ -3,7 +3,7 @@ import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
 import type { FunctionComponent, ReactNode } from "react"
-import { useCallback, useReducer, useState } from "react"
+import { useCallback, useMemo, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
 import type { PanelImplProps } from "./components/Panel"
@@ -256,20 +256,19 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         refresh()
     }, [])
 
-    return (
-        <UIContext.Provider
-            value={{
-                modal,
-                panels,
-                openModal,
-                openPanel,
-                closeModal,
-                closePanel,
-                addToast,
-                configureScreen,
-            }}
-        >
-            {children}
-        </UIContext.Provider>
+    const contextValue = useMemo(
+        () => ({
+            modal,
+            panels,
+            openModal,
+            openPanel,
+            closeModal,
+            closePanel,
+            addToast,
+            configureScreen,
+        }),
+        [modal, panels, openModal, openPanel, closeModal, closePanel, addToast, configureScreen]
     )
+
+    return <UIContext.Provider value={contextValue}>{children}</UIContext.Provider>
 }

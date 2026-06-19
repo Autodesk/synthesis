@@ -94,6 +94,12 @@ class DragModeSystem extends WorldSystem {
 
     private readonly _unsubscriber: () => void
 
+    private readonly _scratchRaycaster = new THREE.Raycaster()
+    private readonly _scratchMouseNDC = new THREE.Vector2()
+    private readonly _scratchCameraDir = new THREE.Vector3()
+    private readonly _scratchPlane = new THREE.Plane()
+    private readonly _scratchIntersection = new THREE.Vector3()
+
     public constructor() {
         super()
 
@@ -487,31 +493,29 @@ class DragModeSystem extends WorldSystem {
         const camera = World.sceneRenderer.mainCamera
 
         // Create a ray from the camera through the current mouse position
-        const mouseNDC = new THREE.Vector2(
+        this._scratchMouseNDC.set(
             (this._lastMousePosition[0] / window.innerWidth) * 2 - 1,
             -(this._lastMousePosition[1] / window.innerHeight) * 2 + 1
         )
 
-        const raycaster = new THREE.Raycaster()
-        raycaster.setFromCamera(mouseNDC, camera)
+        this._scratchRaycaster.setFromCamera(this._scratchMouseNDC, camera)
 
         // Create a dynamic drag plane perpendicular to the camera at the original drag depth
-        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
+        this._scratchCameraDir.set(0, 0, -1).applyQuaternion(camera.quaternion)
         const dragPlanePosition = camera.position
             .clone()
-            .add(cameraDirection.clone().multiplyScalar(this._dragTarget.dragDepth))
-        const dragPlane = new THREE.Plane()
-        dragPlane.setFromNormalAndCoplanarPoint(cameraDirection, dragPlanePosition)
+            .add(this._scratchCameraDir.clone().multiplyScalar(this._dragTarget.dragDepth))
+        this._scratchPlane.setFromNormalAndCoplanarPoint(this._scratchCameraDir, dragPlanePosition)
 
-        const intersectionPoint = new THREE.Vector3()
-        const intersected = raycaster.ray.intersectPlane(dragPlane, intersectionPoint)
+        const intersected = this._scratchRaycaster.ray.intersectPlane(this._scratchPlane, this._scratchIntersection)
 
         if (!intersected) {
             // Fallback: project mouse position onto a sphere around the object
             const fallbackDistance = Math.max(this._dragTarget.dragDepth * 0.5, 1.0)
-            const direction = raycaster.ray.direction.clone().normalize()
-            intersectionPoint.copy(camera.position).add(direction.multiplyScalar(fallbackDistance))
+            const direction = this._scratchRaycaster.ray.direction.clone().normalize()
+            this._scratchIntersection.copy(camera.position).add(direction.multiplyScalar(fallbackDistance))
         }
+        const intersectionPoint = this._scratchIntersection
 
         // The target is where we want the drag point (on the robot) to be
         const targetDragPointWorld = intersectionPoint

@@ -62,15 +62,17 @@ class SimulationLayer {
 
     private _drivers: Map<string, Driver>
     private _stimuli: Map<string, Stimulus>
+    private _driverValues: Driver[] = []
+    private _stimulusValues: Stimulus[] = []
 
     public get brain() {
         return this._brain
     }
-    public get drivers() {
-        return [...this._drivers.values()]
+    public get drivers(): Driver[] {
+        return this._driverValues
     }
-    public get stimuli() {
-        return [...this._stimuli.values()]
+    public get stimuli(): Stimulus[] {
+        return this._stimulusValues
     }
 
     constructor(mechanism: Mechanism) {
@@ -124,6 +126,9 @@ class SimulationLayer {
         } else {
             console.debug("No Assembly found with given mechanism, skipping intake and ejector...")
         }
+
+        this._driverValues = [...this._drivers.values()]
+        this._stimulusValues = [...this._stimuli.values()]
     }
 
     public update(deltaT: number) {

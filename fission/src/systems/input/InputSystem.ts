@@ -32,9 +32,15 @@ class InputSystem extends WorldSystem {
 
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+    private static _brainIndexInputMap: Map<number, Map<string, Input>> = new Map()
 
     public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
         InputSystem.brainIndexSchemeMap.set(index, scheme)
+        const inputMap = new Map<string, Input>()
+        for (const input of scheme.inputs) {
+            inputMap.set(input.inputName, input)
+        }
+        InputSystem._brainIndexInputMap.set(index, inputMap)
         World.analyticsSystem?.event("Scheme Applied", {
             isCustomized: scheme.customized,
             schemeName: scheme.schemeName,
@@ -179,10 +185,10 @@ class InputSystem extends WorldSystem {
         }
 
         const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        if (targetScheme == null) return 0
 
-        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
-
-        if (targetScheme == null || targetInput == null) return 0
+        const targetInput = InputSystem._brainIndexInputMap.get(brainIndex)?.get(inputName) as Input | undefined
+        if (targetInput == null) return 0
 
         return targetInput.getValue(targetScheme.usesGamepad, targetScheme.usesTouchControls)
     }

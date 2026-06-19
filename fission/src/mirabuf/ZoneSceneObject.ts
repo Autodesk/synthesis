@@ -38,6 +38,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
     private _parentAssembly: MirabufSceneObject
     public parentBodyId?: Jolt.BodyID
     public deltaTransformation?: THREE.Matrix4
+    private _lastSensorScale?: THREE.Vector3
 
     public prefs: ZonePreferencesShared & P
 
@@ -100,15 +101,19 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
         World.physicsSystem.setBodyPosition(bodyId, convertThreeVector3ToJoltRVec3(props.translation))
         World.physicsSystem.setBodyRotation(bodyId, convertThreeQuaternionToJoltQuat(props.rotation))
 
-        const boundingVec = new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
-        const shapeSettings = new JOLT.BoxShapeSettings(boundingVec)
-        const shape = shapeSettings.Create()
+        if (!this._lastSensorScale || !this._lastSensorScale.equals(props.scale)) {
+            this._lastSensorScale = props.scale.clone()
 
-        World.physicsSystem.setShape(bodyId, shape.Get(), false, Jolt.EActivation_Activate)
+            const boundingVec = new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
+            const shapeSettings = new JOLT.BoxShapeSettings(boundingVec)
+            const shape = shapeSettings.Create()
 
-        JOLT.destroy(boundingVec)
-        JOLT.destroy(shapeSettings)
-        JOLT.destroy(shape)
+            World.physicsSystem.setShape(bodyId, shape.Get(), false, Jolt.EActivation_Activate)
+
+            JOLT.destroy(boundingVec)
+            JOLT.destroy(shapeSettings)
+            JOLT.destroy(shape)
+        }
     }
 
     // Creates a mesh for the user to visualize the sensor

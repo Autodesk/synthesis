@@ -51,46 +51,23 @@ export class SimGyroInput extends SimInput {
         if (this._joltID) this._joltBody = World.physicsSystem.getBody(this._joltID)
     }
 
-    private getAxis(axis: Jolt.Vec3): number {
-        return ((this._joltBody?.GetRotation().GetRotationAngle(axis) ?? 0) * 180) / Math.PI
-    }
-
-    private getX(): number {
-        return this.getAxis(SimGyroInput.AXIS_X)
-    }
-
-    private getY(): number {
-        return this.getAxis(SimGyroInput.AXIS_Y)
-    }
-
-    private getZ(): number {
-        return this.getAxis(SimGyroInput.AXIS_Z)
-    }
-
-    private getAxisVelocity(axis: "x" | "y" | "z"): number {
-        const axes = this._joltBody?.GetAngularVelocity()
-        if (!axes) return 0
-
-        switch (axis) {
-            case "x":
-                return axes.GetX()
-            case "y":
-                return axes.GetY()
-            case "z":
-                return axes.GetZ()
-        }
-    }
-
     public update(_deltaT: number) {
-        const x = this.getX()
-        const y = this.getY()
-        const z = this.getZ()
+        if (!this._joltBody) return
 
-        SimGyro.setAngleX(this._device, x)
-        SimGyro.setAngleY(this._device, y)
-        SimGyro.setAngleZ(this._device, z)
-        SimGyro.setRateX(this._device, this.getAxisVelocity("x"))
-        SimGyro.setRateY(this._device, this.getAxisVelocity("y"))
-        SimGyro.setRateZ(this._device, this.getAxisVelocity("z"))
+        const rot = this._joltBody.GetRotation()
+        const angVel = this._joltBody.GetAngularVelocity()
+
+        const RAD2DEG = 180 / Math.PI
+        SimGeneric.setMany(SimType.GYRO, this._device, {
+            ">angle_x": rot.GetRotationAngle(SimGyroInput.AXIS_X) * RAD2DEG,
+            ">angle_y": rot.GetRotationAngle(SimGyroInput.AXIS_Y) * RAD2DEG,
+            ">angle_z": rot.GetRotationAngle(SimGyroInput.AXIS_Z) * RAD2DEG,
+            ">rate_x": angVel.GetX(),
+            ">rate_y": angVel.GetY(),
+            ">rate_z": angVel.GetZ(),
+        })
+
+        JOLT.destroy(rot)
+        JOLT.destroy(angVel)
     }
 }

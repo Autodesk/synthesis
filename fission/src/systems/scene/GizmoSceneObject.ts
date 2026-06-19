@@ -26,6 +26,10 @@ class GizmoSceneObject extends SceneObject {
 
     private _size: number
 
+    private readonly _scratchPos = new THREE.Vector3(0, 0, 0)
+    private readonly _scratchQuat = new THREE.Quaternion(0, 0, 0, 1)
+    private readonly _scratchScale = new THREE.Vector3(1, 1, 1)
+
     /** @returns the instance of the transform gizmo itself */
     public get gizmo() {
         return this._gizmo
@@ -213,14 +217,12 @@ class GizmoSceneObject extends SceneObject {
 
         const relativeTransform = this._relativeTransformations.get(rnId)!
         const worldTransform = relativeTransform.clone().premultiply(this._obj.matrix)
-        const position = new THREE.Vector3(0, 0, 0)
-        const rotation = new THREE.Quaternion(0, 0, 0, 1)
-        worldTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
+        worldTransform.decompose(this._scratchPos, this._scratchQuat, this._scratchScale)
 
         World.physicsSystem.setBodyPositionAndRotation(
             jBodyId,
-            convertThreeVector3ToJoltRVec3(position),
-            convertThreeQuaternionToJoltQuat(rotation)
+            convertThreeVector3ToJoltRVec3(this._scratchPos),
+            convertThreeQuaternionToJoltQuat(this._scratchQuat)
         )
     }
 

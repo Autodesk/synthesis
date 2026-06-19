@@ -2,7 +2,7 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import type Mechanism from "@/systems/physics/Mechanism"
 import World from "@/systems/World"
-import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import type { NoraNumber3 } from "../../Nora"
 import type { SimReceiver } from "../SimDataFlow"
 import { SimInput } from "../SimInput"
@@ -42,6 +42,10 @@ export class SimAccelInput extends SimInput {
     private _joltID?: Jolt.BodyID
     private _prevVel: THREE.Vector3
 
+    private readonly _scratchQuat = new THREE.Quaternion()
+    private readonly _scratchMat = new THREE.Matrix4()
+    private readonly _scratchVel = new THREE.Vector3()
+
     constructor(device: string, robot: Mechanism) {
         super(device)
         this._robot = robot
@@ -53,18 +57,27 @@ export class SimAccelInput extends SimInput {
         if (!this._joltID) return
         const body = World.physicsSystem.getBody(this._joltID)
 
-        const rot = convertJoltQuatToThreeQuaternion(body.GetRotation(), true)
-        const mat = new THREE.Matrix4().makeRotationFromQuaternion(rot).transpose()
-        const newVel = convertJoltVec3ToThreeVector3(body.GetLinearVelocity()).applyMatrix4(mat)
+        const jRot = body.GetRotation()
+        this._scratchQuat.set(jRot.GetX(), jRot.GetY(), jRot.GetZ(), jRot.GetW())
+        JOLT.destroy(jRot)
 
-        const x = (newVel.x - this._prevVel.x) / deltaT
-        const y = (newVel.y - this._prevVel.y) / deltaT
-        const z = (newVel.y - this._prevVel.y) / deltaT
+        this._scratchMat.makeRotationFromQuaternion(this._scratchQuat).transpose()
 
-        SimAccel.setX(this._device, x)
-        SimAccel.setY(this._device, y)
-        SimAccel.setZ(this._device, z)
+        const jVel = body.GetLinearVelocity()
+        this._scratchVel.set(jVel.GetX(), jVel.GetY(), jVel.GetZ())
+        JOLT.destroy(jVel)
+        this._scratchVel.applyMatrix4(this._scratchMat)
 
-        this._prevVel = newVel
+        const ax = (this._scratchVel.x - this._prevVel.x) / deltaT
+        const ay = (this._scratchVel.y - this._prevVel.y) / deltaT
+        const az = (this._scratchVel.z - this._prevVel.z) / deltaT
+
+        SimGeneric.setMany(SimType.ACCELEROMETER, this._device, {
+            ">x": ax,
+            ">y": ay,
+            ">z": az,
+        })
+
+        this._prevVel.copy(this._scratchVel)
     }
 }

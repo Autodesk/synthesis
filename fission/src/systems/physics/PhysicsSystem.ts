@@ -21,10 +21,10 @@ import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
-import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
+import type { CurrentContactData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 
 /**
@@ -1301,7 +1301,7 @@ class PhysicsSystem extends WorldSystem {
         }
 
         this._physicsEventQueue.forEach(x => x.dispatch())
-        this._physicsEventQueue = []
+        this._physicsEventQueue.length = 0
     }
 
     private onSameLayer(body1: Jolt.BodyID, body2: Jolt.BodyID): boolean {
@@ -1518,14 +1518,9 @@ class PhysicsSystem extends WorldSystem {
      * Finds the MirabufSceneObject containing the mechanism containing the body referenced by the given id
      */
     private bodyToMiraSceneObject(body: Jolt.Body): MirabufSceneObject | null {
-        const id = body.GetID()
-
-        const object =
-            World.sceneRenderer.mirabufSceneObjects.findWhere(obj =>
-                [...obj.mechanism.nodeToBody].some(n => n[1] == id)
-            ) ?? null
-
-        return object
+        const assoc = this._bodyAssociations.get(body.GetID().GetIndexAndSequenceNumber())
+        if (assoc instanceof RigidNodeAssociate) return assoc.sceneObject
+        return null
     }
 
     /**
@@ -1569,8 +1564,8 @@ class PhysicsSystem extends WorldSystem {
             const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
             const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
 
-            const body1Id = new JOLT.BodyID(body1.GetID().GetIndexAndSequenceNumber())
-            const body2Id = new JOLT.BodyID(body2.GetID().GetIndexAndSequenceNumber())
+            const body1Id = body1.GetID()
+            const body2Id = body2.GetID()
 
             const message: CurrentContactData = {
                 body1: body1Id,
@@ -1613,19 +1608,7 @@ class PhysicsSystem extends WorldSystem {
             EventSystem.dispatch("OnContactRemovedEvent", { message: shapePair })
         }
 
-        contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {
-            const message: OnContactValidateData = {
-                body1: JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body,
-                body2: JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body,
-                baseOffset: JOLT.wrapPointer(inBaseOffsetPtr, JOLT.RVec3) as Jolt.RVec3,
-                collisionResult: JOLT.wrapPointer(
-                    inCollisionResultPtr,
-                    JOLT.CollideShapeResult
-                ) as Jolt.CollideShapeResult,
-            }
-
-            this._physicsEventQueue.push(EventSystem.create("OnContactValidateEvent", message))
-
+        contactListener.OnContactValidate = (_bodyPtr1, _bodyPtr2, _inBaseOffsetPtr, _inCollisionResultPtr) => {
             return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
         }
 

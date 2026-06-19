@@ -592,6 +592,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         JOLT.destroy(weightedCOM)
     }
 
+    private _batchesDirty = false
+
     public updateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
         rn.parts.forEach(part => {
             const partTransform = this._mirabufInstance.parser.globalTransforms
@@ -600,13 +602,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 .premultiply(transform)
             const meshes = this._mirabufInstance.meshes.get(part) ?? []
             meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
-
-            // JOLT.destroy(partTransform)
         })
+        this._batchesDirty = true
     }
 
     /** Updates the batch computations */
     private updateBatches() {
+        if (!this._batchesDirty) return
+        this._batchesDirty = false
         this._mirabufInstance.batches.forEach(x => {
             x.computeBoundingBox()
             x.computeBoundingSphere()

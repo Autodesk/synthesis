@@ -99,6 +99,10 @@ export class CustomOrbitControls extends CameraControls {
     private _isExplicitlyUnfocused: boolean = false
     public locked: boolean
 
+    private readonly _scratchMatA = new THREE.Matrix4()
+    private readonly _scratchMatB = new THREE.Matrix4()
+    private readonly _scratchEuler = new THREE.Euler()
+
     private _interactionHandler: ScreenInteractionHandler
 
     public set enabled(val: boolean) {
@@ -322,29 +326,24 @@ export class CustomOrbitControls extends CameraControls {
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, this._coords.phi))
         this._coords.r = Math.min(CO_MAX_ZOOM, Math.max(CO_MIN_ZOOM, this._coords.r))
 
-        const deltaTransform = new THREE.Matrix4()
-            .makeTranslation(0, 0, this._coords.r)
-            .premultiply(
-                new THREE.Matrix4().makeRotationFromEuler(
-                    new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ")
-                )
-            )
+        this._scratchEuler.set(this._coords.phi, this._coords.theta, 0, "YXZ")
+        this._scratchMatA.makeRotationFromEuler(this._scratchEuler)
+        this._scratchMatB.makeTranslation(0, 0, this._coords.r).premultiply(this._scratchMatA)
+        const deltaTransform = this._scratchMatB
 
         if (this.locked && this._focusProvider) {
             deltaTransform.premultiply(this._focus)
         } else {
-            const focusPosition = new THREE.Matrix4().copyPosition(this._focus)
-            deltaTransform.premultiply(focusPosition)
+            this._scratchMatA.copyPosition(this._focus)
+            deltaTransform.premultiply(this._scratchMatA)
         }
 
         this._mainCamera.position.setFromMatrixPosition(deltaTransform)
         this._mainCamera.rotation.setFromRotationMatrix(deltaTransform)
 
-        this._nextCoords = {
-            theta: this._coords.theta,
-            phi: this._coords.phi,
-            r: this._coords.r,
-        }
+        this._nextCoords.theta = this._coords.theta
+        this._nextCoords.phi = this._coords.phi
+        this._nextCoords.r = this._coords.r
     }
 
     public dispose(): void {}

@@ -30,6 +30,13 @@ class EjectableSceneObject extends SceneObject {
 
     private static _defaultAnimationDuration = 0.5
 
+    private readonly _scratchVec3a = new THREE.Vector3()
+    private readonly _scratchVec3b = new THREE.Vector3()
+    private readonly _scratchQuat = new THREE.Quaternion()
+    private readonly _scratchScale = new THREE.Vector3(1, 1, 1)
+    private readonly _scratchMatA = new THREE.Matrix4()
+    private readonly _scratchMatB = new THREE.Matrix4()
+
     public static setAnimationDuration(duration: number) {
         EjectableSceneObject._defaultAnimationDuration = duration
     }
@@ -115,30 +122,26 @@ class EjectableSceneObject extends SceneObject {
             )
 
             const body = World.physicsSystem.getBody(this._parentBodyId)
-            let desiredPosition = new THREE.Vector3(0, 0, 0)
-            let desiredRotation = new THREE.Quaternion(0, 0, 0, 1)
 
-            // Compute target world transform
-            const desiredTransform = this._deltaTransformation
-                .clone()
-                .premultiply(convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()))
-
-            desiredTransform.decompose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
+            // Compute target world transform into scratchMatA
+            this._scratchMatA.copy(this._deltaTransformation).premultiply(
+                convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+            )
+            this._scratchMatA.decompose(this._scratchVec3a, this._scratchQuat, this._scratchScale)
 
             if (t < 1 && this._startTranslation && this._startRotation) {
                 // gradual acceleration via easedT
-                desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
-                desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, easedT)
+                this._scratchVec3a.lerpVectors(this._startTranslation, this._scratchVec3a, easedT)
+                this._scratchQuat.copy(this._startRotation).slerp(this._scratchQuat, easedT)
             }
 
             // apply the transform
-            desiredTransform.identity().compose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
+            this._scratchMatA.identity().compose(this._scratchVec3a, this._scratchQuat, this._scratchScale)
 
-            const bodyTransform = posToCOM.clone().invert().premultiply(desiredTransform)
-
-            const position = new THREE.Vector3(0, 0, 0)
-            const rotation = new THREE.Quaternion(0, 0, 0, 1)
-            bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
+            this._scratchMatB.copy(posToCOM).invert().premultiply(this._scratchMatA)
+            this._scratchMatB.decompose(this._scratchVec3b, this._scratchQuat, this._scratchScale)
+            const position = this._scratchVec3b
+            const rotation = this._scratchQuat
 
             World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position))
             World.physicsSystem.setBodyRotation(

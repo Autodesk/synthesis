@@ -44,6 +44,7 @@ class SceneRenderer extends WorldSystem {
 
     private _sceneObjects: Map<number, SceneObject>
     private _gizmosOnMirabuf: Map<number, GizmoSceneObject> // maps of all the gizmos that are attached to a mirabuf scene object
+    private _mirabufObjects: Set<MirabufSceneObject> = new Set()
 
     private _cameraControls: CameraControls
 
@@ -64,7 +65,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     public readonly mirabufSceneObjects = {
-        getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
+        getAll: (): MirabufSceneObject[] => [...this._mirabufObjects],
         findWhere: (predicate: (obj: MirabufSceneObject) => boolean) =>
             this.mirabufSceneObjects.getAll().find(predicate),
         getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD),
@@ -379,6 +380,7 @@ class SceneRenderer extends WorldSystem {
 
         obj.id = id
         this._sceneObjects.set(id, obj)
+        if (obj instanceof MirabufSceneObject) this._mirabufObjects.add(obj)
 
         obj.setup()
 
@@ -395,6 +397,7 @@ class SceneRenderer extends WorldSystem {
         this._sceneObjects.forEach(obj => obj.dispose())
         this._gizmosOnMirabuf.clear()
         this._sceneObjects.clear()
+        this._mirabufObjects.clear()
     }
 
     public removeSceneObject(id: number) {
@@ -404,6 +407,7 @@ class SceneRenderer extends WorldSystem {
 
         // If the object is a mirabuf object, remove the gizmo as well
         if (obj instanceof MirabufSceneObject) {
+            this._mirabufObjects.delete(obj)
             const objGizmo = this._gizmosOnMirabuf.get(id)
             if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
             World?.multiplayerSystem?.broadcast({

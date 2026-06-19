@@ -54,38 +54,33 @@ const fillerMaterials = [
     }),
 ]
 
-const transformVerts = (mesh: mirabuf.IMesh) => {
-    const newVerts = new Float32Array(mesh.verts!.length)
-    for (let i = 0; i < mesh.verts!.length; i += 3) {
-        newVerts[i] = mesh.verts!.at(i)! / 100.0
-        newVerts[i + 1] = mesh.verts!.at(i + 1)! / 100.0
-        newVerts[i + 2] = mesh.verts!.at(i + 2)! / 100.0
+const transformVerts = (mesh: mirabuf.IMesh): Float32Array => {
+    const verts = mesh.verts!
+    const newVerts = new Float32Array(verts.length)
+    for (let i = 0; i < verts.length; i += 3) {
+        newVerts[i] = verts[i] / 100.0
+        newVerts[i + 1] = verts[i + 1] / 100.0
+        newVerts[i + 2] = verts[i + 2] / 100.0
     }
     return newVerts
 }
 
-const transformNorms = (mesh: mirabuf.IMesh) => {
-    const newNorms = new Float32Array(mesh.normals!.length)
-    for (let i = 0; i < mesh.normals!.length; i += 3) {
-        const normLength = Math.sqrt(
-            mesh.normals!.at(i)! * mesh.normals!.at(i)! +
-                mesh.normals!.at(i + 1)! * mesh.normals!.at(i + 1)! +
-                mesh.normals!.at(i + 2)! * mesh.normals!.at(i + 2)!
-        )
-
-        newNorms[i] = mesh.normals!.at(i)! / normLength
-        newNorms[i + 1] = mesh.normals!.at(i + 1)! / normLength
-        newNorms[i + 2] = mesh.normals!.at(i + 2)! / normLength
+const transformNorms = (mesh: mirabuf.IMesh): Float32Array => {
+    const normals = mesh.normals!
+    const newNorms = new Float32Array(normals.length)
+    for (let i = 0; i < normals.length; i += 3) {
+        const nx = normals[i], ny = normals[i + 1], nz = normals[i + 2]
+        const normLength = Math.sqrt(nx * nx + ny * ny + nz * nz)
+        newNorms[i] = nx / normLength
+        newNorms[i + 1] = ny / normLength
+        newNorms[i + 2] = nz / normLength
     }
     return newNorms
 }
 
 const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) => {
-    const newVerts = transformVerts(mesh)
-    const newNorms = transformNorms(mesh)
-
-    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(newVerts), 3))
-    geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(newNorms), 3))
+    geometry.setAttribute("position", new THREE.BufferAttribute(transformVerts(mesh), 3))
+    geometry.setAttribute("normal", new THREE.BufferAttribute(transformNorms(mesh), 3))
     geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(mesh.uv!), 2))
     geometry.setIndex(mesh.indices!)
 }

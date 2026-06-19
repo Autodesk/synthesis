@@ -101,4 +101,31 @@ export default class SimGeneric {
         EventSystem.dispatch("SimMapUpdateEvent", { internalUpdate: true })
         return true
     }
+
+    public static setMany(
+        simType: SimType,
+        device: string,
+        fields: Record<string, number | boolean | string>
+    ): boolean {
+        const map = getSimMap()?.get(simType)
+        if (!map) return false
+
+        const data = map.get(device)
+        if (!data) return false
+
+        for (const [field, value] of Object.entries(fields)) {
+            data.set(field, value)
+        }
+
+        worker.getValue().postMessage({
+            command: "update",
+            data: {
+                type: simType,
+                device: device,
+                data: fields,
+            },
+        })
+        EventSystem.dispatch("SimMapUpdateEvent", { internalUpdate: true })
+        return true
+    }
 }
