@@ -224,18 +224,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public set alliance(alliance: Alliance | undefined) {
         this._alliance = alliance
-        if (this._nameTag) {
-            this._nameTag.color = alliance
-            EventSystem.dispatch("SceneOverlayUpdateEvent")
-        }
+        this.updateNameTag()
     }
 
     public set station(station: Station | undefined) {
         this._station = station
-        if (this._nameTag) {
-            this.updateNameTag()
-            EventSystem.dispatch("SceneOverlayUpdateEvent")
-        }
     }
 
     public constructor(
