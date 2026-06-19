@@ -3,6 +3,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import APS from "@/aps/APS"
 import EventSystem from "@/systems/EventSystem.ts"
+import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { deobf } from "@/util/Utility"
 import { useUIContext } from "../helpers/UIProviderHelpers"
@@ -14,6 +15,7 @@ import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton } from "./StyledComponents"
 import ConfigureControls from "./topbar/ConfigureControls"
 import ModeDropdown from "./topbar/ModeDropdown"
+import { TOP_BAR_HEIGHT } from "./topbar/topBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
 import UserIcon from "./UserIcon"
 
@@ -52,38 +54,54 @@ const TopBar: React.FC = () => {
         })
     }, [])
 
+    // Reserve viewport space for the bar so content renders below it, not underneath.
+    // Only applies while the bar is mounted (desktop): the 3D canvas reads the offset
+    // directly, and DOM overlays (ViewCube, Scoreboard) read the --top-bar-height CSS var.
+    // When the bar is absent (mobile) the offset is 0 and the var falls back to 0px.
+    useEffect(() => {
+        document.documentElement.style.setProperty("--top-bar-height", `${TOP_BAR_HEIGHT}px`)
+        if (World.isAlive) World.sceneRenderer.sceneTopOffset = TOP_BAR_HEIGHT
+        return () => {
+            document.documentElement.style.removeProperty("--top-bar-height")
+            if (World.isAlive) World.sceneRenderer.sceneTopOffset = 0
+        }
+    }, [])
+
     return (
         <Box
             position="fixed"
-            sx={{ top: 0, left: 0, right: 0, height: 54, px: 1, zIndex: 1200 }}
+            sx={{ top: 0, left: 0, right: 0, height: TOP_BAR_HEIGHT, px: 2, zIndex: 1200 }}
             bgcolor="topBar.main"
             color="topBarText.main"
         >
-            <Stack direction="row" alignItems="center" height="100%" gap={1}>
+            <Stack direction="row" alignItems="center" height="100%" gap={2}>
                 <ModeDropdown />
                 <IconButton
+                    size="large"
                     sx={{ color: "topBarText.main" }}
                     onClick={() => openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })}
                 >
-                    <TopBarIcon name="add" size={22} />
+                    <TopBarIcon name="add" size={28} />
                 </IconButton>
-                <Box sx={{ width: "1px", height: 34, bgcolor: "topBarText.main", opacity: 0.4 }} />
+                <Box sx={{ width: "1px", height: 36, bgcolor: "topBarText.main", opacity: 0.4 }} />
 
                 {appMode === "Configure" && <ConfigureControls />}
 
                 <Box flexGrow={1} />
 
                 <IconButton
+                    size="large"
                     sx={{ color: "topBarText.main" }}
                     onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
                 >
-                    <TopBarIcon name="settings" size={22} />
+                    <TopBarIcon name="settings" size={28} />
                 </IconButton>
                 <IconButton
+                    size="large"
                     sx={{ color: "topBarText.main" }}
                     onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
                 >
-                    {userInfo ? <UserIcon className="h-6 rounded-full" /> : <TopBarIcon name="login" size={22} />}
+                    {userInfo ? <UserIcon className="h-8 rounded-full" /> : <TopBarIcon name="login" size={28} />}
                 </IconButton>
             </Stack>
         </Box>

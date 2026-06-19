@@ -7,27 +7,29 @@ const CONFIGURE_BUTTONS: TopBarIconName[] = ["cfg-1", "cfg-2", "cfg-3", "cfg-4",
 
 const ConfigureControls: React.FC = () => {
     return (
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack direction="row" alignItems="center" gap={2}>
             {/* TODO: populate + wire selection from spawned assemblies (see AssemblySelection.tsx) */}
             <Stack
                 direction="row"
                 alignItems="center"
                 justifyContent="space-between"
+                gap={1}
                 sx={{
                     bgcolor: "surface.main",
                     color: "topBarText.main",
                     borderRadius: 2,
-                    height: 38,
-                    minWidth: 178,
-                    px: 1.5,
+                    height: 46,
+                    minWidth: 200,
+                    fontSize: 16,
+                    px: 2,
                 }}
             >
                 [Ernie] Dozer
-                <TopBarIcon name="carat-down" size={20} />
+                <TopBarIcon name="carat-down" size={22} />
             </Stack>
             {CONFIGURE_BUTTONS.map(name => (
-                <IconButton key={name} sx={{ color: "topBarText.main" }}>
-                    <TopBarIcon name={name} size={22} />
+                <IconButton key={name} size="large" sx={{ color: "topBarText.main" }}>
+                    <TopBarIcon name={name} size={26} />
                 </IconButton>
             ))}
         </Stack>

@@ -19,11 +19,10 @@ const Scene: React.FC<SceneProps> = ({ useStats }) => {
 
         if (refContainer.current) {
             const sr = World.sceneRenderer
-            sr.renderer.domElement.style.width = "100%"
-            sr.renderer.domElement.style.height = "100%"
 
             refContainer.current.innerHTML = ""
             refContainer.current.appendChild(sr.renderer.domElement)
+            sr.updateCanvasSize()
             window.addEventListener("resize", () => {
                 sr.updateCanvasSize()
             })

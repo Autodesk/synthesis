@@ -12,8 +12,8 @@ const MODE_ICONS: Record<AppMode, TopBarIconName> = {
 }
 
 const ModeLabel: React.FC<{ mode: AppMode }> = ({ mode }) => (
-    <Stack direction="row" alignItems="center" gap={1}>
-        <TopBarIcon name={MODE_ICONS[mode]} size={20} />
+    <Stack direction="row" alignItems="center" gap={1.5}>
+        <TopBarIcon name={MODE_ICONS[mode]} size={24} />
         {mode}
     </Stack>
 )
@@ -26,13 +26,14 @@ const ModeDropdown: React.FC = () => {
             value={appMode}
             onChange={e => setAppMode(e.target.value as AppMode)}
             renderValue={value => <ModeLabel mode={value as AppMode} />}
-            IconComponent={props => <TopBarIcon name="carat-down" size={20} className={props.className} />}
+            IconComponent={props => <TopBarIcon name="carat-down" size={22} className={props.className} />}
             sx={{
                 bgcolor: "surface.main",
                 color: "topBarText.main",
                 borderRadius: 2,
-                height: 38,
-                minWidth: 175,
+                height: 46,
+                minWidth: 200,
+                fontSize: 17,
                 "& .MuiOutlinedInput-notchedOutline": { border: "none" },
                 "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0 },
             }}

@@ -72,6 +72,7 @@ vi.mock("postprocessing", () => ({
     EffectComposer: vi.fn().mockImplementation(() => ({
         addPass: vi.fn(),
         render: vi.fn(),
+        setSize: vi.fn(),
         dispose: vi.fn(),
     })),
     EffectPass: vi.fn().mockImplementation(() => ({
