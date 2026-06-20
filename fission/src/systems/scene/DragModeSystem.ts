@@ -361,8 +361,6 @@ class DragModeSystem extends WorldSystem {
                     -currentVel.GetY() * stopBrakingStrength,
                     -currentVel.GetZ() * stopBrakingStrength
                 )
-                // TODO
-                // Check if a body has a list of forces that it frees at some point, or if the forces should be freed immediately
                 body.AddForce(stopBrakingForce)
 
                 const angularVel = body.GetAngularVelocity()
@@ -373,6 +371,9 @@ class DragModeSystem extends WorldSystem {
                     -angularVel.GetZ() * angularStopBraking
                 )
                 body.AddTorque(angularStopTorque)
+
+                JOLT.destroy(stopBrakingForce)
+                JOLT.destroy(angularStopTorque)
             }
         }
 
