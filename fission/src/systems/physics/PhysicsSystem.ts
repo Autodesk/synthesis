@@ -1174,14 +1174,14 @@ class PhysicsSystem extends WorldSystem {
             .GetNarrowPhaseQuery()
             .CastRay(ray, raySettings, collector, bpFilter, objectFilter, bodyFilter, shapeFilter)
 
-        if (!collector.HadHit()) return undefined
-
         JOLT.destroy(raySettings)
         JOLT.destroy(bpFilter)
         JOLT.destroy(objectFilter)
         JOLT.destroy(bodyFilter)
         JOLT.destroy(shapeFilter)
         JOLT.destroy(dir)
+
+        if (!collector.HadHit()) return undefined
 
         const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
 
