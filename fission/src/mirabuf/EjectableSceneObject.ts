@@ -140,7 +140,11 @@ class EjectableSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-            World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position))
+            World.physicsSystem.setBodyPosition(
+                this._gamePieceBodyId,
+                convertThreeVector3ToJoltRVec3(position),
+                JOLT.EActivation_DontActivate
+            )
             World.physicsSystem.setBodyRotation(
                 this._gamePieceBodyId,
                 convertThreeQuaternionToJoltQuat(rotation),

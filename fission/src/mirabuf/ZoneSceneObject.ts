@@ -1,7 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"
+import type { GlobalPreferences, ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -34,6 +34,12 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
         opacity: 0.0,
         transparent: true,
     })
+
+    // TODO check that the keys here are correct
+    private static prefToRenderKeys: Record<string, "RenderProtectedZones" | "RenderScoringZones"> = {
+        ProtectedZonePreferences: "RenderProtectedZones",
+        ScoringZonePreferences: "RenderScoringZones",
+    }
 
     private _parentAssembly: MirabufSceneObject
     public parentBodyId?: Jolt.BodyID
@@ -91,7 +97,6 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
         const settings = new JOLT.BoxShapeSettings(unitVector)
         this.joltBodyId = World.physicsSystem.createSensor(settings)
 
-        JOLT.destroy(settings)
         JOLT.destroy(unitVector)
     }
 
@@ -142,7 +147,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
 
         if (!this.mesh) return
 
-        this.toRender = PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+        this.toRender = PreferencesSystem.getGlobalPreference(ZoneSceneObject.prefToRenderKeys[typeof this])
         if (!this.toRender) {
             this.mesh.material = ZoneSceneObject.transparentMaterial
             return

@@ -561,11 +561,20 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         if (this._centerOfMassIndicator) {
-            const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
-            this._centerOfMassIndicator.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
-            this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+            const setPositionAndVisibility = (netCoM: Jolt.RVec3) => {
+                this._centerOfMassIndicator!.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
+                this._centerOfMassIndicator!.visible =
+                    PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+            }
 
-            JOLT.destroy(netCoM)
+            if (totalMass > 0) {
+                const netCoM = weightedCOM.Div(totalMass)
+                setPositionAndVisibility(netCoM)
+
+                JOLT.destroy(netCoM)
+            } else {
+                setPositionAndVisibility(weightedCOM)
+            }
         }
 
         JOLT.destroy(weightedCOM)
@@ -681,7 +690,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.removeSceneObjects(this._protectedZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.protectedZones) return
-        render ??= PreferencesSystem.getGlobalPreference("RenderScoringZones")
+        render ??= PreferencesSystem.getGlobalPreference("RenderProtectedZones")
 
         for (let i = 0; i < this._fieldPreferences.protectedZones.length; i++) {
             const newZone = new ProtectedZoneSceneObject(this, i, render)
@@ -693,7 +702,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private removeSceneObjects(objs: SceneObject[]) {
         objs.filter(obj => obj.id != -1).forEach(obj => World.sceneRenderer.removeSceneObject(obj.id))
-        this._protectedZones = []
+        objs.length = 0
     }
 
     public removeScoringZoneObject(zone: ScoringZonePreferences) {

@@ -80,7 +80,6 @@ class SynthesisBrain extends Brain {
             this.configureSkidSteerDriveBehavior(this.driveType == DriveType.ARCADE)
             this.configureArmBehaviors()
 
-            console.log("ahhh")
             this.configureElevatorBehaviors()
             this.configureGamepieceManipBehavior()
         } else {
