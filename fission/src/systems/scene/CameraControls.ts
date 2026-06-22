@@ -54,6 +54,7 @@ const CO_MAX_PHI = Math.PI / 2.1
 const CO_MIN_PHI = -Math.PI / 2.1
 
 const CO_SENSITIVITY_ZOOM = 4.0
+const CO_FACE_ZOOM_SENSITIVITY = 0.4
 
 const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0
@@ -366,7 +367,11 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public interactionMove(move: InteractionMove) {
-        if (this._mode === CameraMode.Face) return
+        if (this._mode === CameraMode.Face) {
+            // Face mode drives the camera directly, so only zoom is allowed
+            if (move.scale) this.zoomFaceMode(move.scale)
+            return
+        }
 
         if (move.movement) {
             if (this._activePointerType == PRIMARY_MOUSE_INTERACTION) {
@@ -395,6 +400,24 @@ export class CustomOrbitControls extends CameraControls {
         if (move.scale) {
             this._nextCoords.r += move.scale
         }
+    }
+
+    /**
+     * Zooms the fixed Face mode camera by moving it along its view axis toward or away from the robot.
+     * Sensitivity scales with distance so zoom feels consistent at any range.
+     */
+    private zoomFaceMode(scale: number): void {
+        const robotPos = new THREE.Vector3().setFromMatrixPosition(this._focus)
+        const offset = this._focusPosition.clone().sub(robotPos)
+        const distance = offset.length()
+        if (distance < 0.01) return
+
+        const newDistance = THREE.MathUtils.clamp(
+            distance * (1 + scale * CO_FACE_ZOOM_SENSITIVITY),
+            CO_MIN_ZOOM,
+            CO_MAX_ZOOM
+        )
+        this._focusPosition.copy(robotPos).addScaledVector(offset.divideScalar(distance), newDistance)
     }
 
     // Fixed camera position, always faces towards robot
