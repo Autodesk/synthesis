@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material"
+import { Box, Stack, Tooltip } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import APS from "@/aps/APS"
@@ -15,7 +15,7 @@ import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton } from "./StyledComponents"
 import ConfigureControls from "./topbar/ConfigureControls"
 import ModeDropdown from "./topbar/ModeDropdown"
-import { TOP_BAR_HEIGHT } from "./topbar/topBarConfig"
+import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/topBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
 import UserIcon from "./UserIcon"
 
@@ -28,6 +28,8 @@ const TopBar: React.FC = () => {
     setOpenModal(openModal)
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
+    const [modeHovered, setModeHovered] = useState(false)
+    const [modeMenuOpen, setModeMenuOpen] = useState(false)
 
     useEffect(() => {
         // biome-ignore-start lint/suspicious/noExplicitAny: allow any
@@ -75,15 +77,32 @@ const TopBar: React.FC = () => {
             color="topBarText.main"
         >
             <Stack direction="row" alignItems="center" height="100%" gap={2}>
-                <ModeDropdown />
-                <IconButton
-                    size="large"
-                    sx={{ color: "topBarText.main" }}
-                    onClick={() => openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })}
+                <Tooltip
+                    title="Change Mode"
+                    disableFocusListener
+                    open={modeHovered && !modeMenuOpen}
+                    onOpen={() => setModeHovered(true)}
+                    onClose={() => setModeHovered(false)}
                 >
-                    <TopBarIcon name="add" size={28} />
-                </IconButton>
-                <Box sx={{ width: "1px", height: 36, bgcolor: "topBarText.main", opacity: 0.4 }} />
+                    <Box component="span" sx={{ display: "inline-flex" }}>
+                        <ModeDropdown onOpenChange={setModeMenuOpen} />
+                    </Box>
+                </Tooltip>
+                <Tooltip title="Add Assembly">
+                    <IconButton
+                        size="large"
+                        disableRipple
+                        sx={TOP_BAR_ICON_BUTTON_SX}
+                        onClick={() =>
+                            openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
+                        }
+                    >
+                        <TopBarIcon name="add" size={40} />
+                    </IconButton>
+                </Tooltip>
+
+                {/* Divider line */}
+                <Box sx={{ width: "2px", height: 38, bgcolor: "topBarText.main", opacity: 0.4 }} />
 
                 {appMode === "Configure" && <ConfigureControls />}
 
@@ -91,14 +110,16 @@ const TopBar: React.FC = () => {
 
                 <IconButton
                     size="large"
-                    sx={{ color: "topBarText.main" }}
+                    disableRipple
+                    sx={TOP_BAR_ICON_BUTTON_SX}
                     onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
                 >
                     <TopBarIcon name="settings" size={28} />
                 </IconButton>
                 <IconButton
                     size="large"
-                    sx={{ color: "topBarText.main" }}
+                    disableRipple
+                    sx={TOP_BAR_ICON_BUTTON_SX}
                     onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
                 >
                     {userInfo ? <UserIcon className="h-8 rounded-full" /> : <TopBarIcon name="login" size={28} />}

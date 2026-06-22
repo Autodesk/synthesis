@@ -19,24 +19,27 @@ const ModeLabel: React.FC<{ mode: AppMode }> = ({ mode }) => (
     </Stack>
 )
 
-const ModeDropdown: React.FC = () => {
+const ModeDropdown: React.FC<{ onOpenChange?: (open: boolean) => void }> = ({ onOpenChange }) => {
     const { appMode, setAppMode } = useStateContext()
 
     return (
         <Select
             value={appMode}
             onChange={e => setAppMode(e.target.value as AppMode)}
+            onOpen={() => onOpenChange?.(true)}
+            onClose={() => onOpenChange?.(false)}
             renderValue={value => <ModeLabel mode={value as AppMode} />}
-            IconComponent={_ => <IoMdArrowDropdown color="topBarText.main" fontSize="1.5em" />}
+            IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
             sx={{
                 bgcolor: "surface.main",
                 color: "topBarText.main",
-                borderRadius: 2,
+                borderRadius: 3,
                 height: 46,
-                minWidth: 200,
+                minWidth: 180,
                 fontSize: 17,
                 "& .MuiOutlinedInput-notchedOutline": { border: "none" },
                 "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0 },
+                "& .MuiSelect-icon": { color: "topBarText.main", right: 14 },
             }}
         >
             {APP_MODES.map(mode => (
