@@ -395,6 +395,7 @@ class SceneRenderer extends WorldSystem {
 
     public removeAllSceneObjects() {
         this._sceneObjects.forEach(obj => obj.dispose())
+        this._gizmosOnMirabuf.forEach(obj => obj.dispose())
         this._gizmosOnMirabuf.clear()
         this._sceneObjects.clear()
         this._mirabufObjects.clear()
@@ -410,6 +411,7 @@ class SceneRenderer extends WorldSystem {
             this._mirabufObjects.delete(obj)
             const objGizmo = this._gizmosOnMirabuf.get(id)
             if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
+
             World?.multiplayerSystem?.broadcast({
                 type: "deleteObject",
                 data: id as RemoteSceneObjectId,
