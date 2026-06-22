@@ -183,7 +183,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Developer Tool", acceptText: "Exit", hideCancel: true }, {})
+        configureScreen(panel!, { title: "Developer Tool", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     return (
