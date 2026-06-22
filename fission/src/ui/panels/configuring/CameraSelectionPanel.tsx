@@ -107,7 +107,9 @@ const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
         >
             <ToggleButton value={CameraMode.Follow}>Follow</ToggleButton>
             <ToggleButton value={CameraMode.Locked}>Locked</ToggleButton>
-            <ToggleButton value={CameraMode.Face} disabled={focusedOnField}>Face</ToggleButton>
+            <ToggleButton value={CameraMode.Face} disabled={focusedOnField}>
+                Face
+            </ToggleButton>
         </ToggleButtonGroup>
     )
 }
@@ -117,7 +119,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     // const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
     //     World.sceneRenderer.currentCameraControls.controlsType
     // )
-    
+
     // TODO add toggle button groups once more control types are available
     // const setCameraControls = useCallback((t: CameraControlsType) => {
     //     switch (t) {
