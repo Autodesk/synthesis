@@ -64,7 +64,7 @@ describe("ScoringZoneSceneObject", () => {
                         deltaTransformation: [1, 2, 3, 4],
                         alliance: "red",
                         points: 10,
-                        persistentPoints: false,
+                        shouldPointsAccumulate: true,
                     },
                 ],
             },
@@ -79,7 +79,7 @@ describe("ScoringZoneSceneObject", () => {
 
     test("ZoneCollision updates score", () => {
         const instance = new ScoringZoneSceneObject({} as unknown as MirabufSceneObject, 0)
-        Reflect.set(instance, "_prefs", { persistentPoints: false, alliance: "red", points: 10 })
+        Reflect.set(instance, "_prefs", { shouldPointsAccumulate: true, alliance: "red", points: 10 })
         const gamePieceBody = {} as unknown as Jolt.BodyID
         mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, associatedBody: 0 }))
         const dispatchSpy = vi.fn()

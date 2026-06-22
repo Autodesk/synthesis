@@ -222,6 +222,11 @@ class PreferencesSystem {
         this.savePreferences()
     }
 
+    public static graphicsPreferencesAreLow(): boolean {
+        const current = this.getGraphicsPreferences()
+        return current.fancyShadows === false && current.antiAliasing === false
+    }
+
     /** Loads all preferences from local storage. */
     public static loadPreferences() {
         const loadedPrefs = window.localStorage.getItem(this._localStorageKey)
