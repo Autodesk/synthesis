@@ -218,7 +218,7 @@ type GraphicsPreset = "low" | "medium" | "high" | "custom"
 
 const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [reload, setReload] = useState<boolean>(false)
-    const [selectedPreset, setSelectedPreset] = useState<GraphicsPreset>("custom")
+    const [selectedGraphicsPreset, setSelectedGraphicsPreset] = useState<GraphicsPreset>("custom")
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
     )
@@ -238,7 +238,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
         )
     }
 
-    const getPresetForPreferences = (prefs: GraphicsPreferences): GraphicsPreset => {
+    const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
         const lowPrefs = lowGraphicsPreferences()
         if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
             return "low"
@@ -264,17 +264,17 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
         setShadowMapSize(prefs.shadowMapSize)
         setAntiAliasing(prefs.antiAliasing)
         World.sceneRenderer.changeLighting(prefs.fancyShadows)
-        setSelectedPreset(getPresetForPreferences(prefs))
+        setSelectedGraphicsPreset(getGraphicsPreset(prefs))
     }
 
     useEffect(() => {
         const current = PreferencesSystem.getGraphicsPreferences()
-        setSelectedPreset(getPresetForPreferences(current))
+        setSelectedGraphicsPreset(getGraphicsPreset(current))
     }, [])
 
     useEffect(() => {
-        setSelectedPreset(
-            getPresetForPreferences({
+        setSelectedGraphicsPreset(
+            getGraphicsPreset({
                 lightIntensity,
                 fancyShadows,
                 maxFar,
@@ -317,7 +317,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 setAntiAliasing(g.antiAliasing)
                 setReload(false)
                 World.sceneRenderer.changeLighting(g.fancyShadows)
-                setSelectedPreset(getPresetForPreferences(g))
+                setSelectedGraphicsPreset(getGraphicsPreset(g))
             },
             requiresReload: reload,
         }
@@ -328,10 +328,10 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
         <Stack gap={2}>
             <Label size="md">Graphics Presets</Label>
             <Select
-                value={selectedPreset}
+                value={selectedGraphicsPreset}
                 onChange={e => {
                     const preset = e.target.value as GraphicsPreset
-                    setSelectedPreset(preset)
+                    setSelectedGraphicsPreset(preset)
                     if (preset === "low") applyGraphicsPreferencesLocally(lowGraphicsPreferences())
                     else if (preset === "medium") applyGraphicsPreferencesLocally(mediumGraphicsPreferences())
                     else if (preset === "high") applyGraphicsPreferencesLocally(highGraphicsPreferences())
