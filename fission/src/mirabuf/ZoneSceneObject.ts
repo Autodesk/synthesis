@@ -86,13 +86,13 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
     // Creates a default sensor
     // Sets `this._joltBodyId` to equal the body id of the new sensor
     private createDefaultSensor() {
-        const _unitVector = new JOLT.Vec3(1, 1, 1)
+        const unitVector = new JOLT.Vec3(1, 1, 1)
 
-        const settings = new JOLT.BoxShapeSettings(_unitVector)
+        const settings = new JOLT.BoxShapeSettings(unitVector)
         this.joltBodyId = World.physicsSystem.createSensor(settings)
 
         JOLT.destroy(settings)
-        JOLT.destroy(_unitVector)
+        JOLT.destroy(unitVector)
     }
 
     // Position/rotate/scale sensor to settings
@@ -141,10 +141,6 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
         this.setSensorProperties(props, this.joltBodyId)
 
         if (!this.mesh) return
-
-        // NOTE for reviewer
-        // `this._toRender` is only used by `update`, `setup`, and `constructor`
-        // so me flipping this return is fine and only improves readability
 
         this.toRender = PreferencesSystem.getGlobalPreference("RenderProtectedZones")
         if (!this.toRender) {
