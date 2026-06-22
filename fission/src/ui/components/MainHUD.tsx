@@ -9,7 +9,6 @@ import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { deobf } from "@/util/Utility"
-import { useThemeContext } from "../helpers/ThemeProviderHelpers"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
@@ -49,7 +48,6 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-    const { mode } = useThemeContext()
     const { openModal, openPanel, addToast } = useUIContext()
     const [isOpen, setIsOpen] = useState(false)
 
@@ -158,7 +156,7 @@ const MainHUD: React.FC = () => {
                             MozUserSelect: "none",
                             msUserSelect: "none",
                             WebkitUserSelect: "none",
-                            filter: mode === "dark" ? "invert(1)" : "none",
+                            filter: "invert(1)",
                         }}
                         draggable={false}
                         onDragStart={e => e.preventDefault()}
