@@ -3,7 +3,6 @@ import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
 import type { LayerReserve } from "./PhysicsSystem"
-import World from "../World"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID

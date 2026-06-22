@@ -378,16 +378,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
             if (!jBodyId) return
 
-            const offset = convertJoltRVec3ToJoltVec3(
-                // TODO for azalea
-                // FIX THIS
-                World.physicsSystem
-                    .getBody(jBodyId)
-                    .GetPosition()
-                    .Sub(bodyCenter)
-            )
-
+            const position = World.physicsSystem.getBody(jBodyId).GetPosition()
+            const rOffset = position.Sub(bodyCenter)
+            const offset = convertJoltRVec3ToJoltVec3(rOffset)
             const newPos = convertJoltVec3ToJoltRVec3(initialTranslation, false)
+
             World.physicsSystem.setBodyPositionRotationAndVelocity(
                 jBodyId,
                 newPos,
@@ -397,6 +392,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 false
             )
 
+            JOLT.destroy(position)
+            JOLT.destroy(rOffset)
             JOLT.destroy(offset)
             JOLT.destroy(newPos)
         })
