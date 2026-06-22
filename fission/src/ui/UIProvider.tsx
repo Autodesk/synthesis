@@ -28,6 +28,17 @@ export type UIProviderProps = {
     children?: ReactNode
 }
 
+const isPlainObject = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null
+
+function shallowEqualProps(a: unknown, b: unknown): boolean {
+    if (a === b) return true
+    if (!isPlainObject(a) || !isPlainObject(b)) return false
+    const aKeys = Object.keys(a)
+    const bKeys = Object.keys(b)
+    if (aKeys.length !== bKeys.length) return false
+    return aKeys.every(k => a[k] === b[k])
+}
+
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
@@ -103,11 +114,13 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PANEL_PROPS
         ) => {
             // Dupe check
-            const isDuplicate = panels.some(p => p.content === content)
-            if (isDuplicate) {
-                const existing = panels.find(p => p.content === content)!
-                setPanels(p => [...p.filter(x => x !== existing), existing])
-                return existing.id
+            const existingDuplicate = panels.find(p => p.content === content)
+            if (existingDuplicate) {
+                const existingCustom = (existingDuplicate.props as { custom?: P }).custom
+                if (customProps === undefined || shallowEqualProps(customProps, existingCustom)) {
+                    setPanels(p => [...p.filter(x => x !== existingDuplicate), existingDuplicate])
+                    return existingDuplicate.id
+                }
             }
             const id = uuidv4()
             const panel = {
