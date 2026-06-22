@@ -1,6 +1,6 @@
 import type React from "react"
 import { useEffect, useState } from "react"
-import { CameraMode, type CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { CameraMode, type CustomTargetControls } from "@/systems/scene/CameraControls"
 import EventSystem from "@/systems/EventSystem"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -12,15 +12,15 @@ import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { MenuItem } from "@mui/material"
 
-interface OrbitSettingsProps {
-    controls: CustomOrbitControls
+interface TargetSettingsProps {
+    controls: CustomTargetControls
 }
 
 CommandRegistry.get().registerCommand({
     id: "open-camera-config",
     label: "Open Camera Configuration",
     description: "Open the Camera Config panel",
-    keywords: ["camera", "config", "orbit", "follow", "locked", "face"],
+    keywords: ["camera", "config", "target", "follow", "locked", "face"],
     perform: () => import("./CameraSelectionPanel").then(m => globalOpenPanel(m.default, undefined)),
 })
 
@@ -32,7 +32,7 @@ function getFocusTargets(): MirabufSceneObject[] {
     return [...robots, ...(field ? [field] : [])]
 }
 
-const FocusSelector: React.FC<{ controls: CustomOrbitControls }> = ({ controls }) => {
+const FocusSelector: React.FC<{ controls: CustomTargetControls }> = ({ controls }) => {
     const [targets, setTargets] = useState<MirabufSceneObject[]>(getFocusTargets)
     const [focusedId, setFocusedId] = useState<number>(controls.focusProvider?.id ?? UNFOCUSED_ID)
 
@@ -76,7 +76,7 @@ const FocusSelector: React.FC<{ controls: CustomOrbitControls }> = ({ controls }
     )
 }
 
-const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
+const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
     const [mode, setMode] = useState<CameraMode>(controls.mode)
     const [focusedOnField, setFocusedOnField] = useState<boolean>(controls.isFocusedOnField)
 
@@ -123,7 +123,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     // TODO add toggle button groups once more control types are available
     // const setCameraControls = useCallback((t: CameraControlsType) => {
     //     switch (t) {
-    //         case "Orbit":
+    //         case "Target":
     //             World.sceneRenderer.setCameraControls(t)
     //             setCameraControlType(t)
     //             break
@@ -139,8 +139,8 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     return (
         <div className="flex flex-col gap-2">
-            <FocusSelector controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
-            <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
+            <FocusSelector controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
+            <TargetSettings controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
         </div>
     )
 }

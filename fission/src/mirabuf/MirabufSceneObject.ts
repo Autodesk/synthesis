@@ -25,7 +25,7 @@ import {
     type SpawnLocation,
     type Station,
 } from "@/systems/preferences/PreferenceTypes"
-import { CameraMode, type CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { CameraMode, type CustomTargetControls } from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
@@ -289,7 +289,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.moveToSpawnLocation()
 
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
 
         if (this.isOwnObject && (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider)) {
             cameraControls.focusProvider = this
@@ -916,7 +916,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         mat.setPosition(center)
     }
 
-    private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomOrbitControls) {
+    private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomTargetControls) {
         const modes = [
             { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
             { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
@@ -972,8 +972,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             })
         }
 
-        if (World.sceneRenderer.currentCameraControls.controlsType == "Orbit") {
-            const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+        if (World.sceneRenderer.currentCameraControls.controlsType == "Target") {
+            const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
             if (cameraControls.focusProvider == this) {
                 data.items.push({
                     name: "Camera: Unfocus",

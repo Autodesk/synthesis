@@ -3,7 +3,7 @@ import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { CustomTargetControls } from "@/systems/scene/CameraControls"
 import World from "@/systems/World"
 
 interface ViewCubeProps {
@@ -109,7 +109,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
             const controls = World.sceneRenderer.currentCameraControls
-            if (controls instanceof CustomOrbitControls) {
+            if (controls instanceof CustomTargetControls) {
                 const currentCoords = controls.getCurrentCoordinates()
 
                 const newTheta = currentCoords.theta - deltaX * sensitivity
@@ -285,7 +285,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     const getTopBottomOrientation = (isTop: boolean) => {
         if (World && World.sceneRenderer && World.sceneRenderer.currentCameraControls) {
             const controls = World.sceneRenderer.currentCameraControls
-            if (controls instanceof CustomOrbitControls) {
+            if (controls instanceof CustomTargetControls) {
                 const currentCoords = controls.getCurrentCoordinates()
 
                 const quarterTurn = Math.PI / 2
@@ -851,7 +851,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
     const snapToOrientation = (orientation: { theta: number; phi: number }) => {
         const controls = World.sceneRenderer.currentCameraControls
-        if (controls instanceof CustomOrbitControls) {
+        if (controls instanceof CustomTargetControls) {
             const currentCoords = controls.getCurrentCoordinates()
 
             const normalizedCurrentTheta = normalizeTheta(currentCoords.theta)

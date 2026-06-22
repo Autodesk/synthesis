@@ -54,7 +54,7 @@ vi.mock("@/systems/World", () => ({
 }))
 
 vi.mock("@/systems/scene/CameraControls", () => ({
-    CustomOrbitControls: vi.fn().mockImplementation(() => ({
+    CustomTargetControls: vi.fn().mockImplementation(() => ({
         dispose: vi.fn(),
         update: vi.fn(),
     })),
@@ -393,7 +393,7 @@ describe("SceneRenderer", () => {
         test("should set camera controls", () => {
             const initialControls = sceneRenderer.currentCameraControls
 
-            sceneRenderer.setCameraControls("Orbit")
+            sceneRenderer.setCameraControls("Target")
 
             expect(initialControls.dispose).toHaveBeenCalled()
             expect(sceneRenderer.currentCameraControls).toBeDefined()

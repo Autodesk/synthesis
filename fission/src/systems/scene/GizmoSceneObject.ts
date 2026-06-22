@@ -96,7 +96,7 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.attach(this._obj)
 
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
-            // disable orbit controls when dragging the transform gizmo
+            // disable target controls when dragging the transform gizmo
             const gizmoDragging = World.sceneRenderer.isAnyGizmoDragging()
             World.sceneRenderer.currentCameraControls.enabled = !event.value && !gizmoDragging
 

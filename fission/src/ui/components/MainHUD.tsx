@@ -215,12 +215,6 @@ const MainHUD: React.FC = () => {
                     >
                         Developer Tool
                     </MainHUDButton>
-                    {/** Will be coming soonish...tm */}
-                    {/* <MainHUDButton
-                        value={"View"}
-                        icon={SynthesisIcons.MAGNIFYING_GLASS}
-                        onClick={() => openModal(<ViewModal />, undefined)}
-                    /> */}
                     <MainHUDButton
                         startIcon={SynthesisIcons.BUG}
                         onClick={() => {

@@ -13,7 +13,7 @@ import {
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
 
-export type CameraControlsType = "Orbit"
+export type CameraControlsType = "Target"
 
 export enum CameraMode {
     Follow = "Follow",
@@ -120,7 +120,7 @@ interface FocusBlend {
     startFocus: THREE.Matrix4
 }
 
-export class CustomOrbitControls extends CameraControls {
+export class CustomTargetControls extends CameraControls {
     private _enabled = true
 
     private _mainCamera: THREE.Camera
@@ -155,7 +155,7 @@ export class CustomOrbitControls extends CameraControls {
         EventSystem.dispatch("CameraModeChangedEvent", { mode: val })
 
         if (val === CameraMode.Face) {
-            // Face mode drives the camera directly and ignores orbit coords
+            // Face mode drives the camera directly and ignores target coords
             this._pendingResync = undefined
             this._focusPosition.copy(this._mainCamera.position)
         } else {
@@ -164,7 +164,7 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     /**
-     * Recalculates orbit coords so the camera stays at worldPos after the focus changes.
+     * Recalculates target coords so the camera stays at worldPos after the focus changes.
      * In Locked mode uses robot-local space. in Follow/Face uses world-space offset from focus.
      */
     private syncCoordsFromWorldPos(worldPos: THREE.Vector3): void {
@@ -278,7 +278,7 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
-        super("Orbit")
+        super("Target")
 
         this._mainCamera = mainCamera
         this._interactionHandler = interactionHandler

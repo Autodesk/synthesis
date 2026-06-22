@@ -10,7 +10,7 @@ import { rayCastForRigidBody } from "@/util/RaycastUtils"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
-import { CameraMode, type CustomOrbitControls } from "./CameraControls"
+import { CameraMode, type CustomTargetControls } from "./CameraControls"
 import {
     type InteractionEnd,
     type InteractionMove,
@@ -304,7 +304,7 @@ class DragModeSystem extends WorldSystem {
         }
 
         // Face mode should keep the camera enabled tracking the target
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
         if (cameraControls.mode !== CameraMode.Face) {
             cameraControls.enabled = false
         }
@@ -356,7 +356,7 @@ class DragModeSystem extends WorldSystem {
         // Remove debug sphere when dragging stops
         this.removeDebugSphere()
 
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
         cameraControls.enabled = true
         if (shouldTransition) {
             cameraControls.settleOntoFocus(targetSceneObject, DragModeSystem.CAMERA_SETTLE_DURATION)
