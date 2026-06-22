@@ -573,9 +573,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
                         const com = body.GetCenterOfMassPosition().Mul(mass)
                         weightedCOM = weightedCOM.AddRVec3(com)
-                        JOLT.destroy(com)
-
                         totalMass += mass
+
+                        JOLT.destroy(com)
                     }
                 }
             })

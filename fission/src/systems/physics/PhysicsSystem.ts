@@ -629,7 +629,8 @@ class PhysicsSystem extends WorldSystem {
         const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 
         const wheelSettings = new JOLT.WheelSettingsWV()
-        wheelSettings.mPosition = convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))
+        const scaledAxis = axis.Mul(0.1)
+        wheelSettings.mPosition = convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(scaledAxis))
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
         wheelSettings.mRadius = radius * 1.05
@@ -679,8 +680,9 @@ class PhysicsSystem extends WorldSystem {
 
         JOLT.destroy(jointOrigin)
         JOLT.destroy(jointOriginOffset)
-        JOLT.destroy(vehicleSettings)
         JOLT.destroy(axis)
+        JOLT.destroy(scaledAxis)
+        JOLT.destroy(vehicleSettings)
 
         this._constraints.push(fixedConstraint, vehicleConstraint)
         return [fixedConstraint, vehicleConstraint, listener]
@@ -830,6 +832,9 @@ class PhysicsSystem extends WorldSystem {
             return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
         })()
 
+        const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
+        const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
+
         nonPhysicsNodes.forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
             let shapesAdded = 0
@@ -845,18 +850,17 @@ class PhysicsSystem extends WorldSystem {
 
             const comAccum = new mirabuf.Vector3()
 
-            const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
-            const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
-
             const rnLayer: number = reservedLayer
                 ? reservedLayer
                 : rn.id.endsWith(GAMEPIECE_SUFFIX)
                   ? LAYER_GENERAL_DYNAMIC
                   : LAYER_FIELD
 
-            rn.parts.forEach(partId => {
+            const constructPartDefinition = (
+                partId: string
+            ): [mirabuf.IPartDefinition, mirabuf.IPartInstance] | [undefined, undefined] => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
-                if (partInstance.skipCollider) return
+                if (partInstance.skipCollider) return [undefined, undefined]
 
                 const partDefinition =
                     parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
@@ -875,7 +879,7 @@ class PhysicsSystem extends WorldSystem {
 
                 if (!partShapeResult) {
                     console.warn("Skipping collider (no valid shape settings)", debugLabel)
-                    return
+                    return [undefined, undefined]
                 }
 
                 const [shapeSettings, partMin, partMax] = partShapeResult
@@ -883,19 +887,30 @@ class PhysicsSystem extends WorldSystem {
                 const transform = convertThreeMatrix4ToJoltMat44(parser.globalTransforms.get(partId)!)
                 const translation = transform.GetTranslation()
                 const rotation = transform.GetQuaternion()
+
+                // NOTE
+                // `AddShape` consumes `translation` and `rotation`
                 compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
                 shapesAdded++
 
                 this.updateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
                 this.updateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
 
-                // TODO
-                // Figure out why these destructions break things
-                // JOLT.destroy(minBounds)
-                // JOLT.destroy(maxBounds)
                 JOLT.destroy(partMin)
                 JOLT.destroy(partMax)
                 JOLT.destroy(transform)
+
+                return [partDefinition, partInstance]
+            }
+
+            // NOTE
+            // Including these destructions breaks things
+            // JOLT.destroy(minBounds)
+            // JOLT.destroy(maxBounds)
+
+            rn.parts.forEach(partId => {
+                const [partDefinition, partInstance] = constructPartDefinition(partId)
+                if (!partDefinition) return
 
                 const physicalMaterial =
                     parser.assembly.data!.materials!.physicalMaterials![
