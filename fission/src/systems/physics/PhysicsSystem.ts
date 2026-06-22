@@ -26,6 +26,7 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
+import { assert } from "vitest"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -115,15 +116,15 @@ class PhysicsSystem extends WorldSystem {
         setupCollisionFiltering(joltSettings)
 
         this._joltInterface = new JOLT.JoltInterface(joltSettings)
-        JOLT.destroy(joltSettings)
 
         this._joltPhysSystem = this._joltInterface.GetPhysicsSystem()
         this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface()
         this.setUpContactListener(this._joltPhysSystem)
 
+        // NOTE
+        // Held by the Jolt Physics System
         const gravityVector = new JOLT.Vec3(0, -9.8, 0)
         this._joltPhysSystem.SetGravity(gravityVector)
-        JOLT.destroy(gravityVector)
 
         this._joltPhysSystem.GetPhysicsSettings().mDeterministicSimulation = false
         this._joltPhysSystem.GetPhysicsSettings().mSpeculativeContactDistance = 0.06
@@ -629,8 +630,10 @@ class PhysicsSystem extends WorldSystem {
         const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 
         const wheelSettings = new JOLT.WheelSettingsWV()
+
         const scaledAxis = axis.Mul(0.1)
         wheelSettings.mPosition = convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(scaledAxis))
+
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
         wheelSettings.mRadius = radius * 1.05
@@ -1173,7 +1176,7 @@ class PhysicsSystem extends WorldSystem {
     public rayCast(
         from: Jolt.Vec3,
         dir: Jolt.Vec3,
-        destroy: boolean = false,
+        destroy: boolean = true,
         ...ignoreBodies: Jolt.BodyID[]
     ): RayCastHit | undefined {
         const rayVec = convertJoltVec3ToJoltRVec3(from, destroy)

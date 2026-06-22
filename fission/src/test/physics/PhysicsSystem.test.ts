@@ -417,9 +417,6 @@ describe("Raycast System", () => {
         expect(hit).toBeDefined()
         expect(hit!.point.GetY()).toBeGreaterThan(0)
         expect(hit!.point.GetY()).toBeLessThan(6)
-
-        JOLT.destroy(from)
-        JOLT.destroy(direction)
     })
 
     test("Raycast Miss", () => {
@@ -427,11 +424,7 @@ describe("Raycast System", () => {
         const direction = new JOLT.Vec3(0, 5, 0) // Ray pointing up but offset
 
         const hit = system.rayCast(from, direction)
-
         expect(hit).toBeUndefined()
-
-        JOLT.destroy(from)
-        JOLT.destroy(direction)
     })
 
     test("Raycast with Ignored Bodies", () => {

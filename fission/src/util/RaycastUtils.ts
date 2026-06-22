@@ -3,6 +3,7 @@ import type * as THREE from "three"
 import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "./TypeConversions"
+import { assert } from "vitest"
 
 export function rayCastForRigidBody(
     mousePos: [number, number]
@@ -33,5 +34,5 @@ export function rayCastForRigidBody(
 
     const association = World.physicsSystem.getBodyAssociation(hit.data.mBodyID) as RigidNodeAssociate
 
-    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point), association }
+    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point, false), association }
 }

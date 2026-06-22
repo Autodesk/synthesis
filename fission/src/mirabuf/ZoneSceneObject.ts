@@ -14,7 +14,7 @@ import {
 import { deltaFieldTransformsPhysicalProp, VisualProperties } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
 
-export default abstract class ZoneSceneObject<P> extends SceneObject {
+export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
     // Colors
     public static redMaterial = new THREE.MeshPhongMaterial({
         color: 0xff0000,
@@ -35,17 +35,12 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
         transparent: true,
     })
 
-    // TODO check that the keys here are correct
-    private static prefToRenderKeys: Record<string, "RenderProtectedZones" | "RenderScoringZones"> = {
-        ProtectedZonePreferences: "RenderProtectedZones",
-        ScoringZonePreferences: "RenderScoringZones",
-    }
-
     private _parentAssembly: MirabufSceneObject
     public parentBodyId?: Jolt.BodyID
     public deltaTransformation?: THREE.Matrix4
 
     public prefs: ZonePreferencesShared & P
+    private preferenceKey: keyof GlobalPreferences
 
     public toRender: boolean | undefined
     public joltBodyId?: Jolt.BodyID
@@ -55,6 +50,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
     public constructor(
         parentAssembly: MirabufSceneObject,
         prefs: ZonePreferencesShared & P, // TODO maybe switch to `ZonePreferences`
+        preferenceKey: keyof GlobalPreferences,
         render?: boolean
     ) {
         super()
@@ -62,6 +58,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
         this._parentAssembly = parentAssembly
         this.toRender = render
         this.prefs = prefs
+        this.preferenceKey = preferenceKey
     }
 
     public setup() {
@@ -147,7 +144,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
 
         if (!this.mesh) return
 
-        this.toRender = PreferencesSystem.getGlobalPreference(ZoneSceneObject.prefToRenderKeys[typeof this])
+        this.toRender = PreferencesSystem.getGlobalPreference(this.preferenceKey) as boolean | undefined
         if (!this.toRender) {
             this.mesh.material = ZoneSceneObject.transparentMaterial
             return

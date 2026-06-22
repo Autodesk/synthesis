@@ -19,7 +19,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
-        super(parentAssembly, parentAssembly.fieldPreferences?.scoringZones[index]!, render)
+        super(parentAssembly, parentAssembly.fieldPreferences?.scoringZones[index]!, "RenderScoringZones", render)
 
         this.toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")
     }
