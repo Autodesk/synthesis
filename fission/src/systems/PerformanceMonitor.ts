@@ -27,7 +27,7 @@ export class PerformanceMonitoringSystem extends WorldSystem {
                 const oldActive = this.activeCount
                 this.activeCount = this.antiCount
                 this.antiCount = oldActive
-                if (this.isCritical) {
+                if (this.isCritical && !PreferencesSystem.graphicsPreferencesAreLow()) {
                     PreferencesSystem.resetGraphicsPreferences()
                     World.sceneRenderer.changeCSMSettings(PreferencesSystem.getGraphicsPreferences())
                     globalOpenModal(SettingsModal, { initialTab: "graphics" })

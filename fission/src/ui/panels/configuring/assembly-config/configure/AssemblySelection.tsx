@@ -1,8 +1,6 @@
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import InputSystem from "@/systems/input/InputSystem.ts"
-import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import World from "@/systems/World.ts"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
@@ -35,11 +33,8 @@ export class AssemblySelectionOption extends SelectMenuOption {
     }
 }
 
-function makeSelectionOption(configurationType: ConfigurationType, assembly: MirabufSceneObject) {
-    return new AssemblySelectionOption(
-        `${configurationType === "ROBOTS" ? `[${assembly.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${assembly.assemblyName}`,
-        assembly
-    )
+function makeSelectionOption(assembly: MirabufSceneObject) {
+    return new AssemblySelectionOption(assembly.descriptiveName, assembly)
 }
 
 const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, ConfigurePanelCustomProps>> = ({
@@ -63,9 +58,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
 
     const computeOptions = useCallback(() => {
         const items: MirabufSceneObject[] = configurationType === "ROBOTS" ? getRobots() : getFields()
-        return items
-            .filter(assembly => assembly != null)
-            .map(assembly => makeSelectionOption(configurationType, assembly))
+        return items.filter(assembly => assembly != null).map(assembly => makeSelectionOption(assembly))
     }, [getRobots, getFields, configurationType])
 
     const [options, setOptions] = useState<AssemblySelectionOption[]>(computeOptions)
@@ -99,9 +92,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
                 setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
-            defaultSelectedOption={
-                selectedAssembly ? makeSelectionOption(configurationType, selectedAssembly) : undefined
-            }
+            defaultSelectedOption={selectedAssembly ? makeSelectionOption(selectedAssembly) : undefined}
         />
     )
 }

@@ -1,8 +1,8 @@
 import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
-import type React from "react"
 import type { FunctionComponent, ReactNode } from "react"
+import type React from "react"
 import { useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
@@ -23,6 +23,7 @@ import {
     type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
+import InputSystem from "@/systems/input/InputSystem.ts"
 
 export type UIProviderProps = {
     children?: ReactNode
@@ -43,6 +44,7 @@ function shallowEqualProps(a: unknown, b: unknown): boolean {
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
+
     const [_, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
@@ -63,6 +65,27 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         ...DEFAULT_PROPS,
         position: "right",
     } as PanelProps<any>
+
+    InputSystem.escapeKeyListeners[1] = () => {
+        if (modal != null) {
+            if (!modal.props.hideCancel) {
+                closeModal(CloseType.Cancel)
+            }
+            return true
+        }
+        return false
+    }
+
+    InputSystem.escapeKeyListeners[2] = () => {
+        if (panels.length > 0) {
+            const panel = panels[panels.length - 1]
+            if (!panel.props.hideCancel) {
+                closePanel(panel.id, CloseType.Cancel)
+                return true
+            }
+        }
+        return false
+    }
 
     const openModal: OpenModalFn = useCallback(
         <T, P>(
