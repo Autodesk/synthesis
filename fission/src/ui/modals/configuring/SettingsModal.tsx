@@ -268,11 +268,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     }
 
     useEffect(() => {
-        const current = PreferencesSystem.getGraphicsPreferences()
-        setSelectedGraphicsPreset(getGraphicsPreset(current))
-    }, [])
-
-    useEffect(() => {
         setSelectedGraphicsPreset(
             getGraphicsPreset({
                 lightIntensity,
