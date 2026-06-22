@@ -10,6 +10,7 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { IconButton, Select } from "../StyledComponents"
+import { TOP_BAR_ICON_BUTTON_SX } from "./topBarConfig"
 import { TopBarIcon, type TopBarIconName } from "./TopBarIcons"
 
 const CONFIGURE_BUTTONS: TopBarIconName[] = ["cfg-1", "cfg-2", "cfg-3", "cfg-4", "cfg-5"]
@@ -62,16 +63,17 @@ const ConfigureControls: React.FC = () => {
                 renderValue={() =>
                     selectedConfigAssembly ? assemblyLabel(selectedConfigAssembly) : "Select an assembly"
                 }
-                IconComponent={_ => <IoMdArrowDropdown color="topBarText.main" fontSize="1.5em" />}
+                IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
                 sx={{
                     bgcolor: "surface.main",
                     color: "topBarText.main",
-                    borderRadius: 2,
+                    borderRadius: 3,
                     height: 46,
-                    minWidth: 200,
+                    minWidth: 220,
                     fontSize: 16,
                     "& .MuiOutlinedInput-notchedOutline": { border: "none" },
                     "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0 },
+                    "& .MuiSelect-icon": { color: "topBarText.main", right: 14 },
                 }}
             >
                 {assemblies.length === 0 && (
@@ -86,7 +88,7 @@ const ConfigureControls: React.FC = () => {
                 ))}
             </Select>
             {CONFIGURE_BUTTONS.map(name => (
-                <IconButton key={name} size="large" sx={{ color: "topBarText.main" }}>
+                <IconButton key={name} size="large" disableRipple sx={TOP_BAR_ICON_BUTTON_SX}>
                     <TopBarIcon name={name} size={26} />
                 </IconButton>
             ))}

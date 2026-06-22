@@ -5,3 +5,12 @@
  * rendered (mobile) no space is reserved and the scene fills the viewport.
  */
 export const TOP_BAR_HEIGHT = 64
+
+/**
+ * Shared `sx` for top bar icon buttons. Strips MUI's default circular hover
+ * background so the bare icon shows on hover.
+ */
+export const TOP_BAR_ICON_BUTTON_SX = {
+    color: "topBarText.main",
+    "&:hover": { backgroundColor: "transparent" },
+} as const

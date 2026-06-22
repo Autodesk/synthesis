@@ -6,17 +6,17 @@ import type React from "react"
  * no code change required.
  */
 export const TOP_BAR_ICONS = {
-    "mode-configure": "/icons/configure-icon.svg",
+    "mode-configure": "/icons/mode-configure.svg",
     "mode-codesim": "/icons/mode-codesim.svg",
     "mode-gameplay": "/icons/mode-gameplay.svg",
     add: "/icons/add-icon.svg",
-    settings: "/icons/settings-icon.svg",
-    login: "/icons/login.svg",
-    "cfg-1": "/icons/cfg-1.svg",
-    "cfg-2": "/icons/cfg-2.svg",
-    "cfg-3": "/icons/cfg-3.svg",
-    "cfg-4": "/icons/ejector-icon.svg",
-    "cfg-5": "/icons/cfg-5.svg",
+    settings: "/icons/settings.svg",
+    login: "/icons/adsk-login.svg",
+    "cfg-1": "/icons/cfg-inputs.svg",
+    "cfg-2": "/icons/cfg-drivetrain.svg",
+    "cfg-3": "/icons/cfg-intake.svg",
+    "cfg-4": "/icons/cfg-ejector.svg",
+    "cfg-5": "/icons/cfg-joints.svg",
 } as const
 
 export type TopBarIconName = keyof typeof TOP_BAR_ICONS
