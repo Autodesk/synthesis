@@ -1,20 +1,24 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true, "defaultBranch": "dev" },
-  "files": { "ignoreUnknown": false },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "dev"
+  },
+  "files": {
+    "ignoreUnknown": false
+  },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
-    "indentStyle": "space",
-    "indentWidth": 4,
-    "lineEnding": "lf",
     "lineWidth": 120,
     "attributePosition": "auto",
     "bracketSameLine": false,
     "bracketSpacing": true,
     "expand": "auto",
     "useEditorconfig": true,
-    "includes": ["src/**", "!dist"]
+    "includes": ["**", "!dist"]
   },
   "linter": {
     "enabled": true,
@@ -74,51 +78,131 @@
             "strictCase": false,
             "requireAscii": true,
             "conventions": [
-              { "selector": { "kind": "class" }, "match": "([^_]*)", "formats": ["PascalCase"] },
               {
-                "selector": { "kind": "classProperty", "modifiers": ["readonly", "static"] },
+                "selector": {
+                  "kind": "class"
+                },
+                "match": "([^_]*)",
+                "formats": ["PascalCase"]
+              },
+              {
+                "selector": {
+                  "kind": "classProperty",
+                  "modifiers": ["readonly", "static"]
+                },
                 "match": "[^_]((.*)[^_])?",
                 "formats": ["CONSTANT_CASE"]
               },
-              { "selector": { "kind": "classMethod" }, "match": "([^_]*)", "formats": ["camelCase"] },
               {
-                "selector": { "kind": "classMember", "modifiers": ["private"] },
+                "selector": {
+                  "kind": "classMethod"
+                },
+                "match": "([^_]*)",
+                "formats": ["camelCase"]
+              },
+              {
+                "selector": {
+                  "kind": "classMember",
+                  "modifiers": ["private"]
+                },
                 "match": "_([^_]*)",
                 "formats": ["camelCase"]
               },
-
-              { "selector": { "kind": "enumMember" }, "match": "[^_]((.*)[^_])?", "formats": ["CONSTANT_CASE"] },
-              { "selector": { "kind": "function" }, "match": "([^_]*)", "formats": ["camelCase"] },
-
-              { "selector": { "kind": "objectLiteralMethod" }, "match": "([^_]*)", "formats": ["camelCase"] },
               {
-                "selector": { "kind": "objectLiteralProperty" },
+                "selector": {
+                  "kind": "enumMember"
+                },
+                "match": "[^_]((.*)[^_])?",
+                "formats": ["CONSTANT_CASE"]
+              },
+              {
+                "selector": {
+                  "kind": "function"
+                },
+                "match": "([^_]*)",
+                "formats": ["camelCase"]
+              },
+              {
+                "selector": {
+                  "kind": "objectLiteralMethod"
+                },
+                "match": "([^_]*)",
+                "formats": ["camelCase"]
+              },
+              {
+                "selector": {
+                  "kind": "objectLiteralProperty"
+                },
                 "match": "[^_]((.*)[^_])?",
                 "formats": ["camelCase", "snake_case", "PascalCase", "CONSTANT_CASE"]
               },
-              { "selector": { "kind": "typeMethod" }, "match": "(.*)[^_]", "formats": ["camelCase"] },
-              { "selector": { "kind": "typeProperty" }, "match": "(.*)[^_]", "formats": ["camelCase", "PascalCase"] },
-              { "selector": { "kind": "classMethod" }, "match": "(.*)[^_]", "formats": ["camelCase"] },
               {
-                "selector": { "kind": "importNamespace" },
+                "selector": {
+                  "kind": "typeMethod"
+                },
+                "match": "(.*)[^_]",
+                "formats": ["camelCase"]
+              },
+              {
+                "selector": {
+                  "kind": "typeProperty"
+                },
+                "match": "(.*)[^_]",
+                "formats": ["camelCase", "PascalCase"]
+              },
+              {
+                "selector": {
+                  "kind": "classMethod"
+                },
+                "match": "(.*)[^_]",
+                "formats": ["camelCase"]
+              },
+              {
+                "selector": {
+                  "kind": "importNamespace"
+                },
                 "match": "([^_]*)",
                 "formats": ["camelCase", "PascalCase", "CONSTANT_CASE"]
               },
               {
-                "selector": { "kind": "importAlias" },
+                "selector": {
+                  "kind": "importAlias"
+                },
                 "match": "([^_]*)",
                 "formats": ["camelCase", "PascalCase", "CONSTANT_CASE"]
               },
-
-              { "selector": { "kind": "functionParameter" }, "match": "([^_]*)", "formats": ["camelCase"] },
               {
-                "selector": { "kind": "const" },
+                "selector": {
+                  "kind": "functionParameter"
+                },
+                "match": "([^_]*)",
+                "formats": ["camelCase"]
+              },
+              {
+                "selector": {
+                  "kind": "const"
+                },
                 "match": "[^_]((.*)[^_])?",
                 "formats": ["PascalCase", "camelCase", "CONSTANT_CASE"]
               },
-              { "selector": { "kind": "variable" }, "match": "[^_]((.*)[^_])?", "formats": ["camelCase"] },
-              { "selector": { "kind": "typeLike" }, "match": "([^_]*)", "formats": ["PascalCase", "camelCase"] },
-              { "match": "_?([^_]*)", "formats": ["camelCase"] }
+              {
+                "selector": {
+                  "kind": "variable"
+                },
+                "match": "[^_]((.*)[^_])?",
+                "formats": ["camelCase"]
+              },
+              {
+                "selector": {
+                  "kind": "typeLike"
+                },
+                "match": "([^_]*)",
+                "formats": ["PascalCase", "camelCase"]
+              },
+              {
+                "match": "_?([^_]*)",
+                "formats": ["camelCase"]
+              }
             ]
           }
         }
@@ -175,11 +259,31 @@
     },
     "globals": ["COMMIT_HASH", "MAIN_WINDOW_VITE_DEV_SERVER_URL", "MAIN_WINDOW_VITE_NAME"]
   },
-  "html": { "formatter": { "selfCloseVoidElements": "always" } },
+  "html": {
+    "formatter": {
+      "selfCloseVoidElements": "always"
+    }
+  },
   "overrides": [
-    { "includes": ["*.json"], "formatter": { "indentWidth": 2 } },
-    { "includes": ["src/proto/**/*"], "linter": { "enabled": false } }
+    {
+      "includes": ["*.json"],
+      "formatter": {
+        "indentWidth": 2
+      }
+    },
+    {
+      "includes": ["src/proto/**/*"],
+      "linter": {
+        "enabled": false
+      }
+    }
   ],
-
-  "assist": { "enabled": true, "actions": { "source": { "organizeImports": "off" } } }
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  }
 }
