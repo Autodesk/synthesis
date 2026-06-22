@@ -4,7 +4,7 @@ import * as THREE from "three"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
 import autodeskLogo from "@/assets/autodesk_symbol.png"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -14,7 +14,7 @@ import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
+import { rayCastForRigidBody } from "@/util/RaycastUtils"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import type { GraphicsPreferences } from "../preferences/PreferenceTypes"
 import World from "../World"
@@ -43,7 +43,9 @@ class SceneRenderer extends WorldSystem {
     private _composer: EffectComposer
 
     private _sceneObjects: Map<number, SceneObject>
-    private _gizmosOnMirabuf: Map<number, GizmoSceneObject> // maps of all the gizmos that are attached to a mirabuf scene object
+
+    // Maps of all the gizmos that are attached to a mirabuf scene object
+    private _gizmosOnMirabuf: Map<number, GizmoSceneObject>
 
     private _cameraControls: CameraControls
 
@@ -54,9 +56,6 @@ class SceneRenderer extends WorldSystem {
 
     public get sceneObjects() {
         return this._sceneObjects
-    }
-    public set sceneObjects(objects: Map<number, SceneObject>) {
-        this._sceneObjects = objects
     }
 
     public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
@@ -540,33 +539,19 @@ class SceneRenderer extends WorldSystem {
      * @param e Mouse event data.
      */
     public onContextMenu(e: InteractionEnd) {
-        // Cast ray into physics scene.
-        const origin = this.mainCamera.position
-
-        const worldSpace = this.pixelToWorldSpace(e.position[0], e.position[1])
-        const dir = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
-
-        const res = World.physicsSystem.rayCast(
-            convertThreeVector3ToJoltVec3(origin),
-            convertThreeVector3ToJoltVec3(dir)
-        )
-
-        // Use any associations to determine ContextData.
         let miraSupplierData: ContextData | undefined
-        if (res) {
-            const assoc = World.physicsSystem.getBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
-            const sceneObject = assoc?.sceneObject
-            if (sceneObject) {
-                if (
-                    !World.multiplayerSystem ||
-                    (sceneObject.miraType === MiraType.ROBOT &&
-                        World.multiplayerSystem
-                            ?.getOwnRobots()
-                            .map(obj => obj.id)
-                            .includes(sceneObject.id))
-                ) {
-                    miraSupplierData = assoc.sceneObject.getSupplierData()
-                }
+        const hit = rayCastForRigidBody(e.position)
+        if (hit) {
+            const sceneObject = hit.association.sceneObject
+            if (
+                !World.multiplayerSystem ||
+                (sceneObject.miraType === MiraType.ROBOT &&
+                    World.multiplayerSystem
+                        ?.getOwnRobots()
+                        .map(obj => obj.id)
+                        .includes(sceneObject.id))
+            ) {
+                miraSupplierData = sceneObject.getSupplierData()
             }
         }
         // All else fails, present default options.
