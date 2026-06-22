@@ -101,18 +101,6 @@ You can alternatively run the default build command for your own hosting:
 bun run build
 ```
 
-### Electron Packaging
-
-We also give you the option to package Synthesis with electron. This will not give a performance boost, but it will allow Synthesis to work offline (make sure to also launch the app and download all the robot/field files you want to use).
-
-To package the app run:
-
-```bash
-bun run electron:publish
-```
-
-The packaged app will be located in the `/fission/out` directory.
-
 ## Core Systems
 
 These core systems make up the lion's share of the fission source code. Each system manages a different aspect of the simulated world
@@ -144,7 +132,3 @@ These core systems make up the lion's share of the fission source code. Each sys
 | `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                                                         |
 | `assetpack:update`   | Downloads the assetpack and unzips/installs it in the correct location, replacing the old directory if it exists.                               |
 | `playwright:install` | Downloads the Playwright browsers.                                                                                                              |
-| `electron:make`      | Builds Synthesis as an electron application.                                                                                                    |
-| `electron:start`     | Starts Synthesis as an electron application.                                                                                                    |
-| `electron:package`   | Packages Synthesis as an electron application.                                                                                                  |
-| `electron:publish`   | Publishes Synthesis as an electron application.                                                                                                 |
