@@ -456,12 +456,30 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public dispose(): void {
+        this._mirabufInstance.dispose(World.sceneRenderer.scene)
+        this._mechanism.dispose()
+
+        if (this._brain && this._brain instanceof SynthesisBrain) {
+            this._brain.clearControls()
+        }
+
+        this._debugBodies?.forEach(x => {
+            World.sceneRenderer.scene.remove(x.colliderMesh, x.comMesh)
+            x.colliderMesh.geometry.dispose()
+            x.comMesh.geometry.dispose()
+
+            ;(x.colliderMesh.material as THREE.Material).dispose()
+            ;(x.comMesh.material as THREE.Material).dispose()
+        })
+        this._debugBodies?.clear()
+
+        this._physicsLayerReserve?.release()
+        this._ejectables.forEach(e => World.sceneRenderer.removeSceneObject(e.id))
+
         if (this._intakeSensor) {
             World.sceneRenderer.removeSceneObject(this._intakeSensor.id)
             this._intakeSensor = undefined
         }
-
-        this._ejectables.forEach(e => World.sceneRenderer.removeSceneObject(e.id))
 
         this._scoringZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
         this._scoringZones = []
@@ -469,32 +487,17 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._protectedZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
         this._protectedZones = []
 
-        this._mechanism.nodeToBody.forEach(bodyId => {
-            World.physicsSystem.removeBodyAssociation(bodyId)
-        })
-
         this._nameTag?.dispose()
-        World.simulationSystem.unregisterMechanism(this._mechanism)
-        World.physicsSystem.destroyMechanism(this._mechanism)
-        this._mirabufInstance.dispose(World.sceneRenderer.scene)
-        this._debugBodies?.forEach(x => {
-            World.sceneRenderer.scene.remove(x.colliderMesh, x.comMesh)
-            x.colliderMesh.geometry.dispose()
-            x.comMesh.geometry.dispose()
-            ;(x.colliderMesh.material as THREE.Material).dispose()
-            ;(x.comMesh.material as THREE.Material).dispose()
-        })
         this._collisionUnsubscriber?.()
-        this._debugBodies?.clear()
-        this._physicsLayerReserve?.release()
+
         if (this._centerOfMassIndicator) {
             World.sceneRenderer.scene.remove(this._centerOfMassIndicator)
             this._centerOfMassIndicator = undefined
         }
 
-        if (this._brain && this._brain instanceof SynthesisBrain) {
-            this._brain.clearControls()
-        }
+        World.simulationSystem.unregisterMechanism(this._mechanism)
+        World.physicsSystem.destroyMechanism(this._mechanism)
+
         EventSystem.dispatch("MirabufObjectChangeEvent", null)
     }
 
