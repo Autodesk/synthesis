@@ -50,12 +50,5 @@ class Mechanism {
     }
 
     public disablePhysics() {}
-
-    public dispose() {
-        this.nodeToBody.forEach(bodyId => {
-            World.physicsSystem.removeBodyAssociation(bodyId)
-        })
-    }
 }
-
 export default Mechanism

@@ -64,7 +64,7 @@ describe("ScoringZoneSceneObject", () => {
                         deltaTransformation: [1, 2, 3, 4],
                         alliance: "red",
                         points: 10,
-                        persistentPoints: false,
+                        shouldPointsAccumulate: true,
                     },
                 ],
             },

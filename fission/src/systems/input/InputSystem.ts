@@ -41,6 +41,9 @@ class InputSystem extends WorldSystem {
         })
     }
 
+    // Janky solution to centralize escape key closing logic, first in the list is higher priority, returning true consumes the keypress
+    public static escapeKeyListeners: (null | (() => boolean))[] = [null, null, null]
+
     /**
      * Sets whether the command palette is open, which blocks all robot inputs
      */
@@ -119,11 +122,26 @@ class InputSystem extends WorldSystem {
     /** Called when any key is first pressed */
     private handleKeyDown(event: KeyboardEvent) {
         InputSystem._keysPressed[event.code as KeyCode] = true
+        this.checkEscapeKey(event)
     }
 
     /* Called when any key is released */
     private handleKeyUp(event: KeyboardEvent) {
+        if (InputSystem._keysPressed["Escape"] == false) {
+            // Sometimes focus issues prevent the keydown from being fired, but the keyup is still sent.
+            this.checkEscapeKey(event)
+        }
+
         InputSystem._keysPressed[event.code as KeyCode] = false
+    }
+
+    private checkEscapeKey(event: KeyboardEvent) {
+        if (event.key == "Escape") {
+            const anyMatched = InputSystem.escapeKeyListeners.some(cb => cb != null && cb())
+            if (anyMatched) {
+                event.preventDefault()
+            }
+        }
     }
 
     /** Clears all stored key data when the user leaves the page. */

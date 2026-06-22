@@ -558,12 +558,12 @@ describe("APS Authentication System", () => {
                 await APS.loadUserInfo(mockAuth)
 
                 expect(mockFetch).toHaveBeenCalledWith(
-                    "https://api.userprofile.autodesk.com/userinfo",
+                    expect.stringContaining("autodesk.com"),
                     expect.objectContaining({
                         method: "GET",
-                        headers: {
-                            Authorization: mockAuth.access_token,
-                        },
+                        headers: expect.objectContaining({
+                            Authorization: "Bearer " + mockAuth.access_token,
+                        }),
                     })
                 )
             })

@@ -5,7 +5,7 @@ import { globalAddToast } from "@/ui/components/GlobalUIControls"
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
-
+const APS_SCOPES = "data:read"
 const CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 
 const ENDPOINT_SYNTHESIS_CODE = `/api/aps/code`
@@ -14,7 +14,7 @@ export const ENDPOINT_SYNTHESIS_CHALLENGE = `/api/aps/challenge`
 const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
 const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
 const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = "https://developer.api.autodesk.com/authentication/v2/revoke"
-const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
+const ENDPOINT_AUTODESK_USERINFO = "https://api.aps.autodesk.com/userinfo"
 
 // biome-ignore-start lint/style/useNamingConvention: returned from api
 export interface APSAuth {
@@ -190,7 +190,7 @@ class APS {
                     response_type: "code",
                     client_id: CLIENT_ID,
                     redirect_uri: callbackUrl,
-                    scope: "data:read",
+                    scope: APS_SCOPES,
                     nonce: Date.now().toString(),
                     prompt: "login",
                     code_challenge: challenge,
@@ -232,7 +232,7 @@ class APS {
                         client_id: CLIENT_ID,
                         grant_type: "refresh_token",
                         refresh_token: refreshToken,
-                        scope: "data:read",
+                        scope: APS_SCOPES,
                     }),
                 })
                 const json = await res.json()
@@ -323,7 +323,8 @@ class APS {
             const res = await fetch(ENDPOINT_AUTODESK_USERINFO, {
                 method: "GET",
                 headers: {
-                    Authorization: auth.access_token,
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + auth.access_token,
                 },
             })
             const json = await res.json()
@@ -334,14 +335,12 @@ class APS {
                 await this.requestAuthCode()
                 return
             }
-            const info: APSUserInfo = {
+            this.userInfo = {
                 name: json.name,
                 givenName: json.given_name,
                 picture: json.picture,
                 email: json.email,
             }
-
-            this.userInfo = info
         } catch (e) {
             console.error(e)
             World.analyticsSystem?.exception("APS Login Failure: User Info")
