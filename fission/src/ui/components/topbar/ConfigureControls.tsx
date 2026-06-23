@@ -12,16 +12,24 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import { IconButton, Select } from "../StyledComponents"
-import { ConfigMode } from "../../panels/configuring/assembly-config/ConfigTypes"
+import { ConfigMode, type ConfigurationType } from "../../panels/configuring/assembly-config/ConfigTypes"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topBarConfig"
 import { TopBarIcon, type TopBarIconName } from "./TopBarIcons"
 
-const CONFIGURE_BUTTONS: { name: TopBarIconName; label: string; mode: ConfigMode }[] = [
+type ConfigureButton = { name: TopBarIconName; label: string; mode: ConfigMode }
+
+const ROBOT_CONFIGURE_BUTTONS: ConfigureButton[] = [
     { name: "cfg-1", label: "Controls", mode: ConfigMode.CONTROLS },
     { name: "cfg-2", label: "Drivetrain", mode: ConfigMode.DRIVETRAIN },
     { name: "cfg-3", label: "Intake", mode: ConfigMode.INTAKE },
     { name: "cfg-4", label: "Ejector", mode: ConfigMode.EJECTOR },
     { name: "cfg-5", label: "Joints", mode: ConfigMode.SUBSYSTEMS },
+]
+
+// Placeholder field config buttons; reuse the intake icon until final art exists.
+const FIELD_CONFIGURE_BUTTONS: ConfigureButton[] = [
+    { name: "cfg-3", label: "Scoring Zones", mode: ConfigMode.SCORING_ZONES },
+    { name: "cfg-3", label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
 ]
 
 const assemblyLabel = (assembly: MirabufSceneObject): string => {
@@ -38,6 +46,12 @@ const ConfigureControls: React.FC = () => {
     const { openPanel, addToast } = useUIContext()
     const [assemblies, setAssemblies] = useState<MirabufSceneObject[]>([])
 
+    // A field shows its own config buttons; everything else (incl. the default,
+    // empty selection) shows the robot buttons.
+    const isField = selectedConfigAssembly?.miraType === MiraType.FIELD
+    const configurationType: ConfigurationType = isField ? "FIELDS" : "ROBOTS"
+    const configureButtons = isField ? FIELD_CONFIGURE_BUTTONS : ROBOT_CONFIGURE_BUTTONS
+
     const openConfig = (mode: ConfigMode) => {
         if (!selectedConfigAssembly) {
             addToast("warning", "No Assembly Selected", "Select an assembly to configure first.")
@@ -46,7 +60,7 @@ const ConfigureControls: React.FC = () => {
         openPanel(ConfigurePanel, {
             selectedAssembly: selectedConfigAssembly,
             configMode: mode,
-            configurationType: "ROBOTS",
+            configurationType,
         })
     }
 
@@ -81,6 +95,9 @@ const ConfigureControls: React.FC = () => {
             ? selectedConfigAssembly.id.toString()
             : ""
 
+    {
+        /* TODO: add a "..." after a long robot name to ensure it isn't rendered underneath the dropdown arrow */
+    }
     return (
         <Stack direction="row" alignItems="center" gap={2}>
             <Select
@@ -96,7 +113,7 @@ const ConfigureControls: React.FC = () => {
                     color: "topBarText.main",
                     borderRadius: 3,
                     height: 46,
-                    minWidth: 220,
+                    minWidth: 260,
                     fontSize: 16,
                     "& .MuiOutlinedInput-notchedOutline": { border: "none" },
                     "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0 },
@@ -114,8 +131,8 @@ const ConfigureControls: React.FC = () => {
                     </MenuItem>
                 ))}
             </Select>
-            {CONFIGURE_BUTTONS.map(({ name, label, mode }) => (
-                <Tooltip key={name} title={label}>
+            {configureButtons.map(({ name, label, mode }) => (
+                <Tooltip key={label} title={label}>
                     <IconButton size="large" disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => openConfig(mode)}>
                         <TopBarIcon name={name} size={40} />
                     </IconButton>

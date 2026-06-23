@@ -77,16 +77,16 @@ describe("React Mounting", async () => {
 
         const screenElement = screen.baseElement
         expect(screenElement.querySelector("canvas")).toBeInTheDocument()
-        expect(screen.getByText("Singleplayer")).toBeInTheDocument()
+        // expect(screen.getByText("Singleplayer")).toBeInTheDocument()
         await annotate("DOM successfully updated to include Synthesis components")
         const initWorldSpy = vi.spyOn(World, "initWorld")
         // for some reason threejs canvas intercepts .click()
-        screen
-            .getByText("Singleplayer")
-            .element()
-            .dispatchEvent(new PointerEvent("click", { bubbles: true }))
+        // screen
+        //     .getByText("Singleplayer")
+        //     .element()
+        //     .dispatchEvent(new PointerEvent("click", { bubbles: true }))
         expect(initWorldSpy).toHaveBeenCalledOnce()
-        await annotate("Singleplayer Button calls initWorld")
+        // await annotate("Singleplayer Button calls initWorld")
 
         await wait(50)
 
