@@ -44,7 +44,6 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltRVec3ToJoltVec3,
-    convertJoltVec3ToJoltRVec3,
     convertJoltVec3ToThreeVector3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
@@ -364,7 +363,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             new THREE.Vector3(0, 1, 0),
             initialPos.yaw
         )
-        const initialTranslation = new JOLT.Vec3(
+        const initialTranslation = new JOLT.RVec3(
             initialPos.pos[0] - rotatedBasePositionTransform.x + referencePosition.x,
             initialPos.pos[1] - rotatedBasePositionTransform.y + referencePosition.y,
             initialPos.pos[2] - rotatedBasePositionTransform.z + referencePosition.z
@@ -380,11 +379,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
             const position = World.physicsSystem.getBody(jBodyId).GetPosition()
             const offset = convertJoltRVec3ToJoltVec3(position.Sub(bodyCenter))
-            const newPos = convertJoltVec3ToJoltRVec3(initialTranslation, false)
 
             World.physicsSystem.setBodyPositionRotationAndVelocity(
                 jBodyId,
-                newPos,
+                initialTranslation,
                 initialRotation,
                 blankVec,
                 blankVec,
@@ -393,7 +391,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
             JOLT.destroy(position)
             JOLT.destroy(offset)
-            JOLT.destroy(newPos)
         })
 
         this.updateMeshTransforms()

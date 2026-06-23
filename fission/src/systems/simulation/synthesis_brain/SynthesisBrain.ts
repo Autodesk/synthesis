@@ -195,7 +195,7 @@ class SynthesisBrain extends Brain {
             stimuli.push(wheelStimuli[i])
 
             JOLT.destroy(constraintMatrix)
-            JOLT.destroy(newPos)
+            JOLT.destroy(wheelPos)
         }
         JOLT.destroy(rightVector)
 
