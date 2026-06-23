@@ -64,7 +64,7 @@ struct GraphEdge {
 
 adsk::core::Ptr<adsk::fusion::Occurrence> joint_connection(
     const adsk::core::Ptr<adsk::fusion::Joint>& joint, const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
-    bool is_rigid = joint->jointMotion()->jointType() == adsk::fusion::RigidJointType;
+    bool is_rigid = joint->jointMotion()->jointType() == adsk::fusion::JointTypes::RigidJointType;
     if (is_rigid) {
         if (joint->occurrenceOne() == occurrence) {
             return joint->occurrenceTwo();
@@ -113,7 +113,7 @@ std::shared_ptr<GraphNode> populate_node(const adsk::core::Ptr<adsk::fusion::Occ
             continue;
         }
 
-        bool is_rigid   = joint->jointMotion()->jointType() == adsk::fusion::RigidJointType;
+        bool is_rigid   = joint->jointMotion()->jointType() == adsk::fusion::JointTypes::RigidJointType;
         auto connection = joint_connection(joint, occurrence);
         if (!connection) {
             continue;
@@ -187,7 +187,7 @@ void get_all_joints(adsk::core::Ptr<adsk::fusion::Component> root_component,
             return;
         }
 
-        if (joint->jointMotion()->jointType() != adsk::fusion::RigidJointType) {
+        if (joint->jointMotion()->jointType() != adsk::fusion::JointTypes::RigidJointType) {
             if (!dynamic_joints.contains(joint->occurrenceOne()->entityToken())) {
                 dynamic_joints[joint->occurrenceOne()->entityToken()] = joint;
             }
@@ -293,21 +293,16 @@ void build_joint_part_hierarchy(mirabuf::joint::Joints* joints, const adsk::core
 
     auto grounded = search_for_grounded(design->rootComponent());
 
-    // If there was anything that represented that the C++ exporter is currently
-    // experimental it would be this. Not having a grounded node is a very common
-    // user facing problem and simply asserting this will cause fusion to crash.
-    // In the future if we want to actually support this section of the project
-    // we will need to update this into an actual error system.
-    //
-    // Note for future development:
-    // All instances of `assert(..)` need to be removed as Fusion simply cannot catch
-    // these errors and will crash.
-    assert(grounded);
+    if (!grounded) {
+        return;
+    }
 
     get_all_joints(design->rootComponent(), grounded, grounded_connections, dynamic_joints);
 
     auto root_node = populate_node(grounded, nullptr, NONE, true, visited_occurrence_entity_tokens, dynamic_joints);
-    assert(root_node);
+    if (!root_node) {
+        return;
+    }
     simulation_nodes["ground"] = root_node;
 
     look_for_grounded_joints(grounded_connections, dynamic_joints, root_node);

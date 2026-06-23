@@ -5,6 +5,7 @@
     {
       "name": "base",
       "hidden": true,
+      "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
@@ -33,14 +34,12 @@
     {
       "name": "debug",
       "displayName": "Build Debug",
-      "configurePreset": "debug",
-      "nativeToolOptions": ["-j"]
+      "configurePreset": "debug"
     },
     {
       "name": "release",
       "displayName": "Build Release",
-      "configurePreset": "release",
-      "nativeToolOptions": ["-j"]
+      "configurePreset": "release"
     }
   ],
   "workflowPresets": [

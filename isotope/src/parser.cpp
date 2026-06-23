@@ -20,9 +20,27 @@
 #include "util.h"
 
 void export_design(const GlobalContext& gctx) {
-    assert(gctx.isValid());
+    if (!gctx.isValid()) {
+        return;
+    }
+
     auto document = gctx.app->activeDocument();
-    auto design   = document->query<adsk::fusion::FusionDocument>()->design();
+    if (!document) {
+        gctx.ui->messageBox("No active document.");
+        return;
+    }
+
+    auto fusion_document = document->query<adsk::fusion::FusionDocument>();
+    if (!fusion_document) {
+        gctx.ui->messageBox("Active document is not a Fusion design.");
+        return;
+    }
+
+    auto design = fusion_document->design();
+    if (!design) {
+        gctx.ui->messageBox("Failed to get design from document.");
+        return;
+    }
 
     mirabuf::Assembly assembly;
     assembly.mutable_info()->CopyFrom(create_info_from_fus_obj(design->rootComponent()));

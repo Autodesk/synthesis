@@ -50,7 +50,9 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
 
     auto properties = appearance->appearanceProperties();
     if (auto p = properties->itemById("surface_roughness")) {
-        result.set_roughness(dynamic_cast<adsk::core::FloatProperty*>(p.get())->value());
+        if (auto fp = dynamic_cast<adsk::core::FloatProperty*>(p.get())) {
+            result.set_roughness(fp->value());
+        }
     }
 
     adsk::core::Ptr<adsk::core::IntegerProperty> model_item = properties->itemById("interior_model");
@@ -62,7 +64,9 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
 
     if (model_type == 0) {
         if (auto p = properties->itemById("opaque_f0")) {
-            result.set_metallic(dynamic_cast<adsk::core::FloatProperty*>(p.get())->value());
+            if (auto fp = dynamic_cast<adsk::core::FloatProperty*>(p.get())) {
+                result.set_metallic(fp->value());
+            }
         }
     } else if (model_type == 1) {
         result.set_metallic(0.8f);
@@ -71,11 +75,13 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
     int16_t opacity = 255;
     if (model_type == 3) {
         adsk::core::Ptr<adsk::core::FloatProperty> dist = properties->itemById("transparent_distance");
-        constexpr float OPACITY_RAMPING_CONSTANT        = 14.0f;
+        if (dist) {
+            constexpr float OPACITY_RAMPING_CONSTANT = 14.0f;
+            const float dist_val                     = static_cast<float>(dist->value());
 
-        const float dist_val = static_cast<float>(dist->value());
-        opacity =
-            static_cast<int16_t>(std::clamp((255.0f * dist_val) / (dist_val + OPACITY_RAMPING_CONSTANT), 0.0f, 255.0f));
+            opacity = static_cast<int16_t>(
+                std::clamp((255.0f * dist_val) / (dist_val + OPACITY_RAMPING_CONSTANT), 0.0f, 255.0f));
+        }
     }
 
     const char* color_key = (model_type <= 1) ? "opaque_albedo" : "layered_diffuse";

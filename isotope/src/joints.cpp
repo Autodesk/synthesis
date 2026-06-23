@@ -66,7 +66,6 @@ void fill_revolute_joint_motion(
         dof->mutable_axis()->set_z(rotation_axis_vector->z());
     } else {
         auto rotation_axis = motion->rotationAxis();
-        assert(rotation_axis);
         switch (rotation_axis) {
             case adsk::fusion::JointDirections::XAxisJointDirection:
                 dof->mutable_axis()->set_x(true);

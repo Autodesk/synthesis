@@ -7,7 +7,9 @@
 #include "parser.h"
 
 void ConfigureCommandCreatedHandler::notify(const adsk::core::Ptr<adsk::core::CommandCreatedEventArgs>& args) {
-    assert(this->gctx.isValid());
+    if (!this->gctx.isValid()) {
+        return;
+    }
     adsk::core::Ptr<adsk::core::Command> command = args->command();
     if (!command || !command->isValid()) {
         this->gctx.ui->messageBox("Invalid command in ConfigureCommandCreatedHandler.");
@@ -18,6 +20,8 @@ void ConfigureCommandCreatedHandler::notify(const adsk::core::Ptr<adsk::core::Co
 }
 
 void ConfigureCommandExecutedHandler::notify(const adsk::core::Ptr<adsk::core::CommandEventArgs>& eventArgs) {
-    assert(this->gctx.isValid());
+    if (!this->gctx.isValid()) {
+        return;
+    }
     export_design(this->gctx);
 }

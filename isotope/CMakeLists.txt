@@ -104,4 +104,16 @@ target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${PROTO_GEN_DIR})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_INSTALL_DIR})
 install(FILES "${CMAKE_CURRENT_LIST_DIR}/isotope.manifest" DESTINATION ${PROJECT_INSTALL_DIR})
-install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/resources/" DESTINATION "${PROJECT_INSTALL_DIR}/resources" FILES_MATCHING PATTERN "*.png") 
+install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/resources/" DESTINATION "${PROJECT_INSTALL_DIR}/resources" FILES_MATCHING PATTERN "*.png")
+
+find_program(CLANG_FORMAT clang-format)
+if(CLANG_FORMAT)
+    file(GLOB_RECURSE FORMAT_SOURCES
+        "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/inc/*.h"
+    )
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT} -i -style=file ${FORMAT_SOURCES}
+        COMMENT "Formatting sources with clang-format"
+    )
+endif()

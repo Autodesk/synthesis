@@ -28,9 +28,16 @@ extern "C" XI_EXPORT bool run(const char* context) {
     }
 
     adsk::core::Ptr<adsk::core::Workspace> workspace = gctx.ui->workspaces()->itemById("FusionSolidEnvironment");
-    adsk::core::Ptr<adsk::core::ToolbarTab> tab      = workspace->toolbarTabs()->itemById("ToolsTab");
-    assert(workspace);
-    assert(tab);
+    if (!workspace || !workspace->isValid()) {
+        gctx.ui->messageBox("Failed to find FusionSolidEnvironment workspace.");
+        return false;
+    }
+
+    adsk::core::Ptr<adsk::core::ToolbarTab> tab = workspace->toolbarTabs()->itemById("ToolsTab");
+    if (!tab || !tab->isValid()) {
+        gctx.ui->messageBox("Failed to find ToolsTab in workspace.");
+        return false;
+    }
 
     tab->activate();
     tab->toolbarPanels()->add("isotope_tool_tab", "Isotope");
@@ -66,6 +73,10 @@ extern "C" XI_EXPORT bool run(const char* context) {
 }
 
 extern "C" XI_EXPORT bool stop() {
+    if (!gctx.isValid()) {
+        return true;
+    }
+
     auto panel = gctx.ui->allToolbarPanels()->itemById("isotope_tool_tab");
     if (panel && panel->isValid()) {
         panel->deleteMe();

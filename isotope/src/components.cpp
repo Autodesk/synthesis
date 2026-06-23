@@ -69,6 +69,9 @@ mirabuf::TriangleMesh map_b_rep_body(const adsk::core::Ptr<adsk::fusion::BRepBod
 
 mirabuf::TriangleMesh map_mesh_body(const adsk::core::Ptr<adsk::fusion::MeshBody>& body) {
     auto fus_mesh = body->displayMesh();
+    if (!fus_mesh) {
+        return {};
+    }
 
     mirabuf::TriangleMesh mesh;
     mesh.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
@@ -106,7 +109,9 @@ adsk::core::Ptr<adsk::core::Matrix3D> get_matrix_world(const adsk::core::Ptr<ads
 
 mirabuf::Node parse_child_occurrence(
     const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence, mirabuf::Parts* parts) {
-    assert(occurrence->isLightBulbOn());
+    if (!occurrence->isLightBulbOn()) {
+        return {};
+    }
 
     mirabuf::Node node;
 
@@ -115,7 +120,7 @@ mirabuf::Node parse_child_occurrence(
     node.set_value(map_constant);
 
     if (parts->part_instances().find(map_constant) != parts->part_instances().end()) {
-        assert(false);
+        return node;
     }
 
     auto& part = (*parts->mutable_part_instances())[map_constant];
@@ -166,7 +171,7 @@ mirabuf::Parts build_part_definitions(const adsk::core::Ptr<adsk::fusion::Compon
     for (const auto& component : fusion_components) {
         const std::string component_ref = guid_component(component);
         if (parts.part_definitions().find(component_ref) != parts.part_definitions().end()) {
-            assert(false);
+            continue;
         }
 
         auto& part = (*parts.mutable_part_definitions())[component_ref];
@@ -223,7 +228,7 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
     root_node.set_value(map_constant);
 
     if (parts->part_instances().find(map_constant) != parts->part_instances().end()) {
-        assert(false);
+        return root_node;
     }
 
     auto& part = (*parts->mutable_part_instances())[map_constant];

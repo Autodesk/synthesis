@@ -10,6 +10,7 @@
 #include <Fusion/Components/JointOrigin.h>
 #include <Fusion/Components/Occurrence.h>
 
+#include <string>
 #include <string_view>
 
 #include "types.pb.h"
