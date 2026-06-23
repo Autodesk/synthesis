@@ -4,7 +4,11 @@ pluginManagement {
     repositories {
         mavenLocal()
         gradlePluginPortal()
-        String frcYear = '2024'
+        maven {
+            name 'frcMaven'
+            url 'https://frcmaven.wpi.edu/artifactory/release/'
+        }
+        String frcYear = '2026'
         File frcHome
         if (OperatingSystem.current().isWindows()) {
             String publicFolder = System.getenv('PUBLIC')

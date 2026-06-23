@@ -53,6 +53,9 @@ dependencies {
     implementation "edu.wpi.first.wpilibj:wpilibj-java:$WPI_Version"
     implementation "edu.wpi.first.wpiutil:wpiutil-java:$WPI_Version"
     implementation "edu.wpi.first.hal:hal-java:$WPI_Version"
+    implementation "edu.wpi.first.wpimath:wpimath-java:$WPI_Version"
+    implementation "edu.wpi.first.ntcore:ntcore-java:$WPI_Version"
+    implementation "edu.wpi.first.wpiunits:wpiunits-java:$WPI_Version"
 
     // REVRobotics
     implementation "com.revrobotics.frc:REVLib-java:$REV_Version"
