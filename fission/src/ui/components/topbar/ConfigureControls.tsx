@@ -1,4 +1,4 @@
-import { MenuItem, Stack } from "@mui/material"
+import { MenuItem, Stack, Tooltip } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import { IoMdArrowDropdown } from "react-icons/io"
@@ -13,7 +13,13 @@ import { IconButton, Select } from "../StyledComponents"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topBarConfig"
 import { TopBarIcon, type TopBarIconName } from "./TopBarIcons"
 
-const CONFIGURE_BUTTONS: TopBarIconName[] = ["cfg-1", "cfg-2", "cfg-3", "cfg-4", "cfg-5"]
+const CONFIGURE_BUTTONS: { name: TopBarIconName; label: string }[] = [
+    { name: "cfg-1", label: "Inputs" },
+    { name: "cfg-2", label: "Drivetrain" },
+    { name: "cfg-3", label: "Intake" },
+    { name: "cfg-4", label: "Ejector" },
+    { name: "cfg-5", label: "Joints" },
+]
 
 const assemblyLabel = (assembly: MirabufSceneObject): string => {
     if (assembly.miraType !== MiraType.ROBOT) return assembly.assemblyName
@@ -87,10 +93,12 @@ const ConfigureControls: React.FC = () => {
                     </MenuItem>
                 ))}
             </Select>
-            {CONFIGURE_BUTTONS.map(name => (
-                <IconButton key={name} size="large" disableRipple sx={TOP_BAR_ICON_BUTTON_SX}>
-                    <TopBarIcon name={name} size={40} />
-                </IconButton>
+            {CONFIGURE_BUTTONS.map(({ name, label }) => (
+                <Tooltip key={name} title={label}>
+                    <IconButton size="large" disableRipple sx={TOP_BAR_ICON_BUTTON_SX}>
+                        <TopBarIcon name={name} size={40} />
+                    </IconButton>
+                </Tooltip>
             ))}
         </Stack>
     )
