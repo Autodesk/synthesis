@@ -110,22 +110,26 @@ const TopBar: React.FC = () => {
 
                 <Box flexGrow={1} />
 
-                <IconButton
-                    size="large"
-                    disableRipple
-                    sx={TOP_BAR_ICON_BUTTON_SX}
-                    onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
-                >
-                    <TopBarIcon name="settings" size={40} />
-                </IconButton>
-                <IconButton
-                    size="large"
-                    disableRipple
-                    sx={TOP_BAR_ICON_BUTTON_SX}
-                    onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
-                >
-                    {userInfo ? <UserIcon className="h-8 rounded-full" /> : <TopBarIcon name="login" size={28} />}
-                </IconButton>
+                <Tooltip title="Settings">
+                    <IconButton
+                        size="large"
+                        disableRipple
+                        sx={TOP_BAR_ICON_BUTTON_SX}
+                        onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
+                    >
+                        <TopBarIcon name="settings" size={40} />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title={userInfo ? "Account" : "Login"}>
+                    <IconButton
+                        size="large"
+                        disableRipple
+                        sx={TOP_BAR_ICON_BUTTON_SX}
+                        onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
+                    >
+                        {userInfo ? <UserIcon className="h-8 rounded-full" /> : <TopBarIcon name="login" size={28} />}
+                    </IconButton>
+                </Tooltip>
             </Stack>
         </Box>
     )
