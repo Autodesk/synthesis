@@ -37,15 +37,14 @@ jobs:
 
       - name: Run Match Mode Test In A Loop
         run: |
-          ITERATIONS="${{ github.event.inputs.iterations }}"
-          echo "Running MatchModeConfigPanel.test.tsx $ITERATIONS times. Will fail fast on first flake."
-          for i in $(seq 1 "$ITERATIONS"); do
-            echo "::group::Iteration $i / $ITERATIONS"
+          echo "Running MatchModeConfigPanel.test.tsx 50 times. Will fail fast on first flake."
+          for i in $(seq 1 "50"); do
+            echo "::group::Iteration $i / 50"
             if ! HOME=/root npm run test src/test/ui/MatchModeConfigPanel.test.tsx --bail=1; then
               echo "::endgroup::"
-              echo "::error::Test failed on iteration $i of $ITERATIONS"
+              echo "::error::Test failed on iteration $i of 50"
               exit 1
             fi
             echo "::endgroup::"
           done
-          echo "All $ITERATIONS iterations passed."
+          echo "All 50 iterations passed."
