@@ -29,7 +29,8 @@ export type UIProviderProps = {
     children?: ReactNode
 }
 
-const isPlainObject = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null
+const isPlainObject = (x: unknown): x is Record<string, unknown> =>
+    typeof x === "object" && x !== null && !Array.isArray(x)
 
 function shallowEqualProps(a: unknown, b: unknown): boolean {
     if (a === b) return true
@@ -139,7 +140,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             // Dupe check
             const existingDuplicate = panels.find(p => p.content === content)
             if (existingDuplicate) {
-                const existingCustom = (existingDuplicate.props as { custom?: P }).custom
+                const existingCustom = (existingDuplicate.props as PanelProps<P>).custom
                 if (customProps === undefined || shallowEqualProps(customProps, existingCustom)) {
                     setPanels(p => [...p.filter(x => x !== existingDuplicate), existingDuplicate])
                     return existingDuplicate.id
@@ -173,7 +174,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
             const contentName = (content as unknown as { name?: string })?.name ?? ""
             const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel", "InitialConfigPanel"]
-            const nextPanels = panels
+            const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
             if (mutuallyExclusive.includes(contentName)) {
                 const existing = panels.find(p =>
                     mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
