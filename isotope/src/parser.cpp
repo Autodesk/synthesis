@@ -18,6 +18,7 @@
 #include "joints.h"
 #include "materials.h"
 #include "util.h"
+#include "wheels.h"
 
 void export_design(const GlobalContext& gctx) {
     if (!gctx.isValid()) {
@@ -55,7 +56,9 @@ void export_design(const GlobalContext& gctx) {
     assembly.mutable_data()->mutable_parts()->CopyFrom(parts);
     assembly.mutable_design_hierarchy()->mutable_nodes()->Add()->CopyFrom(root_node);
 
-    const auto [joints, signals] = populate_joints(design);
+    auto [joints, signals] = populate_joints(design);
+
+    detect_and_tag_wheels(&joints, design, gctx.ui);
 
     assembly.mutable_data()->mutable_joints()->CopyFrom(joints);
     assembly.mutable_data()->mutable_signals()->CopyFrom(signals);
