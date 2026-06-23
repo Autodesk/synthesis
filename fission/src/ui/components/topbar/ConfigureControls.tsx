@@ -56,13 +56,18 @@ const ConfigureControls: React.FC = () => {
 
     useEffect(() => {
         update()
-        const unsubChange = EventSystem.listen("MirabufObjectChangeEvent", update)
+        // On spawn the event carries the new assembly; select it. On disposal it's null.
+        const onChange = (assembly: MirabufSceneObject | null) => {
+            update()
+            if (assembly) setSelectedConfigAssembly(assembly)
+        }
+        const unsubChange = EventSystem.listen("MirabufObjectChangeEvent", onChange)
         const unsubSaved = EventSystem.listen("ConfigurationSavedEvent", update)
         return () => {
             unsubChange()
             unsubSaved()
         }
-    }, [update])
+    }, [update, setSelectedConfigAssembly])
 
     // Drop the selection if its assembly is no longer spawned.
     useEffect(() => {
