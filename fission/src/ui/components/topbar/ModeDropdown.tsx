@@ -1,5 +1,5 @@
 import { MenuItem, Stack } from "@mui/material"
-import { IoMdArrowDropdown } from "react-icons/io";
+import { IoMdArrowDropdown } from "react-icons/io"
 import type React from "react"
 import { APP_MODES, type AppMode } from "@/systems/AppMode"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"

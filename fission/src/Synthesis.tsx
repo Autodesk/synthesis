@@ -47,31 +47,6 @@ function Synthesis() {
 
         startMainLoop()
 
-        // globalOpenModal(MainMenuModal, {
-        //     startSingleplayerCallback: async () => await startMainLoop(),
-        //     startMultiplayerCallback: () => {
-        //         globalOpenModal(MultiplayerStartModal, {
-        //             startWorldCallback: async (name, room) => {
-        //                 const isHost = room == null
-        //                 if (room == null) {
-        //                     room = Math.random().toString(10).substring(2, 8)
-        //                 }
-        //                 PreferencesSystem.setGlobalPreference("MultiplayerUsername", name)
-        //                 PreferencesSystem.savePreferences()
-        //                 const success = await MultiplayerSystem.setup(room, name, isHost)
-        //                 if (success) {
-        //                     if (isHost) {
-        //                         globalAddToast("info", "Room Code", room)
-        //                     }
-        //                     await startMainLoop()
-        //                     return true
-        //                 }
-        //                 return false
-        //             },
-        //         })
-        //     },
-        // })
-        // Cleanup
         return () => {
             // TODO: Teardown literally everything
             cancelAnimationFrame(mainLoopHandle.current)
