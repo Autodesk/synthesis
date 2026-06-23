@@ -12,7 +12,7 @@ export const TOP_BAR_ICONS = {
     add: "/icons/add-icon.svg",
     settings: "/icons/settings.svg",
     login: "/icons/adsk-login.svg",
-    "cfg-1": "/icons/cfg-inputs.svg",
+    "cfg-1": "/icons/cfg-controls.svg",
     "cfg-2": "/icons/cfg-drivetrain.svg",
     "cfg-3": "/icons/cfg-intake.svg",
     "cfg-4": "/icons/cfg-ejector.svg",

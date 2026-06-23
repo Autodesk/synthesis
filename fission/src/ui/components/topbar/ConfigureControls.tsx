@@ -9,16 +9,19 @@ import InputSystem from "@/systems/input/InputSystem"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import { IconButton, Select } from "../StyledComponents"
+import { ConfigMode } from "../../panels/configuring/assembly-config/ConfigTypes"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topBarConfig"
 import { TopBarIcon, type TopBarIconName } from "./TopBarIcons"
 
-const CONFIGURE_BUTTONS: { name: TopBarIconName; label: string }[] = [
-    { name: "cfg-1", label: "Inputs" },
-    { name: "cfg-2", label: "Drivetrain" },
-    { name: "cfg-3", label: "Intake" },
-    { name: "cfg-4", label: "Ejector" },
-    { name: "cfg-5", label: "Joints" },
+const CONFIGURE_BUTTONS: { name: TopBarIconName; label: string; mode: ConfigMode }[] = [
+    { name: "cfg-1", label: "Controls", mode: ConfigMode.CONTROLS },
+    { name: "cfg-2", label: "Drivetrain", mode: ConfigMode.DRIVETRAIN },
+    { name: "cfg-3", label: "Intake", mode: ConfigMode.INTAKE },
+    { name: "cfg-4", label: "Ejector", mode: ConfigMode.EJECTOR },
+    { name: "cfg-5", label: "Joints", mode: ConfigMode.SUBSYSTEMS },
 ]
 
 const assemblyLabel = (assembly: MirabufSceneObject): string => {
@@ -32,7 +35,20 @@ const assemblyLabel = (assembly: MirabufSceneObject): string => {
 
 const ConfigureControls: React.FC = () => {
     const { selectedConfigAssembly, setSelectedConfigAssembly } = useStateContext()
+    const { openPanel, addToast } = useUIContext()
     const [assemblies, setAssemblies] = useState<MirabufSceneObject[]>([])
+
+    const openConfig = (mode: ConfigMode) => {
+        if (!selectedConfigAssembly) {
+            addToast("warning", "No Assembly Selected", "Select an assembly to configure first.")
+            return
+        }
+        openPanel(ConfigurePanel, {
+            selectedAssembly: selectedConfigAssembly,
+            configMode: mode,
+            configurationType: "ROBOTS",
+        })
+    }
 
     const update = useCallback(() => {
         setAssemblies(World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getAll() : [])
@@ -93,9 +109,9 @@ const ConfigureControls: React.FC = () => {
                     </MenuItem>
                 ))}
             </Select>
-            {CONFIGURE_BUTTONS.map(({ name, label }) => (
+            {CONFIGURE_BUTTONS.map(({ name, label, mode }) => (
                 <Tooltip key={name} title={label}>
-                    <IconButton size="large" disableRipple sx={TOP_BAR_ICON_BUTTON_SX}>
+                    <IconButton size="large" disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => openConfig(mode)}>
                         <TopBarIcon name={name} size={40} />
                     </IconButton>
                 </Tooltip>
