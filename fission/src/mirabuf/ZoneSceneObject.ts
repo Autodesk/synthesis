@@ -1,7 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"
+import type { GlobalPreferences, ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -14,7 +14,7 @@ import {
 import { deltaFieldTransformsPhysicalProp, VisualProperties } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
 
-export default abstract class ZoneSceneObject<P> extends SceneObject {
+export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
     // Colors
     public static redMaterial = new THREE.MeshPhongMaterial({
         color: 0xff0000,
@@ -41,6 +41,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
     private _lastSensorScale?: THREE.Vector3
 
     public prefs: ZonePreferencesShared & P
+    private preferenceKey: keyof GlobalPreferences
 
     public toRender: boolean | undefined
     public joltBodyId?: Jolt.BodyID
@@ -50,6 +51,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
     public constructor(
         parentAssembly: MirabufSceneObject,
         prefs: ZonePreferencesShared & P, // TODO maybe switch to `ZonePreferences`
+        preferenceKey: keyof GlobalPreferences,
         render?: boolean
     ) {
         super()
@@ -57,6 +59,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
         this._parentAssembly = parentAssembly
         this.toRender = render
         this.prefs = prefs
+        this.preferenceKey = preferenceKey
     }
 
     public setup() {
@@ -87,13 +90,12 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
     // Creates a default sensor
     // Sets `this._joltBodyId` to equal the body id of the new sensor
     private createDefaultSensor() {
-        const _unitVector = new JOLT.Vec3(1, 1, 1)
+        const unitVector = new JOLT.Vec3(1, 1, 1)
 
-        const settings = new JOLT.BoxShapeSettings(_unitVector)
+        const settings = new JOLT.BoxShapeSettings(unitVector)
         this.joltBodyId = World.physicsSystem.createSensor(settings)
 
-        JOLT.destroy(settings)
-        JOLT.destroy(_unitVector)
+        JOLT.destroy(unitVector)
     }
 
     // Position/rotate/scale sensor to settings
@@ -147,11 +149,7 @@ export default abstract class ZoneSceneObject<P> extends SceneObject {
 
         if (!this.mesh) return
 
-        // NOTE for reviewer
-        // `this._toRender` is only used by `update`, `setup`, and `constructor`
-        // so me flipping this return is fine and only improves readability
-
-        this.toRender = PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+        this.toRender = PreferencesSystem.getGlobalPreference(this.preferenceKey) as boolean | undefined
         if (!this.toRender) {
             this.mesh.material = ZoneSceneObject.transparentMaterial
             return

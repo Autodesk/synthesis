@@ -57,5 +57,4 @@ class Mechanism {
         })
     }
 }
-
 export default Mechanism

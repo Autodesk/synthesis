@@ -70,7 +70,7 @@ class SynthesisBrain extends Brain {
             console.error("Can't find drive behavior!")
             return
         }
-        existing.setIsArcade(driveType == DriveType.ARCADE)
+        existing.isArcade = driveType == DriveType.ARCADE
     }
 
     public configure(): void {
@@ -80,7 +80,6 @@ class SynthesisBrain extends Brain {
             this.configureSkidSteerDriveBehavior(this.driveType == DriveType.ARCADE)
             this.configureArmBehaviors()
 
-            console.log("ahhh")
             this.configureElevatorBehaviors()
             this.configureGamepieceManipBehavior()
         } else {

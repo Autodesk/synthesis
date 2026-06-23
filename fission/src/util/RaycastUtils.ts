@@ -17,6 +17,7 @@ export function rayCastForRigidBody(
         return World.physicsSystem.rayCast(
             convertThreeVector3ToJoltVec3(origin),
             convertThreeVector3ToJoltVec3(direction),
+            true,
             ...ignoredBodies
         )
     }
@@ -32,7 +33,5 @@ export function rayCastForRigidBody(
 
     const association = World.physicsSystem.getBodyAssociation(hit.data.mBodyID) as RigidNodeAssociate
 
-    // TODO
-    // Destroy results of this function
     return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point, false), association }
 }

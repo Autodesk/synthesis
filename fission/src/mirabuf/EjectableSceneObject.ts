@@ -143,7 +143,11 @@ class EjectableSceneObject extends SceneObject {
             const position = this._scratchVec3b
             const rotation = this._scratchQuat
 
-            World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position))
+            World.physicsSystem.setBodyPosition(
+                this._gamePieceBodyId,
+                convertThreeVector3ToJoltRVec3(position),
+                JOLT.EActivation_DontActivate
+            )
             World.physicsSystem.setBodyRotation(
                 this._gamePieceBodyId,
                 convertThreeQuaternionToJoltQuat(rotation),

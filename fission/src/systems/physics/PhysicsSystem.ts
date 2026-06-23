@@ -115,15 +115,15 @@ class PhysicsSystem extends WorldSystem {
         setupCollisionFiltering(joltSettings)
 
         this._joltInterface = new JOLT.JoltInterface(joltSettings)
-        JOLT.destroy(joltSettings)
 
         this._joltPhysSystem = this._joltInterface.GetPhysicsSystem()
         this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface()
         this.setUpContactListener(this._joltPhysSystem)
 
+        // NOTE
+        // Held by the Jolt Physics System
         const gravityVector = new JOLT.Vec3(0, -9.8, 0)
         this._joltPhysSystem.SetGravity(gravityVector)
-        JOLT.destroy(gravityVector)
 
         this._joltPhysSystem.GetPhysicsSettings().mDeterministicSimulation = false
         this._joltPhysSystem.GetPhysicsSettings().mSpeculativeContactDistance = 0.06
@@ -629,8 +629,10 @@ class PhysicsSystem extends WorldSystem {
         const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 
         const wheelSettings = new JOLT.WheelSettingsWV()
+
         const scaledAxis = axis.Mul(0.1)
         wheelSettings.mPosition = convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(scaledAxis))
+
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
         wheelSettings.mRadius = radius * 1.05
@@ -1170,8 +1172,13 @@ class PhysicsSystem extends WorldSystem {
      * @param dir Direction of the ray. Note: Length of dir specifies the maximum length it will check.
      * @returns Either the hit results of the closest object in the ray's path, or undefined if nothing was hit.
      */
-    public rayCast(from: Jolt.Vec3, dir: Jolt.Vec3, ...ignoreBodies: Jolt.BodyID[]): RayCastHit | undefined {
-        const rayVec = convertJoltVec3ToJoltRVec3(from)
+    public rayCast(
+        from: Jolt.Vec3,
+        dir: Jolt.Vec3,
+        destroy: boolean = true,
+        ...ignoreBodies: Jolt.BodyID[]
+    ): RayCastHit | undefined {
+        const rayVec = convertJoltVec3ToJoltRVec3(from, destroy)
         const ray = new JOLT.RRayCast(rayVec, dir)
 
         const raySettings = new JOLT.RayCastSettings()
@@ -1194,7 +1201,9 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(objectFilter)
         JOLT.destroy(bodyFilter)
         JOLT.destroy(shapeFilter)
-        JOLT.destroy(dir)
+        if (destroy) JOLT.destroy(dir)
+
+        if (!collector.HadHit()) return undefined
 
         if (!collector.HadHit()) return undefined
 
@@ -1370,6 +1379,10 @@ class PhysicsSystem extends WorldSystem {
         const shape = shapeSettings.Create()
         if (shape.HasError()) {
             console.error(`Failed to create sensor body\n${shape.GetError().c_str}`)
+
+            if (destroy) JOLT.destroy(shapeSettings)
+            JOLT.destroy(shape)
+
             return undefined
         }
 
@@ -1377,7 +1390,7 @@ class PhysicsSystem extends WorldSystem {
         this._bodies.push(body.GetID())
         body.SetIsSensor(true)
 
-        if (destroy) shapeSettings
+        if (destroy) JOLT.destroy(shapeSettings)
         JOLT.destroy(shape)
 
         this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
@@ -1396,18 +1409,14 @@ class PhysicsSystem extends WorldSystem {
     public setBodyPosition(
         id: Jolt.BodyID,
         position: Jolt.RVec3,
-        activate: boolean = true,
+        activate: Jolt.EActivation = JOLT.EActivation_Activate,
         destroy: boolean = true
     ): void {
         if (!this.isBodyAdded(id)) {
             return
         }
 
-        this._joltBodyInterface.SetPosition(
-            id,
-            position,
-            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
-        )
+        this._joltBodyInterface.SetPosition(id, position, activate)
 
         if (destroy) JOLT.destroy(position)
     }
@@ -1523,10 +1532,7 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltBodyInterface.SetShape(id, shape, massProperties, activationMode)
 
-        if (destroy) {
-            JOLT.destroy(shape)
-        }
-        JOLT.destroy(activationMode)
+        if (destroy) JOLT.destroy(shape)
     }
 
     /**

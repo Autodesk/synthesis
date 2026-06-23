@@ -10,12 +10,6 @@ import World from "@/systems/World"
 
 vi.mock("@/systems/World", () => ({
     default: {
-        get physicsSystem() {
-            return this._physicsSystem
-        },
-        set physicsSystem(value) {
-            this._physicsSystem = value
-        },
         // biome-ignore lint/style/useNamingConvention: Mocking private class property
         _physicsSystem: null,
         sceneRenderer: {

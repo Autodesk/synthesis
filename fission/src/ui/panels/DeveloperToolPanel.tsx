@@ -1,4 +1,4 @@
-import { Alert, Stack } from "@mui/material"
+import { Alert, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
@@ -11,6 +11,8 @@ import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
+import SelectMenu from "@/components/SelectMenu.tsx"
+import { AssemblySelectionOption } from "@/panels/configuring/assembly-config/configure/AssemblySelection.tsx"
 
 async function saveToCache() {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()
@@ -41,36 +43,32 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const [error, setError] = useState<string>("")
     const [editor, setEditor] = useState<FieldMiraEditor | undefined>(undefined)
     const [keys, setKeys] = useState<string[]>([])
-    const [fieldLoaded, setFieldLoaded] = useState<boolean>(false)
-    const prevFieldObj = useRef<MirabufSceneObject | undefined>(undefined)
+    const [activeObj, setActiveObj] = useState<MirabufSceneObject | undefined>(undefined)
+    const prevMiraObj = useRef<MirabufSceneObject | undefined>(undefined)
 
     // Effect: Watch for field changes and update editor/keys only if field changes
     useEffect(() => {
         const updateEditor = () => {
-            const currentField = World.sceneRenderer.mirabufSceneObjects.getField()
-            if (currentField !== prevFieldObj.current) {
-                prevFieldObj.current = currentField
-                if (currentField) {
-                    const parts = currentField.mirabufInstance.parser.assembly.data?.parts
+            if (activeObj !== prevMiraObj.current) {
+                prevMiraObj.current = activeObj
+                if (activeObj) {
+                    const parts = activeObj.mirabufInstance.parser.assembly.data?.parts
                     if (parts) {
                         const newEditor = new FieldMiraEditor(parts)
                         setEditor(newEditor)
                         setKeys(newEditor.getAllDevtoolKeys())
-                        setFieldLoaded(true)
                     } else {
                         setEditor(undefined)
                         setKeys([])
-                        setFieldLoaded(false)
                     }
                 } else {
                     setEditor(undefined)
                     setKeys([])
-                    setFieldLoaded(false)
                 }
                 setSelectedKey(undefined)
                 setJsonValue("")
                 setError("")
-            } else if (currentField && editor) {
+            } else if (activeObj && editor) {
                 setKeys(editor.getAllDevtoolKeys())
             }
         }
@@ -80,22 +78,20 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         updateEditor()
         const interval = setInterval(updateEditor, 1000)
         return () => clearInterval(interval)
-    }, [editor])
+    }, [editor, activeObj])
 
     // Load value when key changes
     useEffect(() => {
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!editor || !field || !selectedKey) return
+        if (!editor || !activeObj || !selectedKey) return
 
-        const val = devtoolHandlers[selectedKey].get(field)
+        const val = devtoolHandlers[selectedKey].get(activeObj)
         editor.setUserData(selectedKey, val)
         setJsonValue(JSON.stringify(val, null, 2))
         setError("")
     }, [selectedKey, editor])
 
     const handleSave = async () => {
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!editor || !selectedKey || !field) return
+        if (!editor || !selectedKey || !activeObj) return
         try {
             setError("")
             const parsed = JSON.parse(jsonValue) as unknown
@@ -110,12 +106,12 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             // Persist changes to cache
             await saveToCache()
 
-            if (!field.fieldPreferences) {
-                globalAddToast?.("error", "Devtool Error", "Field preferences not available.")
-                return
-            }
+            // if (!activeObj.fieldPreferences) { // TODO: remove
+            //     globalAddToast?.("error", "Devtool Error", "Field preferences not available.")
+            //     return
+            // }
 
-            devtoolHandlers[selectedKey].set(field, parsed)
+            devtoolHandlers[selectedKey].set(activeObj, parsed)
             PreferencesSystem.savePreferences?.()
         } catch (_e) {
             setError("Invalid JSON")
@@ -123,8 +119,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }
 
     const handleRemove = async () => {
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!editor || !selectedKey || !field) return
+        if (!editor || !selectedKey || !activeObj) return
 
         editor.removeUserData(selectedKey)
         setKeys(editor.getAllDevtoolKeys())
@@ -135,9 +130,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         // Persist removal to cache
         await saveToCache()
 
-        if (!field.fieldPreferences) return
-
-        devtoolHandlers[selectedKey].set(field, null)
+        devtoolHandlers[selectedKey].set(activeObj, null)
         PreferencesSystem.savePreferences?.()
     }
 
@@ -148,14 +141,13 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }
 
     const handleExport = () => {
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!field) {
-            globalAddToast?.("error", "Export Error", "No field loaded to export.")
+        if (!activeObj) {
+            globalAddToast?.("error", "Export Error", "No object loaded to export.")
             return
         }
-        const assembly = field?.mirabufInstance.parser.assembly
+        const assembly = activeObj?.mirabufInstance.parser.assembly
         if (!assembly) {
-            globalAddToast?.("error", "Export Error", "No assembly found for field.")
+            globalAddToast?.("error", "Export Error", "No assembly found for object.")
             return
         }
         try {
@@ -166,7 +158,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             const url = URL.createObjectURL(blob)
 
             // Check if assembly has devtool data to determine filename
-            let name = assembly.info?.name ?? "field"
+            let name = assembly.info?.name ?? "unknown"
             if (assembly.data?.parts?.userData?.data) {
                 const devtoolKeys = Object.keys(assembly.data.parts.userData.data).filter(k => k.startsWith("devtool:"))
                 if (devtoolKeys.length > 0) {
@@ -184,82 +176,77 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 document.body.removeChild(a)
                 URL.revokeObjectURL(url)
             }, 0)
-            globalAddToast?.("info", "Exported", `Exported field as ${filename}`)
+            globalAddToast?.("info", "Exported", `Exported as ${filename}`)
         } catch (_e) {
-            globalAddToast?.("error", "Export Error", "Failed to export field.")
+            globalAddToast?.("error", "Export Error", "Failed to export.")
         }
     }
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Developer Tool", acceptText: "Exit", hideCancel: true }, {})
+        configureScreen(panel!, { title: "Developer Tool", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     return (
-        <Stack gap={4} className="rounded-md p-4 max-h-[60vh] overflow-y-auto">
-            {!fieldLoaded && (
-                <Alert severity="warning" className="m-2">
-                    No mira field loaded.
-                </Alert>
-            )}
+        <>
+            <SelectMenu
+                options={World.sceneRenderer.mirabufSceneObjects
+                    .getAll()
+                    .map(obj => new AssemblySelectionOption(obj.descriptiveName, obj))}
+                onOptionSelected={val => setActiveObj((val as AssemblySelectionOption)?.assemblyObject)}
+                defaultHeaderText={`Select an object`}
+                noOptionsText={`Nothing spawned!`}
+            />
             {editor && (
-                <Stack gap={6} className="md:flex-row items-start">
-                    {/* Key List */}
-                    <Stack gap={2} className="min-w-[220px] bg-gray-700 dark:bg-gray-800 rounded-lg p-3 shadow-xs">
-                        <div className="font-bold text-base mb-1 text-gray-100">Devtool Data Keys</div>
-                        <ul className="list-none p-0 m-0 flex-1">
-                            {keys.length === 0 && <li className="text-gray-400 italic">No devtool data</li>}
-                            {keys.map(key => (
-                                <li key={key} className="mb-1">
-                                    <Button
-                                        onClick={() => setSelectedKey(key as DevtoolKey)}
-                                        className={`
-                            w-full whitespace-normal break-words text-left
-                            px-2 py-1 rounded
-                            ${
-                                selectedKey === key
-                                    ? "bg-blue-600 text-white font-bold"
-                                    : "bg-gray-700 text-gray-100 hover:bg-gray-600"
-                            }
-                            `}
-                                    >
-                                        {key}
-                                    </Button>
-                                </li>
-                            ))}
-                        </ul>
-                        <div className="mt-2 border-t border-gray-600 pt-2">
-                            <div className="text-xs mb-1 text-gray-300">Add new:</div>
-                            {devtoolKeys
-                                .filter(k => !keys.includes(k))
-                                .map(key => (
-                                    <Button
-                                        key={key}
-                                        onClick={() => handleAdd(key)}
-                                        className="w-full mb-1 whitespace-normal break-words"
-                                    >
-                                        {key}
-                                    </Button>
+                <Stack gap={2} direction="column">
+                    <Stack gap={2} direction="row">
+                        {/* Key List */}
+                        <Stack gap={2} className="bg-gray-700 dark:bg-gray-800 rounded-lg p-3 shadow-xs">
+                            <div className="font-bold text-base mb-1 text-gray-100">Devtool Data Keys</div>
+                            <ul className="list-none p-0 m-0 flex-1">
+                                <div className="text-xs mb-1 text-gray-300">Current</div>
+                                {keys.length === 0 && <li className="text-gray-400 italic">No devtool data</li>}
+                                {keys.map(key => (
+                                    <li key={key} className="mb-1">
+                                        <Button onClick={() => setSelectedKey(key as DevtoolKey)} className="w-full">
+                                            {key}
+                                        </Button>
+                                    </li>
                                 ))}
-                            {devtoolKeys.filter(k => !keys.includes(k)).length === 0 && (
-                                <div className="text-gray-400 italic text-xs">All keys added</div>
-                            )}
-                        </div>
-                    </Stack>
-                    {/* Editor */}
-                    <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-xs text-gray-100">
-                        {selectedKey ? (
-                            <>
-                                {/* strip off the prefix here */}
-                                {selectedKey === "devtool:scoring_zones" ? (
-                                    LabelWithTooltip(
-                                        "scoring_zones",
-                                        'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "persistentPoints": true,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]'
-                                    )
-                                ) : (
-                                    <div className="font-bold text-sm mb-2">{selectedKey.replace(/^devtool:/, "")}</div>
+                            </ul>
+                            <Divider />
+                            <div className="text-xs mb-1 text-gray-300">Available</div>
+                            <ul className="list-none p-0 m-0 flex-1">
+                                {devtoolKeys.filter(k => !keys.includes(k)).length === 0 && (
+                                    <div className="text-gray-400 italic text-xs">All keys added</div>
                                 )}
-                                <textarea
-                                    className={`
+                                {devtoolKeys
+                                    .filter(k => !keys.includes(k))
+                                    .map(key => (
+                                        <li key={key} className="mb-1">
+                                            <Button onClick={() => handleAdd(key)} className="w-full">
+                                                {key}
+                                            </Button>
+                                        </li>
+                                    ))}
+                            </ul>
+                        </Stack>
+                        {/* Editor */}
+                        <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-xs text-gray-100">
+                            {selectedKey ? (
+                                <>
+                                    {/* strip off the prefix here */}
+                                    {selectedKey === "devtool:scoring_zones" ? (
+                                        LabelWithTooltip(
+                                            "scoring_zones",
+                                            'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "shouldPointsAccumulate": false,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]'
+                                        )
+                                    ) : (
+                                        <div className="font-bold text-sm mb-2">
+                                            {selectedKey.replace(/^devtool:/, "")}
+                                        </div>
+                                    )}
+                                    <textarea
+                                        className={`
                             w-full h-48 font-mono text-sm
                             bg-gray-700 dark:bg-gray-800
                             border border-gray-600
@@ -268,30 +255,31 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                             resize-vertical
                             focus:outline-hidden focus:ring-2 focus:ring-blue-500
                         `}
-                                    value={jsonValue}
-                                    onChange={e => setJsonValue(e.target.value)}
-                                    placeholder="Enter JSON data for this key"
-                                />
-                                {error && (
-                                    <Alert severity="error" className="mt-2">
-                                        {error}
-                                    </Alert>
-                                )}
-                                <div className="mt-3 flex gap-2">
-                                    <Button onClick={handleSave}>Save</Button>
-                                    <Button onClick={handleRemove}>Remove</Button>
-                                    <Button onClick={handleExport}>Export</Button>
+                                        value={jsonValue}
+                                        onChange={e => setJsonValue(e.target.value)}
+                                        placeholder="Enter JSON data for this key"
+                                    />
+                                    {error && (
+                                        <Alert severity="error" className="mt-2">
+                                            {error}
+                                        </Alert>
+                                    )}
+                                    <div className="mt-3 flex gap-2">
+                                        <Button onClick={handleSave}>Apply</Button>
+                                        <Button onClick={handleRemove}>Remove</Button>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-gray-400 italic mt-10 text-center">
+                                    Select a key to edit or add a new one.
                                 </div>
-                            </>
-                        ) : (
-                            <div className="text-gray-400 italic mt-10 text-center">
-                                Select a key to edit or add a new one.
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    </Stack>
+                    <Button onClick={handleExport}>Export</Button>
                 </Stack>
             )}
-        </Stack>
+        </>
     )
 }
 

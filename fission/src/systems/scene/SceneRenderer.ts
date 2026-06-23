@@ -43,6 +43,8 @@ class SceneRenderer extends WorldSystem {
     private _composer: EffectComposer
 
     private _sceneObjects: Map<number, SceneObject>
+
+    // Maps of all the gizmos that are attached to a mirabuf scene object
     private _gizmosOnMirabuf: Map<number, GizmoSceneObject> // maps of all the gizmos that are attached to a mirabuf scene object
     private _mirabufObjects: Set<MirabufSceneObject> = new Set()
 
@@ -55,9 +57,6 @@ class SceneRenderer extends WorldSystem {
 
     public get sceneObjects() {
         return this._sceneObjects
-    }
-    public set sceneObjects(objects: Map<number, SceneObject>) {
-        this._sceneObjects = objects
     }
 
     public filterSceneObjects<T extends SceneObject>(predicate: (obj: SceneObject) => obj is T): T[] {
@@ -499,8 +498,6 @@ class SceneRenderer extends WorldSystem {
     public worldToPixelSpace(worldPosition: THREE.Vector3): PixelSpaceCoord {
         this._mainCamera.updateMatrixWorld()
         const screenSpace = worldPosition.project(this._mainCamera)
-        // TODO
-        // Dispose of three vector
 
         return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
