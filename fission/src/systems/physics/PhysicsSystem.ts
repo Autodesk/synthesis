@@ -139,6 +139,11 @@ class PhysicsSystem extends WorldSystem {
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
 
         this._bodyAssociations = new Map()
+
+        // NOTE
+        // Destroying `joltSettings` breaks the physics system for some reason
+        // We've decided not to investigate this further.
+        // JOLT.destroy(joltSettings)
     }
 
     /**
@@ -630,8 +635,7 @@ class PhysicsSystem extends WorldSystem {
 
         const wheelSettings = new JOLT.WheelSettingsWV()
 
-        const scaledAxis = axis.Mul(0.1)
-        wheelSettings.mPosition = convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(scaledAxis))
+        wheelSettings.mPosition = convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))
 
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
@@ -683,7 +687,6 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(jointOrigin)
         JOLT.destroy(jointOriginOffset)
         JOLT.destroy(axis)
-        JOLT.destroy(scaledAxis)
         JOLT.destroy(vehicleSettings)
 
         this._constraints.push(fixedConstraint, vehicleConstraint)
@@ -1196,6 +1199,7 @@ class PhysicsSystem extends WorldSystem {
             .GetNarrowPhaseQuery()
             .CastRay(ray, raySettings, collector, bpFilter, objectFilter, bodyFilter, shapeFilter)
 
+        JOLT.destroy(rayVec)
         JOLT.destroy(raySettings)
         JOLT.destroy(bpFilter)
         JOLT.destroy(objectFilter)
@@ -1203,13 +1207,20 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(shapeFilter)
         if (destroy) JOLT.destroy(dir)
 
-        if (!collector.HadHit()) return undefined
+        if (!collector.HadHit()) {
+            JOLT.destroy(collector)
+            return undefined
+        }
 
-        if (!collector.HadHit()) return undefined
+        // NOTE
+        // The underlying object here is just an id
+        // So I believe this copy is okay (tests pass, at least)
+        const data = collector.mHit
+        JOLT.destroy(collector)
 
-        const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
+        const hitPoint = ray.GetPointOnRay(data.mFraction)
 
-        return { data: collector.mHit, point: convertJoltRVec3ToJoltVec3(hitPoint), ray: ray }
+        return { data, point: convertJoltRVec3ToJoltVec3(hitPoint), ray }
     }
 
     /**
