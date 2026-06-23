@@ -194,12 +194,13 @@ class ScreenInteractionHandler {
                     }
                 }
 
+                const prevPrimary = this._primaryTouchPosition!
                 this._primaryTouchPosition = [e.clientX, e.clientY]
 
                 if (this._secondaryTouch == undefined) {
                     this.interactionMove({
                         interactionType: PRIMARY_MOUSE_INTERACTION,
-                        movement: [e.movementX, e.movementY],
+                        movement: [e.clientX - prevPrimary[0], e.clientY - prevPrimary[1]],
                     })
                 }
             } else if (e.pointerId == this._secondaryTouch) {
