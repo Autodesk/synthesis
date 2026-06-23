@@ -1,7 +1,12 @@
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
-<svg width="84px" height="84px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#BFC5CE" transform="matrix(-1, 0, 0, 1, 0, 0)">
-<g id="SVGRepo_bgCarrier" stroke-width="0"/>
-<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-<g id="SVGRepo_iconCarrier"> <path d="M10 3.5L13.0581 0.441881C12.4304 0.15802 11.7337 0 11 0C8.23858 0 6 2.23858 6 5C6 5.45802 6.06158 5.90165 6.17692 6.32308L0 12.5L3.5 16L9.67692 9.82308C10.0983 9.93842 10.542 10 11 10C13.7614 10 16 7.76142 16 5C16 4.26633 15.842 3.56956 15.5581 2.94188L12.5 6H10V3.5Z" fill="#BFC5CE"/> </g>
-</svg>
+<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.4297 4.63477C19.9876 3.03375 24.073 5.36543 24.5039 9.24316L24.6836 10.8652C24.7305 11.2871 24.7305 11.7129 24.6836 12.1348L24.3818 14.8584C23.9955 18.334 20.6212 20.6629 17.2344 19.792L14.0586 18.9756C13.3643 18.797 12.6357 18.797 11.9414 18.9756L8.76562 19.792C5.37876 20.6629 2.00453 18.334 1.61816 14.8584L1.31641 12.1348C1.26954 11.7129 1.26954 11.2871 1.31641 10.8652L1.49609 9.24316C1.92695 5.36543 6.01236 3.03375 9.57031 4.63477L11.2559 5.39258C12.365 5.89169 13.635 5.89169 14.7441 5.39258L16.4297 4.63477Z" stroke="#BFC5CE" stroke-width="1.5"/>
+<rect x="6" y="9.5" width="2" height="5" fill="#94D1FB" stroke="#94D1FB"/>
+<mask id="path-3-inside-1_23_126" fill="white">
+<path d="M10.5 11V13H3.5V11H10.5Z"/>
+</mask>
+<path d="M10.5 11H11.5V10H10.5V11ZM10.5 13V14H11.5V13H10.5ZM3.5 13H2.5V14H3.5V13ZM3.5 11V10H2.5V11H3.5ZM10.5 11H9.5V13H10.5H11.5V11H10.5ZM10.5 13V12H3.5V13V14H10.5V13ZM3.5 13H4.5V11H3.5H2.5V13H3.5ZM3.5 11V12H10.5V11V10H3.5V11Z" fill="#94D1FB" mask="url(#path-3-inside-1_23_126)"/>
+<rect x="19" y="9" width="1" height="2" fill="#94D1FB"/>
+<rect x="19" y="13" width="1" height="2" fill="#94D1FB"/>
+<rect x="21" y="11" width="1" height="2" fill="#94D1FB"/>
+<rect x="17" y="11" width="1" height="2" fill="#94D1FB"/>
+</svg>

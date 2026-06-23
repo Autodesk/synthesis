@@ -17,6 +17,7 @@ export const TOP_BAR_ICONS = {
     "cfg-3": "/icons/cfg-intake.svg",
     "cfg-4": "/icons/cfg-ejector.svg",
     "cfg-5": "/icons/cfg-joints.svg",
+    "gp-1": "/icons/gp-multiplayer.svg",
 } as const
 
 export type TopBarIconName = keyof typeof TOP_BAR_ICONS

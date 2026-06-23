@@ -14,6 +14,7 @@ import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton } from "./StyledComponents"
 import ConfigureControls from "./topbar/ConfigureControls"
+import GameplayControls from "./topbar/GameplayControls"
 import ModeDropdown from "./topbar/ModeDropdown"
 import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/topBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
@@ -105,6 +106,7 @@ const TopBar: React.FC = () => {
                 <Box sx={{ width: "2px", height: 38, bgcolor: "topBarText.main", opacity: 0.4 }} />
 
                 {appMode === "Configure" && <ConfigureControls />}
+                {appMode === "Gameplay" && <GameplayControls />}
 
                 <Box flexGrow={1} />
 
@@ -114,7 +116,7 @@ const TopBar: React.FC = () => {
                     sx={TOP_BAR_ICON_BUTTON_SX}
                     onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
                 >
-                    <TopBarIcon name="settings" size={28} />
+                    <TopBarIcon name="settings" size={40} />
                 </IconButton>
                 <IconButton
                     size="large"
