@@ -95,7 +95,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     custom: customProps,
                 },
             } as Modal<T, P>
-            modal?.onClose?.(CloseType.Overwrite)
+            if (modal) closeCallbacks(modal, CloseType.Overwrite)
 
             newModal.props.configured = false
 
@@ -187,7 +187,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                             return existing.id
                         }
                     }
-                    // Replace existing with the new one
+                    // Runs cancels cleanup on overwrite
+                    closeCallbacks(existing, CloseType.Overwrite)
                     setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])
                     return id
                 }
@@ -207,7 +208,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 elem.onAccept?.(beforeAcceptResult)
                 break
             }
+            // If anything but accepted, run onCancel
             case CloseType.Cancel:
+            case CloseType.Overwrite:
                 elem.onCancel?.()
                 break
             default:
