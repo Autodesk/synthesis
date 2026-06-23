@@ -1,4 +1,4 @@
-import { act, fireEvent, getByText, render } from "@testing-library/react"
+import { act, fireEvent, getByText, render, waitFor } from "@testing-library/react"
 import React from "react"
 import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
 import { Panel } from "@/ui/components/Panel"
@@ -85,19 +85,21 @@ describe("MatchModeConfigPanel", () => {
         assert(fileInput != undefined)
 
         // Upload the file (wrapped in act to handle React state updates)
-        act(() => {
+        await act(async () => {
             fireEvent.change(fileInput, { target: { files: [testFile] } })
         })
 
-        await new Promise(resolve => setTimeout(resolve, 100))
-
-        const finalCount = getMatchModeCount(container)
         if (validJSON) {
-            assert(
-                finalCount === initialCount + 1,
-                `Expected count to increase from ${initialCount} to ${initialCount + 1}, but got ${finalCount}`
-            )
+            await waitFor(() => {
+                const finalCount = getMatchModeCount(container)
+                assert(
+                    finalCount === initialCount + 1,
+                    `Expected count to increase from ${initialCount} to ${initialCount + 1}, but got ${finalCount}`
+                )
+            })
         } else {
+            await new Promise(resolve => setTimeout(resolve, 100))
+            const finalCount = getMatchModeCount(container)
             assert(finalCount === initialCount, `Expected count to remain ${initialCount}, but got ${finalCount}`)
         }
     }

@@ -1,0 +1,54 @@
+# TODO - Delete before merging
+name: Fission - Match Mode Stress (REMOVE BEFORE MERGE)
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: "Number of times to run the test file"
+        required: true
+        default: "50"
+
+jobs:
+  stressMatchModeTest:
+    name: Match Mode Config Stress Loop
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.0-noble
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "fission"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: JavaScript Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
+          path: "fission/node_modules"
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Match Mode Test In A Loop
+        run: |
+          ITERATIONS="${{ github.event.inputs.iterations }}"
+          echo "Running MatchModeConfigPanel.test.tsx $ITERATIONS times. Will fail fast on first flake."
+          for i in $(seq 1 "$ITERATIONS"); do
+            echo "::group::Iteration $i / $ITERATIONS"
+            if ! HOME=/root npm run test src/test/ui/MatchModeConfigPanel.test.tsx --bail=1; then
+              echo "::endgroup::"
+              echo "::error::Test failed on iteration $i of $ITERATIONS"
+              exit 1
+            fi
+            echo "::endgroup::"
+          done
+          echo "All $ITERATIONS iterations passed."
