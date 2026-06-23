@@ -26,11 +26,9 @@ async function tryConnect(port?: number): Promise<void> {
             socket = new WebSocket(`ws://localhost:${port ?? 3300}/wpilibws`)
 
             socket.addEventListener("open", () => {
-                console.log("WS Opened")
                 self.postMessage({ status: "open" })
             })
             socket.addEventListener("error", () => {
-                console.log("WS Could not open")
                 self.postMessage({ status: "error" })
             })
             socket.addEventListener("close", () => {
@@ -39,7 +37,6 @@ async function tryConnect(port?: number): Promise<void> {
 
             socket.addEventListener("message", onMessage)
         })
-        .then(() => console.debug("Mutex released"))
 }
 
 async function tryDisconnect(): Promise<void> {
