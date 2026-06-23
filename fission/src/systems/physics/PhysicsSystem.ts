@@ -26,7 +26,6 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
-import { assert } from "vitest"
 
 /**
  * Layers used for determining enabled/disabled collisions.
