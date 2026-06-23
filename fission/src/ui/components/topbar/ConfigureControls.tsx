@@ -89,7 +89,7 @@ const ConfigureControls: React.FC = () => {
             </Select>
             {CONFIGURE_BUTTONS.map(name => (
                 <IconButton key={name} size="large" disableRipple sx={TOP_BAR_ICON_BUTTON_SX}>
-                    <TopBarIcon name={name} size={26} />
+                    <TopBarIcon name={name} size={40} />
                 </IconButton>
             ))}
         </Stack>
