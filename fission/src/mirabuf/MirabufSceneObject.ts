@@ -379,8 +379,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             if (!jBodyId) return
 
             const position = World.physicsSystem.getBody(jBodyId).GetPosition()
-            const rOffset = position.Sub(bodyCenter)
-            const offset = convertJoltRVec3ToJoltVec3(rOffset)
+            const offset = convertJoltRVec3ToJoltVec3(position.Sub(bodyCenter))
             const newPos = convertJoltVec3ToJoltRVec3(initialTranslation, false)
 
             World.physicsSystem.setBodyPositionRotationAndVelocity(
@@ -393,7 +392,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             )
 
             JOLT.destroy(position)
-            JOLT.destroy(rOffset)
             JOLT.destroy(offset)
             JOLT.destroy(newPos)
         })
@@ -443,26 +441,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         this._scoringZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
-        this._scoringZones = []
+        this._scoringZones.length = 0
 
         this._protectedZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
-        this._protectedZones = []
+        this._protectedZones.length = 0
 
         this.mechanism.nodeToBody.forEach(bodyId => {
             World.physicsSystem.removeBodyAssociation(bodyId)
         })
 
         this._nameTag?.dispose()
+
         World.simulationSystem.unregisterMechanism(this.mechanism)
         World.physicsSystem.destroyMechanism(this.mechanism)
-        this.mirabufInstance.dispose(World.sceneRenderer.scene)
-        this._debugBodies?.forEach(x => {
-            World.sceneRenderer.scene.remove(x.colliderMesh, x.comMesh)
-            x.colliderMesh.geometry.dispose()
-            x.comMesh.geometry.dispose()
-            ;(x.colliderMesh.material as THREE.Material).dispose()
-            ;(x.comMesh.material as THREE.Material).dispose()
-        })
 
         this._collisionUnsubscriber?.()
 
@@ -470,9 +461,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.sceneRenderer.scene.remove(this._centerOfMassIndicator)
             this._centerOfMassIndicator = undefined
         }
-
-        World.simulationSystem.unregisterMechanism(this.mechanism)
-        World.physicsSystem.destroyMechanism(this.mechanism)
 
         EventSystem.dispatch("MirabufObjectChangeEvent", null)
     }
@@ -548,12 +536,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     const inverseMass = body.GetMotionProperties().GetInverseMass()
 
                     if (inverseMass > 0) {
-                        const mass = 1 / inverseMass
+                        const oldWeighedCOM = weightedCOM
 
+                        const mass = 1 / inverseMass
                         const com = body.GetCenterOfMassPosition().Mul(mass)
+
                         weightedCOM = weightedCOM.AddRVec3(com)
                         totalMass += mass
 
+                        JOLT.destroy(oldWeighedCOM)
                         JOLT.destroy(com)
                     }
                 }
@@ -567,14 +558,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
             }
 
-            if (totalMass > 0) {
-                const netCoM = weightedCOM.Div(totalMass)
-                setPositionAndVisibility(netCoM)
-
-                JOLT.destroy(netCoM)
-            } else {
-                setPositionAndVisibility(weightedCOM)
-            }
+            const com = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
+            setPositionAndVisibility(com)
         }
 
         JOLT.destroy(weightedCOM)
@@ -856,8 +841,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (jBody.IsStatic()) {
             const aaBox = jBody.GetWorldSpaceBounds()
             const mat = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
-            const center = aaBox.mMin.Add(aaBox.mMax).Div(2.0)
-            const centerVec = convertJoltVec3ToThreeVector3(center)
+            const centerVec = convertJoltVec3ToThreeVector3(aaBox.mMin.Add(aaBox.mMax).Div(2.0))
 
             mat.compose(centerVec, new THREE.Quaternion(0, 0, 0, 1), new THREE.Vector3(1, 1, 1))
             gizmo.setTransform(mat)
