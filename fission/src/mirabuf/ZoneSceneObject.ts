@@ -15,19 +15,32 @@ import { deltaFieldTransformsPhysicalProp, VisualProperties } from "@/util/three
 import type MirabufSceneObject from "./MirabufSceneObject"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
-    // Colors
-    public static redMaterial = new THREE.MeshPhongMaterial({
+    public static lightRedMaterial = new THREE.MeshPhongMaterial({
+        color: 0xed1c24,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })
+    public static lightBlueMaterial = new THREE.MeshPhongMaterial({
+        color: 0x0066b3,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })
+
+    public static darkRedMaterial = new THREE.MeshPhongMaterial({
         color: 0xff0000,
         shininess: 0.0,
         opacity: 0.8,
         transparent: true,
     })
-    public static blueMaterial = new THREE.MeshPhongMaterial({
+    public static darkBlueMaterial = new THREE.MeshPhongMaterial({
         color: 0x0022ff,
         shininess: 0.0,
         opacity: 0.8,
         transparent: true,
     })
+
     static transparentMaterial = new THREE.MeshPhongMaterial({
         color: 0x0000,
         shininess: 0.0,
@@ -46,6 +59,8 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     public joltBodyId?: Jolt.BodyID
     public mesh?: THREE.Mesh
     public unsubscribers: (() => void)[] = []
+
+    public abstract get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial }
 
     public constructor(
         parentAssembly: MirabufSceneObject,
@@ -154,6 +169,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         this.mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
         this.mesh.rotation.setFromQuaternion(props.rotation)
         this.mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
-        this.mesh.material = this.prefs.alliance == "red" ? ZoneSceneObject.redMaterial : ZoneSceneObject.blueMaterial
+
+        this.mesh.material = this.prefs.alliance == "red" ? this.materials.red : this.materials.blue
     }
 }
