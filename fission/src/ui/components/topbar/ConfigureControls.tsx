@@ -24,12 +24,12 @@ const ROBOT_CONFIGURE_BUTTONS: ConfigureButton[] = [
     { name: "cfg-3", label: "Intake", mode: ConfigMode.INTAKE },
     { name: "cfg-4", label: "Ejector", mode: ConfigMode.EJECTOR },
     { name: "cfg-5", label: "Joints", mode: ConfigMode.SUBSYSTEMS },
+    { name: "cfg-6", label: "Alliance / Station", mode: ConfigMode.ALLIANCE },
 ]
 
-// Placeholder field config buttons; reuse the intake icon until final art exists.
 const FIELD_CONFIGURE_BUTTONS: ConfigureButton[] = [
-    { name: "cfg-3", label: "Scoring Zones", mode: ConfigMode.SCORING_ZONES },
-    { name: "cfg-3", label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
+    { name: "cfg-8", label: "Scoring Zones", mode: ConfigMode.SCORING_ZONES },
+    { name: "cfg-7", label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
 ]
 
 const assemblyLabel = (assembly: MirabufSceneObject): string => {

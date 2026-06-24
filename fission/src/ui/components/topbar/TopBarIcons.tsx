@@ -17,6 +17,9 @@ export const TOP_BAR_ICONS = {
     "cfg-3": "/icons/cfg-intake.svg",
     "cfg-4": "/icons/cfg-ejector.svg",
     "cfg-5": "/icons/cfg-joints.svg",
+    "cfg-6": "/icons/cfg-alliance.svg",
+    "cfg-7": "/icons/cfg-protected-zones.svg",
+    "cfg-8": "/icons/cfg-scoring-zones.svg",
     "gp-1": "/icons/gp-multiplayer.svg",
 } as const
 
