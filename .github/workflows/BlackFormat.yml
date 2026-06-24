@@ -17,7 +17,7 @@ jobs:
       - name: Python Setup
         uses: actions/setup-python@v6
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - name: Setup Dependencies
         run: python3 -m pip install -r ./exporter/SynthesisFusionAddin/requirements-dev.txt
       - name: Validate Isort Formatting
