@@ -17,7 +17,6 @@ import {
     type Alliance,
     defaultFieldSpawnLocation,
     defaultRobotPreferences,
-    defaultRobotSpawnLocation,
     type EjectorPreferences,
     type FieldPreferences,
     type IntakePreferences,
@@ -45,7 +44,6 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltRVec3ToJoltVec3,
-    convertJoltVec3ToJoltRVec3,
     convertJoltVec3ToThreeVector3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
@@ -257,13 +255,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (DEBUG_BODIES) {
             this._debugBodies = new Map()
             this.mechanism.nodeToBody.forEach((bodyId, rnName) => {
-                const body = World.physicsSystem.getBody(bodyId)
+                const body = World.physicsSystem.getBody(bodyId)!
 
                 const colliderMesh = this.createMeshForShape(body.GetShape())
                 const comMesh = World.sceneRenderer.createSphere(0.05)
+
                 World.sceneRenderer.scene.add(colliderMesh)
                 World.sceneRenderer.scene.add(comMesh)
+
                 ;(comMesh.material as THREE.Material).depthTest = false
+
                 this._debugBodies!.set(rnName, {
                     colliderMesh: colliderMesh,
                     comMesh: comMesh,
@@ -285,6 +286,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType === MiraType.ROBOT) {
             World.simulationSystem.registerMechanism(this.mechanism)
             const simLayer = World.simulationSystem.getSimulationLayer(this.mechanism)!
+
             this._brain = new SynthesisBrain(this, this.assemblyName)
             simLayer.setBrain(this._brain)
         }
@@ -300,7 +302,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.updateBatches()
 
-        this._basePositionTransform = this.getPositionTransform(new THREE.Vector3())
+        this._basePositionTransform = this.getPositionTransform()
 
         this.moveToSpawnLocation()
 
@@ -313,33 +315,43 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         EventSystem.dispatch("MirabufObjectChangeEvent", this)
     }
 
-    // Centered in xz plane, bottom surface of object
-    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()) {
+    // Centered in x-z plane, bottom surface of object
+    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
         const box = this.computeBoundingBox()
+
         const transform = box.getCenter(vec)
         transform.setY(box.min.y)
+
         return transform
     }
 
     public moveToSpawnLocation() {
-        let pos: SpawnLocation = defaultRobotSpawnLocation()
         const referencePos = new THREE.Vector3()
-        if (this.miraType == MiraType.FIELD) {
-            pos = defaultFieldSpawnLocation()
-        } else {
-            const field = World.sceneRenderer.mirabufSceneObjects.getField()
-            const fieldLocations = field?.fieldPreferences?.spawnLocations
-            if (this.alliance != null && this.station != null && fieldLocations != null) {
-                pos = fieldLocations[this.alliance][this.station]
-            } else {
-                pos = fieldLocations?.default ?? pos
-            }
-            field?.getPositionTransform(referencePos)
-        }
-        this.setObjectPosition(pos, referencePos)
+        const pos =
+            this.miraType == MiraType.FIELD
+                ? defaultFieldSpawnLocation()
+                : (this.robotSpawnPosition(referencePos) ?? defaultFieldSpawnLocation())
+
+        this.setObjectPosition(pos)
     }
 
-    private setObjectPosition(initialPos: SpawnLocation, referencePosition: THREE.Vector3) {
+    private robotSpawnPosition(referencePos: THREE.Vector3): SpawnLocation | undefined {
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        const fieldLocations = field?.fieldPreferences?.spawnLocations
+
+        const pos =
+            this.alliance != null && this.station != null && fieldLocations != null
+                ? fieldLocations[this.alliance][this.station]
+                : fieldLocations?.default
+
+        // TODO
+        // Why are we calling this?
+        field?.getPositionTransform(referencePos)
+
+        return pos
+    }
+
+    private setObjectPosition(initialPos: SpawnLocation, referencePosition: THREE.Vector3 = new THREE.Vector3()) {
         const bounds = this.computeBoundingBox()
         if (!Number.isFinite(bounds.min.y)) return
 
@@ -351,33 +363,43 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             new THREE.Vector3(0, 1, 0),
             initialPos.yaw
         )
-        const initialTranslation = new JOLT.Vec3(
+        const initialTranslation = new JOLT.RVec3(
             initialPos.pos[0] - rotatedBasePositionTransform.x + referencePosition.x,
             initialPos.pos[1] - rotatedBasePositionTransform.y + referencePosition.y,
             initialPos.pos[2] - rotatedBasePositionTransform.z + referencePosition.z
         )
-        const initialRotation = JOLT.Quat.prototype.sRotation(new JOLT.Vec3(0, 1, 0), initialPos.yaw)
+
+        const yUnitVec = new JOLT.Vec3(0, 1, 0)
+        const initialRotation = JOLT.Quat.prototype.sRotation(yUnitVec, initialPos.yaw)
+
+        const blankVec = new JOLT.Vec3()
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
             const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
             if (!jBodyId) return
-            const offset = convertJoltRVec3ToJoltVec3(
-                World.physicsSystem.getBody(jBodyId).GetPosition().Sub(bodyCenter)
-            )
-            const newPos = convertJoltVec3ToJoltRVec3(initialTranslation)
+
+            const position = World.physicsSystem.getBody(jBodyId)!.GetPosition()
+            const offset = convertJoltRVec3ToJoltVec3(position.Sub(bodyCenter))
+
             World.physicsSystem.setBodyPositionRotationAndVelocity(
                 jBodyId,
-                newPos,
+                initialTranslation,
                 initialRotation,
-                new JOLT.Vec3(),
-                new JOLT.Vec3()
+                blankVec,
+                blankVec,
+                false
             )
 
+            JOLT.destroy(position)
             JOLT.destroy(offset)
-            JOLT.destroy(newPos)
         })
+
+        this.updateMeshTransforms()
+
+        JOLT.destroy(bodyCenter)
         JOLT.destroy(initialTranslation)
         JOLT.destroy(initialRotation)
-        this.updateMeshTransforms()
+        JOLT.destroy(yUnitVec)
+        JOLT.destroy(blankVec)
     }
 
     public update(): void {
@@ -391,45 +413,52 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public dispose(): void {
+        this.mirabufInstance.dispose(World.sceneRenderer.scene)
+
+        if (this._brain && this._brain instanceof SynthesisBrain) {
+            this._brain.clearControls()
+        }
+
+        this._debugBodies?.forEach(x => {
+            World.sceneRenderer.scene.remove(x.colliderMesh, x.comMesh)
+            x.colliderMesh.geometry.dispose()
+            x.comMesh.geometry.dispose()
+
+            ;(x.colliderMesh.material as THREE.Material).dispose()
+            ;(x.comMesh.material as THREE.Material).dispose()
+        })
+        this._debugBodies?.clear()
+
+        this._physicsLayerReserve?.release()
+        this._ejectables.forEach(e => World.sceneRenderer.removeSceneObject(e.id))
+
         if (this._intakeSensor) {
             World.sceneRenderer.removeSceneObject(this._intakeSensor.id)
             this._intakeSensor = undefined
         }
 
-        this._ejectables.forEach(e => World.sceneRenderer.removeSceneObject(e.id))
-
         this._scoringZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
-        this._scoringZones = []
+        this._scoringZones.length = 0
 
         this._protectedZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
-        this._protectedZones = []
+        this._protectedZones.length = 0
 
         this.mechanism.nodeToBody.forEach(bodyId => {
             World.physicsSystem.removeBodyAssociation(bodyId)
         })
 
         this._nameTag?.dispose()
+
         World.simulationSystem.unregisterMechanism(this.mechanism)
         World.physicsSystem.destroyMechanism(this.mechanism)
-        this.mirabufInstance.dispose(World.sceneRenderer.scene)
-        this._debugBodies?.forEach(x => {
-            World.sceneRenderer.scene.remove(x.colliderMesh, x.comMesh)
-            x.colliderMesh.geometry.dispose()
-            x.comMesh.geometry.dispose()
-            ;(x.colliderMesh.material as THREE.Material).dispose()
-            ;(x.comMesh.material as THREE.Material).dispose()
-        })
+
         this._collisionUnsubscriber?.()
-        this._debugBodies?.clear()
-        this._physicsLayerReserve?.release()
+
         if (this._centerOfMassIndicator) {
             World.sceneRenderer.scene.remove(this._centerOfMassIndicator)
             this._centerOfMassIndicator = undefined
         }
 
-        if (this._brain && this._brain instanceof SynthesisBrain) {
-            this._brain.clearControls()
-        }
         EventSystem.dispatch("MirabufObjectChangeEvent", null)
     }
 
@@ -467,47 +496,70 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public updateMeshTransforms() {
         let weightedCOM = new JOLT.RVec3(0, 0, 0)
         let totalMass = 0
-        this.mirabufInstance.parser.rigidNodes.forEach(rn => {
-            if (!this.mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
-            const bodyId = this.mechanism.getBodyByNodeId(rn.id)!
-            const body = World.physicsSystem.getBody(bodyId)
-            if (!body) return
-            const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
-            this.updateNodeParts(rn, transform)
 
-            if (Number.isNaN(body.GetPosition().GetX())) {
-                const vel = body.GetLinearVelocity()
-                const pos = body.GetPosition()
-                console.warn(
-                    `Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
-                )
-            }
+        // If this.dispose() has been ran then return
+        if (this.mirabufInstance.meshes.size) {
+            this.mirabufInstance.parser.rigidNodes.forEach(rn => {
+                const bodyId = this.mechanism.getBodyByNodeId(rn.id)!
+                const body = World.physicsSystem.getBody(bodyId)
+                if (!body) return
 
-            if (this._debugBodies) {
-                const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
-                colliderMesh.position.setFromMatrixPosition(transform)
-                colliderMesh.rotation.setFromRotationMatrix(transform)
+                const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+                this.updateNodeParts(rn, transform)
 
-                const comTransform = convertJoltMat44ToThreeMatrix4(body.GetCenterOfMassTransform())
+                const position = body.GetPosition()
+                if (Number.isNaN(position.GetX())) {
+                    const vel = body.GetLinearVelocity()
+                    console.warn(
+                        `Invalid Position.\nPosition => ${position.GetX()}, ${position.GetY()}, ${position.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
+                    )
 
-                comMesh.position.setFromMatrixPosition(comTransform)
-                comMesh.rotation.setFromRotationMatrix(comTransform)
-            }
-            if (this._centerOfMassIndicator) {
-                const inverseMass = body.GetMotionProperties().GetInverseMass()
-
-                if (inverseMass > 0) {
-                    const mass = 1 / inverseMass
-                    weightedCOM = weightedCOM.AddRVec3(body.GetCenterOfMassPosition().Mul(mass))
-                    totalMass += mass
+                    JOLT.destroy(vel)
+                    JOLT.destroy(position)
                 }
-            }
-        })
-        if (this._centerOfMassIndicator) {
-            const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
-            this._centerOfMassIndicator.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
-            this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+
+                if (this._debugBodies) {
+                    const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
+                    colliderMesh.position.setFromMatrixPosition(transform)
+                    colliderMesh.rotation.setFromRotationMatrix(transform)
+
+                    const comTransform = convertJoltMat44ToThreeMatrix4(body.GetCenterOfMassTransform())
+
+                    comMesh.position.setFromMatrixPosition(comTransform)
+                    comMesh.rotation.setFromRotationMatrix(comTransform)
+                }
+
+                if (this._centerOfMassIndicator) {
+                    const inverseMass = body.GetMotionProperties().GetInverseMass()
+
+                    if (inverseMass > 0) {
+                        const oldWeighedCOM = weightedCOM
+
+                        const mass = 1 / inverseMass
+                        const com = body.GetCenterOfMassPosition().Mul(mass)
+
+                        weightedCOM = weightedCOM.AddRVec3(com)
+                        totalMass += mass
+
+                        JOLT.destroy(oldWeighedCOM)
+                        JOLT.destroy(com)
+                    }
+                }
+            })
         }
+
+        if (this._centerOfMassIndicator) {
+            const setPositionAndVisibility = (netCoM: Jolt.RVec3) => {
+                this._centerOfMassIndicator!.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
+                this._centerOfMassIndicator!.visible =
+                    PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+            }
+
+            const com = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
+            setPositionAndVisibility(com)
+        }
+
+        JOLT.destroy(weightedCOM)
     }
 
     public updateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
@@ -515,6 +567,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const partTransform = this.mirabufInstance.parser.globalTransforms.get(part)!.clone().premultiply(transform)
             const meshes = this.mirabufInstance.meshes.get(part) ?? []
             meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
+
+            // JOLT.destroy(partTransform)
         })
     }
 
@@ -528,19 +582,24 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     /** Updates the position of the nametag relative to the robots position */
     private updateNameTag() {
-        if (this._nameTag && PreferencesSystem.getGlobalPreference("RenderSceneTags")) {
-            this._nameTag.color = this.alliance
-            const boundingBox = this.computeBoundingBox()
-            this._nameTag.position = World.sceneRenderer.worldToPixelSpace(
-                new THREE.Vector3(
-                    (boundingBox.max.x + boundingBox.min.x) / 2,
-                    boundingBox.max.y + 0.1,
-                    (boundingBox.max.z + boundingBox.min.z) / 2
-                )
+        if (!this._nameTag || !PreferencesSystem.getGlobalPreference("RenderSceneTags")) return
+
+        this._nameTag.color = this.alliance
+        const boundingBox = this.computeBoundingBox()
+
+        this._nameTag.position = World.sceneRenderer.worldToPixelSpace(
+            new THREE.Vector3(
+                (boundingBox.max.x + boundingBox.min.x) / 2,
+                boundingBox.max.y + 0.1,
+                (boundingBox.max.z + boundingBox.min.z) / 2
             )
-        }
+        )
     }
 
+    /*
+     * I think it's fine that we create a new `IntakeSensorSceneObject`
+     *  since this function only gets called occasionally by user input (and on `setup`), rather than in a loop.
+     */
     public updateIntakeSensor() {
         if (this._intakeSensor) {
             World.sceneRenderer.removeSceneObject(this._intakeSensor.id)
@@ -591,43 +650,41 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const ejectable = new EjectableSceneObject(this, bodyId)
         this._ejectables.push(ejectable)
         World.sceneRenderer.registerSceneObject(ejectable)
+
         return true
     }
 
     public updateScoringZones(render?: boolean) {
-        this._scoringZones.filter(zone => zone.id != -1).forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
-        this._scoringZones = []
+        this.removeSceneObjects(this._scoringZones)
 
-        if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
-            for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
-                const newZone = new ScoringZoneSceneObject(
-                    this,
-                    i,
-                    render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
-                )
-                this._scoringZones.push(newZone)
-                World.sceneRenderer.registerSceneObject(newZone)
-            }
+        if (!this._fieldPreferences || !this._fieldPreferences.scoringZones) return
+        render ??= PreferencesSystem.getGlobalPreference("RenderScoringZones")
+
+        for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
+            const newZone = new ScoringZoneSceneObject(this, i, render)
+
+            this._scoringZones.push(newZone)
+            World.sceneRenderer.registerSceneObject(newZone)
         }
     }
 
     public updateProtectedZones(render?: boolean) {
-        this._protectedZones
-            .filter(zone => zone.id != -1)
-            .forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
-        this._protectedZones = []
+        this.removeSceneObjects(this._protectedZones)
 
-        if (this.fieldPreferences && this.fieldPreferences.protectedZones) {
-            for (let i = 0; i < this.fieldPreferences.protectedZones.length; i++) {
-                const newZone = new ProtectedZoneSceneObject(
-                    this,
-                    i,
-                    render ?? PreferencesSystem.getGlobalPreference("RenderProtectedZones")
-                )
-                this._protectedZones.push(newZone)
-                World.sceneRenderer.registerSceneObject(newZone)
-            }
+        if (!this._fieldPreferences || !this._fieldPreferences.protectedZones) return
+        render ??= PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+
+        for (let i = 0; i < this._fieldPreferences.protectedZones.length; i++) {
+            const newZone = new ProtectedZoneSceneObject(this, i, render)
+
+            this._protectedZones.push(newZone)
+            World.sceneRenderer.registerSceneObject(newZone)
         }
+    }
+
+    private removeSceneObjects(objs: SceneObject[]) {
+        objs.filter(obj => obj.id != -1).forEach(obj => World.sceneRenderer.removeSceneObject(obj.id))
+        objs.length = 0
     }
 
     public removeScoringZoneObject(zone: ScoringZonePreferences) {
@@ -699,7 +756,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             return this.getDimensions()
         }
 
-        const rootBody = World.physicsSystem.getBody(rootNodeId)
+        const rootBody = World.physicsSystem.getBody(rootNodeId)!
         const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
 
         const rootPosition = new THREE.Vector3()
@@ -716,21 +773,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
             if (!bodyId) return
 
-            const body = World.physicsSystem.getBody(bodyId)
+            const body = World.physicsSystem.getBody(bodyId)!
             const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
 
             const shape = body.GetShape()
             const scale = new JOLT.Vec3(1, 1, 1)
-            const triangleContext = new JOLT.ShapeGetTriangles(
-                shape,
-                JOLT.AABox.prototype.sBiggest(),
-                shape.GetCenterOfMass(),
-                JOLT.Quat.prototype.sIdentity(),
-                scale
-            )
+            const biggest = JOLT.AABox.prototype.sBiggest()
+
+            const identity = JOLT.Quat.prototype.sIdentity()
+            const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
 
             try {
                 const vertices = new Float32Array(
+                    // I don't think anything needs to be freed here
                     JOLT.HEAP32.buffer,
                     triangleContext.GetVerticesData(),
                     triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
@@ -746,6 +801,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             } finally {
                 JOLT.destroy(triangleContext)
                 JOLT.destroy(scale)
+                JOLT.destroy(biggest)
+                JOLT.destroy(identity)
             }
         })
 
@@ -777,16 +834,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             return
         }
 
-        const jBody = World.physicsSystem.getBody(jRootId)
+        const jBody = World.physicsSystem.getBody(jRootId)!
         if (jBody.IsStatic()) {
             const aaBox = jBody.GetWorldSpaceBounds()
             const mat = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
-            const center = aaBox.mMin.Add(aaBox.mMax).Div(2.0)
-            mat.compose(
-                convertJoltVec3ToThreeVector3(center),
-                new THREE.Quaternion(0, 0, 0, 1),
-                new THREE.Vector3(1, 1, 1)
-            )
+            const centerVec = convertJoltVec3ToThreeVector3(aaBox.mMin.Add(aaBox.mMax).Div(2.0))
+
+            mat.compose(centerVec, new THREE.Quaternion(0, 0, 0, 1), new THREE.Vector3(1, 1, 1))
             gizmo.setTransform(mat)
         } else {
             gizmo.setTransform(convertJoltMat44ToThreeMatrix4(jBody.GetCenterOfMassTransform()))
@@ -891,12 +945,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public hasPhysics(): boolean {
-        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
         return rootBody.IsActive() && !rootBody.IsSensor()
     }
 
     public getRootNodeId(): Jolt.BodyID | undefined {
-        return this.mechanism.getBodyByNodeId(this.mechanism.rootBody)
+        return this.mechanism.getBodyByNodeId(this.mechanism.rootBody)!
     }
 
     public loadFocusTransform(mat: THREE.Matrix4) {
@@ -1020,7 +1074,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getAllBodies(): Jolt.Body[] {
         return [...this.mechanism.nodeToBody.values()]
-            .map(bodyId => World.physicsSystem.getBody(bodyId))
+            .map(bodyId => World.physicsSystem.getBody(bodyId)!)
             .filter(body => body != null)
     }
 

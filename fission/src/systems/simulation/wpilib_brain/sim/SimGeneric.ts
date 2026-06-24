@@ -98,6 +98,7 @@ export default class SimGeneric {
                 data: selectedData,
             },
         })
+
         EventSystem.dispatch("SimMapUpdateEvent", { internalUpdate: true })
         return true
     }

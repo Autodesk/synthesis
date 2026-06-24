@@ -78,7 +78,7 @@ class GizmoSceneObject extends SceneObject {
                 if (!jBodyId) return
 
                 const worldTransform = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(jBodyId).GetWorldTransform()
+                    World.physicsSystem.getBody(jBodyId)!.GetWorldTransform()
                 )
                 const relativeTransform = worldTransform.premultiply(gizmoTransformInv)
                 this._relativeTransformations!.set(rn.id, relativeTransform)

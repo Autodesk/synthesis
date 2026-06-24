@@ -31,16 +31,16 @@ repositories {
         url "https://maven.revrobotics.com/"
     }
 
-    // KAUAI
+    // Studica (NavX)
     maven {
-        url "https://dev.studica.com/maven/release/2024/"
+        url "https://dev.studica.com/maven/release/2026/"
     }
 }
 
-def WPI_Version = '2024.3.2'
-def REV_Version = '2024.2.4'
-def CTRE_Version = '24.3.0'
-def KAUAI_Version = '2024.1.0'
+def WPI_Version = '2026.2.2'
+def REV_Version = '2026.0.5'
+def CTRE_Version = '26.3.0'
+def STUDICA_Version = '2026.0.0'
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
@@ -53,6 +53,9 @@ dependencies {
     implementation "edu.wpi.first.wpilibj:wpilibj-java:$WPI_Version"
     implementation "edu.wpi.first.wpiutil:wpiutil-java:$WPI_Version"
     implementation "edu.wpi.first.hal:hal-java:$WPI_Version"
+    implementation "edu.wpi.first.wpimath:wpimath-java:$WPI_Version"
+    implementation "edu.wpi.first.ntcore:ntcore-java:$WPI_Version"
+    implementation "edu.wpi.first.wpiunits:wpiunits-java:$WPI_Version"
 
     // REVRobotics
     implementation "com.revrobotics.frc:REVLib-java:$REV_Version"
@@ -60,8 +63,8 @@ dependencies {
     // CTRE
     implementation "com.ctre.phoenix6:wpiapi-java:$CTRE_Version"
 
-    // KAUAI
-    implementation "com.kauailabs.navx.frc:navx-frc-java:$KAUAI_Version"
+    // Studica (NavX)
+    implementation "com.studica.frc:Studica-java:$STUDICA_Version"
 }
 
 java {
