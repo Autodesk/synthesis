@@ -14,9 +14,6 @@ export interface AppState {
     // ConfigureInputs stuff
     selectedScheme?: InputScheme
     setSelectedScheme: (_scheme: InputScheme | undefined) => void
-    // View Cube
-    isMainMenuOpen: boolean
-    setIsMainMenuOpen: (_state: boolean) => void
     // Top bar mode selector
     appMode: AppMode
     setAppMode: (_mode: AppMode) => void
@@ -30,8 +27,6 @@ export const StateContext = createContext<AppState>({
     setUnconfirmedImport: () => {},
     selectedScheme: undefined,
     setSelectedScheme: () => {},
-    isMainMenuOpen: true,
-    setIsMainMenuOpen: () => {},
     appMode: "Configure",
     setAppMode: () => {},
     selectedConfigAssembly: undefined,
