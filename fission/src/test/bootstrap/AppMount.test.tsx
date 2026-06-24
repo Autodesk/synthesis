@@ -53,6 +53,11 @@ describe("React Mounting", async () => {
     test("App fully mounts through main.tsx", async ({ annotate, skip }) => {
         skip(server.browser == "firefox", "WebGL bug in Github Actions on Firefox")
 
+        // The MainMenu/MainHUD "Singleplayer" gate was removed: the app now boots
+        // straight into the scene, so World.initWorld runs automatically on mount.
+        // Spy before importing main.tsx to capture that call.
+        const initWorldSpy = vi.spyOn(World, "initWorld")
+
         // biome-ignore lint/suspicious/noTsIgnore: ts-expect-error doesn't work here for some reason
         // @ts-ignore funky dynamic import
         await import("@/main.tsx")
@@ -77,16 +82,13 @@ describe("React Mounting", async () => {
 
         const screenElement = screen.baseElement
         expect(screenElement.querySelector("canvas")).toBeInTheDocument()
-        // expect(screen.getByText("Singleplayer")).toBeInTheDocument()
-        await annotate("DOM successfully updated to include Synthesis components")
-        const initWorldSpy = vi.spyOn(World, "initWorld")
-        // for some reason threejs canvas intercepts .click()
-        // screen
-        //     .getByText("Singleplayer")
-        //     .element()
-        //     .dispatchEvent(new PointerEvent("click", { bubbles: true }))
-        expect(initWorldSpy).toHaveBeenCalledOnce()
-        // await annotate("Singleplayer Button calls initWorld")
+        // The top bar replaces the old MainHUD; its Settings control is always present.
+        expect(screenElement.querySelector('img[alt="settings"]')).toBeInTheDocument()
+        await annotate("DOM successfully updated to include Synthesis components and the top bar")
+
+        // No Singleplayer button anymore — the world initializes on mount.
+        expect(initWorldSpy).toHaveBeenCalled()
+        await annotate("World initialized automatically on mount")
 
         await wait(50)
 
