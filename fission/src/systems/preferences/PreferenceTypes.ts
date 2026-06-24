@@ -144,7 +144,7 @@ export type RobotPreferences = {
 export type MotorPreferences = {
     name: string
     maxVelocity: number
-    maxForce: number
+    maxAcceleration: number
 }
 
 export type Alliance = "red" | "blue"
@@ -245,6 +245,6 @@ export function defaultMotorPreferences(name: string): MotorPreferences {
     return {
         name: name,
         maxVelocity: 1,
-        maxForce: 1,
+        maxAcceleration: 1,
     }
 }

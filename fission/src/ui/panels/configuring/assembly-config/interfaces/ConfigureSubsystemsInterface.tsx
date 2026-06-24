@@ -37,6 +37,7 @@ interface ConfigInterfaceProps {
 }
 
 const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configModeOption, selectedRobot, saveBehaviors }) => {
+    console.log("CONFIG INTERFACE SELECTED")
     return (
         <SubsystemRowInterface
             driver={configModeOption.driver!}
