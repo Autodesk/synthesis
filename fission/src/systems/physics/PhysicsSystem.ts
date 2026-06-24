@@ -755,9 +755,6 @@ class PhysicsSystem extends WorldSystem {
             })
         }
 
-        // TODO for azalea
-        // There is 100% some memory bug with the creation of spare ghost bodies
-        // However, this looks scary, so I'll touch it in another commit
         let bodyStart = bodyB
         let bodyNext = bodyA
         if (constraints.length > 1) {
@@ -1603,7 +1600,6 @@ class PhysicsSystem extends WorldSystem {
         const contactListener = new JOLT.ContactListenerJS()
 
         contactListener.OnContactAdded = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
-            console.log("contact")
             const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
             const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
 

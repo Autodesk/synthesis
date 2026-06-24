@@ -19,6 +19,16 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
+        const prefs = parentAssembly.fieldPreferences?.scoringZones[index]
+        if (prefs && "persistentPoints" in prefs) {
+            prefs.shouldPointsAccumulate = !prefs.persistentPoints
+            delete prefs.persistentPoints
+
+            // NOTE
+            // I'm pretty sure it's passed by reference, but just in case
+            parentAssembly.fieldPreferences.scoringZones[index] = prefs
+        }
+
         super(parentAssembly, parentAssembly.fieldPreferences?.scoringZones[index]!, "RenderScoringZones", render)
 
         this.toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")

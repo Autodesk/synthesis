@@ -115,7 +115,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
     // Creates a mesh for the user to visualize the sensor
     private createVisualMesh(props: VisualProperties) {
-        const unitVector = new JOLT.Vec3()
+        const unitVector = new JOLT.Vec3(1, 1, 1)
 
         this.mesh = World.sceneRenderer.createBox(unitVector, ZoneSceneObject.transparentMaterial)
         World.sceneRenderer.scene.add(this.mesh)
