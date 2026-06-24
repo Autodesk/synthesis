@@ -30,7 +30,7 @@ export abstract class SimOutputGroup extends SimOutput {
         this.type = type
     }
 
-    public abstract update(deltaT: number): void
+    public abstract override update(deltaT: number): void
 }
 
 export class PWMOutputGroup extends SimOutputGroup {
