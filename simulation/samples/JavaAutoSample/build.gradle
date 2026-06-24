@@ -5,6 +5,7 @@ plugins {
 
 repositories {
     mavenLocal()
+    mavenCentral()
     maven {
         url "https://frcmaven.wpi.edu/artifactory/release/"
     }
