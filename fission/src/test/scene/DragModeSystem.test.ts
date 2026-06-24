@@ -138,7 +138,7 @@ describe("DragModeSystem Integration Tests", () => {
             const bodyId = body.GetID()
             physicsSystem.addBodyToSystem(bodyId, true)
 
-            // Create a mock MirabufSceneObject that properly passes instanceof checks
+            // Create a mock MirabufSceneObject that properly passes `instanceof` checks
             const mockSceneObject = Object.create(MirabufSceneObject.prototype)
             mockSceneObject.loadFocusTransform = vi.fn()
             vi.spyOn(mockSceneObject, "miraType", "get").mockReturnValue(MiraType.FIELD)
@@ -157,7 +157,7 @@ describe("DragModeSystem Integration Tests", () => {
             }
             physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
 
-            const physicsBody = physicsSystem.getBody(bodyId)
+            const physicsBody = physicsSystem.getBody(bodyId)!
             dragModeSystem.enabled = true
 
             return {

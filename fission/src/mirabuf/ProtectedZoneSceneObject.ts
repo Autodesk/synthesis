@@ -5,64 +5,30 @@ import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import SceneObject from "@/systems/scene/SceneObject"
+import ZoneSceneObject from "@/mirabuf/ZoneSceneObject"
 import World from "@/systems/World"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import {
-    convertArrayToThreeMatrix4,
-    convertJoltMat44ToThreeMatrix4,
-    convertThreeQuaternionToJoltQuat,
-    convertThreeVector3ToJoltRVec3,
-} from "@/util/TypeConversions"
-import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MiraType } from "./MirabufLoader"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
+import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 
-class ProtectedZoneSceneObject extends SceneObject {
-    // Colors
-    public static redMaterial = new THREE.MeshPhongMaterial({
-        color: 0xff0000,
-        shininess: 0.0,
-        opacity: 0.8,
-        transparent: true,
-    })
-    public static blueMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0022ff,
-        shininess: 0.0,
-        opacity: 0.8,
-        transparent: true,
-    })
-    static transparentMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0000,
-        shininess: 0.0,
-        opacity: 0.0,
-        transparent: true,
-    })
-
-    private _parentAssembly: MirabufSceneObject
-    private _parentBodyId?: Jolt.BodyID
-    private _deltaTransformation?: THREE.Matrix4
-
-    private _toRender: boolean
-    private _prefs?: ProtectedZonePreferences
-    private _joltBodyId?: Jolt.BodyID
-    private _mesh?: THREE.Mesh
-    private _unsubscribers: (() => void)[] = []
-
+class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences> {
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
 
     private _lastRobotCollisionTime: number = 0
 
+    public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
+        return { red: ZoneSceneObject.darkRedMaterial, blue: ZoneSceneObject.darkBlueMaterial }
+    }
+
     private isZoneActive(): boolean {
-        if (!this._prefs?.activeDuring) {
+        if (!this.prefs?.activeDuring) {
             return [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME].includes(
                 MatchMode.getInstance().getMatchModeType()
             )
         }
-        return this._prefs.activeDuring.includes(MatchMode.getInstance().getMatchModeType())
+        return this.prefs.activeDuring.includes(MatchMode.getInstance().getMatchModeType())
     }
 
     private isRobotInside(robot: MirabufSceneObject): boolean {
@@ -71,135 +37,64 @@ class ProtectedZoneSceneObject extends SceneObject {
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
-        super()
+        super(parentAssembly, parentAssembly.fieldPreferences?.protectedZones[index]!, "RenderProtectedZones", render)
 
-        this._parentAssembly = parentAssembly
-        this._prefs = this._parentAssembly.fieldPreferences?.protectedZones[index]
-        this._toRender = render ?? PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+        this.toRender ??= PreferencesSystem.getGlobalPreference("RenderProtectedZones")
     }
 
-    public setup(): void {
-        if (this._prefs) {
-            this._parentBodyId = this._parentAssembly.mechanism.nodeToBody.get(
-                this._prefs.parentNode ?? this._parentAssembly.rootNodeId
-            )
+    // This is used by `super.setup`
+    public setupCollisionSubscribers() {
+        // Detect when something enters or persists in the zone
+        const collisionSubscriber: SynthesisEventListener<"OnContactAddedEvent" | "OnContactPersistedEvent"> = data => {
+            const { body1, body2 } = data
 
-            if (this._parentBodyId) {
-                // Create a default sensor
-                this._joltBodyId = World.physicsSystem.createSensor(new JOLT.BoxShapeSettings(new JOLT.Vec3(1, 1, 1)))
-                if (!this._joltBodyId) {
-                    console.log("Failed to create protected zone. No Jolt Body")
-                    return
-                }
-
-                // Position/rotate/scale sensor to settings
-                this._deltaTransformation = convertArrayToThreeMatrix4(this._prefs.deltaTransformation)
-                const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(this._parentBodyId).GetWorldTransform()
-                )
-                const props = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
-
-                World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(props.translation))
-                World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(props.rotation))
-                const shapeSettings = new JOLT.BoxShapeSettings(
-                    new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
-                )
-                const shape = shapeSettings.Create()
-                World.physicsSystem.setShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
-
-                // Mesh for the user to visualize sensor
-                this._mesh = World.sceneRenderer.createBox(
-                    new JOLT.Vec3(1, 1, 1),
-                    ProtectedZoneSceneObject.transparentMaterial
-                )
-                World.sceneRenderer.scene.add(this._mesh)
-
-                if (this._toRender) {
-                    this._mesh?.position.set(props.translation.x, props.translation.y, props.translation.z)
-                    this._mesh?.rotation.setFromQuaternion(props.rotation)
-                    this._mesh?.scale.set(props.scale.x, props.scale.y, props.scale.z)
-                }
-
-                // Detect when something enters or persists in the zone
-                const collisionSubscriber: SynthesisEventListener<
-                    "OnContactAddedEvent" | "OnContactPersistedEvent"
-                > = data => {
-                    const { body1, body2 } = data
-
-                    if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollision(body2)
-                    } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollision(body1)
-                    }
-
-                    // Handle contact-based penalties based on the configured contact type
-                    if (this._prefs?.contactType == ContactType.ROBOT_ENTERS || !this.isZoneActive()) return
-                    this.handleContactPenalty(body1, body2)
-                }
-                this._unsubscribers.push(EventSystem.listen("OnContactAddedEvent", collisionSubscriber))
-                this._unsubscribers.push(EventSystem.listen("OnContactPersistedEvent", collisionSubscriber))
-
-                // Detects when something leaves the zone
-                this._unsubscribers.push(
-                    EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
-                        const body1 = message.GetBody1ID()
-                        const body2 = message.GetBody2ID()
-
-                        if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                            this.zoneCollisionRemoved(body2)
-                        } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                            this.zoneCollisionRemoved(body1)
-                        }
-                    })
-                )
+            if (body1.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
+                this.zoneCollision(body2)
+            } else if (body2.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
+                this.zoneCollision(body1)
             }
+
+            // Handle contact-based penalties based on the configured contact type
+            if (this.prefs?.contactType == ContactType.ROBOT_ENTERS || !this.isZoneActive()) return
+
+            this.handleContactPenalty(body1, body2)
         }
-    }
+        this.unsubscribers.push(EventSystem.listen("OnContactAddedEvent", collisionSubscriber))
+        this.unsubscribers.push(EventSystem.listen("OnContactPersistedEvent", collisionSubscriber))
 
-    public update(): void {
-        if (this._parentBodyId && this._deltaTransformation && this._joltBodyId && this._prefs) {
-            // Update translation, rotation, and scale
-            const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-                World.physicsSystem.getBody(this._parentBodyId).GetWorldTransform()
-            )
-            const props = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
+        // Detects when something leaves the zone
+        this.unsubscribers.push(
+            EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
+                const body1 = message.GetBody1ID()
+                const body2 = message.GetBody2ID()
 
-            World.physicsSystem.setBodyPosition(this._joltBodyId, convertThreeVector3ToJoltRVec3(props.translation))
-            World.physicsSystem.setBodyRotation(this._joltBodyId, convertThreeQuaternionToJoltQuat(props.rotation))
-            const shapeSettings = new JOLT.BoxShapeSettings(
-                new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
-            )
-            const shape = shapeSettings.Create()
-            World.physicsSystem.setShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
+                const idx1 = body1.GetIndexAndSequenceNumber()
+                const idx2 = body2.GetIndexAndSequenceNumber()
 
-            // Mesh for visualization
-            this._toRender = PreferencesSystem.getGlobalPreference("RenderProtectedZones")
-            if (this._mesh)
-                if (this._toRender) {
-                    this._mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
-                    this._mesh.rotation.setFromQuaternion(props.rotation)
-                    this._mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
-                    this._mesh.material =
-                        this._prefs.alliance == "red"
-                            ? ProtectedZoneSceneObject.redMaterial
-                            : ProtectedZoneSceneObject.blueMaterial
-                } else {
-                    this._mesh.material = ProtectedZoneSceneObject.transparentMaterial
+                const bodyIdx = this.joltBodyId?.GetIndexAndSequenceNumber()
+
+                if (idx1 == bodyIdx) {
+                    this.zoneCollisionRemoved(body2)
+                } else if (idx2 == bodyIdx) {
+                    this.zoneCollisionRemoved(body1)
                 }
-        }
+            })
+        )
     }
 
+    // NOTE for azalea
+    // This function disposes of the `ProtectedZoneSceneObject` correctly
     public dispose(): void {
-        if (this._joltBodyId) {
-            World.physicsSystem.destroyBodyIds(this._joltBodyId)
-            if (this._mesh) {
-                this._mesh.geometry.dispose()
-                ;(this._mesh.material as THREE.Material).dispose()
-                World.sceneRenderer.scene.remove(this._mesh)
+        if (this.joltBodyId) {
+            World.physicsSystem.destroyBodyIds(this.joltBodyId)
+            if (this.mesh) {
+                this.mesh.geometry.dispose()
+                ;(this.mesh.material as THREE.Material).dispose()
+                World.sceneRenderer.scene.remove(this.mesh)
             }
         }
 
-        this._unsubscribers.forEach(func => func())
+        this.unsubscribers.forEach(func => func())
     }
 
     private zoneCollision(collisionID: Jolt.BodyID) {
@@ -209,12 +104,13 @@ class ProtectedZoneSceneObject extends SceneObject {
         const collisionObject = associate.sceneObject as MirabufSceneObject
         if (collisionObject.miraType !== MiraType.ROBOT) return
 
-        if (
-            this._prefs?.contactType === ContactType.ROBOT_ENTERS &&
-            collisionObject.alliance !== this._prefs?.alliance &&
+        const entered =
+            this.prefs?.contactType === ContactType.ROBOT_ENTERS &&
+            collisionObject.alliance !== this.prefs?.alliance &&
             !this.isRobotInside(collisionObject)
-        ) {
-            ScoreTracker.robotPenalty(collisionObject, this._prefs?.penaltyPoints ?? 0, `Entered protected zone`)
+
+        if (entered) {
+            ScoreTracker.robotPenalty(collisionObject, this.prefs?.penaltyPoints ?? 0, `Entered protected zone`)
         }
 
         this._robotsInside.set(collisionObject, Date.now())
@@ -245,10 +141,10 @@ class ProtectedZoneSceneObject extends SceneObject {
 
         // Find the robot that has the opposite alliance from the zone
         const opposingRobot = [collisionObjectBody1, collisionObjectBody2].find(
-            robot => robot.alliance !== this._prefs?.alliance
+            robot => robot.alliance !== this.prefs?.alliance
         )
         if (!opposingRobot) return
-        switch (this._prefs?.contactType) {
+        switch (this.prefs?.contactType) {
             case ContactType.BOTH_ROBOTS_INSIDE:
                 // Penalize opposing robot if both robots are inside the zone and colliding
                 if (this.isRobotInside(collisionObjectBody1) && this.isRobotInside(collisionObjectBody2)) {
@@ -286,7 +182,7 @@ class ProtectedZoneSceneObject extends SceneObject {
             this._lastRobotCollisionTime = Date.now()
             ScoreTracker.robotPenalty(
                 opposingRobot,
-                this._prefs?.penaltyPoints ?? 0,
+                this.prefs?.penaltyPoints ?? 0,
                 `Contact penalty in protected zone`
             )
         }

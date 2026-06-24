@@ -13,15 +13,17 @@ export function rayCastForRigidBody(
     function performRayCast() {
         const worldSpace = World.sceneRenderer.pixelToWorldSpace(mousePos[0], mousePos[1])
         const direction = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
+
         return World.physicsSystem.rayCast(
             convertThreeVector3ToJoltVec3(origin),
             convertThreeVector3ToJoltVec3(direction),
+            true,
             ...ignoredBodies
         )
     }
 
     let hit = performRayCast()
-    /** Transparent objects such as scoring zones should be ignored by raycasting [SYNTH-106] */
+    /** Transparent objects such as scoring zones should be ignored by `raycasting` [SYNTH-106] */
     while (hit && !(World.physicsSystem.getBodyAssociation(hit.data.mBodyID) instanceof RigidNodeAssociate)) {
         ignoredBodies.push(hit.data.mBodyID)
         hit = performRayCast()
@@ -30,5 +32,6 @@ export function rayCastForRigidBody(
     if (!hit) return undefined
 
     const association = World.physicsSystem.getBodyAssociation(hit.data.mBodyID) as RigidNodeAssociate
-    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point), association }
+
+    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point, false), association }
 }
