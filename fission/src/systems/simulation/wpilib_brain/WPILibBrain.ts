@@ -13,7 +13,7 @@ import { SimAnalogInput } from "./sim/SimAI"
 import { SimDigitalInput } from "./sim/SimDIO"
 import { SimGyroInput } from "./sim/SimGyro"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
-import { type DeviceData, SimType, type WSMessage, worker } from "./WPILibTypes"
+import { type DeviceData, type SimType, type WSMessage, worker } from "./WPILibTypes"
 import SimDriverStation from "./sim/SimDriverStation"
 
 worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
