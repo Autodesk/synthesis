@@ -1276,8 +1276,15 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    public getBody(bodyId: Jolt.BodyID): Jolt.Body {
+    public getBody(bodyId: Jolt.BodyID): Jolt.Body | undefined {
+        const hasBody = World.physicsSystem.hasBody(bodyId)
+        if (!hasBody) return
+
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
+    }
+
+    public hasBody(bodyId: Jolt.BodyID): boolean {
+        return this._joltPhysSystem.GetBodyInterface().IsAdded(bodyId)
     }
 
     public update(deltaT: number): void {
@@ -1661,7 +1668,6 @@ class PhysicsSystem extends WorldSystem {
             return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
         }
 
-        // TODO Ensure that we free `contactListener` at some point
         physSystem.SetContactListener(contactListener)
     }
 }
