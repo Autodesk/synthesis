@@ -194,6 +194,7 @@ class ScreenInteractionHandler {
                     }
                 }
 
+                // Avoid using movementX/movementY as Firefox scales these values differently resulting in buggy rotation [SYNTH-68]
                 const prevPrimary = this._primaryTouchPosition!
                 this._primaryTouchPosition = [e.clientX, e.clientY]
 
