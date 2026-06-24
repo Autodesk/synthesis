@@ -75,6 +75,15 @@ class HingeDriver extends Driver {
         this._constraint.SetLimits(-Math.PI, Math.PI)
     }
 
+    /**
+     * True once {@link setContinuousRotation} has been applied — i.e. this hinge is a swerve
+     * azimuth (steering) module rather than a regular arm joint. Used by the configuration UI to
+     * group the module-rotation joints under a single drivetrain slider.
+     */
+    public get continuous(): boolean {
+        return this._continuous
+    }
+
     public get maxForce() {
         return this._constraint.GetMotorSettings().mMaxTorqueLimit
     }
