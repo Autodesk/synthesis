@@ -6,11 +6,11 @@ import type WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import type WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
 import World from "@/systems/World.ts"
 import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions.ts"
-import type Driver from "../../../driver/Driver.ts"
-import { DriverControlMode } from "../../../driver/Driver.ts"
-import type HingeDriver from "../../../driver/HingeDriver.ts"
-import type HingeStimulus from "../../../stimulus/HingeStimulus.ts"
-import type Stimulus from "../../../stimulus/Stimulus.ts"
+import type Driver from "@/systems/simulation/driver/Driver.ts"
+import { DriverControlMode } from "@/systems/simulation/driver/Driver.ts"
+import type HingeDriver from "@/systems/simulation/driver/HingeDriver.ts"
+import type HingeStimulus from "@/systems/simulation/stimulus/HingeStimulus.ts"
+import type Stimulus from "@/systems/simulation/stimulus/Stimulus.ts"
 
 class SwerveDriveBehavior extends DriveBehavior {
     private _wheels: WheelDriver[]
