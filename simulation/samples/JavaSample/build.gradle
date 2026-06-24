@@ -1,10 +1,23 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2024.3.2"
+    id "edu.wpi.first.GradleRIO" version "2026.2.1"
 }
 
 repositories {
     mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://frcmaven.wpi.edu/artifactory/release/"
+    }
+    maven {
+        url "https://maven.ctr-electronics.com/release/"
+    }
+    maven {
+        url "https://maven.revrobotics.com/"
+    }
+    maven {
+        url "https://dev.studica.com/maven/release/2026/"
+    }
 }
 
 // wpi.maven.useLocal = false
