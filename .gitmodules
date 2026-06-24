@@ -1,6 +1,3 @@
 [submodule "mirabuf"]
 	path = mirabuf
 	url = https://github.com/HiceS/mirabuf.git
-[submodule "jolt"]
-	path = jolt
-	url = https://github.com/azaleacolburn/JoltPhysics.js.git
