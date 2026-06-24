@@ -78,15 +78,35 @@ const TopBar: React.FC = () => {
             color="topBarText.main"
         >
             <Stack direction="row" alignItems="center" height="100%" gap={2}>
+                {/*
+                 * Fully control the tooltip from our own hover handlers. MUI's built-in
+                 * listeners are disabled because the Select's backdrop swallows the trigger's
+                 * mouseleave, leaving MUI's internal hover state stuck open after the menu
+                 * closes. Driving `open` purely from React state avoids that — and unlike
+                 * remounting via `key`, it doesn't cancel the Select's first open.
+                 */}
                 <Tooltip
                     title="Change Mode"
-                    disableFocusListener
                     open={modeHovered && !modeMenuOpen}
-                    onOpen={() => setModeHovered(true)}
-                    onClose={() => setModeHovered(false)}
+                    disableHoverListener
+                    disableFocusListener
+                    disableTouchListener
+                    disableInteractive
                 >
-                    <Box component="span" sx={{ display: "inline-flex" }}>
-                        <ModeDropdown onOpenChange={setModeMenuOpen} />
+                    <Box
+                        component="span"
+                        sx={{ display: "inline-flex" }}
+                        onMouseEnter={() => setModeHovered(true)}
+                        onMouseLeave={() => setModeHovered(false)}
+                    >
+                        <ModeDropdown
+                            onOpenChange={open => {
+                                setModeMenuOpen(open)
+                                // Reset hover whenever the menu toggles so the tooltip starts
+                                // hidden after the menu closes (a fresh hover re-opens it).
+                                setModeHovered(false)
+                            }}
+                        />
                     </Box>
                 </Tooltip>
                 <Tooltip title="Add Assembly">

@@ -21,6 +21,7 @@ export const TOP_BAR_ICONS = {
     "cfg-7": "/icons/cfg-protected-zones.svg",
     "cfg-8": "/icons/cfg-scoring-zones.svg",
     "gp-1": "/icons/gp-multiplayer.svg",
+    "gp-2": "/icons/gp-match-mode.svg",
 } as const
 
 export type TopBarIconName = keyof typeof TOP_BAR_ICONS
