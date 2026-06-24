@@ -379,13 +379,13 @@ class PhysicsSystem extends WorldSystem {
             const miraMotor = jointData.motorDefinitions![jDef.motorReference]
 
             let maxVel = VELOCITY_DEFAULT
-            let maxForce
+            let maxAcceleration
             if (prefMotor && prefMotor[0]) {
                 maxVel = prefMotor[0].maxVelocity
-                maxForce = prefMotor[0].maxForce
+                maxAcceleration = prefMotor[0].maxAcceleration
             } else if (miraMotor && miraMotor.simpleMotor) {
                 maxVel = miraMotor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT
-                maxForce = miraMotor.simpleMotor.stallTorque
+                maxAcceleration = miraMotor.simpleMotor.stallTorque
             }
 
             let listener: Jolt.PhysicsStepListener | null = null
@@ -407,7 +407,7 @@ class PhysicsSystem extends WorldSystem {
                     if (this.isWheel(jDef)) {
                         const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
                         if (preferences.driveVelocity > 0) maxVel = preferences.driveVelocity
-                        if (preferences.driveAcceleration > 0) maxForce = preferences.driveAcceleration
+                        if (preferences.driveAcceleration > 0) maxAcceleration = preferences.driveAcceleration
 
                         const [bodyOne, bodyTwo] = parser.directedGraph.getAdjacencyList(rnA.id).length
                             ? [bodyA, bodyB]
@@ -416,7 +416,7 @@ class PhysicsSystem extends WorldSystem {
                         const res = this.createWheelConstraint(
                             jointInst,
                             jDef,
-                            maxForce ?? 1.5,
+                            maxAcceleration ?? 1.5,
                             bodyOne,
                             bodyTwo,
                             parser.assembly.info!.version!
@@ -432,7 +432,7 @@ class PhysicsSystem extends WorldSystem {
                         this.createHingeConstraint(
                             jointInst,
                             jDef,
-                            maxForce ?? 50,
+                            maxAcceleration ?? 50,
                             bodyA,
                             bodyB,
                             parser.assembly.info!.version!
@@ -442,7 +442,7 @@ class PhysicsSystem extends WorldSystem {
                     break
 
                 case mirabuf.joint.JointMotion.SLIDER:
-                    addConstraint(this.createSliderConstraint(jointInst, jDef, maxForce ?? 200, bodyA, bodyB))
+                    addConstraint(this.createSliderConstraint(jointInst, jDef, maxAcceleration ?? 200, bodyA, bodyB))
                     break
                 case mirabuf.joint.JointMotion.BALL:
                     this.createBallConstraint(jointInst, jDef, bodyA, bodyB, mechanism)
