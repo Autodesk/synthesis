@@ -471,6 +471,11 @@ class DragModeSystem extends WorldSystem {
             return
         }
 
+        console.log(body)
+
+        // TODO Whenever a bunch of collisions happen against the dragged object in rapid sequence
+        // `GetPosition` becomes null.
+        // This probably has to do with something being freed weirdly in the collision handler
         const currentPos = body.GetPosition()
         const currentPosition = new THREE.Vector3(currentPos.GetX(), currentPos.GetY(), currentPos.GetZ())
         const currentRotation = body.GetRotation()

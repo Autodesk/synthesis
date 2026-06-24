@@ -507,15 +507,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
                 this.updateNodeParts(rn, transform)
 
-                if (Number.isNaN(body.GetPosition().GetX())) {
+                const position = body.GetPosition()
+                if (Number.isNaN(position.GetX())) {
                     const vel = body.GetLinearVelocity()
-                    const pos = body.GetPosition()
                     console.warn(
-                        `Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
+                        `Invalid Position.\nPosition => ${position.GetX()}, ${position.GetY()}, ${position.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
                     )
 
                     JOLT.destroy(vel)
-                    JOLT.destroy(pos)
+                    JOLT.destroy(position)
                 }
 
                 if (this._debugBodies) {
