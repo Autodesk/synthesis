@@ -279,7 +279,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
         return Err(file_id_result.unwrap_err()[0], ErrorSeverity.Fatal)
     file_id_data = file_id_result.unwrap()
 
-    (lineage_id, file_id, file_version) = file_id_data
+    lineage_id, file_id, file_version = file_id_data
 
     """
     Create APS Storage Location
@@ -289,7 +289,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
         return object_id_result
     object_id = object_id_result.unwrap()
 
-    (prefix, object_key) = str(object_id).split("/", 1)
+    prefix, object_key = str(object_id).split("/", 1)
     bucket_key = prefix.split(":", 3)[3]  # gets the last element smth like: wip.dm.prod
 
     """
@@ -300,7 +300,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
         # Hack to get around different Result success types in the err case
         return Err(generate_signed_url_result.unwrap_err()[0], ErrorSeverity.Fatal)
 
-    (upload_key, signed_url) = generate_signed_url_result.unwrap()
+    upload_key, signed_url = generate_signed_url_result.unwrap()
     upload_file_result = upload_file(signed_url, file_contents)
     if upload_file_result.is_fatal():
         return upload_file_result
