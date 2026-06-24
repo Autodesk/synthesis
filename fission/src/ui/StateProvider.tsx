@@ -8,7 +8,6 @@ import { StateContext, type StateProviderProps } from "./helpers/StateProviderHe
 export const StateProvider: React.FC<StateProviderProps> = ({ children }) => {
     const [unconfirmedImport, setUnconfirmedImport] = useState<boolean>(false)
     const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(undefined)
-    const [isMainMenuOpen, setIsMainMenuOpen] = useState<boolean>(true)
     const [appMode, setAppMode] = useState<AppMode>("Configure")
     const [selectedConfigAssembly, setSelectedConfigAssembly] = useState<MirabufSceneObject | undefined>(undefined)
 
@@ -18,14 +17,12 @@ export const StateProvider: React.FC<StateProviderProps> = ({ children }) => {
             setUnconfirmedImport,
             selectedScheme,
             setSelectedScheme,
-            isMainMenuOpen,
-            setIsMainMenuOpen,
             appMode,
             setAppMode,
             selectedConfigAssembly,
             setSelectedConfigAssembly,
         }),
-        [unconfirmedImport, selectedScheme, isMainMenuOpen, appMode, selectedConfigAssembly]
+        [unconfirmedImport, selectedScheme, appMode, selectedConfigAssembly]
     )
 
     return <StateContext.Provider value={stateContextValue}>{children}</StateContext.Provider>
