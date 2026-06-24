@@ -52,6 +52,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 target_link_libraries(${PROJECT_NAME} PRIVATE ${FUSION_API_NAMESPACE}::${FUSION_API_TARGET})
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/inc")
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang,GNU>:-Wno-deprecated-declarations>)
 
 set(ABSL_PROPAGATE_CXX_STD ON)
 set(protobuf_BUILD_TESTS OFF CACHE BOOL "" FORCE)
