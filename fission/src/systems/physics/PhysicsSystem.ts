@@ -206,7 +206,7 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltBodyInterface.DeactivateBody(bodyId)
 
-        this.getBody(bodyId).SetIsSensor(true)
+        this.getBody(bodyId)!.SetIsSensor(true)
     }
 
     /**
@@ -218,7 +218,7 @@ class PhysicsSystem extends WorldSystem {
         if (!this.isBodyAdded(bodyId)) return
 
         this._joltBodyInterface.ActivateBody(bodyId)
-        this.getBody(bodyId).SetIsSensor(false)
+        this.getBody(bodyId)!.SetIsSensor(false)
     }
 
     public isBodyAdded(bodyId: Jolt.BodyID) {
@@ -366,8 +366,8 @@ class PhysicsSystem extends WorldSystem {
                 )
                 return
             }
-            const bodyA = this.getBody(bodyIdA)
-            const bodyB = this.getBody(bodyIdB)
+            const bodyA = this.getBody(bodyIdA)!
+            const bodyB = this.getBody(bodyIdB)!
 
             // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
             const prefMotors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
@@ -1277,7 +1277,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public getBody(bodyId: Jolt.BodyID): Jolt.Body | undefined {
-        const hasBody = World.physicsSystem.hasBody(bodyId)
+        const hasBody = this.hasBody(bodyId)
         if (!hasBody) return
 
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
@@ -1345,7 +1345,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     private onSameLayer(body1: Jolt.BodyID, body2: Jolt.BodyID): boolean {
-        return this.getBody(body1).GetObjectLayer() === this.getBody(body2).GetObjectLayer()
+        return this.getBody(body1)!.GetObjectLayer() === this.getBody(body2)!.GetObjectLayer()
     }
 
     /*

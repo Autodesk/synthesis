@@ -77,7 +77,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         this.deltaTransformation = convertArrayToThreeMatrix4(this.prefs.deltaTransformation)
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-            World.physicsSystem.getBody(this.parentBodyId).GetWorldTransform()
+            World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform()
         )
         const props: VisualProperties = deltaFieldTransformsPhysicalProp(this.deltaTransformation, fieldTransformation)
 
@@ -137,7 +137,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         // Update translation, rotation, and scale
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-            World.physicsSystem.getBody(this.parentBodyId).GetWorldTransform()
+            World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform()
         )
         const props = deltaFieldTransformsPhysicalProp(this.deltaTransformation, fieldTransformation)
         this.setSensorProperties(props, this.joltBodyId)

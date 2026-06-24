@@ -184,7 +184,7 @@ class SynthesisBrain extends Brain {
             const wheelPos = convertJoltVec3ToJoltRVec3(translation, false)
 
             const robotCOM = World.physicsSystem
-                .getBody(this._mechanism.constraints[0].childBody)
+                .getBody(this._mechanism.constraints[0].childBody)!
                 .GetCenterOfMassPosition()
 
             const newPos = wheelPos.SubRVec3(robotCOM)

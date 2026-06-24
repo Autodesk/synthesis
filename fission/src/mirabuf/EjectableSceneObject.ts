@@ -70,7 +70,7 @@ class EjectableSceneObject extends SceneObject {
             this._ejectVelocity = this._parentSceneObject.ejectorPreferences.ejectorVelocity
 
             // Record start transform at the game piece center of mass
-            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
             this._startTranslation = new THREE.Vector3(0, 0, 0)
             this._startRotation = new THREE.Quaternion(0, 0, 0, 1)
             convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).decompose(
@@ -109,12 +109,12 @@ class EjectableSceneObject extends SceneObject {
                 return
             }
 
-            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
             const posToCOM = convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).premultiply(
                 convertJoltMat44ToThreeMatrix4(gpBody.GetWorldTransform()).invert()
             )
 
-            const body = World.physicsSystem.getBody(this._parentBodyId)
+            const body = World.physicsSystem.getBody(this._parentBodyId)!
             let desiredPosition = new THREE.Vector3(0, 0, 0)
             let desiredRotation = new THREE.Quaternion(0, 0, 0, 1)
 
@@ -163,8 +163,8 @@ class EjectableSceneObject extends SceneObject {
             return
         }
 
-        const parentBody = World.physicsSystem.getBody(this._parentBodyId)
-        const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+        const parentBody = World.physicsSystem.getBody(this._parentBodyId)!
+        const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
         const ejectDir = new THREE.Vector3(0, 0, 1)
             .applyQuaternion(convertJoltQuatToThreeQuaternion(gpBody.GetRotation()))
             .normalize()

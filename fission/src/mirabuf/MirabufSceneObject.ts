@@ -255,7 +255,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (DEBUG_BODIES) {
             this._debugBodies = new Map()
             this.mechanism.nodeToBody.forEach((bodyId, rnName) => {
-                const body = World.physicsSystem.getBody(bodyId)
+                const body = World.physicsSystem.getBody(bodyId)!
 
                 const colliderMesh = this.createMeshForShape(body.GetShape())
                 const comMesh = World.sceneRenderer.createSphere(0.05)
@@ -377,7 +377,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
             if (!jBodyId) return
 
-            const position = World.physicsSystem.getBody(jBodyId).GetPosition()
+            const position = World.physicsSystem.getBody(jBodyId)!.GetPosition()
             const offset = convertJoltRVec3ToJoltVec3(position.Sub(bodyCenter))
 
             World.physicsSystem.setBodyPositionRotationAndVelocity(
@@ -756,7 +756,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             return this.getDimensions()
         }
 
-        const rootBody = World.physicsSystem.getBody(rootNodeId)
+        const rootBody = World.physicsSystem.getBody(rootNodeId)!
         const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
 
         const rootPosition = new THREE.Vector3()
@@ -773,7 +773,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
             if (!bodyId) return
 
-            const body = World.physicsSystem.getBody(bodyId)
+            const body = World.physicsSystem.getBody(bodyId)!
             const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
 
             const shape = body.GetShape()
@@ -834,7 +834,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             return
         }
 
-        const jBody = World.physicsSystem.getBody(jRootId)
+        const jBody = World.physicsSystem.getBody(jRootId)!
         if (jBody.IsStatic()) {
             const aaBox = jBody.GetWorldSpaceBounds()
             const mat = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
@@ -945,12 +945,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public hasPhysics(): boolean {
-        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
         return rootBody.IsActive() && !rootBody.IsSensor()
     }
 
     public getRootNodeId(): Jolt.BodyID | undefined {
-        return this.mechanism.getBodyByNodeId(this.mechanism.rootBody)
+        return this.mechanism.getBodyByNodeId(this.mechanism.rootBody)!
     }
 
     public loadFocusTransform(mat: THREE.Matrix4) {
@@ -1074,7 +1074,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getAllBodies(): Jolt.Body[] {
         return [...this.mechanism.nodeToBody.values()]
-            .map(bodyId => World.physicsSystem.getBody(bodyId))
+            .map(bodyId => World.physicsSystem.getBody(bodyId)!)
             .filter(body => body != null)
     }
 

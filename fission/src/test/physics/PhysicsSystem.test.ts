@@ -457,7 +457,7 @@ describe("Sensor Creation", () => {
         expect(sensorId).toBeDefined()
         expect(system.isBodyAdded(sensorId!)).toBe(true)
 
-        const sensorBody = system.getBody(sensorId!)
+        const sensorBody = system.getBody(sensorId!)!
         expect(sensorBody.IsSensor()).toBe(true)
 
         JOLT.destroy(size)

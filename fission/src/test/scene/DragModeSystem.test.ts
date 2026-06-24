@@ -157,7 +157,7 @@ describe("DragModeSystem Integration Tests", () => {
             }
             physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
 
-            const physicsBody = physicsSystem.getBody(bodyId)
+            const physicsBody = physicsSystem.getBody(bodyId)!
             dragModeSystem.enabled = true
 
             return {
