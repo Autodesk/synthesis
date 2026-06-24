@@ -375,13 +375,13 @@ class PhysicsSystem extends WorldSystem {
             const miraMotor = jointData.motorDefinitions![jDef.motorReference]
 
             let maxVel = VELOCITY_DEFAULT
-            let maxForce
+            let maxAcceleration
             if (prefMotor && prefMotor[0]) {
                 maxVel = prefMotor[0].maxVelocity
-                maxForce = prefMotor[0].maxForce
+                maxAcceleration = prefMotor[0].maxAcceleration
             } else if (miraMotor && miraMotor.simpleMotor) {
                 maxVel = miraMotor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT
-                maxForce = miraMotor.simpleMotor.stallTorque
+                maxAcceleration = miraMotor.simpleMotor.stallTorque
             }
 
             let listener: Jolt.PhysicsStepListener | null = null
@@ -403,7 +403,7 @@ class PhysicsSystem extends WorldSystem {
                     if (this.isWheel(jDef)) {
                         const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
                         if (preferences.driveVelocity > 0) maxVel = preferences.driveVelocity
-                        if (preferences.driveAcceleration > 0) maxForce = preferences.driveAcceleration
+                        if (preferences.driveAcceleration > 0) maxAcceleration = preferences.driveAcceleration
 
                         const [bodyOne, bodyTwo] = parser.directedGraph.getAdjacencyList(rnA.id).length
                             ? [bodyA, bodyB]
@@ -412,7 +412,7 @@ class PhysicsSystem extends WorldSystem {
                         const res = this.createWheelConstraint(
                             jointInst,
                             jDef,
-                            maxForce ?? 1.5,
+                            maxAcceleration ?? 1.5,
                             bodyOne,
                             bodyTwo,
                             parser.assembly.info!.version!
@@ -428,7 +428,7 @@ class PhysicsSystem extends WorldSystem {
                         this.createHingeConstraint(
                             jointInst,
                             jDef,
-                            maxForce ?? 50,
+                            maxAcceleration ?? 50,
                             bodyA,
                             bodyB,
                             parser.assembly.info!.version!
@@ -438,7 +438,7 @@ class PhysicsSystem extends WorldSystem {
                     break
 
                 case mirabuf.joint.JointMotion.SLIDER:
-                    addConstraint(this.createSliderConstraint(jointInst, jDef, maxForce ?? 200, bodyA, bodyB))
+                    addConstraint(this.createSliderConstraint(jointInst, jDef, maxAcceleration ?? 200, bodyA, bodyB))
                     break
                 case mirabuf.joint.JointMotion.BALL:
                     this.createBallConstraint(jointInst, jDef, bodyA, bodyB, mechanism)
@@ -755,9 +755,6 @@ class PhysicsSystem extends WorldSystem {
             })
         }
 
-        // TODO for azalea
-        // There is 100% some memory bug with the creation of spare ghost bodies
-        // However, this looks scary, so I'll touch it in another commit
         let bodyStart = bodyB
         let bodyNext = bodyA
         if (constraints.length > 1) {
@@ -1210,13 +1207,10 @@ class PhysicsSystem extends WorldSystem {
             return undefined
         }
 
-        // NOTE
-        // The underlying object here is just an id
-        // So I believe this copy is okay (tests pass, at least)
-        const data = collector.mHit
-        JOLT.destroy(collector)
+        const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
+        const data = { mBodyID: new JOLT.BodyID(collector.mHit.mBodyID.GetIndexAndSequenceNumber()) }
 
-        const hitPoint = ray.GetPointOnRay(data.mFraction)
+        JOLT.destroy(collector)
 
         return { data, point: convertJoltRVec3ToJoltVec3(hitPoint), ray }
     }
@@ -1598,7 +1592,6 @@ class PhysicsSystem extends WorldSystem {
         const contactListener = new JOLT.ContactListenerJS()
 
         contactListener.OnContactAdded = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
-            console.log("contact")
             const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
             const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
 
@@ -1769,7 +1762,7 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
 }
 
 export type RayCastHit = {
-    data: Jolt.RayCastResult
+    data: { mBodyID: Jolt.BodyID }
     point: Jolt.Vec3
     ray: Jolt.RRayCast
 }

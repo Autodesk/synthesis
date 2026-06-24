@@ -2,7 +2,7 @@ import { Divider, Stack } from "@mui/material"
 import { useCallback, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import type { MotorPreferences, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import type Driver from "@/systems/simulation/driver/Driver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
@@ -37,14 +37,14 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
         ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxVelocity
     )
     const [force, setForce] = useState<number>(
-        ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxForce
+        ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxAcceleration
     )
     const [unstickForce, setUnstickForce] = useState<number>(
         PreferencesSystem.getRobotPreferences(robot.assemblyName).unstickForce
     )
 
     const onChange = useCallback(
-        (vel: number, force: number, unstick: number) => {
+        (vel: number, acceleration: number, unstick: number) => {
             if (driver instanceof WheelDriver) {
                 const wheelDrivers = robot?.mechanism
                     ? World.simulationSystem
@@ -53,12 +53,12 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                     : undefined
                 wheelDrivers?.forEach(x => {
                     x.maxVelocity = vel
-                    x.maxAcceleration = force
+                    x.maxAcceleration = acceleration
                 })
 
                 // Preferences
                 PreferencesSystem.getRobotPreferences(robot.assemblyName).driveVelocity = vel
-                PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = force
+                PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = acceleration
             } else {
                 // Preferences
                 if (driver.info?.name) {
@@ -72,13 +72,13 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                     removedMotor.push({
                         name: driver.info?.name ?? "",
                         maxVelocity: vel,
-                        maxForce: force,
-                    })
+                        maxAcceleration: acceleration,
+                    } satisfies MotorPreferences)
 
                     PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
                 }
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
-                ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
+                ;((driver as SliderDriver) || (driver as HingeDriver)).maxAcceleration = acceleration
             }
 
             PreferencesSystem.getRobotPreferences(robot.assemblyName).unstickForce = unstick

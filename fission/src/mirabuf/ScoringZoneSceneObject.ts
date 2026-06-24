@@ -14,11 +14,25 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     private _gpContacted: Jolt.BodyID[] = []
     private _prevGP: Jolt.BodyID[] = []
 
+    public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
+        return { red: ZoneSceneObject.lightRedMaterial, blue: ZoneSceneObject.lightBlueMaterial }
+    }
+
     public get gpContacted() {
         return this._gpContacted
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
+        const prefs = parentAssembly.fieldPreferences?.scoringZones[index]
+        if (prefs && "persistentPoints" in prefs) {
+            prefs.shouldPointsAccumulate = !prefs.persistentPoints
+            delete prefs.persistentPoints
+
+            // NOTE
+            // I'm pretty sure it's passed by reference, but just in case
+            parentAssembly.fieldPreferences.scoringZones[index] = prefs
+        }
+
         super(parentAssembly, parentAssembly.fieldPreferences?.scoringZones[index]!, "RenderScoringZones", render)
 
         this.toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")
@@ -37,22 +51,20 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         )
 
         // If persistent, detect gamepiece removed listener
-        if (this.prefs.shouldPointsAccumulate) {
-            this.unsubscribers.push(
-                EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
-                    if (this.prefs?.shouldPointsAccumulate) {
-                        const body1 = message.GetBody1ID()
-                        const body2 = message.GetBody2ID()
+        this.unsubscribers.push(
+            EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
+                if (!this.prefs?.shouldPointsAccumulate) {
+                    const body1 = message.GetBody1ID()
+                    const body2 = message.GetBody2ID()
 
-                        if (body1.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
-                            this.zoneCollisionRemoved(body2)
-                        } else if (body2.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
-                            this.zoneCollisionRemoved(body1)
-                        }
+                    if (body1.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
+                        this.zoneCollisionRemoved(body2)
+                    } else if (body2.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
+                        this.zoneCollisionRemoved(body1)
                     }
-                })
-            )
-        }
+                }
+            })
+        )
     }
 
     public update(): void {
@@ -60,7 +72,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             super.update()
 
             // If persistent points, update points based on how many gamepieces in zone
-            if (this.prefs.shouldPointsAccumulate)
+            if (!this.prefs.shouldPointsAccumulate) {
                 if (this._gpContacted.length != this._prevGP.length) {
                     const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
                     const points = this.prefs.points
@@ -85,6 +97,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
                     this._prevGP = Object.assign([], this._gpContacted)
                 }
+            }
         } else {
             console.debug("Failed to update scoring zone")
         }
@@ -111,7 +124,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
         if (associate?.isGamePiece && this.prefs) {
             // If persistent, Update() will handle points
-            if (this.prefs.shouldPointsAccumulate) {
+            if (!this.prefs.shouldPointsAccumulate) {
                 this._gpContacted.push(gpID)
             } else {
                 ScoreTracker.addPoints(this.prefs.alliance, this.prefs.points)
@@ -127,7 +140,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
     // Private gamepiece removal called anytime collision removed from zone. Score update in Update()
     private zoneCollisionRemoved(gpID: Jolt.BodyID) {
-        if (this.prefs?.shouldPointsAccumulate) {
+        if (!this.prefs?.shouldPointsAccumulate) {
             const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
             if (associate?.isGamePiece) {
                 const temp = this._gpContacted.filter(x => {
@@ -141,7 +154,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     // Public gamepiece removal called anytime `EjectableSceneObject` created in case gamepiece was in persistent zone
     // Score update in Update()
     public static removeGamepiece(zone: ScoringZoneSceneObject, gpID: Jolt.BodyID) {
-        if (zone.prefs && zone.prefs.shouldPointsAccumulate) {
+        if (zone.prefs && !zone.prefs.shouldPointsAccumulate) {
             const temp = zone._gpContacted.filter(x => {
                 return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
             })
