@@ -15,6 +15,12 @@ class WheelDriver extends Driver {
     public device?: string
     private _reversed: boolean
 
+    // Friction curves captured at construction, used to toggle wheel friction on/off
+    // for swerve modules (azimuth wheels must be able to slip while rotating to angle).
+    private _normalFrictionLong: Jolt.LinearCurve
+    private _normalFrictionLat: Jolt.LinearCurve
+    private _noFriction: Jolt.LinearCurve
+
     public accelerationDirection: number = 0.0
     private _prevVel: number = 0.0
     public maxVelocity = 30.0
@@ -62,6 +68,30 @@ class WheelDriver extends Driver {
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
         this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION)
         this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
+
+        // Capture the wheel's normal friction curves so they can be toggled off and
+        // restored later (used by swerve to let modules pivot without lateral grip).
+        this._normalFrictionLong = this._wheel.GetSettings().get_mLongitudinalFriction()
+        this._normalFrictionLat = this._wheel.GetSettings().get_mLateralFriction()
+        this._noFriction = new JOLT.LinearCurve()
+        this._noFriction.AddPoint(0, 0)
+        this._noFriction.AddPoint(10000, 0)
+    }
+
+    /** Enables or disables the wheel's longitudinal and lateral friction curves. */
+    public setFrictionEnabled(enabledLong: boolean, enabledLat: boolean = enabledLong) {
+        this._wheel.GetSettings().set_mLongitudinalFriction(enabledLong ? this._normalFrictionLong : this._noFriction)
+        this._wheel.GetSettings().set_mLateralFriction(enabledLat ? this._normalFrictionLat : this._noFriction)
+    }
+
+    /** Sets the wheel's steer angle directly on the underlying Jolt wheel. */
+    public setSteeringAngle(angle: number) {
+        this._wheel.SetSteerAngle(angle)
+    }
+
+    /** @returns the underlying Jolt wheel for this driver. */
+    public getWheel(): Jolt.WheelWV {
+        return this._wheel
     }
 
     public update(_: number): void {
@@ -72,6 +102,9 @@ class WheelDriver extends Driver {
 
     public set reversed(val: boolean) {
         this._reversed = val
+    }
+    public get reversed(): boolean {
+        return this._reversed
     }
 
     public getReceiverType(): NoraTypes {

@@ -24,7 +24,7 @@ const DrivetrainSelectionInterface: React.FC<DrivetrainSelectionProps> = ({ sele
                         }
                     }}
                 >
-                    {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
                         <MenuItem key={`drivetrain-type-${dt}`} value={dt}>
                             {dt}
                         </MenuItem>

@@ -8,6 +8,10 @@ const inputDriveTypeAssociations: Partial<Record<InputName, DriveType>> = {
     arcadeTurn: DriveType.ARCADE,
     tankLeft: DriveType.TANK,
     tankRight: DriveType.TANK,
+    swerveForward: DriveType.SWERVE,
+    swerveStrafe: DriveType.SWERVE,
+    swerveTurn: DriveType.SWERVE,
+    swerveResetFieldForward: DriveType.SWERVE,
 }
 
 /** Represents any user input */

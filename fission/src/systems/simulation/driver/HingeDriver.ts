@@ -4,9 +4,17 @@ import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { type NoraNumber, NoraTypes } from "../Nora"
+import { shortestAngleDelta } from "./AngleUtil"
 import Driver, { DriverControlMode, type DriverID } from "./Driver"
 
 const MAX_TORQUE_WITHOUT_GRAV = 100
+
+// Proportional gain (rad/s per rad of error) for continuous-rotation position tracking. The
+// resulting velocity is capped at the joint's maxVelocity, so this only shapes how the module
+// decelerates as it approaches the target: the proportional (slow-down) zone is maxVelocity/gain
+// wide. At gain 5 and maxVelocity ≈ π that's ~0.63 rad (~36°) of smooth ramp-down before the
+// target. Tunable — raise for snappier steering, lower for gentler approach.
+const CONTINUOUS_POSITION_GAIN = 5.0
 
 class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
@@ -14,6 +22,7 @@ class HingeDriver extends Driver {
     private _controlMode: DriverControlMode = DriverControlMode.VELOCITY
     private _targetAngle: number
     private _maxTorqueWithGrav: number = 0.0
+    private _continuous: boolean = false
     public accelerationDirection: number = 0.0
     public maxVelocity: number
 
@@ -21,13 +30,43 @@ class HingeDriver extends Driver {
         return this._constraint
     }
 
-    private _prevAng: number = 0.0
+    /** World-space position of this hinge's anchor point (on body 1). */
+    public get worldAnchor(): Jolt.RVec3 {
+        return this._constraint.GetBody1().GetCenterOfMassTransform().MulVec3(this._constraint.GetLocalSpacePoint1())
+    }
+
+    /**
+     * World-space hinge axis (on body 1).
+     *
+     * Uses Multiply3x3 (rotation only) because the axis is a direction, not a point —
+     * MulVec3 would add the body's world position and corrupt the direction.
+     */
+    public get worldAxis(): Jolt.Vec3 {
+        return this._constraint
+            .GetBody1()
+            .GetCenterOfMassTransform()
+            .Multiply3x3(this._constraint.GetLocalSpaceHingeAxis1())
+    }
 
     public get targetAngle(): number {
         return this._targetAngle
     }
     public set targetAngle(rads: number) {
-        this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
+        // A continuously-rotating hinge has no meaningful limits to clamp to; the target is a
+        // heading the controller will reach via the shortest path. A limited hinge clamps.
+        this._targetAngle = this._continuous
+            ? rads
+            : Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
+    }
+
+    /**
+     * Removes this hinge's rotation limit so it can spin continuously (used for swerve azimuth /
+     * steering modules). Without this a Jolt hinge angle is confined to [-π, π] and a module can
+     * get stuck taking the long way around when the shortest path crosses the ±π seam.
+     */
+    public setContinuousRotation(): void {
+        this._continuous = true
+        this._constraint.SetLimits(-Math.PI, Math.PI)
     }
 
     public get maxForce() {
@@ -51,7 +90,10 @@ class HingeDriver extends Driver {
                 this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
                 break
             case DriverControlMode.POSITION:
-                this._constraint.SetMotorState(JOLT.EMotorState_Position)
+                // Position tracking is driven through the velocity motor by a shortest-path
+                // P-controller in update(); this is what lets a continuous hinge cross the ±π seam
+                // (Jolt's position motor operates on the wrapped angle and cannot).
+                this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
                 break
             default:
                 // idk
@@ -98,11 +140,13 @@ class HingeDriver extends Driver {
         if (this._controlMode == DriverControlMode.VELOCITY) {
             this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
         } else if (this._controlMode == DriverControlMode.POSITION) {
-            let ang = this._targetAngle
-
-            if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this.maxVelocity
-            if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this.maxVelocity
-            this._constraint.SetTargetAngle(ang)
+            // Shortest-path velocity P-control toward the target angle. Using the wrapped error
+            // (rather than a position setpoint) lets a continuous hinge rotate across the ±π seam
+            // the short way. Velocity is capped at maxVelocity, which also bounds the per-frame
+            // rotation rate (and thus the reaction torque on the chassis).
+            const error = shortestAngleDelta(this._constraint.GetCurrentAngle(), this._targetAngle)
+            const velocity = Math.max(-this.maxVelocity, Math.min(this.maxVelocity, error * CONTINUOUS_POSITION_GAIN))
+            this._constraint.SetTargetAngularVelocity(velocity)
         }
     }
 

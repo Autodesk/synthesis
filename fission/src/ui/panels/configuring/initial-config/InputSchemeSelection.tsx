@@ -145,7 +145,7 @@ export default function InputSchemeSelection({
                             setRobotDriveType(e.target.value as DriveType)
                         }}
                     >
-                        {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                        {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
                             <MenuItem key={dt} value={dt}>
                                 {dt}
                             </MenuItem>
