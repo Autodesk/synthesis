@@ -127,7 +127,7 @@ const TopBar: React.FC = () => {
                         sx={TOP_BAR_ICON_BUTTON_SX}
                         onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
                     >
-                        {userInfo ? <UserIcon className="h-8 rounded-full" /> : <TopBarIcon name="login" size={28} />}
+                        {userInfo ? <UserIcon className="h-8 rounded-full" /> : <TopBarIcon name="login" size={40} />}
                     </IconButton>
                 </Tooltip>
             </Stack>
