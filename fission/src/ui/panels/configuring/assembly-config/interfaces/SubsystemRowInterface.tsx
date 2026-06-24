@@ -52,7 +52,6 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                           ?.drivers.filter(x => x instanceof WheelDriver)
                     : undefined
                 wheelDrivers?.forEach(x => {
-                    console.log("Wheel Driver" + JSON.stringify(x))
                     x.maxVelocity = vel
                     x.maxAcceleration = acceleration
                 })
@@ -88,7 +87,6 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
         [driver, robot.mechanism, robot.assemblyName]
     )
 
-    console.log("SubsystemRowInterface")
     return (
         <>
             <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
