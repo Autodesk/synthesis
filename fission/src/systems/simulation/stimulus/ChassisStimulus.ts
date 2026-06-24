@@ -24,7 +24,7 @@ class ChassisStimulus extends Stimulus {
     public constructor(id: StimulusID, bodyId: Jolt.BodyID, info?: mirabuf.IInfo) {
         super(id, info)
 
-        this._body = World.physicsSystem.getBody(bodyId)
+        this._body = World.physicsSystem.getBody(bodyId)!
         this._mass = this._body.GetShape().GetMassProperties().mMass
     }
 

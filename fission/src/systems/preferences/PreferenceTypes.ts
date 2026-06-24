@@ -151,28 +151,26 @@ export type Alliance = "red" | "blue"
 
 export type Station = 1 | 2 | 3
 
-export type ScoringZonePreferences = {
+export type ZonePreferencesShared = {
     name: string
     alliance: Alliance
     parentNode: string | undefined
+
+    deltaTransformation: number[]
+}
+
+export type ScoringZonePreferences = ZonePreferencesShared & {
     points: number
     destroyGamepiece: boolean
 
     // Replaces "persistentPoints." If true, game pieces that leave the zone will still be counted as scored, otherwise the points are removed when the gamepiece is.
     shouldPointsAccumulate: boolean
-
-    deltaTransformation: number[]
 }
 
-export type ProtectedZonePreferences = {
-    name: string
-    alliance: Alliance
+export type ProtectedZonePreferences = ZonePreferencesShared & {
     penaltyPoints: number
-    parentNode: string | undefined
     contactType: ContactType
     activeDuring: MatchModeType[]
-
-    deltaTransformation: number[]
 }
 
 export type SpawnLocation = Readonly<{
