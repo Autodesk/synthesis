@@ -55,7 +55,7 @@ export class SimAccelInput extends SimInput {
 
     public update(deltaT: number) {
         if (!this._joltID) return
-        const body = World.physicsSystem.getBody(this._joltID)
+        const body = World.physicsSystem.getBody(this._joltID)!
 
         const jRot = body.GetRotation()
         this._scratchQuat.set(jRot.GetX(), jRot.GetY(), jRot.GetZ(), jRot.GetW())

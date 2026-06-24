@@ -94,7 +94,7 @@ class IntakeSensorSceneObject extends SceneObject {
     public update(): void {
         if (!this._joltBodyId || !this._parentBodyId || !this._deltaTransformation) return
 
-        const parentBody = World.physicsSystem.getBody(this._parentBodyId)
+        const parentBody = World.physicsSystem.getBody(this._parentBodyId)!
         const bodyTransform = this._deltaTransformation
             .clone()
             .premultiply(convertJoltMat44ToThreeMatrix4(parentBody.GetWorldTransform()))

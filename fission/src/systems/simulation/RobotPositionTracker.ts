@@ -11,7 +11,7 @@ class RobotPositionTracker {
                 return
             }
 
-            const rootBody = World.physicsSystem.getBody(rootNodeId)
+            const rootBody = World.physicsSystem.getBody(rootNodeId)!
             const rootY = rootBody.GetPosition().GetY()
 
             if (robot.hasPhysics() && rootY < this._mapBoundaryY) {

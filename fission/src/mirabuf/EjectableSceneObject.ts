@@ -77,7 +77,7 @@ class EjectableSceneObject extends SceneObject {
             this._ejectVelocity = this._parentSceneObject.ejectorPreferences.ejectorVelocity
 
             // Record start transform at the game piece center of mass
-            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
             this._startTranslation = new THREE.Vector3(0, 0, 0)
             this._startRotation = new THREE.Quaternion(0, 0, 0, 1)
             convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).decompose(
@@ -116,17 +116,17 @@ class EjectableSceneObject extends SceneObject {
                 return
             }
 
-            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
             const posToCOM = convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).premultiply(
                 convertJoltMat44ToThreeMatrix4(gpBody.GetWorldTransform()).invert()
             )
 
-            const body = World.physicsSystem.getBody(this._parentBodyId)
+            const body = World.physicsSystem.getBody(this._parentBodyId)!
 
             // Compute target world transform into scratchMatA
-            this._scratchMatA.copy(this._deltaTransformation).premultiply(
-                convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
-            )
+            this._scratchMatA
+                .copy(this._deltaTransformation)
+                .premultiply(convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()))
             this._scratchMatA.decompose(this._scratchVec3a, this._scratchQuat, this._scratchScale)
 
             if (t < 1 && this._startTranslation && this._startRotation) {
@@ -166,8 +166,8 @@ class EjectableSceneObject extends SceneObject {
             return
         }
 
-        const parentBody = World.physicsSystem.getBody(this._parentBodyId)
-        const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+        const parentBody = World.physicsSystem.getBody(this._parentBodyId)!
+        const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
         const ejectDir = new THREE.Vector3(0, 0, 1)
             .applyQuaternion(convertJoltQuatToThreeQuaternion(gpBody.GetRotation()))
             .normalize()

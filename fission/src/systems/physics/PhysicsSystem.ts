@@ -206,7 +206,7 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltBodyInterface.DeactivateBody(bodyId)
 
-        this.getBody(bodyId).SetIsSensor(true)
+        this.getBody(bodyId)!.SetIsSensor(true)
     }
 
     /**
@@ -218,7 +218,7 @@ class PhysicsSystem extends WorldSystem {
         if (!this.isBodyAdded(bodyId)) return
 
         this._joltBodyInterface.ActivateBody(bodyId)
-        this.getBody(bodyId).SetIsSensor(false)
+        this.getBody(bodyId)!.SetIsSensor(false)
     }
 
     public isBodyAdded(bodyId: Jolt.BodyID) {
@@ -366,8 +366,8 @@ class PhysicsSystem extends WorldSystem {
                 )
                 return
             }
-            const bodyA = this.getBody(bodyIdA)
-            const bodyB = this.getBody(bodyIdB)
+            const bodyA = this.getBody(bodyIdA)!
+            const bodyB = this.getBody(bodyIdB)!
 
             // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
             const prefMotors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
@@ -1059,7 +1059,6 @@ class PhysicsSystem extends WorldSystem {
                 const vert = convertMirabufFloatToArrJoltVec3(verts, i)
                 points.push_back(vert)
                 this.updateMinMaxBounds(vert, min, max)
-                JOLT.destroy(vert)
             }
         })
 
@@ -1110,7 +1109,6 @@ class PhysicsSystem extends WorldSystem {
                 const vertVec = new JOLT.Vec3(vert)
                 this.updateMinMaxBounds(vertVec, min, max)
 
-                JOLT.destroy(vert)
                 JOLT.destroy(vertVec)
             }
 
@@ -1278,8 +1276,15 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    public getBody(bodyId: Jolt.BodyID): Jolt.Body {
+    public getBody(bodyId: Jolt.BodyID): Jolt.Body | undefined {
+        const hasBody = this.hasBody(bodyId)
+        if (!hasBody) return
+
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
+    }
+
+    public hasBody(bodyId: Jolt.BodyID): boolean {
+        return this._joltPhysSystem.GetBodyInterface().IsAdded(bodyId)
     }
 
     public update(deltaT: number): void {
@@ -1340,7 +1345,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     private onSameLayer(body1: Jolt.BodyID, body2: Jolt.BodyID): boolean {
-        return this.getBody(body1).GetObjectLayer() === this.getBody(body2).GetObjectLayer()
+        return this.getBody(body1)!.GetObjectLayer() === this.getBody(body2)!.GetObjectLayer()
     }
 
     /*
@@ -1379,9 +1384,9 @@ class PhysicsSystem extends WorldSystem {
         const body = this._joltBodyInterface.CreateBody(creationSettings)
         this._bodies.push(body.GetID())
 
+        JOLT.destroy(size)
         JOLT.destroy(rot)
         JOLT.destroy(creationSettings)
-        JOLT.destroy(size)
 
         return body
     }
@@ -1593,6 +1598,7 @@ class PhysicsSystem extends WorldSystem {
         const contactListener = new JOLT.ContactListenerJS()
 
         contactListener.OnContactAdded = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
+            console.log("contact")
             const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
             const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
 
@@ -1606,12 +1612,13 @@ class PhysicsSystem extends WorldSystem {
                 settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
             }
 
-            // Detect if a robot is touching a gp, then push to the robot's touched list
             const [clientBody, otherBody] = this.isClient(body1)
                 ? [body1, body2]
                 : this.isClient(body2)
                   ? [body2, body1]
                   : [undefined, undefined]
+
+            // Detect if a robot is touching a gp, then push to the robot's touched list
             this.recordOtherBodyCollision(clientBody, otherBody)
 
             this._physicsEventQueue.push(EventSystem.create("OnContactAddedEvent", message))
@@ -1644,7 +1651,6 @@ class PhysicsSystem extends WorldSystem {
             return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
         }
 
-        // TODO Ensure that we free `contactListener` at some point
         physSystem.SetContactListener(contactListener)
     }
 }
