@@ -108,20 +108,23 @@ std::shared_ptr<GraphNode> populate_node(const adsk::core::Ptr<adsk::fusion::Occ
         populate_node(occ, node, TRANSFORM, is_ground, visited_occurrence_entity_tokens, dynamic_joints);
     }
 
-    for (const auto& joint : occurrence->joints()) {
-        if (!joint || !joint->occurrenceOne() || !joint->occurrenceTwo()) {
-            continue;
-        }
+    auto joint_list = occurrence->joints();
+    if (joint_list) {
+        for (const auto& joint : joint_list) {
+            if (!joint || !joint->occurrenceOne() || !joint->occurrenceTwo()) {
+                continue;
+            }
 
-        bool is_rigid   = joint->jointMotion()->jointType() == adsk::fusion::JointTypes::RigidJointType;
-        auto connection = joint_connection(joint, occurrence);
-        if (!connection) {
-            continue;
-        }
+            bool is_rigid   = joint->jointMotion()->jointType() == adsk::fusion::JointTypes::RigidJointType;
+            auto connection = joint_connection(joint, occurrence);
+            if (!connection) {
+                continue;
+            }
 
-        if (!prev || connection->entityToken() != prev->data->entityToken()) {
-            populate_node(connection, node, is_rigid ? CONNECTION : NEXT, is_ground, visited_occurrence_entity_tokens,
-                dynamic_joints);
+            if (!prev || connection->entityToken() != prev->data->entityToken()) {
+                populate_node(connection, node, is_rigid ? CONNECTION : NEXT, is_ground,
+                    visited_occurrence_entity_tokens, dynamic_joints);
+            }
         }
     }
 
