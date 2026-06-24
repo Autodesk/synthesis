@@ -259,7 +259,7 @@ class SynthesisBrain extends Brain {
      * magnitude is below {@link SynthesisBrain.SWERVE_AXIS_TOLERANCE}.
      *
      * The robot is considered swerve when the azimuth-hinge count is at least the wheel
-     * count (matching the original `azimuthCount < wheelCount → not swerve` guard).
+     * count (matching the original `azimuthCount < wheelCount -> not swerve` guard).
      */
     private detectSwerve(): { inSwerve: boolean; hinges: HingeDriver[] } {
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
@@ -270,15 +270,12 @@ class SynthesisBrain extends Brain {
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
 
-        // Original used the robot's GroundedNode up vector. Robots are spawned upright, so
-        // world-up is equivalent here; logged below so a tilted edge case is visible.
+        // The original used the robot's GroundedNode up vector. Robots are spawned upright, so
+        // world-up is equivalent here.
         const up = new THREE.Vector3(0, 1, 0)
 
         const swerveHinges: HingeDriver[] = []
-        console.debug(
-            `[Swerve][detect] evaluating ${hingeDrivers.length} hinge(s) against ${wheelDrivers.length} wheel(s)`
-        )
-        hingeDrivers.forEach((h, i) => {
+        hingeDrivers.forEach(h => {
             const a = h.worldAxis
             const axis = new THREE.Vector3(a.GetX(), a.GetY(), a.GetZ()).normalize()
             // Perpendicular-to-up component: |axis - (up·axis)·up|. ~0 means axis ∥ up.
@@ -286,20 +283,10 @@ class SynthesisBrain extends Brain {
                 .clone()
                 .sub(up.clone().multiplyScalar(up.dot(axis)))
                 .length()
-            const isAzimuth = perpMag < SynthesisBrain.SWERVE_AXIS_TOLERANCE
-            console.debug(
-                `[Swerve][detect] hinge ${i} "${h.displayName()}" axis=(${axis.x.toFixed(3)}, ` +
-                    `${axis.y.toFixed(3)}, ${axis.z.toFixed(3)}) perpToUp=${perpMag.toFixed(4)} ` +
-                    `→ ${isAzimuth ? "AZIMUTH" : "arm"}`
-            )
-            if (isAzimuth) swerveHinges.push(h)
+            if (perpMag < SynthesisBrain.SWERVE_AXIS_TOLERANCE) swerveHinges.push(h)
         })
 
         const inSwerve = wheelDrivers.length > 0 && swerveHinges.length >= wheelDrivers.length
-        console.debug(
-            `[Swerve][detect] ${swerveHinges.length} azimuth hinge(s) vs ${wheelDrivers.length} wheel(s) ` +
-                `→ inSwerve=${inSwerve}`
-        )
         return { inSwerve, hinges: swerveHinges }
     }
 
@@ -343,20 +330,6 @@ class SynthesisBrain extends Brain {
 
         const pairing = pairNearestHinges(wheelPositions, hingePositions)
         const sortedHinges = pairing.map(hingeIndex => hingeDrivers[hingeIndex])
-
-        pairing.forEach((hingeIndex, wheelIndex) => {
-            const w = wheelPositions[wheelIndex]
-            if (hingeIndex < 0) {
-                console.warn(`[Swerve][pair] wheel ${wheelIndex} had no remaining hinge to pair with`)
-                return
-            }
-            const h = hingePositions[hingeIndex]
-            const dist = Math.hypot(w.x - h.x, w.y - h.y, w.z - h.z)
-            console.debug(
-                `[Swerve][pair] wheel ${wheelIndex} (${w.x.toFixed(2)}, ${w.y.toFixed(2)}, ${w.z.toFixed(2)}) ` +
-                    `→ hinge ${hingeIndex} (${h.x.toFixed(2)}, ${h.y.toFixed(2)}, ${h.z.toFixed(2)}) dist=${dist.toFixed(3)}`
-            )
-        })
 
         return new SwerveDriveBehavior(
             wheelDrivers,

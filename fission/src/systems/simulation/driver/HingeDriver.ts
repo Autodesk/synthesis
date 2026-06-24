@@ -4,17 +4,23 @@ import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { type NoraNumber, NoraTypes } from "../Nora"
-import { shortestAngleDelta } from "./AngleUtil"
 import Driver, { DriverControlMode, type DriverID } from "./Driver"
 
 const MAX_TORQUE_WITHOUT_GRAV = 100
 
-// Proportional gain (rad/s per rad of error) for continuous-rotation position tracking. The
-// resulting velocity is capped at the joint's maxVelocity, so this only shapes how the module
-// decelerates as it approaches the target: the proportional (slow-down) zone is maxVelocity/gain
-// wide. At gain 5 and maxVelocity ≈ π that's ~0.63 rad (~36°) of smooth ramp-down before the
-// target. Tunable — raise for snappier steering, lower for gentler approach.
+// Proportional gain (rad/s per rad of error) for continuous-rotation position tracking.
 const CONTINUOUS_POSITION_GAIN = 5.0
+
+/**
+ * Smallest signed rotation (in radians, within [-π, π]) that takes angle `from` to angle `to`.
+ */
+function shortestAngleDelta(from: number, to: number): number {
+    const twoPi = 2 * Math.PI
+    let d = (to - from) % twoPi
+    if (d > Math.PI) d -= twoPi
+    if (d < -Math.PI) d += twoPi
+    return d
+}
 
 class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
@@ -38,7 +44,7 @@ class HingeDriver extends Driver {
     /**
      * World-space hinge axis (on body 1).
      *
-     * Uses Multiply3x3 (rotation only) because the axis is a direction, not a point —
+     * Uses Multiply3x3 (rotation only) because the axis is a direction, not a point.
      * MulVec3 would add the body's world position and corrupt the direction.
      */
     public get worldAxis(): Jolt.Vec3 {
