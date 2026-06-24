@@ -72,7 +72,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             super.update()
 
             // If persistent points, update points based on how many gamepieces in zone
-            if (!this.prefs.shouldPointsAccumulate)
+            if (!this.prefs.shouldPointsAccumulate) {
                 if (this._gpContacted.length != this._prevGP.length) {
                     const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
                     const points = this.prefs.points
@@ -97,6 +97,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
                     this._prevGP = Object.assign([], this._gpContacted)
                 }
+            }
         } else {
             console.debug("Failed to update scoring zone")
         }
