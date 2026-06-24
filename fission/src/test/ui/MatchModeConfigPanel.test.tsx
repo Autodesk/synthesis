@@ -85,11 +85,10 @@ describe("MatchModeConfigPanel", () => {
         assert(fileInput != undefined)
 
         // Upload the file (wrapped in act to handle React state updates)
-        act(() => {
+        await act(async () => {
             fireEvent.change(fileInput, { target: { files: [testFile] } })
+            await new Promise(resolve => setTimeout(resolve, 100))
         })
-
-        await new Promise(resolve => setTimeout(resolve, 100))
 
         const finalCount = getMatchModeCount(container)
         if (validJSON) {

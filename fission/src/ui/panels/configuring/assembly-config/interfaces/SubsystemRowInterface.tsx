@@ -5,7 +5,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { applyDriverConfig, type JointConfigControl, type JointConfigGroup } from "../jointConfigGroups"
+import { applyDriverConfig, driverForce, type JointConfigControl, type JointConfigGroup } from "../jointConfigGroups"
 
 type ControlSlidersProps = {
     robot: MirabufSceneObject
@@ -15,7 +15,7 @@ type ControlSlidersProps = {
 /** Velocity (+ optional force) sliders for a single control, applied to all of its drivers. */
 const ControlSliders: React.FC<ControlSlidersProps> = ({ robot, control }) => {
     const [velocity, setVelocity] = useState<number>(control.drivers[0].maxVelocity)
-    const [force, setForce] = useState<number>(control.drivers[0].maxForce)
+    const [force, setForce] = useState<number>(driverForce(control.drivers[0]))
 
     const showForce =
         control.force && (control.force.alwaysVisible || PreferencesSystem.getGlobalPreference("SubsystemGravity"))

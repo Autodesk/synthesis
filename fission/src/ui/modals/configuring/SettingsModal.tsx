@@ -371,8 +371,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
 
 const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
     const {
-        mode,
-        setMode,
         primaryColor,
         secondaryColor,
         blueAllianceColor,
@@ -428,11 +426,6 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
             <ColorEditor label="Secondary Color" color={tempSecondary} setColor={setTempSecondary} />
             <ColorEditor label="Blue Alliance" color={tempBlue} setColor={setTempBlue} />
             <ColorEditor label="Red Alliance" color={tempRed} setColor={setTempRed} />
-            <Checkbox
-                label="Dark Mode"
-                checked={mode === "dark"}
-                onClick={checked => setMode(checked ? "dark" : "light")}
-            />
             <Button
                 startIcon={<GiPerspectiveDiceSixFacesOne />}
                 onClick={() => {

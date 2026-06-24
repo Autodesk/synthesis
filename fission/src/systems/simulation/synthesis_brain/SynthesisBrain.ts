@@ -91,7 +91,7 @@ class SynthesisBrain extends Brain {
             console.error("Can't find drive behavior!")
             return
         }
-        existing.setIsArcade(driveType == DriveType.ARCADE)
+        existing.isArcade = driveType == DriveType.ARCADE
     }
 
     public configure(): void {

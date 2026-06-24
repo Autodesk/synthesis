@@ -52,6 +52,11 @@ function makeControl(label: string, drivers: ConfigurableDriver[]): JointConfigC
     return { label, drivers, ...controlBoundsFor(drivers[0]) }
 }
 
+/** Reads a driver's force value. Wheels expose it as maxAcceleration; other joints as maxForce. */
+export function driverForce(driver: ConfigurableDriver): number {
+    return driver instanceof WheelDriver ? driver.maxAcceleration : driver.maxForce
+}
+
 /**
  * Writes one driver's velocity/force live and into preferences. The only place that knows where
  * each driver kind persists: wheels use the shared drive prefs, others persist by name in the
@@ -64,15 +69,16 @@ export function applyDriverConfig(
     force: number
 ): void {
     driver.maxVelocity = velocity
-    driver.maxForce = force
 
     const prefs = PreferencesSystem.getRobotPreferences(robot.assemblyName)
     if (driver instanceof WheelDriver) {
+        driver.maxAcceleration = force
         prefs.driveVelocity = velocity
         prefs.driveAcceleration = force
         return
     }
 
+    driver.maxForce = force
     const name = driver.info?.name
     if (!name) return
     const motors = (prefs.motors ?? []).filter(m => m.name !== name)
