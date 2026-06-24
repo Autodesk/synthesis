@@ -4,8 +4,10 @@
 
 package frc.robot;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.autodesk.synthesis.io.*;
 
 import edu.wpi.first.wpilibj.SPI;
@@ -17,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 
-import com.autodesk.synthesis.revrobotics.spark.SparkMax;
+import com.autodesk.synthesis.revrobotics.SparkMax;
 import com.autodesk.synthesis.revrobotics.RelativeEncoder;
 import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
 import com.autodesk.synthesis.studica.AHRS;
@@ -62,10 +64,11 @@ public class Robot extends TimedRobot {
         m_chooser.addOption("My Auto", kCustomAuto);
         SmartDashboard.putData("Auto choices", m_chooser);
 
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.encoder.positionConversionFactor(2.0);
+        m_sparkLeft.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+
         m_encoder = m_sparkLeft.getEncoderSim();
-        // 4 inch diameter wheels, default is 1 unit = 1 radian.
-        // Following conversion factor is 1 unit = 1 inch travelled.
-        m_encoder.setPositionConversionFactor(2.0);
     }
 
     /**
@@ -102,7 +105,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         m_autoSelected = m_chooser.getSelected();
-        // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
         System.out.println("Auto selected: " + m_autoSelected);
         m_encoder.setPosition(0.0);
         m_autoState = AutoState.Stage1;

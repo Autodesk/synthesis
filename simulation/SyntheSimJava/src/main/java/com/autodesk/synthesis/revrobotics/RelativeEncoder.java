@@ -10,53 +10,31 @@ import com.revrobotics.REVLibError;
  */
 public class RelativeEncoder implements com.revrobotics.RelativeEncoder {
 
+    private SparkMax m_sparkMax;
     private CANEncoder m_encoder;
     private double m_zero = 0.0;
-    private double m_positionConversionFactor = 1.0;
-    private double m_velocityConversionFactor = 1.0;
-    private double m_invertedFactor = 1.0;
 
-    public RelativeEncoder(com.revrobotics.RelativeEncoder original, CANEncoder encoder) {
+    public RelativeEncoder(SparkMax sparkMax, CANEncoder encoder) {
+        m_sparkMax = sparkMax;
         m_encoder = encoder;
     }
 
     @Override
     public double getPosition() {
-        return m_encoder.getPosition() * m_positionConversionFactor * m_invertedFactor - m_zero;
+        double invertFactor = m_sparkMax.m_encoderInverted ? -1.0 : 1.0;
+        return m_encoder.getPosition() * m_sparkMax.m_encoderPositionFactor * invertFactor - m_zero;
     }
 
     @Override
     public double getVelocity() {
-        return m_encoder.getVelocity() * m_velocityConversionFactor * m_invertedFactor;
+        double invertFactor = m_sparkMax.m_encoderInverted ? -1.0 : 1.0;
+        return m_encoder.getVelocity() * m_sparkMax.m_encoderVelocityFactor * invertFactor;
     }
 
     @Override
     public REVLibError setPosition(double position) {
-        m_zero = m_encoder.getPosition() * m_positionConversionFactor * m_invertedFactor - position;
+        double invertFactor = m_sparkMax.m_encoderInverted ? -1.0 : 1.0;
+        m_zero = m_encoder.getPosition() * m_sparkMax.m_encoderPositionFactor * invertFactor - position;
         return REVLibError.kOk;
-    }
-
-    public void setPositionConversionFactor(double factor) {
-        m_positionConversionFactor = factor;
-    }
-
-    public void setVelocityConversionFactor(double factor) {
-        m_velocityConversionFactor = factor;
-    }
-
-    public double getPositionConversionFactor() {
-        return m_positionConversionFactor;
-    }
-
-    public double getVelocityConversionFactor() {
-        return m_velocityConversionFactor;
-    }
-
-    public void setInverted(boolean inverted) {
-        m_invertedFactor = inverted ? -1.0 : 1.0;
-    }
-
-    public boolean getInverted() {
-        return m_invertedFactor < 0.0;
     }
 }

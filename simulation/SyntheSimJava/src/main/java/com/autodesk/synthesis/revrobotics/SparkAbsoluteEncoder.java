@@ -11,20 +11,22 @@ import com.revrobotics.AbsoluteEncoder;
  */
 public class SparkAbsoluteEncoder implements AbsoluteEncoder {
     private CANEncoder m_simEncoder;
-    private com.revrobotics.spark.SparkAbsoluteEncoder m_realEncoder;
+    private SparkMax m_sparkMax;
 
-    public SparkAbsoluteEncoder(com.revrobotics.spark.SparkAbsoluteEncoder realEncoder, CANEncoder simEncoder) {
-        this.m_realEncoder = realEncoder;
-        this.m_simEncoder = simEncoder;
+    public SparkAbsoluteEncoder(SparkMax sparkMax) {
+        this.m_simEncoder = sparkMax.m_encoder;
+        this.m_sparkMax = sparkMax;
     }
 
     @Override
     public double getPosition() {
-        return this.m_simEncoder.getPosition();
+        double invertFactor = m_sparkMax.m_absEncoderInverted ? -1.0 : 1.0;
+        return m_simEncoder.getPosition() * m_sparkMax.m_absEncoderPositionFactor * invertFactor;
     }
 
     @Override
     public double getVelocity() {
-        return this.m_simEncoder.getVelocity();
+        double invertFactor = m_sparkMax.m_absEncoderInverted ? -1.0 : 1.0;
+        return m_simEncoder.getVelocity() * m_sparkMax.m_absEncoderVelocityFactor * invertFactor;
     }
 }
