@@ -53,10 +53,9 @@ function makeControl(label: string, drivers: ConfigurableDriver[]): JointConfigC
 }
 
 /**
- * Writes one driver's velocity/force, both live and into preferences. This is the only place that
- * knows where each driver kind persists: wheels share the drive velocity/acceleration prefs, while
- * every other joint persists by name in the motors list. Does not save — callers save once after a
- * batch of writes.
+ * Writes one driver's velocity/force live and into preferences. The only place that knows where
+ * each driver kind persists: wheels use the shared drive prefs, others persist by name in the
+ * motors list. Does not save; callers save once after a batch.
  */
 export function applyDriverConfig(
     robot: MirabufSceneObject,
@@ -82,9 +81,8 @@ export function applyDriverConfig(
 }
 
 /**
- * A group provider claims a subset of the robot's drivers into one named group. Whatever it does
- * not claim falls through to single-joint groups. New groupings (e.g. user-defined collections read
- * from preferences) are added simply by appending another provider to {@link GROUP_PROVIDERS}.
+ * Claims a subset of the robot's drivers into one named group; anything unclaimed falls through to
+ * single-joint groups. New groupings plug in by appending another provider to {@link GROUP_PROVIDERS}.
  */
 type GroupProvider = (
     drivers: ConfigurableDriver[],
@@ -107,9 +105,8 @@ const drivetrainGroupProvider: GroupProvider = (drivers, isSwerve) => {
 const GROUP_PROVIDERS: GroupProvider[] = [drivetrainGroupProvider]
 
 /**
- * Builds the configurable joint groups for a robot. Providers claim subsets of joints into named
- * groups; every remaining joint becomes its own single-joint group. The rendering layer consumes
- * the returned groups generically and never needs to know what kind of joints they contain.
+ * Builds the configurable joint groups for a robot: providers claim subsets into named groups, and
+ * every remaining joint becomes its own single-joint group.
  */
 export function buildJointConfigGroups(
     robot: MirabufSceneObject,

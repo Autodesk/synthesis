@@ -75,11 +75,7 @@ class HingeDriver extends Driver {
         this._constraint.SetLimits(-Math.PI, Math.PI)
     }
 
-    /**
-     * True once {@link setContinuousRotation} has been applied — i.e. this hinge is a swerve
-     * azimuth (steering) module rather than a regular arm joint. Used by the configuration UI to
-     * group the module-rotation joints under a single drivetrain slider.
-     */
+    /** True once {@link setContinuousRotation} has been applied, marking this as a swerve azimuth hinge. */
     public get continuous(): boolean {
         return this._continuous
     }
@@ -105,9 +101,8 @@ class HingeDriver extends Driver {
                 this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
                 break
             case DriverControlMode.POSITION:
-                // Position tracking is driven through the velocity motor by a shortest-path
-                // P-controller in update(); this is what lets a continuous hinge cross the ±π seam
-                // (Jolt's position motor operates on the wrapped angle and cannot).
+                // Position tracking runs through the velocity motor via a shortest-path P-controller
+                // in update(), which lets a continuous hinge cross the ±π seam.
                 this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
                 break
             default:
@@ -155,10 +150,8 @@ class HingeDriver extends Driver {
         if (this._controlMode == DriverControlMode.VELOCITY) {
             this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
         } else if (this._controlMode == DriverControlMode.POSITION) {
-            // Shortest-path velocity P-control toward the target angle. Using the wrapped error
-            // (rather than a position setpoint) lets a continuous hinge rotate across the ±π seam
-            // the short way. Velocity is capped at maxVelocity, which also bounds the per-frame
-            // rotation rate (and thus the reaction torque on the chassis).
+            // Shortest-path velocity P-control: the wrapped error lets a continuous hinge cross the
+            // ±π seam the short way, and capping at maxVelocity bounds the reaction torque.
             const error = shortestAngleDelta(this._constraint.GetCurrentAngle(), this._targetAngle)
             const velocity = Math.max(-this.maxVelocity, Math.min(this.maxVelocity, error * CONTINUOUS_POSITION_GAIN))
             this._constraint.SetTargetAngularVelocity(velocity)

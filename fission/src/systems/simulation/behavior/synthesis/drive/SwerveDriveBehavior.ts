@@ -45,10 +45,8 @@ class SwerveDriveBehavior extends DriveBehavior {
             h.setContinuousRotation()
         })
 
-        // Field-oriented drive is zeroed to the robot's heading at the moment swerve is configured
-        // (spawn, or when the drivetrain is switched to swerve), so "forward" lines up with the
-        // robot's nose initially; the reset input re-zeroes it later. Falls back to world +X if the
-        // body can't be resolved yet.
+        // Zero field-oriented drive to the robot's spawn heading so "forward" starts aligned with
+        // its nose. The reset input re-zeroes it later; falls back to world +X if the body isn't ready.
         const rootNodeId = this.resolveRootNodeId()
         if (rootNodeId != undefined) {
             const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId).GetRotation())
@@ -167,9 +165,8 @@ class SwerveDriveBehavior extends DriveBehavior {
                 driveSpeed = -speed
             }
 
-            // Steering is applied by physically rotating the module via its azimuth hinge (the wheel
-            // rides on the module body and follows it). The wheel's own steer angle is intentionally
-            // left alone, setting it would double-steer on top of the hinge rotation.
+            // Steering comes from physically rotating the module via its azimuth hinge; the wheel
+            // rides on the module and follows it. Don't also set the wheel's steer angle (double-steer).
             this._hinges[i].targetAngle = angle
             this._wheels[i].accelerationDirection = driveSpeed
         }

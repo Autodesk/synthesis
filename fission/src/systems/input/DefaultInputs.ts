@@ -217,8 +217,7 @@ class DefaultInputs {
             inputs: [
                 AxisInput.onKeyboard("swerveForward", "KeyW", "KeyS"),
                 AxisInput.onKeyboard("swerveStrafe", "KeyD", "KeyA"),
-                // Positive swerveTurn = turn left (CCW about up), matching the original where
-                // turn = |turnLeft| - |turnRight| and chassisAngularVelocity = up * turn.
+                // Positive swerveTurn = turn left, matching the original control mapping.
                 AxisInput.onKeyboard("swerveTurn", "ArrowLeft", "ArrowRight"),
                 ButtonInput.onKeyboard("swerveResetFieldForward", "KeyR"),
 

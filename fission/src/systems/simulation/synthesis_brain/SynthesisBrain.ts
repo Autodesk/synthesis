@@ -99,16 +99,13 @@ class SynthesisBrain extends Brain {
         this._currentJointIndex = 1
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (this._assembly.mechanism.controllable) {
-            // When in swerve mode, detect the azimuth hinges up front so they can both
-            // drive the swerve modules and be excluded from arm behavior assignment.
+            // In swerve mode, detect the azimuth hinges up front so they can drive the modules and
+            // be excluded from arm behaviors. Fall back to arcade if detection fails.
             const swerveInfo =
                 this.driveType === DriveType.SWERVE
                     ? this.detectSwerve()
                     : { inSwerve: false, hinges: [] as HingeDriver[] }
 
-            // Only treat the robot as swerve when detection actually succeeded (azimuth count
-            // >= wheel count), matching the original's `ConfigureSwerveDrivetrain` false-return
-            // fallback. Otherwise fall back to arcade and leave every hinge available as an arm.
             const useSwerve = this.driveType === DriveType.SWERVE && swerveInfo.inSwerve
             if (this.driveType === DriveType.SWERVE && !swerveInfo.inSwerve) {
                 console.warn("[Swerve] swerve detection failed for this robot; falling back to arcade drive.")
@@ -250,16 +247,10 @@ class SynthesisBrain extends Brain {
     }
 
     /**
-     * Detects whether this robot is a swerve drivetrain and, if so, returns the
-     * azimuth (steering) hinges.
-     *
-     * A hinge is an azimuth/steering hinge when its rotation AXIS is
-     * essentially vertical. Concretely, take the hinge's world-space axis, project out the
-     * component along robot-up, and treat it as azimuth when the remaining (perpendicular)
-     * magnitude is below {@link SynthesisBrain.SWERVE_AXIS_TOLERANCE}.
-     *
-     * The robot is considered swerve when the azimuth-hinge count is at least the wheel
-     * count (matching the original `azimuthCount < wheelCount -> not swerve` guard).
+     * Detects whether this robot is a swerve drivetrain and returns its azimuth (steering) hinges.
+     * A hinge is an azimuth hinge when its rotation axis is essentially vertical (perpendicular-to-up
+     * magnitude below {@link SynthesisBrain.SWERVE_AXIS_TOLERANCE}). The robot is swerve when the
+     * azimuth-hinge count is at least the wheel count.
      */
     private detectSwerve(): { inSwerve: boolean; hinges: HingeDriver[] } {
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
@@ -270,15 +261,14 @@ class SynthesisBrain extends Brain {
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
 
-        // The original used the robot's GroundedNode up vector. Robots are spawned upright, so
-        // world-up is equivalent here.
+        // World-up; robots spawn upright so this matches the original's grounded-node up vector.
         const up = new THREE.Vector3(0, 1, 0)
 
         const swerveHinges: HingeDriver[] = []
         hingeDrivers.forEach(h => {
             const a = h.worldAxis
             const axis = new THREE.Vector3(a.GetX(), a.GetY(), a.GetZ()).normalize()
-            // Perpendicular-to-up component: |axis - (up·axis)·up|. ~0 means axis ∥ up.
+            // Magnitude of the axis component perpendicular to up; near zero means the axis is vertical.
             const perpMag = axis
                 .clone()
                 .sub(up.clone().multiplyScalar(up.dot(axis)))
