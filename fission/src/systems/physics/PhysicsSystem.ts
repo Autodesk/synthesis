@@ -1207,13 +1207,10 @@ class PhysicsSystem extends WorldSystem {
             return undefined
         }
 
-        // NOTE
-        // The underlying object here is just an id
-        // So I believe this copy is okay (tests pass, at least)
-        const data = collector.mHit
-        JOLT.destroy(collector)
+        const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
+        const data = { mBodyID: new JOLT.BodyID(collector.mHit.mBodyID.GetIndexAndSequenceNumber()) }
 
-        const hitPoint = ray.GetPointOnRay(data.mFraction)
+        JOLT.destroy(collector)
 
         return { data, point: convertJoltRVec3ToJoltVec3(hitPoint), ray }
     }
@@ -1782,7 +1779,7 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
 }
 
 export type RayCastHit = {
-    data: Jolt.RayCastResult
+    data: { mBodyID: Jolt.BodyID }
     point: Jolt.Vec3
     ray: Jolt.RRayCast
 }
