@@ -10,10 +10,8 @@ export interface Vec3Like {
  *
  * Faithful to the original Unity implementation, which selected the closest azimuth for
  * each wheel and then removed it from the candidate pool (`potentialAzimuthDrivers.Remove`).
- * (The original had a latent bug where its running-minimum distance was never updated; this
- * port implements the clearly-intended nearest-with-consumption behavior.)
  *
- * Distances are compared squared, which preserves ordering and avoids the sqrt.
+ * https://github.com/Autodesk/synthesis/blob/636668d534564610eca7e80db856f2eb43fc60e9/engine/Assets/Scripts/SimObjects/RobotSimObject.cs#L540-L579
  *
  * @returns for each wheel index, the index of its assigned hinge, or -1 if no hinge remains.
  */

@@ -1,116 +1,127 @@
 # Swerve Module Detection & Configuration
 
-This document describes the **developer-facing** implementation details for how swerve modules are discovered, paired,
-and configured.
+This document describes the **developer-facing** implementation details for how swerve modules are
+discovered, paired, and configured in Fission (the TypeScript simulator).
 
 ## Overview
 
-We treat each swerve pod as two abstract drivers:
+We treat each swerve pod as two drivers that already exist after a normal mirabuf import:
 
-* \`rotator\` for the azimuth (steering) joint
-* \`driver\` for the drive (rolling) joint
+- a `HingeDriver` for the azimuth (steering) joint
+- a `WheelDriver` for the drive (rolling) joint
 
-At runtime, we:
+At runtime, when the drivetrain type is `Swerve`, we:
 
-1. Collect all existing drivers for this robot
-2. Filter out which are candidate steering joints
-3. Collect all drive wheels
-4. Pair each wheel with its closest steering joint (by anchor position)
-5. Wrap these "driver and rotator" pairs
+1. Collect this robot's drivers from its simulation layer.
+2. Identify candidate steering (azimuth) hinges by their axis orientation.
+3. Collect the drive wheels.
+4. Pair each wheel with its nearest azimuth hinge by world-space position.
+5. Build a `SwerveDriveBehavior` from those wheel/hinge pairs.
 
-With this approach, as long as your CAD export yields one steering and one drive joint per pod, the system will self‑configure.
-This also comes with the advantage of zero overhead from the perspective of our robot exporter.
+As long as the CAD export yields one steering and one drive joint per pod, the system
+self-configures with zero additional work in the exporter.
 
 ## Prerequisites & Assumptions
 
-1. **One-to-one pods**: Each physical wheel pod must export exactly one steering joint and one rolling joint.
-2. **Azimuth axis orientation**: Steering axes must be nearly horizontal (perpendicular to gravity).
-3. **Anchor proximity**: The world‑space `Anchor` of a `WheelDriver` and its matching `RotationalDriver` must be spatially close (co‑located) within a pod.
-4. **Driver registration**: The assembly import process must register both driver types with `SimulationManager.Drivers[robotName]`.
+1. **One-to-one pods**: each physical pod exports exactly one steering joint and one rolling joint.
+2. **Azimuth axis orientation**: the steering axis is nearly **vertical** (parallel to up). A real
+   swerve module pivots about a vertical post, so its hinge axis points along gravity.
+3. **Anchor proximity**: a `WheelDriver`'s world anchor and its matching hinge's world anchor are
+   spatially close within a pod.
+4. **Driver registration**: the import registers both driver types on the robot's simulation layer.
 
-Violating any of these may cause detection to fail; in that case, a fall back occurs to a different drivetrain mode.
-One that does not require rotational drivers (e.g., Tank or Arcade).
+If these do not hold, detection fails and the robot falls back to arcade drive (which needs no
+steering joints).
 
 ## Detection Algorithm
 
-### Gathering Drivers
+Detection lives in `SynthesisBrain.detectSwerve()`
+(`fission/src/systems/simulation/synthesis_brain/SynthesisBrain.ts`).
 
-```csharp
-var allDrivers = ...
+### Identifying azimuth hinges
+
+A hinge is an azimuth (steering) hinge when its world-space rotation axis is essentially vertical.
+We take the axis, project out the component along world-up, and accept it when the remaining
+(perpendicular) magnitude is below `SWERVE_AXIS_TOLERANCE` (`0.05`, ported verbatim from the
+original implementation):
+
+```ts
+const up = new THREE.Vector3(0, 1, 0)
+const swerveHinges: HingeDriver[] = []
+hingeDrivers.forEach(h => {
+    const a = h.worldAxis
+    const axis = new THREE.Vector3(a.GetX(), a.GetY(), a.GetZ()).normalize()
+    // Magnitude of the axis component perpendicular to up; near zero means the axis is vertical.
+    const perpMag = axis.clone().sub(up.clone().multiplyScalar(up.dot(axis))).length()
+    if (perpMag < SynthesisBrain.SWERVE_AXIS_TOLERANCE) swerveHinges.push(h)
+})
 ```
 
-This collection contains all joint instances exported from Fusion, created from the imported
-mirabuf assembly.
+> **Note on the axis vector.** `HingeDriver.worldAxis` uses `Multiply3x3` (rotation only) rather
+> than `MulVec3`. The axis is a direction, not a point; `MulVec3` would add the body's world
+> position and corrupt it.
 
-### Filtering Azimuth (Steering) Drivers
+Robots spawn upright, so world-up is used directly (the original used the grounded node's up
+vector).
 
-```csharp
-var potentialAzimuthDrivers = allDrivers
-    .OfType<RotationalDriver>()         // only hinge joints
-    .Where(d => !d.IsWheel)            // exclude any rotational drivers marked as wheels
-    .Where(d => IsHorizontal(d.Axis))  // axis nearly horizontal
-    .ToList();
+### Swerve decision
+
+```ts
+const inSwerve = wheelDrivers.length > 0 && swerveHinges.length >= wheelDrivers.length
 ```
 
-* `IsHorizontal()` is closely implemented as:
+The robot is treated as swerve only when there is at least one wheel and at least as many azimuth
+hinges as wheels. If the drivetrain is set to `Swerve` but detection fails, `configure()` logs a
+warning and falls back to arcade, leaving every hinge available as an arm joint.
 
-  ```csharp
-  bool IsHorizontal(Vector3 axis) =>
-    (axis - Vector3.Dot(Vector3.up, axis) * Vector3.up).magnitude < 0.05f;
-  ```
+## Pairing Algorithm (nearest-neighbor, consuming)
 
-* This selects only steering pivots whose hinge axis lies in the horizontal plane.
+Pairing lives in `pairNearestHinges()`
+(`fission/src/systems/simulation/synthesis_brain/SwervePairing.ts`). Each wheel claims its closest
+hinge and that hinge is removed from the pool, so two wheels can never share a hinge:
 
-### Identifying Wheel Drivers
-
-```csharp
-var wheelDrivers = allDrivers.OfType<WheelDriver>();
-```
-
-All `WheelDriver` instances correspond to the actual drive wheels. These are the rotational joints
-marked as wheels during the robot export process.
-
-### Pairing Algorithm (Nearest‑Neighbor)
-
-```csharp
-if (potentialAzimuthDrivers.Count < wheelDrivers.Count)
-    return; // not enough pods
-
-var modules = new (RotationalDriver azimuth, WheelDriver drive)[wheelDrivers.Count];
-int i = 0;
-
-foreach (var wheel in wheelDrivers) {
-    // find the steering joint whose Anchor is closest to this wheel’s Anchor
-    var closest = potentialAzimuthDrivers
-        .OrderBy(d => (d.Anchor - wheel.Anchor).sqrMagnitude)
-        .First();
-
-    modules[i++] = (closest, wheel);
-    potentialAzimuthDrivers.Remove(closest);
+```ts
+export function pairNearestHinges(wheelPositions: Vec3Like[], hingePositions: Vec3Like[]): number[] {
+    const available = hingePositions.map((_, i) => i)
+    return wheelPositions.map(wheel => {
+        let minDistSq = Infinity
+        let closestSlot = -1
+        available.forEach((hingeIndex, slot) => {
+            const hinge = hingePositions[hingeIndex]
+            const dx = wheel.x - hinge.x
+            const dy = wheel.y - hinge.y
+            const dz = wheel.z - hinge.z
+            const distSq = dx * dx + dy * dy + dz * dz
+            if (distSq < minDistSq) {
+                minDistSq = distSq
+                closestSlot = slot
+            }
+        })
+        if (closestSlot === -1) return -1
+        const [chosen] = available.splice(closestSlot, 1)
+        return chosen
+    })
 }
 ```
 
+`createSwerveDriveBehavior()` feeds this wheel positions from each wheel's world transform and hinge
+positions from each hinge's `worldAnchor`, then builds the `SwerveDriveBehavior` from the paired
+drivers. (Distances are compared squared to avoid a square root.)
+
 ## Common Pitfalls
 
-* **Axis tilt**: If the azimuth hinge axis tilts more than \~3°, it may not be detected as horizontal.
-* **Mismatched anchors**: CAD pods must export pivot and wheel with matching origin positions.
-* **Missing drivers**: Ensure both joints appear in the mirabuf import.
+- **Axis tilt**: if the azimuth hinge axis tilts away from vertical by more than the tolerance it
+  will not be detected.
+- **Mismatched anchors**: a pod's steering and drive joints must export with close world anchors, or
+  pairing may mismatch.
+- **Missing drivers**: both joints must appear in the mirabuf import.
 
-Refer to the debug logs for `Failed to switch to 'Swerve'` messages if detection returns false.
+Check the warning logged by `configure()` if a robot set to swerve falls back to arcade.
 
 ## Final Notes
 
-This implementation was decided upon at the current time to avoid adding additional complexity
-to the robot export process. This however does not mean that this automatic swerve module detection
-system cannot also exist alongside a more comprehensive system implemented within the exporter.
-
-Such exporter additions (if done correctly) have the advantage of improving clarity for how swerve
-is handled within the simulator.
-
-For more information on the original implementation of this swerve module detection system you can here:
+The original (Unity / C# v6) implementation this was ported from:
 
 https://github.com/Autodesk/synthesis/blob/636668d534564610eca7e80db856f2eb43fc60e9/engine/Assets/Scripts/SimObjects/RobotSimObject.cs#L540-L579
 
-This commit hash represents v6 of Synthesis.
-
-> *Last updated: 2025‑07‑08*
+> *Last updated: 2026-06-24*
