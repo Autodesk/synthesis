@@ -40,7 +40,7 @@ import { useUIContext } from "../../helpers/UIProviderHelpers"
 import WiringNode from "./WiringNode"
 
 /**
- * WARNING: Please test *thoroughly* when making changes. React Flow is very tempermental with how nodes
+ * WARNING: Please test *thoroughly* when making changes. React Flow is very temperamental with how nodes
  * and object references are maintained.
  */
 
@@ -135,7 +135,12 @@ function generateGraph(
         const sourceHandle = simConfig.handles[v.sourceId]
         const targetHandle = simConfig.handles[v.targetId]
 
-        if (sourceHandle?.enabled && targetHandle?.enabled) {
+        if (
+            sourceHandle?.enabled &&
+            targetHandle?.enabled &&
+            nodes.has(sourceHandle.nodeId) &&
+            nodes.has(targetHandle.nodeId)
+        ) {
             edges.push({
                 id: k,
                 source: sourceHandle.nodeId,
@@ -160,7 +165,11 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
         const simIn: Record<string, HandleInfo> = {}
         for (const [_k, v] of Object.entries(simConfig.handles)) {
             if (v.nodeId === NODE_ID_SIM_OUT || v.nodeId === NODE_ID_SIM_IN) {
-                v.isSource ? (simOut[v.id] = v) : (simIn[v.id] = v)
+                if (v.isSource) {
+                    simOut[v.id] = { ...v }
+                } else {
+                    simIn[v.id] = { ...v }
+                }
             }
         }
         setSimOut(simOut)
@@ -180,34 +189,38 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
                 <Stack>
                     <Label size="md">Output</Label>
                     <ScrollView>
-                        {Object.values(simOut).sort(handleInfoDisplayCompare).map(handle => (
-                            <Checkbox
-                                label={`${handle.displayName}`}
-                                key={handle.id}
-                                checked={handle.enabled}
-                                onClick={checked => {
-                                    handle.enabled = checked
-                                    setSimOut({ ...simOut, [handle.id]: handle })
-                                }}
-                            />
-                        ))}
+                        {Object.values(simOut)
+                            .sort(handleInfoDisplayCompare)
+                            .map(handle => (
+                                <Checkbox
+                                    label={`${handle.displayName}`}
+                                    key={handle.id}
+                                    checked={handle.enabled}
+                                    onClick={checked => {
+                                        handle.enabled = checked
+                                        setSimOut({ ...simOut, [handle.id]: handle })
+                                    }}
+                                />
+                            ))}
                     </ScrollView>
                 </Stack>
                 <Box sx={{ backgroundColor: theme.palette.text.primary, height: "100%" }} />
                 <Stack>
                     <Label size="md">Input</Label>
                     <ScrollView>
-                        {Object.values(simIn).sort(handleInfoDisplayCompare).map(handle => (
-                            <Checkbox
-                                label={`${handle.displayName}`}
-                                key={handle.id}
-                                checked={handle.enabled}
-                                onClick={checked => {
-                                    handle.enabled = checked
-                                    setSimIn({ ...simIn, [handle.id]: handle })
-                                }}
-                            />
-                        ))}
+                        {Object.values(simIn)
+                            .sort(handleInfoDisplayCompare)
+                            .map(handle => (
+                                <Checkbox
+                                    label={`${handle.displayName}`}
+                                    key={handle.id}
+                                    checked={handle.enabled}
+                                    onClick={checked => {
+                                        handle.enabled = checked
+                                        setSimIn({ ...simIn, [handle.id]: handle })
+                                    }}
+                                />
+                            ))}
                     </ScrollView>
                 </Stack>
             </Box>
@@ -230,9 +243,7 @@ const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
         const accelerometers: JSX.Element[] = []
 
         Object.entries(simConfig.handles).forEach(([_k, v]) => {
-            if (v.nodeId !== NODE_ID_ROBOT_IO) return []
-
-            console.debug(v)
+            if (v.nodeId !== NODE_ID_ROBOT_IO) return
 
             const checkbox = (
                 <Checkbox
@@ -422,10 +433,10 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
         const existingConfig = selectedAssembly.simConfigData
         if (existingConfig) {
-            console.debug('Existing SimConfig found')
+            console.debug("Existing SimConfig found")
             setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
         } else {
-            console.debug('No SimConfig found, creating default...')
+            console.debug("No SimConfig found, creating default...")
             setSimConfig(SimConfig.Default(selectedAssembly))
         }
     }, [selectedAssembly])
@@ -441,7 +452,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
             selectedAssembly.updateSimConfig(simConfig)
         } else {
-            console.warn('Failed to save SimConfig', simConfig, selectedAssembly)
+            console.warn("Failed to save SimConfig", simConfig, selectedAssembly)
         }
     }, [selectedAssembly, simConfig])
 
