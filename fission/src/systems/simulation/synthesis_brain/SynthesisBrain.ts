@@ -12,7 +12,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
 import Brain from "../Brain"
 import type Behavior from "../behavior/Behavior"
-import { DriveType } from "../behavior/Behavior"
+import { DriveType, SwerveReferenceType } from "../behavior/Behavior"
 import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
 import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
 import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
@@ -100,6 +100,19 @@ class SynthesisBrain extends Brain {
         if (!swerve) return
         swerve.resetFieldForward()
     }
+
+    public setSwerveReference(reference: SwerveReferenceType) : void {
+        const swerve = this._behaviors.find(b => b instanceof SwerveDriveBehavior) as SwerveDriveBehavior | undefined
+        if (!swerve) return
+        swerve.setSwerveReferenceType(reference)
+    }
+
+    public getSwerveReference() : SwerveReferenceType {
+        const swerve = this._behaviors.find(b => b instanceof SwerveDriveBehavior) as SwerveDriveBehavior | undefined
+        if (!swerve) return SwerveReferenceType.FIELDCENTRIC
+        return swerve.swerveReferenceType
+    }
+
 
     public configure(): void {
         this._behaviors = []

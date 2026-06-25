@@ -11,6 +11,7 @@ import { DriverControlMode } from "@/systems/simulation/driver/Driver.ts"
 import type HingeDriver from "@/systems/simulation/driver/HingeDriver.ts"
 import type HingeStimulus from "@/systems/simulation/stimulus/HingeStimulus.ts"
 import type Stimulus from "@/systems/simulation/stimulus/Stimulus.ts"
+import { SwerveReferenceType } from "../../Behavior"
 
 class SwerveDriveBehavior extends DriveBehavior {
     private _wheels: WheelDriver[]
@@ -23,6 +24,8 @@ class SwerveDriveBehavior extends DriveBehavior {
     private _turnSpeed = 30
 
     private _fieldForward: THREE.Vector3 = new THREE.Vector3(1, 0, 0)
+
+    public swerveReferenceType: SwerveReferenceType = SwerveReferenceType.FIELDCENTRIC
 
     constructor(
         wheels: WheelDriver[],
@@ -75,6 +78,10 @@ class SwerveDriveBehavior extends DriveBehavior {
         this._fieldForward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation)
     }
 
+    public setSwerveReferenceType(value: SwerveReferenceType) {
+        this.swerveReferenceType = value;
+    }
+
     private driveSpeeds(forward: number, strafe: number, turn: number) {
         const rootNodeId = this.resolveRootNodeId()
         if (rootNodeId == undefined) throw new Error("Robot root node should not be undefined")
@@ -107,7 +114,9 @@ class SwerveDriveBehavior extends DriveBehavior {
             .add(robotRight.clone().multiplyScalar(strafe))
         if (chassisVelocity.length() > 1) chassisVelocity.normalize()
         // Field-oriented drive: rotate commanded velocity by the chassis heading.
-        chassisVelocity.applyAxisAngle(robotUp, this.fieldOrientedAngle(robotForward))
+        if (this.swerveReferenceType==SwerveReferenceType.FIELDCENTRIC) {
+            chassisVelocity.applyAxisAngle(robotUp, this.fieldOrientedAngle(robotForward))
+        }
 
         const chassisAngularVelocity = robotUp.clone().multiplyScalar(turn)
         const com = convertJoltVec3ToThreeVector3(

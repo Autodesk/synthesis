@@ -7,6 +7,11 @@ export enum DriveType {
     SWERVE = "Swerve",
 }
 
+export enum SwerveReferenceType {
+    ROBOTCENTRIC = "Robot",
+    FIELDCENTRIC = "Field"
+}
+
 abstract class Behavior {
     private _drivers: Driver[]
     private _stimuli: Stimulus[]
