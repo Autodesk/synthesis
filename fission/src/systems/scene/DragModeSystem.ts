@@ -365,6 +365,9 @@ class DragModeSystem extends WorldSystem {
                     -angularVel.GetZ() * angularStopBraking
                 )
                 body.AddTorque(angularStopTorque)
+
+                JOLT.destroy(stopBrakingForce)
+                JOLT.destroy(angularStopTorque)
             }
         }
 
