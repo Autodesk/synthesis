@@ -187,6 +187,25 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
     }
 
+    public getBounding() {
+        const dimensions = this.getDimensions()
+        const position = this.getPositionTransform()
+
+        const half_w = dimensions.width / 2
+        const half_h = dimensions.height / 2
+        const half_d = dimensions.depth / 2
+
+        const min = new JOLT.Vec3(position.x - half_w, position.y - half_h, position.z - half_d)
+        const max = new JOLT.Vec3(position.x + half_w, position.y + half_h, position.z + half_d)
+
+        const bounding = new JOLT.AABox(min, max)
+
+        JOLT.destroy(min)
+        JOLT.destroy(max)
+
+        return bounding
+    }
+
     public constructor(
         mirabufInstance: MirabufInstance,
         assemblyName: string,
@@ -657,28 +676,28 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return true
     }
 
-    public updateScoringZones(render?: boolean) {
+    public updateScoringZones() {
         this.removeSceneObjects(this._scoringZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.scoringZones) return
-        render ??= PreferencesSystem.getGlobalPreference("RenderScoringZones")
 
+        console.log(`Creating scoringZone`)
         for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
-            const newZone = new ScoringZoneSceneObject(this, i, render)
+            const newZone = new ScoringZoneSceneObject(this, i)
+            console.log(`SZ: ${JSON.stringify(this._fieldPreferences.scoringZones[i])}`)
 
             this._scoringZones.push(newZone)
             World.sceneRenderer.registerSceneObject(newZone)
         }
     }
 
-    public updateProtectedZones(render?: boolean) {
+    public updateProtectedZones() {
         this.removeSceneObjects(this._protectedZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.protectedZones) return
-        render ??= PreferencesSystem.getGlobalPreference("RenderProtectedZones")
 
         for (let i = 0; i < this._fieldPreferences.protectedZones.length; i++) {
-            const newZone = new ProtectedZoneSceneObject(this, i, render)
+            const newZone = new ProtectedZoneSceneObject(this, i)
 
             this._protectedZones.push(newZone)
             World.sceneRenderer.registerSceneObject(newZone)

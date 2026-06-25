@@ -8,8 +8,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
-    convertThreeQuaternionToJoltQuat,
-    convertThreeVector3ToJoltRVec3,
+    convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp, type VisualProperties } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
@@ -55,15 +54,15 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private _deltaTransformation?: THREE.Matrix4
     private _deltaTransHasUpdated: boolean = false
     private _cachedFieldTransformation?: Jolt.RMat44
-    private _visualProps?: VisualProperties
 
     public prefs: ZonePreferencesShared & P
     private preferenceKey: keyof GlobalPreferences
 
     public toRender: boolean | undefined
-    public joltBodyId?: Jolt.BodyID
     public mesh?: THREE.Mesh
     public unsubscribers: (() => void)[] = []
+
+    public bounding?: Jolt.AABox
 
     public abstract get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial }
 
@@ -75,15 +74,14 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     public constructor(
         parentAssembly: MirabufSceneObject,
         prefs: ZonePreferencesShared & P, // TODO maybe switch to `ZonePreferences`
-        preferenceKey: keyof GlobalPreferences,
-        render?: boolean
+        preferenceKey: keyof GlobalPreferences
     ) {
         super()
 
         this._parentAssembly = parentAssembly
-        this.toRender = render
         this.prefs = prefs
         this.preferenceKey = preferenceKey
+        this.toRender = PreferencesSystem.getGlobalPreference(preferenceKey) as boolean | undefined
     }
 
     public setup() {
@@ -94,54 +92,33 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         )
         if (!this.parentBodyId) return
 
-        this.createDefaultSensor()
-        if (!this.joltBodyId) {
-            console.log("Failed to create protected zone. No Jolt Body")
-            return
-        }
-
         this._deltaTransformation = convertArrayToThreeMatrix4(this.prefs.deltaTransformation)
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(
             World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform()
         )
         const props: VisualProperties = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
 
-        this.setSensorProperties(props, this.joltBodyId)
+        this.createBoundingBox(props)
         this.createVisualMesh(props)
-        this.setupCollisionSubscribers()
     }
 
-    // Creates a default sensor
-    // Sets `this._joltBodyId` to equal the body id of the new sensor
-    private createDefaultSensor() {
-        const unitVector = new JOLT.Vec3(1, 1, 1)
+    private createBoundingBox(props: VisualProperties) {
+        this.bounding = new Jolt.AABox()
 
-        const settings = new JOLT.BoxShapeSettings(unitVector)
-        this.joltBodyId = World.physicsSystem.createSensor(settings)
+        this.bounding.Scaled(convertThreeVector3ToJoltVec3(props.scale))
+        this.bounding.TranslateVec3(convertThreeVector3ToJoltVec3(props.translation))
 
-        JOLT.destroy(unitVector)
+        return this.bounding
     }
 
-    // Position/rotate/scale sensor to settings
-    private setSensorProperties(props: VisualProperties, bodyId: Jolt.BodyID) {
-        World.physicsSystem.setBodyPosition(bodyId, convertThreeVector3ToJoltRVec3(props.translation))
-        World.physicsSystem.setBodyRotation(bodyId, convertThreeQuaternionToJoltQuat(props.rotation))
+    private setMeshProperties(props: VisualProperties) {
+        if (!this.mesh) return
 
-        const boundingVec = new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
-        const shapeSettings = new JOLT.BoxShapeSettings(boundingVec)
-        const shape = shapeSettings.Create()
+        this.mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
+        this.mesh.rotation.setFromQuaternion(props.rotation)
+        this.mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
 
-        World.physicsSystem.setShape(bodyId, shape.Get(), false, Jolt.EActivation_Activate)
-
-        JOLT.destroy(boundingVec)
-        JOLT.destroy(shapeSettings)
-        JOLT.destroy(shape)
-    }
-
-    private setMeshProps(props: VisualProperties) {
-        this.mesh?.position.set(props.translation.x, props.translation.y, props.translation.z)
-        this.mesh?.rotation.setFromQuaternion(props.rotation)
-        this.mesh?.scale.set(props.scale.x, props.scale.y, props.scale.z)
+        this.mesh.material = this.prefs.alliance == "red" ? this.materials.red : this.materials.blue
     }
 
     // Creates a mesh for the user to visualize the sensor
@@ -152,39 +129,55 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         World.sceneRenderer.scene.add(this.mesh)
 
         if (this.toRender) {
-            this.setMeshProps(props)
+            this.setMeshProperties(props)
         }
 
         JOLT.destroy(unitVector)
     }
 
-    public update() {
-        if (!this.parentBodyId || !this._deltaTransformation || !this.joltBodyId || !this.prefs) return
+    private updateRenderPreferences() {
+        // If we don't want to render, then there's no point in updating the transforms
+        this.toRender = PreferencesSystem.getGlobalPreference(this.preferenceKey) as boolean | undefined
+        if (!this.toRender && this.mesh) {
+            this.mesh.material = ZoneSceneObject.transparentMaterial
+            return
+        }
+    }
 
+    /**
+     * Returns `undefined` when the visual properties for this zone have not changed
+     */
+    private generateVisualProperties(): VisualProperties | undefined {
         // Update translation, rotation, and scale only if the field has moved
-        const transform = World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform()
-        if (transform == this._cachedFieldTransformation && !this._deltaTransHasUpdated) return
+        const transform = World.physicsSystem.getBody(this.parentBodyId!)!.GetWorldTransform()
+        if (
+            this._cachedFieldTransformation &&
+            transform.Equals(this._cachedFieldTransformation) &&
+            !this._deltaTransHasUpdated
+        )
+            return undefined
 
         this._cachedFieldTransformation = transform
         this._deltaTransHasUpdated = false
 
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(transform, true)
-        this._visualProps = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
-
-        this.setSensorProperties(this._visualProps, this.joltBodyId)
-
-        if (!this.mesh) return
-
-        this.toRender = PreferencesSystem.getGlobalPreference(this.preferenceKey) as boolean | undefined
-        if (!this.toRender) {
-            this.mesh.material = ZoneSceneObject.transparentMaterial
-            return
-        }
-
-        // Mesh for visualization
-        this.setMeshProps(this._visualProps)
-        this.mesh.material = this.prefs.alliance == "red" ? this.materials.red : this.materials.blue
+        return deltaFieldTransformsPhysicalProp(this._deltaTransformation!, fieldTransformation)
     }
 
-    public abstract setupCollisionSubscribers(): void
+    public update() {
+        // console.log("updated")
+        if (!this.parentBodyId || !this._deltaTransformation || !this.prefs) return
+
+        this.checkObjectsInZone()
+
+        this.updateRenderPreferences()
+
+        const props = this.generateVisualProperties()
+        if (!props) return
+
+        // this.setSensorProperties(props, this.joltBodyId)
+        this.setMeshProperties(props)
+    }
+
+    public abstract checkObjectsInZone(): void
 }

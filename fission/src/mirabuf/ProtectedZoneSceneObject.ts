@@ -1,17 +1,13 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
-import type * as THREE from "three"
-import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
-import MatchMode from "@/systems/match_mode/MatchMode"
+import * as THREE from "three"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ZoneSceneObject from "@/mirabuf/ZoneSceneObject"
 import World from "@/systems/World"
 import { MiraType } from "./MirabufLoader"
 import type MirabufSceneObject from "./MirabufSceneObject"
-import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import MatchMode from "@/systems/match_mode/MatchMode"
 
 class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences> {
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
@@ -36,103 +32,61 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         return Date.now() - timeInside < 100
     }
 
-    public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
-        super(parentAssembly, parentAssembly.fieldPreferences?.protectedZones[index]!, "RenderProtectedZones", render)
-
-        this.toRender ??= PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+    public constructor(parentAssembly: MirabufSceneObject, index: number) {
+        super(parentAssembly, parentAssembly.fieldPreferences?.protectedZones[index]!, "RenderProtectedZones")
     }
 
-    // This is used by `super.setup`
-    public setupCollisionSubscribers() {
-        // Detect when something enters or persists in the zone
-        const collisionSubscriber: SynthesisEventListener<"OnContactAddedEvent" | "OnContactPersistedEvent"> = data => {
-            const { body1, body2 } = data
-
-            if (body1.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
-                this.zoneCollision(body2)
-            } else if (body2.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
-                this.zoneCollision(body1)
-            }
-
-            // Handle contact-based penalties based on the configured contact type
-            if (this.prefs?.contactType == ContactType.ROBOT_ENTERS || !this.isZoneActive()) return
-
-            this.handleContactPenalty(body1, body2)
-        }
-        this.unsubscribers.push(EventSystem.listen("OnContactAddedEvent", collisionSubscriber))
-        this.unsubscribers.push(EventSystem.listen("OnContactPersistedEvent", collisionSubscriber))
-
-        // Detects when something leaves the zone
-        this.unsubscribers.push(
-            EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
-                const body1 = message.GetBody1ID()
-                const body2 = message.GetBody2ID()
-
-                const idx1 = body1.GetIndexAndSequenceNumber()
-                const idx2 = body2.GetIndexAndSequenceNumber()
-
-                const bodyIdx = this.joltBodyId?.GetIndexAndSequenceNumber()
-
-                if (idx1 == bodyIdx) {
-                    this.zoneCollisionRemoved(body2)
-                } else if (idx2 == bodyIdx) {
-                    this.zoneCollisionRemoved(body1)
-                }
-            })
-        )
-    }
-
-    // NOTE for azalea
-    // This function disposes of the `ProtectedZoneSceneObject` correctly
-    public dispose(): void {
-        if (this.joltBodyId) {
-            World.physicsSystem.destroyBodyIds(this.joltBodyId)
-            if (this.mesh) {
-                this.mesh.geometry.dispose()
-                ;(this.mesh.material as THREE.Material).dispose()
-                World.sceneRenderer.scene.remove(this.mesh)
-            }
-        }
-
-        this.unsubscribers.forEach(func => func())
-    }
-
-    private zoneCollision(collisionID: Jolt.BodyID) {
+    public checkObjectsInZone(): void {
         if (!this.isZoneActive()) return
 
-        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collisionID)
-        const collisionObject = associate.sceneObject as MirabufSceneObject
-        if (collisionObject.miraType !== MiraType.ROBOT) return
+        const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
+        const robotsInZone = robots
+            .map(robot => {
+                const bounding = robot.getBounding()
+                return { robot, bounding }
+            })
+            .filter(({ robot: _, bounding }) => {
+                return this.bounding?.OverlapsAABox(bounding)
+            })
 
-        const entered =
-            this.prefs?.contactType === ContactType.ROBOT_ENTERS &&
-            collisionObject.alliance !== this.prefs?.alliance &&
-            !this.isRobotInside(collisionObject)
-
-        if (entered) {
-            ScoreTracker.robotPenalty(collisionObject, this.prefs?.penaltyPoints ?? 0, `Entered protected zone`)
+        const newRobots = robotsInZone.map(robot => robot.robot).filter(this.isRobotInside)
+        if (this.prefs.contactType === ContactType.ROBOT_ENTERS) {
+            newRobots.forEach(this.penalizeEnteringZone)
         }
 
-        this._robotsInside.set(collisionObject, Date.now())
-    }
+        // Collisions of two robots within the scoring zone
+        const collisions: [MirabufSceneObject, MirabufSceneObject][] = []
+        for (const robot1 of robotsInZone) {
+            for (const robot2 of robotsInZone) {
+                const collided = robot1.bounding.OverlapsAABox(robot2.bounding)
+                if (!collided) continue
 
-    private zoneCollisionRemoved(collisionID: Jolt.BodyID) {
-        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collisionID)
-        const collisionObject = associate.sceneObject as MirabufSceneObject
-        this._robotsInside.set(collisionObject, Date.now())
-    }
+                if (collisions.includes([robot2.robot, robot1.robot])) return
 
-    private handleContactPenalty(body1: Jolt.BodyID, body2: Jolt.BodyID) {
-        const [collisionObjectBody1, collisionObjectBody2] = [body1, body2].map(body => {
-            const associate = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate | undefined
-            return associate?.sceneObject as MirabufSceneObject | undefined
+                collisions.push([robot1.robot, robot2.robot])
+            }
+        }
+
+        collisions.forEach(([robot1, robot2]) => {
+            this.handleContactPenalty(robot1, robot2)
         })
+    }
 
-        if (!collisionObjectBody1 || !collisionObjectBody2) return
-        if (collisionObjectBody1.miraType !== MiraType.ROBOT || collisionObjectBody2.miraType !== MiraType.ROBOT) return
+    private penalizeEnteringZone(robot: MirabufSceneObject) {
+        ScoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
+        this._robotsInside.set(robot, Date.now())
+    }
 
+    // TODO
+    // Dispose
+    public dispose(): void {}
+
+    private handleContactPenalty(body1: MirabufSceneObject, body2: MirabufSceneObject) {
+        if (!body1 || !body2) return
+
+        if (body1.miraType !== MiraType.ROBOT || body2.miraType !== MiraType.ROBOT) return
         // Only penalize collisions between robots from different alliances
-        if (collisionObjectBody1.alliance === collisionObjectBody2.alliance) return
+        if (body1.alliance === body2.alliance) return
 
         // Ensures that infinite collisions do not occur
         if (Date.now() - this._lastRobotCollisionTime < 500) return
@@ -140,28 +94,26 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         let shouldPenalize = false
 
         // Find the robot that has the opposite alliance from the zone
-        const opposingRobot = [collisionObjectBody1, collisionObjectBody2].find(
-            robot => robot.alliance !== this.prefs?.alliance
-        )
+        const opposingRobot = [body1, body2].find(robot => robot.alliance !== this.prefs?.alliance)
         if (!opposingRobot) return
         switch (this.prefs?.contactType) {
             case ContactType.BOTH_ROBOTS_INSIDE:
                 // Penalize opposing robot if both robots are inside the zone and colliding
-                if (this.isRobotInside(collisionObjectBody1) && this.isRobotInside(collisionObjectBody2)) {
+                if (this.isRobotInside(body1) && this.isRobotInside(body2)) {
                     shouldPenalize = true
                 }
                 break
 
             case ContactType.ANY_ROBOT_INSIDE:
                 // Penalize if any robot is inside the zone when collision occurs
-                if (this.isRobotInside(collisionObjectBody1) || this.isRobotInside(collisionObjectBody2)) {
+                if (this.isRobotInside(body1) || this.isRobotInside(body2)) {
                     shouldPenalize = true
                 }
                 break
 
             case ContactType.RED_ROBOT_INSIDE: {
                 // Penalize if the red robot is inside the zone when collision occurs
-                const redRobot = [collisionObjectBody1, collisionObjectBody2].find(robot => robot.alliance === "red")
+                const redRobot = [body1, body2].find(robot => robot.alliance === "red")
                 if (redRobot && this.isRobotInside(redRobot)) {
                     shouldPenalize = true
                 }
@@ -170,7 +122,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
             case ContactType.BLUE_ROBOT_INSIDE: {
                 // Penalize if the blue robot is inside the zone when collision occurs
-                const blueRobot = [collisionObjectBody1, collisionObjectBody2].find(robot => robot.alliance === "blue")
+                const blueRobot = [body1, body2].find(robot => robot.alliance === "blue")
                 if (blueRobot && this.isRobotInside(blueRobot)) {
                     shouldPenalize = true
                 }

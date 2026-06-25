@@ -102,6 +102,10 @@ class PhysicsSystem extends WorldSystem {
         return this._pauseSet.size > 0
     }
 
+    public get bodies(): Array<Jolt.BodyID> {
+        return this._bodies
+    }
+
     /**
      * Creates a PhysicsSystem object.
      */

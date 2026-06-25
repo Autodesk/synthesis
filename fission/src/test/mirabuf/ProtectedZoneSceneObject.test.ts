@@ -64,20 +64,20 @@ vi.mock("@/systems/match_mode/MatchMode", () => ({
 describe("ProtectedZoneSceneObject", () => {
     let redRobot: MirabufSceneObject
     let blueRobot: MirabufSceneObject
-    let redRobotBodyId: Jolt.BodyID
-    let blueRobotBodyId: Jolt.BodyID
+    // let redRobotBodyId: Jolt.BodyID
+    // let blueRobotBodyId: Jolt.BodyID
 
     const createMockRobot = (alliance: string) =>
         ({
             miraType: MiraType.ROBOT,
             alliance,
         }) as unknown as MirabufSceneObject
-
-    const createMockBodyId = (id: number) =>
-        ({
-            GetIndexAndSequenceNumber: () => id,
-        }) as unknown as Jolt.BodyID
-
+    //
+    // const createMockBodyId = (id: number) =>
+    //     ({
+    //         GetIndexAndSequenceNumber: () => id,
+    //     }) as unknown as Jolt.BodyID
+    //
     const createProtectedZoneInstance = (prefs: Partial<ProtectedZonePreferences>) => {
         const instance = new ProtectedZoneSceneObject({} as unknown as MirabufSceneObject, 0)
         Reflect.set(instance, "prefs", {
@@ -103,8 +103,8 @@ describe("ProtectedZoneSceneObject", () => {
 
         redRobot = createMockRobot("red")
         blueRobot = createMockRobot("blue")
-        redRobotBodyId = createMockBodyId(1)
-        blueRobotBodyId = createMockBodyId(2)
+        // redRobotBodyId = createMockBodyId(1)
+        // blueRobotBodyId = createMockBodyId(2)
 
         setupMultipleAssociations(
             new Map([
@@ -121,7 +121,7 @@ describe("ProtectedZoneSceneObject", () => {
     test("ZoneCollision applies penalty to opposing robot", () => {
         const instance = createProtectedZoneInstance({})
 
-        instance["zoneCollision"](blueRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
@@ -131,7 +131,7 @@ describe("ProtectedZoneSceneObject", () => {
             activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME],
         })
 
-        instance["zoneCollision"](redRobotBodyId)
+        instance["penalizeEnteringZone"](redRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
@@ -141,7 +141,7 @@ describe("ProtectedZoneSceneObject", () => {
             activeDuring: [MatchModeType.AUTONOMOUS],
         })
 
-        instance["zoneCollision"](blueRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
@@ -151,7 +151,7 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.BOTH_ROBOTS_INSIDE,
         })
 
-        instance["zoneCollision"](blueRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
@@ -159,8 +159,8 @@ describe("ProtectedZoneSceneObject", () => {
     test("ZoneCollision does not penalize if robot is already inside", () => {
         const instance = createProtectedZoneInstance({})
 
-        instance["zoneCollision"](blueRobotBodyId)
-        instance["zoneCollision"](blueRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
+        instance["penalizeEnteringZone"](blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledTimes(1)
     })
@@ -169,11 +169,11 @@ describe("ProtectedZoneSceneObject", () => {
         const fieldObject = createMockRobot("red")
         Reflect.set(fieldObject, "miraType", MiraType.FIELD)
 
-        const fieldBodyId = createMockBodyId(3)
+        // const fieldBodyId = createMockBodyId(3)
         setupMultipleAssociations(new Map([[3, fieldObject]]))
 
         const instance = createProtectedZoneInstance({})
-        instance["zoneCollision"](fieldBodyId)
+        instance["penalizeEnteringZone"](fieldObject)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
@@ -183,10 +183,10 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.BOTH_ROBOTS_INSIDE,
         })
 
-        instance["zoneCollision"](blueRobotBodyId)
-        instance["zoneCollision"](redRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
+        instance["penalizeEnteringZone"](redRobot)
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
@@ -196,9 +196,9 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.ANY_ROBOT_INSIDE,
         })
 
-        instance["zoneCollision"](blueRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
@@ -208,9 +208,9 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.BLUE_ROBOT_INSIDE,
         })
 
-        instance["zoneCollision"](blueRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
@@ -220,9 +220,9 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.RED_ROBOT_INSIDE,
         })
 
-        instance["zoneCollision"](redRobotBodyId)
+        instance["penalizeEnteringZone"](redRobot)
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
@@ -232,9 +232,9 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.BOTH_ROBOTS_INSIDE,
         })
 
-        instance["zoneCollision"](blueRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
@@ -244,7 +244,7 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.ANY_ROBOT_INSIDE,
         })
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
@@ -254,9 +254,9 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.RED_ROBOT_INSIDE,
         })
 
-        instance["zoneCollision"](blueRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
@@ -266,16 +266,16 @@ describe("ProtectedZoneSceneObject", () => {
             contactType: ContactType.BLUE_ROBOT_INSIDE,
         })
 
-        instance["zoneCollision"](redRobotBodyId)
+        instance["penalizeEnteringZone"](redRobot)
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("HandleContactPenalty doesn't penalize if robots are from same alliance", () => {
         const redRobot2 = createMockRobot("red")
-        const redRobot2BodyId = createMockBodyId(3)
+        // const redRobot2BodyId = createMockBodyId(3)
         setupMultipleAssociations(
             new Map([
                 [1, redRobot],
@@ -285,10 +285,10 @@ describe("ProtectedZoneSceneObject", () => {
         )
         const instance = createProtectedZoneInstance({})
 
-        instance["zoneCollision"](redRobotBodyId)
-        instance["zoneCollision"](redRobot2BodyId)
+        instance["penalizeEnteringZone"](redRobot)
+        instance["penalizeEnteringZone"](redRobot2)
 
-        instance["handleContactPenalty"](redRobotBodyId, redRobot2BodyId)
+        instance["handleContactPenalty"](redRobot, redRobot2)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
@@ -296,11 +296,11 @@ describe("ProtectedZoneSceneObject", () => {
     test("HandleContactPenalty doesn't penalize if collision occurs too quickly", () => {
         const instance = createProtectedZoneInstance({})
 
-        instance["zoneCollision"](blueRobotBodyId)
-        instance["zoneCollision"](redRobotBodyId)
+        instance["penalizeEnteringZone"](blueRobot)
+        instance["penalizeEnteringZone"](redRobot)
 
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
-        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobot, blueRobot)
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledTimes(1)
     })
