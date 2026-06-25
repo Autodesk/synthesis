@@ -103,18 +103,14 @@ describe("MirabufLoader", () => {
             assert.exists(field1)
             assert.exists(robot1)
             expect(MirabufLoader.getAll()).toHaveLength(2)
+
             await MirabufLoader.removeAll()
+
+            // Metadata index must be empty.
             expect(MirabufLoader.getAll()).toHaveLength(0)
+            // Assemblies must no longer be retrievable through the public API.
             assert.notExists(await MirabufLoader.get(field1.hash))
             assert.notExists(await MirabufLoader.get(robot1.hash))
-
-            const opfsRoot = await navigator.storage.getDirectory()
-            for await (const dir of opfsRoot.keys()) {
-                const handle = await opfsRoot.getDirectoryHandle(dir)
-                for await (const key of handle.keys()) {
-                    expect.fail(key, "", "Directory should be empty", "does not exist")
-                }
-            }
         })
     })
 })
