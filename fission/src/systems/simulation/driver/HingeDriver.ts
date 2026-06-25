@@ -80,11 +80,11 @@ class HingeDriver extends Driver {
         return this._continuous
     }
 
-    public get maxForce() {
+    public get maxAcceleration() {
         return this._constraint.GetMotorSettings().mMaxTorqueLimit
     }
 
-    public set maxForce(nm: number) {
+    public set maxAcceleration(nm: number) {
         const motorSettings = this._constraint.GetMotorSettings()
         motorSettings.set_mMaxTorqueLimit(nm)
         motorSettings.set_mMinTorqueLimit(-nm)

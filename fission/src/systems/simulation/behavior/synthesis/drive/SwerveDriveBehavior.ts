@@ -124,7 +124,7 @@ class SwerveDriveBehavior extends DriveBehavior {
         chassisVelocity.applyAxisAngle(robotUp, chassisAngleRad)
 
         let maxVelocity = new THREE.Vector3()
-        const com = convertJoltVec3ToThreeVector3(World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition())
+        const com = convertJoltVec3ToThreeVector3(World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition(), false)
 
         const velocities: THREE.Vector3[] = []
         for (let i = 0; i < this._hinges.length; i++) {

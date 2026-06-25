@@ -80,7 +80,7 @@ describe("ProtectedZoneSceneObject", () => {
 
     const createProtectedZoneInstance = (prefs: Partial<ProtectedZonePreferences>) => {
         const instance = new ProtectedZoneSceneObject({} as unknown as MirabufSceneObject, 0)
-        Reflect.set(instance, "_prefs", {
+        Reflect.set(instance, "prefs", {
             activeDuring: [MatchModeType.TELEOP],
             alliance: "red",
             penaltyPoints: 5,
@@ -156,7 +156,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("ZoneCollision doesn't penalize if robot robot is already inside", () => {
+    test("ZoneCollision does not penalize if robot is already inside", () => {
         const instance = createProtectedZoneInstance({})
 
         instance["zoneCollision"](blueRobotBodyId)

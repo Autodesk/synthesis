@@ -241,8 +241,6 @@ describe("Body Position and Rotation Manipulation", () => {
         expect(bodyPosition.GetX()).toBeCloseTo(10, 2)
         expect(bodyPosition.GetY()).toBeCloseTo(20, 2)
         expect(bodyPosition.GetZ()).toBeCloseTo(30, 2)
-
-        JOLT.destroy(newPosition)
     })
 
     test("Set Body Rotation", () => {
@@ -253,8 +251,6 @@ describe("Body Position and Rotation Manipulation", () => {
         const bodyRotation = body.GetRotation()
         expect(bodyRotation.GetZ()).toBeCloseTo(Math.sin(Math.PI / 8), 2)
         expect(bodyRotation.GetW()).toBeCloseTo(Math.cos(Math.PI / 8), 2)
-
-        JOLT.destroy(newRotation)
     })
 
     test("Set Body Position and Rotation", () => {
@@ -270,9 +266,6 @@ describe("Body Position and Rotation Manipulation", () => {
         expect(bodyPosition.GetY()).toBeCloseTo(10, 2)
         expect(bodyPosition.GetZ()).toBeCloseTo(15, 2)
         expect(bodyRotation.GetW()).toBeCloseTo(1, 2)
-
-        JOLT.destroy(newPosition)
-        JOLT.destroy(newRotation)
     })
 
     test("Set Body Position Rotation and Velocity", () => {
@@ -288,11 +281,6 @@ describe("Body Position and Rotation Manipulation", () => {
 
         expect(bodyLinearVel.GetX()).toBeCloseTo(5, 2)
         expect(bodyAngularVel.GetY()).toBeCloseTo(1, 2)
-
-        JOLT.destroy(newPosition)
-        JOLT.destroy(newRotation)
-        JOLT.destroy(linearVel)
-        JOLT.destroy(angularVel)
     })
 
     test("Set Body Position on Non-Added Body", () => {
@@ -311,8 +299,6 @@ describe("Body Position and Rotation Manipulation", () => {
         expect(nonAddedBody.GetPosition().GetX()).toBeCloseTo(0, 2)
         expect(nonAddedBody.GetPosition().GetY()).toBeCloseTo(0, 2)
         expect(nonAddedBody.GetPosition().GetZ()).toBeCloseTo(0, 2)
-
-        JOLT.destroy(newPosition)
     })
 })
 
@@ -431,9 +417,6 @@ describe("Raycast System", () => {
         expect(hit).toBeDefined()
         expect(hit!.point.GetY()).toBeGreaterThan(0)
         expect(hit!.point.GetY()).toBeLessThan(6)
-
-        JOLT.destroy(from)
-        JOLT.destroy(direction)
     })
 
     test("Raycast Miss", () => {
@@ -441,23 +424,16 @@ describe("Raycast System", () => {
         const direction = new JOLT.Vec3(0, 5, 0) // Ray pointing up but offset
 
         const hit = system.rayCast(from, direction)
-
         expect(hit).toBeUndefined()
-
-        JOLT.destroy(from)
-        JOLT.destroy(direction)
     })
 
     test("Raycast with Ignored Bodies", () => {
         const from = new JOLT.Vec3(0, 0, 0)
         const direction = new JOLT.Vec3(0, 10, 0)
 
-        const hit = system.rayCast(from, direction, targetBody.GetID())
+        const hit = system.rayCast(from, direction, true, targetBody.GetID())
 
         expect(hit).toBeUndefined() // Should miss because target body is ignored
-
-        JOLT.destroy(from)
-        JOLT.destroy(direction)
     })
 })
 
@@ -481,7 +457,7 @@ describe("Sensor Creation", () => {
         expect(sensorId).toBeDefined()
         expect(system.isBodyAdded(sensorId!)).toBe(true)
 
-        const sensorBody = system.getBody(sensorId!)
+        const sensorBody = system.getBody(sensorId!)!
         expect(sensorBody.IsSensor()).toBe(true)
 
         JOLT.destroy(size)

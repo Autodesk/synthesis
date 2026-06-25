@@ -52,9 +52,9 @@ function makeControl(label: string, drivers: ConfigurableDriver[]): JointConfigC
     return { label, drivers, ...controlBoundsFor(drivers[0]) }
 }
 
-/** Reads a driver's force value. Wheels expose it as maxAcceleration; other joints as maxForce. */
+/** Reads a driver's force/acceleration value. */
 export function driverForce(driver: ConfigurableDriver): number {
-    return driver instanceof WheelDriver ? driver.maxAcceleration : driver.maxForce
+    return driver.maxAcceleration
 }
 
 /**
@@ -78,11 +78,11 @@ export function applyDriverConfig(
         return
     }
 
-    driver.maxForce = force
+    driver.maxAcceleration = force
     const name = driver.info?.name
     if (!name) return
     const motors = (prefs.motors ?? []).filter(m => m.name !== name)
-    motors.push({ name, maxVelocity: velocity, maxForce: force })
+    motors.push({ name, maxVelocity: velocity, maxAcceleration: force })
     prefs.motors = motors
 }
 
