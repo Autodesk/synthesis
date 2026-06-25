@@ -63,112 +63,107 @@ class SwerveDriveBehavior extends DriveBehavior {
             ?.getRootNodeId()
     }
 
-    /** @returns true if the difference between a and b is within acceptableDelta */
-    private static withinTolerance(a: number, b: number, acceptableDelta: number) {
-        return Math.abs(a - b) < acceptableDelta
+    private static deadband(x: number, threshold = 0.1): number {
+        return Math.abs(x) < threshold ? 0 : x
     }
 
-    // Sets the drivetrain's target linear and rotational velocity
     private driveSpeeds(forward: number, strafe: number, turn: number) {
         const rootNodeId = this.resolveRootNodeId()
-
         if (rootNodeId == undefined) throw new Error("Robot root node should not be undefined")
 
-        const robotRotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId).GetRotation())
+        const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId).GetRotation())
+        const robotForward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation)
+        const robotRight = new THREE.Vector3(1, 0, 0).applyQuaternion(rotation)
+        const robotUp = new THREE.Vector3(0, 1, 0).applyQuaternion(rotation)
 
-        const robotForward: THREE.Vector3 = new THREE.Vector3(0, 0, 1).applyQuaternion(robotRotation)
-        const robotRight: THREE.Vector3 = new THREE.Vector3(1, 0, 0).applyQuaternion(robotRotation)
-        const robotUp: THREE.Vector3 = new THREE.Vector3(0, 1, 0).applyQuaternion(robotRotation)
+        if (InputSystem.getInput("swerveResetFieldForward", this._brainIndex))
+            this._fieldForward = robotForward.clone()
 
-        if (InputSystem.getInput("swerveResetFieldForward", this._brainIndex)) this._fieldForward = robotForward
+        forward = SwerveDriveBehavior.deadband(forward)
+        strafe = SwerveDriveBehavior.deadband(strafe)
+        turn = SwerveDriveBehavior.deadband(turn)
 
-        const headingVector: THREE.Vector3 = robotForward
-            .clone()
-            .sub(new THREE.Vector3(0, 1, 0).multiplyScalar(new THREE.Vector3(0, 1, 0).dot(robotForward)))
-
-        const headingVectorY: number = this._fieldForward.dot(headingVector)
-        // NOTE: THREE.Vector3.cross() mutates the receiver, so clone _fieldForward before crossing.
-        const headingVectorX: number = this._fieldForward
-            .clone()
-            .cross(new THREE.Vector3(0, 1, 0))
-            .dot(headingVector)
-        const chassisAngleRad: number = Math.atan2(headingVectorX, headingVectorY)
-
-        forward = SwerveDriveBehavior.withinTolerance(forward, 0.0, 0.1) ? 0.0 : forward
-        strafe = SwerveDriveBehavior.withinTolerance(strafe, 0.0, 0.1) ? 0.0 : strafe
-        turn = SwerveDriveBehavior.withinTolerance(turn, 0.0, 0.1) ? 0.0 : turn
-
-        // Inputs are basically zero: stop the wheels and leave the modules where they are.
-        if (forward == 0.0 && turn == 0.0 && strafe == 0.0) {
-            this._wheels.forEach(w => {
-                w.accelerationDirection = 0
-            })
+        if (forward === 0 && strafe === 0 && turn === 0) {
+            this._wheels.forEach(w => { w.accelerationDirection = 0 })
             World.physicsSystem.enablePhysicsForBody(rootNodeId)
             return
         }
 
-        // Adjusts how much turning versus translation is favored
+        // Adjusts how much turning versus translation is favored.
         turn *= 1.5
 
-        const chassisVelocity: THREE.Vector3 = robotForward
-            .clone()
-            .multiplyScalar(forward)
+        const chassisVelocity = robotForward.clone().multiplyScalar(forward)
             .add(robotRight.clone().multiplyScalar(strafe))
-        const chassisAngularVelocity: THREE.Vector3 = robotUp.clone().multiplyScalar(turn)
-
-        // Normalize translation so its magnitude is at most 1.
         if (chassisVelocity.length() > 1) chassisVelocity.normalize()
+        // Field-oriented drive: rotate commanded velocity by the chassis heading.
+        chassisVelocity.applyAxisAngle(robotUp, this.fieldOrientedAngle(robotForward))
 
-        // Field-oriented drive: rotate the commanded chassis velocity into the field frame by the
-        // chassis heading (original `Quaternion.AngleAxis(chassisAngle, up) * v`).
-        chassisVelocity.applyAxisAngle(robotUp, chassisAngleRad)
+        const chassisAngularVelocity = robotUp.clone().multiplyScalar(turn)
+        const com = convertJoltVec3ToThreeVector3(
+            World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition(), false
+        )
 
-        let maxVelocity = new THREE.Vector3()
-        const com = convertJoltVec3ToThreeVector3(World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition(), false)
+        const velocities = this.computeModuleVelocities(chassisVelocity, chassisAngularVelocity, com)
+        this.applyModuleTargets(velocities, robotForward, robotRight)
+    }
 
+    /** Returns the field-oriented angle (radians) for the current chassis heading. */
+    private fieldOrientedAngle(robotForward: THREE.Vector3): number {
+        const worldUp = new THREE.Vector3(0, 1, 0)
+        // Project robotForward onto the horizontal plane.
+        const heading = robotForward.clone().sub(worldUp.clone().multiplyScalar(worldUp.dot(robotForward)))
+        const headingY = this._fieldForward.dot(heading)
+        // cross() mutates the receiver, so clone _fieldForward before crossing.
+        const headingX = this._fieldForward.clone().cross(worldUp).dot(heading)
+        return Math.atan2(headingX, headingY)
+    }
+
+    /** Computes the target velocity vector for each swerve module. */
+    private computeModuleVelocities(
+        chassisVelocity: THREE.Vector3,
+        chassisAngularVelocity: THREE.Vector3,
+        com: THREE.Vector3
+    ): THREE.Vector3[] {
         const velocities: THREE.Vector3[] = []
-        for (let i = 0; i < this._hinges.length; i++) {
-            const driver = this._hinges[i]
+        let maxSpeed = 0
 
-            const axis = convertJoltVec3ToThreeVector3(driver.worldAxis).normalize()
-            const radius = convertJoltVec3ToThreeVector3(driver.worldAnchor).sub(com)
-            // Remove the component of the radius along the hinge axis so the moment arm is purely
-            // in the steering plane (matches original `radius -= dot(axis, radius) * axis`).
+        for (let i = 0; i < this._hinges.length; i++) {
+            const axis = convertJoltVec3ToThreeVector3(this._hinges[i].worldAxis).normalize()
+            const radius = convertJoltVec3ToThreeVector3(this._hinges[i].worldAnchor).sub(com)
+            // Remove the axis component so the moment arm is purely in the steering plane.
             radius.sub(axis.clone().multiplyScalar(axis.dot(radius)))
 
             velocities[i] = chassisAngularVelocity.clone().cross(radius).add(chassisVelocity)
-            if (velocities[i].length() > maxVelocity.length()) maxVelocity = velocities[i]
+            const speed = velocities[i].length()
+            if (speed > maxSpeed) maxSpeed = speed
         }
 
         // Normalize all module velocities together if any exceeds 1, preserving their ratios.
-        const maxVelocityLength = maxVelocity.length()
-        if (maxVelocityLength > 1) {
-            for (let i = 0; i < this._wheels.length; i++) {
-                velocities[i].divideScalar(maxVelocityLength)
-            }
-        }
+        if (maxSpeed > 1) velocities.forEach(v => v.divideScalar(maxSpeed))
 
+        return velocities
+    }
+
+    /** Sets each module's target angle and wheel speed, flipping 180° when it shortens the turn. */
+    private applyModuleTargets(
+        velocities: THREE.Vector3[],
+        robotForward: THREE.Vector3,
+        robotRight: THREE.Vector3
+    ): void {
         for (let i = 0; i < this._wheels.length; i++) {
-            const speed: number = velocities[i].length()
-            const yComponent: number = robotForward.dot(velocities[i])
-            const xComponent: number = robotRight.dot(velocities[i])
-
+            const speed = velocities[i].length()
             const currentAngle = this._hinges[i].constraint.GetCurrentAngle()
 
-            let angle: number = Math.atan2(xComponent, yComponent)
-            let driveSpeed: number = speed
-            let delta: number = angle - currentAngle
+            let angle = Math.atan2(robotRight.dot(velocities[i]), robotForward.dot(velocities[i]))
+            let delta = angle - currentAngle
             while (delta > Math.PI) delta -= 2 * Math.PI
             while (delta < -Math.PI) delta += 2 * Math.PI
-            if (Math.abs(delta) > Math.PI / 2) {
-                angle += angle > 0 ? -Math.PI : Math.PI
-                driveSpeed = -speed
-            }
 
+            const flip = Math.abs(delta) > Math.PI / 2
             // Steering comes from physically rotating the module via its azimuth hinge; the wheel
             // rides on the module and follows it. Don't also set the wheel's steer angle (double-steer).
-            this._hinges[i].targetAngle = angle
-            this._wheels[i].accelerationDirection = driveSpeed
+            this._hinges[i].targetAngle = flip ? angle + (angle > 0 ? -Math.PI : Math.PI) : angle
+            this._wheels[i].accelerationDirection = flip ? -speed : speed
         }
     }
 

@@ -1,5 +1,5 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type * as THREE from "three"
 import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
@@ -11,7 +11,7 @@ import { MiraType } from "./MirabufLoader"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
-import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 
 class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences> {
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
