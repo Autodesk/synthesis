@@ -7,7 +7,7 @@ import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTyp
 import World from "@/systems/World"
 import { findListDifference } from "@/util/Utility"
 import type MirabufSceneObject from "./MirabufSceneObject"
-import type { RigidNodeAssociate } from "./MirabufSceneObject"
+import { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
@@ -100,11 +100,50 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             }
         } else {
             console.debug("Failed to update scoring zone")
+            return
         }
+
+        super.update()
+
+        // If persistent points, update points based on how many gamepieces in zone
+        if (!this.prefs.shouldPointsAccumulate) return
+        if (this._gpContacted.length == this._prevGP.length) return
+
+        const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
+        const points = this.prefs.points
+
+        ScoreTracker.addPoints(this.prefs.alliance, (gpAdded.length - gpRemoved.length) * points)
+
+        // Per-robot score calculations
+        const alliancePoints = (associate: RigidNodeAssociate): number => {
+            return associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -points : points
+        }
+
+        function addPointsIfContacted(associate: RigidNodeAssociate, points: number): void {
+            associate.robotLastInContactWith && ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, points)
+        }
+
+        function gPScore(gpID: Jolt.BodyID): [RigidNodeAssociate, number] {
+            const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
+            const robotAlliancePoints = alliancePoints(associate)
+
+            return [associate, robotAlliancePoints]
+        }
+
+        gpAdded.forEach(gpID => {
+            addPointsIfContacted(...gPScore(gpID))
+        })
+
+        gpRemoved.forEach(gpID => {
+            const [a, p] = gPScore(gpID)
+            addPointsIfContacted(a, -p)
+        })
+
+        this._prevGP = Object.assign([], this._gpContacted)
     }
 
     public reset() {
-        this._prevGP = []
+        this._prevGP.length = 0
     }
 
     public dispose(): void {
@@ -122,7 +161,9 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
     private zoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-        if (associate?.isGamePiece && this.prefs) {
+        if (!associate?.isGamePiece || !this.prefs) return
+
+        if (this.prefs.shouldPointsAccumulate) {
             // If persistent, Update() will handle points
             if (!this.prefs.shouldPointsAccumulate) {
                 this._gpContacted.push(gpID)
