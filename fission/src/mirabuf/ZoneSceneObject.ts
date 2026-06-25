@@ -60,7 +60,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
     public toRender: boolean | undefined
     public mesh?: THREE.Mesh
-    public unsubscribers: (() => void)[] = []
 
     public bounding?: Jolt.AABox
 
@@ -103,7 +102,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     }
 
     private createBoundingBox(props: VisualProperties) {
-        this.bounding = new Jolt.AABox()
+        this.bounding = new JOLT.AABox()
 
         this.bounding.Scaled(convertThreeVector3ToJoltVec3(props.scale))
         this.bounding.TranslateVec3(convertThreeVector3ToJoltVec3(props.translation))
@@ -170,13 +169,12 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         this.checkObjectsInZone()
 
-        this.updateRenderPreferences()
-
         const props = this.generateVisualProperties()
-        if (!props) return
+        if (props) {
+            this.setMeshProperties(props)
+        }
 
-        // this.setSensorProperties(props, this.joltBodyId)
-        this.setMeshProperties(props)
+        this.updateRenderPreferences()
     }
 
     public abstract checkObjectsInZone(): void

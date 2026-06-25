@@ -73,6 +73,8 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     }
 
     private penalizeEnteringZone(robot: MirabufSceneObject) {
+        if (robot.alliance == this.prefs.alliance) return
+
         ScoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
         this._robotsInside.set(robot, Date.now())
     }
