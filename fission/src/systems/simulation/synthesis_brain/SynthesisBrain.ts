@@ -111,11 +111,11 @@ class SynthesisBrain extends Brain {
                 console.warn("[Swerve] swerve detection failed for this robot; falling back to arcade drive.")
             }
 
-            if (useSwerve) {
-                this._behaviors.push(this.createSwerveDriveBehavior(swerveInfo.hinges))
-            } else {
-                this._behaviors.push(this.createSkidSteerDriveBehavior(this.driveType === DriveType.ARCADE))
-            }
+            this._behaviors.push(
+                useSwerve
+                    ? this.createSwerveDriveBehavior(swerveInfo.hinges)
+                    : this.createSkidSteerDriveBehavior(this.driveType === DriveType.ARCADE)
+            )
 
             this.configureArmBehaviors(useSwerve ? swerveInfo.hinges : [])
             this.configureElevatorBehaviors()
@@ -308,10 +308,19 @@ class SynthesisBrain extends Brain {
         // Both positions are taken as world-space anchors, matching the original which paired
         // on WheelDriver.Anchor / RotationalDriver.Anchor.
         const wheelPositions = wheelDrivers.map(w => {
-            const t = w.constraint
-                .GetWheelWorldTransform(0, new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(0, 1, 0))
-                .GetTranslation()
-            return { x: t.GetX(), y: t.GetY(), z: t.GetZ() }
+            const forward = new JOLT.Vec3(1, 0, 0)
+            const up = new JOLT.Vec3(0, 1, 0)
+            // GetWheelWorldTransform returns [Value] RMat44 (static temp) — do NOT destroy it.
+            // GetTranslation likewise returns [Value] RVec3 — read inline, no separate variable needed.
+            const transform = w.constraint.GetWheelWorldTransform(0, forward, up)
+            const pos = {
+                x: transform.GetTranslation().GetX(),
+                y: transform.GetTranslation().GetY(),
+                z: transform.GetTranslation().GetZ(),
+            }
+            JOLT.destroy(forward)
+            JOLT.destroy(up)
+            return pos
         })
         const hingePositions = hingeDrivers.map(h => {
             const t = h.worldAnchor

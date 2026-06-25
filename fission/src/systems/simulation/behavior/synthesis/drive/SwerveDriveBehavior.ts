@@ -48,7 +48,7 @@ class SwerveDriveBehavior extends DriveBehavior {
         // Zero field-oriented drive to the robot's spawn heading so "forward" starts aligned with
         // its nose. The reset input re-zeroes it later; falls back to world +X if the body isn't ready.
         const rootNodeId = this.resolveRootNodeId()
-        if (rootNodeId != undefined) {
+        if (rootNodeId) {
             const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId).GetRotation())
             this._fieldForward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation)
         }

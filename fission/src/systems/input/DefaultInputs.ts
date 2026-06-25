@@ -216,7 +216,7 @@ class DefaultInputs {
             supportedDrivetrains: [DriveType.SWERVE],
             inputs: [
                 AxisInput.onKeyboard("swerveForward", "KeyW", "KeyS"),
-                AxisInput.onKeyboard("swerveStrafe", "KeyD", "KeyA"),
+                AxisInput.onKeyboard("swerveStrafe", "KeyA", "KeyD"),
                 // Positive swerveTurn = turn left, matching the original control mapping.
                 AxisInput.onKeyboard("swerveTurn", "ArrowLeft", "ArrowRight"),
                 ButtonInput.onKeyboard("swerveResetFieldForward", "KeyR"),
