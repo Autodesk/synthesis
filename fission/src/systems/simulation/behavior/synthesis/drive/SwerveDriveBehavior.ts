@@ -49,7 +49,7 @@ class SwerveDriveBehavior extends DriveBehavior {
         // its nose. The reset input re-zeroes it later; falls back to world +X if the body isn't ready.
         const rootNodeId = this.resolveRootNodeId()
         if (rootNodeId) {
-            const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId).GetRotation())
+            const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId)!.GetRotation())
             this._fieldForward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation)
         }
     }
@@ -71,20 +71,21 @@ class SwerveDriveBehavior extends DriveBehavior {
         const rootNodeId = this.resolveRootNodeId()
         if (rootNodeId == undefined) throw new Error("Robot root node should not be undefined")
 
-        const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId).GetRotation())
+        const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId)!.GetRotation())
         const robotForward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation)
         const robotRight = new THREE.Vector3(1, 0, 0).applyQuaternion(rotation)
         const robotUp = new THREE.Vector3(0, 1, 0).applyQuaternion(rotation)
 
-        if (InputSystem.getInput("swerveResetFieldForward", this._brainIndex))
-            this._fieldForward = robotForward.clone()
+        if (InputSystem.getInput("swerveResetFieldForward", this._brainIndex)) this._fieldForward = robotForward.clone()
 
         forward = SwerveDriveBehavior.deadband(forward)
         strafe = SwerveDriveBehavior.deadband(strafe)
         turn = SwerveDriveBehavior.deadband(turn)
 
         if (forward === 0 && strafe === 0 && turn === 0) {
-            this._wheels.forEach(w => { w.accelerationDirection = 0 })
+            this._wheels.forEach(w => {
+                w.accelerationDirection = 0
+            })
             World.physicsSystem.enablePhysicsForBody(rootNodeId)
             return
         }
@@ -92,7 +93,9 @@ class SwerveDriveBehavior extends DriveBehavior {
         // Adjusts how much turning versus translation is favored.
         turn *= 1.5
 
-        const chassisVelocity = robotForward.clone().multiplyScalar(forward)
+        const chassisVelocity = robotForward
+            .clone()
+            .multiplyScalar(forward)
             .add(robotRight.clone().multiplyScalar(strafe))
         if (chassisVelocity.length() > 1) chassisVelocity.normalize()
         // Field-oriented drive: rotate commanded velocity by the chassis heading.
@@ -100,7 +103,8 @@ class SwerveDriveBehavior extends DriveBehavior {
 
         const chassisAngularVelocity = robotUp.clone().multiplyScalar(turn)
         const com = convertJoltVec3ToThreeVector3(
-            World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition(), false
+            World.physicsSystem.getBody(rootNodeId)!.GetCenterOfMassPosition(),
+            false
         )
 
         const velocities = this.computeModuleVelocities(chassisVelocity, chassisAngularVelocity, com)
