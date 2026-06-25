@@ -53,8 +53,8 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
     // Visual Properties Cache
     private _deltaTransformation?: THREE.Matrix4
-    private _dTHasUpdated: boolean = false
-    private _fieldTransformation?: Jolt.RMat44
+    private _deltaTransHasUpdated: boolean = false
+    private _cachedFieldTransformation?: Jolt.RMat44
     private _visualProps?: VisualProperties
 
     public prefs: ZonePreferencesShared & P
@@ -68,7 +68,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     public abstract get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial }
 
     set deltaTransformation(delta: THREE.Matrix4) {
-        this._dTHasUpdated = true
+        this._deltaTransHasUpdated = true
         this._deltaTransformation = delta
     }
 
@@ -158,18 +158,15 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         JOLT.destroy(unitVector)
     }
 
-    // Should be overridden by the subclasses
-    public abstract setupCollisionSubscribers(): void
-
     public update() {
         if (!this.parentBodyId || !this._deltaTransformation || !this.joltBodyId || !this.prefs) return
 
         // Update translation, rotation, and scale only if the field has moved
         const transform = World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform()
-        if (transform == this._fieldTransformation && !this._dTHasUpdated) return
+        if (transform == this._cachedFieldTransformation && !this._deltaTransHasUpdated) return
 
-        this._fieldTransformation = transform
-        this._dTHasUpdated = false
+        this._cachedFieldTransformation = transform
+        this._deltaTransHasUpdated = false
 
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(transform, true)
         this._visualProps = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
@@ -188,4 +185,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         this.setMeshProps(this._visualProps)
         this.mesh.material = this.prefs.alliance == "red" ? this.materials.red : this.materials.blue
     }
+
+    public abstract setupCollisionSubscribers(): void
 }

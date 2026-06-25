@@ -68,40 +68,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     }
 
     public override update(): void {
-        if (this.parentBodyId && this.deltaTransformation && this.joltBodyId && this.prefs) {
-            super.update()
-
-            // If persistent points, update points based on how many gamepieces in zone
-            if (!this.prefs.shouldPointsAccumulate) {
-                if (this._gpContacted.length != this._prevGP.length) {
-                    const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
-                    const points = this.prefs.points
-
-                    ScoreTracker.addPoints(this.prefs.alliance, (gpAdded.length - gpRemoved.length) * points)
-
-                    // Per robot score calculations
-                    gpAdded.forEach(gpID => {
-                        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-                        const robotAlliancePoints =
-                            associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -points : points
-                        associate.robotLastInContactWith &&
-                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
-                    })
-                    gpRemoved.forEach(gpID => {
-                        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-                        const robotAlliancePoints =
-                            associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -points : points
-                        associate.robotLastInContactWith &&
-                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
-                    })
-
-                    this._prevGP = Object.assign([], this._gpContacted)
-                }
-            }
-        } else {
-            console.debug("Failed to update scoring zone")
-            return
-        }
+        if (!this.parentBodyId || !this.deltaTransformation || !this.joltBodyId || !this.prefs) return
 
         super.update()
 
@@ -163,19 +130,17 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
         if (!associate?.isGamePiece || !this.prefs) return
 
-        if (this.prefs.shouldPointsAccumulate) {
-            // If persistent, Update() will handle points
-            if (!this.prefs.shouldPointsAccumulate) {
-                this._gpContacted.push(gpID)
-            } else {
-                ScoreTracker.addPoints(this.prefs.alliance, this.prefs.points)
-                const robotAlliancePoints =
-                    associate.robotLastInContactWith?.alliance !== this.prefs?.alliance
-                        ? -this.prefs.points
-                        : this.prefs.points
-                associate.robotLastInContactWith &&
-                    ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
-            }
+        // If persistent, Update() will handle points
+        if (!this.prefs.shouldPointsAccumulate) {
+            this._gpContacted.push(gpID)
+        } else {
+            ScoreTracker.addPoints(this.prefs.alliance, this.prefs.points)
+            const robotAlliancePoints =
+                associate.robotLastInContactWith?.alliance !== this.prefs?.alliance
+                    ? -this.prefs.points
+                    : this.prefs.points
+            associate.robotLastInContactWith &&
+                ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
         }
     }
 
