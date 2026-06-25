@@ -68,7 +68,7 @@ function save(
 
     const gizmoTransformation = gizmo.obj.matrixWorld
     const robotTransformation = convertJoltMat44ToThreeMatrix4(
-        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+        World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
     )
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
@@ -137,7 +137,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
 
                 /** W = L x R. See save() for math details */
                 const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+                    World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
@@ -248,7 +248,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
+                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!)!.GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)

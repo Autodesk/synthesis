@@ -64,7 +64,7 @@ describe("ScoringZoneSceneObject", () => {
                         deltaTransformation: [1, 2, 3, 4],
                         alliance: "red",
                         points: 10,
-                        persistentPoints: false,
+                        shouldPointsAccumulate: true,
                     },
                 ],
             },
@@ -73,13 +73,13 @@ describe("ScoringZoneSceneObject", () => {
         } as unknown as MirabufSceneObject
         const instance = new ScoringZoneSceneObject(parent, 0)
         instance.setup()
-        expect(instance["_parentBodyId"]).toBe(mockBodyId)
+        expect(instance["parentBodyId"]).toBe(mockBodyId)
         expect(mockPhysicsSystem.createSensor).toHaveBeenCalled()
     })
 
     test("ZoneCollision updates score", () => {
         const instance = new ScoringZoneSceneObject({} as unknown as MirabufSceneObject, 0)
-        Reflect.set(instance, "_prefs", { persistentPoints: false, alliance: "red", points: 10 })
+        Reflect.set(instance, "prefs", { shouldPointsAccumulate: true, alliance: "red", points: 10 })
         const gamePieceBody = {} as unknown as Jolt.BodyID
         mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, associatedBody: 0 }))
         const dispatchSpy = vi.fn()
@@ -93,11 +93,11 @@ describe("ScoringZoneSceneObject", () => {
     test("Dispose destroys mesh and sensor", () => {
         const instance = new ScoringZoneSceneObject({} as unknown as MirabufSceneObject, 0)
         const mockBodyId = { GetIndexAndSequenceNumber: () => "id" } as unknown
-        Reflect.set(instance, "_joltBodyId", mockBodyId)
+        Reflect.set(instance, "joltBodyId", mockBodyId)
         const mockMesh = { geometry: { dispose: vi.fn() }, material: { dispose: vi.fn() } }
-        Reflect.set(instance, "_mesh", mockMesh)
+        Reflect.set(instance, "mesh", mockMesh)
         instance.dispose()
-        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
+        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "joltBodyId"))
         expect(mockMesh.geometry.dispose).toHaveBeenCalled()
         expect(mockMesh.material.dispose).toHaveBeenCalled()
         expect(mockSceneRenderer.scene.remove).toHaveBeenCalledWith(mockMesh)

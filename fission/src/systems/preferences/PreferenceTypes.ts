@@ -144,33 +144,33 @@ export type RobotPreferences = {
 export type MotorPreferences = {
     name: string
     maxVelocity: number
-    maxForce: number
+    maxAcceleration: number
 }
 
 export type Alliance = "red" | "blue"
 
 export type Station = 1 | 2 | 3
 
-export type ScoringZonePreferences = {
+export type ZonePreferencesShared = {
     name: string
     alliance: Alliance
     parentNode: string | undefined
-    points: number
-    destroyGamepiece: boolean
-    persistentPoints: boolean
 
     deltaTransformation: number[]
 }
 
-export type ProtectedZonePreferences = {
-    name: string
-    alliance: Alliance
+export type ScoringZonePreferences = ZonePreferencesShared & {
+    points: number
+    destroyGamepiece: boolean
+
+    // Replaces "persistentPoints." If true, game pieces that leave the zone will still be counted as scored, otherwise the points are removed when the gamepiece is.
+    shouldPointsAccumulate: boolean
+}
+
+export type ProtectedZonePreferences = ZonePreferencesShared & {
     penaltyPoints: number
-    parentNode: string | undefined
     contactType: ContactType
     activeDuring: MatchModeType[]
-
-    deltaTransformation: number[]
 }
 
 export type SpawnLocation = Readonly<{
@@ -243,6 +243,6 @@ export function defaultMotorPreferences(name: string): MotorPreferences {
     return {
         name: name,
         maxVelocity: 1,
-        maxForce: 1,
+        maxAcceleration: 1,
     }
 }

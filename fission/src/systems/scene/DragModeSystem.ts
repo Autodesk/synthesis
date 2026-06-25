@@ -6,7 +6,8 @@ import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
+import { rayCastForRigidBody } from "@/util/RaycastUtils"
+import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { CustomOrbitControls, SphericalCoords } from "./CameraControls"
@@ -247,26 +248,22 @@ class DragModeSystem extends WorldSystem {
 
         this._lastMousePosition = interaction.position
 
-        const hitResult = this.raycastFromMouse(interaction.position)
-        if (hitResult) {
-            const association = World.physicsSystem.getBodyAssociation(hitResult.data.mBodyID) as RigidNodeAssociate
-            if (association?.sceneObject) {
-                const body = World.physicsSystem.getBody(hitResult.data.mBodyID)
-                if (body) {
-                    const isStatic = body.GetMotionType() === JOLT.EMotionType_Static
-                    const isFieldStructure =
-                        association.sceneObject.miraType === MiraType.FIELD && !association.isGamePiece
-
-                    if (!isStatic && !isFieldStructure) {
-                        const hitPointVec = convertJoltVec3ToThreeVector3(hitResult.point)
-                        this.startDragging(hitResult.data.mBodyID, interaction.position, hitPointVec)
-                        return
-                    }
-                }
-            }
+        const target = this.findDragTarget(interaction.position)
+        if (target) {
+            this.startDragging(target.bodyId, interaction.position, target.hitPoint)
+        } else {
+            this._originalInteractionStart?.(interaction)
         }
+    }
 
-        this._originalInteractionStart?.(interaction)
+    private findDragTarget(mousePos: [number, number]): { bodyId: Jolt.BodyID; hitPoint: THREE.Vector3 } | undefined {
+        const result = rayCastForRigidBody(mousePos)
+        if (!result || !this.isDraggable(result.association)) return undefined
+        return { bodyId: result.bodyId, hitPoint: result.hitPoint }
+    }
+
+    private isDraggable(association: RigidNodeAssociate): boolean {
+        return association.sceneObject.miraType === MiraType.ROBOT || association.isGamePiece
     }
 
     private onInteractionMove(interaction: InteractionMove): void {
@@ -289,18 +286,6 @@ class DragModeSystem extends WorldSystem {
         } else {
             this._originalInteractionEnd?.(interaction)
         }
-    }
-
-    private raycastFromMouse(mousePos: [number, number]) {
-        const camera = World.sceneRenderer.mainCamera
-        const origin = camera.position
-        const worldSpace = World.sceneRenderer.pixelToWorldSpace(mousePos[0], mousePos[1])
-        const direction = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
-
-        return World.physicsSystem.rayCast(
-            convertThreeVector3ToJoltVec3(origin),
-            convertThreeVector3ToJoltVec3(direction)
-        )
     }
 
     private startDragging(bodyId: Jolt.BodyID, mousePos: [number, number], hitPoint: THREE.Vector3): void {
@@ -380,6 +365,9 @@ class DragModeSystem extends WorldSystem {
                     -angularVel.GetZ() * angularStopBraking
                 )
                 body.AddTorque(angularStopTorque)
+
+                JOLT.destroy(stopBrakingForce)
+                JOLT.destroy(angularStopTorque)
             }
         }
 

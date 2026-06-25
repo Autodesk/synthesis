@@ -1,8 +1,8 @@
 import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
-import type React from "react"
 import type { FunctionComponent, ReactNode } from "react"
+import type React from "react"
 import { useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
@@ -24,15 +24,29 @@ import {
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import InputSystem from "@/systems/input/InputSystem.ts"
 
 export type UIProviderProps = {
     children?: ReactNode
+}
+
+const isPlainObject = (x: unknown): x is Record<string, unknown> =>
+    typeof x === "object" && x !== null && !Array.isArray(x)
+
+function shallowEqualProps(a: unknown, b: unknown): boolean {
+    if (a === b) return true
+    if (!isPlainObject(a) || !isPlainObject(b)) return false
+    const aKeys = Object.keys(a)
+    const bKeys = Object.keys(b)
+    if (aKeys.length !== bKeys.length) return false
+    return aKeys.every(k => a[k] === b[k])
 }
 
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
+
     const [_, refresh] = useReducer(x => !x, false)
 
     const { unconfirmedImport } = useStateContext()
@@ -55,6 +69,27 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         ...DEFAULT_PROPS,
         position: "right",
     } as PanelProps<any>
+
+    InputSystem.escapeKeyListeners[1] = () => {
+        if (modal != null) {
+            if (!modal.props.hideCancel) {
+                closeModal(CloseType.Cancel)
+            }
+            return true
+        }
+        return false
+    }
+
+    InputSystem.escapeKeyListeners[2] = () => {
+        if (panels.length > 0) {
+            const panel = panels[panels.length - 1]
+            if (!panel.props.hideCancel) {
+                closePanel(panel.id, CloseType.Cancel)
+                return true
+            }
+        }
+        return false
+    }
 
     const openModal: OpenModalFn = useCallback(
         <T, P>(
@@ -106,11 +141,13 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PANEL_PROPS
         ) => {
             // Dupe check
-            const isDuplicate = panels.some(p => p.content === content)
-            if (isDuplicate) {
-                const existing = panels.find(p => p.content === content)!
-                setPanels(p => [...p.filter(x => x !== existing), existing])
-                return existing.id
+            const existingDuplicate = panels.find(p => p.content === content)
+            if (existingDuplicate) {
+                const existingCustom = (existingDuplicate.props as PanelProps<P>).custom
+                if (customProps === undefined || shallowEqualProps(customProps, existingCustom)) {
+                    setPanels(p => [...p.filter(x => x !== existingDuplicate), existingDuplicate])
+                    return existingDuplicate.id
+                }
             } else if (unconfirmedImport) {
                 addToast("warning", "You are currenting importing a model!", "Confirm it before opening another panel.")
                 return panels[0].id // NOTE: if the user is configuring, that means Assembly Setup panel is the only one open -- race condition??
@@ -143,7 +180,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
             const contentName = (content as unknown as { name?: string })?.name ?? ""
             const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel", "InitialConfigPanel"]
-            const nextPanels = panels
+            const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
             if (mutuallyExclusive.includes(contentName)) {
                 const existing = panels.find(p =>
                     mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")

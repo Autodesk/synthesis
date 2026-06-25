@@ -102,8 +102,8 @@ describe("Preferences System Global Values", () => {
 
 describe("Preference System Robot/Field", () => {
     test("Setting motor preferences", () => {
-        const motorPreferences1: MotorPreferences = { name: "testName", maxForce: 10, maxVelocity: 5 }
-        const motorPreferences2: MotorPreferences = { name: "testName2", maxForce: 20, maxVelocity: 10 }
+        const motorPreferences1: MotorPreferences = { name: "testName", maxAcceleration: 10, maxVelocity: 5 }
+        const motorPreferences2: MotorPreferences = { name: "testName2", maxAcceleration: 20, maxVelocity: 10 }
 
         PreferencesSystem.setMotorPreferences("MotorPreferences1", motorPreferences1)
         PreferencesSystem.setMotorPreferences("MotorPreferences2", motorPreferences2)
@@ -181,7 +181,7 @@ describe("Preference System Robot/Field", () => {
                     parentNode: undefined,
                     points: 5,
                     destroyGamepiece: true,
-                    persistentPoints: false,
+                    shouldPointsAccumulate: true,
                     deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                 },
             ],
@@ -196,7 +196,7 @@ describe("Preference System Robot/Field", () => {
                     parentNode: undefined,
                     points: 20,
                     destroyGamepiece: false,
-                    persistentPoints: true,
+                    shouldPointsAccumulate: false,
                     deltaTransformation: [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1],
                 },
             ],

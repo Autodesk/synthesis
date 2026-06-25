@@ -79,7 +79,7 @@ function save(
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(1, 1, 1))
     const robotTransformation = convertJoltMat44ToThreeMatrix4(
-        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+        World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
     )
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
@@ -159,7 +159,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
                 /** W = L x R. See save() for math details */
                 const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+                    World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
@@ -293,7 +293,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
+                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!)!.GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)

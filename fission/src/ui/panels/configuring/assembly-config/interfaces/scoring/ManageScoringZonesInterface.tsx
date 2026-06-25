@@ -31,7 +31,7 @@ const ManageScoringZonesInterface: React.FC<ScoringZonesProps> = ({ selectedFiel
             parentNode: undefined,
             points: 0,
             destroyGamepiece: false,
-            persistentPoints: false,
+            shouldPointsAccumulate: true,
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         }),
         emptyLabel: "No scoring zones",

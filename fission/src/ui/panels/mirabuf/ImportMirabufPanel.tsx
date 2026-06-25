@@ -146,7 +146,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                             globalOpenPanel(InitialConfigPanel, undefined)
                         }
                     } else {
-                        progressHandle.fail()
+                        progressHandle.fail("No object!")
                     }
                 })
             } else {
@@ -154,7 +154,10 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                 console.error("Failed to spawn robot")
             }
         })
-        .catch(() => progressHandle.fail())
+        .catch(e => {
+            console.error(e)
+            progressHandle.fail()
+        })
         .finally(() => {
             setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
         })
@@ -228,7 +231,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         status.fail("Failed to cache")
                     }
                 })
-                .catch(() => status.fail())
+                .catch(e => {
+                    console.error(e)
+                    status.fail()
+                })
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
         },
@@ -248,7 +254,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         status.fail("Failed to cache")
                     }
                 })
-                .catch(() => status.fail())
+                .catch(e => {
+                    console.error(e)
+                    status.fail()
+                })
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
         },
@@ -360,7 +369,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                             status.fail("Failed to cache")
                         }
                     })
-                    .catch(() => status.fail())
+                    .catch(e => {
+                        console.error(e)
+                        status.fail()
+                    })
             })
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
