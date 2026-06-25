@@ -367,10 +367,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const fieldLocations = field?.fieldPreferences?.spawnLocations
             if (this._alliance != null && this._station != null && fieldLocations != null) {
                 pos = fieldLocations[this._alliance][this._station]
-            } else if (this._miraType === MiraType.PIECE) {
-                console.log("placing game piece")
+            } else if (this._miraType === MiraType.PIECE && this._mirabufInstance.parser.gamePieceTransform) {
                 const posVec = convertMirabufTransformToJoltPositionRVec3(
-                    this._mirabufInstance.parser.gamePieceTransform!
+                    this._mirabufInstance.parser.gamePieceTransform
                 )
                 pos = {
                     pos: [posVec.GetX(), posVec.GetY(), posVec.GetZ()],

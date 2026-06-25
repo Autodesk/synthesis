@@ -105,12 +105,6 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
             if (assembly) {
                 const mirabufSceneObjects = createMirabuf(assembly, info.id, type, progressHandle)
                 if (mirabufSceneObjects) {
-                    if (type === MiraType.PIECE) {
-                        assembly.transform = new mirabuf.Transform({
-                            // Transform matrix for the position (0, 200, 0)
-                            spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 200, 0, 0, 1, 0, 0, 0, 0, 1],
-                        })
-                    }
                     const { mainSceneObject, gamePieces } = mirabufSceneObjects
 
                     if (mainSceneObject) {
@@ -133,6 +127,13 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
                                     pieceNames.push([name.split(" ")[0], false])
                                 }
                             })
+
+                        World.sceneRenderer.registerSceneObject(mainSceneObject)
+                        progressHandle.done()
+
+                        if (mainSceneObject.miraType == MiraType.ROBOT) {
+                            globalOpenPanel(InitialConfigPanel, undefined)
+                        }
 
                         gamePieces?.forEach(async instance => {
                             const assembly = instance.parser.assembly
@@ -168,13 +169,6 @@ export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progress
                                 World.sceneRenderer.registerSceneObject(sceneObject)
                             }
                         })
-
-                        World.sceneRenderer.registerSceneObject(mainSceneObject)
-                        progressHandle.done()
-
-                        if (mainSceneObject.miraType == MiraType.ROBOT) {
-                            globalOpenPanel(InitialConfigPanel, undefined)
-                        }
                     } else {
                         progressHandle.fail()
                     }

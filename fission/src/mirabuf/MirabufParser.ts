@@ -213,7 +213,8 @@ class MirabufParser {
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
                 // Assumes that the game piece is composed of one instance
-                return this.convertPartInstanceToAssembly(inst, instNode)
+                const worldTransform = this._globalTransforms.get(inst.info!.GUID!)
+                return this.convertPartInstanceToAssembly(inst, instNode, false, true, worldTransform)
             })
             .filter(asm => asm != undefined)
 
@@ -231,7 +232,8 @@ class MirabufParser {
         inst: mirabuf.IPartInstance,
         instNode: mirabuf.INode,
         isEndEffector: boolean = false,
-        isDynamic: boolean = true
+        isDynamic: boolean = true,
+        worldTransform?: THREE.Matrix4
     ): mirabuf.Assembly | undefined {
         const jointDefinition = new mirabuf.joint.Joint({
             info: {
@@ -292,7 +294,19 @@ class MirabufParser {
             // This probably needs to be changed if this function gets generalized for mix-n-match or something
             jointHierarchy: {},
             thumbnail: null,
-            transform: inst.transform,
+            transform: worldTransform
+                ? (() => {
+                      const e = worldTransform.elements
+                      return new mirabuf.Transform({
+                          spatialMatrix: [
+                              e[0], e[4], e[8],  e[12] * 100,
+                              e[1], e[5], e[9],  e[13] * 100,
+                              e[2], e[6], e[10], e[14] * 100,
+                              e[3], e[7], e[11], e[15],
+                          ],
+                      })
+                  })()
+                : inst.transform,
         })
 
         return gamePieceAssembly
