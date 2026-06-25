@@ -1,5 +1,5 @@
 import { Box } from "@mui/material"
-import type React from "react"
+import { type FC, useEffect, useMemo, useRef } from "react"
 
 /**
  * Topbar icons are SVGs inlined into the bundle at build time and rendered as
@@ -53,6 +53,16 @@ const ICON_MARKUP: Record<string, string> = Object.fromEntries(
     })
 )
 
+function parseSvgMarkup(markup: string): SVGSVGElement | null {
+    const document = new DOMParser().parseFromString(markup, "image/svg+xml")
+    const svg = document.querySelector("svg")
+    return svg instanceof SVGSVGElement ? svg : null
+}
+
+const ICON_SVGS: Record<string, SVGSVGElement | null> = Object.fromEntries(
+    Object.entries(ICON_MARKUP).map(([path, markup]) => [path, parseSvgMarkup(markup)])
+)
+
 export const TOP_BAR_ICONS = {
     "mode-configure": "mode-configure.svg",
     "mode-codesim": "mode-codesim.svg",
@@ -74,24 +84,37 @@ export const TOP_BAR_ICONS = {
 
 export type TopBarIconName = keyof typeof TOP_BAR_ICONS
 
-export const TopBarIcon: React.FC<{ name: TopBarIconName; size?: number; className?: string }> = ({
+export const TopBarIcon: FC<{ name: TopBarIconName; size?: number; className?: string }> = ({
     name,
     size = 24,
     className,
-}) => (
-    <Box
-        component="span"
-        role="img"
-        aria-label={name}
-        className={className}
-        sx={{
-            display: "inline-flex",
-            width: size,
-            height: size,
-            // The inlined SVGs carry a viewBox, so forcing the box size scales them cleanly.
-            "& > svg": { width: "100%", height: "100%", display: "block" },
-        }}
-        // biome-ignore lint/style/useNamingConvention: __html is React's required dangerouslySetInnerHTML key
-        dangerouslySetInnerHTML={{ __html: ICON_MARKUP[`./icons/${TOP_BAR_ICONS[name]}`] }}
-    />
-)
+}) => {
+    const hostRef = useRef<HTMLSpanElement | null>(null)
+    const iconSvg = useMemo(() => ICON_SVGS[`./icons/${TOP_BAR_ICONS[name]}`], [name])
+
+    useEffect(() => {
+        if (!hostRef.current) return
+
+        hostRef.current.replaceChildren()
+        if (!iconSvg) return
+
+        hostRef.current.append(iconSvg.cloneNode(true))
+    }, [iconSvg])
+
+    return (
+        <Box
+            component="span"
+            role="img"
+            aria-label={name}
+            className={className}
+            ref={hostRef}
+            sx={{
+                display: "inline-flex",
+                width: size,
+                height: size,
+                // The inlined SVGs carry a viewBox, so forcing the box size scales them cleanly.
+                "& > svg": { width: "100%", height: "100%", display: "block" },
+            }}
+        />
+    )
+}
