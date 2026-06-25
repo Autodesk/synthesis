@@ -140,10 +140,9 @@ class PhysicsSystem extends WorldSystem {
 
         this._bodyAssociations = new Map()
 
-        // NOTE
-        // Destroying `joltSettings` breaks the physics system for some reason
-        // We've decided not to investigate this further.
-        // JOLT.destroy(joltSettings)
+        // joltSettings is no longer needed after JoltInterface copies the filter pointers.
+        // Root cause of prior crashes was a double-free in the sensor tests, not this destroy.
+        JOLT.destroy(joltSettings)
     }
 
     /**
@@ -1355,9 +1354,15 @@ class PhysicsSystem extends WorldSystem {
         this.destroyBodyIds(...this._bodies)
         this._bodies = []
 
-        JOLT.destroy(this._joltBodyInterface)
+        // GetContactListener must be called before JoltInterface is destroyed —
+        // JoltInterface destructor deletes PhysicsSystem, making _joltPhysSystem dangling.
+        const contactListener = this._joltPhysSystem.GetContactListener()
+
+        // BodyInterface is a value member embedded inside PhysicsSystem (not heap-allocated).
+        // Do NOT call JOLT.destroy on it — that would pass an interior sub-object pointer
+        // to free(), corrupting the dlmalloc free list.
         JOLT.destroy(this._joltInterface)
-        JOLT.destroy(this._joltPhysSystem.GetContactListener())
+        JOLT.destroy(contactListener)
     }
 
     private createGhostBody(position: Jolt.Vec3, destroy: boolean = true) {

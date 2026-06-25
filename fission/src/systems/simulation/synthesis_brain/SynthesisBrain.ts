@@ -178,23 +178,26 @@ class SynthesisBrain extends Brain {
         // Determines which wheels and stimuli belong to which side of the robot
         const rightVector = new JOLT.RVec3(1, 0, 0)
         for (let i = 0; i < wheelDrivers.length; i++) {
+            // NOTE: Jolt "value" returns (GetConstraintToBody1Matrix, GetTranslation,
+            // SubRVec3, GetCenterOfMassPosition, ...) hand back a pointer to a reused
+            // static temporary, NOT a heap allocation. They must never be passed to
+            // JOLT.destroy — doing so frees a non-heap address and corrupts the dlmalloc
+            // free list, which later traps as "memory access out of bounds".
             const constraintMatrix = fixedConstraints[i].GetConstraintToBody1Matrix()
             const translation = constraintMatrix.GetTranslation()
-            // `GetTranslation` should return an internal reference
             const wheelPos = convertJoltVec3ToJoltRVec3(translation, false)
 
             const robotCOM = World.physicsSystem
                 .getBody(this._mechanism.constraints[0].childBody)!
                 .GetCenterOfMassPosition()
 
-            const newPos = wheelPos.SubRVec3(robotCOM)
-            const dotProduct = rightVector.Dot(newPos)
+            const dotProduct = rightVector.Dot(wheelPos.SubRVec3(robotCOM))
             const [wheels, stimuli] = dotProduct < 0 ? [rightWheels, rightStimuli] : [leftWheels, leftStimuli]
 
             wheels.push(wheelDrivers[i])
             stimuli.push(wheelStimuli[i])
 
-            JOLT.destroy(constraintMatrix)
+            // wheelPos is the only genuinely heap-allocated object in this loop.
             JOLT.destroy(wheelPos)
         }
         JOLT.destroy(rightVector)
