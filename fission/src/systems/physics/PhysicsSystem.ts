@@ -26,6 +26,7 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
+import { URDF_AUTO_WHEEL_SOURCE, URDF_WHEEL_SOURCE_KEY } from "@/urdf/URDFUserData"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -77,6 +78,144 @@ const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 
 // Motor constant
 const VELOCITY_DEFAULT = 30
+
+type WheelBasis = {
+    forward: Jolt.Vec3
+    up: Jolt.Vec3
+    suspensionDirection: Jolt.Vec3
+    steeringAxis: Jolt.Vec3
+}
+
+type WheelDimensions = {
+    radius: number
+    width: number
+}
+
+type WheelDiagnosticSource = "urdf-auto" | "regular"
+
+function fmtVec(v: Jolt.Vec3 | Jolt.RVec3): string {
+    return `(${v.GetX().toFixed(4)}, ${v.GetY().toFixed(4)}, ${v.GetZ().toFixed(4)})`
+}
+
+function isURDFAutoAssignedWheel(jDef: mirabuf.joint.Joint): boolean {
+    return jDef.userData?.data?.[URDF_WHEEL_SOURCE_KEY] === URDF_AUTO_WHEEL_SOURCE
+}
+
+function getShapeExtents(bounds: Jolt.AABox): [number, number, number] {
+    return [
+        bounds.mMax.GetX() - bounds.mMin.GetX(),
+        bounds.mMax.GetY() - bounds.mMin.GetY(),
+        bounds.mMax.GetZ() - bounds.mMin.GetZ(),
+    ]
+}
+
+function inferWheelDimensionsFromAxle(bounds: Jolt.AABox, axis: Jolt.RVec3): WheelDimensions {
+    const extents = getShapeExtents(bounds)
+    const axisAbs = [Math.abs(axis.GetX()), Math.abs(axis.GetY()), Math.abs(axis.GetZ())]
+    const axleIndex = axisAbs.indexOf(Math.max(...axisAbs))
+    const radialExtents = extents.filter((_, index) => index !== axleIndex)
+
+    return {
+        radius: Math.max(...radialExtents) / 2.0,
+        width: extents[axleIndex],
+    }
+}
+
+function logWheelGeometryComparison(
+    source: WheelDiagnosticSource,
+    jointDefinition: mirabuf.joint.Joint,
+    anchorPoint: Jolt.RVec3,
+    bodyMain: Jolt.Body,
+    bodyWheel: Jolt.Body,
+    axis: Jolt.RVec3,
+    bounds: Jolt.AABox,
+    wheelDimensions: WheelDimensions,
+    wheelPos: Jolt.Vec3,
+    wheelSettings: Jolt.WheelSettingsWV,
+    vehicleSettings: Jolt.VehicleConstraintSettings
+): void {
+    const bodyMainCOM = bodyMain.GetCenterOfMassPosition()
+    const bodyWheelCOM = bodyWheel.GetCenterOfMassPosition()
+    const extents = getShapeExtents(bounds)
+    const axisAbs = [Math.abs(axis.GetX()), Math.abs(axis.GetY()), Math.abs(axis.GetZ())]
+    const axleIndex = axisAbs.indexOf(Math.max(...axisAbs))
+    const radialExtents = extents.filter((_, index) => index !== axleIndex)
+    const anchorLocal = worldPointToBodyLocal(anchorPoint, bodyMain)
+    const bodyCenterLocal = bodyCenterToBodyLocal(bodyWheel, bodyMain)
+    const radius = wheelDimensions.radius * 1.05
+    const inferredBottomY = bodyWheelCOM.GetY() - radius
+    const anchorToCenter = new JOLT.Vec3(
+        bodyWheelCOM.GetX() - anchorPoint.GetX(),
+        bodyWheelCOM.GetY() - anchorPoint.GetY(),
+        bodyWheelCOM.GetZ() - anchorPoint.GetZ()
+    )
+
+    console.log(
+        `[WheelGeomCompare] source=${source}` +
+            ` joint="${jointDefinition.info?.name ?? jointDefinition.info?.GUID ?? "unknown"}"` +
+            ` axis=${fmtVec(axis)} axleIndex=${axleIndex}` +
+            ` boundsMin=${fmtVec(bounds.mMin)} boundsMax=${fmtVec(bounds.mMax)}` +
+            ` extents=(${extents.map(v => v.toFixed(4)).join(", ")})` +
+            ` radialExtents=(${radialExtents.map(v => v.toFixed(4)).join(", ")})` +
+            ` rawRadius=${wheelDimensions.radius.toFixed(4)} simRadius=${radius.toFixed(4)}` +
+            ` width=${wheelDimensions.width.toFixed(4)}` +
+            ` bodyMainCOM=${fmtVec(bodyMainCOM)} bodyWheelCOM=${fmtVec(bodyWheelCOM)}` +
+            ` anchorWorld=${fmtVec(anchorPoint)} anchorLocal=${fmtVec(anchorLocal)}` +
+            ` bodyCenterLocal=${fmtVec(bodyCenterLocal)} chosenMPosition=${fmtVec(wheelPos)}` +
+            ` anchorToCenter=${fmtVec(anchorToCenter)} inferredCylinderBottomY=${inferredBottomY.toFixed(4)}` +
+            ` vehicleForward=${fmtVec(vehicleSettings.mForward)} vehicleUp=${fmtVec(vehicleSettings.mUp)}` +
+            ` wheelForward=${fmtVec(wheelSettings.mWheelForward)} wheelUp=${fmtVec(wheelSettings.mWheelUp)}` +
+            ` suspensionDir=${fmtVec(wheelSettings.mSuspensionDirection)}` +
+            ` steeringAxis=${fmtVec(wheelSettings.mSteeringAxis)}` +
+            ` minSuspension=${wheelSettings.mSuspensionMinLength.toFixed(6)}` +
+            ` maxSuspension=${wheelSettings.mSuspensionMaxLength.toFixed(6)}`
+    )
+
+    JOLT.destroy(anchorLocal)
+    JOLT.destroy(bodyCenterLocal)
+    JOLT.destroy(anchorToCenter)
+}
+
+function inferURDFAutoWheelBasis(axis: Jolt.RVec3): WheelBasis | undefined {
+    const absX = Math.abs(axis.GetX())
+    const absZ = Math.abs(axis.GetZ())
+
+    if (Math.max(absX, absZ) < 0.5) return undefined
+
+    // URDF import converts Z-up to Y-up, so wheels should have a horizontal axle.
+    // Canonicalize the axle sign so all wheels on both sides share the same basis.
+    const lateralX = absX >= absZ ? 1 : 0
+    const lateralZ = absZ > absX ? 1 : 0
+
+    return {
+        // up x lateral gives the chassis forward axis in Synthesis/Jolt Y-up space.
+        forward: new JOLT.Vec3(lateralZ, 0, -lateralX),
+        up: new JOLT.Vec3(0, 1, 0),
+        suspensionDirection: new JOLT.Vec3(0, -1, 0),
+        steeringAxis: new JOLT.Vec3(0, 1, 0),
+    }
+}
+
+function worldPointToBodyLocal(point: Jolt.RVec3, body: Jolt.Body): Jolt.Vec3 {
+    const bodyPosition = body.GetCenterOfMassPosition()
+    const bodyRotation = body.GetRotation()
+    const offset = new JOLT.Vec3(
+        point.GetX() - bodyPosition.GetX(),
+        point.GetY() - bodyPosition.GetY(),
+        point.GetZ() - bodyPosition.GetZ()
+    )
+    const local = bodyRotation.InverseRotate(offset)
+    JOLT.destroy(offset)
+    return local
+}
+
+function bodyCenterToBodyLocal(sourceBody: Jolt.Body, targetBody: Jolt.Body): Jolt.Vec3 {
+    const center = sourceBody.GetCenterOfMassPosition()
+    const centerCopy = new JOLT.RVec3(center.GetX(), center.GetY(), center.GetZ())
+    const local = worldPointToBodyLocal(centerCopy, targetBody)
+    JOLT.destroy(centerCopy)
+    return local
+}
 
 /**
  * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
@@ -339,6 +478,13 @@ class PhysicsSystem extends WorldSystem {
     public createJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!
         const joints = Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][]
+
+        // Auto-detected URDF wheels each carry an independently tessellated mesh, so inferring
+        // radius per-wheel yields sub-millimeter variance between wheels. Resolve one shared radius
+        // up front and apply it to every URDF wheel so the drivetrain rests coplanar
+        // (see computeSharedURDFAutoWheelRadius).
+        const sharedURDFWheelRadius = this.computeSharedURDFAutoWheelRadius(parser, mechanism)
+
         joints.forEach(([jointGuid, jointInst]) => {
             if (jointGuid == GROUNDED_JOINT_ID) return
 
@@ -393,6 +539,7 @@ class PhysicsSystem extends WorldSystem {
                     primaryConstraint: c,
                     maxVelocity: maxVel ?? VELOCITY_DEFAULT,
                     info: jointInst.info ?? undefined, // remove possibility for null
+                    jointUserData: jDef.userData?.data ?? undefined,
                     extraConstraints: [],
                     extraBodies: [],
                 })
@@ -415,7 +562,8 @@ class PhysicsSystem extends WorldSystem {
                             maxAcceleration ?? 1.5,
                             bodyOne,
                             bodyTwo,
-                            parser.assembly.info!.version!
+                            parser.assembly.info!.version!,
+                            sharedURDFWheelRadius
                         )
                         addConstraint(res[0])
                         addConstraint(res[1])
@@ -602,13 +750,65 @@ class PhysicsSystem extends WorldSystem {
         return constraint
     }
 
+    /**
+     * Computes a single wheel radius shared by every auto-detected URDF wheel.
+     *
+     * Native Mirabuf robots get coplanar wheels for free: their wheels are instances of one shared
+     * part definition, so all wheel bodies have identical bounds and therefore identical radii.
+     * URDF gives every link its own independently tessellated mesh, so per-wheel radius inference
+     * produces sub-millimeter variance. With the near-zero suspension travel used for drivetrains,
+     * that variance permanently floats the "shorter" wheels, leaving the robot rocking on a subset
+     * of wheels and breaking skid-steer turning. Applying one radius to all wheels reproduces the
+     * coplanar-by-construction property the native importer relies on.
+     *
+     * @returns The max inferred radius across all URDF auto-wheels, or undefined if there are none.
+     */
+    private computeSharedURDFAutoWheelRadius(parser: MirabufParser, mechanism: Mechanism): number | undefined {
+        const jointData = parser.assembly.data!.joints!
+        const versionNum = parser.assembly.info!.version!
+        let sharedRadius: number | undefined
+
+        for (const [jointGuid, jointInst] of Object.entries(jointData.jointInstances!) as [
+            string,
+            mirabuf.joint.JointInstance,
+        ][]) {
+            if (jointGuid === GROUNDED_JOINT_ID) continue
+            const jDef = jointData.jointDefinitions![jointInst.jointReference!] as mirabuf.joint.Joint | undefined
+            if (!jDef || jDef.jointMotionType !== mirabuf.joint.JointMotion.REVOLUTE) continue
+            if (!this.isWheel(jDef) || !isURDFAutoAssignedWheel(jDef)) continue
+
+            const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
+            const rnB = parser.partToNodeMap.get(jointInst.childPart!)
+            if (!rnA || !rnB || rnA.id === rnB.id) continue
+            const bodyIdA = mechanism.getBodyByNodeId(rnA.id)
+            const bodyIdB = mechanism.getBodyByNodeId(rnB.id)
+            if (!bodyIdA || !bodyIdB) continue
+            // Mirrors the wheel-body selection in createJointsFromParser: bodyTwo is the wheel.
+            const bodyWheel = parser.directedGraph.getAdjacencyList(rnA.id).length
+                ? this.getBody(bodyIdB)!
+                : this.getBody(bodyIdA)!
+
+            const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
+            const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
+            const axis = new JOLT.RVec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
+            const bounds = bodyWheel.GetShape().GetLocalBounds()
+            const { radius } = inferWheelDimensionsFromAxle(bounds, axis)
+            JOLT.destroy(axis)
+
+            sharedRadius = sharedRadius === undefined ? radius : Math.max(sharedRadius, radius)
+        }
+
+        return sharedRadius
+    }
+
     public createWheelConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
         maxAcc: number,
         bodyMain: Jolt.Body,
         bodyWheel: Jolt.Body,
-        versionNum: number
+        versionNum: number,
+        sharedURDFWheelRadius?: number
     ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
         // HINGE CONSTRAINT
         const fixedSettings = new JOLT.FixedConstraintSettings()
@@ -630,22 +830,63 @@ class PhysicsSystem extends WorldSystem {
         const miraAxisX: number = (versionNum < 5 ? -miraAxis.x : miraAxis.x) ?? 0
         const axis: Jolt.RVec3 = new JOLT.RVec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
 
+        const urdfAutoWheel = isURDFAutoAssignedWheel(jointDefinition)
+        const urdfWheelBasis = urdfAutoWheel ? inferURDFAutoWheelBasis(axis) : undefined
+        const diagnosticSource: WheelDiagnosticSource = urdfWheelBasis ? "urdf-auto" : "regular"
         const bounds = bodyWheel.GetShape().GetLocalBounds()
-        const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
+        const wheelDimensions = urdfWheelBasis
+            ? inferWheelDimensionsFromAxle(bounds, axis)
+            : {
+                  radius: (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0,
+                  width: 0.1,
+              }
+
+        // Apply the drivetrain-wide shared radius so all URDF wheels rest coplanar. Per-wheel mesh
+        // tessellation otherwise yields sub-mm radius variance that floats wheels (see
+        // computeSharedURDFAutoWheelRadius). Width stays per-wheel; only radius affects ground contact.
+        if (urdfWheelBasis && sharedURDFWheelRadius !== undefined) {
+            wheelDimensions.radius = sharedURDFWheelRadius
+        }
+        const wheelPos = urdfWheelBasis
+            ? convertJoltRVec3ToJoltVec3(anchorPoint)
+            : convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))
 
         const wheelSettings = new JOLT.WheelSettingsWV()
 
-        wheelSettings.mPosition = convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))
+        wheelSettings.mPosition = wheelPos
 
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
-        wheelSettings.mRadius = radius * 1.05
-        wheelSettings.mWidth = 0.1
-        wheelSettings.mSuspensionMinLength = radius * SUSPENSION_MIN_FACTOR
-        wheelSettings.mSuspensionMaxLength = radius * SUSPENSION_MAX_FACTOR
+        wheelSettings.mRadius = wheelDimensions.radius * 1.05
+        wheelSettings.mWidth = wheelDimensions.width
+        wheelSettings.mSuspensionMinLength = wheelDimensions.radius * SUSPENSION_MIN_FACTOR
+        wheelSettings.mSuspensionMaxLength = wheelDimensions.radius * SUSPENSION_MAX_FACTOR
         wheelSettings.mInertia = 1
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings()
+
+        if (urdfWheelBasis) {
+            vehicleSettings.mForward = urdfWheelBasis.forward
+            vehicleSettings.mUp = urdfWheelBasis.up
+            wheelSettings.mWheelForward = urdfWheelBasis.forward
+            wheelSettings.mWheelUp = urdfWheelBasis.up
+            wheelSettings.mSuspensionDirection = urdfWheelBasis.suspensionDirection
+            wheelSettings.mSteeringAxis = urdfWheelBasis.steeringAxis
+        }
+
+        logWheelGeometryComparison(
+            diagnosticSource,
+            jointDefinition,
+            anchorPoint,
+            bodyMain,
+            bodyWheel,
+            axis,
+            bounds,
+            wheelDimensions,
+            wheelPos,
+            wheelSettings,
+            vehicleSettings
+        )
 
         vehicleSettings.mWheels.clear()
         vehicleSettings.mWheels.push_back(wheelSettings)

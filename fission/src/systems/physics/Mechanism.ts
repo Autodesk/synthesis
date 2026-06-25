@@ -10,6 +10,7 @@ export interface MechanismConstraint {
     primaryConstraint: Jolt.Constraint
     maxVelocity: number
     info?: mirabuf.IInfo
+    jointUserData?: Record<string, string>
     extraConstraints: Jolt.Constraint[]
     extraBodies: Jolt.BodyID[]
 }

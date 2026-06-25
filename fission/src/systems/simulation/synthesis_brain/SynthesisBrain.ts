@@ -175,19 +175,42 @@ class SynthesisBrain extends Brain {
         const rightWheels: WheelDriver[] = []
         const rightStimuli: WheelRotationStimulus[] = []
 
-        // Determines which wheels and stimuli belong to which side of the robot
-        const rightVector = new JOLT.RVec3(1, 0, 0)
+        // Use the chassis (root) body's CoM as the reference, not a wheel body.
+        const rootBodyId = this._mechanism.getBodyByNodeId(this._mechanism.rootBody)
+        const chassisBody = rootBodyId ? World.physicsSystem.getBody(rootBodyId) : undefined
+        const robotCOM = chassisBody
+            ? chassisBody.GetCenterOfMassPosition()
+            : World.physicsSystem.getBody(this._mechanism.constraints[0].childBody)!.GetCenterOfMassPosition()
+
+        // Collect constraint positions to determine the correct lateral axis.
+        // For skid-steer robots the lateral axis (left vs right) is the one that splits
+        // wheels into two equal groups. Try X and Z; pick the more balanced split.
+        const constraintPositions: { x: number; z: number }[] = []
+        for (let i = 0; i < wheelDrivers.length; i++) {
+            const m = fixedConstraints[i].GetConstraintToBody1Matrix()
+            const t = m.GetTranslation()
+            constraintPositions.push({ x: t.GetX() - robotCOM.GetX(), z: t.GetZ() - robotCOM.GetZ() })
+            JOLT.destroy(m)
+        }
+        const xImbalance = Math.abs(
+            constraintPositions.filter(p => p.x >= 0).length - constraintPositions.filter(p => p.x < 0).length
+        )
+        const zImbalance = Math.abs(
+            constraintPositions.filter(p => p.z >= 0).length - constraintPositions.filter(p => p.z < 0).length
+        )
+        // Use Z axis when it gives a more balanced split (URDF robots); fall back to X (Fusion 360 robots).
+        // URDF's usual +Y-left convention converts to -Z-left in Synthesis, so +Z is the right side.
+        const useLateralZ = zImbalance < xImbalance
+        const rightVector = useLateralZ ? new JOLT.RVec3(0, 0, -1) : new JOLT.RVec3(1, 0, 0)
+
         for (let i = 0; i < wheelDrivers.length; i++) {
             const constraintMatrix = fixedConstraints[i].GetConstraintToBody1Matrix()
             const translation = constraintMatrix.GetTranslation()
             // `GetTranslation` should return an internal reference
             const wheelPos = convertJoltVec3ToJoltRVec3(translation, false)
 
-            const robotCOM = World.physicsSystem
-                .getBody(this._mechanism.constraints[0].childBody)!
-                .GetCenterOfMassPosition()
-
             const newPos = wheelPos.SubRVec3(robotCOM)
+
             const dotProduct = rightVector.Dot(newPos)
             const [wheels, stimuli] = dotProduct < 0 ? [rightWheels, rightStimuli] : [leftWheels, leftStimuli]
 
