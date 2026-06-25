@@ -672,4 +672,3 @@ describe("Update Loop", () => {
         expect(body.GetPosition().GetY()).toBeLessThanOrEqual(10)
     })
 })
-
