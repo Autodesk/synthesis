@@ -79,10 +79,6 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         this._robotsInside.set(robot, Date.now())
     }
 
-    // TODO
-    // Dispose
-    public dispose(): void {}
-
     private handleContactPenalty(body1: MirabufSceneObject, body2: MirabufSceneObject) {
         if (!body1 || !body2) return
 

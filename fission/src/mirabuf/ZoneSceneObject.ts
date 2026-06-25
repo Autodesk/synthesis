@@ -178,4 +178,14 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     }
 
     public abstract checkObjectsInZone(): void
+
+    public dispose(): void {
+        if (this.bounding) {
+            JOLT.destroy(this.bounding)
+        }
+
+        if (this.mesh) {
+            World.sceneRenderer.removeObject(this.mesh)
+        }
+    }
 }

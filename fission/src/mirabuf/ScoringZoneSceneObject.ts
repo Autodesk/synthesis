@@ -60,10 +60,6 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         this._prevGPs.length = 0
     }
 
-    public dispose(): void {
-        JOLT.destroy(this.bounding)
-    }
-
     /// Updates points for alliance and robot when game piece enters this scoring zone
     private zoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
