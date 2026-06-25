@@ -97,17 +97,15 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         )
         const props: VisualProperties = deltaFieldTransformsPhysicalProp(this._deltaTransformation, fieldTransformation)
 
-        this.createBoundingBox(props)
         this.createVisualMesh(props)
+        this.createBoundingBox(props)
     }
 
     private createBoundingBox(props: VisualProperties) {
-        this.bounding = new JOLT.AABox()
-
-        this.bounding.Scaled(convertThreeVector3ToJoltVec3(props.scale))
-        this.bounding.TranslateVec3(convertThreeVector3ToJoltVec3(props.translation))
-
-        return this.bounding
+        this.bounding = new JOLT.AABox().sFromTwoPoints(
+            convertThreeVector3ToJoltVec3(props.translation),
+            convertThreeVector3ToJoltVec3(props.scale)
+        )
     }
 
     private setMeshProperties(props: VisualProperties) {

@@ -32,6 +32,10 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     public checkObjectsInZone(): void {
         if (!this.bounding) return
 
+        const max = this.bounding.mMax
+        const min = this.bounding.mMin
+        console.log(`zone [${min.GetX()} ${min.GetY()} ${min.GetZ()}] ${max.GetX()} ${max.GetY()} ${max.GetZ()}`)
+
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) return
 
@@ -39,8 +43,14 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             const gp = World.physicsSystem.getBody(gpID)!
             const objBounding = gp.GetWorldSpaceBounds()
 
+            const max = objBounding.mMax
+            const min = objBounding.mMin
+            console.log(`gp: [${min.GetX()} ${min.GetY()} ${min.GetZ()}] ${max.GetX()} ${max.GetY()} ${max.GetZ()}`)
+
             return this.bounding?.OverlapsAABox(objBounding)
         })
+
+        console.log(gamePiecesContacting.length)
 
         gamePiecesContacting.forEach(this.zoneCollision)
 
