@@ -1031,6 +1031,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 })
             }
         }
+
         if ((this.brain as SynthesisBrain | undefined)?.driveType === DriveType.SWERVE) {
             data.items.push({
                 name: "Reset Orientation",
