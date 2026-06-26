@@ -98,7 +98,7 @@ class SwerveDriveBehavior extends DriveBehavior {
         }
 
         // Adjusts how much turning versus translation is favored.
-        turn *= 0.2
+        turn *= 1.5
 
         const chassisVelocity = robotForward
             .clone()
