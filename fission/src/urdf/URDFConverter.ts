@@ -98,6 +98,11 @@ function parseVec3(el: Element | null | undefined, attrName = "xyz"): [number, n
     return [parseFloat(p[0] ?? "0") || 0, parseFloat(p[1] ?? "0") || 0, parseFloat(p[2] ?? "0") || 0]
 }
 
+function parseVec4(s: string): [number, number, number, number] {
+    const p = s.trim().split(/\s+/)
+    return [parseFloat(p[0] ?? "1"), parseFloat(p[1] ?? "1"), parseFloat(p[2] ?? "1"), parseFloat(p[3] ?? "1")]
+}
+
 function extractLinks(doc: Document): URDFLink[] {
     return Array.from(doc.querySelectorAll("link")).map(link => {
         const name = attr(link, "name")
@@ -117,10 +122,7 @@ function extractLinks(doc: Document): URDFLink[] {
 
         let materialRGBA: [number, number, number, number] | null = null
         const colorRgba = matEl?.querySelector("color")?.getAttribute("rgba")
-        if (colorRgba) {
-            const p = colorRgba.trim().split(/\s+/)
-            materialRGBA = [parseFloat(p[0] ?? "1"), parseFloat(p[1] ?? "1"), parseFloat(p[2] ?? "1"), parseFloat(p[3] ?? "1")]
-        }
+        if (colorRgba) materialRGBA = parseVec4(colorRgba)
 
         const visualOriginEl = visual?.querySelector("origin") ?? null
         return {
@@ -142,13 +144,14 @@ function extractJoints(doc: Document): URDFJoint[] {
     return Array.from(doc.querySelectorAll("joint")).map(joint => {
         const typeStr = attr(joint, "type", "fixed")
         const limitEl = joint.querySelector("limit")
+        const originEl = joint.querySelector("origin")
         return {
             name: attr(joint, "name"),
             type: (validTypes.has(typeStr) ? typeStr : "fixed") as URDFJoint["type"],
             parent: joint.querySelector("parent")?.getAttribute("link") ?? "",
             child: joint.querySelector("child")?.getAttribute("link") ?? "",
-            originXYZ: parseVec3(joint.querySelector("origin")),
-            originRPY: parseVec3(joint.querySelector("origin"), "rpy"),
+            originXYZ: parseVec3(originEl),
+            originRPY: parseVec3(originEl, "rpy"),
             axisXYZ: parseVec3(joint.querySelector("axis")) || ([0, 0, 1] as [number, number, number]),
             limitLower: parseFloat(limitEl?.getAttribute("lower") ?? "0") || 0,
             limitUpper: parseFloat(limitEl?.getAttribute("upper") ?? "0") || 0,
@@ -167,6 +170,18 @@ function resolveMeshBytes(packagePath: string, meshFiles: Map<string, Uint8Array
     )
 }
 
+function applyMat3(src: number[], r: Mat3, tx = 0, ty = 0, tz = 0): number[] {
+    const out = new Array<number>(src.length)
+    for (let i = 0; i < src.length; i += 3) {
+        const x = src[i], y = src[i + 1], z = src[i + 2]
+        out[i]     = r[0][0] * x + r[0][1] * y + r[0][2] * z + tx
+        out[i + 1] = r[1][0] * x + r[1][1] * y + r[1][2] * z + ty
+        out[i + 2] = r[2][0] * x + r[2][1] * y + r[2][2] * z + tz
+    }
+
+    return out
+}
+
 // Apply visual origin transform (rotation + translation) to raw mesh vertices and normals.
 // This maps mesh-local coords -> link-local coords, both in URDF Z-up metres.
 // Must run before scale/unit conversion.
@@ -177,24 +192,12 @@ function applyVisualOrigin(mesh: ParsedMesh, xyz: [number, number, number], rpy:
 
     const R = rpyToMatrix(rpy[0], rpy[1], rpy[2])
     const [ox, oy, oz] = xyz
-
-    const verts = new Array<number>(mesh.verts.length)
-    for (let i = 0; i < mesh.verts.length; i += 3) {
-        const x = mesh.verts[i], y = mesh.verts[i + 1], z = mesh.verts[i + 2]
-        verts[i]     = R[0][0] * x + R[0][1] * y + R[0][2] * z + ox
-        verts[i + 1] = R[1][0] * x + R[1][1] * y + R[1][2] * z + oy
-        verts[i + 2] = R[2][0] * x + R[2][1] * y + R[2][2] * z + oz
+    return {
+        verts: applyMat3(mesh.verts, R, ox, oy, oz),
+        normals: applyMat3(mesh.normals, R),
+        indices: mesh.indices,
+        uv: mesh.uv,
     }
-
-    const normals = new Array<number>(mesh.normals.length)
-    for (let i = 0; i < mesh.normals.length; i += 3) {
-        const x = mesh.normals[i], y = mesh.normals[i + 1], z = mesh.normals[i + 2]
-        normals[i]     = R[0][0] * x + R[0][1] * y + R[0][2] * z
-        normals[i + 1] = R[1][0] * x + R[1][1] * y + R[1][2] * z
-        normals[i + 2] = R[2][0] * x + R[2][1] * y + R[2][2] * z
-    }
-
-    return { verts, normals, indices: mesh.indices, uv: mesh.uv }
 }
 
 // Convert a flat float array of 3D vectors from URDF Z-up to Y-up by applying Rx(-90°):
@@ -277,33 +280,30 @@ function buildLinkBody(link: URDFLink, meshFiles: Map<string, Uint8Array>): mira
     const parsed = loadMesh(link.visualMeshPath, meshFiles)
     if (!parsed) return null
 
-    // 1. Apply visual origin: maps mesh vertices from mesh-local frame -> link-local URDF Z-up frame.
+    // Apply visual origin: maps mesh vertices from mesh-local frame -> link-local URDF Z-up frame.
     const inLinkFrame = applyVisualOrigin(parsed, link.visualOriginXYZ, link.visualOriginRPY)
 
-    // 2. Convert from URDF Z-up to Y-up so body-local frames align with world (Y-up).
-    //    This is required for Jolt physics: VehicleConstraint expects mPosition in body-local
-    //    Y-up space, and the wheel radius is computed from the Y-extent of the local bounding box.
-    const yupVerts = toYup(inLinkFrame.verts)
-    const yupNormals = toYup(inLinkFrame.normals)
-
-    // 3. Scale: mesh file units -> cm. URDF meshes are in metres; mirabuf stores cm.
+    // Convert Z-up→Y-up and scale (metres→cm) in one pass per array.
+    // Jolt VehicleConstraint requires mPosition in body-local Y-up space.
     const [sx, sy, sz] = link.visualMeshScale.map(s => s * 100)
-    const scaled = new Array<number>(yupVerts.length)
-    for (let i = 0; i < yupVerts.length; i += 3) {
-        scaled[i]     = yupVerts[i]     * sx
-        scaled[i + 1] = yupVerts[i + 1] * sy
-        scaled[i + 2] = yupVerts[i + 2] * sz
+    const rv = inLinkFrame.verts
+    const scaled = new Array<number>(rv.length)
+    for (let i = 0; i < rv.length; i += 3) {
+        scaled[i]     = rv[i]     * sx
+        scaled[i + 1] = rv[i + 2] * sy   // Z-up→Y-up swap
+        scaled[i + 2] = -rv[i + 1] * sz
     }
+    const yupNormals = toYup(inLinkFrame.normals)
 
     return {
         info: { GUID: `${link.name}_body`, name: `${link.name}_body` },
         triangleMesh: {
             mesh: {
                 verts: scaled,
-                normals: Array.from(yupNormals),
+                normals: yupNormals,
                 // uv must be non-empty: MirabufInstance.ts:184 checks !mesh.uv
-                uv: inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Array((yupVerts.length / 3) * 2).fill(0),
-                indices: Array.from(inLinkFrame.indices),
+                uv: inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Array((scaled.length / 3) * 2).fill(0),
+                indices: inLinkFrame.indices,
             },
         },
         appearanceOverride: link.materialName ?? undefined,
@@ -339,7 +339,7 @@ function buildParts(
                 ? ROOT_SPATIAL_MATRIX
                 : pj
                   ? originToSpatialMatrix(pj.originXYZ, pj.originRPY)
-                  : [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+                  : ROOT_SPATIAL_MATRIX
 
         partInstances[link.name] = {
             info: { GUID: link.name, name: link.name, version: 1 },
@@ -382,8 +382,7 @@ function buildAppearances(links: URDFLink[], doc: Document): Record<string, mira
         if (!name) continue
         const colorRgba = matEl.querySelector("color")?.getAttribute("rgba")
         if (!colorRgba) continue
-        const p = colorRgba.trim().split(/\s+/)
-        add(name, [parseFloat(p[0] ?? "1"), parseFloat(p[1] ?? "1"), parseFloat(p[2] ?? "1"), parseFloat(p[3] ?? "1")])
+        add(name, parseVec4(colorRgba))
     }
 
     return appearances

@@ -121,6 +121,7 @@ function groupByDirection(pairs: AxlePair[]): { direction: Vec3; indices: number
 function largestCollinearSet(points: Vec2[]): number[] {
     if (points.length <= 2) return points.map((_, i) => i)
     let best: number[] = []
+    const onLine: number[] = []
     for (let i = 0; i < points.length; i++) {
         for (let j = i + 1; j < points.length; j++) {
             const du = points[j].u - points[i].u
@@ -128,12 +129,12 @@ function largestCollinearSet(points: Vec2[]): number[] {
             const len = Math.sqrt(du * du + dv * dv)
             if (len < 1e-9) continue
             const dir: Vec2 = { u: du / len, v: dv / len }
-            const onLine = points.reduce<number[]>((acc, p, k) => {
-                if (distToLine(p, points[i], dir) <= COLLINEAR_DISTANCE) acc.push(k)
-                return acc
-            }, [])
+            onLine.length = 0
+            for (let k = 0; k < points.length; k++) {
+                if (distToLine(points[k], points[i], dir) <= COLLINEAR_DISTANCE) onLine.push(k)
+            }
 
-            if (onLine.length > best.length) best = onLine
+            if (onLine.length > best.length) best = onLine.slice()
         }
     }
 

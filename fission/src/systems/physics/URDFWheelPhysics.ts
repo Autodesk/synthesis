@@ -43,8 +43,8 @@ export function inferWheelDimensionsFromAxle(bounds: Jolt.AABox, axis: Jolt.RVec
 // from the radial extents about the detected axle; native wheels use the vertical extent (their axle
 // is horizontal). Shared by the wheel-creation path and the radius-resolution pass so they can't drift.
 export function inferWheelRadius(jDef: mirabuf.joint.Joint, bounds: Jolt.AABox, axis: Jolt.RVec3): number {
-    const urdfWheelBasis = isURDFWheel(jDef) ? inferURDFAutoWheelBasis(axis) : undefined
-    return urdfWheelBasis
+    const hasHorizontalAxle = Math.abs(axis.GetX()) >= 0.5 || Math.abs(axis.GetZ()) >= 0.5
+    return isURDFWheel(jDef) && hasHorizontalAxle
         ? inferWheelDimensionsFromAxle(bounds, axis).radius
         : (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 }
