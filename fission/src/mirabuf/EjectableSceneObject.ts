@@ -5,7 +5,6 @@ import World from "@/systems/World"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
-    convertJoltQuatToThreeQuaternion,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
@@ -27,6 +26,8 @@ class EjectableSceneObject extends SceneObject {
     private _animationDuration = EjectableSceneObject._defaultAnimationDuration
     private _startTranslation?: THREE.Vector3
     private _startRotation?: THREE.Quaternion
+
+    private _desiredQuatRotation?: THREE.Quaternion
 
     private static _defaultAnimationDuration = 0.5
 
@@ -125,6 +126,8 @@ class EjectableSceneObject extends SceneObject {
 
             desiredTransform.decompose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
 
+            this._desiredQuatRotation = desiredRotation.clone()
+
             if (t < 1 && this._startTranslation && this._startRotation) {
                 // gradual acceleration via easedT
                 desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
@@ -165,9 +168,7 @@ class EjectableSceneObject extends SceneObject {
 
         const parentBody = World.physicsSystem.getBody(this._parentBodyId)!
         const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
-        const ejectDir = new THREE.Vector3(0, 0, 1)
-            .applyQuaternion(convertJoltQuatToThreeQuaternion(gpBody.GetRotation()))
-            .normalize()
+        const ejectDir = new THREE.Vector3(0, 0, 1).applyQuaternion(this._desiredQuatRotation!).normalize()
 
         World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
 
