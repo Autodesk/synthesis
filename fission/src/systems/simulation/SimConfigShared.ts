@@ -68,9 +68,9 @@ export const NODE_ID_SIM_IN = "sim-input-node"
 export type ConfigState = "wiring" | "simIO" | "robotIO"
 export type OriginType = SimType | StimulusType | DriverType
 export enum FuncType {
-    Junction = "junct",
-    Constructor = "construct",
-    Deconstructor = "deconstruct",
+    JUNCTION = "junct",
+    CONSTRUCTOR = "construct",
+    DECONSTRUCTOR = "deconstruct",
 }
 
 export type HandleInfo = {
@@ -162,26 +162,26 @@ export type NodeInfo = {
     funcType?: FuncType
     position: XYPosition
     tooltip?: string
-    sources: HandleId_Alias[]
-    targets: HandleId_Alias[]
+    sources: HandleIdAlias[]
+    targets: HandleIdAlias[]
 }
 
-type NodeId_Alias = string
-type HandleId_Alias = string
-type EdgeId_Alias = string
-type Edge_Alias = { sourceId: HandleId_Alias; targetId: HandleId_Alias }
+type NodeIdAlias = string
+type HandleIdAlias = string
+type EdgeIdAlias = string
+type EdgeAlias = { sourceId: HandleIdAlias; targetId: HandleIdAlias }
 
 export type SimConfigData = {
-    handles: { [k: HandleId_Alias]: HandleInfo }
-    edges: { [k: EdgeId_Alias]: Edge_Alias }
-    adjacency: { [k: HandleId_Alias]: { [j: EdgeId_Alias]: boolean } }
-    nodes: { [k: NodeId_Alias]: NodeInfo }
+    handles: { [k: HandleIdAlias]: HandleInfo }
+    edges: { [k: EdgeIdAlias]: EdgeAlias }
+    adjacency: { [k: HandleIdAlias]: { [j: EdgeIdAlias]: boolean } }
+    nodes: { [k: NodeIdAlias]: NodeInfo }
 }
 
 export class SimConfig {
     private constructor() {}
 
-    public static Default(assembly: MirabufSceneObject) {
+    public static default(assembly: MirabufSceneObject) {
         const config: SimConfigData = {
             handles: {},
             edges: {},
@@ -189,7 +189,7 @@ export class SimConfig {
             nodes: {},
         }
 
-        SimConfig.AddRobotIONode(config)
+        SimConfig.addRobotIONode(config)
         const simInNode: NodeInfo = {
             id: NODE_ID_SIM_IN,
             type: WiringNode.name,
@@ -225,7 +225,7 @@ export class SimConfig {
                     many: hasNoraAverageFunc(x.getReceiverType()),
                     isSource: false,
                 }
-                this.AddHandle(config, handle)
+                this.addHandle(config, handle)
                 simInNode.targets.push(handle.id)
             }
         })
@@ -244,7 +244,7 @@ export class SimConfig {
                     many: hasNoraAverageFunc(x.getSupplierType()),
                     isSource: true,
                 }
-                this.AddHandle(config, handle)
+                this.addHandle(config, handle)
                 simOutNode.sources.push(handle.id)
             } else {
                 console.debug("Skipping stimulus", x)
@@ -255,13 +255,13 @@ export class SimConfig {
     }
 
     public static refreshRobotIO(config: SimConfigData) {
-        SimConfig.AddRobotIONode(config)
+        SimConfig.addRobotIONode(config)
         // TODO: Try to restore connections that remain valid after refresh
     }
 
-    private static AddRobotIONode(config: SimConfigData) {
+    private static addRobotIONode(config: SimConfigData) {
         if (config.nodes[NODE_ID_ROBOT_IO] !== undefined) {
-            SimConfig.RemoveNode(config, NODE_ID_ROBOT_IO)
+            SimConfig.removeNode(config, NODE_ID_ROBOT_IO)
         }
 
         const robotIONode: NodeInfo = {
@@ -288,7 +288,7 @@ export class SimConfig {
                 many: true,
                 isSource: true,
             }
-            this.AddHandle(config, handle)
+            this.addHandle(config, handle)
             robotIONode.sources.push(handle.id)
         })
         getCANEncoder().forEach(([id, _]) => {
@@ -305,7 +305,7 @@ export class SimConfig {
                 many: hasNoraAverageFunc(receiverTypeMap[SimType.CAN_ENCODER]!),
                 isSource: false,
             }
-            this.AddHandle(config, handle)
+            this.addHandle(config, handle)
             robotIONode.targets.push(handle.id)
         })
         getPWMDevices().forEach(([id, _]) => {
@@ -322,7 +322,7 @@ export class SimConfig {
                 many: true,
                 isSource: true,
             }
-            this.AddHandle(config, handle)
+            this.addHandle(config, handle)
             robotIONode.sources.push(handle.id)
         })
         getAccelDevices().forEach(([id, data]) => {
@@ -339,7 +339,7 @@ export class SimConfig {
                 many: hasNoraAverageFunc(receiverTypeMap[SimType.ACCELEROMETER]!),
                 isSource: false,
             }
-            this.AddHandle(config, handle)
+            this.addHandle(config, handle)
             robotIONode.targets.push(handle.id)
         })
         // TODO
@@ -377,7 +377,7 @@ export class SimConfig {
         // })
     }
 
-    private static AddHandle(config: SimConfigData, info: HandleInfo) {
+    private static addHandle(config: SimConfigData, info: HandleInfo) {
         let handleId = ""
         do {
             handleId = genRandomId()
@@ -387,24 +387,24 @@ export class SimConfig {
         config.adjacency[handleId] = {}
     }
 
-    private static RemoveHandle(config: SimConfigData, id: HandleId_Alias): boolean {
+    private static removeHandle(config: SimConfigData, id: HandleIdAlias): boolean {
         if (config.handles[id] === undefined) return false
         const edgeIds = config.adjacency[id]
         if (edgeIds === undefined) return false
-        ;[...Object.keys(edgeIds)].forEach(x => this.DeleteEdge(config, x))
+        ;[...Object.keys(edgeIds)].forEach(x => this.deleteEdge(config, x))
         delete config.adjacency[id]
         delete config.handles[id]
         return true
     }
 
-    public static RemoveNode(config: SimConfigData, id: NodeId_Alias): boolean {
+    public static removeNode(config: SimConfigData, id: NodeIdAlias): boolean {
         if (config.nodes[id] === undefined) return false
-        ;[...Object.values(config.handles)].filter(x => x.nodeId === id).forEach(x => this.RemoveHandle(config, x.id))
+        ;[...Object.values(config.handles)].filter(x => x.nodeId === id).forEach(x => this.removeHandle(config, x.id))
         delete config.nodes[id]
         return true
     }
 
-    public static AddJunctionNode(config: SimConfigData): NodeId_Alias {
+    public static addJunctionNode(config: SimConfigData): NodeIdAlias {
         let nodeId = ""
         do {
             nodeId = genRandomId()
@@ -413,7 +413,7 @@ export class SimConfig {
             id: nodeId,
             type: WiringNode.name,
             position: { x: 300 + random() * 100, y: -100 + random() * 50 },
-            funcType: FuncType.Junction,
+            funcType: FuncType.JUNCTION,
             targets: [],
             sources: [],
         }
@@ -432,7 +432,7 @@ export class SimConfig {
             many: true,
             isSource: false,
         }
-        SimConfig.AddHandle(config, targetHandle)
+        SimConfig.addHandle(config, targetHandle)
         node.targets.push(targetHandle.id)
 
         const sourceHandle: HandleInfo = {
@@ -448,16 +448,16 @@ export class SimConfig {
             many: true,
             isSource: true,
         }
-        SimConfig.AddHandle(config, sourceHandle)
+        SimConfig.addHandle(config, sourceHandle)
         node.sources.push(sourceHandle.id)
         return nodeId
     }
 
-    public static AddDeconstructorNode(
+    public static addDeconstructorNode(
         config: SimConfigData,
         targetNoraType: NoraTypes,
         positionHint?: XYPosition
-    ): HandleId_Alias | undefined {
+    ): HandleIdAlias | undefined {
         const types = deconstructNoraType(targetNoraType)
         if (types === undefined || types.length === 0) return undefined
 
@@ -469,7 +469,7 @@ export class SimConfig {
             id: nodeId,
             type: WiringNode.name,
             position: positionHint ?? { x: 0, y: 0 },
-            funcType: FuncType.Deconstructor,
+            funcType: FuncType.DECONSTRUCTOR,
             targets: [],
             sources: [],
         }
@@ -488,7 +488,7 @@ export class SimConfig {
             many: hasNoraAverageFunc(targetNoraType),
             isSource: false,
         }
-        SimConfig.AddHandle(config, targetHandle)
+        SimConfig.addHandle(config, targetHandle)
         node.targets.push(targetHandle.id)
 
         types.forEach((sourceType, i) => {
@@ -505,18 +505,18 @@ export class SimConfig {
                 many: true,
                 isSource: true,
             }
-            SimConfig.AddHandle(config, sourceHandle)
+            SimConfig.addHandle(config, sourceHandle)
             node.sources.push(sourceHandle.id)
         })
 
         return targetHandle.id
     }
 
-    public static AddConstructorNode(
+    public static addConstructorNode(
         config: SimConfigData,
         sourceNoraType: NoraTypes,
         positionHint?: XYPosition
-    ): HandleId_Alias | undefined {
+    ): HandleIdAlias | undefined {
         const types = deconstructNoraType(sourceNoraType)
         if (types === undefined || types.length === 0) return undefined
 
@@ -528,7 +528,7 @@ export class SimConfig {
             id: nodeId,
             type: WiringNode.name,
             position: positionHint ?? { x: 0, y: 0 },
-            funcType: FuncType.Constructor,
+            funcType: FuncType.CONSTRUCTOR,
             targets: [],
             sources: [],
         }
@@ -547,7 +547,7 @@ export class SimConfig {
             many: true,
             isSource: true,
         }
-        SimConfig.AddHandle(config, sourceHandle)
+        SimConfig.addHandle(config, sourceHandle)
         node.sources.push(sourceHandle.id)
 
         types.forEach((targetType, i) => {
@@ -564,27 +564,23 @@ export class SimConfig {
                 many: hasNoraAverageFunc(targetType),
                 isSource: false,
             }
-            SimConfig.AddHandle(config, targetHandle)
+            SimConfig.addHandle(config, targetHandle)
             node.targets.push(targetHandle.id)
         })
 
         return sourceHandle.id
     }
 
-    public static GetEdge(
+    public static getEdge(
         config: SimConfigData,
-        sourceId: HandleId_Alias,
-        targetId: HandleId_Alias
-    ): EdgeId_Alias | undefined {
+        sourceId: HandleIdAlias,
+        targetId: HandleIdAlias
+    ): EdgeIdAlias | undefined {
         const targetEdges = config.adjacency[targetId]!
         return [...Object.keys(config.adjacency[sourceId]!)].filter(x => targetEdges[x] !== undefined)[0]
     }
 
-    public static ValidateConnection(
-        config: SimConfigData,
-        sourceId: HandleId_Alias,
-        targetId: HandleId_Alias
-    ): boolean {
+    public static validateConnection(config: SimConfigData, sourceId: HandleIdAlias, targetId: HandleIdAlias): boolean {
         const sourceInfo = config.handles[sourceId]
         const targetInfo = config.handles[targetId]
         if (sourceInfo === undefined || targetInfo === undefined) return false
@@ -594,13 +590,13 @@ export class SimConfig {
         return sourceInfo.noraType === targetInfo.noraType
     }
 
-    public static MakeConnection(config: SimConfigData, sourceId: HandleId_Alias, targetId: HandleId_Alias): boolean {
-        if (!SimConfig.ValidateConnection(config, sourceId, targetId)) {
+    public static makeConnection(config: SimConfigData, sourceId: HandleIdAlias, targetId: HandleIdAlias): boolean {
+        if (!SimConfig.validateConnection(config, sourceId, targetId)) {
             console.error("Failed to make edge")
             return false
         }
 
-        if (SimConfig.GetEdge(config, sourceId, targetId) !== undefined) {
+        if (SimConfig.getEdge(config, sourceId, targetId) !== undefined) {
             console.error("Connection already exists")
             return false
         }
@@ -615,8 +611,8 @@ export class SimConfig {
         return true
     }
 
-    public static DeleteConnection(config: SimConfigData, sourceId: HandleId_Alias, targetId: HandleId_Alias): boolean {
-        const edgeId = SimConfig.GetEdge(config, sourceId, targetId)
+    public static deleteConnection(config: SimConfigData, sourceId: HandleIdAlias, targetId: HandleIdAlias): boolean {
+        const edgeId = SimConfig.getEdge(config, sourceId, targetId)
         if (edgeId === undefined) return false
         delete config.adjacency[sourceId][edgeId]
         delete config.adjacency[targetId][edgeId]
@@ -624,7 +620,7 @@ export class SimConfig {
         return true
     }
 
-    public static DeleteEdge(config: SimConfigData, edgeId: EdgeId_Alias): boolean {
+    public static deleteEdge(config: SimConfigData, edgeId: EdgeIdAlias): boolean {
         const edge = config.edges[edgeId]
         if (edge === undefined) return false
         delete config.adjacency[edge.sourceId][edgeId]
@@ -633,7 +629,7 @@ export class SimConfig {
         return true
     }
 
-    public static Compile(config: SimConfigData, assembly: MirabufSceneObject): SimFlow[] | undefined {
+    public static compile(config: SimConfigData, assembly: MirabufSceneObject): SimFlow[] | undefined {
         const simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)
         if (!simLayer) {
             console.error("No sim layer found")
@@ -647,7 +643,7 @@ export class SimConfig {
                     (info.nodeId === NODE_ID_ROBOT_IO || info.nodeId === NODE_ID_SIM_IN) &&
                     (Object.entries(config.adjacency[info.id])?.length ?? 0) > 0
                 ) {
-                    const flow = SimConfig.CompileTargetHandle(config, simLayer, id, new Set<HandleId_Alias>())
+                    const flow = SimConfig.compileTargetHandle(config, simLayer, id, new Set<HandleIdAlias>())
                     if (flow) flows.push(flow)
                     else throw new Error("Failed to compile flows")
                 }
@@ -659,11 +655,11 @@ export class SimConfig {
         }
     }
 
-    public static CompileTargetHandle(
+    public static compileTargetHandle(
         config: SimConfigData,
         simLayer: SimulationLayer,
-        targetHandleId: HandleId_Alias,
-        encountered: Set<HandleId_Alias>
+        targetHandleId: HandleIdAlias,
+        encountered: Set<HandleIdAlias>
     ): SimFlow | undefined {
         const edges = Object.keys(config.adjacency[targetHandleId])
         if (!edges || edges.length < 1) {
@@ -737,7 +733,7 @@ export class SimConfig {
                     if (!node?.funcType) break
                     const index = node.sources.indexOf(sourceHandle.id)
                     if (index === -1) break
-                    const funcSuppliers = SimConfig.CompileFunctionNode(config, simLayer, node, encountered)
+                    const funcSuppliers = SimConfig.compileFunctionNode(config, simLayer, node, encountered)
                     if (!funcSuppliers || funcSuppliers?.length !== node.sources.length) break
                     suppliers.push(funcSuppliers[index])
                 }
@@ -764,20 +760,20 @@ export class SimConfig {
         }
     }
 
-    public static CompileFunctionNode(
+    public static compileFunctionNode(
         config: SimConfigData,
         simLayer: SimulationLayer,
         node: NodeInfo,
-        encountered: Set<HandleId_Alias>
+        encountered: Set<HandleIdAlias>
     ): SimSupplier[] | undefined {
         switch (node.funcType) {
-            case FuncType.Constructor: {
+            case FuncType.CONSTRUCTOR: {
                 if (node.sources.length !== 1 || node.targets.length < 1) {
                     return undefined
                 }
                 const outputType = config.handles[node.sources[0]].noraType
                 const inputs = node.targets.map(x => {
-                    const flow = SimConfig.CompileTargetHandle(config, simLayer, x, encountered)
+                    const flow = SimConfig.compileTargetHandle(config, simLayer, x, encountered)
                     if (!flow) {
                         console.error(`Failed to compile flow. TargetHandleId: ${x}`)
                         throw new Error("Failed to compile SimConfig")
@@ -791,12 +787,12 @@ export class SimConfig {
                     },
                 ]
             }
-            case FuncType.Deconstructor: {
+            case FuncType.DECONSTRUCTOR: {
                 if (node.sources.length < 1 || node.targets.length !== 1) {
                     return undefined
                 }
                 const inputType = config.handles[node.targets[0]].noraType
-                const input = SimConfig.CompileTargetHandle(config, simLayer, node.targets[0], encountered)
+                const input = SimConfig.compileTargetHandle(config, simLayer, node.targets[0], encountered)
                 if (!input) {
                     console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
                     throw new Error("Failed to compile SimConfig")
@@ -812,11 +808,11 @@ export class SimConfig {
                 }
                 return suppliers
             }
-            case FuncType.Junction: {
+            case FuncType.JUNCTION: {
                 if (node.sources.length !== 1 || node.targets.length !== 1) {
                     return undefined
                 }
-                const input = SimConfig.CompileTargetHandle(config, simLayer, node.targets[0], encountered)
+                const input = SimConfig.compileTargetHandle(config, simLayer, node.targets[0], encountered)
                 if (!input) {
                     console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
                     throw new Error("Failed to compile SimConfig")
