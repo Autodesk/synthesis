@@ -67,7 +67,6 @@ class SwerveDriveBehavior extends DriveBehavior {
         return Math.abs(x) < threshold ? 0 : x
     }
 
-    // Reset field forward direction (may be a cleaner way to do this)
     public resetFieldForward(): void {
         const rootNodeId = this.resolveRootNodeId()
         if (rootNodeId == undefined) return

@@ -1031,14 +1031,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 })
             }
         }
-        if ((this.brain as SynthesisBrain | undefined)?.driveType=== DriveType.SWERVE) {
-            data.items.push({    
+        if ((this.brain as SynthesisBrain | undefined)?.driveType === DriveType.SWERVE) {
+            data.items.push({
                 name: "Reset Orientation",
                 func: () => {
                     (this.brain as SynthesisBrain).resetSwerveOrientation()
-                }
+                },
             })
-    }
+        }
 
         data.items.push({
             name: "Remove",
