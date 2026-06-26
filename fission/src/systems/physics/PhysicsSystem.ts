@@ -625,14 +625,14 @@ class PhysicsSystem extends WorldSystem {
      * Resolves the radius each wheel should use, grouping wheels of similar size and snapping every
      * wheel in a group to that group's max radius. Applies to all import paths.
      *
-     * Native Mirabuf robots get coplanar same-size wheels for free: their wheels are instances of one
-     * shared part definition, so all wheel bodies have identical bounds and therefore identical radii.
-     * URDF gives every link its own independently tessellated mesh, so per-wheel inference produces
-     * sub-millimeter variance. With the near-zero suspension travel used for drivetrains, that variance
-     * permanently floats the "shorter" wheels, leaving the robot rocking on a subset of wheels and
-     * breaking skid-steer turning. Snapping each group to a common radius reproduces the
-     * coplanar-by-construction property for any robot, while clustering preserves robots that
-     * intentionally mix wheel sizes (those land in separate groups).
+     * With tessellated meshes, per-wheel inference produces sub-millimeter variance. With the near-zero
+     * suspension travel used for drivetrains, that variance permanently floats the "shorter" wheels, 
+     * leaving the robot rocking on a subset of wheels and breaking skid-steer turning. Snapping each 
+     * group to a common radius reproduces the coplanar-by-construction property for any robot, while 
+     * clustering preserves robots that intentionally mix wheel sizes.
+     * 
+     * TRANSITION: SYNTH-171
+     * This can be removed in the future with a custom wheel implementation. See SYNTH-178
      *
      * @returns Map of joint GUID -> radius for every wheel joint.
      */
