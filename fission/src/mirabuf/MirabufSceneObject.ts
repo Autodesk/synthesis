@@ -1036,7 +1036,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             data.items.push({
                 name: "Reset Orientation",
                 func: () => {
-                    (this.brain as SynthesisBrain).resetSwerveOrientation()
+                    ;(this.brain as SynthesisBrain).resetSwerveOrientation()
                 },
             })
         }
