@@ -38,11 +38,11 @@ interface URDFJoint {
 
 type Mat3 = number[][]
 
-function mat3Mul(A: Mat3, B: Mat3): Mat3 {
-    return [0, 1, 2].map(i => [0, 1, 2].map(j => [0, 1, 2].reduce((s, k) => s + A[i][k] * B[k][j], 0)))
+function mat3Mul(a: Mat3, b: Mat3): Mat3 {
+    return [0, 1, 2].map(i => [0, 1, 2].map(j => [0, 1, 2].reduce((s, k) => s + a[i][k] * b[k][j], 0)))
 }
-function transpose3(M: Mat3): Mat3 {
-    return [0, 1, 2].map(i => [0, 1, 2].map(j => M[j][i]))
+function transpose3(m: Mat3): Mat3 {
+    return [0, 1, 2].map(i => [0, 1, 2].map(j => m[j][i]))
 }
 
 // RPY → rotation matrix (ZYX Euler, URDF convention: R = Rz(yaw)*Ry(pitch)*Rx(roll))
@@ -58,20 +58,20 @@ function rpyToMatrix(roll: number, pitch: number, yaw: number): Mat3 {
 }
 
 // Rx(-90°): converts URDF Z-up frame to Y-up
-const R_ZY: Mat3 = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
+const RZy: Mat3 = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
 
 // Build mirabuf spatialMatrix (16 floats, row-major) from a URDF joint origin.
 // Converts to Y-up space — mesh vertices are also converted to Y-up (see toYupMesh),
 // so body-local frames are Y-up throughout. This keeps Jolt physics constraints correct.
 function originToSpatialMatrix(xyz: [number, number, number], rpy: [number, number, number]): number[] {
-    const R_u = rpyToMatrix(rpy[0], rpy[1], rpy[2])
-    const R_y = mat3Mul(R_ZY, mat3Mul(R_u, transpose3(R_ZY)))
+    const RU = rpyToMatrix(rpy[0], rpy[1], rpy[2])
+    const RY = mat3Mul(RZy, mat3Mul(RU, transpose3(RZy)))
     const [px, py, pz] = xyz
     const [tx, ty, tz] = [px * 100, pz * 100, -py * 100] // metres → cm, Z-up → Y-up
     return [
-        R_y[0][0], R_y[0][1], R_y[0][2], tx,
-        R_y[1][0], R_y[1][1], R_y[1][2], ty,
-        R_y[2][0], R_y[2][1], R_y[2][2], tz,
+        RY[0][0], RY[0][1], RY[0][2], tx,
+        RY[1][0], RY[1][1], RY[1][2], ty,
+        RY[2][0], RY[2][1], RY[2][2], tz,
         0, 0, 0, 1,
     ]
 }

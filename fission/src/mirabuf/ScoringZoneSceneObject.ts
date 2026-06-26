@@ -1,5 +1,5 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type * as THREE from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"

@@ -144,55 +144,19 @@ function largestCollinearSet(points: Vec2[]): number[] {
     return best
 }
 
-// --- Logging helper ---
-
-const fv = (v: Vec3) => `(${v.x.toFixed(3)}, ${v.y.toFixed(3)}, ${v.z.toFixed(3)})`
-
 // --- Public entry point ---
 
 export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
     const jointDefs = assembly.data?.joints?.jointDefinitions as Record<string, mirabuf.joint.IJoint> | undefined
-    if (!jointDefs) {
-        console.log("[WheelDetect] No joint definitions found — skipping")
-        return
-    }
-
-    console.group("[WheelDetect] Wheel detection")
+    if (!jointDefs) return
 
     const candidates = extractCandidates(jointDefs)
-    console.log(`[WheelDetect] Revolute candidates (${candidates.length}):`)
-    for (const c of candidates) {
-        console.log(`[WheelDetect]   "${c.token}"  origin=${fv(c.origin)}m  axis=${fv(c.axis)}`)
-    }
-
-    if (candidates.length < 2) {
-        console.log("[WheelDetect] Fewer than 2 revolute joints — no drivetrain possible")
-        console.groupEnd()
-        return
-    }
+    if (candidates.length < 2) return
 
     const pairs = buildAxlePairs(candidates)
-    console.log(`[WheelDetect] Axle pairs (${pairs.length}):`)
-    for (const p of pairs) {
-        console.log(
-            `[WheelDetect]   "${candidates[p.a].token}" ↔ "${candidates[p.b].token}"` +
-                `  mid=${fv(p.midpoint)}m  dir=${fv(p.direction)}`
-        )
-    }
-
-    if (pairs.length === 0) {
-        console.log("[WheelDetect] No valid axle pairs found (axes not parallel or not aligned with displacement)")
-        console.groupEnd()
-        return
-    }
+    if (pairs.length === 0) return
 
     const groups = groupByDirection(pairs)
-    console.log(`[WheelDetect] Direction groups (${groups.length}):`)
-    for (const g of groups) {
-        console.log(
-            `[WheelDetect]   dir=${fv(g.direction)}  pairs=[${g.indices.map(i => `"${pairs[i].key}"`).join(", ")}]`
-        )
-    }
 
     let selected: number[] = []
     for (const group of groups) {
@@ -202,23 +166,13 @@ export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
             v: dot3(pairs[idx].midpoint, v),
         }))
         const collinear = largestCollinearSet(midpoints)
-        console.log(
-            `[WheelDetect]   dir=${fv(group.direction)}: collinear set size=${collinear.length}` +
-                ` [${collinear.map(local => `"${pairs[group.indices[local]].key}"`).join(", ")}]`
-        )
         if (collinear.length > selected.length) selected = collinear.map(local => group.indices[local])
     }
 
-    if (selected.length === 0) {
-        console.log("[WheelDetect] No collinear drivetrain found — no wheels tagged")
-        console.groupEnd()
-        return
-    }
+    if (selected.length === 0) return
 
-    const taggedJoints = new Set<string>()
     for (const idx of selected) {
         for (const token of [candidates[pairs[idx].a].token, candidates[pairs[idx].b].token]) {
-            taggedJoints.add(token)
             const jDef = jointDefs[token]
             if (!jDef) continue
             if (!jDef.userData) jDef.userData = { data: {} }
@@ -228,9 +182,4 @@ export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
             jDef.userData.data[URDF_WHEEL_SOURCE_KEY] = URDF_AUTO_WHEEL_SOURCE
         }
     }
-
-    console.log(
-        `[WheelDetect] Tagged ${taggedJoints.size} wheel joints: [${[...taggedJoints].map(t => `"${t}"`).join(", ")}]`
-    )
-    console.groupEnd()
 }

@@ -1,5 +1,4 @@
 import World from "@/systems/World.ts"
-import { URDF_AUTO_WHEEL_SOURCE, URDF_WHEEL_SOURCE_KEY } from "@/urdf/URDFUserData"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type Mechanism from "../physics/Mechanism"
 import WorldSystem from "../WorldSystem"
@@ -91,18 +90,7 @@ class SimulationLayer {
                 this._stimuli.set(JSON.stringify(stim.id), stim)
             } else if (x.primaryConstraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.primaryConstraint, JOLT.VehicleConstraint)
-                const wheelDiagnosticSource =
-                    x.jointUserData?.[URDF_WHEEL_SOURCE_KEY] === URDF_AUTO_WHEEL_SOURCE ? "urdf-auto" : "regular"
-                const driver = new WheelDriver(
-                    makeDriverID(x),
-                    vehicle,
-                    x.maxVelocity,
-                    x.info,
-                    undefined,
-                    undefined,
-                    false,
-                    wheelDiagnosticSource
-                )
+                const driver = new WheelDriver(makeDriverID(x), vehicle, x.maxVelocity, x.info)
                 this._drivers.set(JSON.stringify(driver.id), driver)
                 const stim = new WheelRotationStimulus(makeStimulusID(x), vehicle.GetWheel(0), x.info)
                 this._stimuli.set(JSON.stringify(stim.id), stim)

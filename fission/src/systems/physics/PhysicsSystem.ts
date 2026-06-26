@@ -96,12 +96,6 @@ type WheelDimensions = {
     width: number
 }
 
-type WheelDiagnosticSource = "urdf-auto" | "regular"
-
-function fmtVec(v: Jolt.Vec3 | Jolt.RVec3): string {
-    return `(${v.GetX().toFixed(4)}, ${v.GetY().toFixed(4)}, ${v.GetZ().toFixed(4)})`
-}
-
 function isURDFAutoAssignedWheel(jDef: mirabuf.joint.Joint): boolean {
     return jDef.userData?.data?.[URDF_WHEEL_SOURCE_KEY] === URDF_AUTO_WHEEL_SOURCE
 }
@@ -134,61 +128,6 @@ function inferWheelRadius(jDef: mirabuf.joint.Joint, bounds: Jolt.AABox, axis: J
     return urdfWheelBasis
         ? inferWheelDimensionsFromAxle(bounds, axis).radius
         : (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
-}
-
-function logWheelGeometryComparison(
-    source: WheelDiagnosticSource,
-    jointDefinition: mirabuf.joint.Joint,
-    anchorPoint: Jolt.RVec3,
-    bodyMain: Jolt.Body,
-    bodyWheel: Jolt.Body,
-    axis: Jolt.RVec3,
-    bounds: Jolt.AABox,
-    wheelDimensions: WheelDimensions,
-    wheelPos: Jolt.Vec3,
-    wheelSettings: Jolt.WheelSettingsWV,
-    vehicleSettings: Jolt.VehicleConstraintSettings
-): void {
-    const bodyMainCOM = bodyMain.GetCenterOfMassPosition()
-    const bodyWheelCOM = bodyWheel.GetCenterOfMassPosition()
-    const extents = getShapeExtents(bounds)
-    const axisAbs = [Math.abs(axis.GetX()), Math.abs(axis.GetY()), Math.abs(axis.GetZ())]
-    const axleIndex = axisAbs.indexOf(Math.max(...axisAbs))
-    const radialExtents = extents.filter((_, index) => index !== axleIndex)
-    const anchorLocal = worldPointToBodyLocal(anchorPoint, bodyMain)
-    const bodyCenterLocal = bodyCenterToBodyLocal(bodyWheel, bodyMain)
-    const radius = wheelDimensions.radius * 1.05
-    const inferredBottomY = bodyWheelCOM.GetY() - radius
-    const anchorToCenter = new JOLT.Vec3(
-        bodyWheelCOM.GetX() - anchorPoint.GetX(),
-        bodyWheelCOM.GetY() - anchorPoint.GetY(),
-        bodyWheelCOM.GetZ() - anchorPoint.GetZ()
-    )
-
-    console.log(
-        `[WheelGeomCompare] source=${source}` +
-            ` joint="${jointDefinition.info?.name ?? jointDefinition.info?.GUID ?? "unknown"}"` +
-            ` axis=${fmtVec(axis)} axleIndex=${axleIndex}` +
-            ` boundsMin=${fmtVec(bounds.mMin)} boundsMax=${fmtVec(bounds.mMax)}` +
-            ` extents=(${extents.map(v => v.toFixed(4)).join(", ")})` +
-            ` radialExtents=(${radialExtents.map(v => v.toFixed(4)).join(", ")})` +
-            ` rawRadius=${wheelDimensions.radius.toFixed(4)} simRadius=${radius.toFixed(4)}` +
-            ` width=${wheelDimensions.width.toFixed(4)}` +
-            ` bodyMainCOM=${fmtVec(bodyMainCOM)} bodyWheelCOM=${fmtVec(bodyWheelCOM)}` +
-            ` anchorWorld=${fmtVec(anchorPoint)} anchorLocal=${fmtVec(anchorLocal)}` +
-            ` bodyCenterLocal=${fmtVec(bodyCenterLocal)} chosenMPosition=${fmtVec(wheelPos)}` +
-            ` anchorToCenter=${fmtVec(anchorToCenter)} inferredCylinderBottomY=${inferredBottomY.toFixed(4)}` +
-            ` vehicleForward=${fmtVec(vehicleSettings.mForward)} vehicleUp=${fmtVec(vehicleSettings.mUp)}` +
-            ` wheelForward=${fmtVec(wheelSettings.mWheelForward)} wheelUp=${fmtVec(wheelSettings.mWheelUp)}` +
-            ` suspensionDir=${fmtVec(wheelSettings.mSuspensionDirection)}` +
-            ` steeringAxis=${fmtVec(wheelSettings.mSteeringAxis)}` +
-            ` minSuspension=${wheelSettings.mSuspensionMinLength.toFixed(6)}` +
-            ` maxSuspension=${wheelSettings.mSuspensionMaxLength.toFixed(6)}`
-    )
-
-    JOLT.destroy(anchorLocal)
-    JOLT.destroy(bodyCenterLocal)
-    JOLT.destroy(anchorToCenter)
 }
 
 function inferURDFAutoWheelBasis(axis: Jolt.RVec3): WheelBasis | undefined {
@@ -864,7 +803,6 @@ class PhysicsSystem extends WorldSystem {
 
         const urdfAutoWheel = isURDFAutoAssignedWheel(jointDefinition)
         const urdfWheelBasis = urdfAutoWheel ? inferURDFAutoWheelBasis(axis) : undefined
-        const diagnosticSource: WheelDiagnosticSource = urdfWheelBasis ? "urdf-auto" : "regular"
         const bounds = bodyWheel.GetShape().GetLocalBounds()
         const wheelDimensions = urdfWheelBasis
             ? inferWheelDimensionsFromAxle(bounds, axis)
@@ -905,20 +843,6 @@ class PhysicsSystem extends WorldSystem {
             wheelSettings.mSuspensionDirection = urdfWheelBasis.suspensionDirection
             wheelSettings.mSteeringAxis = urdfWheelBasis.steeringAxis
         }
-
-        logWheelGeometryComparison(
-            diagnosticSource,
-            jointDefinition,
-            anchorPoint,
-            bodyMain,
-            bodyWheel,
-            axis,
-            bounds,
-            wheelDimensions,
-            wheelPos,
-            wheelSettings,
-            vehicleSettings
-        )
 
         vehicleSettings.mWheels.clear()
         vehicleSettings.mWheels.push_back(wheelSettings)

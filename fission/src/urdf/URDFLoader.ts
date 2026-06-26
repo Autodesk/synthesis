@@ -1,5 +1,5 @@
 import JSZip from "jszip"
-import { mirabuf } from "@/proto/mirabuf"
+import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "./WheelDetector"
 
