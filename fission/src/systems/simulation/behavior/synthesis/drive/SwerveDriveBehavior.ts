@@ -67,6 +67,13 @@ class SwerveDriveBehavior extends DriveBehavior {
         return Math.abs(x) < threshold ? 0 : x
     }
 
+    public resetFieldForward(): void {
+        const rootNodeId = this.resolveRootNodeId()
+        if (rootNodeId == undefined) return
+        const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId)!.GetRotation())
+        this._fieldForward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation)
+    }
+
     private driveSpeeds(forward: number, strafe: number, turn: number) {
         const rootNodeId = this.resolveRootNodeId()
         if (rootNodeId == undefined) throw new Error("Robot root node should not be undefined")
@@ -76,7 +83,7 @@ class SwerveDriveBehavior extends DriveBehavior {
         const robotRight = new THREE.Vector3(1, 0, 0).applyQuaternion(rotation)
         const robotUp = new THREE.Vector3(0, 1, 0).applyQuaternion(rotation)
 
-        if (InputSystem.getInput("swerveResetFieldForward", this._brainIndex)) this._fieldForward = robotForward.clone()
+        if (InputSystem.getInput("swerveResetFieldForward", this._brainIndex)) this.resetFieldForward()
 
         forward = SwerveDriveBehavior.deadband(forward)
         strafe = SwerveDriveBehavior.deadband(strafe)

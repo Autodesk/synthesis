@@ -94,6 +94,12 @@ class SynthesisBrain extends Brain {
         existing.isArcade = driveType == DriveType.ARCADE
     }
 
+    public resetSwerveOrientation(): void {
+        const swerve = this._behaviors.find(b => b instanceof SwerveDriveBehavior) as SwerveDriveBehavior | undefined
+        if (!swerve) return
+        swerve.resetFieldForward()
+    }
+
     public configure(): void {
         this._behaviors = []
         this._currentJointIndex = 1
