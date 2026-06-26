@@ -1,3 +1,5 @@
+import Jolt from "@azaleacolburn/jolt-physics"
+
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
 }
@@ -18,6 +20,13 @@ export function deobf(s: string) {
                 .match(/.{1,2}/g)!
                 .join("%")
     )
+}
+
+export function printAABox(box: Jolt.AABox) {
+    const min = box.mMin
+    const max = box.mMax
+
+    console.log(`[${min.GetX()} ${min.GetX()} ${min.GetZ()}] [${max.GetX()} ${max.GetY()} ${max.GetZ()}]`)
 }
 
 export function findListDifference<T>(previousList: T[], currentList: T[]): { added: T[]; removed: T[] } {

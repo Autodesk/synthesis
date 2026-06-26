@@ -3,7 +3,7 @@ import type * as THREE from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
-import { findListDifference } from "@/util/Utility"
+import { findListDifference, printAABox } from "@/util/Utility"
 import MirabufSceneObject from "./MirabufSceneObject"
 import { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
@@ -42,15 +42,24 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             .filter(rn => rn.isGamePiece)
             .map(rn => field.mechanism.nodeToBody.get(rn.id)!) as Jolt.BodyID[]
 
+        // console.log(`gps ${gps.length}`)
+
         const gamePiecesContacting = gps.filter(gpID => {
             const gp = World.physicsSystem.getBody(gpID)!
-            const objBounding = gp.GetWorldSpaceBounds()
+            const gpBounding = gp.GetWorldSpaceBounds()
 
-            const overlaps = this.bounding?.OverlapsAABox(objBounding)
-            JOLT.destroy(objBounding)
+            // console.log("GP Bounding")
+            // printAABox(gpBounding)
+
+            const overlaps = this.bounding?.OverlapsAABox(gpBounding)
+            JOLT.destroy(gpBounding)
 
             return overlaps
         })
+
+        if (gamePiecesContacting.length !== 0) {
+            console.log("GAME PIECES CONTACTING: " + gamePiecesContacting.length)
+        }
 
         const { added, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
 

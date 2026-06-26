@@ -8,10 +8,12 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
+    convertJoltVec3ToThreeVector3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp, type VisualProperties } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
+import { printAABox } from "@/util/Utility"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
     public static lightRedMaterial = new THREE.MeshPhongMaterial({
@@ -102,12 +104,36 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     }
 
     private createBoundingBox(props: VisualProperties) {
-        // TODO
-        // Maybe unit box instead?
-        this.bounding = new JOLT.AABox(new JOLT.Vec3(-0.5, -0.5, -0.5), new JOLT.Vec3(0.5, 0.5, 0.5))
+        // this.bounding = new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(1, 1, 1))
 
-        this.bounding = this.bounding.Scaled(convertThreeVector3ToJoltVec3(props.scale))
-        this.bounding.TranslateVec3(convertThreeVector3ToJoltVec3(props.translation))
+        // const scale = convertThreeVector3ToJoltVec3(props.scale)
+        // const translation = convertThreeVector3ToJoltVec3(props.translation)
+
+        // this.bounding = this.bounding.Scaled(scale)
+        // this.bounding.TranslateVec3(translation)
+        // this.bounding.TranslateVec3(translation.Add(new JOLT.Vec3(-0.5, 0.0, 0.0)))
+
+        if (!this.mesh) return
+
+        const box = new THREE.Box3()
+        box.setFromObject(this.mesh, true)
+
+        const min = convertThreeVector3ToJoltVec3(box.min)
+        const max = convertThreeVector3ToJoltVec3(box.max)
+
+        this.bounding = new JOLT.AABox(min, max)
+
+        const material = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+        const points = [
+            convertJoltVec3ToThreeVector3(this.bounding.mMax, false),
+            convertJoltVec3ToThreeVector3(this.bounding.mMin, false),
+        ]
+        const geometry = new THREE.BufferGeometry().setFromPoints(points)
+
+        const line = new THREE.Line(geometry, material)
+        World.sceneRenderer.addObject(line)
+
+        printAABox(this.bounding)
     }
 
     private setMeshProperties(props: VisualProperties) {
