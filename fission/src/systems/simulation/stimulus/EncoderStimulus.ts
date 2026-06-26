@@ -9,7 +9,7 @@ abstract class EncoderStimulus extends Stimulus {
         super(id, info)
     }
 
-    public abstract update(deltaT: number): void
+    public abstract override update(deltaT: number): void
 }
 
 export default EncoderStimulus
