@@ -52,7 +52,7 @@ function affect(
 
         if (punch) {
             World.physicsSystem
-                .getBody(res.data.mBodyID)
+                .getBody(res.data.mBodyID)!
                 .AddImpulse(
                     convertThreeVector3ToJoltVec3(dir.normalize().multiplyScalar(punchForce)),
                     convertJoltVec3ToJoltRVec3(res.point)

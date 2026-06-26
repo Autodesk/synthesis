@@ -13,7 +13,7 @@ class RobotPositionTracker {
                 return
             }
 
-            const rootBody = World.physicsSystem.getBody(rootNodeId)
+            const rootBody = World.physicsSystem.getBody(rootNodeId)!
             const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
 
             const rootPosition = new THREE.Vector3()

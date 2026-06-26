@@ -51,9 +51,9 @@ export class SimAccelInput extends SimInput {
 
     public update(deltaT: number) {
         if (!this._joltID) return
-        const body = World.physicsSystem.getBody(this._joltID)
+        const body = World.physicsSystem.getBody(this._joltID)!
 
-        const rot = convertJoltQuatToThreeQuaternion(body.GetRotation())
+        const rot = convertJoltQuatToThreeQuaternion(body.GetRotation(), true)
         const mat = new THREE.Matrix4().makeRotationFromQuaternion(rot).transpose()
         const newVel = convertJoltVec3ToThreeVector3(body.GetLinearVelocity()).applyMatrix4(mat)
 

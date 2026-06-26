@@ -106,7 +106,7 @@ function computeDeltaFromGizmo(
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
     const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+        World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
     )
     const deltaTransformation = gizmoTransformation.premultiply(fieldTransformation.invert())
 
@@ -189,7 +189,7 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
             }
 
             const fieldTransformation = convertJoltMat44ToThreeMatrix4(
-                World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+                World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
             )
             const props = deltaFieldTransformsPhysicalProp(deltaTransformation, fieldTransformation)
 
