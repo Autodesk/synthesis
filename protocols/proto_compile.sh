@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if ! [ -d ../api/Api/Gen/ ]
 then
     mkdir ../api/Api/Gen/

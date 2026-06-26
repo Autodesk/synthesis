@@ -1,7 +1,7 @@
 import * as THREE from "three"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
 import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
@@ -10,12 +10,6 @@ import World from "@/systems/World"
 
 vi.mock("@/systems/World", () => ({
     default: {
-        get physicsSystem() {
-            return this._physicsSystem
-        },
-        set physicsSystem(value) {
-            this._physicsSystem = value
-        },
         // biome-ignore lint/style/useNamingConvention: Mocking private class property
         _physicsSystem: null,
         sceneRenderer: {
@@ -144,15 +138,14 @@ describe("DragModeSystem Integration Tests", () => {
             const bodyId = body.GetID()
             physicsSystem.addBodyToSystem(bodyId, true)
 
-            // Create a mock MirabufSceneObject that properly passes instanceof checks
+            // Create a mock MirabufSceneObject that properly passes `instanceof` checks
             const mockSceneObject = Object.create(MirabufSceneObject.prototype)
             mockSceneObject.loadFocusTransform = vi.fn()
             vi.spyOn(mockSceneObject, "miraType", "get").mockReturnValue(MiraType.FIELD)
 
-            const mockAssociation = {
-                sceneObject: mockSceneObject,
-                isGamePiece: true,
-            }
+            const mockAssociation = Object.create(RigidNodeAssociate.prototype)
+            mockAssociation.sceneObject = mockSceneObject
+            mockAssociation.rigidNode = { isGamePiece: true }
 
             const originalGetBodyAssociation = physicsSystem.getBodyAssociation
             physicsSystem.getBodyAssociation = vi.fn().mockReturnValue(mockAssociation)
@@ -164,7 +157,7 @@ describe("DragModeSystem Integration Tests", () => {
             }
             physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
 
-            const physicsBody = physicsSystem.getBody(bodyId)
+            const physicsBody = physicsSystem.getBody(bodyId)!
             dragModeSystem.enabled = true
 
             return {

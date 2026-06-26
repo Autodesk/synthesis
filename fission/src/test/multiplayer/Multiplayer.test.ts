@@ -72,9 +72,9 @@ describe("Multiplayer Tests", () => {
 
             const connectionSpy = vi.fn()
             const acceptedConnectionSpy = vi.spyOn(player1, "setupConnectionHandlers")
-            player1.getClient().on("connection", connectionSpy)
+            player1.client.on("connection", connectionSpy)
 
-            player2.getClient().connect(player1.clientId, {
+            player2.client.connect(player1.clientId, {
                 metadata: {
                     authHash: "invalid",
                 },

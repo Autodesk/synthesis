@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import com.autodesk.synthesis.io.*;
 
@@ -17,10 +17,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 
-import com.autodesk.synthesis.revrobotics.CANSparkMax;
+import com.autodesk.synthesis.revrobotics.spark.SparkMax;
 import com.autodesk.synthesis.revrobotics.RelativeEncoder;
 import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
-import com.kauailabs.navx.frc.AHRS;
+import com.autodesk.synthesis.studica.AHRS;
 import com.autodesk.synthesis.CANEncoder;
 import com.autodesk.synthesis.ctre.TalonFX;
 
@@ -39,13 +39,17 @@ public class Robot extends TimedRobot {
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-    private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
+    private static final int kAutoTurn = 90;
+
+    private ADXL362 m_accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
     private AHRS m_Gyro = new AHRS();
 
-    private CANSparkMax m_sparkLeft = new CANSparkMax(1, MotorType.kBrushless);
-    private CANSparkMax m_sparkRight = new CANSparkMax(2, MotorType.kBrushless);
-    private CANSparkMax m_sparkArm = new CANSparkMax(3, MotorType.kBrushless);
+    private SparkMax m_sparkLeft = new SparkMax(1, MotorType.kBrushless);
+    private SparkMax m_sparkRight = new SparkMax(2, MotorType.kBrushless);
+    private SparkMax m_sparkArm = new SparkMax(3, MotorType.kBrushless);
     private RelativeEncoder m_encoder;
+
+    private double m_initAngle = 0;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -117,13 +121,19 @@ public class Robot extends TimedRobot {
                 m_sparkLeft.set(0.5);
                 m_sparkRight.set(0.5);
                 if (m_encoder.getPosition() > 36.0) {
+                    m_initAngle = m_accelerometer.getY();
                     m_autoState = AutoState.Stage2;
                     System.out.println("--- Transitioning to Stage 2 ---");
                 }
                 break;
             case Stage2:
-                m_sparkLeft.set(0.5);
-                m_sparkRight.set(-0.5);
+                double current = (m_accelerometer.getY() - m_initAngle);
+                double delta = kAutoTurn - current;
+                double speed = delta * (1.0 / 15.0);
+                speed = Math.max(Math.min(speed, 1.0), -1.0);
+
+                m_sparkLeft.set(speed);
+                m_sparkRight.set(-speed);
                 break;
             default:
                 break;

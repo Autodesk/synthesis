@@ -14,7 +14,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 export const COLLISION_TIMEOUT = 500
 
 class MultiplayerSystem {
-    private readonly _client: Peer
+    public readonly client: Peer
     private readonly _connections: Map<string, DataConnection> = new Map()
     readonly roomId: string
     readonly clientId: string
@@ -36,28 +36,24 @@ class MultiplayerSystem {
         return await system._initializationPromise
     }
 
-    getClient() {
-        return this._client
-    }
-
     private constructor(roomId: string, clientId: string, displayName: string, isHost: boolean = false) {
         this.roomId = roomId
         this.clientId = clientId
         this.info = { clientId: this.clientId, displayName: displayName, isHost, creationTime: Date.now() }
 
-        this._client = new Peer(this.clientId, {
+        this.client = new Peer(this.clientId, {
             host: window.location.hostname,
             port: parseInt(import.meta.env.VITE_MULTIPLAYER_PORT) ?? 9002,
             path: "/",
         })
 
-        this._client.on("call", e => console.debug("peerjs call", e))
-        this._client.on("close", () => {
+        this.client.on("call", e => console.debug("peerjs call", e))
+        this.client.on("close", () => {
             console.debug("peerjs close")
         })
 
         this._initializationPromise = new Promise<boolean>(resolve => {
-            this._client.on("open", async (id: string) => {
+            this.client.on("open", async (id: string) => {
                 console.debug(`Broker connection opened: ID - ${id}`)
                 const peerCount = await this.connectToRoom()
                 if (peerCount == 0 && !isHost) {
@@ -70,7 +66,7 @@ class MultiplayerSystem {
                 resolve(true)
             })
 
-            this._client.on("error", e => {
+            this.client.on("error", e => {
                 console.error("PeerJS Error:", e)
                 switch (e.type) {
                     case "unavailable-id":
@@ -88,12 +84,12 @@ class MultiplayerSystem {
                 resolve(false)
             })
 
-            this._client.on("disconnected", peer => {
+            this.client.on("disconnected", peer => {
                 console.log("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
             })
         })
 
-        this._client.on("connection", async conn => {
+        this.client.on("connection", async conn => {
             console.debug("Receiving Connection: ", conn.peer)
             if (
                 conn.metadata.authHash !=
@@ -122,7 +118,7 @@ class MultiplayerSystem {
     async connectToRoom() {
         const roomHash = await createSha256Hash({ roomId: this.roomId })
 
-        const peersPromise = new Promise<string[]>(resolve => this._client.listAllPeers(resolve))
+        const peersPromise = new Promise<string[]>(resolve => this.client.listAllPeers(resolve))
         const peers = await peersPromise
 
         console.debug(`Peers: ${peers}`)
@@ -138,7 +134,7 @@ class MultiplayerSystem {
                     )
                         return false
 
-                    const conn = this._client.connect(peer, {
+                    const conn = this.client.connect(peer, {
                         metadata: {
                             authHash: await createSha256Hash({
                                 roomId: this.roomId,
@@ -308,7 +304,7 @@ class MultiplayerSystem {
     public destroy() {
         this._connections.forEach(conn => conn.close())
         this._connections.clear()
-        this._client.destroy()
+        this.client.destroy()
         this._clientToSceneObjectIdMap.clear()
         this._onDestroyHooks.forEach(hook => {
             hook()

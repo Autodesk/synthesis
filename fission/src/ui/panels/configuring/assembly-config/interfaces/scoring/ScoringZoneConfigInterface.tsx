@@ -5,12 +5,6 @@ import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTyp
 import ZoneConfigBase from "../zones/ZoneConfigBase"
 import Checkbox from "@/ui/components/Checkbox"
 
-/**
- * @param points Number of points the zone is worth.
- * @param destroy Destroy gamepiece setting.
- * @param persistent Persistent points setting.
- */
-
 function attachAndPersistZone(zone: ScoringZonePreferences, field: MirabufSceneObject) {
     if (!field?.fieldPreferences) return
     if (!field.fieldPreferences.scoringZones.includes(zone)) field.fieldPreferences.scoringZones.push(zone)
@@ -24,14 +18,14 @@ interface ZoneConfigProps {
 
 const ScoringZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
     const [points, setPoints] = useState<number>(selectedZone.points)
-    const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
+    const [accumulating, setAccumulating] = useState<boolean>(selectedZone.shouldPointsAccumulate)
 
     const applyExtrasOnSave = useCallback(
         (zone: ScoringZonePreferences) => {
             zone.points = points
-            zone.persistentPoints = persistent
+            zone.shouldPointsAccumulate = accumulating
         },
-        [points, persistent]
+        [points, accumulating]
     )
 
     const removeZoneObject = useCallback((field: MirabufSceneObject, zone: ScoringZonePreferences) => {
@@ -54,7 +48,12 @@ const ScoringZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, 
                 defaultValue={selectedZone.points}
                 onChange={v => setPoints(parseInt(v.target.value) || 0)}
             />
-            <Checkbox label="Persistent Points" checked={persistent} onClick={checked => setPersistent(checked)} />
+            <Checkbox
+                label="Accumulating Points"
+                tooltip="If disabled, gamepieces that exit the scoring zone will be subtracted from the score (for pick and place games)"
+                checked={accumulating}
+                onClick={checked => setAccumulating(checked)}
+            />
         </ZoneConfigBase>
     )
 }

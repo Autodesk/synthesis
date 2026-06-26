@@ -45,9 +45,11 @@ class World {
     public static get sceneRenderer() {
         return World._sceneRenderer
     }
+
     public static get physicsSystem() {
         return World._physicsSystem
     }
+
     public static get simulationSystem() {
         return World._simulationSystem
     }
@@ -70,10 +72,6 @@ class World {
 
     public static getOwnObjects() {
         return World.multiplayerSystem?.getOwnObjects() ?? World.sceneRenderer.mirabufSceneObjects.getAll()
-    }
-
-    public static set physicsSystem(system: PhysicsSystem) {
-        World.physicsSystem = system
     }
 
     public static resetAccumTimes() {
@@ -122,7 +120,7 @@ class World {
 
         World._isAlive = false
 
-        World._physicsSystem.destroy()
+        World.physicsSystem.destroy()
         World._sceneRenderer.destroy()
         World._simulationSystem.destroy()
         World._inputSystem.destroy()
@@ -140,7 +138,7 @@ class World {
 
         this._accumTimes.totalTime += this.time(() => {
             this._accumTimes.simulationTime += this.time(() => World._simulationSystem.update(this._currentDeltaT))
-            this._accumTimes.physicsTime += this.time(() => World._physicsSystem.update(this._currentDeltaT))
+            this._accumTimes.physicsTime += this.time(() => World.physicsSystem.update(this._currentDeltaT))
             this._accumTimes.inputTime += this.time(() => World._inputSystem.update(this._currentDeltaT))
             this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.update(this._currentDeltaT))
             World._dragModeSystem.update(this._currentDeltaT)

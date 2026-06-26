@@ -18,22 +18,15 @@ class WheelDriver extends Driver {
     public accelerationDirection: number = 0.0
     private _prevVel: number = 0.0
     public maxVelocity = 30.0
-    private _maxAcceleration = 1.5
+    public maxAcceleration = 1.5
 
     public _targetVelocity = () => {
         let vel = this.accelerationDirection * (this._reversed ? -1 : 1) * this.maxVelocity
 
-        if (vel - this._prevVel < -this._maxAcceleration) vel = this._prevVel - this._maxAcceleration
-        if (vel - this._prevVel > this._maxAcceleration) vel = this._prevVel + this._maxAcceleration
+        if (vel - this._prevVel < -this.maxAcceleration) vel = this._prevVel - this.maxAcceleration
+        if (vel - this._prevVel > this.maxAcceleration) vel = this._prevVel + this.maxAcceleration
 
         return vel
-    }
-
-    public get maxForce(): number {
-        return this._maxAcceleration
-    }
-    public set maxForce(acc: number) {
-        this._maxAcceleration = acc
     }
 
     public get constraint(): Jolt.VehicleConstraint {
@@ -54,7 +47,7 @@ class WheelDriver extends Driver {
         this._constraint = constraint
         this.maxVelocity = maxVel
         const controller = JOLT.castObject(this._constraint.GetController(), JOLT.WheeledVehicleController)
-        this._maxAcceleration = controller.GetEngine().mMaxTorque
+        this.maxAcceleration = controller.GetEngine().mMaxTorque
 
         this._reversed = reversed
         this.deviceType = deviceType
@@ -68,10 +61,6 @@ class WheelDriver extends Driver {
         const vel = this._targetVelocity()
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
-    }
-
-    public set reversed(val: boolean) {
-        this._reversed = val
     }
 
     public getReceiverType(): NoraTypes {

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 FUSION_ADDIN_LOCATION=~/Library/Application\ Support/Autodesk/ApplicationPlugins/
 EXPORTER_SOURCE_DIR=../../../exporter/SynthesisFusionAddin/

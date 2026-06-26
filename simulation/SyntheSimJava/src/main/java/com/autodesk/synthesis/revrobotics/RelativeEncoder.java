@@ -3,9 +3,13 @@ package com.autodesk.synthesis.revrobotics;
 import com.autodesk.synthesis.CANEncoder;
 import com.revrobotics.REVLibError;
 
+/**
+ * RelativeEncoder wrapper to add proper WPILib HALSim support.
+ * Position and velocity are sourced from the Synthesis sim encoder.
+ * Conversion factors and inversion are managed internally.
+ */
 public class RelativeEncoder implements com.revrobotics.RelativeEncoder {
 
-    private com.revrobotics.RelativeEncoder m_original;
     private CANEncoder m_encoder;
     private double m_zero = 0.0;
     private double m_positionConversionFactor = 1.0;
@@ -13,12 +17,7 @@ public class RelativeEncoder implements com.revrobotics.RelativeEncoder {
     private double m_invertedFactor = 1.0;
 
     public RelativeEncoder(com.revrobotics.RelativeEncoder original, CANEncoder encoder) {
-        m_original = original;
         m_encoder = encoder;
-
-        m_positionConversionFactor = m_original.getPositionConversionFactor();
-        m_velocityConversionFactor = m_original.getVelocityConversionFactor();
-        m_invertedFactor = m_original.getInverted() ? -1.0 : 1.0;
     }
 
     @Override
@@ -37,62 +36,27 @@ public class RelativeEncoder implements com.revrobotics.RelativeEncoder {
         return REVLibError.kOk;
     }
 
-    @Override
-    public REVLibError setPositionConversionFactor(double factor) {
+    public void setPositionConversionFactor(double factor) {
         m_positionConversionFactor = factor;
-        return REVLibError.kOk;
     }
 
-    @Override
-    public REVLibError setVelocityConversionFactor(double factor) {
+    public void setVelocityConversionFactor(double factor) {
         m_velocityConversionFactor = factor;
-        return REVLibError.kOk;
     }
 
-    @Override
     public double getPositionConversionFactor() {
         return m_positionConversionFactor;
     }
 
-    @Override
     public double getVelocityConversionFactor() {
         return m_velocityConversionFactor;
     }
 
-    @Override
-    public REVLibError setAverageDepth(int depth) {
-        return m_original.setAverageDepth(depth);
-    }
-
-    @Override
-    public int getAverageDepth() {
-        return m_original.getAverageDepth();
-    }
-
-    @Override
-    public REVLibError setMeasurementPeriod(int period_ms) {
-        return m_original.setMeasurementPeriod(period_ms);
-    }
-
-    @Override
-    public int getMeasurementPeriod() {
-        return m_original.getMeasurementPeriod();
-    }
-
-    @Override
-    public int getCountsPerRevolution() {
-        return 1;
-    }
-
-    @Override
-    public REVLibError setInverted(boolean inverted) {
+    public void setInverted(boolean inverted) {
         m_invertedFactor = inverted ? -1.0 : 1.0;
-        return REVLibError.kOk;
     }
 
-    @Override
     public boolean getInverted() {
         return m_invertedFactor < 0.0;
     }
-    
 }

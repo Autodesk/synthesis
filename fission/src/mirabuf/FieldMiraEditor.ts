@@ -4,8 +4,12 @@ import { mirabuf } from "@/proto/mirabuf"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes.ts"
 import {
     defaultFieldPreferences,
+    defaultRobotPreferences,
+    type EjectorPreferences,
     type FieldPreferences,
+    type IntakePreferences,
     type ProtectedZonePreferences,
+    type RobotPreferences,
     type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
 
@@ -13,6 +17,8 @@ export interface DevtoolMiraData {
     "devtool:scoring_zones": ScoringZonePreferences[]
     "devtool:protected_zones": ProtectedZonePreferences[]
     "devtool:spawn_locations": FieldPreferences["spawnLocations"]
+    "devtool:robot_ejector": RobotPreferences["ejector"]
+    "devtool:robot_intake": RobotPreferences["intake"]
     "devtool:a": unknown
     "devtool:b": unknown
     "devtool:test": unknown
@@ -48,7 +54,7 @@ export const devtoolHandlers = {
                     (typeof z.parentNode === "string" || z.parentNode === undefined) &&
                     typeof z.points === "number" &&
                     typeof z.destroyGamepiece === "boolean" &&
-                    typeof z.persistentPoints === "boolean" &&
+                    (typeof z.shouldPointsAccumulate === "boolean" || typeof z.persistentPoints === "boolean") &&
                     Array.isArray(z.deltaTransformation)
             )
         },
@@ -127,10 +133,43 @@ export const devtoolHandlers = {
             })
         },
     },
+    "devtool:robot_intake": {
+        get(robot) {
+            return robot.intakePreferences ?? defaultRobotPreferences().intake
+        },
+        set(robot, val) {
+            val ??= defaultRobotPreferences().intake
+            if (!robot.intakePreferences || !this.validate(val)) {
+                console.warn("validation failed", val, robot.intakePreferences)
+                return
+            }
+            robot.intakePreferences = val
+            robot.updateIntakeSensor()
+        },
+        validate(z): z is IntakePreferences {
+            return typeof z === "object" && z !== null
+        },
+    },
+    "devtool:robot_ejector": {
+        get(robot) {
+            return robot.ejectorPreferences ?? defaultRobotPreferences().ejector
+        },
+        set(robot, val) {
+            val ??= defaultRobotPreferences().intake
+            if (!robot.intakePreferences || !this.validate(val)) {
+                console.warn("validation failed", val, robot.intakePreferences)
+                return
+            }
+            robot.ejectorPreferences = val
+        },
+        validate(z): z is EjectorPreferences {
+            return typeof z === "object" && z !== null
+        },
+    },
 } as const satisfies Partial<{
     [K in keyof DevtoolMiraData]: {
-        get(field: MirabufSceneObject): DevtoolMiraData[K]
-        set(field: MirabufSceneObject, val: unknown | null): void
+        get(object: MirabufSceneObject): DevtoolMiraData[K]
+        set(object: MirabufSceneObject, val: unknown | null): void
         validate(val: unknown): val is DevtoolMiraData[K]
     }
 }>

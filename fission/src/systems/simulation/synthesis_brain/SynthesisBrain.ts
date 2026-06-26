@@ -47,7 +47,7 @@ class SynthesisBrain extends Brain {
         return this._behaviors
     }
 
-    // Tracks the number of each specific mira file spawned
+    // Tracks the number of each specific mirabuf file spawned
     public static numberRobotsSpawned: { [key: string]: number } = {}
 
     /** @returns {string} The name of the input scheme attached to this brain. */
@@ -70,7 +70,7 @@ class SynthesisBrain extends Brain {
             console.error("Can't find drive behavior!")
             return
         }
-        existing.setIsArcade(driveType == DriveType.ARCADE)
+        existing.isArcade = driveType == DriveType.ARCADE
     }
 
     public configure(): void {
@@ -79,6 +79,7 @@ class SynthesisBrain extends Brain {
         if (this._assembly.mechanism.controllable) {
             this.configureSkidSteerDriveBehavior(this.driveType == DriveType.ARCADE)
             this.configureArmBehaviors()
+
             this.configureElevatorBehaviors()
             this.configureGamepieceManipBehavior()
         } else {
@@ -154,7 +155,7 @@ class SynthesisBrain extends Brain {
     public clearControls(): void {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
-    /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */
+    /** Creates an instance of `ArcadeDriveBehavior` and automatically configures it. */
     private configureSkidSteerDriveBehavior(isArcade: boolean) {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
@@ -175,33 +176,35 @@ class SynthesisBrain extends Brain {
         const rightStimuli: WheelRotationStimulus[] = []
 
         // Determines which wheels and stimuli belong to which side of the robot
+        const rightVector = new JOLT.RVec3(1, 0, 0)
         for (let i = 0; i < wheelDrivers.length; i++) {
-            const wheelPos = convertJoltVec3ToJoltRVec3(
-                fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
-            )
+            const constraintMatrix = fixedConstraints[i].GetConstraintToBody1Matrix()
+            const translation = constraintMatrix.GetTranslation()
+            // `GetTranslation` should return an internal reference
+            const wheelPos = convertJoltVec3ToJoltRVec3(translation, false)
 
             const robotCOM = World.physicsSystem
-                .getBody(this._mechanism.constraints[0].childBody)
+                .getBody(this._mechanism.constraints[0].childBody)!
                 .GetCenterOfMassPosition()
-            const rightVector = new JOLT.RVec3(1, 0, 0)
 
-            const dotProduct = rightVector.Dot(wheelPos.SubRVec3(robotCOM))
+            const newPos = wheelPos.SubRVec3(robotCOM)
+            const dotProduct = rightVector.Dot(newPos)
+            const [wheels, stimuli] = dotProduct < 0 ? [rightWheels, rightStimuli] : [leftWheels, leftStimuli]
 
-            if (dotProduct < 0) {
-                rightWheels.push(wheelDrivers[i])
-                rightStimuli.push(wheelStimuli[i])
-            } else {
-                leftWheels.push(wheelDrivers[i])
-                leftStimuli.push(wheelStimuli[i])
-            }
+            wheels.push(wheelDrivers[i])
+            stimuli.push(wheelStimuli[i])
+
+            JOLT.destroy(constraintMatrix)
+            JOLT.destroy(wheelPos)
         }
+        JOLT.destroy(rightVector)
 
         this._behaviors.push(
             new SkidSteerDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex, isArcade)
         )
     }
 
-    /** Creates instances of ArmBehavior and automatically configures them. */
+    /** Creates instances of `ArmBehavior` and automatically configures them. */
     private configureArmBehaviors() {
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof HingeDriver
@@ -238,7 +241,7 @@ class SynthesisBrain extends Brain {
         }
     }
 
-    /** Creates instances of ElevatorBehavior and automatically configures them. */
+    /** Creates instances of `ElevatorBehavior` and automatically configures them. */
     private configureElevatorBehaviors() {
         const sliderDrivers: SliderDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof SliderDriver

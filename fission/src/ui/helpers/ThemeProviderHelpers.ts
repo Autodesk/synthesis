@@ -1,4 +1,3 @@
-import type { PaletteMode } from "@mui/material"
 import { createContext, type ReactNode, useContext } from "react"
 
 export interface ThemeProviderProps {
@@ -6,7 +5,6 @@ export interface ThemeProviderProps {
 }
 
 export interface StoredTheme {
-    mode: PaletteMode
     primary: {
         main: string
     }
@@ -22,8 +20,6 @@ export interface StoredTheme {
 }
 
 export const ThemeContext = createContext({
-    mode: "dark",
-    setMode: (_mode: PaletteMode) => {},
     setPrimaryColor: (_color: string) => {},
     setSecondaryColor: (_color: string) => {},
     primaryColor: "",

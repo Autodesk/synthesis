@@ -48,7 +48,7 @@ export class SimGyroInput extends SimInput {
         this._robot = robot
         this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
 
-        if (this._joltID) this._joltBody = World.physicsSystem.getBody(this._joltID)
+        if (this._joltID) this._joltBody = World.physicsSystem.getBody(this._joltID)!
     }
 
     private getAxis(axis: Jolt.Vec3): number {
