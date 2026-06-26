@@ -1,4 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
+import { convertJoltVec3ToThreeVector3 } from "./TypeConversions"
+import World from "@/systems/World"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
@@ -27,6 +30,24 @@ export function printAABox(box: Jolt.AABox) {
     const max = box.mMax
 
     console.log(`[${min.GetX()} ${min.GetX()} ${min.GetZ()}] [${max.GetX()} ${max.GetY()} ${max.GetZ()}]`)
+}
+
+export function renderAABox(box: Jolt.AABox) {
+    const material = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+    const points = [convertJoltVec3ToThreeVector3(box.mMin, false), convertJoltVec3ToThreeVector3(box.mMax, false)]
+    const geometry = new THREE.BufferGeometry().setFromPoints(points)
+
+    const line = new THREE.Line(geometry, material)
+    World.sceneRenderer.addObject(line)
+}
+
+export function renderThreeBox3(box: THREE.Box3) {
+    const material = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+    const points = [box.min, box.max]
+    const geometry = new THREE.BufferGeometry().setFromPoints(points)
+
+    const line = new THREE.Line(geometry, material)
+    World.sceneRenderer.addObject(line)
 }
 
 export function findListDifference<T>(previousList: T[], currentList: T[]): { added: T[]; removed: T[] } {
