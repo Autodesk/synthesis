@@ -22,11 +22,13 @@ import SimCANEncoder from "./wpilib_brain/sim/SimCANEncoder"
 import SimCANMotor from "./wpilib_brain/sim/SimCANMotor"
 import SimPWM from "./wpilib_brain/sim/SimPWM"
 import { SimType } from "./wpilib_brain/WPILibTypes"
+import SimGyro from "./wpilib_brain/sim/SimGyro"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
     [NoraTypes.NUMBER]: "#5f60ff",
     [NoraTypes.NUMBER2]: "#2bc275",
     [NoraTypes.NUMBER3]: "#ffc21a",
+    [NoraTypes.NUMBER6]: "#ff6f1a",
     [NoraTypes.UNKNOWN]: "#bebebe",
 }
 
@@ -681,6 +683,10 @@ export class SimConfig {
                 }
                 case SimType.ACCELEROMETER: {
                     receiver = SimAccel.genReceiver(targetHandle.originId)
+                    break
+                }
+                case SimType.GYRO: {
+                    receiver = SimGyro.genReceiver(targetHandle.originId)
                     break
                 }
             }

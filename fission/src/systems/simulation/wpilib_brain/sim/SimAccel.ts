@@ -42,6 +42,9 @@ export class SimAccelInput extends SimInput {
     private _joltID?: Jolt.BodyID
     private _prevVel: THREE.Vector3
 
+    private static readonly GRAVITY = new THREE.Vector3(0, -9.8, 0)
+    private static readonly GRAVITY_MAGNITUDE = SimAccelInput.GRAVITY.length()
+
     constructor(device: string, robot: Mechanism) {
         super(device)
         this._robot = robot
@@ -53,18 +56,18 @@ export class SimAccelInput extends SimInput {
         if (!this._joltID) return
         const body = World.physicsSystem.getBody(this._joltID)!
 
+        const worldVel = convertJoltVec3ToThreeVector3(body.GetLinearVelocity())
+        const worldAccel = worldVel.clone().sub(this._prevVel).divideScalar(deltaT)
+
+        const specificForce = worldAccel.sub(SimAccelInput.GRAVITY).divideScalar(SimAccelInput.GRAVITY_MAGNITUDE)
+
         const rot = convertJoltQuatToThreeQuaternion(body.GetRotation(), true)
-        const mat = new THREE.Matrix4().makeRotationFromQuaternion(rot).transpose()
-        const newVel = convertJoltVec3ToThreeVector3(body.GetLinearVelocity()).applyMatrix4(mat)
+        const localAccel = specificForce.applyQuaternion(rot.invert())
 
-        const x = (newVel.x - this._prevVel.x) / deltaT
-        const y = (newVel.y - this._prevVel.y) / deltaT
-        const z = (newVel.y - this._prevVel.y) / deltaT
+        SimAccel.setX(this._device, localAccel.x)
+        SimAccel.setY(this._device, localAccel.y)
+        SimAccel.setZ(this._device, localAccel.z)
 
-        SimAccel.setX(this._device, x)
-        SimAccel.setY(this._device, y)
-        SimAccel.setZ(this._device, z)
-
-        this._prevVel = newVel
+        this._prevVel = worldVel
     }
 }
