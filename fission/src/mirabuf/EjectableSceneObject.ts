@@ -5,6 +5,7 @@ import World from "@/systems/World"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
+    convertJoltQuatToThreeQuaternion,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
@@ -168,7 +169,8 @@ class EjectableSceneObject extends SceneObject {
 
         const parentBody = World.physicsSystem.getBody(this._parentBodyId)!
         const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
-        const ejectDir = new THREE.Vector3(0, 0, 1).applyQuaternion(this._desiredQuatRotation!).normalize()
+        const rot = this._desiredQuatRotation ?? convertJoltQuatToThreeQuaternion(gpBody.GetRotation())
+        const ejectDir = new THREE.Vector3(0, 0, 1).applyQuaternion(rot).normalize()
 
         World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
 
