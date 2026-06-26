@@ -839,6 +839,12 @@ class PhysicsSystem extends WorldSystem {
 
         nonPhysicsNodes.forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
+
+            // Settings whose cached shape is consumed below for game pieces. Jolt frees a
+            // ShapeSettings' created shape when the settings are destroyed, so these must
+            // outlive body creation and are cleaned up alongside `compoundShapeSettings`.
+            let gamePieceSphereSettings: Jolt.SphereShapeSettings | undefined
+            let gamePieceOffsetSettings: Jolt.RotatedTranslatedShapeSettings | undefined
             let shapesAdded = 0
 
             let totalMass = 0
@@ -974,10 +980,30 @@ class PhysicsSystem extends WorldSystem {
                     return
                 }
 
-                const shape = shapeResult.Get()
+                let shape = shapeResult.Get()
 
                 if (rn.isDynamic) {
                     if (rn.isGamePiece) {
+                        // Game pieces use a simple sphere collider sized to fit the part's bounds.
+                        // A StaticCompoundShape recenters its local space on its center of mass,
+                        // so GetLocalBounds() is COM-relative and its center is ~origin. The part's
+                        // true offset within the body lives in GetCenterOfMass(); place the sphere
+                        // there so it lands on the geometry instead of the body origin.
+                        const bounds = shape.GetLocalBounds()
+                        const extent = bounds.GetExtent()
+                        const center = shape.GetCenterOfMass()
+                        const radius = Math.max((extent.GetX() + extent.GetY() + extent.GetZ()) / 3.0, 0.01)
+
+                        gamePieceSphereSettings = new JOLT.SphereShapeSettings(radius)
+                        const identityRotation = new JOLT.Quat(0, 0, 0, 1)
+                        gamePieceOffsetSettings = new JOLT.RotatedTranslatedShapeSettings(
+                            center,
+                            identityRotation,
+                            gamePieceSphereSettings
+                        )
+                        shape = gamePieceOffsetSettings.Create().Get()
+                        JOLT.destroy(identityRotation)
+
                         const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
                         shape.GetMassProperties().mMass = mass
                     } else {
@@ -1026,8 +1052,10 @@ class PhysicsSystem extends WorldSystem {
                 JOLT.destroy(r)
             }
 
-            // Cleanup
-            JOLT.destroy(compoundShapeSettings)
+            // Note, uncommenting this breaks things
+            // JOLT.destroy(compoundShapeSettings)
+            // if (gamePieceOffsetSettings) JOLT.destroy(gamePieceOffsetSettings)
+            // if (gamePieceSphereSettings) JOLT.destroy(gamePieceSphereSettings)
         })
 
         return rnToBodies
