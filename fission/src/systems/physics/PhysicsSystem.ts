@@ -74,6 +74,11 @@ const DEFAULT_FRICTION = 0.7
 const SUSPENSION_MIN_FACTOR = 0.0001
 const SUSPENSION_MAX_FACTOR = 0.0001
 
+// Wheels whose inferred radii fall within this relative tolerance of each other are treated as the
+// same size and snapped to a common radius. Sits well above mesh-tessellation noise (<1%) and well
+// below the gap between genuinely different wheel sizes, so distinct sizes stay in separate groups.
+const WHEEL_RADIUS_CLUSTER_TOLERANCE = 0.1
+
 const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 
 // Motor constant
@@ -119,6 +124,16 @@ function inferWheelDimensionsFromAxle(bounds: Jolt.AABox, axis: Jolt.RVec3): Whe
         radius: Math.max(...radialExtents) / 2.0,
         width: extents[axleIndex],
     }
+}
+
+// Radius used for a simulated wheel before any cross-wheel unification. URDF auto-wheels infer it
+// from the radial extents about the detected axle; native wheels use the vertical extent (their axle
+// is horizontal). Shared by the wheel-creation path and the radius-resolution pass so they can't drift.
+function inferWheelRadius(jDef: mirabuf.joint.Joint, bounds: Jolt.AABox, axis: Jolt.RVec3): number {
+    const urdfWheelBasis = isURDFAutoAssignedWheel(jDef) ? inferURDFAutoWheelBasis(axis) : undefined
+    return urdfWheelBasis
+        ? inferWheelDimensionsFromAxle(bounds, axis).radius
+        : (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 }
 
 function logWheelGeometryComparison(
@@ -479,11 +494,10 @@ class PhysicsSystem extends WorldSystem {
         const jointData = parser.assembly.data!.joints!
         const joints = Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][]
 
-        // Auto-detected URDF wheels each carry an independently tessellated mesh, so inferring
-        // radius per-wheel yields sub-millimeter variance between wheels. Resolve one shared radius
-        // up front and apply it to every URDF wheel so the drivetrain rests coplanar
-        // (see computeSharedURDFAutoWheelRadius).
-        const sharedURDFWheelRadius = this.computeSharedURDFAutoWheelRadius(parser, mechanism)
+        // Resolve a radius per wheel up front, grouping same-size wheels so they rest coplanar.
+        // Independently tessellated meshes (URDF) otherwise yield sub-millimeter radius variance that,
+        // with near-zero suspension travel, permanently floats wheels (see resolveWheelRadii).
+        const wheelRadii = this.resolveWheelRadii(parser, mechanism)
 
         joints.forEach(([jointGuid, jointInst]) => {
             if (jointGuid == GROUNDED_JOINT_ID) return
@@ -563,7 +577,7 @@ class PhysicsSystem extends WorldSystem {
                             bodyOne,
                             bodyTwo,
                             parser.assembly.info!.version!,
-                            sharedURDFWheelRadius
+                            wheelRadii.get(jointGuid)
                         )
                         addConstraint(res[0])
                         addConstraint(res[1])
@@ -751,22 +765,24 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Computes a single wheel radius shared by every auto-detected URDF wheel.
+     * Resolves the radius each wheel should use, grouping wheels of similar size and snapping every
+     * wheel in a group to that group's max radius. Applies to all import paths.
      *
-     * Native Mirabuf robots get coplanar wheels for free: their wheels are instances of one shared
-     * part definition, so all wheel bodies have identical bounds and therefore identical radii.
-     * URDF gives every link its own independently tessellated mesh, so per-wheel radius inference
-     * produces sub-millimeter variance. With the near-zero suspension travel used for drivetrains,
-     * that variance permanently floats the "shorter" wheels, leaving the robot rocking on a subset
-     * of wheels and breaking skid-steer turning. Applying one radius to all wheels reproduces the
-     * coplanar-by-construction property the native importer relies on.
+     * Native Mirabuf robots get coplanar same-size wheels for free: their wheels are instances of one
+     * shared part definition, so all wheel bodies have identical bounds and therefore identical radii.
+     * URDF gives every link its own independently tessellated mesh, so per-wheel inference produces
+     * sub-millimeter variance. With the near-zero suspension travel used for drivetrains, that variance
+     * permanently floats the "shorter" wheels, leaving the robot rocking on a subset of wheels and
+     * breaking skid-steer turning. Snapping each group to a common radius reproduces the
+     * coplanar-by-construction property for any robot, while clustering preserves robots that
+     * intentionally mix wheel sizes (those land in separate groups).
      *
-     * @returns The max inferred radius across all URDF auto-wheels, or undefined if there are none.
+     * @returns Map of joint GUID -> radius for every wheel joint.
      */
-    private computeSharedURDFAutoWheelRadius(parser: MirabufParser, mechanism: Mechanism): number | undefined {
+    private resolveWheelRadii(parser: MirabufParser, mechanism: Mechanism): Map<string, number> {
         const jointData = parser.assembly.data!.joints!
         const versionNum = parser.assembly.info!.version!
-        let sharedRadius: number | undefined
+        const wheels: { guid: string; radius: number }[] = []
 
         for (const [jointGuid, jointInst] of Object.entries(jointData.jointInstances!) as [
             string,
@@ -774,8 +790,7 @@ class PhysicsSystem extends WorldSystem {
         ][]) {
             if (jointGuid === GROUNDED_JOINT_ID) continue
             const jDef = jointData.jointDefinitions![jointInst.jointReference!] as mirabuf.joint.Joint | undefined
-            if (!jDef || jDef.jointMotionType !== mirabuf.joint.JointMotion.REVOLUTE) continue
-            if (!this.isWheel(jDef) || !isURDFAutoAssignedWheel(jDef)) continue
+            if (!jDef || jDef.jointMotionType !== mirabuf.joint.JointMotion.REVOLUTE || !this.isWheel(jDef)) continue
 
             const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
             const rnB = parser.partToNodeMap.get(jointInst.childPart!)
@@ -791,14 +806,31 @@ class PhysicsSystem extends WorldSystem {
             const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
             const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
             const axis = new JOLT.RVec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
-            const bounds = bodyWheel.GetShape().GetLocalBounds()
-            const { radius } = inferWheelDimensionsFromAxle(bounds, axis)
+            const radius = inferWheelRadius(jDef, bodyWheel.GetShape().GetLocalBounds(), axis)
             JOLT.destroy(axis)
 
-            sharedRadius = sharedRadius === undefined ? radius : Math.max(sharedRadius, radius)
+            wheels.push({ guid: jointGuid, radius })
         }
 
-        return sharedRadius
+        // Cluster by ascending radius (single-linkage): extend a group while the next wheel is within
+        // tolerance of the previous one, then snap the whole group to its max radius.
+        const radii = new Map<string, number>()
+        const sorted = wheels.sort((a, b) => a.radius - b.radius)
+        let groupStart = 0
+        while (groupStart < sorted.length) {
+            let groupEnd = groupStart + 1
+            while (
+                groupEnd < sorted.length &&
+                sorted[groupEnd].radius <= sorted[groupEnd - 1].radius * (1 + WHEEL_RADIUS_CLUSTER_TOLERANCE)
+            ) {
+                groupEnd++
+            }
+            const groupMax = sorted[groupEnd - 1].radius
+            for (let k = groupStart; k < groupEnd; k++) radii.set(sorted[k].guid, groupMax)
+            groupStart = groupEnd
+        }
+
+        return radii
     }
 
     public createWheelConstraint(
@@ -808,7 +840,7 @@ class PhysicsSystem extends WorldSystem {
         bodyMain: Jolt.Body,
         bodyWheel: Jolt.Body,
         versionNum: number,
-        sharedURDFWheelRadius?: number
+        resolvedRadius?: number
     ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
         // HINGE CONSTRAINT
         const fixedSettings = new JOLT.FixedConstraintSettings()
@@ -841,11 +873,11 @@ class PhysicsSystem extends WorldSystem {
                   width: 0.1,
               }
 
-        // Apply the drivetrain-wide shared radius so all URDF wheels rest coplanar. Per-wheel mesh
-        // tessellation otherwise yields sub-mm radius variance that floats wheels (see
-        // computeSharedURDFAutoWheelRadius). Width stays per-wheel; only radius affects ground contact.
-        if (urdfWheelBasis && sharedURDFWheelRadius !== undefined) {
-            wheelDimensions.radius = sharedURDFWheelRadius
+        // Snap to the group-resolved radius so same-size wheels rest coplanar (see resolveWheelRadii).
+        // Width stays per-wheel; only radius affects ground contact. For uniform native drivetrains this
+        // resolves to the wheel's own radius, so their behavior is unchanged.
+        if (resolvedRadius !== undefined) {
+            wheelDimensions.radius = resolvedRadius
         }
         const wheelPos = urdfWheelBasis
             ? convertJoltRVec3ToJoltVec3(anchorPoint)
