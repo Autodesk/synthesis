@@ -102,10 +102,12 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     }
 
     private createBoundingBox(props: VisualProperties) {
-        this.bounding = new JOLT.AABox().sFromTwoPoints(
-            convertThreeVector3ToJoltVec3(props.translation),
-            convertThreeVector3ToJoltVec3(props.scale)
-        )
+        // TODO
+        // Maybe unit box instead?
+        this.bounding = new JOLT.AABox(new JOLT.Vec3(-0.5, -0.5, -0.5), new JOLT.Vec3(0.5, 0.5, 0.5))
+
+        this.bounding = this.bounding.Scaled(convertThreeVector3ToJoltVec3(props.scale))
+        this.bounding.TranslateVec3(convertThreeVector3ToJoltVec3(props.translation))
     }
 
     private setMeshProperties(props: VisualProperties) {

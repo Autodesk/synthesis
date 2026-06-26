@@ -7,7 +7,6 @@ import { findListDifference } from "@/util/Utility"
 import MirabufSceneObject from "./MirabufSceneObject"
 import { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
-import assert from "assert"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
@@ -29,34 +28,35 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         super(parentAssembly, prefs, "RenderScoringZones")
     }
 
+    // NOTE
+    // Runs 2 times a frame on 2023
+    // Each call takes about 1ms on my desktop
+    // NOT a performance issue
     public checkObjectsInZone(): void {
         if (!this.bounding) return
-
-        const max = this.bounding.mMax
-        const min = this.bounding.mMin
-        console.log(`zone [${min.GetX()} ${min.GetY()} ${min.GetZ()}] ${max.GetX()} ${max.GetY()} ${max.GetZ()}`)
 
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) return
 
-        const gamePiecesContacting = field.activeEjectables.filter(gpID => {
+        const gps = [...field.mirabufInstance.parser.rigidNodes.values()]
+            .filter(rn => rn.isGamePiece)
+            .map(rn => field.mechanism.nodeToBody.get(rn.id)!) as Jolt.BodyID[]
+
+        const gamePiecesContacting = gps.filter(gpID => {
             const gp = World.physicsSystem.getBody(gpID)!
             const objBounding = gp.GetWorldSpaceBounds()
 
-            const max = objBounding.mMax
-            const min = objBounding.mMin
-            console.log(`gp: [${min.GetX()} ${min.GetY()} ${min.GetZ()}] ${max.GetX()} ${max.GetY()} ${max.GetZ()}`)
+            const overlaps = this.bounding?.OverlapsAABox(objBounding)
+            JOLT.destroy(objBounding)
 
-            return this.bounding?.OverlapsAABox(objBounding)
+            return overlaps
         })
 
-        console.log(gamePiecesContacting.length)
+        const { added, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
 
-        gamePiecesContacting.forEach(this.zoneCollision)
-
-        const { added: _, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
+        added.forEach(gpID => this.zoneCollision(gpID))
         if (!this.prefs.shouldPointsAccumulate) {
-            removed.forEach(this.zoneCollisionRemovedNoAccumulation)
+            removed.forEach(gpID => this.zoneCollisionRemovedNoAccumulation(gpID))
         }
 
         this._prevGPs = gamePiecesContacting
@@ -72,8 +72,8 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
     /// Updates points for alliance and robot when game piece enters this scoring zone
     private zoneCollision(gpID: Jolt.BodyID) {
+        // console.log("zone collision")
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-        if (!associate?.isGamePiece || !this.prefs) return
 
         ScoreTracker.addPoints(this.prefs.alliance, this.prefs.points)
         const robotAlliancePoints =
@@ -87,11 +87,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
      * Basically removes points from the alliance and robot
      */
     private zoneCollisionRemovedNoAccumulation(gpID: Jolt.BodyID) {
-        // TODO remove asserts
-        assert(!this.prefs?.shouldPointsAccumulate)
-
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-        assert(associate.isGamePiece)
 
         ScoreTracker.addPoints(this.prefs.alliance, -this.prefs.points)
         const robotAlliancePoints =

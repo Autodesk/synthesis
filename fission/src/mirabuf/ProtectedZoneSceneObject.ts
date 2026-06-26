@@ -8,6 +8,8 @@ import type MirabufSceneObject from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import MatchMode from "@/systems/match_mode/MatchMode"
+import Jolt from "@azaleacolburn/jolt-physics"
+import { findListDifference } from "@/util/Utility"
 
 class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences> {
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
@@ -27,9 +29,12 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         return this.prefs.activeDuring.includes(MatchMode.getInstance().getMatchModeType())
     }
 
+    // private isRobotInside(robot: MirabufSceneObject): boolean {
+    //     const timeInside = this._robotsInside.get(robot) ?? 0
+    //     return Date.now() - timeInside < 100
+    // }
     private isRobotInside(robot: MirabufSceneObject): boolean {
-        const timeInside = this._robotsInside.get(robot) ?? 0
-        return Date.now() - timeInside < 100
+        return this._robotsInside.has(robot)
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number) {
@@ -41,41 +46,42 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
         const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
         const robotsInZone = robots
-            .map(robot => {
-                const bounding = robot.getBounding()
-                return { robot, bounding }
-            })
-            .filter(({ robot: _, bounding }) => {
-                return this.bounding?.OverlapsAABox(bounding)
-            })
+            .map(robot => [robot, robot.getBounding()] as [MirabufSceneObject, Jolt.AABox])
+            .filter(([_robot, bounding]) => this.bounding?.OverlapsAABox(bounding))
 
-        const newRobots = robotsInZone.map(robot => robot.robot).filter(this.isRobotInside)
+        const oldRobotsInZone = [...this._robotsInside.keys()]
+
+        const { added, removed } = findListDifference(
+            oldRobotsInZone,
+            robotsInZone.map(([robot, _]) => robot)
+        )
+
         if (this.prefs.contactType === ContactType.ROBOT_ENTERS) {
-            newRobots.forEach(this.penalizeEnteringZone)
+            added.forEach(this.penalizeEnteringZone)
         }
+
+        removed.forEach(this._robotsInside.delete)
 
         // Collisions of two robots within the scoring zone
         const collisions: [MirabufSceneObject, MirabufSceneObject][] = []
-        for (const robot1 of robotsInZone) {
-            for (const robot2 of robotsInZone) {
-                const collided = robot1.bounding.OverlapsAABox(robot2.bounding)
+        for (const [robot1, bounding1] of robotsInZone) {
+            for (const [robot2, bounding2] of robotsInZone) {
+                const collided = bounding1.OverlapsAABox(bounding2)
+
                 if (!collided) continue
+                if (collisions.includes([robot2, robot1])) continue
 
-                if (collisions.includes([robot2.robot, robot1.robot])) return
-
-                collisions.push([robot1.robot, robot2.robot])
+                collisions.push([robot1, robot2])
             }
         }
 
-        collisions.forEach(([robot1, robot2]) => {
-            this.handleContactPenalty(robot1, robot2)
-        })
+        collisions.forEach(robots => this.handleContactPenalty(...robots))
     }
 
     private penalizeEnteringZone(robot: MirabufSceneObject) {
-        if (robot.alliance == this.prefs.alliance) return
+        if (robot.alliance == this.prefs.alliance)
+            ScoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
 
-        ScoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
         this._robotsInside.set(robot, Date.now())
     }
 
