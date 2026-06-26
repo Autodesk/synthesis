@@ -57,6 +57,26 @@ const SIGNIFICANT_FRICTION_THRESHOLD = 0.05
 const MAX_ROBOT_MASS = 250.0
 const MAX_GP_MASS = 10.0
 
+// Minimum Wadell sphericity for a game piece to be approximated with a sphere collider.
+// Sphericity is the ratio of a volume-equivalent sphere's surface area to the part's actual
+// surface area: 1.0 for a perfect sphere, ~0.806 for a cube, ~0.87 for a cylinder. The
+// threshold sits above those so only genuinely ball-shaped pieces qualify.
+const MIN_SPHERICITY = 0.98
+
+/**
+ * Wadell sphericity of a solid from its volume and surface area. Returns a value in (0, 1],
+ * approaching 1 as the solid approaches a perfect sphere, or 0 when the area is non-positive.
+ *
+ * @param volume    Solid volume (any unit).
+ * @param area      Solid surface area (consistent unit; the measure is dimensionless).
+ */
+function computeSphericity(volume: number, area: number): number {
+    if (volume <= 0 || area <= 0) return 0
+    const volumeEquivalentSphereArea = Math.cbrt(Math.PI) * Math.pow(6 * volume, 2 / 3)
+    console.log(`computeSphericity: volume=${volume}, area=${area}, volumeEquivalentSphereArea=${volumeEquivalentSphereArea / area}`)
+    return volumeEquivalentSphereArea / area
+}
+
 let lastDeltaT = STANDARD_SIMULATION_PERIOD
 export function getLastDeltaT(): number {
     return lastDeltaT
@@ -840,14 +860,12 @@ class PhysicsSystem extends WorldSystem {
         nonPhysicsNodes.forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
 
-            // Settings whose cached shape is consumed below for game pieces. Jolt frees a
-            // ShapeSettings' created shape when the settings are destroyed, so these must
-            // outlive body creation and are cleaned up alongside `compoundShapeSettings`.
-            let gamePieceSphereSettings: Jolt.SphereShapeSettings | undefined
-            let gamePieceOffsetSettings: Jolt.RotatedTranslatedShapeSettings | undefined
             let shapesAdded = 0
 
             let totalMass = 0
+            // Accumulated geometry used to decide whether a game piece is sphere-like (see below).
+            let totalVolume = 0
+            let totalArea = 0
 
             type FrictionPairing = {
                 dynamic: number
@@ -920,6 +938,9 @@ class PhysicsSystem extends WorldSystem {
                 const [partDefinition, partInstance] = constructPartDefinition(partId)
                 if (!partDefinition) return
 
+                totalVolume += partDefinition.physicalData?.volume ?? 0
+                totalArea += partDefinition.physicalData?.area ?? 0
+
                 const physicalMaterial =
                     parser.assembly.data!.materials!.physicalMaterials![
                         partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY
@@ -984,25 +1005,33 @@ class PhysicsSystem extends WorldSystem {
 
                 if (rn.isDynamic) {
                     if (rn.isGamePiece) {
-                        // Game pieces use a simple sphere collider sized to fit the part's bounds.
-                        // A StaticCompoundShape recenters its local space on its center of mass,
-                        // so GetLocalBounds() is COM-relative and its center is ~origin. The part's
-                        // true offset within the body lives in GetCenterOfMass(); place the sphere
-                        // there so it lands on the geometry instead of the body origin.
-                        const bounds = shape.GetLocalBounds()
-                        const extent = bounds.GetExtent()
-                        const center = shape.GetCenterOfMass()
-                        const radius = Math.max((extent.GetX() + extent.GetY() + extent.GetZ()) / 3.0, 0.01)
+                        // Only ball-shaped game pieces get a sphere collider; everything else keeps
+                        // its mesh-accurate compound shape.
+                        if (computeSphericity(totalVolume, totalArea) >= MIN_SPHERICITY) {
+                            // A StaticCompoundShape recenters its local space on its center of mass,
+                            // so its true offset within the body lives in GetCenterOfMass(); place
+                            // the sphere there so it lands on the geometry instead of the body origin.
+                            const center = shape.GetCenterOfMass()
+                            // Derive the radius from volume rather than the bounding box: a
+                            // tessellated sphere's AABB depends on spawn orientation, so the same
+                            // game piece would otherwise get different sizes. Volume is rotation-
+                            // invariant. physicalData volume is cm^3; physics units are meters.
+                            const volumeMeters3 = totalVolume * 1e-6
+                            const radius = Math.max(Math.cbrt((3 * volumeMeters3) / (4 * Math.PI)), 0.01)
 
-                        gamePieceSphereSettings = new JOLT.SphereShapeSettings(radius)
-                        const identityRotation = new JOLT.Quat(0, 0, 0, 1)
-                        gamePieceOffsetSettings = new JOLT.RotatedTranslatedShapeSettings(
-                            center,
-                            identityRotation,
-                            gamePieceSphereSettings
-                        )
-                        shape = gamePieceOffsetSettings.Create().Get()
-                        JOLT.destroy(identityRotation)
+                            // These settings own the created shape (Jolt frees it with the
+                            // settings), so — like `shapeResult` for the compound path — they are
+                            // intentionally left undestroyed to outlive the body that uses them.
+                            const sphereSettings = new JOLT.SphereShapeSettings(radius)
+                            const identityRotation = new JOLT.Quat(0, 0, 0, 1)
+                            const offsetSettings = new JOLT.RotatedTranslatedShapeSettings(
+                                center,
+                                identityRotation,
+                                sphereSettings
+                            )
+                            shape = offsetSettings.Create().Get()
+                            JOLT.destroy(identityRotation)
+                        }
 
                         const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
                         shape.GetMassProperties().mMass = mass
@@ -1052,10 +1081,10 @@ class PhysicsSystem extends WorldSystem {
                 JOLT.destroy(r)
             }
 
-            // Note, uncommenting this breaks things
-            // JOLT.destroy(compoundShapeSettings)
-            // if (gamePieceOffsetSettings) JOLT.destroy(gamePieceOffsetSettings)
-            // if (gamePieceSphereSettings) JOLT.destroy(gamePieceSphereSettings)
+            // NOTE: ShapeSettings are intentionally not destroyed here. In this Jolt binding,
+            // destroying a ShapeSettings frees the shape the created body still references, which
+            // corrupts the physics heap (crashes during constraint creation / the physics step).
+            // This applies to `compoundShapeSettings` and the game-piece sphere settings alike.
         })
 
         return rnToBodies
