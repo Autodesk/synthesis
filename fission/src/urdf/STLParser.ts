@@ -25,6 +25,7 @@ function parseBinarySTL(data: Uint8Array): ParsedMesh {
             normals.push(nx, ny, nz)
             offset += 12
         }
+
         offset += 2 // attribute byte count
 
         const base = i * 3
@@ -64,7 +65,7 @@ function parseASCIISTL(text: string): ParsedMesh {
 
 function isBinarySTL(data: Uint8Array): boolean {
     if (data.length < 84) return false
-    // Check for ASCII "solid" header — but some binary files also start with "solid", so verify via size
+    // Check for ASCII "solid" header; some binary files also start with "solid", so verify via size
     const header = new TextDecoder().decode(data.slice(0, 5))
     if (header !== "solid") return true
     const triCount = new DataView(data.buffer, data.byteOffset).getUint32(80, true)

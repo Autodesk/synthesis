@@ -23,11 +23,13 @@ async function buildMeshMap(zip: JSZip, urdfPath: string): Promise<Map<string, U
             // Store under three keys so resolveMeshBytes in URDFConverter can find it:
             // 1. Full zip path (e.g. "robot_pkg/meshes/part.stl")
             meshFiles.set(path, bytes)
+
             // 2. Package-relative path (strip leading package root directory)
             if (packageRoot && path.startsWith(packageRoot)) {
                 meshFiles.set(path.slice(packageRoot.length), bytes)
             }
-            // 3. Basename only (e.g. "part.stl") — last-resort fallback
+
+            // 3. Basename only (e.g. "part.stl")
             const basename = path.split("/").pop()!
             if (!meshFiles.has(basename)) meshFiles.set(basename, bytes)
         })
@@ -40,7 +42,7 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
     const ext = filename.split(".").pop()?.toLowerCase()
 
     if (ext === "urdf") {
-        // Bare URDF — no zip to extract. Mesh files unavailable; links without geometry still import.
+        // Bare URDF with no zip. Mesh files unavailable; links without geometry still import.
         const text = new TextDecoder().decode(buffer)
         const assembly = convertURDF(text, new Map())
         detectAndTagWheels(assembly)

@@ -2,16 +2,15 @@ import { mirabuf } from "@/proto/mirabuf"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
 
-// --- Coordinate frame ---
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
 // Frame change matrix: Rx(-90°) = [[1,0,0],[0,0,1],[0,-1,0]]
-// Point (x,y,z)_urdf → (x, z, -y)_yup
+// Point (x,y,z)_urdf -> (x, z, -y)_yup
 
 interface URDFLink {
     name: string
     visualMeshPath: string | null
     visualMeshScale: [number, number, number]
-    // <visual><origin> — positions the mesh frame relative to the link frame.
+    // <visual><origin> positions the mesh frame relative to the link frame.
     // Many Onshape-exported URDFs define mesh vertices in the assembly global frame
     // and use visual origin to correct back to link-relative space.
     visualOriginXYZ: [number, number, number]
@@ -34,8 +33,6 @@ interface URDFJoint {
     limitUpper: number
 }
 
-// --- Math helpers ---
-
 type Mat3 = number[][]
 
 function mat3Mul(a: Mat3, b: Mat3): Mat3 {
@@ -45,7 +42,7 @@ function transpose3(m: Mat3): Mat3 {
     return [0, 1, 2].map(i => [0, 1, 2].map(j => m[j][i]))
 }
 
-// RPY → rotation matrix (ZYX Euler, URDF convention: R = Rz(yaw)*Ry(pitch)*Rx(roll))
+// RPY -> rotation matrix (ZYX Euler, URDF convention: R = Rz(yaw)*Ry(pitch)*Rx(roll))
 function rpyToMatrix(roll: number, pitch: number, yaw: number): Mat3 {
     const [cr, sr] = [Math.cos(roll), Math.sin(roll)]
     const [cp, sp] = [Math.cos(pitch), Math.sin(pitch)]
@@ -61,13 +58,13 @@ function rpyToMatrix(roll: number, pitch: number, yaw: number): Mat3 {
 const RZy: Mat3 = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
 
 // Build mirabuf spatialMatrix (16 floats, row-major) from a URDF joint origin.
-// Converts to Y-up space — mesh vertices are also converted to Y-up (see toYupMesh),
+// Converts to Y-up space; mesh vertices are also converted to Y-up (see toYupMesh),
 // so body-local frames are Y-up throughout. This keeps Jolt physics constraints correct.
 function originToSpatialMatrix(xyz: [number, number, number], rpy: [number, number, number]): number[] {
     const RU = rpyToMatrix(rpy[0], rpy[1], rpy[2])
     const RY = mat3Mul(RZy, mat3Mul(RU, transpose3(RZy)))
     const [px, py, pz] = xyz
-    const [tx, ty, tz] = [px * 100, pz * 100, -py * 100] // metres → cm, Z-up → Y-up
+    const [tx, ty, tz] = [px * 100, pz * 100, -py * 100] // metres -> cm, Z-up -> Y-up
     return [
         RY[0][0], RY[0][1], RY[0][2], tx,
         RY[1][0], RY[1][1], RY[1][2], ty,
@@ -76,7 +73,7 @@ function originToSpatialMatrix(xyz: [number, number, number], rpy: [number, numb
     ]
 }
 
-// Root link transform: identity — no rotation needed because mesh vertices are already
+// Root link transform. No rotation needed because mesh vertices are already
 // stored in Y-up space. This ensures the physics chassis body has no rotation, so
 // body-local ≡ world (Y-up), which Jolt's VehicleConstraint requires.
 const ROOT_SPATIAL_MATRIX = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
@@ -102,8 +99,6 @@ function parseVec3(el: Element | null | undefined, attrName = "xyz"): [number, n
     const p = (el?.getAttribute(attrName) ?? "0 0 0").trim().split(/\s+/)
     return [parseFloat(p[0] ?? "0") || 0, parseFloat(p[1] ?? "0") || 0, parseFloat(p[2] ?? "0") || 0]
 }
-
-// --- URDF parsing ---
 
 function extractLinks(doc: Document): URDFLink[] {
     return Array.from(doc.querySelectorAll("link")).map(link => {
@@ -163,8 +158,6 @@ function extractJoints(doc: Document): URDFJoint[] {
     })
 }
 
-// --- Mesh loading ---
-
 function resolveMeshBytes(packagePath: string, meshFiles: Map<string, Uint8Array>): Uint8Array | null {
     // Strip package:// or model:// scheme prefix
     const stripped = packagePath.replace(/^(?:package|model):\/\/[^/]+\//, "").replace(/^\//, "")
@@ -177,7 +170,7 @@ function resolveMeshBytes(packagePath: string, meshFiles: Map<string, Uint8Array
 }
 
 // Apply visual origin transform (rotation + translation) to raw mesh vertices and normals.
-// This maps mesh-local coords → link-local coords, both in URDF Z-up metres.
+// This maps mesh-local coords -> link-local coords, both in URDF Z-up metres.
 // Must run before scale/unit conversion.
 function applyVisualOrigin(mesh: ParsedMesh, xyz: [number, number, number], rpy: [number, number, number]): ParsedMesh {
     const hasOffset = xyz[0] !== 0 || xyz[1] !== 0 || xyz[2] !== 0
@@ -215,6 +208,7 @@ function toYup(arr: number[]): number[] {
         out[i + 1] = arr[i + 2]
         out[i + 2] = -arr[i + 1]
     }
+
     return out
 }
 
@@ -224,14 +218,13 @@ function loadMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): ParsedM
         console.warn(`[URDF] Mesh not found: ${meshPath}`)
         return null
     }
+
     const ext = meshPath.split(".").pop()?.toLowerCase()
     if (ext === "stl") return parseSTL(data)
     if (ext === "obj") return parseOBJ(data)
     console.warn(`[URDF] Unsupported mesh format: .${ext} (${meshPath}) — link will have no geometry`)
     return null
 }
-
-// --- Design hierarchy ---
 
 function buildDesignHierarchy(joints: URDFJoint[], rootName: string): mirabuf.IGraphContainer {
     const childrenOf = new Map<string, string[]>()
@@ -246,8 +239,6 @@ function buildDesignHierarchy(joints: URDFJoint[], rootName: string): mirabuf.IG
 
     return { nodes: [buildNode(rootName)] }
 }
-
-// --- Rigid groups from fixed/floating/planar joints (for bandageRigidNodes) ---
 
 function buildRigidGroups(links: URDFLink[], joints: URDFJoint[]): mirabuf.joint.IRigidGroup[] {
     const fixedTypes = new Set<string>(["fixed", "floating", "planar"])
@@ -276,76 +267,63 @@ function buildRigidGroups(links: URDFLink[], joints: URDFJoint[]): mirabuf.joint
         .map(g => ({ name: g.join("_rigid"), occurrences: g }))
 }
 
-// --- Joint motion type mapping ---
-
 function mapJointMotion(type: URDFJoint["type"]): mirabuf.joint.JointMotion {
     if (type === "revolute" || type === "continuous") return mirabuf.joint.JointMotion.REVOLUTE
     if (type === "prismatic") return mirabuf.joint.JointMotion.SLIDER
     return mirabuf.joint.JointMotion.RIGID
 }
 
-// --- Main converter ---
+function buildLinkBody(link: URDFLink, meshFiles: Map<string, Uint8Array>): mirabuf.IBody | null {
+    if (!link.visualMeshPath) return null
 
-export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>): mirabuf.Assembly {
-    const doc = new DOMParser().parseFromString(urdfText, "text/xml")
+    const parsed = loadMesh(link.visualMeshPath, meshFiles)
+    if (!parsed) return null
 
-    const parseError = doc.querySelector("parsererror")
-    if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
+    // 1. Apply visual origin: maps mesh vertices from mesh-local frame -> link-local URDF Z-up frame.
+    const inLinkFrame = applyVisualOrigin(parsed, link.visualOriginXYZ, link.visualOriginRPY)
 
-    const robotName = doc.querySelector("robot")?.getAttribute("name") ?? "robot"
-    const links = extractLinks(doc)
-    const joints = extractJoints(doc)
+    // 2. Convert from URDF Z-up to Y-up so body-local frames align with world (Y-up).
+    //    This is required for Jolt physics: VehicleConstraint expects mPosition in body-local
+    //    Y-up space, and the wheel radius is computed from the Y-extent of the local bounding box.
+    const yupVerts = toYup(inLinkFrame.verts)
+    const yupNormals = toYup(inLinkFrame.normals)
 
-    if (links.length === 0) throw new Error("URDF contains no <link> elements")
+    // 3. Scale: mesh file units -> cm. URDF meshes are in metres; mirabuf stores cm.
+    const [sx, sy, sz] = link.visualMeshScale.map(s => s * 100)
+    const scaled = new Array<number>(yupVerts.length)
+    for (let i = 0; i < yupVerts.length; i += 3) {
+        scaled[i]     = yupVerts[i]     * sx
+        scaled[i + 1] = yupVerts[i + 1] * sy
+        scaled[i + 2] = yupVerts[i + 2] * sz
+    }
 
-    const childSet = new Set(joints.map(j => j.child))
-    const rootLink = links.find(l => !childSet.has(l.name))
-    if (!rootLink) throw new Error("URDF has no root link — every link is listed as a child joint")
+    return {
+        info: { GUID: `${link.name}_body`, name: `${link.name}_body` },
+        triangleMesh: {
+            mesh: {
+                verts: scaled,
+                normals: Array.from(yupNormals),
+                // uv must be non-empty: MirabufInstance.ts:184 checks !mesh.uv
+                uv: inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Array((yupVerts.length / 3) * 2).fill(0),
+                indices: Array.from(inLinkFrame.indices),
+            },
+        },
+        appearanceOverride: link.materialName ?? undefined,
+    }
+}
 
-    const parentJoint = new Map<string, URDFJoint>()
-    joints.forEach(j => parentJoint.set(j.child, j))
-
-    // --- Part definitions + instances ---
+function buildParts(
+    links: URDFLink[],
+    rootLink: URDFLink,
+    joints: URDFJoint[],
+    meshFiles: Map<string, Uint8Array>
+): { partDefinitions: Record<string, mirabuf.IPartDefinition>; partInstances: Record<string, mirabuf.IPartInstance> } {
     const partDefinitions: Record<string, mirabuf.IPartDefinition> = {}
     const partInstances: Record<string, mirabuf.IPartInstance> = {}
+    const parentJoint = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
 
     for (const link of links) {
-        const parsed = link.visualMeshPath ? loadMesh(link.visualMeshPath, meshFiles) : null
-
-        const bodies: mirabuf.IBody[] = []
-        if (parsed) {
-            // 1. Apply visual origin: maps mesh vertices from mesh-local frame → link-local URDF Z-up frame.
-            const inLinkFrame = applyVisualOrigin(parsed, link.visualOriginXYZ, link.visualOriginRPY)
-
-            // 2. Convert from URDF Z-up to Y-up so body-local frames align with world (Y-up).
-            //    This is required for Jolt physics: VehicleConstraint expects mPosition in body-local
-            //    Y-up space, and the wheel radius is computed from the Y-extent of the local bounding box.
-            const yupVerts   = toYup(inLinkFrame.verts)
-            const yupNormals = toYup(inLinkFrame.normals)
-
-            // 3. Scale: mesh file units → cm. URDF meshes are in metres; mirabuf stores cm.
-            const [sx, sy, sz] = link.visualMeshScale.map(s => s * 100)
-            const scaled = new Array<number>(yupVerts.length)
-            for (let i = 0; i < yupVerts.length; i += 3) {
-                scaled[i]     = yupVerts[i]     * sx
-                scaled[i + 1] = yupVerts[i + 1] * sy
-                scaled[i + 2] = yupVerts[i + 2] * sz
-            }
-
-            bodies.push({
-                info: { GUID: `${link.name}_body`, name: `${link.name}_body` },
-                triangleMesh: {
-                    mesh: {
-                        verts: scaled,
-                        normals: Array.from(yupNormals),
-                        // uv must be non-empty: MirabufInstance.ts:184 checks !mesh.uv
-                        uv: inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Array((yupVerts.length / 3) * 2).fill(0),
-                        indices: Array.from(inLinkFrame.indices),
-                    },
-                },
-                appearanceOverride: link.materialName ?? undefined,
-            })
-        }
+        const body = buildLinkBody(link, meshFiles)
 
         partDefinitions[link.name] = {
             info: { GUID: link.name, name: link.name, version: 1 },
@@ -354,7 +332,7 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
                 com: positionToYup(link.comXYZ[0], link.comXYZ[1], link.comXYZ[2]),
             },
             baseTransform: { spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
-            bodies,
+            bodies: body ? [body] : [],
         }
 
         const pj = parentJoint.get(link.name)
@@ -373,10 +351,13 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
         }
     }
 
-    // --- Materials ---
+    return { partDefinitions, partInstances }
+}
+
+function buildAppearances(links: URDFLink[], doc: Document): Record<string, mirabuf.material.IAppearance> {
     const appearances: Record<string, mirabuf.material.IAppearance> = {}
 
-    function addAppearance(name: string, rgba: [number, number, number, number]) {
+    function add(name: string, rgba: [number, number, number, number]) {
         if (appearances[name]) return
         appearances[name] = {
             info: { GUID: name, name },
@@ -393,9 +374,8 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
         }
     }
 
-    // Collect inline link materials
     for (const link of links) {
-        if (link.materialName && link.materialRGBA) addAppearance(link.materialName, link.materialRGBA)
+        if (link.materialName && link.materialRGBA) add(link.materialName, link.materialRGBA)
     }
 
     // Collect top-level robot materials (may define colors that links reference by name only)
@@ -405,14 +385,57 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
         const colorRgba = matEl.querySelector("color")?.getAttribute("rgba")
         if (!colorRgba) continue
         const p = colorRgba.trim().split(/\s+/)
-        addAppearance(name, [parseFloat(p[0] ?? "1"), parseFloat(p[1] ?? "1"), parseFloat(p[2] ?? "1"), parseFloat(p[3] ?? "1")])
+        add(name, [parseFloat(p[0] ?? "1"), parseFloat(p[1] ?? "1"), parseFloat(p[2] ?? "1"), parseFloat(p[3] ?? "1")])
     }
 
-    // --- Joints ---
+    return appearances
+}
+
+function buildJointDefinition(joint: URDFJoint): mirabuf.joint.IJoint {
+    const motionType = mapJointMotion(joint.type)
+    const jDef: mirabuf.joint.IJoint = {
+        info: { GUID: joint.name, name: joint.name, version: 1 },
+        origin: positionToYup(joint.originXYZ[0], joint.originXYZ[1], joint.originXYZ[2]),
+        jointMotionType: motionType,
+    }
+
+    if (motionType === mirabuf.joint.JointMotion.REVOLUTE) {
+        const axis = axisToYup(...(joint.axisXYZ as [number, number, number]))
+        const isContiguous = joint.type === "continuous"
+        jDef.rotational = {
+            rotationalFreedom: {
+                axis,
+                limits: {
+                    lower: isContiguous ? -Math.PI * 1e6 : joint.limitLower,
+                    upper: isContiguous ? Math.PI * 1e6 : joint.limitUpper,
+                },
+                value: 0,
+            },
+        }
+    } else if (motionType === mirabuf.joint.JointMotion.SLIDER) {
+        const axis = axisToYup(...(joint.axisXYZ as [number, number, number]))
+        jDef.prismatic = {
+            prismaticFreedom: {
+                axis,
+                // PhysicsSystem.ts:574 multiplies limits by 0.01 (cm->m), so store in cm
+                limits: { lower: joint.limitLower * 100, upper: joint.limitUpper * 100 },
+                value: 0,
+            },
+        }
+    }
+    // RIGID joints: no oneof set. PhysicsSystem switch falls through to default (skip), which is correct.
+
+    return jDef
+}
+
+function buildJoints(
+    joints: URDFJoint[],
+    rootLink: URDFLink
+): { jointDefinitions: Record<string, mirabuf.joint.IJoint>; jointInstances: Record<string, mirabuf.joint.IJointInstance> } {
     const jointDefinitions: Record<string, mirabuf.joint.IJoint> = {}
     const jointInstances: Record<string, mirabuf.joint.IJointInstance> = {}
 
-    // Synthetic grounded joint — MirabufParser requires this entry.
+    // Synthetic grounded joint; MirabufParser requires this entry.
     // parts.nodes[0].value is used to identify the root rigid node (MirabufParser.ts:92,122).
     jointInstances["grounded"] = {
         info: { GUID: "grounded", name: "grounded" },
@@ -422,44 +445,7 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     }
 
     for (const joint of joints) {
-        const motionType = mapJointMotion(joint.type)
-        const jDef: mirabuf.joint.IJoint = {
-            info: { GUID: joint.name, name: joint.name, version: 1 },
-            origin: positionToYup(joint.originXYZ[0], joint.originXYZ[1], joint.originXYZ[2]),
-            jointMotionType: motionType,
-        }
-
-        if (motionType === mirabuf.joint.JointMotion.REVOLUTE) {
-            const axis = axisToYup(...(joint.axisXYZ as [number, number, number]))
-            const isContiguous = joint.type === "continuous"
-            jDef.rotational = {
-                rotationalFreedom: {
-                    axis,
-                    limits: {
-                        lower: isContiguous ? -Math.PI * 1e6 : joint.limitLower,
-                        upper: isContiguous ? Math.PI * 1e6 : joint.limitUpper,
-                    },
-                    value: 0,
-                },
-            }
-        } else if (motionType === mirabuf.joint.JointMotion.SLIDER) {
-            const axis = axisToYup(...(joint.axisXYZ as [number, number, number]))
-            jDef.prismatic = {
-                prismaticFreedom: {
-                    axis,
-                    // PhysicsSystem.ts:574 multiplies limits by 0.01 (cm→m), so store in cm
-                    limits: {
-                        lower: joint.limitLower * 100,
-                        upper: joint.limitUpper * 100,
-                    },
-                    value: 0,
-                },
-            }
-        }
-        // RIGID joints: no oneof set; PhysicsSystem switch falls through to default (skip) — correct behavior
-
-        jointDefinitions[joint.name] = jDef
-
+        jointDefinitions[joint.name] = buildJointDefinition(joint)
         jointInstances[joint.name] = {
             info: { GUID: joint.name, name: joint.name, version: 1 },
             parentPart: joint.parent,
@@ -468,11 +454,33 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
             offset: { x: 0, y: 0, z: 0 },
             // parts.nodes must be EMPTY for non-grounded joints. MirabufParser.ts:162-163 moves
             // everything in parts.nodes into the PARENT rigid node, so [{ value: child }] would
-            // collapse the child into the parent's rigid node — preventing joint creation.
+            // collapse the child into the parent's rigid node, preventing joint creation.
             parts: { nodes: [] },
         }
     }
 
+    return { jointDefinitions, jointInstances }
+}
+
+export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>): mirabuf.Assembly {
+    const doc = new DOMParser().parseFromString(urdfText, "text/xml")
+
+    const parseError = doc.querySelector("parsererror")
+    if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
+
+    const robotName = doc.querySelector("robot")?.getAttribute("name") ?? "robot"
+    const links = extractLinks(doc)
+    const joints = extractJoints(doc)
+
+    if (links.length === 0) throw new Error("URDF contains no <link> elements")
+
+    const childSet = new Set(joints.map(j => j.child))
+    const rootLink = links.find(l => !childSet.has(l.name))
+    if (!rootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
+
+    const { partDefinitions, partInstances } = buildParts(links, rootLink, joints, meshFiles)
+    const appearances = buildAppearances(links, doc)
+    const { jointDefinitions, jointInstances } = buildJoints(joints, rootLink)
     // rigidGroups must be an array (not undefined): bandageRigidNodes calls .forEach on it directly
     const rigidGroups = buildRigidGroups(links, joints)
 
@@ -486,7 +494,7 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
             joints: { jointDefinitions, jointInstances, rigidGroups, motorDefinitions: {} },
             // appearances must be an object (not undefined/null): loadMaterials calls Object.entries on it
             // physicalMaterials must be an object (not undefined): PhysicsSystem.ts:918 indexes it directly
-            // before the null-check at line 922, so undefined throws — an empty map is fine
+            // before the null-check at line 922, so undefined throws, an empty map is fine
             materials: { appearances, physicalMaterials: {} },
         },
     })

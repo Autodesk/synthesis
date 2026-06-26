@@ -22,6 +22,7 @@ export function parseOBJ(data: Uint8Array): ParsedMesh {
             outIndices.push(cached)
             return
         }
+
         const idx = vi < 0 ? srcVerts.length + vi : vi - 1
         const v = srcVerts[idx]
         if (!v) return
@@ -54,6 +55,7 @@ export function parseOBJ(data: Uint8Array): ParsedMesh {
                     const [vi, ui, ni] = p.split("/").map(x => (x ? parseInt(x) : 0))
                     return { vi: vi ?? 0, ui: ui ?? 0, ni: ni ?? 0 }
                 })
+
                 // Fan triangulation for quads/ngons
                 for (let i = 1; i < face.length - 1; i++) {
                     addVertex(face[0].vi, face[0].ni, face[0].ui)
