@@ -75,7 +75,7 @@ function originToSpatialMatrix(xyz: [number, number, number], rpy: [number, numb
 
 // Root link transform. No rotation needed because mesh vertices are already
 // stored in Y-up space. This ensures the physics chassis body has no rotation, so
-// body-local ≡ world (Y-up), which Jolt's VehicleConstraint requires.
+// body-local = world (Y-up), which Jolt's VehicleConstraint requires.
 const ROOT_SPATIAL_MATRIX = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
 
 // Convert URDF unit axis vector (Z-up) to Y-up IVector3
@@ -88,8 +88,6 @@ function axisToYup(ax: number, ay: number, az: number): mirabuf.IVector3 {
 function positionToYup(x: number, y: number, z: number): mirabuf.IVector3 {
     return { x: x * 100, y: z * 100, z: -y * 100 }
 }
-
-// --- XML helpers ---
 
 function attr(el: Element | null | undefined, name: string, fallback = ""): string {
     return el?.getAttribute(name) ?? fallback
