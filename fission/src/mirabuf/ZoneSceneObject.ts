@@ -61,6 +61,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
     public toRender: boolean | undefined
     public mesh?: THREE.Mesh
+    private lineTmp: THREE.Line
 
     public bounding?: Jolt.AABox
 
@@ -103,24 +104,17 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     }
 
     private createBoundingBox(props: VisualProperties) {
-        if (!this.mesh) return
+        if (this.bounding) JOLT.destroy(this.bounding)
+        if (this.lineTmp) World.sceneRenderer.removeObject(this.lineTmp)
 
-        const box = new THREE.Box3()
-        box.setFromObject(this.mesh, true)
+        const origin = new JOLT.Vec3(0, 0, 0)
+        const unit = new JOLT.Vec3(1, 1, 1)
 
-        const helper = new THREE.BoxHelper(this.mesh, 0xffff00)
-        World.sceneRenderer.addObject(helper)
+        this.bounding = new JOLT.AABox(origin, unit)
+        this.bounding = this.bounding.Scaled(convertThreeVector3ToJoltVec3(props.scale).Div(2))
+        this.bounding.TranslateVec3(convertThreeVector3ToJoltVec3(props.translation))
 
-        // World.sceneRenderer.addObject(box)
-
-        const min = convertThreeVector3ToJoltVec3(box.min)
-        const max = convertThreeVector3ToJoltVec3(box.max)
-
-        this.bounding = new JOLT.AABox(min, max)
-        // this.bounding.TranslateVec3(new JOLT.Vec3(0, 0, -0.25))
-        // this.bounding = this.bounding.Scaled(new JOLT.Vec3(0, 0, -0.25))
-
-        // renderThreeBox3(box)
+        this.lineTmp = renderAABox(this.bounding)
     }
 
     private setMeshProperties(props: VisualProperties) {
@@ -186,6 +180,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         const props = this.generateVisualProperties()
         if (props) {
             this.setMeshProperties(props)
+            this.createBoundingBox(props)
         }
 
         this.updateRenderPreferences()

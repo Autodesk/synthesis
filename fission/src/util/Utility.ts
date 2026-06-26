@@ -32,13 +32,15 @@ export function printAABox(box: Jolt.AABox) {
     console.log(`[${min.GetX()} ${min.GetX()} ${min.GetZ()}] [${max.GetX()} ${max.GetY()} ${max.GetZ()}]`)
 }
 
-export function renderAABox(box: Jolt.AABox) {
+export function renderAABox(box: Jolt.AABox): THREE.Line {
     const material = new THREE.LineBasicMaterial({ color: 0x00ff00 })
     const points = [convertJoltVec3ToThreeVector3(box.mMin, false), convertJoltVec3ToThreeVector3(box.mMax, false)]
     const geometry = new THREE.BufferGeometry().setFromPoints(points)
 
     const line = new THREE.Line(geometry, material)
     World.sceneRenderer.addObject(line)
+
+    return line
 }
 
 export function renderThreeBox3(box: THREE.Box3) {
