@@ -200,6 +200,64 @@ class DefaultInputs {
         }
     }
 
+    public static felix: InputSupplier = () => {
+        const negativeModifierKeys: ModifierState = {
+            ctrl: false,
+            alt: false,
+            shift: true,
+            meta: false,
+        }
+        return {
+            schemeName: "Felix",
+            descriptiveName: "WASD + Arrows (Swerve)",
+            customized: false,
+            usesGamepad: false,
+            usesTouchControls: false,
+            supportedDrivetrains: [DriveType.SWERVE],
+            inputs: [
+                AxisInput.onKeyboard("swerveForward", "KeyW", "KeyS"),
+                AxisInput.onKeyboard("swerveStrafe", "KeyA", "KeyD"),
+                // Positive swerveTurn = turn left, matching the original control mapping.
+                AxisInput.onKeyboard("swerveTurn", "ArrowLeft", "ArrowRight"),
+                ButtonInput.onKeyboard("swerveResetFieldForward", "KeyR"),
+
+                ButtonInput.onKeyboard("intake", "KeyE"),
+                ButtonInput.onKeyboard("eject", "KeyQ"),
+                ButtonInput.onKeyboard("unstick", "Space"),
+
+                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", negativeModifierKeys),
+            ],
+        }
+    }
+
+    public static gizmo: InputSupplier = () => {
+        return {
+            schemeName: "Gizmo",
+            descriptiveName: "Dual Stick (Swerve)",
+            customized: false,
+            usesGamepad: true,
+            usesTouchControls: false,
+            supportedDrivetrains: [DriveType.SWERVE],
+            inputs: [
+                AxisInput.onGamepadJoystick("swerveForward", 1, true),
+                AxisInput.onGamepadJoystick("swerveStrafe", 0, false),
+                AxisInput.onGamepadJoystick("swerveTurn", 2, false),
+                ButtonInput.onGamepad("swerveResetFieldForward", 8),
+
+                ButtonInput.onGamepad("intake", 4),
+                ButtonInput.onGamepad("eject", 5),
+                ButtonInput.onGamepad("unstick", 6),
+
+                AxisInput.onGamepadButtons("joint 1", 3, 0),
+                AxisInput.onGamepadButtons("joint 2", 1, 2),
+            ],
+        }
+    }
+
     /** @returns {InputScheme[]} New copies of the default input schemes without reference to any others. */
     public static get defaultInputCopies(): InputScheme[] {
         return [
@@ -211,18 +269,29 @@ class DefaultInputs {
             DefaultInputs.carmela(),
             DefaultInputs.brandon(),
             DefaultInputs.julian(),
+            DefaultInputs.felix(),
+            DefaultInputs.gizmo(),
         ]
     }
 
     /** @returns {InputScheme} A new blank input scheme with no control bound. */
     public static newBlankScheme(drivetype: DriveType): InputScheme {
         let driveInputs: AxisInput[]
+        const extraButtons: ButtonInput[] = []
         switch (drivetype) {
             case DriveType.ARCADE:
                 driveInputs = [AxisInput.unbound("arcadeDrive"), AxisInput.unbound("arcadeTurn")]
                 break
             case DriveType.TANK:
                 driveInputs = [AxisInput.unbound("tankLeft"), AxisInput.unbound("tankRight")]
+                break
+            case DriveType.SWERVE:
+                driveInputs = [
+                    AxisInput.unbound("swerveForward"),
+                    AxisInput.unbound("swerveStrafe"),
+                    AxisInput.unbound("swerveTurn"),
+                ]
+                extraButtons.push(ButtonInput.unbound("swerveResetFieldForward"))
                 break
         }
         return {
@@ -238,6 +307,7 @@ class DefaultInputs {
                 ButtonInput.unbound("intake"),
                 ButtonInput.unbound("eject"),
                 ButtonInput.unbound("unstick"),
+                ...extraButtons,
             ],
         }
     }

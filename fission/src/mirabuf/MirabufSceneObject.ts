@@ -13,6 +13,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
 import type { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { DriveType, SwerveReferenceType } from "@/systems/simulation/behavior/Behavior.ts"
 import {
     type Alliance,
     defaultFieldSpawnLocation,
@@ -1026,6 +1027,30 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     name: "Camera: Focus",
                     func: () => {
                         cameraControls.focusProvider = this
+                    },
+                })
+            }
+        }
+        if ((this.brain as SynthesisBrain | undefined)?.driveType=== DriveType.SWERVE) {
+            data.items.push({    
+                name: "Reset Orientation",
+                func: () => {
+                    (this.brain as SynthesisBrain).resetSwerveOrientation()
+                }
+            })
+
+            if ((this.brain as SynthesisBrain).getSwerveReference() === SwerveReferenceType.FIELDCENTRIC) {
+                data.items.push({
+                    name: "Robot Centric",
+                    func: () => {
+                        (this.brain as SynthesisBrain).setSwerveReference(SwerveReferenceType.ROBOTCENTRIC)
+                    },
+                })
+            } else {
+                data.items.push({
+                    name: "Field Centric",
+                    func: () => {
+                        (this.brain as SynthesisBrain).setSwerveReference(SwerveReferenceType.FIELDCENTRIC)
                     },
                 })
             }
