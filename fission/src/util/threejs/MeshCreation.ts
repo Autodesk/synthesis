@@ -45,9 +45,11 @@ export function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
         case JOLT.EShapeSubType_Box: {
             const boxShape = JOLT.castObject(shape, JOLT.BoxShape)
             const extent = convertJoltVec3ToThreeVector3(boxShape.GetHalfExtent()).multiplyScalar(2)
+
             threeObj = new THREE.Mesh(new THREE.BoxGeometry(extent.x, extent.y, extent.z, 1, 1, 1), material)
             threeObj.receiveShadow = true
             threeObj.castShadow = true
+
             break
         }
         case JOLT.EShapeSubType_Capsule:
@@ -69,7 +71,7 @@ export function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
     if (!threeObj) return undefined
 
     threeObj.position.copy(convertJoltVec3ToThreeVector3(body.GetPosition()))
-    threeObj.quaternion.copy(convertJoltQuatToThreeQuaternion(body.GetRotation()))
+    threeObj.quaternion.copy(convertJoltQuatToThreeQuaternion(body.GetRotation(), true))
 
     return threeObj
 }

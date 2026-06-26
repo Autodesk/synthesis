@@ -13,4 +13,5 @@ export const TOP_BAR_HEIGHT = 64
 export const TOP_BAR_ICON_BUTTON_SX = {
     color: "topBarText.main",
     "&:hover": { backgroundColor: "transparent" },
+    "&:focus, &:focus-visible": { outline: "none" },
 } as const
