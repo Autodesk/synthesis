@@ -6,7 +6,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { Select, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
+import { Select, ToggleButtonGroup, TooltipToggleButton } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -105,11 +105,15 @@ const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
                 if (v !== null) setMode(v as CameraMode)
             }}
         >
-            <ToggleButton value={CameraMode.Follow}>Follow</ToggleButton>
-            <ToggleButton value={CameraMode.Locked}>Locked</ToggleButton>
-            <ToggleButton value={CameraMode.Face} disabled={focusedOnField}>
-                Face
-            </ToggleButton>
+            <TooltipToggleButton title="Follow the target position, but allow free rotation around it" value={CameraMode.Follow}>
+                Follow
+            </TooltipToggleButton>
+            <TooltipToggleButton title="Follow the target with camera position and rotation" value={CameraMode.Locked}>
+                Locked
+            </TooltipToggleButton>
+            <TooltipToggleButton title="Lock camera position and orient the camera to face the target" value={CameraMode.Face} disabled={focusedOnField}>
+                    Face
+            </TooltipToggleButton>
         </ToggleButtonGroup>
     )
 }
