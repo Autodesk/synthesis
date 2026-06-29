@@ -33,6 +33,7 @@ const VisuallyHiddenInput = styled("input")({
 
 interface ImportLocalMirabufProps {
     configurationType: ConfigurationType
+    errorMessage?: string
 }
 
 function isURDFFile(filename: string): boolean {
@@ -42,24 +43,24 @@ function isURDFFile(filename: string): boolean {
 const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufProps>> = ({ modal }) => {
     const { openPanel, closeModal, configureScreen } = useUIContext()
 
-    const { configurationType } = modal!.props.custom
+    const { configurationType, errorMessage } = modal!.props.custom
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
     const [miraType, setSelectedType] = useState<MiraType | undefined>()
     const [isUrdf, setIsUrdf] = useState(false)
-    const [urdfError, setUrdfError] = useState<string | undefined>(undefined)
+    const [importError, setImportError] = useState<string | undefined>(errorMessage)
 
     const onInputChanged = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const file = e.target.files[0]
             const ext = file.name.split(".").pop()?.toLowerCase()
             if (ext === "urdf") {
-                setUrdfError("Plain URDF files are not supported. Please select a ZIP archive containing the URDF and its meshes.")
+                setImportError("Plain URDF files are not supported. Please select a ZIP archive containing the URDF and its meshes.")
                 setSelectedFile(undefined)
                 setIsUrdf(false)
                 return
             }
-            setUrdfError(undefined)
+            setImportError(undefined)
             setSelectedFile(file)
             if (isURDFFile(file.name)) {
                 setIsUrdf(true)
@@ -118,6 +119,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 console.error("[URDF Import]", e)
                 globalOpenModal(ImportLocalMirabufModal, {
                     configurationType: miraTypeToConfigType(miraType),
+                    errorMessage: e instanceof Error ? e.message : "An unknown error occurred during import.",
                 })
             } finally {
                 setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
@@ -152,7 +154,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 Upload File
                 <VisuallyHiddenInput type="file" onChange={onInputChanged} multiple accept=".mira,.urdf,.zip" />
             </Button>
-            {urdfError && <Label className="text-center" size="sm" style={{ color: "red" }}>{urdfError}</Label>}
+            {importError && <Label className="text-center" size="sm" style={{ color: "red" }}>{importError}</Label>}
             {selectedFile && <Label className="text-center" size="sm">{`Selected File: ${selectedFile.name}`}</Label>}
         </Stack>
     )

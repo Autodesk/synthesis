@@ -5,6 +5,22 @@ import { detectAndTagWheels } from "./WheelDetector"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "dae"])
 
+function validateURDFMeshFormats(urdfText: string): void {
+    const doc = new DOMParser().parseFromString(urdfText, "text/xml")
+    const meshFilenames = [...doc.querySelectorAll("mesh[filename]")].map(el => el.getAttribute("filename")!)
+    const unsupported = meshFilenames.filter(f => {
+        const ext = f.split(".").pop()?.toLowerCase()
+        return ext !== "stl"
+    })
+
+    if (unsupported.length > 0) {
+        const formats = [...new Set(unsupported.map(f => `.${f.split(".").pop()?.toLowerCase() ?? "unknown"}`))]
+        throw new Error(
+            `Unsupported mesh format(s) in URDF: ${formats.join(", ")}. Only STL exports are supported.`
+        )
+    }
+}
+
 async function buildMeshMap(zip: JSZip, urdfPath: string): Promise<Map<string, Uint8Array>> {
     const meshFiles = new Map<string, Uint8Array>()
 
@@ -56,6 +72,7 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
             buildMeshMap(zip, urdfEntry.name),
         ])
 
+        validateURDFMeshFormats(urdfText)
         const assembly = convertURDF(urdfText, meshFiles)
         detectAndTagWheels(assembly)
         return assembly
