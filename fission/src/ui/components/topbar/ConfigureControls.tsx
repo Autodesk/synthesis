@@ -115,9 +115,11 @@ const ConfigureControls: React.FC = () => {
                     height: 46,
                     minWidth: 260,
                     fontSize: 16,
+                    cursor: "pointer",
+                    alignItems: "stretch",
                     "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-                    "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0 },
-                    "& .MuiSelect-icon": { color: "topBarText.main", right: 14 },
+                    "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0, boxSizing: "border-box" },
+                    "& .MuiSelect-icon": { color: "topBarText.main", right: 14, pointerEvents: "none" },
                 }}
             >
                 {assemblies.length === 0 && (

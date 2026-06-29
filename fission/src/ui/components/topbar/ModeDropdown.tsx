@@ -13,7 +13,7 @@ const MODE_ICONS: Record<AppMode, TopBarIconName> = {
 }
 
 const ModeLabel: React.FC<{ mode: AppMode }> = ({ mode }) => (
-    <Stack direction="row" alignItems="center" gap={1.5}>
+    <Stack direction="row" alignItems="center" gap={1.5} sx={{ pointerEvents: "none" }}>
         <TopBarIcon name={MODE_ICONS[mode]} size={24} />
         {mode}
     </Stack>
@@ -37,9 +37,11 @@ const ModeDropdown: React.FC<{ onOpenChange?: (open: boolean) => void }> = ({ on
                 height: 46,
                 minWidth: 180,
                 fontSize: 17,
+                cursor: "pointer",
+                alignItems: "stretch", // Ensures the inner select div stretches to full height
                 "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-                "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0 },
-                "& .MuiSelect-icon": { color: "topBarText.main", right: 14 },
+                "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0, boxSizing: "border-box" },
+                "& .MuiSelect-icon": { color: "topBarText.main", right: 14, pointerEvents: "none" },
             }}
         >
             {APP_MODES.map(mode => (
