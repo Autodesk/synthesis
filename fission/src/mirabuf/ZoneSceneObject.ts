@@ -115,6 +115,9 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         this.bounding.TranslateVec3(convertThreeVector3ToJoltVec3(props.translation))
 
         this.lineTmp = renderAABox(this.bounding)
+
+        JOLT.destroy(origin)
+        JOLT.destroy(unit)
     }
 
     private setMeshProperties(props: VisualProperties) {
