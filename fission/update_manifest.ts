@@ -1,10 +1,10 @@
 import crypto from "node:crypto"
-import path from "node:path";
+import path from "node:path"
 import * as fs from "fs/promises"
-import type {ManifestFileType} from "./manifest";
+import type { ManifestFileType } from "./manifest"
 
 const basepath = "public/Downloadables/Mira"
-const map: ManifestFileType = {fields: [], private: [], robots: []}
+const map: ManifestFileType = { fields: [], private: [], robots: [] }
 
 const dirs = Object.keys(map) as (keyof typeof map)[]
 
@@ -17,7 +17,7 @@ async function main() {
             }
 
             const data = await fs.readFile(path.join(file.parentPath, file.name))
-            list.push({filename: file.name, hash: await hashBuffer(data.buffer as ArrayBuffer)})
+            list.push({ filename: file.name, hash: await hashBuffer(data.buffer as ArrayBuffer) })
         }
     }
     await fs.writeFile(path.join(basepath, "manifest.json"), JSON.stringify(map))
@@ -25,7 +25,7 @@ async function main() {
 
 main().catch(console.error)
 
-export async function hashBuffer(buffer:ArrayBuffer) {
+export async function hashBuffer(buffer: ArrayBuffer) {
     const hashBuffer = await crypto.subtle.digest("SHA-1", buffer)
     return Array.from(new Uint8Array(hashBuffer))
         .map(x => x.toString(16))

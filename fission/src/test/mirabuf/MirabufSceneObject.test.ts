@@ -8,6 +8,7 @@ import type MirabufInstance from "../../mirabuf/MirabufInstance"
 import MirabufInstanceClass from "../../mirabuf/MirabufInstance"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import { defaultRobotPreferences } from "@/systems/preferences/PreferenceTypes.ts"
 
 const mockPhysicsSystem = {
     createMechanismFromParser: vi.fn(() => mockMechanism()),
@@ -171,7 +172,9 @@ describe("MirabufSceneObject", () => {
         setPrivate(instance, "_ejectables", [{ id: 1, gamePieceBodyId: mockBodyId() }])
         setPrivate(instance, "_scoringZones", [{ id: 2 }])
         setPrivate(instance, "_intakeSensor", { id: 3 } as unknown as IntakeSensorSceneObject)
+
         instance.dispose()
+
         expect(mockSceneRenderer.removeSceneObject).toHaveBeenCalled()
         expect(mockPhysicsSystem.destroyMechanism).toHaveBeenCalled()
     })
@@ -187,38 +190,12 @@ describe("MirabufSceneObject", () => {
     test("SetEjectable returns false if not configured or max reached", () => {
         const bodyId = mockBodyId()
         expect(instance.setEjectable(undefined)).toBe(false)
-        setPrivate(instance, "_ejectorPreferences", {
-            parentNode: "n",
-            deltaTransformation: [1],
-            ejectorVelocity: 1,
-            ejectOrder: "FIFO",
-        })
-        setPrivate(instance, "_intakePreferences", {
-            parentNode: "n",
-            deltaTransformation: [1],
-            zoneDiameter: 1,
-            showZoneAlways: false,
-            maxPieces: 0,
-            animationDuration: 0.5,
-        })
+        instance.robotPreferences.intake.maxPieces = 0
         expect(instance.setEjectable(bodyId)).toBe(false)
     })
 
     test("SetEjectable returns true and registers ejectable if valid", () => {
-        setPrivate(instance, "_ejectorPreferences", {
-            parentNode: "n",
-            deltaTransformation: [1],
-            ejectorVelocity: 1,
-            ejectOrder: "FIFO",
-        })
-        setPrivate(instance, "_intakePreferences", {
-            parentNode: "n",
-            deltaTransformation: [1],
-            zoneDiameter: 1,
-            showZoneAlways: false,
-            maxPieces: 2,
-            animationDuration: 0.5,
-        })
+        instance.robotPreferences.intake.maxPieces = 2
         setPrivate(instance, "_ejectables", [])
         const bodyId = mockBodyId()
         bodyId.GetIndexAndSequenceNumber = () => 123
@@ -229,16 +206,18 @@ describe("MirabufSceneObject", () => {
 
 describe("MirabufSceneObject - Real Systems Integration", () => {
     test("getDimensions returns proper values for Dozer robot", async context => {
-        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
+        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT)
 
         if (!cacheInfo) {
             context.skip()
+            return
         }
 
-        const assembly = await MirabufCachingService.get(cacheInfo!.hash)
+        const assembly = await MirabufCachingService.get(cacheInfo.hash)
 
         if (!assembly) {
             context.skip()
+            return
         }
 
         const parser = new MirabufParser(assembly!)
@@ -248,12 +227,34 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
             batch.computeBoundingBox()
         })
 
-        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v9", undefined)
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v10", undefined)
 
         const originalDimensions = dozerSceneObject.getDimensions()
 
         expect(originalDimensions.width).toBeCloseTo(0.84, 0)
         expect(originalDimensions.height).toBeCloseTo(0.48, 0)
         expect(originalDimensions.depth).toBeCloseTo(0.9, 0)
+    })
+    test("Ejector and Intake are configured for Dozer", async context => {
+        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT)
+
+        if (!cacheInfo) {
+            context.skip()
+            return
+        }
+
+        const assembly = await MirabufCachingService.get(cacheInfo.hash)
+
+        if (!assembly) {
+            context.skip()
+            return
+        }
+
+        const parser = new MirabufParser(assembly!)
+        const mirabufInstance = new MirabufInstanceClass(parser)
+
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v10", undefined)
+        expect(dozerSceneObject.intakePreferences).not.toEqual(defaultRobotPreferences().intake)
+        expect(dozerSceneObject.ejectorPreferences).not.toEqual(defaultRobotPreferences().ejector)
     })
 })

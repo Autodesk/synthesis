@@ -33,10 +33,10 @@ class SliderDriver extends Driver {
         )
     }
 
-    public get maxForce(): number {
+    public get maxAcceleration(): number {
         return this._constraint.GetMotorSettings().mMaxForceLimit
     }
-    public set maxForce(newtons: number) {
+    public set maxAcceleration(newtons: number) {
         const motorSettings = this._constraint.GetMotorSettings()
         motorSettings.set_mMaxForceLimit(newtons)
         motorSettings.set_mMinForceLimit(-newtons)
