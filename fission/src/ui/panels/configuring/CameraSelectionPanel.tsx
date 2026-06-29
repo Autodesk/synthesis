@@ -11,7 +11,6 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { MenuItem } from "@mui/material"
-import Label from "@/ui/components/Label"
 
 interface TargetSettingsProps {
     controls: CustomTargetControls
@@ -118,7 +117,7 @@ const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [focusedOnRobot, setFocusedOnRobot] = useState<boolean>(
-        (World.sceneRenderer.currentCameraControls as CustomTargetControls).isFocusedOnRobot,
+        (World.sceneRenderer.currentCameraControls as CustomTargetControls).isFocusedOnRobot
     )
     // const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
     //     World.sceneRenderer.currentCameraControls.controlsType
