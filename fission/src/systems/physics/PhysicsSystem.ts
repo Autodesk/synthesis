@@ -628,9 +628,6 @@ class PhysicsSystem extends WorldSystem {
      * leaving the robot rocking on a subset of wheels and breaking skid-steer turning. Snapping each 
      * group to a common radius reproduces the coplanar-by-construction property for any robot, while 
      * clustering preserves robots that intentionally mix wheel sizes.
-     * 
-     * TRANSITION: SYNTH-171
-     * This can be removed in the future with a custom wheel implementation. See SYNTH-178
      *
      * @returns Map of joint GUID -> radius for every wheel joint.
      */
@@ -680,6 +677,7 @@ class PhysicsSystem extends WorldSystem {
             ) {
                 groupEnd++
             }
+
             const groupMax = sorted[groupEnd - 1].radius
             for (let k = groupStart; k < groupEnd; k++) radii.set(sorted[k].guid, groupMax)
             groupStart = groupEnd
@@ -733,6 +731,7 @@ class PhysicsSystem extends WorldSystem {
         if (resolvedRadius !== undefined) {
             wheelDimensions.radius = resolvedRadius
         }
+
         const wheelPos = urdfWheelBasis
             ? convertJoltRVec3ToJoltVec3(anchorPoint)
             : convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))

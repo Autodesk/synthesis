@@ -192,12 +192,14 @@ class SynthesisBrain extends Brain {
             constraintPositions.push({ x: t.GetX() - robotCOM.GetX(), z: t.GetZ() - robotCOM.GetZ() })
             JOLT.destroy(m)
         }
+
         const xImbalance = Math.abs(
             constraintPositions.filter(p => p.x >= 0).length - constraintPositions.filter(p => p.x < 0).length
         )
         const zImbalance = Math.abs(
             constraintPositions.filter(p => p.z >= 0).length - constraintPositions.filter(p => p.z < 0).length
         )
+
         // Use Z axis when it gives a more balanced split (URDF robots); fall back to X (Fusion 360 robots).
         // URDF's usual +Y-left convention converts to -Z-left in Synthesis, so +Z is the right side.
         const useLateralZ = zImbalance < xImbalance
