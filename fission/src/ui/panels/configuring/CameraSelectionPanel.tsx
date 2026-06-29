@@ -11,6 +11,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { MenuItem } from "@mui/material"
+import Label from "@/ui/components/Label"
 
 interface TargetSettingsProps {
     controls: CustomTargetControls
@@ -78,17 +79,10 @@ const FocusSelector: React.FC<{ controls: CustomTargetControls }> = ({ controls 
 
 const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
     const [mode, setMode] = useState<CameraMode>(controls.mode)
-    const [focusedOnField, setFocusedOnField] = useState<boolean>(controls.isFocusedOnField)
 
     useEffect(() => {
         return EventSystem.listen("CameraModeChangedEvent", ({ mode: newMode }) => {
             setMode(newMode as CameraMode)
-        })
-    }, [])
-
-    useEffect(() => {
-        return EventSystem.listen("CameraFocusChangedEvent", ({ focusProvider }) => {
-            setFocusedOnField(focusProvider?.miraType === MiraType.FIELD)
         })
     }, [])
 
@@ -114,7 +108,6 @@ const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
             <TooltipToggleButton
                 title="Lock camera position and orient the camera to face the target"
                 value={CameraMode.Face}
-                disabled={focusedOnField}
             >
                 Face
             </TooltipToggleButton>
@@ -124,6 +117,9 @@ const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
 
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
+    const [focusedOnField, setFocusedOnField] = useState<boolean>(
+        (World.sceneRenderer.currentCameraControls as CustomTargetControls).isFocusedOnField,
+    )
     // const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
     //     World.sceneRenderer.currentCameraControls.controlsType
     // )
@@ -145,10 +141,20 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         configureScreen(panel!, { title: "Camera Config", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
+    useEffect(() => {
+        return EventSystem.listen("CameraFocusChangedEvent", ({ focusProvider }) => {
+            setFocusedOnField(focusProvider?.miraType === MiraType.FIELD)
+        })
+    }, [])
+
     return (
         <div className="flex flex-col gap-2">
             <FocusSelector controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
-            <TargetSettings controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
+            {!focusedOnField ? (
+                <TargetSettings controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
+            ) : (
+                <Label size="sm">Unable to change focus mode for fields</Label>
+            )}
         </div>
     )
 }
