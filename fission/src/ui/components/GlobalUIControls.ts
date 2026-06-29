@@ -2,7 +2,6 @@ import type { AddToastFn, OpenModalFn, OpenPanelFn } from "../helpers/UIProvider
 
 /**
  * This is where all the global references to the Global UI controls are located.
- * See GlobalUIComponent.tsx for explanation of this madness.
  */
 
 export let globalAddToast: AddToastFn = () => {}

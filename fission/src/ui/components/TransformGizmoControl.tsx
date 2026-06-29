@@ -101,7 +101,7 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
                 value={mode}
                 exclusive
                 onChange={(_, v) => {
-                    if (v === undefined) return
+                    if (v == null) return
 
                     setMode(v)
                     gizmo?.setMode(v)
