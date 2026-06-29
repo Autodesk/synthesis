@@ -1,7 +1,7 @@
 import JSZip from "jszip"
 import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
-import { detectAndTagWheels } from "./WheelDetector"
+import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "dae"])
 
