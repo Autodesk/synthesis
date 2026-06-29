@@ -23,7 +23,6 @@ import {
     type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import InputSystem from "@/systems/input/InputSystem.ts"
 
 export type UIProviderProps = {
@@ -48,8 +47,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
 
     const [_, refresh] = useReducer(x => !x, false)
-
-    const { unconfirmedImport } = useStateContext()
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
@@ -148,9 +145,16 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     setPanels(p => [...p.filter(x => x !== existingDuplicate), existingDuplicate])
                     return existingDuplicate.id
                 }
-            } else if (unconfirmedImport) {
-                addToast("warning", "You are currenting importing a model!", "Confirm it before opening another panel.")
-                return panels[0].id // NOTE: if the user is configuring, that means Assembly Setup panel is the only one open -- race condition??
+            }
+
+            // if any (generic) open panel declares itself as blocking, prevent opening a new one
+            const blockingPanel = panels.find(p => (p.props as PanelProps<unknown>).blocking)
+            if (blockingPanel) {
+                const msg =
+                    (blockingPanel.props as PanelProps<unknown>).blockingMessage ??
+                    "Close the current panel before opening another."
+                addToast("warning", msg)
+                return blockingPanel.id
             }
             const id = uuidv4()
             const panel = {
@@ -186,27 +190,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
                 )
                 if (existing) {
-                    // If the existing panel is ConfigurePanel and a spawn/initial panel is being opened while editing,
-                    // warn the user and keep Configure open. Otherwise, replace existing with the new panel.
-                    const existingName = (existing.content as unknown as { name?: string })?.name ?? ""
-                    const isExistingConfigure = existingName === "ConfigurePanel"
-                    const isNewSpawnOrInit =
-                        contentName === "ImportMirabufPanel" || contentName === "InitialConfigPanel"
-                    if (isExistingConfigure && isNewSpawnOrInit) {
-                        // Only block if actively configuring an assembly (has selection or a mode set)
-                        const custom = (existing.props as unknown as { custom?: any })?.custom ?? {}
-                        const isActivelyConfiguring =
-                            Boolean(custom?.selectedAssembly) || custom?.configMode !== undefined
-                        if (isActivelyConfiguring) {
-                            // Show a warning toast about unsaved configuration
-                            enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
-                                variant: "warning",
-                                action: snackbarAction,
-                            })
-                            setPanels(p => [...p.filter(x => x !== existing), existing])
-                            return existing.id
-                        }
-                    }
                     // Replace existing with the new one
                     setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])
                     return id
@@ -216,7 +199,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setPanels([...nextPanels, panel as Panel<any, any>])
             return id
         },
-        [panels, unconfirmedImport]
+        [panels]
     )
 
     const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {

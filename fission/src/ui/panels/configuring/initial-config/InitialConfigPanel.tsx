@@ -24,7 +24,7 @@ import InputSchemeSelection from "./InputSchemeSelection"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
-    const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
+    const { setSelectedScheme } = useStateContext()
     const { openModal, openPanel, configureScreen, closePanel } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
@@ -72,8 +72,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }, [targetAssembly])
 
     useEffect(() => {
-        setUnconfirmedImport(true)
-
         configureScreen(
             panel!,
             { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
@@ -82,12 +80,9 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     closeFinish()
                 },
                 onCancel: () => closeDelete(),
-                onClose: () => {
-                    setUnconfirmedImport(false)
-                },
             }
         )
-    }, [closeFinish, closeDelete, configureScreen, panel, setUnconfirmedImport])
+    }, [closeFinish, closeDelete, configureScreen, panel])
 
     return (
         <Stack gap={2}>
@@ -155,7 +150,12 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 <InputSchemeSelection
                     brainIndex={brainIndex}
                     onSelect={() => {}}
-                    onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
+                    onEdit={() =>
+                        openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel, {
+                            blocking: true,
+                            blockingMessage: "Close Assembly Setup before opening another panel.",
+                        })
+                    }
                     onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
                     panelId={panel?.id}
                 />

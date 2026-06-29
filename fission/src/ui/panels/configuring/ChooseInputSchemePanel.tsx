@@ -59,7 +59,10 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
                     brainIndex={brainIndex}
                     onSelect={() => closePanel(panel!.id, CloseType.Accept)}
                     onEdit={() => {
-                        openPanel(ConfigurePanel, { configurationType: "INPUTS" })
+                        openPanel(ConfigurePanel, { configurationType: "INPUTS" }, undefined, {
+                            blocking: true,
+                            blockingMessage: "Close Assembly Setup before opening another panel.",
+                        })
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                     onCreateNew={() => {
