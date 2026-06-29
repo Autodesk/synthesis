@@ -45,7 +45,6 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToThreeVector3,
-    convertMirabufTransformToJoltPositionRVec3,
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
@@ -346,6 +345,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public moveToSpawnLocation() {
+        if (this._miraType === MiraType.PIECE) {
+            this.spawnGamePiece()
+            return
+        }
+
         const referencePos = new THREE.Vector3()
         let pos: SpawnLocation
         if (this.miraType == MiraType.FIELD) {
@@ -355,20 +359,44 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const fieldLocations = field?.fieldPreferences?.spawnLocations
             if (this.alliance != null && this.station != null && fieldLocations != null) {
                 pos = fieldLocations[this.alliance][this.station]
-            } else if (this._miraType === MiraType.PIECE && this.mirabufInstance.parser.gamePieceTransform) {
-                const posVec = convertMirabufTransformToJoltPositionRVec3(
-                    this.mirabufInstance.parser.gamePieceTransform
-                )
-                pos = {
-                    pos: [posVec.GetX(), posVec.GetY(), posVec.GetZ()],
-                    yaw: 0,
-                }
             } else {
                 pos = fieldLocations?.default ?? defaultFieldSpawnLocation()
             }
             field?.getPositionTransform(referencePos)
         }
         this.setObjectPosition(pos, referencePos)
+    }
+
+    // Game piece bodies are created at origin (0,0,0) by Jolt. Their globalTransforms
+    // encode world-space field positions, so body × globalTransform gives the correct
+    // visual and collision placement without moving X/Z (which would double-offset).
+    // We apply only the field's root body Y so pieces sit on the field surface.
+    private spawnGamePiece() {
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        if (!field) return
+
+        const fieldRootBodyId = field.mechanism.getBodyByNodeId(field.mechanism.rootBody)
+        if (!fieldRootBodyId) return
+
+        const fieldRootY = World.physicsSystem.getBody(fieldRootBodyId)!.GetPosition().GetY()
+        const yUnitVec = new JOLT.Vec3(0, 1, 0)
+        const identityRot = JOLT.Quat.prototype.sRotation(yUnitVec, 0)
+        const blankVec = new JOLT.Vec3()
+
+        this.mirabufInstance.parser.rigidNodes.forEach(rn => {
+            const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
+            if (!jBodyId) return
+            const yPos = new JOLT.RVec3(0, fieldRootY, 0)
+            World.physicsSystem.setBodyPositionRotationAndVelocity(
+                jBodyId, yPos, identityRot, blankVec, blankVec, false
+            )
+            JOLT.destroy(yPos)
+        })
+
+        JOLT.destroy(yUnitVec)
+        JOLT.destroy(identityRot)
+        JOLT.destroy(blankVec)
+        this.updateMeshTransforms()
     }
 
     private robotSpawnPosition(referencePos: THREE.Vector3): SpawnLocation | undefined {
