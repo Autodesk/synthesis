@@ -138,8 +138,8 @@ export class CustomTargetControls extends CameraControls {
     private _mode: CameraMode = CameraMode.Follow
     private _focusPosition: THREE.Vector3 = new THREE.Vector3()
 
-    public get isFocusedOnField(): boolean {
-        return this._focusProvider?.miraType === MiraType.FIELD
+    public get isFocusedOnRobot(): boolean {
+        return this._focusProvider?.miraType === MiraType.ROBOT
     }
 
     public get mode(): CameraMode {

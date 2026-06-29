@@ -117,8 +117,8 @@ const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
 
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const [focusedOnField, setFocusedOnField] = useState<boolean>(
-        (World.sceneRenderer.currentCameraControls as CustomTargetControls).isFocusedOnField
+    const [focusedOnRobot, setFocusedOnRobot] = useState<boolean>(
+        (World.sceneRenderer.currentCameraControls as CustomTargetControls).isFocusedOnRobot,
     )
     // const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
     //     World.sceneRenderer.currentCameraControls.controlsType
@@ -143,17 +143,15 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     useEffect(() => {
         return EventSystem.listen("CameraFocusChangedEvent", ({ focusProvider }) => {
-            setFocusedOnField(focusProvider?.miraType === MiraType.FIELD)
+            setFocusedOnRobot(focusProvider?.miraType === MiraType.ROBOT)
         })
     }, [])
 
     return (
         <div className="flex flex-col gap-2">
             <FocusSelector controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
-            {!focusedOnField ? (
+            {focusedOnRobot && (
                 <TargetSettings controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
-            ) : (
-                <Label size="sm">Unable to change focus mode for fields</Label>
             )}
         </div>
     )
