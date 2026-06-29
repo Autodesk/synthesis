@@ -81,25 +81,27 @@ describe("MatchModeConfigPanel", () => {
         const testJsonString = JSON.stringify(json)
         const testFile = new File([testJsonString], "test.json", { type: "application/json" })
 
-        const fileInput = container.querySelector("input[type='file']")
+        const fileInput = container.querySelector<HTMLInputElement>("input[type='file']")
         assert(fileInput != undefined)
+        const readSpy = vi.spyOn(testFile, "text")
 
         // Upload the file (wrapped in act to handle React state updates)
         await act(async () => {
             fireEvent.change(fileInput, { target: { files: [testFile] } })
         })
 
+        // Wait for the file to be read and processed
+        await waitFor(() => assert(readSpy.mock.calls.length > 0, "File has not been read"))
+        await readSpy.mock.results[0].value
+        await act(async () => {})
+        const finalCount = getMatchModeCount(container)
+
         if (validJSON) {
-            await waitFor(() => {
-                const finalCount = getMatchModeCount(container)
-                assert(
-                    finalCount === initialCount + 1,
-                    `Expected count to increase from ${initialCount} to ${initialCount + 1}, but got ${finalCount}`
-                )
-            })
+            assert(
+                finalCount === initialCount + 1,
+                `Expected count to increase from ${initialCount} to ${initialCount + 1}, but got ${finalCount}`
+            )
         } else {
-            await new Promise(resolve => setTimeout(resolve, 100))
-            const finalCount = getMatchModeCount(container)
             assert(finalCount === initialCount, `Expected count to remain ${initialCount}, but got ${finalCount}`)
         }
     }
