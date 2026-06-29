@@ -2,6 +2,7 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { convertJoltVec3ToThreeVector3 } from "./TypeConversions"
 import World from "@/systems/World"
+import JOLT from "./loading/JoltSyncLoader"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
@@ -23,6 +24,26 @@ export function deobf(s: string) {
                 .match(/.{1,2}/g)!
                 .join("%")
     )
+}
+
+export function copyJoltRMat44(mat: Jolt.RMat44): Jolt.RMat44 {
+    const [translation, rotation] = [mat.GetTranslation(), mat.GetQuaternion()]
+    const newMat = new JOLT.RMat44().sRotationTranslation(rotation, translation)
+
+    JOLT.destroy(translation)
+    JOLT.destroy(rotation)
+
+    return newMat
+}
+
+export function copyJoltMat44(mat: Jolt.Mat44): Jolt.Mat44 {
+    const [translation, rotation] = [mat.GetTranslation(), mat.GetQuaternion()]
+    const newMat = new JOLT.Mat44().sRotationTranslation(rotation, translation)
+
+    JOLT.destroy(translation)
+    JOLT.destroy(rotation)
+
+    return newMat
 }
 
 export function printAABox(box: Jolt.AABox) {

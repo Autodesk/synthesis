@@ -3,7 +3,7 @@ import type * as THREE from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
-import { findListDifference, printAABox } from "@/util/Utility"
+import { findListDifference, renderAABox } from "@/util/Utility"
 import MirabufSceneObject from "./MirabufSceneObject"
 import { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
@@ -42,14 +42,12 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             .filter(rn => rn.isGamePiece)
             .map(rn => field.mechanism.nodeToBody.get(rn.id)!) as Jolt.BodyID[]
 
-        // console.log(`gps ${gps.length}`)
-
         const gamePiecesContacting = gps.filter(gpID => {
             const gp = World.physicsSystem.getBody(gpID)!
             const gpBounding = gp.GetWorldSpaceBounds()
 
             // console.log("GP Bounding")
-            // printAABox(gpBounding)
+            renderAABox(gpBounding)
 
             const overlaps = this.bounding?.OverlapsAABox(gpBounding)
             JOLT.destroy(gpBounding)
