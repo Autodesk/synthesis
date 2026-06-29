@@ -222,6 +222,10 @@ class PreferencesSystem {
         this.savePreferences()
     }
 
+    public static setGraphicsPreferences(g: GraphicsPreferences) {
+        this._preferences[GRAPHICS_PREFERENCE_KEY] = g
+        this.savePreferences()
+    }
     public static graphicsPreferencesAreLow(): boolean {
         const current = this.getGraphicsPreferences()
         return current.fancyShadows === false && current.antiAliasing === false
