@@ -97,7 +97,9 @@ interface AxlePair {
 
 function canonicalDir(v: THREE.Vector3): THREE.Vector3 {
     const n = v.clone().normalize()
-    const ax = Math.abs(n.x), ay = Math.abs(n.y), az = Math.abs(n.z)
+    const ax = Math.abs(n.x),
+        ay = Math.abs(n.y),
+        az = Math.abs(n.z)
     const dominant = ax >= ay && ax >= az ? n.x : ay >= az ? n.y : n.z
     return dominant < 0 ? n.multiplyScalar(-1) : n
 }

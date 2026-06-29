@@ -55,7 +55,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             const file = e.target.files[0]
             const ext = file.name.split(".").pop()?.toLowerCase()
             if (ext === "urdf") {
-                setImportError("Plain URDF files are not supported. Please select a ZIP archive containing the URDF and its meshes.")
+                setImportError(
+                    "Plain URDF files are not supported. Please select a ZIP archive containing the URDF and its meshes."
+                )
                 setSelectedFile(undefined)
                 setIsUrdf(false)
                 return
@@ -154,7 +156,11 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 Upload File
                 <VisuallyHiddenInput type="file" onChange={onInputChanged} multiple accept=".mira,.urdf,.zip" />
             </Button>
-            {importError && <Label className="text-center" size="sm" style={{ color: "red" }}>{importError}</Label>}
+            {importError && (
+                <Label className="text-center" size="sm" style={{ color: "red" }}>
+                    {importError}
+                </Label>
+            )}
             {selectedFile && <Label className="text-center" size="sm">{`Selected File: ${selectedFile.name}`}</Label>}
         </Stack>
     )

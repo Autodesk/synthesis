@@ -55,6 +55,7 @@ function rpyToMatrix(roll: number, pitch: number, yaw: number): Mat3 {
 }
 
 // Rx(-90°): converts URDF Z-up frame to Y-up
+// biome-ignore format: matrix layout
 const RZy: Mat3 = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
 
 // Build mirabuf spatialMatrix (16 floats, row-major) from a URDF joint origin.
@@ -65,6 +66,7 @@ function originToSpatialMatrix(xyz: [number, number, number], rpy: [number, numb
     const RY = mat3Mul(RZy, mat3Mul(RU, transpose3(RZy)))
     const [px, py, pz] = xyz
     const [tx, ty, tz] = [px * 100, pz * 100, -py * 100] // metres -> cm, Z-up -> Y-up
+    // biome-ignore format: spatial matrix row layout
     return [
         RY[0][0], RY[0][1], RY[0][2], tx,
         RY[1][0], RY[1][1], RY[1][2], ty,
@@ -117,7 +119,11 @@ function extractLinks(doc: Document): URDFLink[] {
         if (meshEl) {
             visualMeshPath = attr(meshEl, "filename") || null
             const sp = attr(meshEl, "scale", "1 1 1").trim().split(/\s+/)
-            visualMeshScale = [parseFloat(sp[0] ?? "1") || 1, parseFloat(sp[1] ?? "1") || 1, parseFloat(sp[2] ?? "1") || 1]
+            visualMeshScale = [
+                parseFloat(sp[0] ?? "1") || 1,
+                parseFloat(sp[1] ?? "1") || 1,
+                parseFloat(sp[2] ?? "1") || 1,
+            ]
         }
 
         let materialRGBA: [number, number, number, number] | null = null
@@ -173,8 +179,10 @@ function resolveMeshBytes(packagePath: string, meshFiles: Map<string, Uint8Array
 function applyMat3(src: number[], r: Mat3, tx = 0, ty = 0, tz = 0): number[] {
     const out = new Array<number>(src.length)
     for (let i = 0; i < src.length; i += 3) {
-        const x = src[i], y = src[i + 1], z = src[i + 2]
-        out[i]     = r[0][0] * x + r[0][1] * y + r[0][2] * z + tx
+        const x = src[i]
+        const y = src[i + 1]
+        const z = src[i + 2]
+        out[i] = r[0][0] * x + r[0][1] * y + r[0][2] * z + tx
         out[i + 1] = r[1][0] * x + r[1][1] * y + r[1][2] * z + ty
         out[i + 2] = r[2][0] * x + r[2][1] * y + r[2][2] * z + tz
     }
@@ -205,7 +213,7 @@ function applyVisualOrigin(mesh: ParsedMesh, xyz: [number, number, number], rpy:
 function toYup(arr: number[]): number[] {
     const out = new Array<number>(arr.length)
     for (let i = 0; i < arr.length; i += 3) {
-        out[i]     = arr[i]
+        out[i] = arr[i]
         out[i + 1] = arr[i + 2]
         out[i + 2] = -arr[i + 1]
     }
@@ -250,11 +258,13 @@ function buildRigidGroups(links: URDFLink[], joints: URDFJoint[]): mirabuf.joint
         return parent.get(x)!
     }
 
-    joints.filter(j => fixedTypes.has(j.type)).forEach(j => {
-        const ra = find(j.parent),
-            rb = find(j.child)
-        if (ra !== rb) parent.set(ra, rb)
-    })
+    joints
+        .filter(j => fixedTypes.has(j.type))
+        .forEach(j => {
+            const ra = find(j.parent),
+                rb = find(j.child)
+            if (ra !== rb) parent.set(ra, rb)
+        })
 
     const groups = new Map<string, string[]>()
     for (const l of links) {
@@ -289,8 +299,8 @@ function buildLinkBody(link: URDFLink, meshFiles: Map<string, Uint8Array>): mira
     const rv = inLinkFrame.verts
     const scaled = new Array<number>(rv.length)
     for (let i = 0; i < rv.length; i += 3) {
-        scaled[i]     = rv[i]     * sx
-        scaled[i + 1] = rv[i + 2] * sy   // Z-up→Y-up swap
+        scaled[i] = rv[i] * sx
+        scaled[i + 1] = rv[i + 2] * sy // Z-up→Y-up swap
         scaled[i + 2] = -rv[i + 1] * sz
     }
     const yupNormals = toYup(inLinkFrame.normals)
@@ -428,7 +438,10 @@ function buildJointDefinition(joint: URDFJoint): mirabuf.joint.IJoint {
 function buildJoints(
     joints: URDFJoint[],
     rootLink: URDFLink
-): { jointDefinitions: Record<string, mirabuf.joint.IJoint>; jointInstances: Record<string, mirabuf.joint.IJointInstance> } {
+): {
+    jointDefinitions: Record<string, mirabuf.joint.IJoint>
+    jointInstances: Record<string, mirabuf.joint.IJointInstance>
+} {
     const jointDefinitions: Record<string, mirabuf.joint.IJoint> = {}
     const jointInstances: Record<string, mirabuf.joint.IJointInstance> = {}
 

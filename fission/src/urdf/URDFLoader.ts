@@ -16,9 +16,7 @@ function validateURDFMeshFormats(urdfText: string): void {
 
     if (unsupported.length > 0) {
         const formats = [...new Set(unsupported.map(f => `.${f.split(".").pop()?.toLowerCase() ?? "unknown"}`))]
-        throw new Error(
-            `Unsupported mesh format(s) in URDF: ${formats.join(", ")}. Only STL exports are supported.`
-        )
+        throw new Error(`Unsupported mesh format(s) in URDF: ${formats.join(", ")}. Only STL exports are supported.`)
     }
 }
 
@@ -59,7 +57,9 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
     const ext = filename.split(".").pop()?.toLowerCase()
 
     if (ext === "urdf") {
-        throw new Error("Plain URDF files are not supported. Please select a ZIP archive containing the URDF and its meshes.")
+        throw new Error(
+            "Plain URDF files are not supported. Please select a ZIP archive containing the URDF and its meshes."
+        )
     }
 
     if (ext === "zip") {
@@ -68,10 +68,7 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
         const urdfEntry = Object.values(zip.files).find(f => !f.dir && f.name.endsWith(".urdf"))
         if (!urdfEntry) throw new Error("No .urdf file found in the zip archive")
 
-        const [urdfText, meshFiles] = await Promise.all([
-            urdfEntry.async("text"),
-            buildMeshMap(zip, urdfEntry.name),
-        ])
+        const [urdfText, meshFiles] = await Promise.all([urdfEntry.async("text"), buildMeshMap(zip, urdfEntry.name)])
 
         validateURDFMeshFormats(urdfText)
         const assembly = convertURDF(urdfText, meshFiles)

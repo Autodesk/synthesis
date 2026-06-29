@@ -21,7 +21,11 @@ function parseBinarySTL(data: Uint8Array): ParsedMesh {
         offset += 12
 
         for (let v = 0; v < 3; v++) {
-            verts.push(view.getFloat32(offset, true), view.getFloat32(offset + 4, true), view.getFloat32(offset + 8, true))
+            verts.push(
+                view.getFloat32(offset, true),
+                view.getFloat32(offset + 4, true),
+                view.getFloat32(offset + 8, true)
+            )
             normals.push(nx, ny, nz)
             offset += 12
         }

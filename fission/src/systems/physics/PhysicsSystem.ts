@@ -624,9 +624,9 @@ class PhysicsSystem extends WorldSystem {
      * wheel in a group to that group's max radius. Applies to all import paths.
      *
      * With tessellated meshes, per-wheel inference produces sub-millimeter variance. With the near-zero
-     * suspension travel used for drivetrains, that variance permanently floats the "shorter" wheels, 
-     * leaving the robot rocking on a subset of wheels and breaking skid-steer turning. Snapping each 
-     * group to a common radius reproduces the coplanar-by-construction property for any robot, while 
+     * suspension travel used for drivetrains, that variance permanently floats the "shorter" wheels,
+     * leaving the robot rocking on a subset of wheels and breaking skid-steer turning. Snapping each
+     * group to a common radius reproduces the coplanar-by-construction property for any robot, while
      * clustering preserves robots that intentionally mix wheel sizes.
      *
      * @returns Map of joint GUID -> radius for every wheel joint.
