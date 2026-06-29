@@ -1,6 +1,6 @@
 import { MiraType } from "@/mirabuf/MirabufLoader.ts"
 
-export const CONFIG_OPTS = ["ROBOTS", "FIELDS", "INPUTS"] as const
+export const CONFIG_OPTS = ["ROBOTS", "FIELDS", "PIECES", "INPUTS"] as const
 export type ConfigurationType = (typeof CONFIG_OPTS)[number]
 
 export function configTypeToMiraType(config: ConfigurationType): MiraType | undefined {
@@ -9,6 +9,8 @@ export function configTypeToMiraType(config: ConfigurationType): MiraType | unde
             return MiraType.FIELD
         case "ROBOTS":
             return MiraType.ROBOT
+        case "PIECES":
+            return MiraType.PIECE
         default:
             return undefined
     }
@@ -20,6 +22,8 @@ export function miraTypeToConfigType(config: MiraType): ConfigurationType {
             return "ROBOTS"
         case MiraType.FIELD:
             return "FIELDS"
+        case MiraType.PIECE:
+            return "PIECES"
     }
 }
 

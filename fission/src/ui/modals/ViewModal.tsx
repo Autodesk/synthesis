@@ -17,7 +17,7 @@ const ViewModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         }
 
         configureScreen(modal!, { title: "Camera View" }, { onBeforeAccept })
-    }, [modal, view])
+    }, [modal, view, configureScreen])
 
     return (
         <FormControl fullWidth>

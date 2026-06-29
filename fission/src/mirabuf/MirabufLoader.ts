@@ -8,6 +8,14 @@ import { hashBuffer } from "@/util/Utility.ts"
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
 
+export enum MiraType {
+    ROBOT = 1,
+    FIELD,
+    PIECE,
+}
+
+export type MirabufCacheID = string
+
 export interface MirabufCacheInfo {
     hash: string
     name: string
@@ -224,7 +232,9 @@ class MirabufCachingService {
                 // await this.remove(cached.hash)
             }
 
-            if (cached) return cached
+            if (cached) {
+                return cached
+            }
 
             globalAddToast("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
 
@@ -253,7 +263,7 @@ class MirabufCachingService {
         }
 
         World.analyticsSystem?.event("APS Download", {
-            type: miraType == MiraType.ROBOT ? "robot" : "field",
+            type: miraType === MiraType.ROBOT ? "robot" : miraType === MiraType.FIELD ? "field" : "piece",
             fileSize: miraBuff.byteLength,
         })
 
@@ -489,11 +499,6 @@ class MirabufCachingService {
     private static assemblyFromBuffer(buffer: ArrayBuffer): mirabuf.Assembly {
         return mirabuf.Assembly.decode(unzipMira(new Uint8Array(buffer)))
     }
-}
-
-export enum MiraType {
-    ROBOT = 1,
-    FIELD,
 }
 
 export default MirabufCachingService

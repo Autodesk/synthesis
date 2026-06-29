@@ -1,6 +1,7 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import EventSystem from "@/systems/EventSystem.ts"
+import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -129,7 +130,8 @@ class IntakeSensorSceneObject extends SceneObject {
 
     private intakeCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-        if (associate?.isGamePiece) {
+        const inGPLayer = World.physicsSystem.getBody(gpID).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        if (associate?.isGamePiece || inGPLayer) {
             associate.robotLastInContactWith = this._parentAssembly
             this._parentAssembly.setEjectable(gpID)
         }

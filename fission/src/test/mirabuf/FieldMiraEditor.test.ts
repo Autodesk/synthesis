@@ -1,3 +1,4 @@
+import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
 import { assert, describe, expect, test, vi } from "vitest"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
@@ -7,7 +8,6 @@ import {
     defaultRobotSpawnLocation,
     type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes.ts"
-import FieldMiraEditor from "../../mirabuf/FieldMiraEditor.ts"
 
 function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }
@@ -125,7 +125,11 @@ describe("Devtool Scoring Zones Caching Tests", () => {
         editor.setUserData("devtool:scoring_zones", scoringZonePayload)
 
         const newPayload: ScoringZonePreferences[] = [
-            { ...scoringZonePayload[0], name: "Blue Zone", alliance: "blue" as Alliance },
+            {
+                ...scoringZonePayload[0],
+                name: "Blue Zone",
+                alliance: "blue" as Alliance,
+            },
         ]
         editor.setUserData("devtool:scoring_zones", newPayload)
         expect(editor.getUserData("devtool:scoring_zones")).toEqual(newPayload)
@@ -156,11 +160,12 @@ describe("Asset tests", () => {
             })
         assert.exists(file)
 
-        const mirabuf = await createMirabuf(file)
-        assert.exists(mirabuf)
-        assert.exists(mirabuf.fieldPreferences)
-        expect(mirabuf.fieldPreferences.spawnLocations.hasConfiguredLocations).toBe(true)
-        expect(mirabuf.fieldPreferences.spawnLocations.red["1"]).not.toStrictEqual(defaultRobotSpawnLocation())
-        expect(mirabuf.fieldPreferences.spawnLocations.default).not.toStrictEqual(defaultRobotSpawnLocation())
+        const result = createMirabuf(file!, "test-id", MiraType.FIELD)
+        assert.exists(result)
+        const { mainSceneObject } = result
+        assert.exists(mainSceneObject.fieldPreferences)
+        expect(mainSceneObject.fieldPreferences!.spawnLocations.hasConfiguredLocations).toBe(true)
+        expect(mainSceneObject.fieldPreferences!.spawnLocations.red["1"]).not.toStrictEqual(defaultRobotSpawnLocation())
+        expect(mainSceneObject.fieldPreferences!.spawnLocations.default).not.toStrictEqual(defaultRobotSpawnLocation())
     })
 })

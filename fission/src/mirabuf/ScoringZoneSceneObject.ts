@@ -1,7 +1,8 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type * as THREE from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import EventSystem from "@/systems/EventSystem.ts"
+import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
@@ -120,9 +121,10 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         this.unsubscribers.forEach(unsubscribe => unsubscribe())
     }
 
-    private zoneCollision(gpID: Jolt.BodyID) {
+    public zoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-        if (associate?.isGamePiece && this.prefs) {
+        const inGPLayer = World.physicsSystem.getBody(gpID).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        if ((associate?.isGamePiece || inGPLayer) && this.prefs) {
             // If persistent, Update() will handle points
             if (!this.prefs.shouldPointsAccumulate) {
                 this._gpContacted.push(gpID)

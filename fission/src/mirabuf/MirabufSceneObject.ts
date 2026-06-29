@@ -11,7 +11,7 @@ import type {
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
-import type { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { LAYER_GENERAL_DYNAMIC, type LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     type Alliance,
@@ -45,19 +45,21 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToThreeVector3,
+    convertMirabufTransformToJoltPositionRVec3,
+    convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
-import { createMeshForShape } from "@/util/threejs/MeshCreation.ts"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import FieldMiraEditor, { devtoolHandlers, devtoolKeys } from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
-import { MiraType } from "./MirabufLoader"
+import MirabufCachingService, { type MirabufCacheID, MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
+import { createMeshForShape } from "@/util/threejs/MeshCreation"
 
 const DEBUG_BODIES = false
 
@@ -116,6 +118,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
     private _collisionUnsubscriber?: () => void
+    private _cacheId?: string
+    private _miraType: MiraType = MiraType.ROBOT
 
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
         return this._scoringZones
@@ -166,7 +170,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get miraType(): MiraType {
-        return this.mirabufInstance.parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD
+        return this._miraType
     }
 
     public get rootNodeId(): string {
@@ -187,9 +191,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
     }
 
+    public set miraType(type: MiraType) {
+        this._miraType = type
+    }
+
+    public get cacheId() {
+        return this._cacheId
+    }
+
     public constructor(
         mirabufInstance: MirabufInstance,
         assemblyName: string,
+        cacheId: string = "",
         progressHandle?: ProgressHandle,
         multiplayerOwnerId?: string
     ) {
@@ -197,6 +210,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.mirabufInstance = mirabufInstance
         this.assemblyName = assemblyName
         this.multiplayerOwningClientId = multiplayerOwnerId
+        this._cacheId = cacheId
+        this._miraType = this.mirabufInstance.parser.assembly.dynamic
+            ? this.mirabufInstance.parser.isGamePiece
+                ? MiraType.PIECE
+                : MiraType.ROBOT
+            : MiraType.FIELD
 
         progressHandle?.update("Creating mechanism...", 0.9)
 
@@ -305,6 +324,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._basePositionTransform = this.getPositionTransform()
 
         this.moveToSpawnLocation()
+        // }
 
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
 
@@ -327,12 +347,28 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public moveToSpawnLocation() {
         const referencePos = new THREE.Vector3()
-        const pos =
-            this.miraType == MiraType.FIELD
-                ? defaultFieldSpawnLocation()
-                : (this.robotSpawnPosition(referencePos) ?? defaultFieldSpawnLocation())
-
-        this.setObjectPosition(pos)
+        let pos: SpawnLocation
+        if (this.miraType == MiraType.FIELD) {
+            pos = defaultFieldSpawnLocation()
+        } else {
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
+            const fieldLocations = field?.fieldPreferences?.spawnLocations
+            if (this.alliance != null && this.station != null && fieldLocations != null) {
+                pos = fieldLocations[this.alliance][this.station]
+            } else if (this._miraType === MiraType.PIECE && this.mirabufInstance.parser.gamePieceTransform) {
+                const posVec = convertMirabufTransformToJoltPositionRVec3(
+                    this.mirabufInstance.parser.gamePieceTransform
+                )
+                pos = {
+                    pos: [posVec.GetX(), posVec.GetY(), posVec.GetZ()],
+                    yaw: 0,
+                }
+            } else {
+                pos = fieldLocations?.default ?? defaultFieldSpawnLocation()
+            }
+            field?.getPositionTransform(referencePos)
+        }
+        this.setObjectPosition(pos, referencePos)
     }
 
     private robotSpawnPosition(referencePos: THREE.Vector3): SpawnLocation | undefined {
@@ -620,6 +656,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public setEjectable(bodyId?: Jolt.BodyID): boolean {
+        // 1) still require you’ve configured an ejector
         if (!bodyId) {
             return false
         }
@@ -961,13 +998,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getSupplierData(): ContextData {
         const data: ContextData = {
-            title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
+            title:
+                this.miraType == MiraType.ROBOT
+                    ? "A Robot"
+                    : this.miraType == MiraType.PIECE
+                      ? "A Game Piece"
+                      : "A Field",
             items: [],
         }
 
         data.items.push(
             {
                 name: "Move",
+
                 customProps: {
                     configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
                     configMode: ConfigMode.MOVE,
@@ -978,6 +1021,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             },
             {
                 name: "Configure",
+
                 customProps: {
                     configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
                     configMode: undefined,
@@ -1080,24 +1124,49 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private recordRobotCollision(collision: Jolt.BodyID) {
         const objectCollidedWith = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collision)
-        if (objectCollidedWith && objectCollidedWith.isGamePiece) {
+        const inGPLayer = World.physicsSystem.getBody(collision).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        if (objectCollidedWith && (objectCollidedWith.isGamePiece || inGPLayer)) {
             objectCollidedWith.robotLastInContactWith = this
         }
     }
 }
 
-export async function createMirabuf(
+export function createMirabuf(
     assembly: mirabuf.Assembly,
+    id: MirabufCacheID,
+    type: MiraType,
     progressHandle?: ProgressHandle,
     multiplayerOwnerId?: string
-): Promise<MirabufSceneObject | null | undefined> {
-    const parser = new MirabufParser(assembly, progressHandle)
+):
+    | {
+          mainSceneObject: MirabufSceneObject
+          gamePieces?: MirabufInstance[]
+      }
+    | undefined {
+    const parser = new MirabufParser(assembly, type == MiraType.PIECE, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle, multiplayerOwnerId)
+    const mainSceneObject = new MirabufSceneObject(
+        new MirabufInstance(parser),
+        assembly.info!.name!,
+        id,
+        progressHandle,
+        multiplayerOwnerId
+    )
+    if (parser.gamePieces == undefined || parser.gamePieces.length === 0)
+        return {
+            mainSceneObject,
+        }
+
+    const gamePieces = parser.gamePieces.map(parser => new MirabufInstance(parser))
+
+    return {
+        mainSceneObject,
+        gamePieces,
+    }
 }
 
 /**

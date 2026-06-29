@@ -55,9 +55,7 @@ describe("Mirabuf Parser Tests", () => {
         const t = new MirabufParser(field!)
         const physicsNodes = filterNonPhysicsNodes([...t.rigidNodes.values()], field!)
 
-        expect(physicsNodes.length).toBe(34)
-        expect([...t.partTreeValues.values()].length).toBe(982)
-        expect([...t.partToNodeMap.values()].length).toBe(981)
+        expect(physicsNodes.length).toBe(2)
         expect(await hashTransforms(t.globalTransforms)).toMatchSnapshot()
         expect(t.rootNode).toBe("35merged")
     })

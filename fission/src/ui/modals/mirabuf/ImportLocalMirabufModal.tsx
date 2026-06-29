@@ -2,7 +2,8 @@ import { Stack, styled } from "@mui/material"
 import { type ChangeEvent, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { mirabuf } from "@/proto/mirabuf"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
@@ -61,7 +62,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     .then(result => {
                         if (result) {
-                            return createMirabuf(result.assembly, undefined)
+                            return createMirabuf(result.assembly, result.cacheInfo.hash, miraType, undefined)
                         }
                         globalOpenModal(ImportLocalMirabufModal, {
                             configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT),
@@ -70,9 +71,29 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     })
                     .then(mirabufSceneObject => {
                         if (mirabufSceneObject) {
-                            World.sceneRenderer.registerSceneObject(mirabufSceneObject)
+                            const { mainSceneObject, gamePieces } = mirabufSceneObject
 
-                            if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                            World.sceneRenderer.registerSceneObject(mainSceneObject)
+                            gamePieces?.forEach(async instance => {
+                                const assembly = instance.parser.assembly
+                                const buffer = mirabuf.Assembly.encode(assembly).finish().buffer as ArrayBuffer
+
+                                const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
+                                if (!cacheInfo) return
+
+                                if (!cacheInfo.name) {
+                                    MirabufCachingService.cacheInfo(
+                                        cacheInfo.cacheKey,
+                                        MiraType.PIECE,
+                                        assembly.info?.name ?? undefined
+                                    )
+                                }
+
+                                const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, cacheInfo.id)
+                                World.sceneRenderer.registerSceneObject(sceneObject)
+                            })
+
+                            if (mirabufSceneObject.mainSceneObject.miraType == MiraType.ROBOT) {
                                 openPanel(InitialConfigPanel, undefined, modal)
                             }
                             const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
@@ -108,6 +129,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             >
                 <ToggleButton value={MiraType.ROBOT}>Robot</ToggleButton>
                 <ToggleButton value={MiraType.FIELD}>Field</ToggleButton>
+                <ToggleButton value={MiraType.PIECE}>Piece</ToggleButton>
             </ToggleButtonGroup>
             <Button component="label" role={undefined}>
                 Upload File

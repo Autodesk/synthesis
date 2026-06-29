@@ -44,7 +44,7 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
         const onCancel = () => openModal(RoboRIOModal, undefined, modal)
 
         configureScreen(modal!, { title: "Create Device", acceptText: "Next" }, { onBeforeAccept, onCancel })
-    }, [])
+    }, [configureScreen, modal, openModal, type])
 
     return (
         <FormControl fullWidth>

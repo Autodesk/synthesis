@@ -81,7 +81,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
         <SelectMenu
             options={options}
             onOptionSelected={val => onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)}
-            defaultHeaderText={`Select a ${configurationType === "ROBOTS" ? "Robot" : "Field"}`}
+            defaultHeaderText={`Select a ${configurationType.slice(0, configurationType.length - 1).toLowerCase()}`}
             onDelete={val => {
                 onStageDelete(val)
                 update()
@@ -91,7 +91,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
                 closePanel(panel!.id, CloseType.Accept)
                 setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
             }}
-            noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
+            noOptionsText={`No ${configurationType.slice(0, configurationType.length - 1).toLowerCase()} spawned!`}
             defaultSelectedOption={selectedAssembly ? makeSelectionOption(selectedAssembly) : undefined}
         />
     )

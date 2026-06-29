@@ -31,7 +31,7 @@ import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
  * Layers used for determining enabled/disabled collisions.
  */
 const LAYER_FIELD = 0 // Used for grounded rigid node of a field as well as any rigid nodes jointed to it.
-const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
+export const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
 const ROBOT_LAYERS: number[] = [
     // Reserved layers for robots. Robot layers have no collision with themselves but have collision with everything else.
     2,
@@ -320,10 +320,9 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public createMechanismFromParser(parser: MirabufParser): Mechanism {
-        const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
-        const bodyMap = this.createBodiesFromParser(parser, layer)
+        const layer = parser.assembly.dynamic && !parser.isGamePiece ? new LayerReserve() : undefined
         const rootBody = parser.rootNode
-
+        const bodyMap = this.createBodiesFromParser(parser, layer)
         const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)
         this.createJointsFromParser(parser, mechanism)
 
@@ -672,15 +671,6 @@ class PhysicsSystem extends WorldSystem {
         const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint)
         this._joltPhysSystem.AddStepListener(listener)
 
-        // const callbacks = new JOLT.VehicleConstraintCallbacksJS()
-        // callbacks.GetCombinedFriction = (_wheelIndex, _tireFrictionDirection, tireFriction, _body2Ptr, _subShapeID2) => {
-        //     return tireFriction
-        // }
-        // callbacks.OnPreStepCallback = (_vehicle, _stepContext) => { };
-        // callbacks.OnPostCollideCallback = (_vehicle, _stepContext) => { };
-        // callbacks.OnPostStepCallback = (_vehicle, _stepContext) => { };
-        // callbacks.SetVehicleConstraint(vehicleConstraint)
-
         this._joltPhysSystem.AddConstraint(vehicleConstraint)
         this._joltPhysSystem.AddConstraint(fixedConstraint)
 
@@ -804,6 +794,7 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(jointOriginOffset)
     }
 
+
     private isWheel(jDef: mirabuf.joint.Joint): boolean {
         return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
     }
@@ -817,8 +808,8 @@ class PhysicsSystem extends WorldSystem {
     public createBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
         const rnToBodies = new Map<string, Jolt.BodyID>()
 
-        if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
-            throw new Error("No layer reserve for dynamic assembly")
+        if ((parser.assembly.dynamic && !layerReserve && !parser.isGamePiece) || layerReserve?.isReleased) {
+            throw new Error("No layer reserve for non-game piece dynamic assembly")
         }
 
         const reservedLayer: number | undefined = layerReserve?.layer
@@ -854,7 +845,7 @@ class PhysicsSystem extends WorldSystem {
 
             const rnLayer: number = reservedLayer
                 ? reservedLayer
-                : rn.id.endsWith(GAMEPIECE_SUFFIX)
+                : parser.isGamePiece
                   ? LAYER_GENERAL_DYNAMIC
                   : LAYER_FIELD
 
@@ -865,7 +856,7 @@ class PhysicsSystem extends WorldSystem {
                 if (partInstance.skipCollider) return [undefined, undefined]
 
                 const partDefinition =
-                    parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
+                    parser.assembly.data!.parts!.partDefinitions![partInstance?.partDefinitionReference]
 
                 const debugLabel = {
                     rn: rn.id,
@@ -950,7 +941,9 @@ class PhysicsSystem extends WorldSystem {
                     frictionAccum.push(frictionPairing)
                 }
 
-                if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
+                if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) {
+                    return
+                }
 
                 const mass = partDefinition.massOverride
                     ? partDefinition.massOverride!
@@ -1743,9 +1736,13 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
 }
 
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
+    const instances = mira.data?.parts?.partInstances
     return nodes.filter(x => {
         for (const part of x.parts) {
-            const inst = mira.data!.parts!.partInstances![part]!
+            const inst = instances![part] ?? instances![mira.info?.GUID ?? ""]
+            if (!inst) {
+                return false
+            }
             const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!
             if (def.bodies && def.bodies.length > 0) {
                 return true

@@ -27,7 +27,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
         return () => {
             setIsMainMenuOpen(false)
         }
-    }, [])
+    }, [configureScreen, modal, setIsMainMenuOpen])
     return (
         <Stack gap={1}>
             <Button

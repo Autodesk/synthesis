@@ -111,6 +111,11 @@ export function convertMirabufTransformToThreeMatrix(m: mirabuf.ITransform): THR
     return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1))
 }
 
+export function convertMirabufTransformToJoltPositionRVec3(transform: mirabuf.ITransform): Jolt.RVec3 {
+    const mat = transform.spatialMatrix!
+    return new JOLT.RVec3(mat[3] / 100.0, mat[7] / 100.0, mat[11] / 100.0)
+}
+
 export function convertMirabufVector3ToThreeVector3(v: mirabuf.Vector3): THREE.Vector3 {
     return new THREE.Vector3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
 }
