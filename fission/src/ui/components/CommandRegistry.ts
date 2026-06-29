@@ -21,28 +21,28 @@ export type CommandProvider = () => CommandDefinition[]
  * - On disable/unmount, call the disposer to unregister.
  */
 class CommandRegistry {
-    private static instance: CommandRegistry | null = null
+    private static _instance: CommandRegistry | null = null
 
-    private staticCommands: Map<string, CommandDefinition> = new Map()
-    private providers: Set<CommandProvider> = new Set()
-    private listeners: Set<() => void> = new Set()
-    private notifyScheduled: boolean = false
-    private notifyPending: boolean = false
+    private _staticCommands: Map<string, CommandDefinition> = new Map()
+    private _providers: Set<CommandProvider> = new Set()
+    private _listeners: Set<() => void> = new Set()
+    private _notifyScheduled: boolean = false
+    private _notifyPending: boolean = false
 
     static get(): CommandRegistry {
-        if (!CommandRegistry.instance) {
-            CommandRegistry.instance = new CommandRegistry()
+        if (!CommandRegistry._instance) {
+            CommandRegistry._instance = new CommandRegistry()
         }
-        return CommandRegistry.instance
+        return CommandRegistry._instance
     }
 
     /** Register a single static command. Returns an unregister function. */
     registerCommand(command: CommandDefinition): () => void {
-        this.staticCommands.set(command.id, command)
+        this._staticCommands.set(command.id, command)
         this.notify()
         return () => {
-            if (this.staticCommands.get(command.id) === command) {
-                this.staticCommands.delete(command.id)
+            if (this._staticCommands.get(command.id) === command) {
+                this._staticCommands.delete(command.id)
                 this.notify()
             }
         }
@@ -64,10 +64,10 @@ class CommandRegistry {
 
     /** Register a dynamic provider. Returns an unregister function. */
     registerProvider(provider: CommandProvider): () => void {
-        this.providers.add(provider)
+        this._providers.add(provider)
         this.notify()
         return () => {
-            if (this.providers.delete(provider)) {
+            if (this._providers.delete(provider)) {
                 this.notify()
             }
         }
@@ -79,10 +79,10 @@ class CommandRegistry {
      */
     getCommands(): CommandDefinition[] {
         const merged = new Map<string, CommandDefinition>()
-        for (const [id, cmd] of this.staticCommands) {
+        for (const [id, cmd] of this._staticCommands) {
             merged.set(id, cmd)
         }
-        for (const provider of this.providers) {
+        for (const provider of this._providers) {
             try {
                 const provided = provider() || []
                 for (const cmd of provided) {
@@ -96,22 +96,22 @@ class CommandRegistry {
     }
 
     subscribe(listener: () => void): () => void {
-        this.listeners.add(listener)
+        this._listeners.add(listener)
         return () => {
-            this.listeners.delete(listener)
+            this._listeners.delete(listener)
         }
     }
 
     private notify() {
         // Coalesce multiple rapid updates into a single microtask flush
-        this.notifyPending = true
-        if (this.notifyScheduled) return
-        this.notifyScheduled = true
+        this._notifyPending = true
+        if (this._notifyScheduled) return
+        this._notifyScheduled = true
         queueMicrotask(() => {
-            this.notifyScheduled = false
-            if (!this.notifyPending) return
-            this.notifyPending = false
-            for (const l of this.listeners) {
+            this._notifyScheduled = false
+            if (!this._notifyPending) return
+            this._notifyPending = false
+            for (const l of this._listeners) {
                 try {
                     l()
                 } catch {
