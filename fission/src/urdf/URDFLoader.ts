@@ -2,6 +2,7 @@ import JSZip from "jszip"
 import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
+import { URDF_WHEEL_TAG } from "./URDFUserData"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "dae"])
 
@@ -75,6 +76,14 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
         validateURDFMeshFormats(urdfText)
         const assembly = convertURDF(urdfText, meshFiles)
         detectAndTagWheels(assembly)
+
+        const jointDefs = assembly.data?.joints?.jointDefinitions ?? {}
+        for (const jDef of Object.values(jointDefs)) {
+            if (jDef.userData?.data?.["wheel"] === "true") {
+                jDef.userData.data[URDF_WHEEL_TAG] = "true"
+            }
+        }
+
         return assembly
     }
 

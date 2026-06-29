@@ -70,7 +70,6 @@
 
 import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
-import { URDF_WHEEL_TAG } from "@/urdf/URDFUserData"
 
 const AXIS_PARALLEL_COS = 0.99 // axes must be this parallel to be the same axle direction
 const AXLE_ALIGN_COS = 0.98 // wheel-to-wheel displacement must align with the axis
@@ -229,7 +228,6 @@ export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
             jDef.userData.data ??= {}
             jDef.userData.data["wheel"] = "true"
             jDef.userData.data["wheelType"] = "0"
-            jDef.userData.data[URDF_WHEEL_TAG] = "true"
         }
     }
 }
