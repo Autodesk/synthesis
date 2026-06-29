@@ -37,7 +37,9 @@ const StatefulSlider: React.FC<
                     <Label size="sm" className="mr-12 whitespace-nowrap">
                         {props.label}
                     </Label>
-                    {showValue !== false && <Typography variant="caption">{value.toFixed(2)}</Typography>}
+                    {showValue !== false && (
+                        <Typography variant="caption">{(value ?? 0).toFixed(2)}</Typography>
+                    )}
                 </Stack>
                 <Slider
                     {...sliderProps}

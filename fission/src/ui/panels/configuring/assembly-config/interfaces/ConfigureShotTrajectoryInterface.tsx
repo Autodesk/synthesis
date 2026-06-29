@@ -169,7 +169,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
 
     useEffect(() => {
         if (selectedRobot?.ejectorPreferences) {
-            setEjectorVelocity(selectedRobot.ejectorPreferences.ejectorVelocity)
+            setEjectorVelocity(selectedRobot.ejectorPreferences.ejectorVelocity ?? (MIN_VELOCITY + MAX_VELOCITY) / 2.0)
             setSelectedNode(selectedRobot.ejectorPreferences.parentNode)
             setEjectOrder(selectedRobot.ejectorPreferences.ejectOrder)
         } else {
