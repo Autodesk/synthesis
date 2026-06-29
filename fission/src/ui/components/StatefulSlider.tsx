@@ -1,6 +1,6 @@
 import { Slider, Stack, Tooltip, Typography } from "@mui/material"
 import Label from "./Label"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 const StatefulSlider: React.FC<
     Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & {
@@ -12,6 +12,12 @@ const StatefulSlider: React.FC<
     }
 > = props => {
     const [value, setValue] = useState(props.defaultValue)
+
+    useEffect(() => {
+        // when setting the values with a dropdown menu the sliders didn't update
+        setValue(props.defaultValue)
+    }, [props.defaultValue])
+
     const { showValue, ...sliderProps } = props
     return (
         <Tooltip title={props.tooltip ?? ""}>
