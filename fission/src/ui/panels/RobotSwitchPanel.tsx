@@ -9,7 +9,7 @@ import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const RobotSwitchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
+    const [robots, setRobots] = useState(["Dozer_v10_0", "Team 2471 (2018) v7_0"])
     const [selected, setSelected] = useState(0)
 
     useEffect(() => {

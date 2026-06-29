@@ -8,14 +8,10 @@ class SkidSteerDriveBehavior extends Behavior {
     private readonly _leftWheels: WheelDriver[]
     private readonly _rightWheels: WheelDriver[]
     private readonly _brainIndex: number
-    private _isArcade: boolean
+    public isArcade: boolean
 
     public get wheels(): WheelDriver[] {
         return this._leftWheels.concat(this._rightWheels)
-    }
-
-    public setIsArcade(isArcade: boolean) {
-        this._isArcade = isArcade
     }
 
     public constructor(
@@ -31,7 +27,7 @@ class SkidSteerDriveBehavior extends Behavior {
         this._leftWheels = leftWheels
         this._rightWheels = rightWheels
         this._brainIndex = brainIndex
-        this._isArcade = isArcade
+        this.isArcade = isArcade
     }
 
     // Sets the drivetrains target linear and rotational velocity
@@ -60,7 +56,7 @@ class SkidSteerDriveBehavior extends Behavior {
     }
 
     public update(_: number): void {
-        if (this._isArcade) {
+        if (this.isArcade) {
             this.arcadeUpdate()
         } else {
             this.tankUpdate()

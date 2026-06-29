@@ -50,5 +50,4 @@ class Mechanism {
 
     public disablePhysics() {}
 }
-
 export default Mechanism

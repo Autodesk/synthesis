@@ -96,6 +96,14 @@ const CommandPalette: React.FC = () => {
         })
     }, [commands])
 
+    InputSystem.escapeKeyListeners[0] = () => {
+        if (isOpen) {
+            closePalette()
+            return true
+        }
+        return false
+    }
+
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase()
         if (!q) return commands
@@ -125,16 +133,11 @@ const CommandPalette: React.FC = () => {
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.key === "/") {
                 if (isTextInputTarget(e.target)) return
+                e.preventDefault()
                 if (!World.isAlive) return
                 if (isMainMenuOpen) return
                 if (modal) return
-                e.preventDefault()
                 openPalette()
-            } else if (e.key === "Escape") {
-                if (isOpen) {
-                    e.preventDefault()
-                    closePalette()
-                }
             }
         }
         window.addEventListener("keydown", onKeyDown)
@@ -195,12 +198,9 @@ const CommandPalette: React.FC = () => {
             } else if (e.key === "Enter") {
                 e.preventDefault()
                 execute(activeIndex)
-            } else if (e.key === "Escape") {
-                e.preventDefault()
-                closePalette()
             }
         },
-        [activeIndex, execute, visible.length, closePalette]
+        [activeIndex, execute, visible.length]
     )
 
     if (!isOpen) return null

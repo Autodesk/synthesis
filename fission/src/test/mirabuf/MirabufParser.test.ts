@@ -5,9 +5,9 @@ import type { mirabuf } from "@/proto/mirabuf"
 import type { Matrix4 } from "three"
 
 describe("Mirabuf Parser Tests", () => {
-    test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
+    test("Generate Rigid Nodes (Dozer_v10.mira)", async () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
-            "/api/mira/robots/Dozer_v9.mira",
+            "/api/mira/robots/Dozer_v10.mira",
             MiraType.ROBOT
         ).then(x => MirabufCachingService.get(x!.hash))
 

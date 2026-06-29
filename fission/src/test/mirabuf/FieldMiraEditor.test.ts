@@ -31,7 +31,7 @@ const scoringZonePayload: ScoringZonePreferences[] = [
         parentNode: "root",
         points: 5,
         destroyGamepiece: false,
-        persistentPoints: true,
+        shouldPointsAccumulate: false,
         deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
     },
 ]
@@ -49,7 +49,7 @@ describe("Basic Field Mira Editor Tests", () => {
                 parentNode: "root",
                 points: 10,
                 destroyGamepiece: false,
-                persistentPoints: false,
+                shouldPointsAccumulate: true,
                 deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             },
         ]

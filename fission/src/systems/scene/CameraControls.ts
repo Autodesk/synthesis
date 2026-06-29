@@ -101,6 +101,10 @@ export class CustomOrbitControls extends CameraControls {
 
     private _interactionHandler: ScreenInteractionHandler
 
+    /*
+     * NOTE
+     * These getter and setters and necessary for adhering to the `CameraControls` interface
+     */
     public set enabled(val: boolean) {
         this._enabled = val
     }

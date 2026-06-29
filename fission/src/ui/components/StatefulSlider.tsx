@@ -18,6 +18,7 @@ const StatefulSlider: React.FC<
         setValue(props.defaultValue)
     }, [props.defaultValue])
 
+    const { showValue, ...sliderProps } = props
     return (
         <Tooltip title={props.tooltip ?? ""}>
             <Stack
@@ -36,10 +37,10 @@ const StatefulSlider: React.FC<
                     <Label size="sm" className="mr-12 whitespace-nowrap">
                         {props.label}
                     </Label>
-                    {props.showValue !== false && <Typography variant="caption">{value.toFixed(2)}</Typography>}
+                    {showValue !== false && <Typography variant="caption">{value.toFixed(2)}</Typography>}
                 </Stack>
                 <Slider
-                    {...props}
+                    {...sliderProps}
                     value={value}
                     onChange={(_, value) => {
                         setValue(value as number)
