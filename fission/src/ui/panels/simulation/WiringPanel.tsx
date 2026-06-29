@@ -98,7 +98,7 @@ function generateGraph(
                 break
             default:
                 onDelete = () => {
-                    if (SimConfig.RemoveNode(simConfig, v.id)) refreshGraph()
+                    if (SimConfig.removeNode(simConfig, v.id)) refreshGraph()
                 }
                 break
         }
@@ -328,7 +328,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
 
     const onEdgeDoubleClick = useCallback(
         (_: React.MouseEvent, edge: FlowEdge) => {
-            if (SimConfig.DeleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
+            if (SimConfig.deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
                 refreshGraph()
             }
         },
@@ -351,7 +351,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         (connection: Connection) => {
             const sourceId = connection.sourceHandle
             const targetId = connection.targetHandle
-            if (SimConfig.MakeConnection(simConfig, sourceId!, targetId!)) {
+            if (SimConfig.makeConnection(simConfig, sourceId!, targetId!)) {
                 refreshGraph()
             }
         },
@@ -371,7 +371,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
                 return
             }
 
-            const newHandleId = (handleInfo.isSource ? SimConfig.AddDeconstructorNode : SimConfig.AddConstructorNode)(
+            const newHandleId = (handleInfo.isSource ? SimConfig.addDeconstructorNode : SimConfig.addConstructorNode)(
                 simConfig,
                 handleInfo.noraType,
                 screenToFlowPosition({ x: clientX, y: clientY })
@@ -380,8 +380,8 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
 
             if (
                 handleInfo.isSource
-                    ? SimConfig.MakeConnection(simConfig, handleInfo.id, newHandleId)
-                    : SimConfig.MakeConnection(simConfig, newHandleId, handleInfo.id)
+                    ? SimConfig.makeConnection(simConfig, handleInfo.id, newHandleId)
+                    : SimConfig.makeConnection(simConfig, newHandleId, handleInfo.id)
             )
                 refreshGraph()
         },
@@ -389,7 +389,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     )
 
     const onCreateJunction = useCallback(() => {
-        SimConfig.AddJunctionNode(simConfig)
+        SimConfig.addJunctionNode(simConfig)
         refreshGraph()
     }, [refreshGraph, simConfig])
 
@@ -437,13 +437,13 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
         } else {
             console.debug("No SimConfig found, creating default...")
-            setSimConfig(SimConfig.Default(selectedAssembly))
+            setSimConfig(SimConfig.default(selectedAssembly))
         }
     }, [selectedAssembly])
 
     const save = useCallback(() => {
         if (simConfig && selectedAssembly) {
-            const flows = SimConfig.Compile(simConfig, selectedAssembly)
+            const flows = SimConfig.compile(simConfig, selectedAssembly)
             if (!flows) {
                 console.error("Compilation Failed")
                 return
@@ -458,7 +458,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     const reset = useCallback(() => {
         if (selectedAssembly) {
-            setSimConfig(SimConfig.Default(selectedAssembly))
+            setSimConfig(SimConfig.default(selectedAssembly))
         }
     }, [selectedAssembly])
 

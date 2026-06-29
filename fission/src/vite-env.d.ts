@@ -4,7 +4,6 @@ interface ImportMetaEnv {
     readonly VITE_MULTIPLAYER_PORT: string
 }
 
-// biome-ignore lint/correctness/noUnusedVariables: funky env stuff it is used
 interface ImportMeta {
     readonly env: ImportMetaEnv
 }
