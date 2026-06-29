@@ -23,6 +23,8 @@ class SwerveDriveBehavior extends DriveBehavior {
     private _turnSpeed = 30
 
     private _fieldForward: THREE.Vector3 = new THREE.Vector3(1, 0, 0)
+    private _prevTargetAngles: number[] = []
+    private _prevFlips: boolean[] = []
 
     constructor(
         wheels: WheelDriver[],
@@ -74,7 +76,7 @@ class SwerveDriveBehavior extends DriveBehavior {
         this._fieldForward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation)
     }
 
-    private driveSpeeds(forward: number, strafe: number, turn: number) {
+    private driveSpeeds(forward: number, strafe: number, turn: number, dt: number) {
         const rootNodeId = this.resolveRootNodeId()
         if (rootNodeId == undefined) throw new Error("Robot root node should not be undefined")
 
@@ -104,9 +106,7 @@ class SwerveDriveBehavior extends DriveBehavior {
             .clone()
             .multiplyScalar(forward)
             .add(robotRight.clone().multiplyScalar(strafe))
-        if (chassisVelocity.length() > 1) chassisVelocity.normalize()
-        // Field-oriented drive: rotate commanded velocity by the chassis heading.
-        chassisVelocity.applyAxisAngle(robotUp, this.fieldOrientedAngle(robotForward))
+            .applyAxisAngle(robotUp, this.fieldOrientedAngle(robotForward))
 
         const chassisAngularVelocity = robotUp.clone().multiplyScalar(turn)
         const com = convertJoltVec3ToThreeVector3(
@@ -115,7 +115,7 @@ class SwerveDriveBehavior extends DriveBehavior {
         )
 
         const velocities = this.computeModuleVelocities(chassisVelocity, chassisAngularVelocity, com)
-        this.applyModuleTargets(velocities, robotForward, robotRight)
+        this.applyModuleTargets(velocities, robotForward, robotRight, dt)
     }
 
     /** Returns the field-oriented angle (radians) for the current chassis heading. */
@@ -141,10 +141,12 @@ class SwerveDriveBehavior extends DriveBehavior {
         for (let i = 0; i < this._hinges.length; i++) {
             const axis = convertJoltVec3ToThreeVector3(this._hinges[i].worldAxis).normalize()
             const radius = convertJoltVec3ToThreeVector3(this._hinges[i].worldAnchor).sub(com)
+            const axisComponent = axis.clone().multiplyScalar(axis.dot(radius))
             // Remove the axis component so the moment arm is purely in the steering plane.
-            radius.sub(axis.clone().multiplyScalar(axis.dot(radius)))
+            radius.sub(axisComponent)
 
-            velocities[i] = chassisAngularVelocity.clone().cross(radius).add(chassisVelocity)
+            const rotationalContrib = chassisAngularVelocity.clone().cross(radius)
+            velocities[i] = rotationalContrib.clone().add(chassisVelocity)
             const speed = velocities[i].length()
             if (speed > maxSpeed) maxSpeed = speed
         }
@@ -159,7 +161,8 @@ class SwerveDriveBehavior extends DriveBehavior {
     private applyModuleTargets(
         velocities: THREE.Vector3[],
         robotForward: THREE.Vector3,
-        robotRight: THREE.Vector3
+        robotRight: THREE.Vector3,
+        dt: number
     ): void {
         for (let i = 0; i < this._wheels.length; i++) {
             const speed = velocities[i].length()
@@ -171,14 +174,33 @@ class SwerveDriveBehavior extends DriveBehavior {
             while (delta < -Math.PI) delta += 2 * Math.PI
 
             const flip = Math.abs(delta) > Math.PI / 2
+            const targetAngle = flip ? angle + (angle > 0 ? -Math.PI : Math.PI) : angle
+            const wheelSpeed = flip ? -speed : speed
+
+            // Feedforward: estimate the rate at which the robot-frame target angle is changing
+            // (caused by chassis rotation) and pre-emptively command that velocity so the servo
+            // tracks the moving target
+            let feedforward = 0
+            const prevTarget = this._prevTargetAngles[i]
+            if (prevTarget !== undefined && this._prevFlips[i] === flip && dt > 0) {
+                let targetDelta = targetAngle - prevTarget
+                while (targetDelta > Math.PI) targetDelta -= 2 * Math.PI
+                while (targetDelta < -Math.PI) targetDelta += 2 * Math.PI
+                // Large jumps are input discontinuities, not spin drift.
+                if (Math.abs(targetDelta) < Math.PI / 4) feedforward = targetDelta / dt
+            }
+            this._prevTargetAngles[i] = targetAngle
+            this._prevFlips[i] = flip
+
             // Steering comes from physically rotating the module via its azimuth hinge; the wheel
             // rides on the module and follows it. Don't also set the wheel's steer angle (double-steer).
-            this._hinges[i].targetAngle = flip ? angle + (angle > 0 ? -Math.PI : Math.PI) : angle
-            this._wheels[i].accelerationDirection = flip ? -speed : speed
+            this._hinges[i].feedforwardVelocity = feedforward
+            this._hinges[i].targetAngle = targetAngle
+            this._wheels[i].accelerationDirection = wheelSpeed
         }
     }
 
-    public update(_: number): void {
+    public update(dt: number): void {
         const forwardInput = InputSystem.getInput("swerveForward", this._brainIndex)
         const strafeInput = InputSystem.getInput("swerveStrafe", this._brainIndex)
         const turnInput = InputSystem.getInput("swerveTurn", this._brainIndex)
@@ -186,7 +208,8 @@ class SwerveDriveBehavior extends DriveBehavior {
         this.driveSpeeds(
             forwardInput * this._forwardSpeed,
             strafeInput * this._strafeSpeed,
-            turnInput * this._turnSpeed
+            turnInput * this._turnSpeed,
+            dt
         )
     }
 }

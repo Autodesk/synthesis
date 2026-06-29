@@ -32,6 +32,9 @@ class HingeDriver extends Driver {
     public accelerationDirection: number = 0.0
     public maxVelocity: number
 
+    // Used by `SwerveDriveBehaviour`
+    public feedforwardVelocity: number = 0
+
     public get constraint(): Jolt.HingeConstraint {
         return this._constraint
     }
@@ -152,8 +155,11 @@ class HingeDriver extends Driver {
         } else if (this._controlMode == DriverControlMode.POSITION) {
             // Shortest-path velocity P-control: the wrapped error lets a continuous hinge cross the
             // ±π seam the short way, and capping at maxVelocity bounds the reaction torque.
+            // feedforwardVelocity cancels steady-state lag when the target angle migrates (e.g.
+            // during chassis rotation the robot-frame target moves at the chassis spin rate).
             const error = shortestAngleDelta(this._constraint.GetCurrentAngle(), this._targetAngle)
-            const velocity = Math.max(-this.maxVelocity, Math.min(this.maxVelocity, error * CONTINUOUS_POSITION_GAIN))
+            const rawVelocity = error * CONTINUOUS_POSITION_GAIN + this.feedforwardVelocity
+            const velocity = Math.max(-this.maxVelocity, Math.min(this.maxVelocity, rawVelocity))
             this._constraint.SetTargetAngularVelocity(velocity)
         }
     }

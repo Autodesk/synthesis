@@ -318,8 +318,6 @@ class SynthesisBrain extends Brain {
         const wheelPositions = wheelDrivers.map(w => {
             const forward = new JOLT.Vec3(1, 0, 0)
             const up = new JOLT.Vec3(0, 1, 0)
-            // GetWheelWorldTransform returns [Value] RMat44 (static temp) — do NOT destroy it.
-            // GetTranslation likewise returns [Value] RVec3 — read inline, no separate variable needed.
             const transform = w.constraint.GetWheelWorldTransform(0, forward, up)
             const pos = {
                 x: transform.GetTranslation().GetX(),
