@@ -111,8 +111,12 @@ const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
             <TooltipToggleButton title="Follow the target with camera position and rotation" value={CameraMode.Locked}>
                 Locked
             </TooltipToggleButton>
-            <TooltipToggleButton title="Lock camera position and orient the camera to face the target" value={CameraMode.Face} disabled={focusedOnField}>
-                    Face
+            <TooltipToggleButton
+                title="Lock camera position and orient the camera to face the target"
+                value={CameraMode.Face}
+                disabled={focusedOnField}
+            >
+                Face
             </TooltipToggleButton>
         </ToggleButtonGroup>
     )
