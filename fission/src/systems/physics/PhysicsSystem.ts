@@ -1085,6 +1085,7 @@ class PhysicsSystem extends WorldSystem {
                 JOLT.destroy(r)
             }
 
+            // Cleanup
             JOLT.destroy(compoundShapeSettings)
         })
 
