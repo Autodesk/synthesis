@@ -118,7 +118,7 @@ const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [focusedOnField, setFocusedOnField] = useState<boolean>(
-        (World.sceneRenderer.currentCameraControls as CustomTargetControls).isFocusedOnField,
+        (World.sceneRenderer.currentCameraControls as CustomTargetControls).isFocusedOnField
     )
     // const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
     //     World.sceneRenderer.currentCameraControls.controlsType
