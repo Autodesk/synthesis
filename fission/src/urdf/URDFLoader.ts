@@ -42,11 +42,7 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
     const ext = filename.split(".").pop()?.toLowerCase()
 
     if (ext === "urdf") {
-        // Bare URDF with no zip. Mesh files unavailable; links without geometry still import.
-        const text = new TextDecoder().decode(buffer)
-        const assembly = convertURDF(text, new Map())
-        detectAndTagWheels(assembly)
-        return assembly
+        throw new Error("Plain URDF files are not supported. Please select a ZIP archive containing the URDF and its meshes.")
     }
 
     if (ext === "zip") {
