@@ -133,12 +133,9 @@ export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, o
     )
 }
 
-export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiToggleButtonGroup {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiToggleButtonGroup>
-    )
+export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, ...props }) => {
+    // The sound is played by the individual ToggleButton that was clicked
+    return <MuiToggleButtonGroup {...props}>{children}</MuiToggleButtonGroup>
 }
 
 export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
