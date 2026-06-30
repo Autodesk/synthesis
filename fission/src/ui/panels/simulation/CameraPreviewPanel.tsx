@@ -1,30 +1,33 @@
 import { Stack } from "@mui/material"
 import type React from "react"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import RobotCameraSceneObject from "@/mirabuf/RobotCameraSceneObject"
+import EventSystem from "@/systems/EventSystem"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
+function resolveCameras(): RobotCameraSceneObject[] {
+    return World.sceneRenderer.mirabufSceneObjects.getRobots().flatMap(r => [...r.cameras])
+}
+
 const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const canvasRefs = useRef<Map<string, HTMLCanvasElement | null>>(new Map())
+    const [cameras, setCameras] = useState<RobotCameraSceneObject[]>(resolveCameras)
 
     useEffect(() => {
         configureScreen(panel!, { title: "Camera Preview", hideCancel: true, acceptText: "Close" }, {})
     }, [])
 
-    // Marks a frame consumer so the cameras actually render while this panel is open.
     useEffect(() => {
+        // cameras don't render if no consumer
         RobotCameraSceneObject.addPreviewConsumer()
         return () => RobotCameraSceneObject.removePreviewConsumer()
     }, [])
 
-    const cameras = useMemo<RobotCameraSceneObject[]>(
-        () => World.sceneRenderer.mirabufSceneObjects.getRobots().flatMap(r => [...r.cameras]),
-        []
-    )
+    useEffect(() => EventSystem.listen("RobotCamerasChangeEvent", () => setCameras(resolveCameras())), [])
 
     useEffect(() => {
         let handle = requestAnimationFrame(function draw() {
@@ -60,8 +63,6 @@ const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                             style={{
                                 display: "block",
                                 width: "320px",
-                                // Pin display height so the canvas can't render at its full
-                                // bitmap height and slip under the panel footer.
                                 aspectRatio: `${cam.width} / ${cam.height}`,
                                 borderRadius: "8px",
                                 background: "#000",

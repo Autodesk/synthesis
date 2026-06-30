@@ -59,8 +59,8 @@ public class Robot extends TimedRobot {
 
     private double m_initAngle = 0;
 
-    // Name and device index must match the camera configured in Synthesis (Configure ->
-    // USB Cameras).
+    // name and device index must match the camera configured in Synthesis (Configure ->
+    // USB Cameras)
     private static final int kCameraWidth = 640;
     private static final int kCameraHeight = 480;
     private UsbCamera m_camera;
@@ -87,8 +87,8 @@ public class Robot extends TimedRobot {
         m_camera = new UsbCamera("USB Camera 0", 0, kCameraWidth, kCameraHeight, 30);
         m_cvSink = m_camera.getVideo();
 
-        // putVideo both republishes the feed for dashboards and forces the OpenCV native
-        // to load before we allocate the Mat below.
+        // putVideo republishes the feed for dashboards and forces the OpenCV native to load
+        // before we allocate the Mat below
         m_outputStream = CameraServer.putVideo("Synthesis Camera", kCameraWidth, kCameraHeight);
         m_frame = new Mat();
     }

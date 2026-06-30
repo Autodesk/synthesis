@@ -10,7 +10,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 /**
- * Localhost WebSocket server that receives rendered camera frames from Synthesis. Frames
+ * localhost WebSocket server that receives rendered camera frames from Synthesis. frames
  * can't ride HALSim (SimDevice carries only numbers/booleans), so Synthesis streams them
  * here as {@code "<device>\n<base64-jpeg>"}; the latest frame per device is kept for
  * {@link Camera#grabFrame}.
@@ -53,7 +53,7 @@ public class CameraFrameServer extends WebSocketServer {
         try {
             m_frames.put(device, Base64.getDecoder().decode(encoded));
         } catch (IllegalArgumentException e) {
-            // Ignore malformed frames.
+            // ignore malformed frames
         }
     }
 

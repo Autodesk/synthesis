@@ -655,6 +655,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._cameras.push(camera)
             World.sceneRenderer.registerSceneObject(camera)
         }
+
+        EventSystem.dispatch("RobotCamerasChangeEvent")
     }
 
     public setIntakeVisualIndicatorVisible(visible: boolean) {

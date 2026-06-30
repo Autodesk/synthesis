@@ -31,14 +31,13 @@ const MIN_FPS = 1
 const MAX_FPS = 60
 
 function parentBodyId(robot: MirabufSceneObject, parentNode: string | undefined): Jolt.BodyID | undefined {
-    return robot.mechanism.nodeToBody.get(parentNode ?? robot.rootNodeId) ?? robot.getRootNodeId()
+    return robot.mechanism.nodeToBody.get(parentNode ?? robot.rootNodeId)
 }
 
 interface ConfigCameraProps {
     selectedRobot: MirabufSceneObject
 }
 
-// Camera placement reuses the ejector interface's gizmo + delta-transform math.
 const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }) => {
     const [version, setVersion] = useState(0)
     const [selectedIndex, setSelectedIndex] = useState<number>(selectedRobot.cameraPreferences.length > 0 ? 0 : -1)
@@ -51,13 +50,14 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
 
     const forceRender = useCallback(() => setVersion(v => v + 1), [])
 
-    // Persists prefs and recreates the live camera scene objects.
     const commit = useCallback(() => {
         if (camera && gizmoRef.current) {
             const nodeBodyId = parentBodyId(selectedRobot, selectedNode)
             if (nodeBodyId) {
                 const gizmoWorld = gizmoRef.current.obj.matrixWorld.clone()
-                const robotWorld = convertJoltMat44ToThreeMatrix4(World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform())
+                const robotWorld = convertJoltMat44ToThreeMatrix4(
+                    World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
+                )
                 const delta = gizmoWorld.premultiply(robotWorld.invert())
                 camera.deltaTransformation = convertThreeMatrix4ToArray(delta)
                 camera.parentNode = selectedNode
@@ -83,7 +83,7 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
         setSelectedNode(camera?.parentNode)
     }, [selectedIndex, camera])
 
-    // Keyed on selectedIndex so the gizmo re-spawns positioned for the newly selected camera.
+    // keyed on selectedIndex so the gizmo re-spawns positioned for the newly selected camera
     const placeholderMesh = useMemo(() => {
         return new THREE.Mesh(
             new THREE.BoxGeometry(0.12, 0.08, 0.16).translate(0, 0, 0.08),
@@ -105,7 +105,9 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
             const nodeBodyId = parentBodyId(selectedRobot, camera.parentNode)
             if (!nodeBodyId) return
 
-            const robotWorld = convertJoltMat44ToThreeMatrix4(World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform())
+            const robotWorld = convertJoltMat44ToThreeMatrix4(
+                World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
+            )
             const gizmoWorld = delta.premultiply(robotWorld)
             gizmo.obj.position.setFromMatrixPosition(gizmoWorld)
             gizmo.obj.rotation.setFromRotationMatrix(gizmoWorld)
@@ -129,9 +131,12 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
         (body: Jolt.BodyID) => {
             const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || assoc.sceneObject !== selectedRobot) return false
+
             setSelectedNode(assoc.rigidNodeId)
             if (camera) camera.parentNode = assoc.rigidNodeId
+
             commit()
+
             return true
         },
         [selectedRobot, camera, commit]
@@ -141,21 +146,23 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
         const nextId = cameras.reduce((max, c) => Math.max(max, c.id + 1), 0)
         cameras.push(defaultCameraPreferences(nextId))
         setSelectedIndex(cameras.length - 1)
+
         commit()
         forceRender()
     }, [cameras, commit, forceRender])
 
     const removeCamera = useCallback(() => {
         if (selectedIndex < 0) return
+
         cameras.splice(selectedIndex, 1)
         setSelectedIndex(cameras.length > 0 ? Math.max(0, selectedIndex - 1) : -1)
+
         commit()
         forceRender()
     }, [cameras, selectedIndex, commit, forceRender])
 
     return (
         <Stack gap={2} key={version}>
-            {/* Camera selector */}
             <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="center">
                 {cameras.map((c, i) => (
                     <Button
@@ -182,7 +189,6 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                         helperText={`Sim device: ${camera.name}[${camera.id}] — must match robot code`}
                         onChange={e => {
                             camera.name = e.target.value
-                            commit()
                         }}
                     />
 
@@ -200,7 +206,6 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                         defaultValue={camera.fovDegrees}
                         onChange={v => {
                             camera.fovDegrees = v
-                            commit()
                         }}
                     />
                     <StatefulSlider
@@ -211,7 +216,6 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                         defaultValue={camera.resolutionWidth}
                         onChange={v => {
                             camera.resolutionWidth = v
-                            commit()
                         }}
                     />
                     <StatefulSlider
@@ -222,7 +226,6 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                         defaultValue={camera.resolutionHeight}
                         onChange={v => {
                             camera.resolutionHeight = v
-                            commit()
                         }}
                     />
                     <StatefulSlider
@@ -233,7 +236,6 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                         defaultValue={camera.fps}
                         onChange={v => {
                             camera.fps = v
-                            commit()
                         }}
                     />
 

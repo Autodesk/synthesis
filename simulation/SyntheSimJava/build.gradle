@@ -41,7 +41,7 @@ def WPI_Version = '2026.2.2'
 def REV_Version = '2026.0.5'
 def CTRE_Version = '26.3.0'
 def STUDICA_Version = '2026.0.0'
-// OpenCV is still published under the frc2025 group for the 2026 season (no frc2026 group).
+// OpenCV still published under the frc2025 group for the 2026 season (no frc2026 group)
 def OPENCV_Group = 'edu.wpi.first.thirdparty.frc2025.opencv'
 def OPENCV_Version = '4.10.0-3'
 
@@ -60,12 +60,12 @@ dependencies {
     implementation "edu.wpi.first.ntcore:ntcore-java:$WPI_Version"
     implementation "edu.wpi.first.wpiunits:wpiunits-java:$WPI_Version"
 
-    // cscore + OpenCV, for the simulated USB camera (CameraServer-compatible) support.
+    // cscore + OpenCV for the simulated USB camera (CameraServer-compatible)
     implementation "edu.wpi.first.cscore:cscore-java:$WPI_Version"
     implementation "$OPENCV_Group:opencv-java:$OPENCV_Version"
 
-    // WebSocket server used to receive rendered camera frames from Synthesis. Frames are
-    // too large for the HALSim SimDevice channel, so they stream over a side channel.
+    // WebSocket lib for receiving rendered frames; too large for HALSim's SimDevice
+    // channel, so they stream over a side channel
     implementation "org.java-websocket:Java-WebSocket:1.5.7"
 
     // REVRobotics

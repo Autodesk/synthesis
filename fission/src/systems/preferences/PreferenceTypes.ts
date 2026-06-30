@@ -145,8 +145,7 @@ export type EjectorPreferences = {
     ejectOrder: "FIFO" | "LIFO"
 }
 
-// `name`/`id` must match the robot code's UsbCamera args; together they form the sim
-// device key `"<name>[<id>]"`.
+// name/id must match the robot code's UsbCamera args, key `"<name>[<id>]"`
 export type CameraPreferences = {
     name: string
     id: number

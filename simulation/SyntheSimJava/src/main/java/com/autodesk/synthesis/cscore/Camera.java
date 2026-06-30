@@ -10,7 +10,7 @@ import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.hal.SimInt;
 
 /**
- * Backing sim device for a simulated USB camera. Config (resolution/fps/connected) is
+ * backing sim device for a simulated USB camera. config (resolution/fps/connected) is
  * published over HALSim; the frame can't (SimDevice carries only numbers/booleans) and is
  * streamed by Synthesis to {@link CameraFrameServer}, matched back to this device by name.
  */
@@ -29,7 +29,7 @@ public class Camera {
     public Camera(String name, int deviceId, int width, int height, int fps) {
         m_device = SimDevice.create("Camera:" + name, deviceId);
 
-        // Null outside of simulation.
+        // null outside of simulation
         if (m_device != null) {
             m_width = m_device.createInt("width", Direction.kOutput, width);
             m_height = m_device.createInt("height", Direction.kOutput, height);
@@ -60,11 +60,7 @@ public class Camera {
         }
     }
 
-    /**
-     * Decodes the latest frame from Synthesis into {@code dst}.
-     *
-     * @return true if a frame was available and decoded.
-     */
+    /** @return true if a frame was available and decoded into {@code dst} */
     public boolean grabFrame(Mat dst) {
         byte[] bytes = m_frameServer.getFrame(m_deviceName);
         if (bytes == null || bytes.length == 0) {

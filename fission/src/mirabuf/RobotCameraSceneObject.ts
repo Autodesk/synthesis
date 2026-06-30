@@ -13,8 +13,8 @@ const MIN_DIMENSION = 16
 const MAX_FPS = 60
 const JPEG_QUALITY = 0.6
 
-// A camera looks down its local -Z, but the config gizmo's placeholder points +Z; flip so
-// the camera looks where the gizmo points (away from the robot) rather than back into it.
+// camera looks down local -Z but the gizmo placeholder points +Z; flip so it faces where
+// the gizmo points (away from the robot), not back into it
 const FORWARD_FLIP = new THREE.Matrix4().makeRotationY(Math.PI)
 
 class RobotCameraSceneObject extends SceneObject {
@@ -36,6 +36,7 @@ class RobotCameraSceneObject extends SceneObject {
     private _renderTarget?: THREE.WebGLRenderTarget
     private _parentBodyId?: Jolt.BodyID
     private _deltaTransformation: THREE.Matrix4
+    private readonly _worldTransform = new THREE.Matrix4()
 
     private _width = 0
     private _height = 0
@@ -54,7 +55,7 @@ class RobotCameraSceneObject extends SceneObject {
         this._deltaTransformation = convertArrayToThreeMatrix4(prefs.deltaTransformation)
     }
 
-    /** The sim device key, e.g. `"USB Camera 0[0]"`. */
+    /** sim device key, e.g. `"USB Camera 0[0]"` */
     public get deviceName(): string {
         return `${this._prefs.name}[${this._prefs.id}]`
     }
@@ -111,8 +112,8 @@ class RobotCameraSceneObject extends SceneObject {
 
         const device = this.deviceName
         const streaming = SimCamera.isPresent(device)
-        // The readback below is a synchronous GPU stall, so skip it entirely unless a frame
-        // is actually consumed — otherwise a configured camera would freeze the app.
+        // readback below is a synchronous GPU stall; skip unless a frame is consumed, else a
+        // configured camera would freeze the app
         if (!streaming && RobotCameraSceneObject.previewConsumers === 0) return
 
         const reqWidth = SimCamera.getWidth(device, this._prefs.resolutionWidth)
@@ -131,8 +132,8 @@ class RobotCameraSceneObject extends SceneObject {
 
         const parentBody = World.physicsSystem.getBody(this._parentBodyId)
         if (!parentBody) return
-        const worldTransform = this._deltaTransformation
-            .clone()
+        const worldTransform = this._worldTransform
+            .copy(this._deltaTransformation)
             .premultiply(convertJoltMat44ToThreeMatrix4(parentBody.GetWorldTransform()))
             .multiply(FORWARD_FLIP)
         this._camera.position.setFromMatrixPosition(worldTransform)
@@ -140,9 +141,9 @@ class RobotCameraSceneObject extends SceneObject {
         this._camera.updateMatrixWorld()
 
         const renderer = World.sceneRenderer.renderer
-        // The EffectComposer leaves autoClear=false, so clear the depth buffer ourselves or
-        // the view is partially depth-rejected. setRenderTarget already sets the full-size
-        // viewport; setViewport would re-scale it by devicePixelRatio and crop the capture.
+        // EffectComposer leaves autoClear=false, so clear the depth buffer ourselves or the
+        // view is partially depth-rejected. setRenderTarget already sets the full-size
+        // viewport; setViewport would re-scale by devicePixelRatio and crop the capture
         const prevTarget = renderer.getRenderTarget()
         const prevAutoClear = renderer.autoClear
         try {
@@ -168,7 +169,7 @@ class RobotCameraSceneObject extends SceneObject {
         }
     }
 
-    // GL pixels are bottom-up; flip rows into the top-down ImageData.
+    // GL pixels are bottom-up; flip rows into the top-down ImageData
     private flipInto(target: ImageData, source: Uint8Array): void {
         const w = this._width
         const h = this._height

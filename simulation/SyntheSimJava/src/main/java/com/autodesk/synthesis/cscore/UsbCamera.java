@@ -1,9 +1,7 @@
 package com.autodesk.synthesis.cscore;
 
-import org.opencv.core.Mat;
-
 /**
- * Swap-in for {@code edu.wpi.first.cscore.UsbCamera} (mirrors the SparkMax wrapper
+ * swap-in for {@code edu.wpi.first.cscore.UsbCamera} (mirrors the SparkMax wrapper
  * pattern): frames come from Synthesis instead of a physical device.
  *
  * <pre>
@@ -28,16 +26,8 @@ public class UsbCamera extends edu.wpi.first.cscore.UsbCamera {
         this.m_camera = new Camera(name, dev, width, height, fps);
     }
 
-    public Camera getCamera() {
-        return this.m_camera;
-    }
-
     public CvSink getVideo() {
         return new CvSink(this.getName() + " - sink", this.m_camera);
-    }
-
-    public long grabFrame(Mat dst) {
-        return this.m_camera.grabFrame(dst) ? 1L : 0L;
     }
 
     @Override

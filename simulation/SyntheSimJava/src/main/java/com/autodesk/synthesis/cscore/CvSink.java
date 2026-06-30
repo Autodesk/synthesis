@@ -2,8 +2,10 @@ package com.autodesk.synthesis.cscore;
 
 import org.opencv.core.Mat;
 
+import edu.wpi.first.util.WPIUtilJNI;
+
 /**
- * Swap-in for {@code edu.wpi.first.cscore.CvSink}: the frame-grab methods return the frame
+ * swap-in for {@code edu.wpi.first.cscore.CvSink}: the frame-grab methods return the frame
  * Synthesis rendered for the associated {@link Camera} instead of a physical source, so
  * existing OpenCV processing keeps working.
  */
@@ -28,6 +30,10 @@ public class CvSink extends edu.wpi.first.cscore.CvSink {
 
     @Override
     public long grabFrameNoTimeout(Mat image) {
-        return m_camera.grabFrame(image) ? 1L : 0L;
+        if (!m_camera.grabFrame(image)) {
+            return 0L;
+        }
+
+        return WPIUtilJNI.now();
     }
 }
