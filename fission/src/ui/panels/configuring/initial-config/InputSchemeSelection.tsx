@@ -11,7 +11,6 @@ import Label from "@/ui/components/Label"
 import {
     Button,
     DeleteButton,
-    EditButton,
     PositiveButton,
     SynthesisIcons,
     Select,
@@ -21,7 +20,6 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 interface InputSchemeSelectionProps {
     brainIndex: number
     onSelect?: () => void
-    onEdit?: () => void
     onCreateNew?: () => void
     panelId?: string
 }
@@ -29,7 +27,6 @@ interface InputSchemeSelectionProps {
 export default function InputSchemeSelection({
     brainIndex,
     onSelect,
-    onEdit,
     onCreateNew,
     panelId,
 }: InputSchemeSelectionProps) {
@@ -90,13 +87,7 @@ export default function InputSchemeSelection({
                                 {SynthesisIcons.SELECT_LARGE}
                             </PositiveButton>
                         </Box>
-                        {/** Edit button - same as select but opens the inputs modal */}
-                        {EditButton(() => {
-                            InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
 
-                            setSelectedScheme(scheme)
-                            onEdit?.()
-                        })}
 
                         {/** Delete button (only if the scheme is customized and not in use) */}
                         {scheme.customized && status !== InputSchemeUseType.IN_USE ? (

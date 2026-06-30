@@ -19,13 +19,12 @@ import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeMo
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
     const { setSelectedScheme } = useStateContext()
-    const { openModal, openPanel, configureScreen, closePanel } = useUIContext()
+    const { openModal, configureScreen, closePanel } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -156,7 +155,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 <InputSchemeSelection
                     brainIndex={brainIndex}
                     onSelect={() => {}}
-                    onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
                     onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
                     panelId={panel?.id}
                 />
