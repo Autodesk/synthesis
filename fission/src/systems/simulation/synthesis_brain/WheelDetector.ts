@@ -4,12 +4,23 @@
  * The algorithm works in four passes:
  *
  *   1. CANDIDATES - collect every revolute joint that has a well-defined axis.
+ *      Joints whose axis is near-vertical (the robot up axis) are classified as
+ *      steering joints; the rest are wheel candidates.  Each wheel candidate is
+ *      augmented with the closest steering joint whose origin is within
+ *      STEER_ORIGIN_DISTANCE, making it "yaw-rotatable" (i.e. a swerve wheel).
  *
- *   2. AXLE PAIRS - for every pair of candidates, check two conditions:
- *        a) their axes are parallel (dot product >= AXIS_PARALLEL_COS), and
- *        b) the vector between their origins aligns with that axis (wheel sits
- *           across the robot, not fore/aft of another wheel on the same side).
- *      Each passing pair is one physical axle; its midpoint is the axle centre.
+ *   2. AXLE PAIRS - for every pair of candidates the test depends on type:
+ *        Fixed / Fixed  – axes are parallel AND the wheel-to-wheel displacement
+ *                         aligns with that axis (original behaviour).
+ *        Swerve / Swerve – each wheel's axis is reachable after rotating its
+ *                          module around its steering axis toward the pair
+ *                          displacement direction (canYawAxisToDirection).
+ *        Mixed          – the fixed wheel's axis must align with the pair
+ *                         direction AND the swerve wheel must be able to yaw
+ *                         into that same direction.
+ *      The pair's geometric direction is always
+ *        canonicalDir(normalize(originB − originA)),
+ *      so AxlePair.direction is the physical axle vector, not the raw joint axis.
  *
  *   3. GROUP BY DIRECTION - axle pairs that share a drive axis are grouped
  *      together so swerve/mixed-axis robots don't cross-contaminate.
@@ -31,6 +42,11 @@
  *         |             |
  *
  *              M1 and M2 are collinear -> drivetrain detected (ok)
+ *
+ * -- Valid swerve drivetrain (modules exported at 45°, detected via yaw reachability) --
+ *
+ *        [W/45°]--------[W/45°]  <- wheel axes rotated 45°, but steer joints allow
+ *                                    yawing to the lateral pair direction -> ok
  *
  * -- Invalid drivetrain (midpoints M1, M2 are not collinear) --
  *
@@ -72,7 +88,10 @@ import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
 
 const AXIS_PARALLEL_COS = 0.99 // axes must be this parallel to be the same axle direction
-const AXLE_ALIGN_COS = 0.98 // wheel-to-wheel displacement must align with the axis
+const AXLE_ALIGN_COS = 0.98 // wheel-to-wheel displacement must align with the axis (fixed wheels)
+const STEER_AXIS_UP_COS = 0.95 // steer joint axis must be this aligned with Y-up to qualify
+const STEER_ORIGIN_DISTANCE = 0.3 // metres, max distance between steer origin and wheel origin for association
+const AXIAL_COMPONENT_TOLERANCE = 0.15 // tolerance for canYawAxisToDirection axial-component comparison
 const COINCIDENT_DISTANCE = 1e-4 // metres, same-point guard
 const COLLINEAR_DISTANCE = 0.01 // metres (1 cm), collinear midpoint tolerance
 
@@ -84,14 +103,17 @@ interface Vec2 {
 interface Candidate {
     token: string
     origin: THREE.Vector3 // metres
-    axis: THREE.Vector3 // normalised
+    axis: THREE.Vector3 // normalised wheel spin axis
+    steerAxis?: THREE.Vector3 // normalised steer (azimuth) axis, present for swerve modules
+    steerOrigin?: THREE.Vector3 // steer joint origin in metres
+    isYawRotatable: boolean
 }
 
 interface AxlePair {
     a: number
     b: number
     midpoint: THREE.Vector3
-    direction: THREE.Vector3 // canonical
+    direction: THREE.Vector3 // canonical geometric pair direction
     key: string
 }
 
@@ -115,8 +137,23 @@ function distToLine(p: Vec2, anchor: Vec2, dir: Vec2): number {
     return Math.abs((p.u - anchor.u) * dir.v - (p.v - anchor.v) * dir.u)
 }
 
+/**
+ * Returns true when a wheel whose spin axis is `wheelAxis` can be yawed around
+ * `steerAxis` so that its spin axis becomes parallel to `targetDirection`.
+ *
+ * Rotation around steerAxis preserves the component of any vector along that
+ * axis, so the target is reachable only if both vectors have the same magnitude
+ * of axial component.
+ */
+function canYawAxisToDirection(wheelAxis: THREE.Vector3, steerAxis: THREE.Vector3, targetDirection: THREE.Vector3): boolean {
+    const wParallel = Math.abs(wheelAxis.dot(steerAxis))
+    const tParallel = Math.abs(targetDirection.dot(steerAxis))
+    return Math.abs(wParallel - tParallel) < AXIAL_COMPONENT_TOLERANCE
+}
+
 function extractCandidates(jointDefs: Record<string, mirabuf.joint.IJoint>): Candidate[] {
-    const out: Candidate[] = []
+    const allRevolute: { token: string; origin: THREE.Vector3; axis: THREE.Vector3 }[] = []
+
     for (const [token, jDef] of Object.entries(jointDefs)) {
         if (jDef.jointMotionType !== mirabuf.joint.JointMotion.REVOLUTE) continue
         const axisVec = jDef.rotational?.rotationalFreedom?.axis
@@ -126,10 +163,37 @@ function extractCandidates(jointDefs: Record<string, mirabuf.joint.IJoint>): Can
         const o = jDef.origin ?? {}
 
         // Joint origins stored in cm (positionToYup * 100)
-        out.push({
+        allRevolute.push({
             token,
             origin: new THREE.Vector3((o.x ?? 0) / 100, (o.y ?? 0) / 100, (o.z ?? 0) / 100),
             axis: axisRaw.normalize(),
+        })
+    }
+
+    const up = new THREE.Vector3(0, 1, 0)
+
+    // Joints whose axis is near-vertical are azimuth / steering joints, not wheels.
+    const steerJoints = allRevolute.filter(j => Math.abs(j.axis.dot(up)) >= STEER_AXIS_UP_COS)
+    const wheelJoints = allRevolute.filter(j => Math.abs(j.axis.dot(up)) < STEER_AXIS_UP_COS)
+
+    const out: Candidate[] = []
+    for (const w of wheelJoints) {
+        let nearestSteer: (typeof steerJoints)[0] | undefined
+        let nearestDist = STEER_ORIGIN_DISTANCE
+        for (const s of steerJoints) {
+            const d = s.origin.distanceTo(w.origin)
+            if (d < nearestDist) {
+                nearestDist = d
+                nearestSteer = s
+            }
+        }
+        out.push({
+            token: w.token,
+            origin: w.origin,
+            axis: w.axis,
+            steerAxis: nearestSteer?.axis,
+            steerOrigin: nearestSteer?.origin,
+            isYawRotatable: nearestSteer !== undefined,
         })
     }
 
@@ -140,18 +204,37 @@ function buildAxlePairs(candidates: Candidate[]): AxlePair[] {
     const pairs: AxlePair[] = []
     for (let i = 0; i < candidates.length; i++) {
         for (let j = i + 1; j < candidates.length; j++) {
-            if (Math.abs(candidates[i].axis.dot(candidates[j].axis)) < AXIS_PARALLEL_COS) continue
-            const disp = candidates[j].origin.clone().sub(candidates[i].origin)
+            const ci = candidates[i]
+            const cj = candidates[j]
+            const disp = cj.origin.clone().sub(ci.origin)
             const span = disp.length()
             if (span < COINCIDENT_DISTANCE) continue
-            if (Math.abs(disp.clone().divideScalar(span).dot(candidates[i].axis)) < AXLE_ALIGN_COS) continue
-            const ta = candidates[i].token
-            const tb = candidates[j].token
+            const pairDir = disp.clone().divideScalar(span)
+
+            if (ci.isYawRotatable && cj.isYawRotatable) {
+                // Swerve / swerve: each module just needs to be able to yaw onto the pair direction.
+                if (!ci.steerAxis || !canYawAxisToDirection(ci.axis, ci.steerAxis, pairDir)) continue
+                if (!cj.steerAxis || !canYawAxisToDirection(cj.axis, cj.steerAxis, pairDir)) continue
+            } else if (!ci.isYawRotatable && !cj.isYawRotatable) {
+                // Fixed / fixed: original logic — axes must be parallel and displacement must align.
+                if (Math.abs(ci.axis.dot(cj.axis)) < AXIS_PARALLEL_COS) continue
+                if (Math.abs(pairDir.dot(ci.axis)) < AXLE_ALIGN_COS) continue
+            } else {
+                // Mixed: fixed wheel's axis sets the axle direction; swerve must be able to reach it.
+                const fixed = ci.isYawRotatable ? cj : ci
+                const swerve = ci.isYawRotatable ? ci : cj
+                if (Math.abs(pairDir.dot(fixed.axis)) < AXLE_ALIGN_COS) continue
+                if (!swerve.steerAxis || !canYawAxisToDirection(swerve.axis, swerve.steerAxis, pairDir)) continue
+            }
+
+            const ta = ci.token
+            const tb = cj.token
             pairs.push({
                 a: i,
                 b: j,
-                midpoint: candidates[i].origin.clone().add(candidates[j].origin).multiplyScalar(0.5),
-                direction: canonicalDir(candidates[i].axis),
+                midpoint: ci.origin.clone().add(cj.origin).multiplyScalar(0.5),
+                // Use the geometric pair direction, not the raw joint axis.
+                direction: canonicalDir(pairDir),
                 key: ta < tb ? `${ta}|${tb}` : `${tb}|${ta}`,
             })
         }
@@ -217,7 +300,7 @@ export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
         if (collinear.length > selected.length) selected = collinear.map(local => group.indices[local])
     }
 
-    if (selected.length === 0) {
+    if (selected.length < 2) {
         console.error("No drivetrain found. Wheels will not be auto-assigned")
         return
     }
