@@ -22,7 +22,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
 
     const validateConnection = useCallback(
         (edge: Edge | Connection) => {
-            return SimConfig.ValidateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
+            return SimConfig.validateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
         },
         [simConfig]
     )

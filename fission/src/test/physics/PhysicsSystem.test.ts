@@ -462,7 +462,7 @@ describe("Sensor Creation", () => {
         expect(sensorBody.IsSensor()).toBe(true)
 
         JOLT.destroy(size)
-        JOLT.destroy(shapeSettings)
+        // shapeSettings already destroyed by createSensor (destroy=true by default)
     })
 
     test("Create Invalid Sensor", () => {
@@ -478,8 +478,7 @@ describe("Sensor Creation", () => {
             const sensorId = system.createSensor(shapeSettings)
 
             expect(sensorId).toBeUndefined()
-
-            JOLT.destroy(shapeSettings)
+            // shapeSettings already destroyed by createSensor on error path (destroy=true by default)
         } finally {
             // Always restore console.error
             console.error = originalConsoleError
