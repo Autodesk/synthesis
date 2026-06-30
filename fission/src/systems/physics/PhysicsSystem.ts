@@ -60,7 +60,7 @@ const MAX_GP_MASS = 10.0
 // Minimum threshold for Wadell sphericity to consider a convex hull a sphere.
 // 2025 & 2026 spheres have a sphericity of 0.9999
 // 2023 cube has a value of 0.9532
-const MIN_SPHERICITY = 0.98
+const MIN_SPHERICITY = 0.99
 
 const SPHERE_GP_ANGULAR_DAMPING = 0.5
 const SPHERE_GP_LINEAR_DAMPING = 0.1
