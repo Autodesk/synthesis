@@ -130,6 +130,10 @@ class PhysicsSystem extends WorldSystem {
         return this._pauseSet.size > 0
     }
 
+    public get sphereGamePieceBodies(): readonly Jolt.BodyID[] {
+        return this._sphereGamePieceBodies
+    }
+
     /**
      * Creates a PhysicsSystem object.
      */
@@ -1028,6 +1032,7 @@ class PhysicsSystem extends WorldSystem {
                             )
                             shape = offsetSettings.Create().Get()
                             JOLT.destroy(identityRotation)
+                            JOLT.destroy(sphereSettings)
                             appliedSphereCollider = true
                         }
 
