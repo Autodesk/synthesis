@@ -77,7 +77,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private hasLogged: boolean = false
 
     set deltaTransformation(delta: THREE.Matrix4) {
-        console.log("Updating Delta Transform")
         this._deltaTransHasUpdated = true
         this._deltaTransformation = delta
     }
@@ -115,24 +114,27 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         console.log(`Setup Transform: ${JSON.stringify(fieldTransformation)}`)
 
         this.createVisualMesh(props)
-        this.createBoundingBox(props)
+        this.createBoundingBox()
     }
 
-    private createBoundingBox(props: VisualProperties) {
+    /**
+     * Draws a bounding box around `this.mesh`
+     *
+     * On order for the bounding box to be up-to-date, either `this.createVisualMesh` or `this.setMeshProperties` must be called first
+     *
+     * In the future, we should probably create the bounding box from `VisualProperties`, but I couldn't get that to work
+     */
+    private createBoundingBox() {
+        if (!this.mesh) return
         if (this.bounding) JOLT.destroy(this.bounding)
-        if (this.lineTmp) World.sceneRenderer.removeObject(this.lineTmp)
 
-        const origin = new JOLT.Vec3(0, 0, 0)
-        const unit = new JOLT.Vec3(1, 1, 1)
+        const bounding = new THREE.Box3()
+        bounding.setFromObject(this.mesh)
 
-        this.bounding = new JOLT.AABox(origin, unit)
-        this.bounding = this.bounding.Scaled(convertThreeVector3ToJoltVec3(props.scale).Div(2))
-        this.bounding.TranslateVec3(convertThreeVector3ToJoltVec3(props.translation))
+        const min = convertThreeVector3ToJoltVec3(bounding.min)
+        const max = convertThreeVector3ToJoltVec3(bounding.max)
 
-        this.lineTmp = renderAABox(this.bounding)
-
-        JOLT.destroy(origin)
-        JOLT.destroy(unit)
+        this.bounding = new JOLT.AABox(min, max)
     }
 
     private setMeshProperties(props: VisualProperties) {
@@ -172,17 +174,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private generateVisualProperties(): VisualProperties | undefined {
         // Update translation, rotation, and scale only if the field has moved
         const newTransform = World.physicsSystem.getBody(this.parentBodyId!)!.GetWorldTransform()
-        if (!this.hasLogged && this instanceof ProtectedZoneSceneObject) {
-            console.log(
-                `Old     Transform: ${JSON.stringify(convertJoltMat44ToThreeMatrix4(this._cachedFieldTransformation!))}`
-            )
-            console.log(`Updated Transform: ${JSON.stringify(convertJoltMat44ToThreeMatrix4(newTransform))}`)
-
-            const hasChanged = this._cachedFieldTransformation && newTransform.Equals(this._cachedFieldTransformation)
-            console.log(`F.T. changed: ${!hasChanged}`)
-            this.hasLogged = true
-        }
-
         const transformHasNotUpdated =
             this._cachedFieldTransformation && newTransform.Equals(this._cachedFieldTransformation)
 
@@ -200,17 +191,10 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         this.checkObjectsInZone()
 
-        // Try to update the zone
-        // TODO
-        // Why the frick did initially caching the field transform cause the mesh to render in the wrong spot?
-        // Why and where are the transforms changing?
         const props = this.generateVisualProperties()
         if (props) {
-            // For some reason, the visual properties only get reset exactly once across all zones
-            // Only in the blue scoring zone, for the 2023 field
-            console.log(`Setting Visual Properties: ${ZoneSceneObject.count++}`)
             this.setMeshProperties(props)
-            this.createBoundingBox(props)
+            this.createBoundingBox()
         }
 
         this.updateRenderPreferences()

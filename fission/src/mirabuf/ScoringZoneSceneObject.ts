@@ -47,7 +47,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             const gpBounding = gp.GetWorldSpaceBounds()
 
             // console.log("GP Bounding")
-            renderAABox(gpBounding)
+            // renderAABox(gpBounding)
 
             const overlaps = this.bounding?.OverlapsAABox(gpBounding)
             JOLT.destroy(gpBounding)

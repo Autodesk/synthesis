@@ -42,7 +42,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     }
 
     public checkObjectsInZone(): void {
-        if (!this.isZoneActive()) return
+        // if (!this.isZoneActive()) return
 
         const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
         const robotsInZone = robots
@@ -55,6 +55,9 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             oldRobotsInZone,
             robotsInZone.map(([robot, _]) => robot)
         )
+
+        // console.log(`Added: ${added}`)
+        // console.log(`Removed: ${removed}`)
 
         if (this.prefs.contactType === ContactType.ROBOT_ENTERS) {
             added.forEach(this.penalizeEnteringZone)
