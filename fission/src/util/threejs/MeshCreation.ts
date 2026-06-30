@@ -129,8 +129,8 @@ export function deltaFieldTransformsPhysicalProp(
     zoneTransformation.decompose(translation, rotation, scale)
 
     return {
-        translation: translation,
-        rotation: rotation,
-        scale: scale,
+        translation,
+        rotation,
+        scale,
     }
 }

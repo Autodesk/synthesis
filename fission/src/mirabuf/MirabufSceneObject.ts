@@ -310,11 +310,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             simLayer.setBrain(this._brain)
         }
 
-        // Intake
-        this.updateIntakeSensor()
-        this.updateScoringZones()
-        this.updateProtectedZones()
-
         if (this.isOwnObject) {
             setSpotlightAssembly(this)
         }
@@ -324,6 +319,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._basePositionTransform = this.getPositionTransform()
 
         this.moveToSpawnLocation()
+
+        this.updateIntakeSensor()
+        this.updateScoringZones()
+        this.updateProtectedZones()
 
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
 
