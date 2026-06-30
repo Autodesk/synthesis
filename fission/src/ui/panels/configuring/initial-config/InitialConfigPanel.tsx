@@ -74,7 +74,13 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     useEffect(() => {
         configureScreen(
             panel!,
-            { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
+            {
+                title: "Assembly Setup",
+                acceptText: "Finish",
+                cancelText: "Remove",
+                blocking: true,
+                blockingMessage: "Finish Assembly Setup before spawning another asset.",
+            },
             {
                 onBeforeAccept: () => {
                     closeFinish()
@@ -150,12 +156,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 <InputSchemeSelection
                     brainIndex={brainIndex}
                     onSelect={() => {}}
-                    onEdit={() =>
-                        openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel, {
-                            blocking: true,
-                            blockingMessage: "Close Assembly Setup before opening another panel.",
-                        })
-                    }
+                    onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
                     onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
                     panelId={panel?.id}
                 />

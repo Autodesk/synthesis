@@ -189,15 +189,7 @@ const MainHUD: React.FC = () => {
                     Spawn Asset
                 </MainHUDButton>
                 <ButtonGroup orientation="vertical" variant="contained">
-                    <MainHUDButton
-                        startIcon={SynthesisIcons.WRENCH}
-                        onClick={() =>
-                            openPanel(ConfigurePanel, {}, undefined, {
-                                blocking: true,
-                                blockingMessage: "Close Assembly Setup before opening another panel.",
-                            })
-                        }
-                    >
+                    <MainHUDButton startIcon={SynthesisIcons.WRENCH} onClick={() => openPanel(ConfigurePanel, {})}>
                         Configure Assets
                     </MainHUDButton>
                     <MainHUDButton

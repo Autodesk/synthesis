@@ -73,10 +73,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                             World.sceneRenderer.registerSceneObject(mirabufSceneObject)
 
                             if (mirabufSceneObject.miraType == MiraType.ROBOT) {
-                                openPanel(InitialConfigPanel, undefined, modal, {
-                                    blocking: true,
-                                    blockingMessage: "Finish Assembly Setup before spawning another asset.",
-                                })
+                                openPanel(InitialConfigPanel, undefined, modal)
                             }
                             const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
                             if (miraType === MiraType.ROBOT || !cameraControls.focusProvider) {

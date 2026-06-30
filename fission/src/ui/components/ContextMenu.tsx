@@ -74,7 +74,7 @@ const ContextMenu: React.FC = () => {
                                 if (x.type === "modal") {
                                     globalOpenModal(x.screen, x.customProps)
                                 } else {
-                                    globalOpenPanel(x.screen, x.customProps, undefined, x.panelProps as never)
+                                    globalOpenPanel(x.screen, x.customProps)
                                 }
                             }
                             x.func?.()

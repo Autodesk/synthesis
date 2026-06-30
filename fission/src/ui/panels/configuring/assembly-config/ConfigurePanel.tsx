@@ -330,7 +330,11 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
+            {
+                title: "Configure Assets",
+                acceptText: "Save",
+                cancelText: "Cancel",
+            },
             { onBeforeAccept, onCancel }
         )
     }, [selectedAssembly, pendingDeletes])

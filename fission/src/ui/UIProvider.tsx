@@ -148,11 +148,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             }
 
             // if any (generic) open panel declares itself as blocking, prevent opening a new one
-            const blockingPanel = panels.find(p => (p.props as PanelProps<unknown>).blocking)
+            const blockingPanel = panels.find(p => p.props.blocking)
             if (blockingPanel) {
-                const msg =
-                    (blockingPanel.props as PanelProps<unknown>).blockingMessage ??
-                    "Close the current panel before opening another."
+                const msg = blockingPanel.props.blockingMessage ?? "Close the current panel before opening another."
                 addToast("warning", msg)
                 return blockingPanel.id
             }

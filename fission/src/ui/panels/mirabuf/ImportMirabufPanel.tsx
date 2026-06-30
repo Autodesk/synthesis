@@ -143,10 +143,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                         progressHandle.done()
 
                         if (mirabufSceneObject.miraType == MiraType.ROBOT) {
-                            globalOpenPanel(InitialConfigPanel, undefined, undefined, {
-                                blocking: true,
-                                blockingMessage: "Finish Assembly Setup before spawning another asset.",
-                            })
+                            globalOpenPanel(InitialConfigPanel, undefined)
                         }
                     } else {
                         progressHandle.fail("No object!")

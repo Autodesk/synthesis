@@ -973,10 +973,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     configMode: ConfigMode.MOVE,
                     selectedAssembly: this,
                 },
-                panelProps: {
-                    blocking: true,
-                    blockingMessage: "Close Assembly Setup before opening another panel.",
-                },
                 screen: ConfigurePanel,
                 type: "panel",
             },
@@ -986,10 +982,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
                     configMode: undefined,
                     selectedAssembly: this,
-                },
-                panelProps: {
-                    blocking: true,
-                    blockingMessage: "Close Assembly Setup before opening another panel.",
                 },
                 screen: ConfigurePanel,
                 type: "panel",

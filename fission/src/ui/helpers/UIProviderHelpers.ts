@@ -28,6 +28,8 @@ export interface UIScreenProps<P> {
     disableAccept?: boolean
     cancelText?: string
     acceptText?: string
+    blocking?: boolean // if true, will prevent other panels from opening while this panel is open
+    blockingMessage?: string
     custom: P
 }
 
@@ -46,8 +48,6 @@ export interface ModalProps<P> extends UIScreenProps<P> {
 export interface PanelProps<P> extends UIScreenProps<P> {
     type: "panel"
     position?: PanelPosition
-    blocking?: boolean // if true, will prevent other panels from opening while this panel is open
-    blockingMessage?: string
 }
 
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
