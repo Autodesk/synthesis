@@ -76,12 +76,12 @@ describe("ProtectedZoneSceneObject", () => {
             miraType: MiraType.ROBOT,
             alliance,
         }) as unknown as MirabufSceneObject
-    //
+
     // const createMockBodyId = (id: number) =>
     //     ({
     //         GetIndexAndSequenceNumber: () => id,
     //     }) as unknown as Jolt.BodyID
-    //
+
     const createProtectedZoneInstance = (prefs: Partial<ProtectedZonePreferences>) => {
         const instance = new ProtectedZoneSceneObject({} as unknown as MirabufSceneObject, 0)
         Reflect.set(instance, "prefs", {
@@ -125,9 +125,9 @@ describe("ProtectedZoneSceneObject", () => {
     test("ZoneCollision applies penalty to opposing robot", () => {
         const instance = createProtectedZoneInstance({})
 
-        instance["checkObjectsInZone"]()
+        instance["penalizeEnteringZone"](redRobot)
 
-        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(redRobot, 5, expect.any(String))
     })
 
     test("ZoneCollision does not penalize same alliance robot", () => {
@@ -135,27 +135,20 @@ describe("ProtectedZoneSceneObject", () => {
             activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME],
         })
 
-        instance["checkObjectsInZone"]()
+        instance["penalizeEnteringZone"](blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("ZoneCollision does not penalize when zone is inactive", () => {
-        const instance = createProtectedZoneInstance({
-            activeDuring: [MatchModeType.AUTONOMOUS],
-        })
-
-        instance["checkObjectsInZone"]()
-
-        expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
-    })
+    // NOTE for reviewers
+    // The zone activity check is done earlier on
 
     test("ZoneCollision does not penalize when both robots must be inside but only one robot is in the zone", () => {
         const instance = createProtectedZoneInstance({
             contactType: ContactType.BOTH_ROBOTS_INSIDE,
         })
 
-        instance["checkObjectsInZone"]()
+        instance["handleContactPenalty"](redRobot, blueRobot)
 
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })

@@ -46,18 +46,11 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             const gp = World.physicsSystem.getBody(gpID)!
             const gpBounding = gp.GetWorldSpaceBounds()
 
-            // console.log("GP Bounding")
-            // renderAABox(gpBounding)
-
             const overlaps = this.bounding?.OverlapsAABox(gpBounding)
             JOLT.destroy(gpBounding)
 
             return overlaps
         })
-
-        if (gamePiecesContacting.length !== 0) {
-            console.log("GAME PIECES CONTACTING: " + gamePiecesContacting.length)
-        }
 
         const { added, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
 

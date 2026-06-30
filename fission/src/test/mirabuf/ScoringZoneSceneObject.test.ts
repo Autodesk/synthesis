@@ -1,5 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import * as THREE from "three"
+import { afterEach, assert, beforeEach, describe, expect, test, vi } from "vitest"
 import EventSystem from "@/systems/EventSystem.ts"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
@@ -27,6 +28,8 @@ const mockSceneRenderer = {
     mirabufSceneObjects: {
         getField: vi.fn(),
     },
+    addObject: vi.fn(),
+    removeObject: vi.fn(),
 }
 
 vi.mock("@/systems/World", () => ({
@@ -54,7 +57,7 @@ describe("ScoringZoneSceneObject", () => {
         console.log = originalConsoleLog
     })
 
-    test("Setup creates sensor and mesh", () => {
+    test("Setup creates mesh", () => {
         const mockBodyId = { GetIndexAndSequenceNumber: () => "id" } as unknown
         const parent = {
             fieldPreferences: {
@@ -69,37 +72,53 @@ describe("ScoringZoneSceneObject", () => {
                 ],
             },
             mechanism: { nodeToBody: new Map([["node1", mockBodyId]]) },
-            rootNodeId: "root",
+            rootNodeId: "node1",
         } as unknown as MirabufSceneObject
+
         const instance = new ScoringZoneSceneObject(parent, 0)
         instance.setup()
+
         expect(instance["parentBodyId"]).toBe(mockBodyId)
-        expect(mockPhysicsSystem.createSensor).toHaveBeenCalled()
     })
 
     test("ZoneCollision updates score", () => {
-        const instance = new ScoringZoneSceneObject({} as unknown as MirabufSceneObject, 0)
-        Reflect.set(instance, "prefs", { shouldPointsAccumulate: true, alliance: "red", points: 10 })
-        const gamePieceBody = {} as unknown as Jolt.BodyID
+        const parent = {} as unknown as MirabufSceneObject
+        Reflect.set(parent, "fieldPreferences", {
+            scoringZones: [{ shouldPointsAccumulate: true, alliance: "red", points: 10 }],
+        })
+        const instance = new ScoringZoneSceneObject(parent, 0)
+
+        const gamePieceId = {} as unknown as Jolt.BodyID
         mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, associatedBody: 0 }))
+
         const dispatchSpy = vi.fn()
         const unsubscribe = EventSystem.listen("ScoreChangedEvent", dispatchSpy)
-        instance["zoneCollision"](gamePieceBody)
+
+        instance["zoneCollision"](gamePieceId)
+
         expect(ScoreTracker.redScore).toBe(10)
         expect(dispatchSpy).toHaveBeenCalled()
+
         unsubscribe()
     })
 
-    test("Dispose destroys mesh and sensor", () => {
-        const instance = new ScoringZoneSceneObject({} as unknown as MirabufSceneObject, 0)
+    test("Dispose destroys mesh and bounding box", () => {
+        const parent = {} as unknown as MirabufSceneObject
+        Reflect.set(parent, "fieldPreferences", {
+            scoringZones: [{ shouldPointsAccumulate: true, alliance: "red", points: 10 }],
+        })
+
+        const zone = new ScoringZoneSceneObject(parent, 0)
+
         const mockBodyId = { GetIndexAndSequenceNumber: () => "id" } as unknown
-        Reflect.set(instance, "joltBodyId", mockBodyId)
+        Reflect.set(zone, "joltBodyId", mockBodyId)
+
         const mockMesh = { geometry: { dispose: vi.fn() }, material: { dispose: vi.fn() } }
-        Reflect.set(instance, "mesh", mockMesh)
-        instance.dispose()
-        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "joltBodyId"))
+        Reflect.set(zone, "mesh", mockMesh)
+
+        zone.dispose()
+
         expect(mockMesh.geometry.dispose).toHaveBeenCalled()
-        expect(mockMesh.material.dispose).toHaveBeenCalled()
-        expect(mockSceneRenderer.scene.remove).toHaveBeenCalledWith(mockMesh)
+        expect(mockSceneRenderer.removeObject).toHaveBeenCalledWith(mockMesh)
     })
 })

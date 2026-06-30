@@ -16,7 +16,6 @@ import {
 } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import { copyJoltRMat44, renderAABox } from "@/util/Utility"
-import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
     public static readonly lightRedMaterial = new THREE.MeshPhongMaterial({
@@ -72,10 +71,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
     public abstract get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial }
 
-    // Debugging variables
-    private lineTmp?: THREE.Line
-    private hasLogged: boolean = false
-
     set deltaTransformation(delta: THREE.Matrix4) {
         this._deltaTransHasUpdated = true
         this._deltaTransformation = delta
@@ -98,6 +93,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         this.parentBodyId = this._parentAssembly.mechanism.nodeToBody.get(
             this.prefs.parentNode ?? this._parentAssembly.rootNodeId
         )
+
         if (!this.parentBodyId) return
 
         this._deltaTransformation = convertArrayToThreeMatrix4(this.prefs.deltaTransformation)
@@ -110,8 +106,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
             this._deltaTransformation,
             fieldTransformation
         )
-
-        console.log(`Setup Transform: ${JSON.stringify(fieldTransformation)}`)
 
         this.createVisualMesh(props)
         this.createBoundingBox()
@@ -154,8 +148,10 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         this.mesh = World.sceneRenderer.createBox(unitVector, ZoneSceneObject.transparentMaterial)
         World.sceneRenderer.addObject(this.mesh)
 
-        if (this.toRender) {
-            this.setMeshProperties(props)
+        this.setMeshProperties(props)
+
+        if (!this.toRender) {
+            this.mesh.material = ZoneSceneObject.transparentMaterial
         }
 
         JOLT.destroy(unitVector)
@@ -209,6 +205,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         if (this.mesh) {
             World.sceneRenderer.removeObject(this.mesh)
+            this.mesh.geometry.dispose()
         }
     }
 }

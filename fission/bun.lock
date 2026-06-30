@@ -47,6 +47,7 @@
         "@vitejs/plugin-react": "^5.0.0",
         "@vitejs/plugin-react-swc": "^4.0.0",
         "cssnano": "^7.1.0",
+        "jsdom": "^29.1.1",
         "pako": "^2.1.0",
         "peer": "^1.0.2",
         "postcss": "^8.5.6",
@@ -64,6 +65,14 @@
   },
   "packages": {
     "@alloc/quick-lru": ["@alloc/quick-lru@5.2.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@alloc/quick-lru/-/quick-lru-5.2.0.tgz", {}, "sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw=="],
+
+    "@asamuzakjp/css-color": ["@asamuzakjp/css-color@5.1.11", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@asamuzakjp/css-color/-/css-color-5.1.11.tgz", { "dependencies": { "@asamuzakjp/generational-cache": "^1.0.1", "@csstools/css-calc": "^3.2.0", "@csstools/css-color-parser": "^4.1.0", "@csstools/css-parser-algorithms": "^4.0.0", "@csstools/css-tokenizer": "^4.0.0" } }, "sha512-KVw6qIiCTUQhByfTd78h2yD1/00waTmm9uy/R7Ck/ctUyAPj+AEDLkQIdJW0T8+qGgj3j5bpNKK7Q3G+LedJWg=="],
+
+    "@asamuzakjp/dom-selector": ["@asamuzakjp/dom-selector@7.1.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@asamuzakjp/dom-selector/-/dom-selector-7.1.1.tgz", { "dependencies": { "@asamuzakjp/generational-cache": "^1.0.1", "@asamuzakjp/nwsapi": "^2.3.9", "bidi-js": "^1.0.3", "css-tree": "^3.2.1", "is-potential-custom-element-name": "^1.0.1" } }, "sha512-67RZDnYRc8H/8MLDgQCDE//zoqVFwajkepHZgmXrbwybzXOEwOWGPYGmALYl9J2DOLfFPPs6kKCqmbzV895hTQ=="],
+
+    "@asamuzakjp/generational-cache": ["@asamuzakjp/generational-cache@1.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@asamuzakjp/generational-cache/-/generational-cache-1.0.1.tgz", {}, "sha512-wajfB8KqzMCN2KGNFdLkReeHncd0AslUSrvHVvvYWuU8ghncRJoA50kT3zP9MVL0+9g4/67H+cdvBskj9THPzg=="],
+
+    "@asamuzakjp/nwsapi": ["@asamuzakjp/nwsapi@2.3.9", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@asamuzakjp/nwsapi/-/nwsapi-2.3.9.tgz", {}, "sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q=="],
 
     "@azaleacolburn/jolt-physics": ["@azaleacolburn/jolt-physics@0.31.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@azaleacolburn/jolt-physics/-/jolt-physics-0.31.2.tgz", {}, "sha512-vNmmWZK0GmmpDA91secxQDxqvydjadDITAib3OO3cBhs8pRA0OawmDtjY1Fu3RiW/h2GE0J4FGZ804eqXwHK5g=="],
 
@@ -125,7 +134,21 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.5.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@biomejs/cli-win32-x64/-/cli-win32-x64-2.5.1.tgz", { "os": "win32", "cpu": "x64" }, "sha512-6uxpR9hvaglANkZemeSiN/FhYgkGasrEGn267eXIWvjrjJ2LhDlk251IhjVJq6MXzkV2/bcXwLwSroLyPtqRZg=="],
 
+    "@bramus/specificity": ["@bramus/specificity@2.4.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@bramus/specificity/-/specificity-2.4.2.tgz", { "dependencies": { "css-tree": "^3.0.0" }, "bin": { "specificity": "bin/cli.js" } }, "sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw=="],
+
     "@colordx/core": ["@colordx/core@5.5.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@colordx/core/-/core-5.5.0.tgz", {}, "sha512-3PxTH8itZzltK0U9jTwVVnjLXvnDYuq3m+QXsHkENxWiPRh4WaoLcs1SQjqgZ55kS+QyirpH5BVwzP2gMVG6EQ=="],
+
+    "@csstools/color-helpers": ["@csstools/color-helpers@6.1.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@csstools/color-helpers/-/color-helpers-6.1.0.tgz", {}, "sha512-064IFJdjTfUqnjpCVpMOdbr8FLQBhinbZj6yRv2An2E41O/pLEXqfFRWqGq/SxlE5PEUYTlvWsG2r8MswAVvkg=="],
+
+    "@csstools/css-calc": ["@csstools/css-calc@3.2.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@csstools/css-calc/-/css-calc-3.2.1.tgz", { "peerDependencies": { "@csstools/css-parser-algorithms": "^4.0.0", "@csstools/css-tokenizer": "^4.0.0" } }, "sha512-DtdHlgXh5ZkA43cwBcAm+huzgJiwx3ZTWVjBs94kwz2xKqSimDA3lBgCjphYgwgVUMWatSM0pDd8TILB1yrVVg=="],
+
+    "@csstools/css-color-parser": ["@csstools/css-color-parser@4.1.9", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@csstools/css-color-parser/-/css-color-parser-4.1.9.tgz", { "dependencies": { "@csstools/color-helpers": "^6.1.0", "@csstools/css-calc": "^3.2.1" }, "peerDependencies": { "@csstools/css-parser-algorithms": "^4.0.0", "@csstools/css-tokenizer": "^4.0.0" } }, "sha512-paQcIaOO53Rk5+YrBaBjm/SgrV4INImjo2BT1DtQRYr+XeTRbeAYlS+jxXp9drqvKmtFnWRJKIalDLhZZDu42A=="],
+
+    "@csstools/css-parser-algorithms": ["@csstools/css-parser-algorithms@4.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@csstools/css-parser-algorithms/-/css-parser-algorithms-4.0.0.tgz", { "peerDependencies": { "@csstools/css-tokenizer": "^4.0.0" } }, "sha512-+B87qS7fIG3L5h3qwJ/IFbjoVoOe/bpOdh9hAjXbvx0o8ImEmUsGXN0inFOnk2ChCFgqkkGFQ+TpM5rbhkKe4w=="],
+
+    "@csstools/css-syntax-patches-for-csstree": ["@csstools/css-syntax-patches-for-csstree@1.1.6", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@csstools/css-syntax-patches-for-csstree/-/css-syntax-patches-for-csstree-1.1.6.tgz", { "peerDependencies": { "css-tree": "^3.2.1" }, "optionalPeers": ["css-tree"] }, "sha512-TcJCWFbXLPpJYq6z7bfOyjWYJDiDg2/I4gyUC9pqPNqHFRIey0EB0q0L5cSnQDfWJg8Jd6VadakxdIez/3zkqQ=="],
+
+    "@csstools/css-tokenizer": ["@csstools/css-tokenizer@4.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@csstools/css-tokenizer/-/css-tokenizer-4.0.0.tgz", {}, "sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA=="],
 
     "@dimforge/rapier3d-compat": ["@dimforge/rapier3d-compat@0.12.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@dimforge/rapier3d-compat/-/rapier3d-compat-0.12.0.tgz", {}, "sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow=="],
 
@@ -206,6 +229,8 @@
     "@esbuild/win32-ia32": ["@esbuild/win32-ia32@0.28.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@esbuild/win32-ia32/-/win32-ia32-0.28.1.tgz", { "os": "win32", "cpu": "ia32" }, "sha512-zvb/mB2bSCoJOpoCBgYKKpX6YM6mJBlBUVUtVj41DlZJVEB6/0CKlRYxP5wWl1C1ILiCoAU5wZZ4q1P3qeS6Eg=="],
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.28.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@esbuild/win32-x64/-/win32-x64-0.28.1.tgz", { "os": "win32", "cpu": "x64" }, "sha512-bm4Mowrv+GXMlpWX++EcXw/iLyd1o3+bJkC2DkWXYVvgZCqD/bSj9ctZeAMC3cIxgjRVR2Dufaiu4YPxr5gW1A=="],
+
+    "@exodus/bytes": ["@exodus/bytes@1.15.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@exodus/bytes/-/bytes-1.15.1.tgz", { "peerDependencies": { "@noble/hashes": "^1.8.0 || ^2.0.0" }, "optionalPeers": ["@noble/hashes"] }, "sha512-S6mL0yNB/Abt9Ei4tq8gDhcczc4S3+vQ4ra7vxnAf+YHC02srtqxKKZghx2Dq6p0e66THKwR6r8N6P95wEty7Q=="],
 
     "@floating-ui/core": ["@floating-ui/core@1.7.5", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@floating-ui/core/-/core-1.7.5.tgz", { "dependencies": { "@floating-ui/utils": "^0.2.11" } }, "sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ=="],
 
@@ -689,7 +714,11 @@
 
     "data-uri-to-buffer": ["data-uri-to-buffer@4.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/data-uri-to-buffer/-/data-uri-to-buffer-4.0.1.tgz", {}, "sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A=="],
 
+    "data-urls": ["data-urls@7.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/data-urls/-/data-urls-7.0.0.tgz", { "dependencies": { "whatwg-mimetype": "^5.0.0", "whatwg-url": "^16.0.0" } }, "sha512-23XHcCF+coGYevirZceTVD7NdJOqVn+49IHyxgszm+JIiHLoB2TkmPtsYkNWT1pvRSGkc35L6NHs0yHkN2SumA=="],
+
     "debug": ["debug@4.4.3", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/debug/-/debug-4.4.3.tgz", { "dependencies": { "ms": "^2.1.3" } }, "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA=="],
+
+    "decimal.js": ["decimal.js@10.6.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/decimal.js/-/decimal.js-10.6.0.tgz", {}, "sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg=="],
 
     "deep-eql": ["deep-eql@5.0.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/deep-eql/-/deep-eql-5.0.2.tgz", {}, "sha512-h5k/5U50IJJFpzfL6nO9jaaumfjO/f2NjK/oYB2Djzm4p9L+3T9qWpZqZ2hAbLPuuYq9wrU08WQyBTL5GbPk5Q=="],
 
@@ -731,7 +760,7 @@
 
     "enhanced-resolve": ["enhanced-resolve@5.21.6", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/enhanced-resolve/-/enhanced-resolve-5.21.6.tgz", { "dependencies": { "graceful-fs": "^4.2.4", "tapable": "^2.3.3" } }, "sha512-aNnGCvbJ/RIyWo1IuhNdVjnNF+EjH9wpzpNHt+ci/m9He9LJvUN8wrCcXjp9cWsGNAuvSpVFTx/vraAFQ8qGjQ=="],
 
-    "entities": ["entities@4.5.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/entities/-/entities-4.5.0.tgz", {}, "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw=="],
+    "entities": ["entities@8.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/entities/-/entities-8.0.0.tgz", {}, "sha512-zwfzJecQ/Uej6tusMqwAqU/6KL2XaB2VZ2Jg54Je6ahNBGNH6Ek6g3jjNCF0fG9EWQKGZNddNjU5F1ZQn/sBnA=="],
 
     "error-ex": ["error-ex@1.3.4", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/error-ex/-/error-ex-1.3.4.tgz", { "dependencies": { "is-arrayish": "^0.2.1" } }, "sha512-sqQamAnR14VgCr1A618A3sGrygcpK+HEbenA/HiEAkkUwcZIIB/tgWqHFxWgOyDh4nB4JCRimh79dR5Ywc9MDQ=="],
 
@@ -839,6 +868,8 @@
 
     "hoist-non-react-statics": ["hoist-non-react-statics@3.3.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz", { "dependencies": { "react-is": "^16.7.0" } }, "sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw=="],
 
+    "html-encoding-sniffer": ["html-encoding-sniffer@6.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/html-encoding-sniffer/-/html-encoding-sniffer-6.0.0.tgz", { "dependencies": { "@exodus/bytes": "^1.6.0" } }, "sha512-CV9TW3Y3f8/wT0BRFc1/KAVQ3TUHiXmaAb6VW9vtiMFf7SLoMd1PdAc4W3KFOFETBJUb90KatHqlsZMWV+R9Gg=="],
+
     "http-errors": ["http-errors@2.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/http-errors/-/http-errors-2.0.1.tgz", { "dependencies": { "depd": "~2.0.0", "inherits": "~2.0.4", "setprototypeof": "~1.2.0", "statuses": "~2.0.2", "toidentifier": "~1.0.1" } }, "sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ=="],
 
     "iconv-lite": ["iconv-lite@0.4.24", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/iconv-lite/-/iconv-lite-0.4.24.tgz", { "dependencies": { "safer-buffer": ">= 2.1.2 < 3" } }, "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA=="],
@@ -863,6 +894,8 @@
 
     "is-node-process": ["is-node-process@1.2.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/is-node-process/-/is-node-process-1.2.0.tgz", {}, "sha512-Vg4o6/fqPxIjtxgUH5QLJhwZ7gW5diGCVlXpuUfELC62CuxM1iHcRe51f2W1FDy04Ai4KJkagKjx3XaqyfRKXw=="],
 
+    "is-potential-custom-element-name": ["is-potential-custom-element-name@1.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/is-potential-custom-element-name/-/is-potential-custom-element-name-1.0.1.tgz", {}, "sha512-bCYeRA2rVibKZd+s2625gGnGF/t7DSqDs4dP7CrLA1m7jKWz6pps0LpYLJN8Q64HtmPKJ1hrN3nzPNKFEKOUiQ=="],
+
     "is-promise": ["is-promise@2.2.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/is-promise/-/is-promise-2.2.2.tgz", {}, "sha512-+lP4/6lKUBfQjZ2pdxThZvLUAafmZb8OAxFb8XXtiQmS35INgr85hdOGoEs124ez1FCnZJt6jau/T+alh58QFQ=="],
 
     "isexe": ["isexe@2.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/isexe/-/isexe-2.0.0.tgz", {}, "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw=="],
@@ -876,6 +909,8 @@
     "js2xmlparser": ["js2xmlparser@4.0.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/js2xmlparser/-/js2xmlparser-4.0.2.tgz", { "dependencies": { "xmlcreate": "^2.0.4" } }, "sha512-6n4D8gLlLf1n5mNLQPRfViYzu9RATblzPEtm1SthMX1Pjao0r9YI9nw7ZIfRxQMERS87mcswrg+r/OYrPRX6jA=="],
 
     "jsdoc": ["jsdoc@4.0.5", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/jsdoc/-/jsdoc-4.0.5.tgz", { "dependencies": { "@babel/parser": "^7.20.15", "@jsdoc/salty": "^0.2.1", "@types/markdown-it": "^14.1.1", "bluebird": "^3.7.2", "catharsis": "^0.9.0", "escape-string-regexp": "^2.0.0", "js2xmlparser": "^4.0.2", "klaw": "^3.0.0", "markdown-it": "^14.1.0", "markdown-it-anchor": "^8.6.7", "marked": "^4.0.10", "mkdirp": "^1.0.4", "requizzle": "^0.2.3", "strip-json-comments": "^3.1.0", "underscore": "~1.13.2" }, "bin": { "jsdoc": "jsdoc.js" } }, "sha512-P4C6MWP9yIlMiK8nwoZvxN84vb6MsnXcHuy7XzVOvQoCizWX5JFCBsWIIWKXBltpoRZXddUOVQmCTOZt9yDj9g=="],
+
+    "jsdom": ["jsdom@29.1.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/jsdom/-/jsdom-29.1.1.tgz", { "dependencies": { "@asamuzakjp/css-color": "^5.1.11", "@asamuzakjp/dom-selector": "^7.1.1", "@bramus/specificity": "^2.4.2", "@csstools/css-syntax-patches-for-csstree": "^1.1.3", "@exodus/bytes": "^1.15.0", "css-tree": "^3.2.1", "data-urls": "^7.0.0", "decimal.js": "^10.6.0", "html-encoding-sniffer": "^6.0.0", "is-potential-custom-element-name": "^1.0.1", "lru-cache": "^11.3.5", "parse5": "^8.0.1", "saxes": "^6.0.0", "symbol-tree": "^3.2.4", "tough-cookie": "^6.0.1", "undici": "^7.25.0", "w3c-xmlserializer": "^5.0.0", "webidl-conversions": "^8.0.1", "whatwg-mimetype": "^5.0.0", "whatwg-url": "^16.0.1", "xml-name-validator": "^5.0.0" }, "peerDependencies": { "canvas": "^3.0.0" }, "optionalPeers": ["canvas"] }, "sha512-ECi4Fi2f7BdJtUKTflYRTiaMxIB0O6zfR1fX0GXpUrf6flp8QIYn1UT20YQqdSOfk2dfkCwS8LAFoJDEppNK5Q=="],
 
     "jsesc": ["jsesc@3.1.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/jsesc/-/jsesc-3.1.0.tgz", { "bin": { "jsesc": "bin/jsesc" } }, "sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA=="],
 
@@ -931,7 +966,7 @@
 
     "loupe": ["loupe@3.2.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/loupe/-/loupe-3.2.1.tgz", {}, "sha512-CdzqowRJCeLU72bHvWqwRBBlLcMEtIvGrlvef74kMnV2AolS9Y8xUv1I0U/MNAWMhBlKIoyuEgoJ0t/bbwHbLQ=="],
 
-    "lru-cache": ["lru-cache@5.1.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/lru-cache/-/lru-cache-5.1.1.tgz", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
+    "lru-cache": ["lru-cache@11.5.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/lru-cache/-/lru-cache-11.5.1.tgz", {}, "sha512-RPimw/7aMdv2oqRrxKwvZXcPfwBrn/JZ2xYcY9Hus/6LaS3VOAKVWKWgNLCFSiOm1ESXinjsDlidVU7JlnCN2A=="],
 
     "lygia": ["lygia@1.4.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/lygia/-/lygia-1.4.1.tgz", {}, "sha512-wMOioKBk4vr7Pt+x85J7TImaNFuB9ZfqDp5pIYuzbaiKjdfsvqiM67vC+ngXEYf4hxqWcgTUM4Sx6bn0se9R7w=="],
 
@@ -1018,6 +1053,8 @@
     "parent-module": ["parent-module@1.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/parent-module/-/parent-module-1.0.1.tgz", { "dependencies": { "callsites": "^3.0.0" } }, "sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g=="],
 
     "parse-json": ["parse-json@5.2.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/parse-json/-/parse-json-5.2.0.tgz", { "dependencies": { "@babel/code-frame": "^7.0.0", "error-ex": "^1.3.1", "json-parse-even-better-errors": "^2.3.0", "lines-and-columns": "^1.1.6" } }, "sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg=="],
+
+    "parse5": ["parse5@8.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/parse5/-/parse5-8.0.1.tgz", { "dependencies": { "entities": "^8.0.0" } }, "sha512-z1e/HMG90obSGeidlli3hj7cbocou0/wa5HacvI3ASx34PecNjNQeaHNo5WIZpWofN9kgkqV1q5YvXe3F0FoPw=="],
 
     "parseurl": ["parseurl@1.3.3", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/parseurl/-/parseurl-1.3.3.tgz", {}, "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ=="],
 
@@ -1125,6 +1162,8 @@
 
     "proxy-addr": ["proxy-addr@2.0.7", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/proxy-addr/-/proxy-addr-2.0.7.tgz", { "dependencies": { "forwarded": "0.2.0", "ipaddr.js": "1.9.1" } }, "sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg=="],
 
+    "punycode": ["punycode@2.3.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/punycode/-/punycode-2.3.1.tgz", {}, "sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg=="],
+
     "punycode.js": ["punycode.js@2.3.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/punycode.js/-/punycode.js-2.3.1.tgz", {}, "sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA=="],
 
     "qs": ["qs@6.15.3", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/qs/-/qs-6.15.3.tgz", { "dependencies": { "es-define-property": "^1.0.1", "side-channel": "^1.1.1" } }, "sha512-O9gl3zCl5h5blw1KGUzQKhA5oUXSl8rwUIM5o0S3nCXMliSvy5Dzx7/DJcI+SwgICv+IneSZwhBh1oSyEHA71A=="],
@@ -1174,6 +1213,8 @@
     "safer-buffer": ["safer-buffer@2.1.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/safer-buffer/-/safer-buffer-2.1.2.tgz", {}, "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg=="],
 
     "sax": ["sax@1.6.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/sax/-/sax-1.6.0.tgz", {}, "sha512-6R3J5M4AcbtLUdZmRv2SygeVaM7IhrLXu9BmnOGmmACak8fiUtOsYNWUS4uK7upbmHIBbLBeFeI//477BKLBzA=="],
+
+    "saxes": ["saxes@6.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/saxes/-/saxes-6.0.0.tgz", { "dependencies": { "xmlchars": "^2.2.0" } }, "sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA=="],
 
     "scheduler": ["scheduler@0.21.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/scheduler/-/scheduler-0.21.0.tgz", { "dependencies": { "loose-envify": "^1.1.0" } }, "sha512-1r87x5fz9MXqswA2ERLo0EbOAU74DpIUO090gIasYTqlVoJeMcl+Z1Rg7WHz+qtPujhS/hGIt9kxZOYBV3faRQ=="],
 
@@ -1245,6 +1286,8 @@
 
     "svgo": ["svgo@4.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/svgo/-/svgo-4.0.1.tgz", { "dependencies": { "commander": "^11.1.0", "css-select": "^5.1.0", "css-tree": "^3.0.1", "css-what": "^6.1.0", "csso": "^5.0.5", "picocolors": "^1.1.1", "sax": "^1.5.0" }, "bin": "./bin/svgo.js" }, "sha512-XDpWUOPC6FEibaLzjfe0ucaV0YrOjYotGJO1WpF0Zd+n6ZGEQUsSugaoLq9QkEZtAfQIxT42UChcssDVPP3+/w=="],
 
+    "symbol-tree": ["symbol-tree@3.2.4", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/symbol-tree/-/symbol-tree-3.2.4.tgz", {}, "sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw=="],
+
     "tagged-tag": ["tagged-tag@1.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/tagged-tag/-/tagged-tag-1.0.0.tgz", {}, "sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng=="],
 
     "tailwindcss": ["tailwindcss@4.3.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/tailwindcss/-/tailwindcss-4.3.2.tgz", {}, "sha512-WtctNNSH8A9jlMIqxzuYumOHU5uGZyRv0Q5svQl+oEPy5w84YpBxdb7MdqyiSPQge5jTJ6zFQLq0PFygdccSBA=="],
@@ -1281,6 +1324,8 @@
 
     "tough-cookie": ["tough-cookie@6.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/tough-cookie/-/tough-cookie-6.0.1.tgz", { "dependencies": { "tldts": "^7.0.5" } }, "sha512-LktZQb3IeoUWB9lqR5EWTHgW/VTITCXg4D21M+lvybRVdylLrRMnqaIONLVb5mav8vM19m44HIcGq4qASeu2Qw=="],
 
+    "tr46": ["tr46@6.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/tr46/-/tr46-6.0.0.tgz", { "dependencies": { "punycode": "^2.3.1" } }, "sha512-bLVMLPtstlZ4iMQHpFHTR7GAGj2jxi8Dg0s2h2MafAE4uSWF98FC/3MomU51iQAMf8/qDUbKWf5GxuvvVcXEhw=="],
+
     "troika-three-text": ["troika-three-text@0.52.4", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/troika-three-text/-/troika-three-text-0.52.4.tgz", { "dependencies": { "bidi-js": "^1.0.2", "troika-three-utils": "^0.52.4", "troika-worker-utils": "^0.52.0", "webgl-sdf-generator": "1.1.1" }, "peerDependencies": { "three": ">=0.125.0" } }, "sha512-V50EwcYGruV5rUZ9F4aNsrytGdKcXKALjEtQXIOBfhVoZU9VAqZNIoGQ3TMiooVqFAbR1w15T+f+8gkzoFzawg=="],
 
     "troika-three-utils": ["troika-three-utils@0.52.4", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/troika-three-utils/-/troika-three-utils-0.52.4.tgz", { "peerDependencies": { "three": ">=0.125.0" } }, "sha512-NORAStSVa/BDiG52Mfudk4j1FG4jC4ILutB3foPnfGbOeIs9+G5vZLa0pnmnaftZUGm4UwSoqEpWdqvC7zms3A=="],
@@ -1306,6 +1351,8 @@
     "uglify-js": ["uglify-js@3.19.3", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/uglify-js/-/uglify-js-3.19.3.tgz", { "bin": { "uglifyjs": "bin/uglifyjs" } }, "sha512-v3Xu+yuwBXisp6QYTcH4UbH+xYJXqnq2m/LtQVWKWzYc1iehYnLixoQDN9FH6/j9/oybfd6W9Ghwkl8+UMKTKQ=="],
 
     "underscore": ["underscore@1.13.8", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/underscore/-/underscore-1.13.8.tgz", {}, "sha512-DXtD3ZtEQzc7M8m4cXotyHR+FAS18C64asBYY5vqZexfYryNNnDc02W4hKg3rdQuqOYas1jkseX0+nZXjTXnvQ=="],
+
+    "undici": ["undici@7.28.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/undici/-/undici-7.28.0.tgz", {}, "sha512-cRZYrTDwWznlnRiPjggAGxZXanty6M8RV1ff8Wm4LWXBp7/IG8v5DnOm74DtUBp9OONpK75YlPnIjQqX0dBDtA=="],
 
     "undici-types": ["undici-types@6.21.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/undici-types/-/undici-types-6.21.0.tgz", {}, "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="],
 
@@ -1337,13 +1384,21 @@
 
     "vitest-browser-react": ["vitest-browser-react@1.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/vitest-browser-react/-/vitest-browser-react-1.0.1.tgz", { "peerDependencies": { "@types/react": "^18.0.0 || ^19.0.0", "@types/react-dom": "^18.0.0 || ^19.0.0", "@vitest/browser": "^2.1.0 || ^3.0.0 || ^4.0.0-0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0", "vitest": "^2.1.0 || ^3.0.0 || ^4.0.0-0" }, "optionalPeers": ["@types/react", "@types/react-dom"] }, "sha512-LqiGFCdknrbMoSDWXTCTrPsED3SvdIXIgYOOZyYUNj2dkJusW2eF6NENOlBlxwq+FBQqzNK1X59b+b03pXFpAQ=="],
 
+    "w3c-xmlserializer": ["w3c-xmlserializer@5.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/w3c-xmlserializer/-/w3c-xmlserializer-5.0.0.tgz", { "dependencies": { "xml-name-validator": "^5.0.0" } }, "sha512-o8qghlI8NZHU1lLPrpi2+Uq7abh4GGPpYANlalzWxyWteJOCsr/P+oPBA49TOLu5FTZO4d3F9MnWJfiMo4BkmA=="],
+
     "web-streams-polyfill": ["web-streams-polyfill@3.3.3", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/web-streams-polyfill/-/web-streams-polyfill-3.3.3.tgz", {}, "sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw=="],
 
     "webgl-constants": ["webgl-constants@1.1.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/webgl-constants/-/webgl-constants-1.1.1.tgz", {}, "sha512-LkBXKjU5r9vAW7Gcu3T5u+5cvSvh5WwINdr0C+9jpzVB41cjQAP5ePArDtk/WHYdVj0GefCgM73BA7FlIiNtdg=="],
 
     "webgl-sdf-generator": ["webgl-sdf-generator@1.1.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/webgl-sdf-generator/-/webgl-sdf-generator-1.1.1.tgz", {}, "sha512-9Z0JcMTFxeE+b2x1LJTdnaT8rT8aEp7MVxkNwoycNmJWwPdzoXzMh0BjJSh/AEFP+KPYZUli814h8bJZFIZ2jA=="],
 
+    "webidl-conversions": ["webidl-conversions@8.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/webidl-conversions/-/webidl-conversions-8.0.1.tgz", {}, "sha512-BMhLD/Sw+GbJC21C/UgyaZX41nPt8bUTg+jWyDeg7e7YN4xOM05YPSIXceACnXVtqyEw/LMClUQMtMZ+PGGpqQ=="],
+
     "webrtc-adapter": ["webrtc-adapter@9.0.6", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/webrtc-adapter/-/webrtc-adapter-9.0.6.tgz", { "dependencies": { "sdp": "^3.2.0" } }, "sha512-CHbl2ZQbxx164IgWRgzJno4hWtM4tFbRam1QfI3Yxhs3w/DvqluVxVWeXs3oL5/fbGkSNLKo0Ty5MgUWceNhog=="],
+
+    "whatwg-mimetype": ["whatwg-mimetype@5.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/whatwg-mimetype/-/whatwg-mimetype-5.0.0.tgz", {}, "sha512-sXcNcHOC51uPGF0P/D4NVtrkjSU2fNsm9iog4ZvZJsL3rjoDAzXZhkm2MWt1y+PUdggKAYVoMAIYcs78wJ51Cw=="],
+
+    "whatwg-url": ["whatwg-url@16.0.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/whatwg-url/-/whatwg-url-16.0.1.tgz", { "dependencies": { "@exodus/bytes": "^1.11.0", "tr46": "^6.0.0", "webidl-conversions": "^8.0.1" } }, "sha512-1to4zXBxmXHV3IiSSEInrreIlu02vUOvrhxJJH5vcxYTBDAx51cqZiKdyTxlecdKNSjj8EcxGBxNf6Vg+945gw=="],
 
     "which": ["which@2.0.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/which/-/which-2.0.2.tgz", { "dependencies": { "isexe": "^2.0.0" }, "bin": { "node-which": "./bin/node-which" } }, "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA=="],
 
@@ -1356,6 +1411,10 @@
     "wrappy": ["wrappy@1.0.2", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/wrappy/-/wrappy-1.0.2.tgz", {}, "sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ=="],
 
     "ws": ["ws@8.21.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/ws/-/ws-8.21.0.tgz", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g=="],
+
+    "xml-name-validator": ["xml-name-validator@5.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/xml-name-validator/-/xml-name-validator-5.0.0.tgz", {}, "sha512-EvGK8EJ3DhaHfbRlETOWAS5pO9MZITeauHKJyb8wyajUfQUenkIg2MvLDTZ4T/TgIcm3HU0TFBgWWboAZ30UHg=="],
+
+    "xmlchars": ["xmlchars@2.2.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/xmlchars/-/xmlchars-2.2.0.tgz", {}, "sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw=="],
 
     "xmlcreate": ["xmlcreate@2.0.4", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/xmlcreate/-/xmlcreate-2.0.4.tgz", {}, "sha512-nquOebG4sngPmGPICTS5EnxqhKbCmz5Ox5hsszI2T6U5qdrJizBc+0ilYSEjTSzU0yZcmvppztXe/5Al5fUwdg=="],
 
@@ -1374,6 +1433,8 @@
     "@babel/core/convert-source-map": ["convert-source-map@2.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/convert-source-map/-/convert-source-map-2.0.0.tgz", {}, "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg=="],
 
     "@babel/core/semver": ["semver@6.3.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/semver/-/semver-6.3.1.tgz", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
+
+    "@babel/helper-compilation-targets/lru-cache": ["lru-cache@5.1.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/lru-cache/-/lru-cache-5.1.1.tgz", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
 
     "@babel/helper-compilation-targets/semver": ["semver@6.3.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/semver/-/semver-6.3.1.tgz", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
@@ -1407,6 +1468,8 @@
 
     "csso/css-tree": ["css-tree@2.2.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/css-tree/-/css-tree-2.2.1.tgz", { "dependencies": { "mdn-data": "2.0.28", "source-map-js": "^1.0.1" } }, "sha512-OA0mILzGc1kCOCSJerOeqDxDQ4HOh+G8NbOJFOTgOCzpw7fCBubk0fEyxp8AgOL/jvLgYA/uV0cMbe43ElF1JA=="],
 
+    "dom-serializer/entities": ["entities@4.5.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/entities/-/entities-4.5.0.tgz", {}, "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw=="],
+
     "escodegen/estraverse": ["estraverse@4.3.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/estraverse/-/estraverse-4.3.0.tgz", {}, "sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw=="],
 
     "escodegen/source-map": ["source-map@0.6.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/source-map/-/source-map-0.6.1.tgz", {}, "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g=="],
@@ -1424,6 +1487,8 @@
     "its-fine/@types/react-reconciler": ["@types/react-reconciler@0.28.9", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/@types/react-reconciler/-/react-reconciler-0.28.9.tgz", { "peerDependencies": { "@types/react": "*" } }, "sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg=="],
 
     "jsdoc/escape-string-regexp": ["escape-string-regexp@2.0.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz", {}, "sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w=="],
+
+    "markdown-it/entities": ["entities@4.5.0", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/entities/-/entities-4.5.0.tgz", {}, "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw=="],
 
     "notistack/clsx": ["clsx@1.2.1", "https://npm.autodesk.com/artifactory/api/npm/autodesk-npm-virtual/clsx/-/clsx-1.2.1.tgz", {}, "sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg=="],
 

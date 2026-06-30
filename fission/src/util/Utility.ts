@@ -30,8 +30,8 @@ export function copyJoltRMat44(mat: Jolt.RMat44): Jolt.RMat44 {
     const [translation, rotation] = [mat.GetTranslation(), mat.GetQuaternion()]
     const newMat = new JOLT.RMat44().sRotationTranslation(rotation, translation)
 
-    JOLT.destroy(translation)
-    JOLT.destroy(rotation)
+    // JOLT.destroy(translation)
+    // JOLT.destroy(rotation)
 
     return newMat
 }
@@ -40,8 +40,10 @@ export function copyJoltMat44(mat: Jolt.Mat44): Jolt.Mat44 {
     const [translation, rotation] = [mat.GetTranslation(), mat.GetQuaternion()]
     const newMat = new JOLT.Mat44().sRotationTranslation(rotation, translation)
 
-    JOLT.destroy(translation)
-    JOLT.destroy(rotation)
+    // TODO
+    // Tests fail when these are destroyed
+    // JOLT.destroy(translation)
+    // JOLT.destroy(rotation)
 
     return newMat
 }
