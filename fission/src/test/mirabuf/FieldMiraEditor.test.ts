@@ -149,14 +149,14 @@ describe("Devtool Scoring Zones Caching Tests", () => {
 describe("Asset tests", () => {
     test("FRC Field 2018_v13 has spawn locations", async () => {
         const file = await MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2018_v13.mira", MiraType.FIELD)
-            .then(x => MirabufCachingService.get(x!.hash))
+            .then(async x => ({ hash: x!.hash, asset: await MirabufCachingService.get(x!.hash) }))
             .catch(e => {
                 console.error("Could not get mirabuf file", e)
                 return undefined
             })
-        assert.exists(file)
+        assert.exists(file?.asset)
 
-        const mirabuf = await createMirabuf(file)
+        const mirabuf = await createMirabuf(file.hash, file.asset)
         assert.exists(mirabuf)
         assert.exists(mirabuf.fieldPreferences)
         expect(mirabuf.fieldPreferences.spawnLocations.hasConfiguredLocations).toBe(true)

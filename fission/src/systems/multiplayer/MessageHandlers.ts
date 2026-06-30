@@ -184,7 +184,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
         return
     }
 
-    const object = await createMirabuf(assembly, handle, peerId)
+    const object = await createMirabuf(data.assemblyHash, assembly, handle, peerId)
     if (object == null) return
 
     const clientToObjectMap = World.multiplayerSystem?._clientToObjectMap

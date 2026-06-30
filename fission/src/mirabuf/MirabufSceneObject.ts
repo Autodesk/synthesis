@@ -85,6 +85,7 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
 
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public readonly assemblyName: string
+    public readonly assemblyHash: string
     public readonly mirabufInstance: MirabufInstance
     public readonly mechanism: Mechanism
 
@@ -196,6 +197,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         super()
         this.mirabufInstance = mirabufInstance
         this.assemblyName = assemblyName
+        this.assemblyHash = mirabufInstance.parser.hash
         this.multiplayerOwningClientId = multiplayerOwnerId
 
         progressHandle?.update("Creating mechanism...", 0.9)
@@ -551,8 +553,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this._centerOfMassIndicator) {
             const setPositionAndVisibility = (netCoM: Jolt.RVec3) => {
                 this._centerOfMassIndicator!.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
-                this._centerOfMassIndicator!.visible =
-                    PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+                this._centerOfMassIndicator!.visible = PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")
             }
 
             const com = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
@@ -582,7 +583,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     /** Updates the position of the nametag relative to the robots position */
     private updateNameTag() {
-        if (!this._nameTag || !PreferencesSystem.getGlobalPreference("RenderSceneTags")) return
+        if (!this._nameTag || !PreferencesSystem.getUserPreference("RenderSceneTags")) return
 
         this._nameTag.color = this.alliance
         const boundingBox = this.computeBoundingBox()
@@ -658,7 +659,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.removeSceneObjects(this._scoringZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.scoringZones) return
-        render ??= PreferencesSystem.getGlobalPreference("RenderScoringZones")
+        render ??= PreferencesSystem.getUserPreference("RenderScoringZones")
 
         for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
             const newZone = new ScoringZoneSceneObject(this, i, render)
@@ -672,7 +673,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.removeSceneObjects(this._protectedZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.protectedZones) return
-        render ??= PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+        render ??= PreferencesSystem.getUserPreference("RenderProtectedZones")
 
         for (let i = 0; i < this._fieldPreferences.protectedZones.length; i++) {
             const newZone = new ProtectedZoneSceneObject(this, i, render)
@@ -860,8 +861,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public getPreferences(): void {
-        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
-        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)
+        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyHash)
+        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyHash)
 
         // Ensure backwards compatibility for showZoneAlways field
         this._robotPreferences.intake.showZoneAlways ??= false
@@ -877,9 +878,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 devtoolHandlers[key].set(this, editor.getUserData(key))
             })
             if (this.miraType === MiraType.FIELD) {
-                PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
+                PreferencesSystem.setFieldPreferences(this.assemblyHash, this._fieldPreferences)
             } else {
-                PreferencesSystem.setRobotPreferences(this.assemblyName, this._robotPreferences)
+                PreferencesSystem.setRobotPreferences(this.assemblyHash, this._robotPreferences)
             }
             PreferencesSystem.savePreferences()
         }
@@ -1087,11 +1088,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 }
 
 export async function createMirabuf(
+    hash: string,
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle,
     multiplayerOwnerId?: string
 ): Promise<MirabufSceneObject | null | undefined> {
-    const parser = new MirabufParser(assembly, progressHandle)
+    const parser = new MirabufParser(hash, assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return

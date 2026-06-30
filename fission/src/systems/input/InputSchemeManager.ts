@@ -19,7 +19,7 @@ class InputSchemeManager {
         if (this._customSchemes) return this._customSchemes
 
         // Load schemes from preferences and parse into objects
-        this._customSchemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+        this._customSchemes = PreferencesSystem.getUserPreference("InputSchemes")
         this._customSchemes.forEach(scheme => this.parseScheme(scheme))
 
         return this._customSchemes
@@ -181,7 +181,7 @@ class InputSchemeManager {
             return s.customized
         })
 
-        PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)
+        PreferencesSystem.setUserPreference("InputSchemes", customizedSchemes)
         PreferencesSystem.savePreferences()
         EventSystem.dispatch("InputSchemeChanged", { panelId })
     }

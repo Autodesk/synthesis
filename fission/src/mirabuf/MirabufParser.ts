@@ -73,7 +73,11 @@ class MirabufParser {
         return this._rootNode
     }
 
-    public constructor(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle) {
+    public constructor(
+        public readonly hash: string,
+        assembly: mirabuf.Assembly,
+        progressHandle?: ProgressHandle
+    ) {
         this._assembly = assembly
         this._errors = []
         this._globalTransforms = new Map()

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useReducer, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
+import type { UserPreference, UserPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
@@ -54,7 +54,7 @@ type ThemeEditorTabActions = {
 }
 
 type GeneralTabProps = {
-    writePreference: <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => void
+    writePreference: <K extends UserPreference>(pref: K, value: UserPreferences[K]) => void
 }
 
 type GraphicsTabProps = {
@@ -121,7 +121,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
         <StatefulSlider
             min={0.1}
             max={2.0}
-            defaultValue={PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")}
+            defaultValue={PreferencesSystem.getUserPreference("SceneRotationSensitivity")}
             label={"Scene Rotation Sensitivity"}
             onChange={value => writePreference("SceneRotationSensitivity", value)}
             step={0.1}
@@ -132,7 +132,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
         <StatefulSlider
             min={0.06}
             max={6.0}
-            defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
+            defaultValue={PreferencesSystem.getUserPreference("ViewCubeRotationSensitivity")}
             label={"ViewCube Rotation Sensitivity"}
             onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
             step={0.06}
@@ -141,7 +141,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
         />
         <Checkbox
             label="Show View Cube"
-            checked={PreferencesSystem.getGlobalPreference("ShowViewCube")}
+            checked={PreferencesSystem.getUserPreference("ShowViewCube")}
             onClick={checked => writePreference("ShowViewCube", checked)}
             tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
         />
@@ -152,37 +152,37 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
         <Stack direction="column">
             <Checkbox
                 label="Report Analytics"
-                checked={PreferencesSystem.getGlobalPreference("ReportAnalytics")}
+                checked={PreferencesSystem.getUserPreference("ReportAnalytics")}
                 onClick={checked => writePreference("ReportAnalytics", checked)}
                 tooltip="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
             />
             <Checkbox
                 label="Realistic Subsystem Gravity"
-                checked={PreferencesSystem.getGlobalPreference("SubsystemGravity")}
+                checked={PreferencesSystem.getUserPreference("SubsystemGravity")}
                 onClick={checked => writePreference("SubsystemGravity", checked)}
                 tooltip="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
             />
             <Checkbox
                 label="Show Score Zones"
-                checked={PreferencesSystem.getGlobalPreference("RenderScoringZones")}
+                checked={PreferencesSystem.getUserPreference("RenderScoringZones")}
                 onClick={checked => writePreference("RenderScoringZones", checked)}
                 tooltip="If disabled, scoring zones will not be visible but will continue to function the same."
             />
             <Checkbox
                 label="Show Protected Zones"
-                checked={PreferencesSystem.getGlobalPreference("RenderProtectedZones")}
+                checked={PreferencesSystem.getUserPreference("RenderProtectedZones")}
                 onClick={checked => writePreference("RenderProtectedZones", checked)}
                 tooltip="If disabled, protected zones will not be visible but will continue to function the same."
             />
             <Checkbox
                 label="Show Scene Tags"
-                checked={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
+                checked={PreferencesSystem.getUserPreference("RenderSceneTags")}
                 onClick={checked => writePreference("RenderSceneTags", checked)}
                 tooltip="Name tags above robot."
             />
             <Checkbox
                 label="Show Scoreboard"
-                checked={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
+                checked={PreferencesSystem.getUserPreference("RenderScoreboard")}
                 onClick={checked => {
                     writePreference("RenderScoreboard", checked)
                     if (checked) {
@@ -193,19 +193,19 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             />
             <Checkbox
                 label="Show Centers of Mass"
-                checked={PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")}
+                checked={PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")}
                 onClick={checked => writePreference("ShowCenterOfMassIndicators", checked)}
                 tooltip="Show a purple dot to indicate the center of mass of each robot in frame"
             />
             <Checkbox
                 label="Mute All Sound"
-                checked={PreferencesSystem.getGlobalPreference("MuteAllSound")}
+                checked={PreferencesSystem.getUserPreference("MuteAllSound")}
                 onClick={checked => writePreference("MuteAllSound", checked)}
             />
             <StatefulSlider
                 min={0}
                 max={100}
-                defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
+                defaultValue={PreferencesSystem.getUserPreference("SFXVolume")}
                 label={"SFX Volume"}
                 onChange={value => writePreference("SFXVolume", value)}
                 tooltip="Volume of sound effects (%)."
@@ -542,8 +542,8 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
         { key: "theme", label: "Theme Editor", component: ThemeEditorTab },
     ]
 
-    const writePreference = <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => {
-        PreferencesSystem.setGlobalPreference(pref, value)
+    const writePreference = <K extends UserPreference>(pref: K, value: UserPreferences[K]) => {
+        PreferencesSystem.setUserPreference(pref, value)
         refresh()
     }
 

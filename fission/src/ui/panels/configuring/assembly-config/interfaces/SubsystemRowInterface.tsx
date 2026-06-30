@@ -40,7 +40,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
         ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxAcceleration
     )
     const [unstickForce, setUnstickForce] = useState<number>(
-        PreferencesSystem.getRobotPreferences(robot.assemblyName).unstickForce
+        PreferencesSystem.getRobotPreferences(robot.assemblyHash).unstickForce
     )
 
     const onChange = useCallback(
@@ -57,13 +57,13 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                 })
 
                 // Preferences
-                PreferencesSystem.getRobotPreferences(robot.assemblyName).driveVelocity = vel
-                PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = acceleration
+                PreferencesSystem.getRobotPreferences(robot.assemblyHash).driveVelocity = vel
+                PreferencesSystem.getRobotPreferences(robot.assemblyHash).driveAcceleration = acceleration
             } else {
                 // Preferences
                 if (driver.info?.name) {
-                    const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
-                        ? PreferencesSystem.getRobotPreferences(robot.assemblyName).motors.filter(x => {
+                    const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyHash).motors
+                        ? PreferencesSystem.getRobotPreferences(robot.assemblyHash).motors.filter(x => {
                               if (x.name) return x.name !== driver.info?.name
                               return false
                           })
@@ -75,16 +75,16 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         maxAcceleration: acceleration,
                     } satisfies MotorPreferences)
 
-                    PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
+                    PreferencesSystem.getRobotPreferences(robot.assemblyHash).motors = removedMotor
                 }
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxAcceleration = acceleration
             }
 
-            PreferencesSystem.getRobotPreferences(robot.assemblyName).unstickForce = unstick
+            PreferencesSystem.getRobotPreferences(robot.assemblyHash).unstickForce = unstick
             PreferencesSystem.savePreferences()
         },
-        [driver, robot.mechanism, robot.assemblyName]
+        [driver, robot.mechanism, robot.assemblyHash]
     )
 
     return (
@@ -107,7 +107,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         }}
                         step={0.01}
                     />
-                    {PreferencesSystem.getGlobalPreference("SubsystemGravity") ||
+                    {PreferencesSystem.getUserPreference("SubsystemGravity") ||
                         (driver instanceof WheelDriver && (
                             <StatefulSlider
                                 label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}

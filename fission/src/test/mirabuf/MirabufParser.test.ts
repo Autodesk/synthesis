@@ -9,12 +9,12 @@ describe("Mirabuf Parser Tests", () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/robots/Dozer_v10.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
+        ).then(async x => ({ hash: x!.hash, asset: await MirabufCachingService.get(x!.hash) }))
 
-        const t = new MirabufParser(spikeMira!)
+        const t = new MirabufParser(spikeMira.hash, spikeMira.asset!)
         const rn = [...t.rigidNodes.values()]
 
-        const physicsNodes = filterNonPhysicsNodes(rn, spikeMira!).length
+        const physicsNodes = filterNonPhysicsNodes(rn, spikeMira.asset!).length
         expect(physicsNodes).toBe(7)
         expect([...t.partTreeValues.values()].length).toBe(13)
         expect([...t.partToNodeMap.values()].length).toBe(12)
@@ -33,11 +33,11 @@ describe("Mirabuf Parser Tests", () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
+        ).then(async x => ({ hash: x!.hash, asset: await MirabufCachingService.get(x!.hash) }))
 
-        const t = new MirabufParser(spikeMira!)
+        const t = new MirabufParser(spikeMira.hash, spikeMira.asset!)
         const rn = [...t.rigidNodes.values()]
-        const physicsNodes = filterNonPhysicsNodes(rn, spikeMira!)
+        const physicsNodes = filterNonPhysicsNodes(rn, spikeMira.asset!)
 
         expect(physicsNodes.length).toBe(9)
         expect([...t.partTreeValues.values()].length).toBe(12)
@@ -50,10 +50,10 @@ describe("Mirabuf Parser Tests", () => {
         const field = await MirabufCachingService.cacheRemote(
             "/api/mira/fields/FRC Field 2018_v13.mira",
             MiraType.FIELD
-        ).then(x => MirabufCachingService.get(x!.hash))
+        ).then(async x => ({ hash: x!.hash, asset: await MirabufCachingService.get(x!.hash) }))
 
-        const t = new MirabufParser(field!)
-        const physicsNodes = filterNonPhysicsNodes([...t.rigidNodes.values()], field!)
+        const t = new MirabufParser(field.hash, field.asset!)
+        const physicsNodes = filterNonPhysicsNodes([...t.rigidNodes.values()], field.asset!)
 
         expect(physicsNodes.length).toBe(34)
         expect([...t.partTreeValues.values()].length).toBe(982)

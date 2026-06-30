@@ -6,7 +6,7 @@ import type { SimConfigData } from "../simulation/SimConfigShared"
 
 /** Names of all global preferences. */
 
-export type GlobalPreferences = {
+export type UserPreferences = {
     ZoomSensitivity: number
     PitchSensitivity: number
     YawSensitivity: number
@@ -30,25 +30,27 @@ export type GlobalPreferences = {
     MultiplayerClientID: string
 }
 
-export type GlobalPreference = keyof GlobalPreferences
+export type UserPreference = keyof UserPreferences
 
 export const ROBOT_PREFERENCE_KEY = "Robots" as const
 export const FIELD_PREFERENCE_KEY = "Fields" as const
 export const MOTOR_PREFERENCES_KEY = "Motors" as const
 export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
+export const USER_PREFERENCE_KEY = "Users" as const
 
-export type Preferences = GlobalPreferences & {
+export type Preferences = {
     [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
     [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
     [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>
     [GRAPHICS_PREFERENCE_KEY]: GraphicsPreferences
+    [USER_PREFERENCE_KEY]: UserPreferences
 }
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const defaultGlobalPreferences: GlobalPreferences = {
+export const defaultUserPreferences: UserPreferences = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,

@@ -220,7 +220,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
             return
         }
 
-        const parser = new MirabufParser(assembly!)
+        const parser = new MirabufParser(cacheInfo.hash, assembly!)
         const mirabufInstance = new MirabufInstanceClass(parser)
 
         mirabufInstance.batches.forEach(batch => {
@@ -250,7 +250,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
             return
         }
 
-        const parser = new MirabufParser(assembly!)
+        const parser = new MirabufParser(cacheInfo.hash, assembly!)
         const mirabufInstance = new MirabufInstanceClass(parser)
 
         const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v10", undefined)

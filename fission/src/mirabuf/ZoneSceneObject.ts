@@ -1,7 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { GlobalPreferences, ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"
+import type { UserPreferences, ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -53,7 +53,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     public deltaTransformation?: THREE.Matrix4
 
     public prefs: ZonePreferencesShared & P
-    private preferenceKey: keyof GlobalPreferences
+    private preferenceKey: keyof UserPreferences
 
     public toRender: boolean | undefined
     public joltBodyId?: Jolt.BodyID
@@ -65,7 +65,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     public constructor(
         parentAssembly: MirabufSceneObject,
         prefs: ZonePreferencesShared & P, // TODO maybe switch to `ZonePreferences`
-        preferenceKey: keyof GlobalPreferences,
+        preferenceKey: keyof UserPreferences,
         render?: boolean
     ) {
         super()
@@ -159,7 +159,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         if (!this.mesh) return
 
-        this.toRender = PreferencesSystem.getGlobalPreference(this.preferenceKey) as boolean | undefined
+        this.toRender = PreferencesSystem.getUserPreference(this.preferenceKey) as boolean | undefined
         if (!this.toRender) {
             this.mesh.material = ZoneSceneObject.transparentMaterial
             return

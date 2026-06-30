@@ -45,10 +45,10 @@ describe("Input Scheme Manager Checks", () => {
     })
 
     test("Saving Schemes", () => {
-        const startingLength = PreferencesSystem.getGlobalPreference("InputSchemes").length
+        const startingLength = PreferencesSystem.getUserPreference("InputSchemes").length
         InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme(DriveType.ARCADE))
         InputSchemeManager.saveSchemes()
-        const newLength = PreferencesSystem.getGlobalPreference("InputSchemes").length
+        const newLength = PreferencesSystem.getUserPreference("InputSchemes").length
         expect(newLength).toBe(startingLength + 1)
     })
 

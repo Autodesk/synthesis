@@ -143,7 +143,11 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        const unstickForce = new JOLT.Vec3(0, PreferencesSystem.getRobotPreferences(this._assemblyName).unstickForce, 0)
+        const unstickForce = new JOLT.Vec3(
+            0,
+            PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).unstickForce,
+            0
+        )
         body.AddForce(unstickForce)
     }
 
@@ -215,17 +219,19 @@ class SynthesisBrain extends Brain {
         ) as HingeStimulus[]
 
         for (let i = 0; i < hingeDrivers.length; i++) {
-            let sequentialConfig = PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.find(
-                sc => sc.jointIndex == this._currentJointIndex
-            )
+            let sequentialConfig = PreferencesSystem.getRobotPreferences(
+                this._assembly.assemblyHash
+            ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
 
             if (sequentialConfig == undefined) {
                 sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Arm")
 
-                if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
-                    PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
+                if (PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig == undefined)
+                    PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig = []
 
-                PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.push(sequentialConfig)
+                PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig?.push(
+                    sequentialConfig
+                )
                 PreferencesSystem.savePreferences()
             }
 
@@ -252,17 +258,19 @@ class SynthesisBrain extends Brain {
         ) as SliderStimulus[]
 
         for (let i = 0; i < sliderDrivers.length; i++) {
-            let sequentialConfig = PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.find(
-                sc => sc.jointIndex == this._currentJointIndex
-            )
+            let sequentialConfig = PreferencesSystem.getRobotPreferences(
+                this._assembly.assemblyHash
+            ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
 
             if (sequentialConfig == undefined) {
                 sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Elevator")
 
-                if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
-                    PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
+                if (PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig == undefined)
+                    PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig = []
 
-                PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.push(sequentialConfig)
+                PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig?.push(
+                    sequentialConfig
+                )
                 PreferencesSystem.savePreferences()
             }
 
@@ -297,7 +305,7 @@ class SynthesisBrain extends Brain {
 
     /** Gets field preferences and handles any field specific configuration. */
     private configureField() {
-        PreferencesSystem.getFieldPreferences(this._assemblyName)
+        PreferencesSystem.getFieldPreferences(this._assembly.assemblyHash)
 
         /** Put any field configuration here */
     }

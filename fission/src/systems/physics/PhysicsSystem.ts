@@ -368,7 +368,7 @@ class PhysicsSystem extends WorldSystem {
             const bodyB = this.getBody(bodyIdB)!
 
             // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
-            const prefMotors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
+            const prefMotors = PreferencesSystem.getRobotPreferences(parser.hash).motors
             const prefMotor = prefMotors ? prefMotors.filter(x => x.name == jointInst.info?.name) : undefined
             const miraMotor = jointData.motorDefinitions![jDef.motorReference]
 
@@ -399,7 +399,7 @@ class PhysicsSystem extends WorldSystem {
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.isWheel(jDef)) {
-                        const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
+                        const preferences = PreferencesSystem.getRobotPreferences(parser.hash)
                         if (preferences.driveVelocity > 0) maxVel = preferences.driveVelocity
                         if (preferences.driveAcceleration > 0) maxAcceleration = preferences.driveAcceleration
 

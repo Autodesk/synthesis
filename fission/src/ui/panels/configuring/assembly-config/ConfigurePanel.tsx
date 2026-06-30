@@ -16,7 +16,7 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { Button } from "@/ui/components/StyledComponents"
+import { Button, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
@@ -40,6 +40,7 @@ import { Tab, Tabs } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -249,22 +250,20 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const originalStation = useRef<MirabufSceneObject["station"]>(selectedAssembly?.station)
 
     useEffect(() => {
-        const allSchemes: InputScheme[] = PreferencesSystem.getGlobalPreference("InputSchemes") || []
+        const allSchemes: InputScheme[] = PreferencesSystem.getUserPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
 
         originalAlliance.current = selectedAssembly?.alliance
         originalStation.current = selectedAssembly?.station
 
         if (selectedAssembly) {
-            const name = selectedAssembly.assemblyName
+            const hash = selectedAssembly.assemblyHash
 
-            const robotPrefs = PreferencesSystem.getRobotPreferences(name)
-            const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
-            const motorPrefs = PreferencesSystem.getMotorPreferences(name)
+            const robotPrefs = PreferencesSystem.getRobotPreferences(hash)
+            const fieldPrefs = PreferencesSystem.getFieldPreferences(hash)
 
             if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
             if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
-            if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
 
             originalAlliance.current = selectedAssembly.alliance
             originalStation.current = selectedAssembly.station
@@ -298,11 +297,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             setPendingDeletes([])
 
             if (selectedAssembly) {
-                const name = selectedAssembly.assemblyName
+                const hash = selectedAssembly.assemblyHash
 
-                if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
-                if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
-                if (originalMotorPrefs.current) PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
+                if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(hash, originalRobotPrefs.current)
+                if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(hash, originalFieldPrefs.current)
 
                 selectedAssembly.alliance = originalAlliance.current
                 selectedAssembly.station = originalStation.current
@@ -311,7 +309,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             }
 
             if (originalInputSchemes.current) {
-                PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
+                PreferencesSystem.setUserPreference("InputSchemes", originalInputSchemes.current)
                 PreferencesSystem.savePreferences()
                 InputSchemeManager.resetDefaultSchemes(panel?.id)
             }
@@ -457,6 +455,12 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     )}
                     {configMode !== undefined && selectedAssembly !== undefined && (
                         <ConfigInterface panel={panel!} configMode={configMode} assembly={selectedAssembly} />
+                    )}
+                    {configMode === undefined && selectedAssembly !== undefined && (
+                        <>
+                            {Spacer(16, 0)}
+                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                        </>
                     )}
                 </>
             )}

@@ -292,8 +292,8 @@ describe("Mirabuf Mechanism Creation", () => {
         const assembly = await MirabufCachingService.cacheRemote(
             "/api/mira/robots/Dozer_v10.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
-        const parser = new MirabufParser(assembly!)
+        ).then(async x => ({ hash: x!.hash, asset: await MirabufCachingService.get(x!.hash) }))
+        const parser = new MirabufParser(assembly.hash, assembly.asset!)
 
         const mechanism = physSystem.createMechanismFromParser(parser)
 
@@ -306,8 +306,8 @@ describe("Mirabuf Mechanism Creation", () => {
         const assembly = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
-        const parser = new MirabufParser(assembly!)
+        ).then(async x => ({ hash: x!.hash, asset: await MirabufCachingService.get(x!.hash) }))
+        const parser = new MirabufParser(assembly.hash, assembly.asset!)
 
         const mechanism = physSystem.createMechanismFromParser(parser)
 

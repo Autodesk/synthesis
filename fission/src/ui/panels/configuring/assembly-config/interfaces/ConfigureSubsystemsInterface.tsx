@@ -52,7 +52,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
 
     const behaviors = useMemo<SequentialBehaviorPreferences[]>(
         () =>
-            PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
+            PreferencesSystem.getRobotPreferences(selectedRobot.assemblyHash)?.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
@@ -102,7 +102,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
                     configModeOption={selectedConfigMode}
                     selectedRobot={selectedRobot}
                     saveBehaviors={() => {
-                        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
+                        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyHash).sequentialConfig = behaviors
                         PreferencesSystem.savePreferences()
                     }}
                 />

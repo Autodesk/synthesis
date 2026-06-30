@@ -71,7 +71,7 @@ class MultiplayerSystem {
                 switch (e.type) {
                     case "unavailable-id":
                         globalAddToast("warning", "Reused Client ID", "Try Joining Again")
-                        PreferencesSystem.setGlobalPreference("MultiplayerClientID", "")
+                        PreferencesSystem.setUserPreference("MultiplayerClientID", "")
                         break
                     case "network":
                         globalAddToast("error", "Network Issue", "Could not connect to server")
@@ -334,10 +334,10 @@ async function generateId(roomId: string, forceRegen: boolean = false): Promise<
     let id =
         import.meta.env.DEV && new URLSearchParams(window.location.search).get("randomId")
             ? undefined
-            : PreferencesSystem.getGlobalPreference("MultiplayerClientID")
+            : PreferencesSystem.getUserPreference("MultiplayerClientID")
     if (!id || forceRegen) {
         id = `client_${Math.random().toString(36).substring(2, 9)}`
-        PreferencesSystem.setGlobalPreference("MultiplayerClientID", id)
+        PreferencesSystem.setUserPreference("MultiplayerClientID", id)
         PreferencesSystem.savePreferences()
     }
     PreferencesSystem.savePreferences()
