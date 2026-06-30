@@ -1,12 +1,12 @@
 import * as THREE from "three"
 import { beforeEach, describe, expect, test } from "vitest"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { CustomTargetControls } from "@/systems/scene/CameraControls"
 import ScreenInteractionHandler, { type InteractionType } from "@/systems/scene/ScreenInteractionHandler"
 
-describe("CustomOrbitControls", () => {
+describe("CustomTargetControls", () => {
     let camera: THREE.PerspectiveCamera
     let interactionHandler: ScreenInteractionHandler
-    let controls: CustomOrbitControls
+    let controls: CustomTargetControls
 
     beforeEach(() => {
         camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
@@ -15,7 +15,7 @@ describe("CustomOrbitControls", () => {
         const mockElement = document.createElement("div")
         interactionHandler = new ScreenInteractionHandler(mockElement)
 
-        controls = new CustomOrbitControls(camera, interactionHandler)
+        controls = new CustomTargetControls(camera, interactionHandler)
     })
 
     describe("Camera Position and Update", () => {
