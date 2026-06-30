@@ -28,6 +28,7 @@ import {
     FaArrowLeft,
     FaBasketball,
     FaBug,
+    FaCamera,
     FaCar,
     FaChessBoard,
     FaFileImport,
@@ -47,6 +48,7 @@ import { HiDownload } from "react-icons/hi"
 import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
+import React from "react"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
@@ -72,6 +74,7 @@ export class SynthesisIcons {
     public static readonly INFO = <AiOutlineInfoCircle />
     public static readonly BUG = <FaBug />
     public static readonly PLAY = <IoPlayOutline />
+    public static readonly CAMERA = <FaCamera />
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />
@@ -130,12 +133,9 @@ export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, o
     )
 }
 
-export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiToggleButtonGroup {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiToggleButtonGroup>
-    )
+export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, ...props }) => {
+    // The sound is played by the individual ToggleButton that was clicked
+    return <MuiToggleButtonGroup {...props}>{children}</MuiToggleButtonGroup>
 }
 
 export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
@@ -278,6 +278,20 @@ export const CustomTooltip = (text: string) => {
         </Tooltip>
     )
 }
+
+interface TooltipToggleButtonProps extends ToggleButtonProps {
+    title: string
+}
+
+export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipToggleButtonProps>(
+    ({ title, ...props }, ref) => {
+        return (
+            <Tooltip title={title}>
+                <MuiToggleButton ref={ref} {...props} />
+            </Tooltip>
+        )
+    }
+)
 
 export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
     return (
