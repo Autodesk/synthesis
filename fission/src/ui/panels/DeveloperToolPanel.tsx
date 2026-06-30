@@ -7,12 +7,22 @@ import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import FieldMiraEditor, { type DevtoolKey, devtoolHandlers, devtoolKeys } from "../../mirabuf/FieldMiraEditor"
-import { globalAddToast } from "../components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { Button, LabelWithTooltip } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import SelectMenu from "@/components/SelectMenu.tsx"
 import { AssemblySelectionOption } from "@/panels/configuring/assembly-config/configure/AssemblySelection.tsx"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register command: Open Developer Tool Panel (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "open-developer-tool-panel",
+    label: "Open Developer Tool Panel",
+    description: "Open the Developer Tool panel.",
+    keywords: ["panel", "developer", "devtool"],
+    perform: () => import("./DeveloperToolPanel").then(m => globalOpenPanel(m.default, undefined)),
+})
 
 async function saveToCache() {
     const field = World.sceneRenderer.mirabufSceneObjects.getField()

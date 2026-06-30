@@ -10,9 +10,11 @@ import { useUIContext } from "../helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
+import DeveloperToolPanel from "../panels/DeveloperToolPanel"
+import DebugPanel from "../panels/DebugPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
-import { IconButton } from "./StyledComponents"
+import { IconButton, SynthesisIcons } from "./StyledComponents"
 import ConfigureControls from "./topbar/ConfigureControls"
 import GameplayControls from "./topbar/GameplayControls"
 import ModeDropdown from "./topbar/ModeDropdown"
@@ -129,6 +131,33 @@ const TopBar: React.FC = () => {
                 {appMode === "Gameplay" && <GameplayControls />}
 
                 <Box flexGrow={1} />
+
+                {import.meta.env.DEV && (
+                    <>
+                        <Tooltip title="Developer Tool">
+                            <IconButton
+                                size="large"
+                                disableRipple
+                                sx={TOP_BAR_ICON_BUTTON_SX}
+                                onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                            >
+                                {/* Box sets the em-square so the icon scales to 34 px;
+                                    color inherits from TOP_BAR_ICON_BUTTON_SX → topBarText.main */}
+                                <Box sx={{ fontSize: 34, display: "flex" }}>{SynthesisIcons.CODE_SQUARE}</Box>
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Debug Tools">
+                            <IconButton
+                                size="large"
+                                disableRipple
+                                sx={TOP_BAR_ICON_BUTTON_SX}
+                                onClick={() => openPanel(DebugPanel, undefined)}
+                            >
+                                <Box sx={{ fontSize: 34, display: "flex" }}>{SynthesisIcons.BUG}</Box>
+                            </IconButton>
+                        </Tooltip>
+                    </>
+                )}
 
                 <Tooltip title="Settings">
                     <IconButton
