@@ -41,9 +41,7 @@ def WPI_Version = '2026.2.2'
 def REV_Version = '2026.0.5'
 def CTRE_Version = '26.3.0'
 def STUDICA_Version = '2026.0.0'
-// WPILib-published OpenCV. The OpenCV vendoring is still published under the frc2025
-// group for the 2026 season (there is no frc2026 group); keep the version in sync with
-// the OpenCV bundled with the installed WPILib release.
+// OpenCV is still published under the frc2025 group for the 2026 season (no frc2026 group).
 def OPENCV_Group = 'edu.wpi.first.thirdparty.frc2025.opencv'
 def OPENCV_Version = '4.10.0-3'
 

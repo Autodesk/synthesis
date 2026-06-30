@@ -59,9 +59,8 @@ public class Robot extends TimedRobot {
 
     private double m_initAngle = 0;
 
-    // Simulated USB camera. The name and device index ("USB Camera 0", 0) must match the
-    // camera configured in Synthesis (Configure -> USB Cameras), which renders the robot's
-    // point of view and streams frames here.
+    // Name and device index must match the camera configured in Synthesis (Configure ->
+    // USB Cameras).
     private static final int kCameraWidth = 640;
     private static final int kCameraHeight = 480;
     private UsbCamera m_camera;
@@ -85,13 +84,11 @@ public class Robot extends TimedRobot {
         // Following conversion factor is 1 unit = 1 inch travelled.
         m_encoder.setPositionConversionFactor(2.0);
 
-        // Set up the simulated USB camera and a sink to grab frames from it.
         m_camera = new UsbCamera("USB Camera 0", 0, kCameraWidth, kCameraHeight, 30);
         m_cvSink = m_camera.getVideo();
 
-        // Republish the processed feed so it can be viewed (e.g. on a dashboard). Creating
-        // a CameraServer source also forces the OpenCV native library to load before we
-        // allocate the destination Mat below.
+        // putVideo both republishes the feed for dashboards and forces the OpenCV native
+        // to load before we allocate the Mat below.
         m_outputStream = CameraServer.putVideo("Synthesis Camera", kCameraWidth, kCameraHeight);
         m_frame = new Mat();
     }
@@ -141,7 +138,6 @@ public class Robot extends TimedRobot {
             SmartDashboard.putNumber("Camera/Height", m_frame.height());
             SmartDashboard.putNumber("Camera/Mean Brightness", brightness);
 
-            // Republish the frame for viewing on a dashboard.
             m_outputStream.putFrame(m_frame);
         } else {
             SmartDashboard.putBoolean("Camera/Frame Received", false);

@@ -161,7 +161,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.robotPreferences.cameras = val
     }
 
-    /** Active camera scene objects, exposed for the camera preview UI. */
     public get cameras(): Readonly<RobotCameraSceneObject[]> {
         return this._cameras
     }
@@ -645,11 +644,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
-    /*
-     * Recreates the robot-mounted camera scene objects from preferences. Like
-     * `updateIntakeSensor`, this only runs on `setup` or occasional user input, so
-     * recreating the objects (and their render targets) here is acceptable.
-     */
     public updateCameras() {
         this._cameras.forEach(c => World.sceneRenderer.removeSceneObject(c.id))
         this._cameras = []

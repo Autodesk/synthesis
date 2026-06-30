@@ -7,11 +7,6 @@ import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
-/**
- * Live preview of every robot-mounted USB camera. Each frame we blit the latest captured
- * frame from each {@link RobotCameraSceneObject} onto a visible canvas, so users can see
- * exactly what their simulated camera streams to the robot code.
- */
 const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const canvasRefs = useRef<Map<string, HTMLCanvasElement | null>>(new Map())
@@ -20,13 +15,12 @@ const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         configureScreen(panel!, { title: "Camera Preview", hideCancel: true, acceptText: "Close" }, {})
     }, [])
 
-    // Tell cameras to actually render/capture while this preview is open.
+    // Marks a frame consumer so the cameras actually render while this panel is open.
     useEffect(() => {
         RobotCameraSceneObject.addPreviewConsumer()
         return () => RobotCameraSceneObject.removePreviewConsumer()
     }, [])
 
-    // Snapshot the current cameras on mount; reopen the panel to pick up new ones.
     const cameras = useMemo<RobotCameraSceneObject[]>(
         () => World.sceneRenderer.mirabufSceneObjects.getRobots().flatMap(r => [...r.cameras]),
         []
@@ -66,8 +60,8 @@ const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                             style={{
                                 display: "block",
                                 width: "320px",
-                                // Pin the display height so the canvas can't render at its
-                                // full bitmap height and slip under the panel footer.
+                                // Pin display height so the canvas can't render at its full
+                                // bitmap height and slip under the panel footer.
                                 aspectRatio: `${cam.width} / ${cam.height}`,
                                 borderRadius: "8px",
                                 background: "#000",

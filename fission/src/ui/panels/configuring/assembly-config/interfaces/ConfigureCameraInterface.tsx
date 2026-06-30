@@ -30,7 +30,6 @@ const MAX_RES = 1280
 const MIN_FPS = 1
 const MAX_FPS = 60
 
-/** Resolves the body id of a camera's parent node, falling back to the robot root. */
 function parentBodyId(robot: MirabufSceneObject, parentNode: string | undefined): Jolt.BodyID | undefined {
     return robot.mechanism.nodeToBody.get(parentNode ?? robot.rootNodeId) ?? robot.getRootNodeId()
 }
@@ -39,12 +38,7 @@ interface ConfigCameraProps {
     selectedRobot: MirabufSceneObject
 }
 
-/**
- * Configures the robot's USB cameras. Each camera is placed relative to a rigid node
- * with a transform gizmo (identical math to the ejector interface) and has its own
- * resolution / fps / fov. The placement is stored as a delta transform so the camera
- * tracks the node as the robot moves.
- */
+// Camera placement reuses the ejector interface's gizmo + delta-transform math.
 const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }) => {
     const [version, setVersion] = useState(0)
     const [selectedIndex, setSelectedIndex] = useState<number>(selectedRobot.cameraPreferences.length > 0 ? 0 : -1)
@@ -59,7 +53,6 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
 
     // Persists prefs and recreates the live camera scene objects.
     const commit = useCallback(() => {
-        // Capture the gizmo placement into the selected camera before saving.
         if (camera && gizmoRef.current) {
             const nodeBodyId = parentBodyId(selectedRobot, selectedNode)
             if (nodeBodyId) {
@@ -86,18 +79,16 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
         }
     }, [])
 
-    // Sync the selected node with the active camera.
     useEffect(() => {
         setSelectedNode(camera?.parentNode)
     }, [selectedIndex, camera])
 
+    // Keyed on selectedIndex so the gizmo re-spawns positioned for the newly selected camera.
     const placeholderMesh = useMemo(() => {
-        const mesh = new THREE.Mesh(
+        return new THREE.Mesh(
             new THREE.BoxGeometry(0.12, 0.08, 0.16).translate(0, 0, 0.08),
             World.sceneRenderer.createToonMaterial(convertReactRgbaColorToThreeColor({ r: 80, g: 180, b: 255, a: 255 }))
         )
-        return mesh
-        // Recreate when switching cameras so the gizmo re-spawns positioned correctly.
     }, [selectedIndex])
 
     const gizmoComponent = useMemo(() => {

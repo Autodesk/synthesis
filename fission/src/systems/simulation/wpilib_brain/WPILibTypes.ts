@@ -56,10 +56,8 @@ export const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 export const CANENCODER_POSITION = ">position"
 export const CANENCODER_VELOCITY = ">velocity"
 
-// USB Camera fields. Resolution / fps / connected are configured by the robot code
-// (outputs, read by Synthesis). The rendered frame itself does not travel over HALSim —
-// SimDevices only carry numbers/booleans — and is streamed over a side channel instead
-// (see CameraFrameSocket).
+// USB Camera config, set by robot code and read by Synthesis. The frame itself can't ride
+// HALSim (numbers/booleans only) and streams over a side channel (see CameraFrameSocket).
 export const CAMERA_WIDTH = "<width"
 export const CAMERA_HEIGHT = "<height"
 export const CAMERA_FPS = "<fps"

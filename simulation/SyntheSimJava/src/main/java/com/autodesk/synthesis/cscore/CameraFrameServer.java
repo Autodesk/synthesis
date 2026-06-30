@@ -10,17 +10,13 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 /**
- * A small localhost WebSocket server that receives rendered camera frames from Synthesis.
- *
- * Frame bytes are too large to travel over the HALSim {@link edu.wpi.first.hal.SimDevice}
- * channel (which only carries numbers and booleans), so Synthesis streams them here
- * instead — mirroring how it already connects out to the HALSim WebSocket. Each message is
- * the text {@code "<device>\n<base64-jpeg>"}; the most recent frame per device is kept and
- * served to {@link Camera#grabFrame}.
+ * Localhost WebSocket server that receives rendered camera frames from Synthesis. Frames
+ * can't ride HALSim (SimDevice carries only numbers/booleans), so Synthesis streams them
+ * here as {@code "<device>\n<base64-jpeg>"}; the latest frame per device is kept for
+ * {@link Camera#grabFrame}.
  */
 public class CameraFrameServer extends WebSocketServer {
 
-    /** Port Synthesis connects to in order to stream camera frames. */
     public static final int PORT = 5808;
 
     private static CameraFrameServer instance;
@@ -32,11 +28,6 @@ public class CameraFrameServer extends WebSocketServer {
         setReuseAddr(true);
     }
 
-    /**
-     * Returns the shared frame server, lazily starting it on first use.
-     *
-     * @return The singleton {@link CameraFrameServer}.
-     */
     public static synchronized CameraFrameServer getInstance() {
         if (instance == null) {
             instance = new CameraFrameServer(PORT);
@@ -46,12 +37,6 @@ public class CameraFrameServer extends WebSocketServer {
         return instance;
     }
 
-    /**
-     * Gets the most recent frame received for a device.
-     *
-     * @param device The sim device key, e.g. {@code "USB Camera 0[0]"}.
-     * @return The most recent encoded JPEG bytes, or null if none have been received.
-     */
     public byte[] getFrame(String device) {
         return m_frames.get(device);
     }

@@ -145,12 +145,8 @@ export type EjectorPreferences = {
     ejectOrder: "FIFO" | "LIFO"
 }
 
-/**
- * A simulated USB camera mounted to the robot. `name` and `id` must match the
- * arguments the robot code passes to the Synthesis `UsbCamera` wrapper; together they
- * form the sim device key `"<name>[<id>]"`. The camera is positioned relative to
- * `parentNode` via `deltaTransformation`, identical to the intake / ejector pattern.
- */
+// `name`/`id` must match the robot code's UsbCamera args; together they form the sim
+// device key `"<name>[<id>]"`.
 export type CameraPreferences = {
     name: string
     id: number
