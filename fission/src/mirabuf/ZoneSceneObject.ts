@@ -11,7 +11,7 @@ import {
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import { deltaFieldTransformsPhysicalProp, VisualProperties } from "@/util/threejs/MeshCreation"
+import { deltaFieldTransformsPhysicalProp, type VisualProperties } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
