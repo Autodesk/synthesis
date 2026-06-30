@@ -23,7 +23,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const [redAllianceColor, setRedAllianceColor] = useState(themeOptions.redAlliance?.main ?? "#ed1c24")
     const [topBarColor, setTopBarColor] = useState(themeOptions.topBar?.main ?? "#3D4352")
     const [surfaceColor, setSurfaceColor] = useState(themeOptions.surface?.main ?? "#2A3340")
-    const [topBarTextColor, setTopBarTextColor] = useState(themeOptions.topBarText?.main ?? "#B5BCCA")
+    const [topBarTextColor, setTopBarTextColor] = useState(themeOptions.topBarText?.main ?? "#BFC5CE")
 
     useEffect(() => {
         localStorage.setItem("theme", JSON.stringify(themeOptions))
