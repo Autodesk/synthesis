@@ -21,6 +21,7 @@ import AssemblySelection, { type AssemblySelectionOption } from "./configure/Ass
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
+import ConfigureCameraInterface from "./interfaces/ConfigureCameraInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
@@ -165,6 +166,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
         case ConfigMode.EJECTOR:
             return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
+        case ConfigMode.CAMERA:
+            return <ConfigureCameraInterface selectedRobot={assembly} />
         case ConfigMode.SUBSYSTEMS:
             return <ConfigureSubsystemsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS: {
@@ -372,6 +375,12 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         "Ejector",
                         ConfigMode.EJECTOR,
                         "Configure the robot’s ejector mechanism, which controls the release or expulsion of game pieces."
+                    ),
+
+                    new ConfigModeSelectionOption(
+                        "USB Cameras",
+                        ConfigMode.CAMERA,
+                        "Add USB cameras and configure their position, resolution, and field of view for code simulation."
                     ),
 
                     new ConfigModeSelectionOption(

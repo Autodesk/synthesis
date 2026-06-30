@@ -38,4 +38,5 @@ export enum ConfigMode {
     DRIVETRAIN,
     ALLIANCE,
     METADATA,
+    CAMERA,
 }

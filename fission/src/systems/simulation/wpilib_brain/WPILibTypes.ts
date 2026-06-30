@@ -18,6 +18,7 @@ export enum SimType {
     AI = "AI",
     AO = "AO",
     DRIVERS_STATION = "DriverStation",
+    CAMERA = "Camera",
 }
 
 export enum FieldType {
@@ -54,5 +55,14 @@ export const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 
 export const CANENCODER_POSITION = ">position"
 export const CANENCODER_VELOCITY = ">velocity"
+
+// USB Camera fields. Resolution / fps / connected are configured by the robot code
+// (outputs, read by Synthesis). The rendered frame itself does not travel over HALSim —
+// SimDevices only carry numbers/booleans — and is streamed over a side channel instead
+// (see CameraFrameSocket).
+export const CAMERA_WIDTH = "<width"
+export const CAMERA_HEIGHT = "<height"
+export const CAMERA_FPS = "<fps"
+export const CAMERA_CONNECTED = "<connected"
 
 export const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())

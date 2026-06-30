@@ -8,6 +8,12 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import com.autodesk.synthesis.io.*;
 
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.wpilibj.ADXL362;
@@ -17,6 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 
+import com.autodesk.synthesis.cscore.CvSink;
+import com.autodesk.synthesis.cscore.UsbCamera;
 import com.autodesk.synthesis.revrobotics.spark.SparkMax;
 import com.autodesk.synthesis.revrobotics.RelativeEncoder;
 import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
@@ -51,6 +59,16 @@ public class Robot extends TimedRobot {
 
     private double m_initAngle = 0;
 
+    // Simulated USB camera. The name and device index ("USB Camera 0", 0) must match the
+    // camera configured in Synthesis (Configure -> USB Cameras), which renders the robot's
+    // point of view and streams frames here.
+    private static final int kCameraWidth = 640;
+    private static final int kCameraHeight = 480;
+    private UsbCamera m_camera;
+    private CvSink m_cvSink;
+    private CvSource m_outputStream;
+    private Mat m_frame;
+
     /**
      * This function is run when the robot is first started up and should be used
      * for any
@@ -66,6 +84,16 @@ public class Robot extends TimedRobot {
         // 4 inch diameter wheels, default is 1 unit = 1 radian.
         // Following conversion factor is 1 unit = 1 inch travelled.
         m_encoder.setPositionConversionFactor(2.0);
+
+        // Set up the simulated USB camera and a sink to grab frames from it.
+        m_camera = new UsbCamera("USB Camera 0", 0, kCameraWidth, kCameraHeight, 30);
+        m_cvSink = m_camera.getVideo();
+
+        // Republish the processed feed so it can be viewed (e.g. on a dashboard). Creating
+        // a CameraServer source also forces the OpenCV native library to load before we
+        // allocate the destination Mat below.
+        m_outputStream = CameraServer.putVideo("Synthesis Camera", kCameraWidth, kCameraHeight);
+        m_frame = new Mat();
     }
 
     /**
@@ -96,6 +124,28 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("AHRS/VelX", m_Gyro.getVelocityX());
         SmartDashboard.putNumber("AHRS/VelY", m_Gyro.getVelocityY());
         SmartDashboard.putNumber("AHRS/VelZ", m_Gyro.getVelocityZ());
+
+        // Grab the latest frame rendered by Synthesis and report some basic diagnostics so
+        // the camera can be verified end-to-end.
+        if (m_cvSink == null) {
+            return;
+        }
+
+        long frameTime = m_cvSink.grabFrame(m_frame);
+        if (frameTime != 0 && !m_frame.empty()) {
+            Scalar mean = Core.mean(m_frame);
+            double brightness = (mean.val[0] + mean.val[1] + mean.val[2]) / 3.0;
+
+            SmartDashboard.putBoolean("Camera/Frame Received", true);
+            SmartDashboard.putNumber("Camera/Width", m_frame.width());
+            SmartDashboard.putNumber("Camera/Height", m_frame.height());
+            SmartDashboard.putNumber("Camera/Mean Brightness", brightness);
+
+            // Republish the frame for viewing on a dashboard.
+            m_outputStream.putFrame(m_frame);
+        } else {
+            SmartDashboard.putBoolean("Camera/Frame Received", false);
+        }
     }
 
     /**
