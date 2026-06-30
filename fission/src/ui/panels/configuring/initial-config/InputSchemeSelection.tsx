@@ -8,14 +8,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
-import {
-    Button,
-    DeleteButton,
-    PositiveButton,
-    SynthesisIcons,
-    Select,
-} from "@/ui/components/StyledComponents"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { Button, DeleteButton, PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 
 interface InputSchemeSelectionProps {
     brainIndex: number
@@ -30,7 +23,6 @@ export default function InputSchemeSelection({
     onCreateNew,
     panelId,
 }: InputSchemeSelectionProps) {
-    const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
@@ -87,7 +79,6 @@ export default function InputSchemeSelection({
                                 {SynthesisIcons.SELECT_LARGE}
                             </PositiveButton>
                         </Box>
-
 
                         {/** Delete button (only if the scheme is customized and not in use) */}
                         {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
