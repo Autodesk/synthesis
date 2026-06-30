@@ -3,7 +3,7 @@ import type * as THREE from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
-import { findListDifference, renderAABox } from "@/util/Utility"
+import { findListDifference } from "@/util/Utility"
 import MirabufSceneObject from "./MirabufSceneObject"
 import { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
@@ -28,10 +28,6 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         super(parentAssembly, prefs, "RenderScoringZones")
     }
 
-    // NOTE
-    // Runs 2 times a frame on 2023
-    // Each call takes about 1ms on my desktop
-    // NOT a performance issue
     public checkObjectsInZone(): void {
         if (!this.bounding) return
 
@@ -72,7 +68,6 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
     /// Updates points for alliance and robot when game piece enters this scoring zone
     private zoneCollision(gpID: Jolt.BodyID) {
-        // console.log("zone collision")
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
 
         ScoreTracker.addPoints(this.prefs.alliance, this.prefs.points)
@@ -95,19 +90,6 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         associate.robotLastInContactWith &&
             ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
     }
-
-    // TODO
-    // Figure out what needs to be done here
-    // Public gamepiece removal called anytime `EjectableSceneObject` created in case gamepiece was in persistent zone
-    // Score update in Update()
-    // public static removeGamepiece(zone: ScoringZoneSceneObject, gpID: Jolt.BodyID) {
-    //     if (zone.prefs && !zone.prefs.shouldPointsAccumulate) {
-    //         const temp = zone._gpContacted.filter(x => {
-    //             return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
-    //         })
-    //         if (zone._gpContacted != temp) zone._gpContacted = Object.assign([], temp)
-    //     }
-    // }
 }
 
 export default ScoringZoneSceneObject

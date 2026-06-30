@@ -48,13 +48,6 @@ export function copyJoltMat44(mat: Jolt.Mat44): Jolt.Mat44 {
     return newMat
 }
 
-export function printAABox(box: Jolt.AABox) {
-    const min = box.mMin
-    const max = box.mMax
-
-    console.log(`[${min.GetX()} ${min.GetX()} ${min.GetZ()}] [${max.GetX()} ${max.GetY()} ${max.GetZ()}]`)
-}
-
 export function renderAABox(box: Jolt.AABox): THREE.Line {
     const material = new THREE.LineBasicMaterial({ color: 0x00ff00 })
     const points = [convertJoltVec3ToThreeVector3(box.mMin, false), convertJoltVec3ToThreeVector3(box.mMax, false)]

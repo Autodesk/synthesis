@@ -646,13 +646,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         if (!this.ejectorPreferences.parentNode) {
-            console.log(bodyId)
             const now = Date.now()
             if (
                 (!World.multiplayerSystem || World.multiplayerSystem?.getOwnRobots().includes(this)) &&
                 now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS
             ) {
-                console.log(`Configure an ejector first.`)
+                console.warn(`Configure an ejector first.`)
                 globalAddToast("info", "Configure Ejector", "Configure an ejector first.")
                 this._lastEjectableToastTime = now
             }
@@ -680,11 +679,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         if (!this._fieldPreferences || !this._fieldPreferences.scoringZones) return
 
-        console.log(`Creating scoringZone`)
         for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
             const newZone = new ScoringZoneSceneObject(this, i)
-            console.log(`SZ: ${JSON.stringify(this._fieldPreferences.scoringZones[i])}`)
-
             this._scoringZones.push(newZone)
             World.sceneRenderer.registerSceneObject(newZone)
         }

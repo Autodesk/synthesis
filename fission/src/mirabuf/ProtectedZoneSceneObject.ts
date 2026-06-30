@@ -3,14 +3,12 @@ import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import ZoneSceneObject from "@/mirabuf/ZoneSceneObject"
 import World from "@/systems/World"
-import { MiraType } from "./MirabufLoader"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { findListDifference } from "@/util/Utility"
-import { assert } from "vitest"
 
 type RobotBox = [MirabufSceneObject, Jolt.AABox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
@@ -31,10 +29,6 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             )
         }
         return this.prefs.activeDuring.includes(MatchMode.getInstance().getMatchModeType())
-    }
-
-    private isRobotInside(robot: MirabufSceneObject): boolean {
-        return this._robotsInside.has(robot)
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number) {
