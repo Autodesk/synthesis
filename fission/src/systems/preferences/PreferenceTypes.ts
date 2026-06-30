@@ -213,7 +213,7 @@ export function defaultRobotPreferences(): RobotPreferences {
 
 // The object will be moved such that the y-value specified is the bottom of the object, and the x and z values are the center
 export function defaultFieldSpawnLocation(): SpawnLocation {
-    return { pos: [0, 0.1, 0], yaw: 0 }
+    return { pos: [0, 0, 0], yaw: 0 }
 }
 export function defaultRobotSpawnLocation(): SpawnLocation {
     return { pos: [0, 0.1, 0], yaw: 0 }
