@@ -1,10 +1,10 @@
 import InputSystem from "@/systems/input/InputSystem.ts"
-import Behavior from "@/systems/simulation/behavior/Behavior.ts"
+import { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
 import type WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import type WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
 import { clamp } from "@/util/Utility.ts"
 
-class SkidSteerDriveBehavior extends Behavior {
+class SkidSteerDriveBehavior extends DriveBehavior {
     private readonly _leftWheels: WheelDriver[]
     private readonly _rightWheels: WheelDriver[]
     private readonly _brainIndex: number
