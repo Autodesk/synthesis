@@ -1,69 +1,158 @@
 import type React from "react"
-import { useCallback, useEffect, useState } from "react"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
-import type { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { useEffect, useState } from "react"
+import { CameraMode, type CustomTargetControls } from "@/systems/scene/CameraControls"
+import EventSystem from "@/systems/EventSystem"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
+import { Select, ToggleButtonGroup, TooltipToggleButton } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { MenuItem } from "@mui/material"
 
-interface OrbitSettingsProps {
-    controls: CustomOrbitControls
+interface TargetSettingsProps {
+    controls: CustomTargetControls
 }
 
-const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
-    const [locked, setLocked] = useState<boolean>(controls.locked)
+CommandRegistry.get().registerCommand({
+    id: "open-camera-config",
+    label: "Open Camera Configuration",
+    description: "Open the Camera Config panel",
+    keywords: ["camera", "config", "target", "follow", "locked", "face"],
+    perform: () => import("./CameraSelectionPanel").then(m => globalOpenPanel(m.default, undefined)),
+})
+
+const UNFOCUSED_ID = -1
+
+function getFocusTargets(): MirabufSceneObject[] {
+    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots()
+    const field = World.sceneRenderer.mirabufSceneObjects.getField()
+    return [...robots, ...(field ? [field] : [])]
+}
+
+const FocusSelector: React.FC<{ controls: CustomTargetControls }> = ({ controls }) => {
+    const [targets, setTargets] = useState<MirabufSceneObject[]>(getFocusTargets)
+    const [focusedId, setFocusedId] = useState<number>(controls.focusProvider?.id ?? UNFOCUSED_ID)
 
     useEffect(() => {
-        controls.locked = locked
-    }, [controls, locked])
+        return EventSystem.listen("MirabufObjectChangeEvent", () => {
+            setTargets(getFocusTargets())
+        })
+    }, [])
 
-    return <Checkbox label="Lock to Robot" checked={locked} onClick={setLocked} />
+    useEffect(() => {
+        return EventSystem.listen("CameraFocusChangedEvent", ({ focusProvider }) => {
+            setFocusedId(focusProvider?.id ?? UNFOCUSED_ID)
+        })
+    }, [])
+
+    return (
+        <div className="flex flex-col gap-1 w-full">
+            <span className="text-xs opacity-70">Focus Target</span>
+            <Select
+                value={focusedId}
+                onChange={e => {
+                    const id = e.target.value as number
+                    if (id === UNFOCUSED_ID) {
+                        controls.unfocus()
+                    } else {
+                        const target = targets.find(t => t.id === id)
+                        if (target) controls.focusProvider = target
+                    }
+                }}
+                size="small"
+                fullWidth
+            >
+                <MenuItem value={UNFOCUSED_ID}>None</MenuItem>
+                {targets.map(t => (
+                    <MenuItem key={t.id} value={t.id}>
+                        {t.assemblyName}
+                    </MenuItem>
+                ))}
+            </Select>
+        </div>
+    )
+}
+
+const TargetSettings: React.FC<TargetSettingsProps> = ({ controls }) => {
+    const [mode, setMode] = useState<CameraMode>(controls.mode)
+
+    useEffect(() => {
+        return EventSystem.listen("CameraModeChangedEvent", ({ mode: newMode }) => {
+            setMode(newMode as CameraMode)
+        })
+    }, [])
+
+    useEffect(() => {
+        controls.mode = mode
+    }, [controls, mode])
+
+    return (
+        <ToggleButtonGroup
+            orientation="horizontal"
+            value={mode}
+            exclusive
+            onChange={(_, v) => {
+                if (v !== null) setMode(v as CameraMode)
+            }}
+        >
+            <TooltipToggleButton title="Follow the target position, but allow free rotation" value={CameraMode.Follow}>
+                Follow
+            </TooltipToggleButton>
+            <TooltipToggleButton title="Follow the target with camera position and rotation" value={CameraMode.Locked}>
+                Locked
+            </TooltipToggleButton>
+            <TooltipToggleButton
+                title="Lock camera position and orient the camera to face the target"
+                value={CameraMode.Face}
+            >
+                Face
+            </TooltipToggleButton>
+        </ToggleButtonGroup>
+    )
 }
 
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
-        World.sceneRenderer.currentCameraControls.controlsType
+    const [focusedOnRobot, setFocusedOnRobot] = useState<boolean>(
+        (World.sceneRenderer.currentCameraControls as CustomTargetControls).isFocusedOnRobot
     )
+    // const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
+    //     World.sceneRenderer.currentCameraControls.controlsType
+    // )
 
-    const setCameraControls = useCallback((t: CameraControlsType) => {
-        switch (t) {
-            case "Orbit":
-                World.sceneRenderer.setCameraControls(t)
-                setCameraControlType(t)
-                break
-            default:
-                console.error("Unrecognized camera control option detected")
-                break
-        }
+    // TODO add toggle button groups once more control types are available
+    // const setCameraControls = useCallback((t: CameraControlsType) => {
+    //     switch (t) {
+    //         case "Target":
+    //             World.sceneRenderer.setCameraControls(t)
+    //             setCameraControlType(t)
+    //             break
+    //         default:
+    //             console.error("Unrecognized camera control option detected")
+    //             break
+    //     }
+    // }, [])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Camera Config", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Choose a Camera", hideAccept: true, cancelText: "Close" }, {})
+        return EventSystem.listen("CameraFocusChangedEvent", ({ focusProvider }) => {
+            setFocusedOnRobot(focusProvider?.miraType === MiraType.ROBOT)
+        })
     }, [])
 
     return (
-        <>
-            <ToggleButtonGroup
-                orientation="vertical"
-                value={cameraControlType}
-                exclusive
-                onChange={(_, v) => {
-                    if (v !== null) return
-
-                    setCameraControls(v)
-                }}
-                onMouseDown={() => SoundPlayer.getInstance().play(buttonPressSound)}
-            >
-                <ToggleButton value="Orbit">Orbit</ToggleButton>
-            </ToggleButtonGroup>
-            {cameraControlType === "Orbit" && (
-                <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
+        <div className="flex flex-col gap-2">
+            <FocusSelector controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
+            {focusedOnRobot && (
+                <TargetSettings controls={World.sceneRenderer.currentCameraControls as CustomTargetControls} />
             )}
-        </>
+        </div>
     )
 }
 

@@ -101,7 +101,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
                         value={type}
                         onChange={e => setType(e.target.value as DriveType)}
                     >
-                        {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                        {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
                             <MenuItem key={dt} value={dt}>
                                 {dt}
                             </MenuItem>
