@@ -1,5 +1,8 @@
 name: Fission - Unit Test
 
+env:
+  BUN_VERSION: "1.3.14"
+
 on:
   workflow_dispatch: {}
   push:
@@ -28,7 +31,7 @@ jobs:
       - name: Bun Setup
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: ${{ env.BUN_VERSION }}
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
@@ -83,7 +86,7 @@ jobs:
       - name: Bun Setup
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: ${{ env.BUN_VERSION }}
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
