@@ -17,7 +17,7 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import type { CustomTargetControls } from "@/systems/scene/CameraControls"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -96,7 +96,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                             if (mirabufSceneObject.mainSceneObject.miraType == MiraType.ROBOT) {
                                 openPanel(InitialConfigPanel, undefined, modal)
                             }
-                            const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+                            const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
                             if (miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
                                 cameraControls.focusProvider = mirabufSceneObject
                             }

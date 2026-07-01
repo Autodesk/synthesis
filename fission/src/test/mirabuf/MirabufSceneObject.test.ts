@@ -36,7 +36,7 @@ const mockSceneRenderer = {
     })),
     currentCameraControls: {
         focusProvider: undefined,
-        controlsType: "Orbit",
+        controlsType: "Target",
         locked: false,
     },
     worldToPixelSpace: vi.fn(() => [0, 0]),

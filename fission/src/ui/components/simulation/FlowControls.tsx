@@ -9,16 +9,16 @@ function FlowControls({ onCreateJunction }: FlowControlsProps) {
 
     return (
         <FlowPanel position="bottom-left" className="flex flex-col-reverse gap-1">
-            <Button onClick={() => fitView()}>
+            <Button variant="outlined" onClick={() => fitView()}>
                 <MdFitScreen className="w-full h-full" />
             </Button>
-            <Button onClick={() => zoomOut()}>
+            <Button variant="outlined" onClick={() => zoomOut()}>
                 <MdZoomOutMap className="w-full h-full" />
             </Button>
-            <Button onClick={() => zoomIn()}>
+            <Button variant="outlined" onClick={() => zoomIn()}>
                 <MdZoomInMap className="w-full h-full" />
             </Button>
-            <Button onClick={() => onCreateJunction?.()}>
+            <Button variant="outlined" onClick={() => onCreateJunction?.()}>
                 <FaPlus className="w-full h-full" />
             </Button>
         </FlowPanel>

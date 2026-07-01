@@ -37,7 +37,7 @@ import {
 } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import CommandRegistry from "@/ui/components/CommandRegistry"
-import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import type { CustomTargetControls } from "@/systems/scene/CameraControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
@@ -128,7 +128,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
 
                         World.sceneRenderer.registerSceneObject(mainSceneObject)
 
-                        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+                        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
 
                         if (World.multiplayerSystem != null) {
                             const encodedAssembly =

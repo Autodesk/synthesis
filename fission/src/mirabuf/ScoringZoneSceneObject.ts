@@ -68,7 +68,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         )
     }
 
-    public update(): void {
+    public override update(): void {
         if (this.parentBodyId && this.deltaTransformation && this.joltBodyId && this.prefs) {
             super.update()
 

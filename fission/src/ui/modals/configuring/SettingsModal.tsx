@@ -16,6 +16,13 @@ import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
 import CommandRegistry from "@/ui/components/CommandRegistry"
+import {
+    mediumGraphicsPreferences,
+    lowGraphicsPreferences,
+    highGraphicsPreferences,
+    type GraphicsPreferences,
+} from "@/systems/preferences/PreferenceTypes"
+import { Select, MenuItem } from "@mui/material"
 
 // Register command: Open Settings (module-scope side effect)
 CommandRegistry.get().registerCommand({
@@ -206,8 +213,11 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
     </Stack>
 )
 
+type GraphicsPreset = "low" | "medium" | "high" | "custom"
+
 const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [reload, setReload] = useState<boolean>(false)
+    const [selectedGraphicsPreset, setSelectedGraphicsPreset] = useState<GraphicsPreset>("custom")
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
     )
@@ -216,6 +226,58 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [cascades, setCascades] = useState<number>(PreferencesSystem.getGraphicsPreferences().cascades)
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
+
+    const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
+        return (
+            a.fancyShadows === b.fancyShadows &&
+            a.maxFar === b.maxFar &&
+            a.cascades === b.cascades &&
+            a.shadowMapSize === b.shadowMapSize &&
+            a.antiAliasing === b.antiAliasing
+        )
+    }
+
+    const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
+        const lowPrefs = lowGraphicsPreferences()
+        if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
+            return "low"
+        }
+
+        const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
+            { key: "medium", prefs: mediumGraphicsPreferences() },
+            { key: "high", prefs: highGraphicsPreferences() },
+        ]
+
+        for (const p of presets) {
+            if (prefsEqual(prefs, p.prefs)) return p.key
+        }
+
+        return "custom"
+    }
+
+    const applyGraphicsPreferencesLocally = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
+        setLightIntensity(prefs.lightIntensity)
+        setFancyShadows(prefs.fancyShadows)
+        setMaxFar(prefs.maxFar)
+        setCascades(prefs.cascades)
+        setShadowMapSize(prefs.shadowMapSize)
+        setAntiAliasing(prefs.antiAliasing)
+        World.sceneRenderer.changeLighting(prefs.fancyShadows)
+        setSelectedGraphicsPreset(getGraphicsPreset(prefs))
+    }
+
+    useEffect(() => {
+        setSelectedGraphicsPreset(
+            getGraphicsPreset({
+                lightIntensity,
+                fancyShadows,
+                maxFar,
+                cascades,
+                shadowMapSize,
+                antiAliasing,
+            })
+        )
+    }, [lightIntensity, fancyShadows, maxFar, cascades, shadowMapSize, antiAliasing])
 
     // Create actions object and notify parent
     useEffect(() => {
@@ -249,6 +311,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 setAntiAliasing(g.antiAliasing)
                 setReload(false)
                 World.sceneRenderer.changeLighting(g.fancyShadows)
+                setSelectedGraphicsPreset(getGraphicsPreset(g))
             },
             requiresReload: reload,
         }
@@ -257,6 +320,28 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
 
     return (
         <Stack gap={2}>
+            <Label size="md">Graphics Presets</Label>
+            <Select
+                value={selectedGraphicsPreset}
+                onChange={e => {
+                    const preset = e.target.value as GraphicsPreset
+                    setSelectedGraphicsPreset(preset)
+                    if (preset === "low") applyGraphicsPreferencesLocally(lowGraphicsPreferences())
+                    else if (preset === "medium") applyGraphicsPreferencesLocally(mediumGraphicsPreferences())
+                    else if (preset === "high") applyGraphicsPreferencesLocally(highGraphicsPreferences())
+                }}
+                sx={{ width: "100%" }}
+            >
+                <MenuItem value="low">Low Graphics (Default)</MenuItem>
+                <MenuItem value="medium">Medium Graphics</MenuItem>
+                <MenuItem value="high">High Graphics</MenuItem>
+                <MenuItem value="custom" disabled>
+                    Custom
+                </MenuItem>
+            </Select>
+
+            <Label size="md">Customize Graphics</Label>
+
             <StatefulSlider
                 label="Light Intensity"
                 min={MIN_LIGHT_INTENSITY}
@@ -333,26 +418,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                         }}
                         step={1024}
                     />
-                    <Box alignSelf="center">
-                        <Button
-                            onClick={() => {
-                                setShadowMapSize(4096)
-                                setMaxFar(30)
-                                setLightIntensity(5)
-                                setCascades(4)
-                                World.sceneRenderer.changeCSMSettings({
-                                    shadowMapSize: 4096,
-                                    maxFar: 30,
-                                    lightIntensity: 5,
-                                    fancyShadows,
-                                    cascades: 4,
-                                    antiAliasing,
-                                })
-                            }}
-                        >
-                            Reset Default
-                        </Button>
-                    </Box>
                 </>
             )}
             <Checkbox
