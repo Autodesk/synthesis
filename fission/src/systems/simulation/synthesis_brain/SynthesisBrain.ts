@@ -1,9 +1,12 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
+import type { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
+import SwerveDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SwerveDriveBehavior.ts"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
@@ -13,6 +16,7 @@ import { DriveType } from "../behavior/Behavior"
 import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
 import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
 import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
+import { DriverControlMode } from "../driver/Driver"
 import EjectorDriver from "../driver/EjectorDriver"
 import HingeDriver from "../driver/HingeDriver"
 import IntakeDriver from "../driver/IntakeDriver"
@@ -22,9 +26,16 @@ import type { SimulationLayer } from "../SimulationSystem"
 import HingeStimulus from "../stimulus/HingeStimulus"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import WheelRotationStimulus from "../stimulus/WheelStimulus"
+import { pairNearestHinges } from "./SwervePairing"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
+
+    /**
+     * Max allowed perpendicular-to-up component of a hinge axis for it to count as a swerve
+     * azimuth hinge. Ported verbatim from the original Unity swerve detection (0.05).
+     */
+    private static readonly SWERVE_AXIS_TOLERANCE = 0.05
 
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
@@ -64,7 +75,17 @@ class SynthesisBrain extends Brain {
     }
 
     public configureDriveBehavior(driveType: DriveType) {
+        const wasSwerve = this.driveType === DriveType.SWERVE
         this.driveType = driveType
+
+        // Transitioning into or out of swerve requires a full rebuild so that the
+        // azimuth (steering) hinges are correctly excluded from / restored to arm control.
+        if (driveType === DriveType.SWERVE || wasSwerve) {
+            this.configure()
+            return
+        }
+
+        // Tank <-> Arcade is a lightweight toggle on the existing skid-steer behavior.
         const existing = this._behaviors.find((behavior: Behavior) => behavior instanceof SkidSteerDriveBehavior)
         if (existing == null) {
             console.error("Can't find drive behavior!")
@@ -73,13 +94,36 @@ class SynthesisBrain extends Brain {
         existing.isArcade = driveType == DriveType.ARCADE
     }
 
+    public resetSwerveOrientation(): void {
+        const swerve = this._behaviors.find(b => b instanceof SwerveDriveBehavior) as SwerveDriveBehavior | undefined
+        if (!swerve) return
+        swerve.resetFieldForward()
+    }
+
     public configure(): void {
         this._behaviors = []
+        this._currentJointIndex = 1
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (this._assembly.mechanism.controllable) {
-            this.configureSkidSteerDriveBehavior(this.driveType == DriveType.ARCADE)
-            this.configureArmBehaviors()
+            // In swerve mode, detect the azimuth hinges up front so they can drive the modules and
+            // be excluded from arm behaviors. Fall back to arcade if detection fails.
+            const swerveInfo =
+                this.driveType === DriveType.SWERVE
+                    ? this.detectSwerve()
+                    : { inSwerve: false, hinges: [] as HingeDriver[] }
 
+            const useSwerve = this.driveType === DriveType.SWERVE && swerveInfo.inSwerve
+            if (this.driveType === DriveType.SWERVE && !swerveInfo.inSwerve) {
+                console.warn("[Swerve] swerve detection failed for this robot; falling back to arcade drive.")
+            }
+
+            this._behaviors.push(
+                useSwerve
+                    ? this.createSwerveDriveBehavior(swerveInfo.hinges)
+                    : this.createSkidSteerDriveBehavior(this.driveType === DriveType.ARCADE)
+            )
+
+            this.configureArmBehaviors(useSwerve ? swerveInfo.hinges : [])
             this.configureElevatorBehaviors()
             this.configureGamepieceManipBehavior()
         } else {
@@ -155,8 +199,9 @@ class SynthesisBrain extends Brain {
     public clearControls(): void {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
-    /** Creates an instance of `ArcadeDriveBehavior` and automatically configures it. */
-    private configureSkidSteerDriveBehavior(isArcade: boolean) {
+
+    /** Creates and returns a configured skid-steer (tank/arcade) drive behavior. */
+    private createSkidSteerDriveBehavior(isArcade: boolean): DriveBehavior {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
@@ -200,21 +245,123 @@ class SynthesisBrain extends Brain {
         }
         JOLT.destroy(rightVector)
 
-        this._behaviors.push(
-            new SkidSteerDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex, isArcade)
+        return new SkidSteerDriveBehavior(
+            leftWheels,
+            rightWheels,
+            leftStimuli,
+            rightStimuli,
+            this._brainIndex,
+            isArcade
         )
     }
 
-    /** Creates instances of `ArmBehavior` and automatically configures them. */
-    private configureArmBehaviors() {
+    /**
+     * Detects whether this robot is a swerve drivetrain and returns its azimuth (steering) hinges.
+     * A hinge is an azimuth hinge when its rotation axis is essentially vertical (perpendicular-to-up
+     * magnitude below {@link SynthesisBrain.SWERVE_AXIS_TOLERANCE}). The robot is swerve when the
+     * azimuth-hinge count is at least the wheel count.
+     */
+    private detectSwerve(): { inSwerve: boolean; hinges: HingeDriver[] } {
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof HingeDriver
         ) as HingeDriver[]
+
+        const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
+            driver => driver instanceof WheelDriver
+        ) as WheelDriver[]
+
+        // World-up; robots spawn upright so this matches the original's grounded-node up vector.
+        const up = new THREE.Vector3(0, 1, 0)
+
+        const swerveHinges: HingeDriver[] = []
+        hingeDrivers.forEach(h => {
+            const a = h.worldAxis
+            const axis = new THREE.Vector3(a.GetX(), a.GetY(), a.GetZ()).normalize()
+            // Magnitude of the axis component perpendicular to up; near zero means the axis is vertical.
+            const perpMag = axis
+                .clone()
+                .sub(up.clone().multiplyScalar(up.dot(axis)))
+                .length()
+            if (perpMag < SynthesisBrain.SWERVE_AXIS_TOLERANCE) swerveHinges.push(h)
+        })
+
+        const inSwerve = wheelDrivers.length > 0 && swerveHinges.length >= wheelDrivers.length
+        return { inSwerve, hinges: swerveHinges }
+    }
+
+    /**
+     * Creates and returns a configured swerve drive behavior, pairing each drive wheel
+     * with its nearest azimuth hinge. Falls back to arcade if the robot lacks the wheels
+     * or hinges needed for swerve.
+     */
+    private createSwerveDriveBehavior(hingeDrivers: HingeDriver[]): DriveBehavior {
+        const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
+            driver => driver instanceof WheelDriver
+        ) as WheelDriver[]
+        const wheelStimuli: WheelRotationStimulus[] = this._simLayer.stimuli.filter(
+            stimulus => stimulus instanceof WheelRotationStimulus
+        ) as WheelRotationStimulus[]
         const hingeStimuli: HingeStimulus[] = this._simLayer.stimuli.filter(
             stimulus => stimulus instanceof HingeStimulus
         ) as HingeStimulus[]
 
+        if (wheelDrivers.length === 0 || hingeDrivers.length === 0) {
+            console.error(
+                `Cannot configure swerve drivetrain (${wheelDrivers.length} wheels, ` +
+                    `${hingeDrivers.length} azimuth hinges). Falling back to arcade.`
+            )
+            return this.createSkidSteerDriveBehavior(true)
+        }
+
+        // Pair each wheel with its nearest azimuth hinge so paired drivers share an index.
+        // Both positions are taken as world-space anchors, matching the original which paired
+        // on WheelDriver.Anchor / RotationalDriver.Anchor.
+        const wheelPositions = wheelDrivers.map(w => {
+            const forward = new JOLT.Vec3(1, 0, 0)
+            const up = new JOLT.Vec3(0, 1, 0)
+            const transform = w.constraint.GetWheelWorldTransform(0, forward, up)
+            const pos = {
+                x: transform.GetTranslation().GetX(),
+                y: transform.GetTranslation().GetY(),
+                z: transform.GetTranslation().GetZ(),
+            }
+            JOLT.destroy(forward)
+            JOLT.destroy(up)
+            return pos
+        })
+        const hingePositions = hingeDrivers.map(h => {
+            const t = h.worldAnchor
+            return { x: t.GetX(), y: t.GetY(), z: t.GetZ() }
+        })
+
+        const pairing = pairNearestHinges(wheelPositions, hingePositions)
+        const sortedHinges = pairing.map(hingeIndex => hingeDrivers[hingeIndex])
+
+        return new SwerveDriveBehavior(
+            wheelDrivers,
+            sortedHinges,
+            wheelStimuli,
+            hingeStimuli,
+            this._brainIndex,
+            this._assemblyName
+        )
+    }
+
+    /** Creates instances of ArmBehavior and automatically configures them. */
+    private configureArmBehaviors(excludeHinges: HingeDriver[] = []) {
+        const excludeGuids = new Set(excludeHinges.map(h => h.id.guid))
+        const hingeDrivers: HingeDriver[] = (
+            this._simLayer.drivers.filter(driver => driver instanceof HingeDriver) as HingeDriver[]
+        ).filter(h => !excludeGuids.has(h.id.guid))
+        const hingeStimuli: HingeStimulus[] = (
+            this._simLayer.stimuli.filter(stimulus => stimulus instanceof HingeStimulus) as HingeStimulus[]
+        ).filter(s => !excludeGuids.has(s.id.guid))
+
         for (let i = 0; i < hingeDrivers.length; i++) {
+            // An arm joint is always velocity-controlled. Reset the control mode in case this
+            // hinge was previously left in POSITION mode by a swerve configuration.
+            hingeDrivers[i].controlMode = DriverControlMode.VELOCITY
+
             let sequentialConfig = PreferencesSystem.getRobotPreferences(
                 this._assembly.assemblyHash
             ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
@@ -225,7 +372,7 @@ class SynthesisBrain extends Brain {
                     this._assembly.robotPreferences.sequentialConfig = []
 
                 this._assembly.robotPreferences.sequentialConfig?.push(sequentialConfig)
-                PreferencesSystem.savePreferences()
+                this._assembly.savePreferences()
             }
 
             this._behaviors.push(
@@ -262,7 +409,7 @@ class SynthesisBrain extends Brain {
                     this._assembly.robotPreferences.sequentialConfig = []
 
                 this._assembly.robotPreferences.sequentialConfig?.push(sequentialConfig)
-                PreferencesSystem.savePreferences()
+                this._assembly.savePreferences()
             }
 
             this._behaviors.push(

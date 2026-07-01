@@ -13,6 +13,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
 import type { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import {
     type Alliance,
     defaultFieldPreferences,
@@ -959,10 +960,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {
-        this._robotPreferences ??= defaultRobotPreferences()
-        this._robotPreferences.simConfig = config
-        PreferencesSystem.setRobotPreferences(this.assemblyName, this._robotPreferences)
-        PreferencesSystem.savePreferences()
+        this.robotPreferences.simConfig = config
+        this.savePreferences()
         ;(this._brain as WPILibBrain)?.loadSimConfig?.()
     }
 
@@ -1098,6 +1097,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     },
                 })
             }
+        }
+
+        if ((this.brain as SynthesisBrain | undefined)?.driveType === DriveType.SWERVE) {
+            data.items.push({
+                name: "Reset Orientation",
+                func: () => {
+                    ;(this.brain as SynthesisBrain).resetSwerveOrientation()
+                },
+            })
         }
 
         data.items.push({

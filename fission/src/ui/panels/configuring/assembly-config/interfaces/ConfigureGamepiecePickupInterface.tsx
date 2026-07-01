@@ -1,20 +1,19 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Stack } from "@mui/material"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import {Stack} from "@mui/material"
+import {useCallback, useEffect, useMemo, useRef, useState} from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
 import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
-import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type {RigidNodeId} from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import {PAUSE_REF_ASSEMBLY_CONFIG} from "@/systems/physics/PhysicsTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { Button, Spacer } from "@/ui/components/StyledComponents"
+import {Button, Spacer} from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
@@ -92,7 +91,7 @@ function save(
 
     selectedRobot.intakePreferences.maxPieces = maxPieces!
     selectedRobot.intakePreferences.animationDuration = animationDuration!
-    PreferencesSystem.savePreferences()
+    selectedRobot.savePreferences()
 }
 
 interface ConfigPickupProps {
@@ -279,7 +278,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             <StatefulSlider
                 label="Max Pieces"
                 min={1}
-                max={10}
+                max={50}
                 step={1}
                 defaultValue={maxPieces ?? 1}
                 onChange={v => setMaxPieces(v as number)}

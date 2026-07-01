@@ -160,6 +160,28 @@ class InputSchemeManager {
         return this.availableInputSchemesByType(driveType)
     }
 
+    /**
+     * Ensures the brain has an input scheme compatible with its current drivetrain.
+     *
+     * @returns the scheme now bound to the brain, or undefined if no compatible scheme is available.
+     */
+    public static applyCompatibleScheme(brainIndex: number): InputScheme | undefined {
+        const driveType = SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType
+        const current = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        if (current && (driveType == null || current.supportedDrivetrains.includes(driveType))) {
+            return current
+        }
+
+        // Unbind the outgoing scheme before evaluating availability. Otherwise it still counts as in-use.
+        InputSystem.brainIndexSchemeMap.delete(brainIndex)
+
+        const next = this.availableInputSchemesByBrain(brainIndex).find(
+            entry => entry.status === InputSchemeUseType.AVAILABLE
+        )?.scheme
+        if (next) InputSystem.setBrainIndexSchemeMapping(brainIndex, next)
+        return next
+    }
+
     /** @returns a random available robot name */
     public static get randomAvailableName(): string {
         const usedNames = this.allInputSchemes.map(s => s.schemeName)

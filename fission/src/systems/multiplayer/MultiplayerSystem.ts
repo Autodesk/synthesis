@@ -340,7 +340,6 @@ async function generateId(roomId: string, forceRegen: boolean = false): Promise<
         PreferencesSystem.setUserPreference("MultiplayerClientID", id)
         PreferencesSystem.savePreferences()
     }
-    PreferencesSystem.savePreferences()
     return `${id}-${await createSha256Hash({ roomId })}-${await createSha256Hash({ roomId, establishedClientId: id })}`
 }
 

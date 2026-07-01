@@ -1,9 +1,9 @@
-import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import {ProgressHandle} from "@/components/ProgressNotificationData.ts"
 import MirabufCachingService from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import type { mirabuf } from "@/proto/mirabuf"
+import MirabufSceneObject, {createMirabuf} from "@/mirabuf/MirabufSceneObject"
+import type {mirabuf} from "@/proto/mirabuf"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import {globalAddToast} from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
 import World from "../World"
@@ -20,7 +20,6 @@ import type {
     RemoteSceneObjectId,
     UpdateObjectData,
 } from "./types"
-import PreferencesSystem from "../preferences/PreferencesSystem"
 import EventSystem from "@/systems/EventSystem.ts"
 
 export const peerMessageHandlers = {
@@ -281,7 +280,7 @@ function handleObjectConfiguration(data: ObjectPreferences, peerId: string) {
             return
         }
         sceneObject.setPreferenceData(data.objectConfigurationData)
-        PreferencesSystem.savePreferences()
+        sceneObject.savePreferences()
     } else {
         pendingOperations.push(() => handleObjectConfiguration(data, peerId))
     }
