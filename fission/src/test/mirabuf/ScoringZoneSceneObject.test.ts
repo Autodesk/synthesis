@@ -1,6 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
-import { afterEach, assert, beforeEach, describe, expect, test, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import EventSystem from "@/systems/EventSystem.ts"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"

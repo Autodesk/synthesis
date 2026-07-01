@@ -15,43 +15,15 @@ import {
     type VisualProperties,
 } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
-import { copyJoltRMat44, renderAABox } from "@/util/Utility"
+import { copyJoltRMat44 } from "@/util/Utility"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
-    public static readonly lightRedMaterial = new THREE.MeshPhongMaterial({
-        color: 0xed1c24,
-        shininess: 0.0,
-        opacity: 0.7,
-        transparent: true,
-    })
-    public static readonly lightBlueMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0066b3,
-        shininess: 0.0,
-        opacity: 0.7,
-        transparent: true,
-    })
-
-    public static readonly darkRedMaterial = new THREE.MeshPhongMaterial({
-        color: 0xff0000,
-        shininess: 0.0,
-        opacity: 0.8,
-        transparent: true,
-    })
-    public static readonly darkBlueMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0022ff,
-        shininess: 0.0,
-        opacity: 0.8,
-        transparent: true,
-    })
-
-    static readonly transparentMaterial = new THREE.MeshPhongMaterial({
+    private static readonly transparentMaterial = new THREE.MeshPhongMaterial({
         color: 0x0000,
         shininess: 0.0,
         opacity: 0.0,
         transparent: true,
     })
-
-    static count: number = 0
 
     private _parentAssembly: MirabufSceneObject
     public parentBodyId?: Jolt.BodyID
@@ -71,7 +43,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
     public abstract get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial }
 
-    set deltaTransformation(delta: THREE.Matrix4) {
+    public set deltaTransformation(delta: THREE.Matrix4) {
         this._deltaTransHasUpdated = true
         this._deltaTransformation = delta
     }

@@ -1,4 +1,5 @@
-import * as THREE from "three"
+import type * as THREE from "three"
+import * as Three from "three"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import ZoneSceneObject from "@/mirabuf/ZoneSceneObject"
@@ -14,12 +15,24 @@ type RobotBox = [MirabufSceneObject, Jolt.AABox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
 
 class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences> {
-    private _robotsInside: Map<MirabufSceneObject, number> = new Map()
+    public static readonly redMaterial = new Three.MeshPhongMaterial({
+        color: 0xff0000,
+        shininess: 0.0,
+        opacity: 0.8,
+        transparent: true,
+    })
+    public static readonly blueMaterial = new Three.MeshPhongMaterial({
+        color: 0x0022ff,
+        shininess: 0.0,
+        opacity: 0.8,
+        transparent: true,
+    })
 
+    private _robotsInside: Map<MirabufSceneObject, number> = new Map()
     private _lastRobotCollisionTime: number = 0
 
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
-        return { red: ZoneSceneObject.darkRedMaterial, blue: ZoneSceneObject.darkBlueMaterial }
+        return { red: ProtectedZoneSceneObject.redMaterial, blue: ProtectedZoneSceneObject.blueMaterial }
     }
 
     private isZoneActive(): boolean {

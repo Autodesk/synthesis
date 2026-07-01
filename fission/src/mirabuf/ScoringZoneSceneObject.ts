@@ -1,5 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import type * as THREE from "three"
+import * as Three from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
@@ -10,10 +11,23 @@ import ZoneSceneObject from "./ZoneSceneObject"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
+    public static readonly redMaterial = new Three.MeshPhongMaterial({
+        color: 0xed1c24,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })
+    public static readonly blueMaterial = new Three.MeshPhongMaterial({
+        color: 0x0066b3,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })
+
     private _prevGPs: Jolt.BodyID[] = []
 
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
-        return { red: ZoneSceneObject.lightRedMaterial, blue: ZoneSceneObject.lightBlueMaterial }
+        return { red: ScoringZoneSceneObject.redMaterial, blue: ScoringZoneSceneObject.blueMaterial }
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number) {
