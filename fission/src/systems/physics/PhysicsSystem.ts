@@ -794,7 +794,6 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(jointOriginOffset)
     }
 
-
     private isWheel(jDef: mirabuf.joint.Joint): boolean {
         return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
     }

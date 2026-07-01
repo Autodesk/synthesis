@@ -408,6 +408,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         "Define and manage protected zones on the field where robots can not enter."
                     ),
                 ]
+            case "PIECES":
+                return [new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of the game piece.")]
             default:
                 return []
         }
@@ -425,6 +427,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             >
                 <Tab key="robots" value="ROBOTS" label="ROBOTS" />
                 <Tab key="fields" value="FIELDS" label="FIELDS" />
+                <Tab key="pieces" value="PIECES" label="PIECES" />
                 <Tab key="inputs" value="INPUTS" label="INPUTS" />
             </Tabs>
             {configurationType === "INPUTS" && <ConfigureInputsInterface />}

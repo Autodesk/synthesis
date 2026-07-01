@@ -37,7 +37,7 @@ import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuDa
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
-import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import { ConfigMode, miraTypeToConfigType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -388,7 +388,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             if (!jBodyId) return
             const yPos = new JOLT.RVec3(0, fieldRootY, 0)
             World.physicsSystem.setBodyPositionRotationAndVelocity(
-                jBodyId, yPos, identityRot, blankVec, blankVec, false
+                jBodyId,
+                yPos,
+                identityRot,
+                blankVec,
+                blankVec,
+                false
             )
             JOLT.destroy(yPos)
         })
@@ -1035,12 +1040,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             items: [],
         }
 
+        const configurationType = miraTypeToConfigType(this.miraType)
+
         data.items.push(
             {
                 name: "Move",
 
                 customProps: {
-                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configurationType,
                     configMode: ConfigMode.MOVE,
                     selectedAssembly: this,
                 },
@@ -1051,7 +1058,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 name: "Configure",
 
                 customProps: {
-                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configurationType,
                     configMode: undefined,
                     selectedAssembly: this,
                 },

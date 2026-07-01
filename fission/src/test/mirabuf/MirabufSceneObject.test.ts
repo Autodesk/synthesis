@@ -208,7 +208,6 @@ describe("MirabufSceneObject", () => {
         setPrivate(instance, "_scoringZones", [{ id: 2 }])
         setPrivate(instance, "_intakeSensor", { id: 3 } as unknown as IntakeSensorSceneObject)
 
-
         instance.dispose()
 
         expect(mockSceneRenderer.removeSceneObject).toHaveBeenCalled()

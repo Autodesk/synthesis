@@ -298,6 +298,7 @@ class MirabufParser {
                 ? (() => {
                       const e = worldTransform.elements
                       return new mirabuf.Transform({
+                          // prettier-ignore
                           spatialMatrix: [
                               e[0], e[4], e[8],  e[12] * 100,
                               e[1], e[5], e[9],  e[13] * 100,

@@ -55,11 +55,16 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
         return !field || pendingDeletes.includes(field.id) ? [] : [field]
     }, [pendingDeletes])
+    const getPieces = useCallback(
+        () => World.sceneRenderer.mirabufSceneObjects.getPieces().filter(x => !pendingDeletes.includes(x.id)),
+        [pendingDeletes]
+    )
 
     const computeOptions = useCallback(() => {
-        const items: MirabufSceneObject[] = configurationType === "ROBOTS" ? getRobots() : getFields()
+        const items: MirabufSceneObject[] =
+            configurationType === "ROBOTS" ? getRobots() : configurationType === "PIECES" ? getPieces() : getFields()
         return items.filter(assembly => assembly != null).map(assembly => makeSelectionOption(assembly))
-    }, [getRobots, getFields, configurationType])
+    }, [getRobots, getFields, getPieces, configurationType])
 
     const [options, setOptions] = useState<AssemblySelectionOption[]>(computeOptions)
 

@@ -145,9 +145,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                                     assemblyHash: info.hash,
                                     miraType: info.miraType,
                                     initialPreferences: mainSceneObject.getPreferenceData(),
-                                    bodyIds: mainSceneObject
-                                        .getAllBodyIds()
-                                        .map(id => id.GetIndexAndSequenceNumber()),
+                                    bodyIds: mainSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
                                 },
                             }
                             await World.multiplayerSystem?.broadcast(message)
@@ -191,7 +189,11 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                                         assembly.info?.name ?? undefined
                                     )
                                 }
-                                const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, cacheInfo.hash)
+                                const sceneObject = new MirabufSceneObject(
+                                    instance,
+                                    assembly.info?.name!,
+                                    cacheInfo.hash
+                                )
                                 World.sceneRenderer.registerSceneObject(sceneObject)
                             }
                         })
