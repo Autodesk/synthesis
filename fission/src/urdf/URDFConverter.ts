@@ -42,9 +42,11 @@ type Mat3 = number[][]
 function mat3Mul(a: Mat3, b: Mat3): Mat3 {
     return [0, 1, 2].map(i => [0, 1, 2].map(j => [0, 1, 2].reduce((s, k) => s + a[i][k] * b[k][j], 0)))
 }
+
 function mat3VecMul(m: Mat3, v: [number, number, number]): [number, number, number] {
     return [0, 1, 2].map(i => m[i][0] * v[0] + m[i][1] * v[1] + m[i][2] * v[2]) as [number, number, number]
 }
+
 function transpose3(m: Mat3): Mat3 {
     return [0, 1, 2].map(i => [0, 1, 2].map(j => m[j][i]))
 }
@@ -335,12 +337,9 @@ function meshCentroid(verts: number[]): { c: [number, number, number]; mag: numb
         sy += verts[i + 1]
         sz += verts[i + 2]
     }
+
     const c: [number, number, number] = [sx / n, sy / n, sz / n]
     return { c, mag: Math.hypot(c[0], c[1], c[2]) }
-}
-
-function vecDist(a: [number, number, number], b: [number, number, number]): number {
-    return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2])
 }
 
 function visualCentroidInLinkFrame(visual: URDFVisual, meshFiles: Map<string, Uint8Array>) {
@@ -375,6 +374,8 @@ function visualTransformInLinkFrame(
         return { rotation: visualRotation, translation: visual.visualOriginXYZ, frame: "linkLocal" }
     }
 
+    // Robot-space: pre-multiply by T_link^-1 so the later T_link application cancels and the mesh lands
+    // at V·meshVerts = the part's true Onshape global transform. See shouldTreatVisualOriginsAsRobotSpace.
     return {
         rotation: mat3Mul(transpose3(linkGlobalTransform.rotation), visualRotation),
         translation: inverseTransformPoint(linkGlobalTransform, visual.visualOriginXYZ),
@@ -382,6 +383,23 @@ function visualTransformInLinkFrame(
     }
 }
 
+/**
+ * Detects Onshape's "robot-space visual" encoding for collapsed assembly links.
+ *
+ * In standard URDF, a mesh is placed as T_link * V * meshVerts, where T_link comes from the joint tree
+ * and V is the <visual><origin> transform from mesh frame to link frame. Some Onshape exports instead
+ * put each visual's assembly-global occurrence transform in V while also giving the collapsed link a
+ * non-identity T_link. Applying both transforms displaces the whole collapsed assembly.
+ *
+ * When this returns true, visualTransformInLinkFrame() rewrites V as T_link^-1 * V so the normal
+ * T_link application cancels and the mesh lands at the exported occurrence transform.
+ *
+ * The heuristic intentionally uses only visual data. For the affected links, T_link is the unreliable
+ * graft transform introduced while flattening an assembly graph into a URDF tree, so comparing visuals
+ * to the FK link origin can reject the links that need correction most. Robot-space visuals show up as
+ * multi-visual links whose transformed geometry and visual-origin translations are both far from the
+ * link-local origin; ordinary link-local visual offsets stay near zero.
+ */
 function shouldTreatVisualOriginsAsRobotSpace(
     link: URDFLink,
     globalTransform: URDFTransform | undefined,
@@ -403,15 +421,17 @@ function shouldTreatVisualOriginsAsRobotSpace(
     if (totalVertices === 0) return false
     for (let i = 0; i < 3; i++) centroid[i] /= totalVertices
 
-    const visualMagnitude = Math.hypot(centroid[0], centroid[1], centroid[2])
-    const linkMagnitude = Math.hypot(
-        globalTransform.position[0],
-        globalTransform.position[1],
-        globalTransform.position[2]
-    )
-    const visualToLink = vecDist(centroid, globalTransform.position)
+    // Mean magnitude of the visual <origin> translations, global-scale (~decimetres) for robot-space
+    // baked-in occurrence transforms, ~mm for real link-local mounting offsets.
+    const meshVisuals = link.visuals.filter(visual => visual.visualMeshPath !== null)
+    const meanVisualOrigin =
+        meshVisuals.reduce((sum, visual) => sum + Math.hypot(...visual.visualOriginXYZ), 0) /
+        Math.max(1, meshVisuals.length)
 
-    return visualMagnitude > 0.15 && linkMagnitude > 0.05 && visualToLink < 0.35
+    // Robot-space needs BOTH the aggregate geometry far from the link-local origin AND global-scale
+    // visual origins. Both come from the visuals alone (never the joint-FK origin, see header).
+    const visualMagnitude = Math.hypot(centroid[0], centroid[1], centroid[2])
+    return visualMagnitude > 0.15 && meanVisualOrigin > 0.15
 }
 
 function loadMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): ParsedMesh | null {
