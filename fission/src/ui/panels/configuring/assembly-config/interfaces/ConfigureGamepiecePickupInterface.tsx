@@ -23,6 +23,11 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 
+const IDENTITY_MATRIX = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+function isDefaultDelta(delta: number[]): boolean {
+    return delta.length === IDENTITY_MATRIX.length && delta.every((v, i) => v === IDENTITY_MATRIX[i])
+}
+
 // slider constants
 const MIN_ZONE_SIZE = 0.1
 const MAX_ZONE_SIZE = 1.0
@@ -163,6 +168,11 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
+                // / Don't set to center if not default delta, as this will override the user's configuration
+                if (isDefaultDelta(selectedRobot.intakePreferences!.deltaTransformation)) {
+                    gizmoTransformation.setPosition(selectedRobot.getCenter())
+                }
+
                 gizmo.setTransform(gizmoTransformation)
             }
 
@@ -295,7 +305,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
                             World.physicsSystem.getBody(selectedRobot.getRootNodeId()!)!.GetWorldTransform()
                         )
-                        gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
+                        gizmoRef.current.obj.position.copy(selectedRobot.getCenter())
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)
                     }
                     setZoneSize(0.5)

@@ -326,6 +326,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return transform
     }
 
+    public getCenter(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
+        return this.computeBoundingBox().getCenter(vec)
+    }
+
     public moveToSpawnLocation() {
         const referencePos = new THREE.Vector3()
         const pos =
