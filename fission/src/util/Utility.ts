@@ -26,28 +26,6 @@ export function deobf(s: string) {
     )
 }
 
-export function copyJoltRMat44(mat: Jolt.RMat44): Jolt.RMat44 {
-    const [translation, rotation] = [mat.GetTranslation(), mat.GetQuaternion()]
-    const newMat = new JOLT.RMat44().sRotationTranslation(rotation, translation)
-
-    // JOLT.destroy(translation)
-    // JOLT.destroy(rotation)
-
-    return newMat
-}
-
-export function copyJoltMat44(mat: Jolt.Mat44): Jolt.Mat44 {
-    const [translation, rotation] = [mat.GetTranslation(), mat.GetQuaternion()]
-    const newMat = new JOLT.Mat44().sRotationTranslation(rotation, translation)
-
-    // TODO
-    // Tests fail when these are destroyed
-    // JOLT.destroy(translation)
-    // JOLT.destroy(rotation)
-
-    return newMat
-}
-
 export function renderAABox(box: Jolt.AABox): THREE.Line {
     const material = new THREE.LineBasicMaterial({ color: 0x00ff00 })
     const points = [convertJoltVec3ToThreeVector3(box.mMin, false), convertJoltVec3ToThreeVector3(box.mMax, false)]

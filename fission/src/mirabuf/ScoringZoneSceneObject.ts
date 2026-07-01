@@ -36,6 +36,8 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             console.error(
                 "Tried to create ScoringZoneSceneObject with undefined preferences. This is necessarily a bug in Synthesis and should be hotfixed. If you are a user seeing this, please open an issue on our github: https://github.com/Autodesk/synthesis."
             )
+
+            return
         }
 
         if ("persistentPoints" in prefs!) {

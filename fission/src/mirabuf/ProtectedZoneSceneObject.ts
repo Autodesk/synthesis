@@ -8,7 +8,7 @@ import type MirabufSceneObject from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import MatchMode from "@/systems/match_mode/MatchMode"
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import { findListDifference } from "@/util/Utility"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
@@ -69,7 +69,9 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
         if (this.prefs.contactType === ContactType.ROBOT_ENTERS) {
             added.forEach(robot => this.penalizeEnteringZone(robot))
+
             // No reason to do any collision checking if this zone has a different `ContactType`
+            robots.forEach(([_, bounding]) => JOLT.destroy(bounding))
             return
         }
 

@@ -15,7 +15,6 @@ import {
     type VisualProperties,
 } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
-import { copyJoltRMat44 } from "@/util/Utility"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
     private static readonly transparentMaterial = new THREE.MeshPhongMaterial({
@@ -69,9 +68,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (!this.parentBodyId) return
 
         this._deltaTransformation = convertArrayToThreeMatrix4(this.prefs.deltaTransformation)
-        this._cachedFieldTransformation = copyJoltRMat44(
-            World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform()
-        )
+        this._cachedFieldTransformation = World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform()
 
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(this._cachedFieldTransformation)
         const props: VisualProperties = deltaAndFieldTransformsToVisualProp(
@@ -86,7 +83,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     /**
      * Draws a bounding box around `this.mesh`
      *
-     * On order for the bounding box to be up-to-date, either `this.createVisualMesh` or `this.setMeshProperties` must be called first
+     * In order for the bounding box to be up-to-date, either `this.createVisualMesh` or `this.setMeshProperties` must be called first
      *
      * In the future, we should probably create the bounding box from `VisualProperties`, but I couldn't get that to work
      */
@@ -153,7 +150,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
             JOLT.destroy(this._cachedFieldTransformation)
         }
 
-        this._cachedFieldTransformation = copyJoltRMat44(newTransform)
+        this._cachedFieldTransformation = newTransform
         this._deltaTransHasUpdated = false
 
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(this._cachedFieldTransformation)
