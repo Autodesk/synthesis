@@ -34,6 +34,9 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
     const [useGamepadButtons, setUseGamepadButtons] = useState<boolean>(
         input instanceof AxisInput ? input.useGamepadButtons : false
     )
+    const [joystickInverted, setJoystickInverted] = useState<boolean>(
+        input instanceof AxisInput ? input.joystickInverted : false
+    )
 
     /** Show the correct selection mode based on input type and how it's configured */
     const inputConfig = () => {
@@ -64,9 +67,10 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         {/* // Button to invert the joystick axis */}
                         <Checkbox
                             label="Invert Joystick"
-                            checked={input.joystickInverted}
+                            checked={joystickInverted}
                             onClick={checked => {
                                 input.joystickInverted = checked
+                                setJoystickInverted(checked)
                             }}
                         />
                         <Divider />
@@ -87,9 +91,10 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         {/* // Button to invert the joystick axis */}
                         <Checkbox
                             label="Invert Joystick"
-                            checked={input.joystickInverted}
+                            checked={joystickInverted}
                             onClick={checked => {
                                 input.joystickInverted = checked
+                                setJoystickInverted(checked)
                             }}
                         />
                         <Divider />
