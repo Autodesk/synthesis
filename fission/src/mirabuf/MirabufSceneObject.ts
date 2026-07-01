@@ -188,23 +188,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
     }
 
-    public getBounding() {
-        const dimensions = this.getDimensions()
-        const position = this.getPositionTransform()
+    public getBounding(): Jolt.OrientedBox {
+        const box = this.computeBoundingBox()
+        const aabb = new JOLT.AABox(convertThreeVector3ToJoltVec3(box.min), convertThreeVector3ToJoltVec3(box.max))
 
-        const half_w = dimensions.width / 2
-        const half_h = dimensions.height / 2
-        const half_d = dimensions.depth / 2
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+        const transform = rootBody.GetWorldTransform()
 
-        const min = new JOLT.Vec3(position.x - half_w, position.y - half_h, position.z - half_d)
-        const max = new JOLT.Vec3(position.x + half_w, position.y + half_h, position.z + half_d)
+        const obb = new JOLT.OrientedBox(aabb, transform)
 
-        const bounding = new JOLT.AABox(min, max)
+        JOLT.destroy(aabb)
 
-        JOLT.destroy(min)
-        JOLT.destroy(max)
-
-        return bounding
+        return obb
     }
 
     public constructor(

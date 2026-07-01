@@ -56,7 +56,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             .getRobots()
             .map(robot => [robot, robot.getBounding()] as RobotBox)
 
-        const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.OverlapsAABox(bounding))
+        const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.Overlaps(bounding))
         const oldRobotsInZone = [...this._robotsInside.keys()]
 
         const { added, removed } = findListDifference(

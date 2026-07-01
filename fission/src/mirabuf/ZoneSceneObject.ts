@@ -8,6 +8,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
+    convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import {
@@ -38,7 +39,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     public toRender: boolean | undefined
     public mesh?: THREE.Mesh
 
-    public bounding?: Jolt.AABox
+    public bounding?: Jolt.OrientedBox
 
     public abstract get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial }
 
@@ -77,7 +78,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         )
 
         this.createVisualMesh(props)
-        this.createBoundingBox()
+        this.createBoundingBox(props)
     }
 
     /**
@@ -87,20 +88,27 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
      *
      * In the future, we should probably create the bounding box from `VisualProperties`, but I couldn't get that to work
      */
-    private createBoundingBox() {
+    private createBoundingBox(props: VisualProperties) {
         if (!this.mesh) return
         if (this.bounding) JOLT.destroy(this.bounding)
 
-        const bounding = new THREE.Box3()
-        bounding.setFromObject(this.mesh)
+        const halfExtents = convertThreeVector3ToJoltVec3(props.scale).Div(2)
+        const transformMatrix = new JOLT.Mat44().sRotationTranslation(
+            convertThreeQuaternionToJoltQuat(props.rotation),
+            convertThreeVector3ToJoltVec3(props.translation)
+        )
+        this.bounding = new JOLT.OrientedBox(transformMatrix, halfExtents)
 
-        const min = convertThreeVector3ToJoltVec3(bounding.min)
-        const max = convertThreeVector3ToJoltVec3(bounding.max)
-
-        this.bounding = new JOLT.AABox(min, max)
-
-        JOLT.destroy(min)
-        JOLT.destroy(max)
+        // const bounding = new THREE.Box3()
+        // bounding.setFromObject(this.mesh)
+        //
+        // const min = convertThreeVector3ToJoltVec3(bounding.min)
+        // const max = convertThreeVector3ToJoltVec3(bounding.max)
+        //
+        // bounding = new JOLT.OrientedBox(min, max)
+        //
+        // JOLT.destroy(min)
+        // JOLT.destroy(max)
     }
 
     private setMeshProperties(props: VisualProperties) {
@@ -170,7 +178,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         const props = this.generateVisualProperties()
         if (props) {
             this.setMeshProperties(props)
-            this.createBoundingBox()
+            this.createBoundingBox(props)
         }
 
         this.updateRenderPreferences()

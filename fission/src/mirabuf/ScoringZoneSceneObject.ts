@@ -1,4 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import type * as THREE from "three"
 import * as Three from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
@@ -8,7 +9,6 @@ import { findListDifference } from "@/util/Utility"
 import MirabufSceneObject from "./MirabufSceneObject"
 import { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
-import JOLT from "@/util/loading/JoltSyncLoader"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     public static readonly redMaterial = new Three.MeshPhongMaterial({
@@ -62,7 +62,9 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             const gp = World.physicsSystem.getBody(gpID)!
             const gpBounding = gp.GetWorldSpaceBounds()
 
-            const overlaps = this.bounding?.OverlapsAABox(gpBounding)
+            // TODO
+            // Update bindings when `Overlaps` gets exposed
+            const overlaps = this.bounding.Overlaps(gpBounding)
             JOLT.destroy(gpBounding)
 
             return overlaps
