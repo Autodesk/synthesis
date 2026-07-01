@@ -107,6 +107,7 @@ class PreferencesSystem {
     public static getRobotPreferences(miraHash: string): RobotPreferences {
         const mergedPrefs = { ...defaultRobotPreferences(), ...(this._robotPreferences[miraHash] ?? {}) }
         this._robotPreferences[miraHash] = mergedPrefs
+
         return mergedPrefs
     }
 

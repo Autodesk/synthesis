@@ -143,11 +143,7 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        const unstickForce = new JOLT.Vec3(
-            0,
-            PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).unstickForce,
-            0
-        )
+        const unstickForce = new JOLT.Vec3(0, this._assembly.robotPreferences.unstickForce, 0)
         body.AddForce(unstickForce)
     }
 
@@ -225,13 +221,10 @@ class SynthesisBrain extends Brain {
 
             if (sequentialConfig == undefined) {
                 sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Arm")
+                if (this._assembly.robotPreferences.sequentialConfig == undefined)
+                    this._assembly.robotPreferences.sequentialConfig = []
 
-                if (PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig == undefined)
-                    PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig = []
-
-                PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig?.push(
-                    sequentialConfig
-                )
+                this._assembly.robotPreferences.sequentialConfig?.push(sequentialConfig)
                 PreferencesSystem.savePreferences()
             }
 
@@ -265,12 +258,10 @@ class SynthesisBrain extends Brain {
             if (sequentialConfig == undefined) {
                 sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Elevator")
 
-                if (PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig == undefined)
-                    PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig = []
+                if (this._assembly.robotPreferences.sequentialConfig == undefined)
+                    this._assembly.robotPreferences.sequentialConfig = []
 
-                PreferencesSystem.getRobotPreferences(this._assembly.assemblyHash).sequentialConfig?.push(
-                    sequentialConfig
-                )
+                this._assembly.robotPreferences.sequentialConfig?.push(sequentialConfig)
                 PreferencesSystem.savePreferences()
             }
 
@@ -305,8 +296,6 @@ class SynthesisBrain extends Brain {
 
     /** Gets field preferences and handles any field specific configuration. */
     private configureField() {
-        PreferencesSystem.getFieldPreferences(this._assembly.assemblyHash)
-
         /** Put any field configuration here */
     }
 

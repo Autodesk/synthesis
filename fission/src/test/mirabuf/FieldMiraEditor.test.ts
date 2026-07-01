@@ -56,7 +56,7 @@ describe("Basic Field Mira Editor Tests", () => {
 
         editor.setUserData(key, payload)
         expect(editor.getUserData(key)).toEqual(payload)
-        expect(editor.getAllSynthesisKeys()).toContain(key)
+        expect(editor.getAllKeys()).toContain(key)
 
         editor.removeUserData(key)
         expect(editor.getUserData(key)).toBeUndefined()
@@ -64,7 +64,7 @@ describe("Basic Field Mira Editor Tests", () => {
 
     test("default state: no keys, getUserData yields undefined", () => {
         const editor = new FieldMiraEditor(mockParts())
-        expect(editor.getAllSynthesisKeys()).toEqual([])
+        expect(editor.getAllKeys()).toEqual([])
         expect(editor.getUserData("devtool:foo")).toBeUndefined()
     })
 
@@ -72,7 +72,7 @@ describe("Basic Field Mira Editor Tests", () => {
         const editor = new FieldMiraEditor(mockParts())
         editor.setUserData("devtool:a", { v: 1 })
         editor.setUserData("devtool:b", [2, 3])
-        expect(editor.getAllSynthesisKeys()).toEqual(["devtool:a", "devtool:b"])
+        expect(editor.getAllKeys()).toEqual(["devtool:a", "devtool:b"])
         expect(editor.getUserData("devtool:b")).toEqual([2, 3])
     })
 
@@ -106,7 +106,7 @@ describe("Basic Field Mira Editor Tests", () => {
         editor.setUserData("devtool:keep", { a: 1 })
         editor.setUserData("devtool:drop", { b: 2 })
         editor.removeUserData("devtool:drop")
-        expect(editor.getAllSynthesisKeys()).toEqual(["devtool:keep"])
+        expect(editor.getAllKeys()).toEqual(["devtool:keep"])
     })
 })
 
@@ -116,7 +116,7 @@ describe("Devtool Scoring Zones Caching Tests", () => {
         const editor = new FieldMiraEditor(parts)
         editor.setUserData("devtool:scoring_zones", scoringZonePayload)
         expect(editor.getUserData("devtool:scoring_zones")).toEqual(scoringZonePayload)
-        expect(editor.getAllSynthesisKeys()).toContain("devtool:scoring_zones")
+        expect(editor.getAllKeys()).toContain("devtool:scoring_zones")
     })
 
     test("overwrite and remove scoring zones", () => {
@@ -132,7 +132,7 @@ describe("Devtool Scoring Zones Caching Tests", () => {
 
         editor.removeUserData("devtool:scoring_zones")
         expect(editor.getUserData("devtool:scoring_zones")).toBeUndefined()
-        expect(editor.getAllSynthesisKeys()).not.toContain("devtool:scoring_zones")
+        expect(editor.getAllKeys()).not.toContain("devtool:scoring_zones")
     })
     test("cache round-trip preserves devtool scoring zones", () => {
         const parts = mockParts()

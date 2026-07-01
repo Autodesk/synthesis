@@ -1,9 +1,19 @@
 import { mirabuf } from "@/proto/mirabuf"
-import type { FieldPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
+import type {
+    FieldPreferences,
+    ProtectedZonePreferences,
+    RobotPreferences,
+    ScoringZonePreferences,
+} from "@/systems/preferences/PreferenceTypes"
 
 export interface DevtoolMiraData {
     "synthesis:field_preferences": FieldPreferences
     "synthesis:robot_preferences": RobotPreferences
+    "devtool:scoring_zones": ScoringZonePreferences[]
+    "devtool:protected_zones": ProtectedZonePreferences[]
+    "devtool:spawn_locations": FieldPreferences["spawnLocations"]
+    "devtool:robot_ejector": RobotPreferences["ejector"]
+    "devtool:robot_intake": RobotPreferences["intake"]
     "devtool:a": unknown
     "devtool:b": unknown
     "devtool:test": unknown
@@ -31,6 +41,37 @@ export default class FieldMiraEditor {
         }
     }
 
+    migrateDevtoolFieldData(prefs: FieldPreferences): void {
+        const scoringZones = this.getUserData("devtool:scoring_zones")
+        if (scoringZones !== undefined) {
+            prefs.scoringZones = scoringZones
+        }
+        const protectedZones = this.getUserData("devtool:protected_zones")
+        if (protectedZones !== undefined) {
+            prefs.protectedZones = protectedZones
+        }
+        const spawnLocations = this.getUserData("devtool:spawn_locations")
+        if (spawnLocations !== undefined) {
+            prefs.spawnLocations = spawnLocations
+        }
+
+        this.removeUserData("devtool:scoring_zones")
+        this.removeUserData("devtool:protected_zones")
+        this.removeUserData("devtool:spawn_locations")
+    }
+
+    migrateDevtoolRobotData(prefs: RobotPreferences): void {
+        const intakeSettings = this.getUserData("devtool:robot_intake")
+        if (intakeSettings !== undefined) {
+            prefs.intake = intakeSettings
+        }
+        const ejectorSettings = this.getUserData("devtool:robot_ejector")
+        if (ejectorSettings !== undefined) {
+            prefs.ejector = ejectorSettings
+        }
+        this.removeUserData("devtool:robot_intake")
+        this.removeUserData("devtool:robot_ejector")
+    }
     /**
      * Get parsed data for a devtool key (e.g., 'devtool:scoring_zones').
      */
@@ -61,7 +102,7 @@ export default class FieldMiraEditor {
     /**
      * Get all devtool keys currently in userData.
      */
-    getAllSynthesisKeys(): string[] {
-        return Object.keys(this._parts.userData!.data!).filter(k => k.startsWith("synthesis:"))
+    getAllKeys(): string[] {
+        return Object.keys(this._parts.userData!.data!)
     }
 }

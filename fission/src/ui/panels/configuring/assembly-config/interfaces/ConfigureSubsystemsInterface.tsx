@@ -102,8 +102,8 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
                     configModeOption={selectedConfigMode}
                     selectedRobot={selectedRobot}
                     saveBehaviors={() => {
-                        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyHash).sequentialConfig = behaviors
-                        PreferencesSystem.savePreferences()
+                        selectedRobot.robotPreferences.sequentialConfig = behaviors
+                        selectedRobot.savePreferences()
                     }}
                 />
             )}

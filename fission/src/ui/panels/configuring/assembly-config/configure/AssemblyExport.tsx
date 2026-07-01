@@ -12,6 +12,7 @@ interface ConfigModeSelectionProps {
 
 const AssemblyExportButton: React.FC<ConfigModeSelectionProps> = ({ selectedAssembly }) => {
     const exportHandler = useCallback(() => {
+        selectedAssembly.savePreferencesToMirabuf()
         const assembly = selectedAssembly.mirabufInstance.parser.assembly
 
         try {
@@ -36,7 +37,7 @@ const AssemblyExportButton: React.FC<ConfigModeSelectionProps> = ({ selectedAsse
         } catch (_e) {
             globalAddToast?.("error", "Export Error", "Failed to export.")
         }
-    }, [selectedAssembly.mirabufInstance.parser.assembly])
+    }, [selectedAssembly])
     return (
         <Button className={"w-full"} color={"secondary"} onClick={exportHandler}>
             Export

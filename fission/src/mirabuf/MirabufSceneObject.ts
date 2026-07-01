@@ -199,6 +199,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         super()
         this.mirabufInstance = mirabufInstance
         this.multiplayerOwningClientId = multiplayerOwnerId
+        this.loadPreferences()
 
         progressHandle?.update("Creating mechanism...", 0.9)
 
@@ -206,8 +207,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.mechanism.layerReserve) this._physicsLayerReserve = this.mechanism.layerReserve
 
         this._debugBodies = null
-
-        this.loadPreferences()
 
         if (this.miraType === MiraType.ROBOT) {
             // creating nametag for robots
@@ -866,12 +865,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const parts = this.mirabufInstance.parser.assembly.data?.parts
         if (parts) {
             const editor = new FieldMiraEditor(parts)
+            editor.migrateDevtoolFieldData(this._fieldPreferences)
+            editor.migrateDevtoolRobotData(this._robotPreferences)
             this._fieldPreferences = { ...this._fieldPreferences, ...editor.getUserData("synthesis:field_preferences") }
             this._robotPreferences = { ...this._robotPreferences, ...editor.getUserData("synthesis:robot_preferences") }
         }
-        if (this.miraType == MiraType.FIELD) {
+        this.savePreferences()
+    }
+
+    public savePreferences(): void {
+        if (this.miraType == MiraType.FIELD && this._fieldPreferences) {
             PreferencesSystem.setFieldPreferences(this.assemblyHash, this._fieldPreferences)
-        } else {
+        } else if (this._robotPreferences) {
             PreferencesSystem.setRobotPreferences(this.assemblyHash, this._robotPreferences)
         }
         PreferencesSystem.savePreferences()
@@ -879,28 +884,46 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public loadPreferences(): void {
-        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyHash)
-        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyHash)
-
         const parts = this.mirabufInstance.parser.assembly.data?.parts
+
         if (parts) {
             const editor = new FieldMiraEditor(parts)
             if (this.miraType === MiraType.FIELD && !PreferencesSystem.hasFieldPreferences(this.assemblyHash)) {
+                this._fieldPreferences = defaultFieldPreferences()
+                editor.migrateDevtoolFieldData(this._fieldPreferences)
                 this._fieldPreferences = {
-                    ...defaultFieldPreferences(),
+                    ...this._fieldPreferences,
                     ...editor.getUserData("synthesis:field_preferences"),
                 }
-                PreferencesSystem.setFieldPreferences(this.assemblyHash, this._fieldPreferences)
             } else if (!PreferencesSystem.hasRobotPreferences(this.assemblyHash)) {
+                this._robotPreferences = defaultRobotPreferences()
+                editor.migrateDevtoolRobotData(this._robotPreferences)
                 this._robotPreferences = {
-                    ...defaultRobotPreferences(),
+                    ...this._robotPreferences,
                     ...editor.getUserData("synthesis:robot_preferences"),
                 }
-                PreferencesSystem.setRobotPreferences(this.assemblyHash, this._robotPreferences)
             }
-            PreferencesSystem.savePreferences()
+            this.savePreferences()
         }
+        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyHash)
+        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyHash)
         setTimeout(() => this.sendPreferences())
+    }
+
+    public savePreferencesToMirabuf(): void {
+        const parts = this.mirabufInstance.parser.assembly.data?.parts
+        if (parts) {
+            const editor = new FieldMiraEditor(parts)
+            if (this.miraType === MiraType.FIELD) {
+                if (this._fieldPreferences !== undefined) {
+                    editor.setUserData("synthesis:field_preferences", this._fieldPreferences)
+                }
+            } else {
+                if (this._robotPreferences !== undefined) {
+                    editor.setUserData("synthesis:robot_preferences", this._robotPreferences)
+                }
+            }
+        }
     }
 
     public getPreferenceData(): FieldConfiguration | RobotConfiguration {
