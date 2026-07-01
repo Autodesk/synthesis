@@ -132,7 +132,7 @@ class WPILibBrain extends Brain {
         const configData = this._assembly.simConfigData
         if (!configData) return false
 
-        const flows = SimConfig.Compile(configData, this._assembly)
+        const flows = SimConfig.compile(configData, this._assembly)
         if (!flows) {
             console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
             return false

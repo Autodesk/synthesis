@@ -49,6 +49,9 @@ interface EventDataMap {
 
     DragModeToggled: { enabled: boolean }
 
+    CameraModeChangedEvent: { mode: string }
+    CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }
+
     APSUserInfoUpdate: never
 
     MultiplayerStateJoinRoom: never
@@ -63,7 +66,7 @@ type EventKeyWithoutValue = Exclude<EventKey, EventKeyWithValue>
 
 class CustomEvent<K extends EventKey, T extends EventDataMap[K]> extends Event {
     public readonly data: T
-    public readonly type: K
+    public override readonly type: K
     public constructor(event: K, data: T) {
         super(event)
         this.type = event

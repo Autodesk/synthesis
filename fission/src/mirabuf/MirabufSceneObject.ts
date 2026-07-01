@@ -27,7 +27,7 @@ import {
     type SpawnLocation,
     type Station,
 } from "@/systems/preferences/PreferenceTypes"
-import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { CameraMode, type CustomTargetControls } from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
@@ -307,7 +307,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.moveToSpawnLocation()
 
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
 
         if (this.isOwnObject && (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider)) {
             cameraControls.focusProvider = this
@@ -588,13 +588,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._nameTag.color = this.alliance
         const boundingBox = this.computeBoundingBox()
 
-        this._nameTag.position = World.sceneRenderer.worldToPixelSpace(
-            new THREE.Vector3(
-                (boundingBox.max.x + boundingBox.min.x) / 2,
-                boundingBox.max.y + 0.1,
-                (boundingBox.max.z + boundingBox.min.z) / 2
-            )
-        )
+        const rootNodeId = this.getRootNodeId()
+        if (rootNodeId) {
+            const body = World.physicsSystem.getBody(rootNodeId)
+            if (body) {
+                const centerOfMass = body.GetCenterOfMassPosition()
+                this._nameTag.position = World.sceneRenderer.worldToPixelSpace(
+                    new THREE.Vector3(centerOfMass.GetX(), boundingBox.max.y + 0.1, centerOfMass.GetZ())
+                )
+            }
+        }
     }
 
     /*
@@ -956,8 +959,45 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public loadFocusTransform(mat: THREE.Matrix4) {
         const bounds = this.computeBoundingBox()
-        const center = bounds.getCenter(new THREE.Vector3())
-        mat.makeTranslation(center.x, center.y, center.z)
+        let center = bounds.getCenter(new THREE.Vector3())
+        const rotation = new THREE.Quaternion()
+
+        const rootNodeId = this.getRootNodeId()
+        if (rootNodeId) {
+            const rootBody = World.physicsSystem.getBody(rootNodeId)
+            if (rootBody) {
+                const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
+                rootTransform.decompose(new THREE.Vector3(), rotation, new THREE.Vector3())
+
+                // Prioritize center of mass for smooth rotations
+                if (!rootBody.IsStatic()) {
+                    const pos = rootBody.GetCenterOfMassPosition()
+                    center = new THREE.Vector3(pos.GetX(), pos.GetY(), pos.GetZ())
+                }
+            }
+        }
+
+        mat.makeRotationFromQuaternion(rotation)
+        mat.setPosition(center)
+    }
+
+    private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomTargetControls) {
+        const modes = [
+            { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
+            { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
+            { mode: CameraMode.Face, name: "Camera: Face Robot" },
+        ]
+
+        modes.forEach(({ mode, name }) => {
+            if (cameraControls.mode !== mode) {
+                data.items.push({
+                    name,
+                    func: () => {
+                        cameraControls.mode = mode
+                    },
+                })
+            }
+        })
     }
 
     public getSupplierData(): ContextData {
@@ -997,8 +1037,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             })
         }
 
-        if (World.sceneRenderer.currentCameraControls.controlsType == "Orbit") {
-            const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
+        if (World.sceneRenderer.currentCameraControls.controlsType == "Target") {
+            const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
             if (cameraControls.focusProvider == this) {
                 data.items.push({
                     name: "Camera: Unfocus",
@@ -1007,20 +1047,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     },
                 })
 
-                if (cameraControls.locked) {
-                    data.items.push({
-                        name: "Camera: Unlock",
-                        func: () => {
-                            cameraControls.locked = false
-                        },
-                    })
-                } else {
-                    data.items.push({
-                        name: "Camera: Lock",
-                        func: () => {
-                            cameraControls.locked = true
-                        },
-                    })
+                if (this.miraType === MiraType.ROBOT) {
+                    this.addRobotCameraMenuItems(data, cameraControls)
                 }
             } else {
                 data.items.push({
