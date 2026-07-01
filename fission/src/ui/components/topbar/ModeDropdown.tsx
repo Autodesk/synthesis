@@ -6,7 +6,7 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { Select } from "../StyledComponents"
 import { TopBarIcon, type TopBarIconName } from "./TopBarIcons"
 
-const MODE_ICONS: Record<AppMode, TopBarIconName> = {
+export const MODE_ICONS: Record<AppMode, TopBarIconName> = {
     Configure: "mode-configure",
     Codesim: "mode-codesim",
     Gameplay: "mode-gameplay",
