@@ -10,6 +10,7 @@ import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceT
 import MatchMode from "@/systems/match_mode/MatchMode"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { findListDifference } from "@/util/Utility"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 type RobotBox = [MirabufSceneObject, Jolt.AABox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
@@ -74,6 +75,11 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
         const collisions = this.checkCollisions(robots, robotsInZone)
         collisions.forEach(robots => this.handleContactPenalty(...robots))
+
+        // Dispose of robot bounding boxes
+        robots.forEach(([_, bounding]) => {
+            JOLT.destroy(bounding)
+        })
     }
 
     private checkCollisions(robots: RobotBox[], robotsInZone: RobotBox[]): Collision[] {
@@ -84,7 +90,9 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
             const collided = bounding1.OverlapsAABox(bounding2)
             if (!collided) return
-            if (collisions.includes([robot2, robot1])) return
+            // NOTE
+            // We might have duplicates, but it's okay, because the cooldown in `handleContactPenalty` will catch them
+            // This is better than iterating through the collisions list each time we add to it
 
             collisions.push([robot1, robot2])
         }

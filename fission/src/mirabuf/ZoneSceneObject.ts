@@ -101,6 +101,9 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         const max = convertThreeVector3ToJoltVec3(bounding.max)
 
         this.bounding = new JOLT.AABox(min, max)
+
+        JOLT.destroy(min)
+        JOLT.destroy(max)
     }
 
     private setMeshProperties(props: VisualProperties) {
@@ -109,8 +112,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         this.mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
         this.mesh.rotation.setFromQuaternion(props.rotation)
         this.mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
-
-        this.mesh.material = this.prefs.alliance == "red" ? this.materials.red : this.materials.blue
     }
 
     // Creates a mesh for the user to visualize the sensor
@@ -121,19 +122,20 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         World.sceneRenderer.addObject(this.mesh)
 
         this.setMeshProperties(props)
-
-        if (!this.toRender) {
-            this.mesh.material = ZoneSceneObject.transparentMaterial
-        }
+        this.updateRenderPreferences()
 
         JOLT.destroy(unitVector)
     }
 
     private updateRenderPreferences() {
-        this.toRender = PreferencesSystem.getGlobalPreference(this.preferenceKey) as boolean | undefined
-        if (!this.toRender && this.mesh) {
-            this.mesh.material = ZoneSceneObject.transparentMaterial
+        if (!this.mesh) {
+            console.error("No mesh present in zone")
+
+            return
         }
+
+        this.toRender = PreferencesSystem.getGlobalPreference(this.preferenceKey) as boolean | undefined
+        this.mesh.material = this.toRender ? this.material() : ZoneSceneObject.transparentMaterial
     }
 
     /**
@@ -147,11 +149,20 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         if (transformHasNotUpdated && !this._deltaTransHasUpdated) return undefined
 
+        if (this._cachedFieldTransformation) {
+            JOLT.destroy(this._cachedFieldTransformation)
+        }
+
         this._cachedFieldTransformation = copyJoltRMat44(newTransform)
         this._deltaTransHasUpdated = false
 
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(this._cachedFieldTransformation)
         return deltaAndFieldTransformsToVisualProp(this._deltaTransformation!, fieldTransformation)
+    }
+
+    private material() {
+        const { red, blue } = this.materials
+        return this.prefs.alliance == "red" ? red : blue
     }
 
     public update() {
@@ -178,6 +189,10 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (this.mesh) {
             World.sceneRenderer.removeObject(this.mesh)
             this.mesh.geometry.dispose()
+        }
+
+        if (this._cachedFieldTransformation) {
+            JOLT.destroy(this._cachedFieldTransformation)
         }
     }
 }
