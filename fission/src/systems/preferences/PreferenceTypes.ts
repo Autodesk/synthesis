@@ -35,7 +35,7 @@ export type UserPreference = keyof UserPreferences
 export const ROBOT_PREFERENCE_KEY = "Robots" as const
 export const FIELD_PREFERENCE_KEY = "Fields" as const
 export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
-export const USER_PREFERENCE_KEY = "Users" as const
+export const USER_PREFERENCE_KEY = "User" as const
 
 export type Preferences = {
     [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
