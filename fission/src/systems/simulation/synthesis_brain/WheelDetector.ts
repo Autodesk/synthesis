@@ -145,7 +145,11 @@ function distToLine(p: Vec2, anchor: Vec2, dir: Vec2): number {
  * axis, so the target is reachable only if both vectors have the same magnitude
  * of axial component.
  */
-function canYawAxisToDirection(wheelAxis: THREE.Vector3, steerAxis: THREE.Vector3, targetDirection: THREE.Vector3): boolean {
+function canYawAxisToDirection(
+    wheelAxis: THREE.Vector3,
+    steerAxis: THREE.Vector3,
+    targetDirection: THREE.Vector3
+): boolean {
     const wParallel = Math.abs(wheelAxis.dot(steerAxis))
     const tParallel = Math.abs(targetDirection.dot(steerAxis))
     return Math.abs(wParallel - tParallel) < AXIAL_COMPONENT_TOLERANCE
