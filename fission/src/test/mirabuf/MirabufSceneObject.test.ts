@@ -29,7 +29,7 @@ const mockSceneRenderer = {
     registerSceneObject: vi.fn(),
     removeSceneObject: vi.fn(),
     createSphere: vi.fn(() => ({ material: {}, geometry: {}, position: {}, rotation: {} })),
-    currentCameraControls: { focusProvider: undefined, controlsType: "Orbit", locked: false },
+    currentCameraControls: { focusProvider: undefined, controlsType: "Target", locked: false },
     worldToPixelSpace: vi.fn(() => [0, 0]),
     createToonMaterial: vi.fn(() => ({ color: 0x123456 })),
     setupMaterial: vi.fn(),

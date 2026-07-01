@@ -16,11 +16,11 @@ import type { ConfigurationType } from "../panels/configuring/assembly-config/Co
 import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import DebugPanel from "../panels/DebugPanel"
-// import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import UserIcon from "./UserIcon"
+import CameraSelectionPanel from "../panels/configuring/CameraSelectionPanel"
 
 const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => {
     return (
@@ -201,6 +201,12 @@ const MainHUD: React.FC = () => {
                         }
                     >
                         General Settings
+                    </MainHUDButton>
+                    <MainHUDButton
+                        startIcon={SynthesisIcons.CAMERA}
+                        onClick={() => openPanel(CameraSelectionPanel, undefined)}
+                    >
+                        Configure Camera
                     </MainHUDButton>
                     <MainHUDButton
                         startIcon={SynthesisIcons.BUG}
