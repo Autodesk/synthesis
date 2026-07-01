@@ -243,9 +243,9 @@ class DefaultInputs {
             usesTouchControls: false,
             supportedDrivetrains: [DriveType.SWERVE],
             inputs: [
-                AxisInput.onGamepadJoystick("swerveForward", 1, true),
+                AxisInput.onGamepadJoystick("swerveForward", 1, false),
                 AxisInput.onGamepadJoystick("swerveStrafe", 0, false),
-                AxisInput.onGamepadJoystick("swerveTurn", 2, false),
+                AxisInput.onGamepadJoystick("swerveTurn", 2, true),
                 ButtonInput.onGamepad("swerveResetFieldForward", 8),
 
                 ButtonInput.onGamepad("intake", 4),
