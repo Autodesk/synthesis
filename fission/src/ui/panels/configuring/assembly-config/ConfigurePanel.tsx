@@ -36,8 +36,8 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
-import { FaArrowRight } from "react-icons/fa"
 import MetadataConfigInterface from "@/panels/configuring/assembly-config/interfaces/MetadataConfigInterface.tsx"
+import { FaArrowsRotate } from "react-icons/fa6"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -472,7 +472,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             >
                                 Reset
                                 {Spacer(0, 5)}
-                                <FaArrowRight />
+                                <FaArrowsRotate />
                             </Button>
                         </>
                     )}
