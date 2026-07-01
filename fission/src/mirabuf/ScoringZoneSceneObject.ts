@@ -46,7 +46,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         super(parentAssembly, prefs!, "RenderScoringZones")
     }
 
-    public checkObjectsInZone(): void {
+    public override checkObjectsInZone(): void {
         if (!this.bounding) return
 
         const field = World.sceneRenderer.mirabufSceneObjects.getField()

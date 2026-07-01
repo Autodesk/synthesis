@@ -69,9 +69,6 @@ vi.mock("@/systems/match_mode/MatchMode", () => ({
 
 type RobotsInside = "red" | "blue" | "neither" | "both"
 
-const redBox = new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(1, 1, 1))
-const blueBox = new JOLT.AABox(new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(2, 1, 1))
-
 const boundingConfigMap: Record<RobotsInside, Jolt.AABox> = {
     // Just `redBox` translated -0.5 along the x-axis
     red: new JOLT.AABox(new JOLT.Vec3(-0.5, 0, 0), new JOLT.Vec3(0.5, 1, 1)),
@@ -86,11 +83,15 @@ describe("ProtectedZoneSceneObject", () => {
     let redRobot: MirabufSceneObject
     let blueRobot: MirabufSceneObject
 
-    const createMockRobot = (alliance: string) => {
+    const createMockRobot = (alliance: "red" | "blue") => {
         const robot = {
             miraType: MiraType.ROBOT,
             alliance,
-            getBounding: vi.fn(alliance === "red" ? () => redBox : () => blueBox),
+            getBounding: vi.fn(
+                alliance === "red"
+                    ? () => new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(1, 1, 1))
+                    : () => new JOLT.AABox(new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(2, 1, 1))
+            ),
         } as unknown as MirabufSceneObject
 
         return robot
@@ -181,7 +182,9 @@ describe("ProtectedZoneSceneObject", () => {
         // const fieldBodyId = createMockBodyId(3)
         setupMultipleAssociations(new Map([[3, fieldObject]]))
 
-        const instance = createProtectedZoneInstance({}, "red")
+        mockSceneRenderer.mirabufSceneObjects.getRobots = vi.fn(() => [fieldObject])
+
+        const instance = createProtectedZoneInstance({}, "blue")
 
         instance["checkObjectsInZone"]()
 

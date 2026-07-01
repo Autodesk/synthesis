@@ -49,7 +49,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         super(parentAssembly, parentAssembly.fieldPreferences?.protectedZones[index]!, "RenderProtectedZones")
     }
 
-    public checkObjectsInZone(): void {
+    public override checkObjectsInZone(): void {
         if (!this.isZoneActive()) return
 
         const robots = World.sceneRenderer.mirabufSceneObjects
@@ -74,12 +74,9 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         }
 
         const collisions = this.checkCollisions(robots, robotsInZone)
-        collisions.forEach(robots => this.handleContactPenalty(...robots))
+        collisions.forEach(collidedRobots => this.handleContactPenalty(...collidedRobots))
 
-        // Dispose of robot bounding boxes
-        robots.forEach(([_, bounding]) => {
-            JOLT.destroy(bounding)
-        })
+        robots.forEach(([_, bounding]) => JOLT.destroy(bounding))
     }
 
     private checkCollisions(robots: RobotBox[], robotsInZone: RobotBox[]): Collision[] {
