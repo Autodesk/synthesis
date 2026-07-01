@@ -1,8 +1,8 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import JOLT from "./loading/JoltSyncLoader"
 import * as THREE from "three"
 import { convertJoltVec3ToThreeVector3 } from "./TypeConversions"
 import World from "@/systems/World"
-import JOLT from "./loading/JoltSyncLoader"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()

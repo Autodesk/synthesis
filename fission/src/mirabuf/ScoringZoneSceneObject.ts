@@ -32,14 +32,18 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
     public constructor(parentAssembly: MirabufSceneObject, index: number) {
         const prefs = parentAssembly.fieldPreferences?.scoringZones[index]
-        if (!prefs) return
+        if (!prefs) {
+            console.error(
+                "Tried to create ScoringZoneSceneObject with undefined preferences. This is necessarily a bug in Synthesis and should be hotfixed. If you are a user seeing this, please open an issue on our github: https://github.com/Autodesk/synthesis."
+            )
+        }
 
-        if ("persistentPoints" in prefs) {
+        if ("persistentPoints" in prefs!) {
             prefs.shouldPointsAccumulate = !prefs.persistentPoints
             delete prefs.persistentPoints
         }
 
-        super(parentAssembly, prefs, "RenderScoringZones")
+        super(parentAssembly, prefs!, "RenderScoringZones")
     }
 
     public checkObjectsInZone(): void {

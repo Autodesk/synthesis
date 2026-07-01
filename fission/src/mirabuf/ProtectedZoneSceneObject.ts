@@ -102,15 +102,17 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
                 checkIn(robotsInZone, robots)
                 break
 
-            case ContactType.RED_ROBOT_INSIDE:
+            case ContactType.RED_ROBOT_INSIDE: {
                 const redRobotsInside = robotsInZone.filter(([robot, _]) => robot.alliance === "red")
                 checkIn(redRobotsInside, robots)
                 break
+            }
 
-            case ContactType.BLUE_ROBOT_INSIDE:
+            case ContactType.BLUE_ROBOT_INSIDE: {
                 const blueRobotsInside = robotsInZone.filter(([robot, _]) => robot.alliance === "blue")
                 checkIn(blueRobotsInside, robots)
                 break
+            }
         }
 
         return collisions
