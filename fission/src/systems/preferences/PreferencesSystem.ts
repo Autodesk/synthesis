@@ -130,6 +130,14 @@ class PreferencesSystem {
         return mergedPrefs
     }
 
+    public static hasFieldPreferences(miraHash: string): boolean {
+        return this._fieldPreferences[miraHash] !== undefined
+    }
+
+    public static hasRobotPreferences(miraHash: string): boolean {
+        return this._robotPreferences[miraHash] !== undefined
+    }
+
     /** Gets simulation quality preferences */
     public static getGraphicsPreferences(): GraphicsPreferences {
         let graphicsPrefs = this.getPreferenceFamily(GRAPHICS_PREFERENCE_KEY)

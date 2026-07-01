@@ -15,6 +15,7 @@ import type { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     type Alliance,
+    defaultFieldPreferences,
     defaultFieldSpawnLocation,
     defaultRobotPreferences,
     type EjectorPreferences,
@@ -50,7 +51,7 @@ import {
 import { createMeshForShape } from "@/util/threejs/MeshCreation.ts"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
-import FieldMiraEditor, { devtoolHandlers, devtoolKeys } from "./FieldMiraEditor"
+import FieldMiraEditor from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
 import { MiraType } from "./MirabufLoader"
@@ -84,8 +85,6 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
 }
 
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
-    public readonly assemblyName: string
-    public readonly assemblyHash: string
     public readonly mirabufInstance: MirabufInstance
     public readonly mechanism: Mechanism
 
@@ -188,16 +187,17 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
     }
 
-    public constructor(
-        mirabufInstance: MirabufInstance,
-        assemblyName: string,
-        progressHandle?: ProgressHandle,
-        multiplayerOwnerId?: string
-    ) {
+    public get assemblyName() {
+        return this.mirabufInstance.parser.assembly.info?.name ?? "Unknown"
+    }
+
+    public get assemblyHash() {
+        return this.mirabufInstance.parser.hash
+    }
+
+    public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
         super()
         this.mirabufInstance = mirabufInstance
-        this.assemblyName = assemblyName
-        this.assemblyHash = mirabufInstance.parser.hash
         this.multiplayerOwningClientId = multiplayerOwnerId
 
         progressHandle?.update("Creating mechanism...", 0.9)
@@ -207,7 +207,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this._debugBodies = null
 
-        this.getPreferences()
+        this.loadPreferences()
 
         if (this.miraType === MiraType.ROBOT) {
             // creating nametag for robots
@@ -860,30 +860,47 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
     }
 
-    public getPreferences(): void {
+    public resetPreferences(): void {
+        this._fieldPreferences = defaultFieldPreferences()
+        this._robotPreferences = defaultRobotPreferences()
+        const parts = this.mirabufInstance.parser.assembly.data?.parts
+        if (parts) {
+            const editor = new FieldMiraEditor(parts)
+            this._fieldPreferences = { ...this._fieldPreferences, ...editor.getUserData("synthesis:field_preferences") }
+            this._robotPreferences = { ...this._robotPreferences, ...editor.getUserData("synthesis:robot_preferences") }
+        }
+        if (this.miraType == MiraType.FIELD) {
+            PreferencesSystem.setFieldPreferences(this.assemblyHash, this._fieldPreferences)
+        } else {
+            PreferencesSystem.setRobotPreferences(this.assemblyHash, this._robotPreferences)
+        }
+        PreferencesSystem.savePreferences()
+        setTimeout(() => this.sendPreferences())
+    }
+
+    public loadPreferences(): void {
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyHash)
         this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyHash)
-
-        // Ensure backwards compatibility for showZoneAlways field
-        this._robotPreferences.intake.showZoneAlways ??= false
-
-        setTimeout(() => this.sendPreferences())
-
-        // For fields, sync dev-tool data with field preferences
 
         const parts = this.mirabufInstance.parser.assembly.data?.parts
         if (parts) {
             const editor = new FieldMiraEditor(parts)
-            devtoolKeys.forEach(key => {
-                devtoolHandlers[key].set(this, editor.getUserData(key))
-            })
-            if (this.miraType === MiraType.FIELD) {
+            if (this.miraType === MiraType.FIELD && !PreferencesSystem.hasFieldPreferences(this.assemblyHash)) {
+                this._fieldPreferences = {
+                    ...defaultFieldPreferences(),
+                    ...editor.getUserData("synthesis:field_preferences"),
+                }
                 PreferencesSystem.setFieldPreferences(this.assemblyHash, this._fieldPreferences)
-            } else {
+            } else if (!PreferencesSystem.hasRobotPreferences(this.assemblyHash)) {
+                this._robotPreferences = {
+                    ...defaultRobotPreferences(),
+                    ...editor.getUserData("synthesis:robot_preferences"),
+                }
                 PreferencesSystem.setRobotPreferences(this.assemblyHash, this._robotPreferences)
             }
             PreferencesSystem.savePreferences()
         }
+        setTimeout(() => this.sendPreferences())
     }
 
     public getPreferenceData(): FieldConfiguration | RobotConfiguration {
@@ -1099,7 +1116,7 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle, multiplayerOwnerId)
+    return new MirabufSceneObject(new MirabufInstance(parser), progressHandle, multiplayerOwnerId)
 }
 
 /**

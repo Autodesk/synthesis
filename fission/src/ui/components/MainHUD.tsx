@@ -16,7 +16,7 @@ import type { ConfigurationType } from "../panels/configuring/assembly-config/Co
 import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import DebugPanel from "../panels/DebugPanel"
-import DeveloperToolPanel from "../panels/DeveloperToolPanel"
+// import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
@@ -202,18 +202,6 @@ const MainHUD: React.FC = () => {
                     >
                         General Settings
                     </MainHUDButton>
-                    <MainHUDButton
-                        startIcon={SynthesisIcons.CODE_SQUARE}
-                        onClick={() => openPanel(DeveloperToolPanel, undefined)}
-                    >
-                        Developer Tool
-                    </MainHUDButton>
-                    {/** Will be coming soonish...tm */}
-                    {/* <MainHUDButton
-                        value={"View"}
-                        icon={SynthesisIcons.MAGNIFYING_GLASS}
-                        onClick={() => openModal(<ViewModal />, undefined)}
-                    /> */}
                     <MainHUDButton
                         startIcon={SynthesisIcons.BUG}
                         onClick={() => {

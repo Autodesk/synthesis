@@ -6,12 +6,7 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type {
-    Alliance,
-    FieldPreferences,
-    MotorPreferences,
-    RobotPreferences,
-} from "@/systems/preferences/PreferenceTypes"
+import type { Alliance, FieldPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
@@ -39,8 +34,10 @@ import EventSystem from "@/systems/EventSystem.ts"
 import { Tab, Tabs } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
-import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
+import { FaArrowRight } from "react-icons/fa"
+import MetadataConfigInterface from "@/panels/configuring/assembly-config/interfaces/MetadataConfigInterface.tsx"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -216,6 +213,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
             return <AllianceSelectionInterface selectedAssembly={assembly} />
         case ConfigMode.DRIVETRAIN:
             return <DrivetrainSelectionInterface selectedAssembly={assembly} />
+        case ConfigMode.METADATA:
+            return <MetadataConfigInterface selectedAssembly={assembly}></MetadataConfigInterface>
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -228,8 +227,7 @@ export interface ConfigurePanelCustomProps {
 }
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
-    const { configureScreen } = useUIContext()
-
+    const { configureScreen, closePanel } = useUIContext()
     const {
         configMode: initialConfigMode,
         selectedAssembly: initialSelectedAssembly,
@@ -243,7 +241,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
     const originalRobotPrefs = useRef<RobotPreferences | null>(null)
     const originalFieldPrefs = useRef<FieldPreferences | null>(null)
-    const originalMotorPrefs = useRef<MotorPreferences | null>(null)
     const originalInputSchemes = useRef<InputScheme[] | null>(null)
 
     const originalAlliance = useRef<Alliance | undefined>(selectedAssembly?.alliance)
@@ -287,7 +284,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
             originalRobotPrefs.current = null
             originalFieldPrefs.current = null
-            originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
             selectedAssembly?.sendPreferences()
@@ -305,7 +301,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 selectedAssembly.alliance = originalAlliance.current
                 selectedAssembly.station = originalStation.current
 
-                selectedAssembly.getPreferences()
+                selectedAssembly.loadPreferences()
             }
 
             if (originalInputSchemes.current) {
@@ -316,7 +312,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
             originalRobotPrefs.current = null
             originalFieldPrefs.current = null
-            originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
             originalAlliance.current = undefined
@@ -380,6 +375,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         ConfigMode.ALLIANCE,
                         "Set the robot's alliance color for matches. (red or blue)"
                     ),
+                    new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the asset's metadata"),
                     selectedAssembly?.brain?.brainType === "wpilib"
                         ? new ConfigModeSelectionOption(
                               "Simulation",
@@ -405,6 +401,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         ConfigMode.PROTECTED_ZONES,
                         "Define and manage protected zones on the field where robots can not enter."
                     ),
+                    new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the asset's metadata"),
                 ]
             default:
                 return []
@@ -460,6 +457,23 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         <>
                             {Spacer(16, 0)}
                             <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                            {Spacer(16, 0)}
+                            <Button
+                                className={"w-full"}
+                                color={"warning"}
+                                onClick={() => {
+                                    closePanel(panel!.id, CloseType.Accept)
+                                    selectedAssembly.resetPreferences()
+                                    globalAddToast(
+                                        "info",
+                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
+                                    )
+                                }}
+                            >
+                                Reset
+                                {Spacer(0, 5)}
+                                <FaArrowRight />
+                            </Button>
                         </>
                     )}
                 </>

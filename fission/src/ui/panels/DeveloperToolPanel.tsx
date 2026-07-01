@@ -56,7 +56,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     if (parts) {
                         const newEditor = new FieldMiraEditor(parts)
                         setEditor(newEditor)
-                        setKeys(newEditor.getAllDevtoolKeys())
+                        setKeys(newEditor.getAllSynthesisKeys())
                     } else {
                         setEditor(undefined)
                         setKeys([])
@@ -69,10 +69,10 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 setJsonValue("")
                 setError("")
             } else if (activeObj && editor) {
-                setKeys(editor.getAllDevtoolKeys())
+                setKeys(editor.getAllSynthesisKeys())
             }
         }
-        const allKeys = editor?.getAllDevtoolKeys()
+        const allKeys = editor?.getAllSynthesisKeys()
         console.log("devtool keys (poll):", allKeys)
 
         updateEditor()
@@ -101,7 +101,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             }
             editor.setUserData(selectedKey, parsed)
 
-            setKeys(editor.getAllDevtoolKeys())
+            setKeys(editor.getAllSynthesisKeys())
 
             // Persist changes to cache
             await saveToCache()
@@ -122,7 +122,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         if (!editor || !selectedKey || !activeObj) return
 
         editor.removeUserData(selectedKey)
-        setKeys(editor.getAllDevtoolKeys())
+        setKeys(editor.getAllSynthesisKeys())
         setSelectedKey(undefined)
         setJsonValue("")
         setError("")

@@ -140,7 +140,7 @@ describe("MirabufSceneObject", () => {
         vi.clearAllMocks()
         mirabufInstance = mockMirabufInstance()
         progressHandle = undefined
-        instance = new MirabufSceneObject(mirabufInstance, "TestAssembly", progressHandle)
+        instance = new MirabufSceneObject(mirabufInstance, progressHandle)
 
         console.log = vi.fn()
         console.error = vi.fn()
@@ -227,7 +227,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
             batch.computeBoundingBox()
         })
 
-        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v10", undefined)
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, undefined)
 
         const originalDimensions = dozerSceneObject.getDimensions()
 
@@ -253,7 +253,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
         const parser = new MirabufParser(cacheInfo.hash, assembly!)
         const mirabufInstance = new MirabufInstanceClass(parser)
 
-        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v10", undefined)
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, undefined)
         expect(dozerSceneObject.intakePreferences).not.toEqual(defaultRobotPreferences().intake)
         expect(dozerSceneObject.ejectorPreferences).not.toEqual(defaultRobotPreferences().ejector)
     })
