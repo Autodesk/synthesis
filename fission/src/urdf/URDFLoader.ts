@@ -6,6 +6,47 @@ import { URDF_WHEEL_TAG } from "./URDFUserData"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "dae"])
 
+export function applyConservativeURDFImport(assembly: mirabuf.Assembly): void {
+    const jointData = assembly.data?.joints
+    if (!jointData?.jointInstances || !jointData.jointDefinitions) return
+
+    const keptJointInstances: Record<string, mirabuf.joint.IJointInstance> = {}
+    const keptJointDefinitions: Record<string, mirabuf.joint.IJoint> = {}
+    const rigidGroups = [...(jointData.rigidGroups ?? [])]
+
+    for (const [name, jointInstance] of Object.entries(jointData.jointInstances)) {
+        if (name === "grounded") {
+            keptJointInstances[name] = jointInstance
+            continue
+        }
+
+        const jointDefinition = jointInstance.jointReference
+            ? jointData.jointDefinitions[jointInstance.jointReference]
+            : undefined
+        const isDetectedWheel = jointDefinition?.userData?.data?.["wheel"] === "true"
+
+        if (isDetectedWheel && jointInstance.jointReference) {
+            jointDefinition.userData ??= { data: {} }
+            jointDefinition.userData.data ??= {}
+            jointDefinition.userData.data[URDF_WHEEL_TAG] = "true"
+            keptJointInstances[name] = jointInstance
+            keptJointDefinitions[jointInstance.jointReference] = jointDefinition
+            continue
+        }
+
+        if (jointInstance.parentPart && jointInstance.childPart) {
+            rigidGroups.push({
+                name: `${name}_conservative_rigid`,
+                occurrences: [jointInstance.parentPart, jointInstance.childPart],
+            })
+        }
+    }
+
+    jointData.jointInstances = keptJointInstances
+    jointData.jointDefinitions = keptJointDefinitions
+    jointData.rigidGroups = rigidGroups
+}
+
 function validateURDFMeshFormats(urdfText: string): void {
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
     const meshFilenames = [...doc.querySelectorAll("mesh[filename]")].map(el => el.getAttribute("filename")!)
@@ -73,13 +114,7 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
         validateURDFMeshFormats(urdfText)
         const assembly = convertURDF(urdfText, meshFiles)
         detectAndTagWheels(assembly)
-
-        const jointDefs = assembly.data?.joints?.jointDefinitions ?? {}
-        for (const jDef of Object.values(jointDefs)) {
-            if (jDef.userData?.data?.["wheel"] === "true") {
-                jDef.userData.data[URDF_WHEEL_TAG] = "true"
-            }
-        }
+        applyConservativeURDFImport(assembly)
 
         return assembly
     }

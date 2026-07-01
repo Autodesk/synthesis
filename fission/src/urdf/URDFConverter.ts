@@ -6,8 +6,7 @@ import { parseSTL, type ParsedMesh } from "./STLParser"
 // Frame change matrix: Rx(-90°) = [[1,0,0],[0,0,1],[0,-1,0]]
 // Point (x,y,z)_urdf -> (x, z, -y)_yup
 
-interface URDFLink {
-    name: string
+interface URDFVisual {
     visualMeshPath: string | null
     visualMeshScale: [number, number, number]
     // <visual><origin> positions the mesh frame relative to the link frame.
@@ -17,6 +16,11 @@ interface URDFLink {
     visualOriginRPY: [number, number, number]
     materialName: string | null
     materialRGBA: [number, number, number, number] | null
+}
+
+interface URDFLink {
+    name: string
+    visuals: URDFVisual[]
     mass: number
     comXYZ: [number, number, number]
 }
@@ -37,6 +41,9 @@ type Mat3 = number[][]
 
 function mat3Mul(a: Mat3, b: Mat3): Mat3 {
     return [0, 1, 2].map(i => [0, 1, 2].map(j => [0, 1, 2].reduce((s, k) => s + a[i][k] * b[k][j], 0)))
+}
+function mat3VecMul(m: Mat3, v: [number, number, number]): [number, number, number] {
+    return [0, 1, 2].map(i => m[i][0] * v[0] + m[i][1] * v[1] + m[i][2] * v[2]) as [number, number, number]
 }
 function transpose3(m: Mat3): Mat3 {
     return [0, 1, 2].map(i => [0, 1, 2].map(j => m[j][i]))
@@ -91,6 +98,109 @@ function positionToYup(x: number, y: number, z: number): mirabuf.IVector3 {
     return { x: x * 100, y: z * 100, z: -y * 100 }
 }
 
+interface URDFTransform {
+    rotation: Mat3
+    position: [number, number, number]
+}
+
+interface JointFrame {
+    originXYZ: [number, number, number]
+    axisXYZ: [number, number, number]
+}
+
+const IDENTITY_ROTATION: Mat3 = [
+    [1, 0, 0],
+    [0, 1, 0],
+    [0, 0, 1],
+]
+
+function addVec3(a: [number, number, number], b: [number, number, number]): [number, number, number] {
+    return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
+}
+
+function transformPoint(t: URDFTransform, p: [number, number, number]): [number, number, number] {
+    return addVec3(t.position, mat3VecMul(t.rotation, p))
+}
+
+function transformDirection(t: URDFTransform, d: [number, number, number]): [number, number, number] {
+    return mat3VecMul(t.rotation, d)
+}
+
+function inverseTransformPoint(t: URDFTransform, p: [number, number, number]): [number, number, number] {
+    return mat3VecMul(transpose3(t.rotation), [p[0] - t.position[0], p[1] - t.position[1], p[2] - t.position[2]])
+}
+
+function buildGlobalJointFrames(joints: URDFJoint[], rootName: string): Map<string, JointFrame> {
+    const childrenOf = new Map<string, URDFJoint[]>()
+    for (const joint of joints) {
+        if (!childrenOf.has(joint.parent)) childrenOf.set(joint.parent, [])
+        childrenOf.get(joint.parent)!.push(joint)
+    }
+
+    const frames = new Map<string, JointFrame>()
+    const linkTransforms = new Map<string, URDFTransform>([
+        [rootName, { rotation: IDENTITY_ROTATION, position: [0, 0, 0] }],
+    ])
+
+    function visit(parent: string) {
+        const parentTransform = linkTransforms.get(parent)
+        if (!parentTransform) return
+
+        for (const joint of childrenOf.get(parent) ?? []) {
+            const jointOrigin = transformPoint(parentTransform, joint.originXYZ)
+            frames.set(joint.name, {
+                originXYZ: jointOrigin,
+                axisXYZ: transformDirection(parentTransform, joint.axisXYZ),
+            })
+
+            if (linkTransforms.has(joint.child)) continue
+            linkTransforms.set(joint.child, {
+                rotation: mat3Mul(parentTransform.rotation, rpyToMatrix(...joint.originRPY)),
+                position: jointOrigin,
+            })
+            visit(joint.child)
+        }
+    }
+
+    visit(rootName)
+    return frames
+}
+
+// Accumulate each link's global transform (URDF Z-up metres) by walking the joint tree.
+function buildGlobalLinkTransforms(joints: URDFJoint[], rootName: string): Map<string, URDFTransform> {
+    const childrenOf = new Map<string, URDFJoint[]>()
+    for (const joint of joints) {
+        if (!childrenOf.has(joint.parent)) childrenOf.set(joint.parent, [])
+        childrenOf.get(joint.parent)!.push(joint)
+    }
+
+    const transforms = new Map<string, URDFTransform>([
+        [rootName, { rotation: IDENTITY_ROTATION, position: [0, 0, 0] }],
+    ])
+
+    function visit(parent: string) {
+        const pt = transforms.get(parent)
+        if (!pt) return
+        for (const joint of childrenOf.get(parent) ?? []) {
+            if (transforms.has(joint.child)) continue
+            transforms.set(joint.child, {
+                rotation: mat3Mul(pt.rotation, rpyToMatrix(...joint.originRPY)),
+                position: transformPoint(pt, joint.originXYZ),
+            })
+            visit(joint.child)
+        }
+    }
+
+    visit(rootName)
+    return transforms
+}
+
+// Rotation magnitude (radians) of a 3x3 rotation matrix — used to test whether a transform is "trivial".
+function rotationAngle(m: Mat3): number {
+    const trace = m[0][0] + m[1][1] + m[2][2]
+    return Math.acos(Math.min(1, Math.max(-1, (trace - 1) / 2)))
+}
+
 function attr(el: Element | null | undefined, name: string, fallback = ""): string {
     return el?.getAttribute(name) ?? fallback
 }
@@ -108,37 +218,32 @@ function parseVec4(s: string): [number, number, number, number] {
 function extractLinks(doc: Document): URDFLink[] {
     return Array.from(doc.querySelectorAll("link")).map(link => {
         const name = attr(link, "name")
-        const visual = link.querySelector("visual")
-        const meshEl = visual?.querySelector("mesh") ?? null
-        const matEl = visual?.querySelector("material") ?? null
         const inertialEl = link.querySelector("inertial")
         const massEl = inertialEl?.querySelector("mass") ?? null
-
-        let visualMeshPath: string | null = null
-        let visualMeshScale: [number, number, number] = [1, 1, 1]
-        if (meshEl) {
-            visualMeshPath = attr(meshEl, "filename") || null
+        const visuals: URDFVisual[] = Array.from(link.querySelectorAll("visual")).map(visual => {
+            const meshEl = visual.querySelector("mesh")
+            const matEl = visual.querySelector("material")
             const sp = attr(meshEl, "scale", "1 1 1").trim().split(/\s+/)
-            visualMeshScale = [
-                parseFloat(sp[0] ?? "1") || 1,
-                parseFloat(sp[1] ?? "1") || 1,
-                parseFloat(sp[2] ?? "1") || 1,
-            ]
-        }
+            const colorRgba = matEl?.querySelector("color")?.getAttribute("rgba")
+            const visualOriginEl = visual.querySelector("origin")
 
-        let materialRGBA: [number, number, number, number] | null = null
-        const colorRgba = matEl?.querySelector("color")?.getAttribute("rgba")
-        if (colorRgba) materialRGBA = parseVec4(colorRgba)
+            return {
+                visualMeshPath: meshEl ? attr(meshEl, "filename") || null : null,
+                visualMeshScale: [
+                    parseFloat(sp[0] ?? "1") || 1,
+                    parseFloat(sp[1] ?? "1") || 1,
+                    parseFloat(sp[2] ?? "1") || 1,
+                ],
+                visualOriginXYZ: parseVec3(visualOriginEl),
+                visualOriginRPY: parseVec3(visualOriginEl, "rpy"),
+                materialName: matEl ? attr(matEl, "name") || null : null,
+                materialRGBA: colorRgba ? parseVec4(colorRgba) : null,
+            }
+        })
 
-        const visualOriginEl = visual?.querySelector("origin") ?? null
         return {
             name,
-            visualMeshPath,
-            visualMeshScale,
-            visualOriginXYZ: parseVec3(visualOriginEl),
-            visualOriginRPY: parseVec3(visualOriginEl, "rpy"),
-            materialName: matEl ? attr(matEl, "name") || null : null,
-            materialRGBA,
+            visuals,
             mass: parseFloat(massEl?.getAttribute("value") ?? "0") || 0,
             comXYZ: parseVec3(inertialEl?.querySelector("origin")),
         } satisfies URDFLink
@@ -190,19 +295,15 @@ function applyMat3(src: number[], r: Mat3, tx = 0, ty = 0, tz = 0): number[] {
     return out
 }
 
-// Apply visual origin transform (rotation + translation) to raw mesh vertices and normals.
-// This maps mesh-local coords -> link-local coords, both in URDF Z-up metres.
-// Must run before scale/unit conversion.
-function applyVisualOrigin(mesh: ParsedMesh, xyz: [number, number, number], rpy: [number, number, number]): ParsedMesh {
+function applyVisualTransform(mesh: ParsedMesh, rotation: Mat3, xyz: [number, number, number]): ParsedMesh {
     const hasOffset = xyz[0] !== 0 || xyz[1] !== 0 || xyz[2] !== 0
-    const hasRotation = rpy[0] !== 0 || rpy[1] !== 0 || rpy[2] !== 0
+    const hasRotation = rotationAngle(rotation) > 1e-9
     if (!hasOffset && !hasRotation) return mesh
 
-    const R = rpyToMatrix(rpy[0], rpy[1], rpy[2])
     const [ox, oy, oz] = xyz
     return {
-        verts: applyMat3(mesh.verts, R, ox, oy, oz),
-        normals: applyMat3(mesh.normals, R),
+        verts: applyMat3(mesh.verts, rotation, ox, oy, oz),
+        normals: applyMat3(mesh.normals, rotation),
         indices: mesh.indices,
         uv: mesh.uv,
     }
@@ -219,6 +320,98 @@ function toYup(arr: number[]): number[] {
     }
 
     return out
+}
+
+// Centroid of a flat [x,y,z,...] vertex array, in the mesh's own (untransformed) coordinate space.
+// A centroid magnitude near zero means the mesh is authored in link-LOCAL space.
+function meshCentroid(verts: number[]): { c: [number, number, number]; mag: number } {
+    const n = verts.length / 3
+    if (n === 0) return { c: [0, 0, 0], mag: 0 }
+    let sx = 0
+    let sy = 0
+    let sz = 0
+    for (let i = 0; i < verts.length; i += 3) {
+        sx += verts[i]
+        sy += verts[i + 1]
+        sz += verts[i + 2]
+    }
+    const c: [number, number, number] = [sx / n, sy / n, sz / n]
+    return { c, mag: Math.hypot(c[0], c[1], c[2]) }
+}
+
+function vecDist(a: [number, number, number], b: [number, number, number]): number {
+    return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2])
+}
+
+function visualCentroidInLinkFrame(visual: URDFVisual, meshFiles: Map<string, Uint8Array>) {
+    if (!visual.visualMeshPath) return null
+
+    const parsed = loadMesh(visual.visualMeshPath, meshFiles)
+    if (!parsed) return null
+
+    const raw = meshCentroid(parsed.verts)
+    const rotated = mat3VecMul(rpyToMatrix(...visual.visualOriginRPY), raw.c)
+    const inLink: [number, number, number] = [
+        rotated[0] + visual.visualOriginXYZ[0],
+        rotated[1] + visual.visualOriginXYZ[1],
+        rotated[2] + visual.visualOriginXYZ[2],
+    ]
+
+    return {
+        rawCentroid: raw.c,
+        rawMagnitude: raw.mag,
+        linkCentroid: inLink,
+        vertexCount: parsed.verts.length / 3,
+    }
+}
+
+function visualTransformInLinkFrame(
+    visual: URDFVisual,
+    robotSpaceVisuals: boolean,
+    linkGlobalTransform?: URDFTransform
+): { rotation: Mat3; translation: [number, number, number]; frame: "robotSpace" | "linkLocal" } {
+    const visualRotation = rpyToMatrix(...visual.visualOriginRPY)
+    if (!robotSpaceVisuals || !linkGlobalTransform) {
+        return { rotation: visualRotation, translation: visual.visualOriginXYZ, frame: "linkLocal" }
+    }
+
+    return {
+        rotation: mat3Mul(transpose3(linkGlobalTransform.rotation), visualRotation),
+        translation: inverseTransformPoint(linkGlobalTransform, visual.visualOriginXYZ),
+        frame: "robotSpace",
+    }
+}
+
+function shouldTreatVisualOriginsAsRobotSpace(
+    link: URDFLink,
+    globalTransform: URDFTransform | undefined,
+    meshFiles: Map<string, Uint8Array>
+): boolean {
+    if (!globalTransform || link.visuals.length < 2) return false
+
+    const summaries = link.visuals
+        .map(visual => visualCentroidInLinkFrame(visual, meshFiles))
+        .filter(summary => summary !== null)
+    if (summaries.length < 2) return false
+
+    let totalVertices = 0
+    const centroid: [number, number, number] = [0, 0, 0]
+    for (const summary of summaries) {
+        totalVertices += summary.vertexCount
+        for (let i = 0; i < 3; i++) centroid[i] += summary.linkCentroid[i] * summary.vertexCount
+    }
+    if (totalVertices === 0) return false
+    for (let i = 0; i < 3; i++) centroid[i] /= totalVertices
+
+    const visualMagnitude = Math.hypot(centroid[0], centroid[1], centroid[2])
+    const linkMagnitude = Math.hypot(
+        globalTransform.position[0],
+        globalTransform.position[1],
+        globalTransform.position[2]
+    )
+    const visualToLink = vecDist(centroid, globalTransform.position)
+
+    return visualMagnitude > 0.15 && linkMagnitude > 0.05 && visualToLink < 0.35
 }
 
 function loadMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): ParsedMesh | null {
@@ -249,7 +442,13 @@ function buildDesignHierarchy(joints: URDFJoint[], rootName: string): mirabuf.IG
     return { nodes: [buildNode(rootName)] }
 }
 
-function buildRigidGroups(links: URDFLink[], joints: URDFJoint[]): mirabuf.joint.IRigidGroup[] {
+function buildRigidGroups(
+    links: URDFLink[],
+    joints: URDFJoint[]
+): {
+    rigidGroups: mirabuf.joint.IRigidGroup[]
+    linkToGroup: Map<string, string>
+} {
     const fixedTypes = new Set<string>(["fixed", "floating", "planar"])
     const parent = new Map<string, string>(links.map(l => [l.name, l.name]))
 
@@ -258,13 +457,67 @@ function buildRigidGroups(links: URDFLink[], joints: URDFJoint[]): mirabuf.joint
         return parent.get(x)!
     }
 
-    joints
-        .filter(j => fixedTypes.has(j.type))
-        .forEach(j => {
-            const ra = find(j.parent),
-                rb = find(j.child)
-            if (ra !== rb) parent.set(ra, rb)
-        })
+    function union(a: string, b: string) {
+        const ra = find(a)
+        const rb = find(b)
+        if (ra !== rb) parent.set(ra, rb)
+    }
+
+    for (const j of joints) {
+        if (fixedTypes.has(j.type) || isZeroTravelPrismatic(j)) union(j.parent, j.child)
+    }
+
+    // Onshape emits "_loop_closure" joints to close kinematic loops in gear trains and belt
+    // drives. They carry no real DOF — merge them as fixed so the synthetic loop closure link
+    // attaches to its body rather than spawning as a free-floating orphan in the simulation.
+    // union(child, parent) keeps the real part as the union-find representative.
+    const loopClosureChildren = new Set<string>()
+    for (const j of joints) {
+        if (j.name.includes("_loop_closure")) {
+            union(j.child, j.parent)
+            loopClosureChildren.add(j.child)
+        }
+    }
+
+    const childJointsByParent = new Map<string, URDFJoint[]>()
+    for (const j of joints) {
+        if (!childJointsByParent.has(j.parent)) childJointsByParent.set(j.parent, [])
+        childJointsByParent.get(j.parent)!.push(j)
+    }
+
+    // Phantom links: zero-mass, no-geometry intermediaries Onshape emits for multi-DOF joints
+    // (cylindrical, planar). Merge each one into its parent to eliminate the massless body that
+    // would otherwise destabilise Jolt's constraint solver.
+    // union(phantom, parent) keeps the real part as the union-find representative.
+    const parentJointOf = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
+    const phantomLinks = new Set<string>()
+    for (const link of links) {
+        if (link.visuals.every(visual => visual.visualMeshPath === null) && link.mass === 0) {
+            phantomLinks.add(link.name)
+            const pj = parentJointOf.get(link.name)
+            if (pj) {
+                union(link.name, pj.parent)
+
+                // Onshape exports cylindrical mates as prismatic -> massless phantom -> continuous.
+                // The generated translation range is often enormous, and the final continuous joint
+                // makes ordinary bolted hardware like motor housings free to spin or orbit in physics.
+                // Collapse that synthetic chain into a rigid group; true drivetrain wheel/steer joints
+                // are separate non-cylindrical joints and remain physical.
+                if (isCylindricalPhantom(link, pj)) {
+                    for (const childJoint of childJointsByParent.get(link.name) ?? []) {
+                        if (childJoint.type === "continuous" || childJoint.type === "revolute") {
+                            union(childJoint.child, pj.parent)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Loop-closure links are synthetic bookkeeping links. Phantom links, however, must remain
+    // in emitted rigid-group occurrences so MirabufParser maps joints that reference them onto
+    // a real rigid node instead of leaving separate zero-geometry bodies.
+    const excludeFromOccurrences = loopClosureChildren
 
     const groups = new Map<string, string[]>()
     for (const l of links) {
@@ -273,9 +526,19 @@ function buildRigidGroups(links: URDFLink[], joints: URDFJoint[]): mirabuf.joint
         groups.get(root)!.push(l.name)
     }
 
-    return Array.from(groups.values())
-        .filter(g => g.length > 1)
-        .map(g => ({ name: g.join("_rigid"), occurrences: g }))
+    const linkToGroup = new Map<string, string>()
+    const rigidGroups: mirabuf.joint.IRigidGroup[] = []
+    for (const group of groups.values()) {
+        if (group.length <= 1) continue
+
+        const name = group.join("_rigid")
+        for (const linkName of group) linkToGroup.set(linkName, name)
+
+        const occurrences = group.filter(n => !excludeFromOccurrences.has(n))
+        if (occurrences.length > 1) rigidGroups.push({ name, occurrences })
+    }
+
+    return { rigidGroups, linkToGroup }
 }
 
 function mapJointMotion(type: URDFJoint["type"]): mirabuf.joint.JointMotion {
@@ -284,18 +547,36 @@ function mapJointMotion(type: URDFJoint["type"]): mirabuf.joint.JointMotion {
     return mirabuf.joint.JointMotion.RIGID
 }
 
-function buildLinkBody(link: URDFLink, meshFiles: Map<string, Uint8Array>): mirabuf.IBody | null {
-    if (!link.visualMeshPath) return null
+function isZeroTravelPrismatic(joint: URDFJoint): boolean {
+    return joint.type === "prismatic" && Math.abs(joint.limitUpper - joint.limitLower) <= 1e-6
+}
 
-    const parsed = loadMesh(link.visualMeshPath, meshFiles)
+function isCylindricalPhantom(link: URDFLink, parentJoint: URDFJoint): boolean {
+    return (
+        parentJoint.type === "prismatic" &&
+        (link.name.startsWith("cylindrical") || parentJoint.name.startsWith("cylindrical"))
+    )
+}
+
+function buildLinkBody(
+    link: URDFLink,
+    visual: URDFVisual,
+    index: number,
+    meshFiles: Map<string, Uint8Array>,
+    robotSpaceVisuals: boolean,
+    linkGlobalTransform?: URDFTransform
+): mirabuf.IBody | null {
+    if (!visual.visualMeshPath) return null
+
+    const parsed = loadMesh(visual.visualMeshPath, meshFiles)
     if (!parsed) return null
 
-    // Apply visual origin: maps mesh vertices from mesh-local frame -> link-local URDF Z-up frame.
-    const inLinkFrame = applyVisualOrigin(parsed, link.visualOriginXYZ, link.visualOriginRPY)
+    const visualTransform = visualTransformInLinkFrame(visual, robotSpaceVisuals, linkGlobalTransform)
+    const inLinkFrame = applyVisualTransform(parsed, visualTransform.rotation, visualTransform.translation)
 
     // Convert Z-up→Y-up and scale (metres→cm) in one pass per array.
     // Jolt VehicleConstraint requires mPosition in body-local Y-up space.
-    const [sx, sy, sz] = link.visualMeshScale.map(s => s * 100)
+    const [sx, sy, sz] = visual.visualMeshScale.map(s => s * 100)
     const rv = inLinkFrame.verts
     const scaled = new Array<number>(rv.length)
     for (let i = 0; i < rv.length; i += 3) {
@@ -306,7 +587,7 @@ function buildLinkBody(link: URDFLink, meshFiles: Map<string, Uint8Array>): mira
     const yupNormals = toYup(inLinkFrame.normals)
 
     return {
-        info: { GUID: `${link.name}_body`, name: `${link.name}_body` },
+        info: { GUID: `${link.name}_body_${index}`, name: `${link.name}_body_${index}` },
         triangleMesh: {
             mesh: {
                 verts: scaled,
@@ -316,7 +597,7 @@ function buildLinkBody(link: URDFLink, meshFiles: Map<string, Uint8Array>): mira
                 indices: inLinkFrame.indices,
             },
         },
-        appearanceOverride: link.materialName ?? undefined,
+        appearanceOverride: visual.materialName ?? undefined,
     }
 }
 
@@ -329,9 +610,15 @@ function buildParts(
     const partDefinitions: Record<string, mirabuf.IPartDefinition> = {}
     const partInstances: Record<string, mirabuf.IPartInstance> = {}
     const parentJoint = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
+    const globalTransforms = buildGlobalLinkTransforms(joints, rootLink.name)
 
     for (const link of links) {
-        const body = buildLinkBody(link, meshFiles)
+        const globalTransform = globalTransforms.get(link.name)
+        const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles)
+
+        const bodies = link.visuals
+            .map((visual, index) => buildLinkBody(link, visual, index, meshFiles, robotSpaceVisuals, globalTransform))
+            .filter((body): body is mirabuf.IBody => body !== null)
 
         partDefinitions[link.name] = {
             info: { GUID: link.name, name: link.name, version: 1 },
@@ -340,7 +627,7 @@ function buildParts(
                 com: positionToYup(link.comXYZ[0], link.comXYZ[1], link.comXYZ[2]),
             },
             baseTransform: { spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
-            bodies: body ? [body] : [],
+            bodies,
         }
 
         const pj = parentJoint.get(link.name)
@@ -355,7 +642,7 @@ function buildParts(
             info: { GUID: link.name, name: link.name, version: 1 },
             partDefinitionReference: link.name,
             transform: { spatialMatrix },
-            appearance: link.materialName ?? undefined,
+            appearance: link.visuals[0]?.materialName ?? undefined,
         }
     }
 
@@ -383,7 +670,9 @@ function buildAppearances(links: URDFLink[], doc: Document): Record<string, mira
     }
 
     for (const link of links) {
-        if (link.materialName && link.materialRGBA) add(link.materialName, link.materialRGBA)
+        for (const visual of link.visuals) {
+            if (visual.materialName && visual.materialRGBA) add(visual.materialName, visual.materialRGBA)
+        }
     }
 
     // Collect top-level robot materials (may define colors that links reference by name only)
@@ -398,16 +687,17 @@ function buildAppearances(links: URDFLink[], doc: Document): Record<string, mira
     return appearances
 }
 
-function buildJointDefinition(joint: URDFJoint): mirabuf.joint.IJoint {
+function buildJointDefinition(joint: URDFJoint, frame?: JointFrame): mirabuf.joint.IJoint {
     const motionType = mapJointMotion(joint.type)
+    const originXYZ = frame?.originXYZ ?? joint.originXYZ
     const jDef: mirabuf.joint.IJoint = {
         info: { GUID: joint.name, name: joint.name, version: 1 },
-        origin: positionToYup(joint.originXYZ[0], joint.originXYZ[1], joint.originXYZ[2]),
+        origin: positionToYup(originXYZ[0], originXYZ[1], originXYZ[2]),
         jointMotionType: motionType,
     }
 
     if (motionType === mirabuf.joint.JointMotion.REVOLUTE) {
-        const axis = axisToYup(...(joint.axisXYZ as [number, number, number]))
+        const axis = axisToYup(...(frame?.axisXYZ ?? joint.axisXYZ))
         const isContiguous = joint.type === "continuous"
         jDef.rotational = {
             rotationalFreedom: {
@@ -420,7 +710,7 @@ function buildJointDefinition(joint: URDFJoint): mirabuf.joint.IJoint {
             },
         }
     } else if (motionType === mirabuf.joint.JointMotion.SLIDER) {
-        const axis = axisToYup(...(joint.axisXYZ as [number, number, number]))
+        const axis = axisToYup(...(frame?.axisXYZ ?? joint.axisXYZ))
         jDef.prismatic = {
             prismaticFreedom: {
                 axis,
@@ -437,7 +727,8 @@ function buildJointDefinition(joint: URDFJoint): mirabuf.joint.IJoint {
 
 function buildJoints(
     joints: URDFJoint[],
-    rootLink: URDFLink
+    rootLink: URDFLink,
+    jointFrames?: Map<string, JointFrame>
 ): {
     jointDefinitions: Record<string, mirabuf.joint.IJoint>
     jointInstances: Record<string, mirabuf.joint.IJointInstance>
@@ -455,7 +746,7 @@ function buildJoints(
     }
 
     for (const joint of joints) {
-        jointDefinitions[joint.name] = buildJointDefinition(joint)
+        jointDefinitions[joint.name] = buildJointDefinition(joint, jointFrames?.get(joint.name))
         jointInstances[joint.name] = {
             info: { GUID: joint.name, name: joint.name, version: 1 },
             parentPart: joint.parent,
@@ -488,16 +779,39 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     const rootLink = links.find(l => !childSet.has(l.name))
     if (!rootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
 
+    // rigidGroups must be computed before physicsJoints — filtering depends on group membership.
+    // Must be an array (not undefined): bandageRigidNodes calls .forEach on it directly.
+    const { rigidGroups, linkToGroup } = buildRigidGroups(links, joints)
+
+    // Map each ungrouped link to itself so we can identify within-group joints.
+    for (const link of links) {
+        if (!linkToGroup.has(link.name)) linkToGroup.set(link.name, link.name)
+    }
+
+    // Physics joints: exclude loop closure joints (no real DOF, now merged into rigid groups)
+    // and joints whose both endpoints are in the same rigid group (within-body constraints
+    // that became no-ops after phantom link and loop closure merging).
+    const physicsJoints = joints.filter(
+        j => !j.name.includes("_loop_closure") && linkToGroup.get(j.parent) !== linkToGroup.get(j.child)
+    )
+
+    // buildParts uses original joints for transform computation — phantom links still need
+    // their correct spatial matrices derived from their original parent joints.
     const { partDefinitions, partInstances } = buildParts(links, rootLink, joints, meshFiles)
+
     const appearances = buildAppearances(links, doc)
-    const { jointDefinitions, jointInstances } = buildJoints(joints, rootLink)
-    // rigidGroups must be an array (not undefined): bandageRigidNodes calls .forEach on it directly
-    const rigidGroups = buildRigidGroups(links, joints)
+    const jointFrames = buildGlobalJointFrames(joints, rootLink.name)
+    const { jointDefinitions, jointInstances } = buildJoints(physicsJoints, rootLink, jointFrames)
+
+    // The design hierarchy must stay complete even when physics joints are filtered out.
+    // MirabufParser builds _partToNodeMap by walking this tree, and rigidGroups may still
+    // reference links connected by filtered fixed/loop-closure joints.
+    const hierarchy = buildDesignHierarchy(joints, rootLink.name)
 
     return mirabuf.Assembly.create({
         info: { GUID: robotName, name: robotName, version: 5 },
         dynamic: true,
-        designHierarchy: buildDesignHierarchy(joints, rootLink.name),
+        designHierarchy: hierarchy,
         data: {
             parts: { partDefinitions, partInstances },
             // motorDefinitions must be an object: PhysicsSystem.ts:375 indexes it before any null-check
