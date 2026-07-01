@@ -85,14 +85,16 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     private checkCollisions(robots: RobotBox[], robotsInZone: RobotBox[]): Collision[] {
         const collisions: Collision[] = []
 
+        const isDuplicateCollision = (robot1: MirabufSceneObject, robot2: MirabufSceneObject): boolean => {
+            return collisions.some(collision => collision[0] === robot2 && collision[1] === robot1)
+        }
+
         const checkCollision = ([robot1, bounding1]: RobotBox, [robot2, bounding2]: RobotBox) => {
             if (robot1.alliance === robot2.alliance) return
 
             const collided = bounding1.OverlapsAABox(bounding2)
             if (!collided) return
-            // NOTE
-            // We might have duplicates, but it's okay, because the cooldown in `handleContactPenalty` will catch them
-            // This is better than iterating through the collisions list each time we add to it
+            if (isDuplicateCollision(robot1, robot2)) return
 
             collisions.push([robot1, robot2])
         }
