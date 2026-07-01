@@ -180,16 +180,24 @@ class PreferencesSystem {
         }
 
         try {
-            const saved = JSON.parse(loadedPrefs)
-
+            const saved: Preferences & UserPreferences = JSON.parse(loadedPrefs)
+            console.log(saved)
+            saved[USER_PREFERENCE_KEY] ??= defaultUserPreferences
+            let didMigrate = false
             for (const key in defaultUserPreferences) {
+                const typedKey = key as UserPreference
                 // Migrate old settings to new system
+                console.log(key, key in saved, saved[typedKey])
                 if (key in saved) {
-                    this.setUserPreference(key as UserPreference, saved[key])
-                    delete saved[key]
+                    didMigrate = true
+                    ;(saved[USER_PREFERENCE_KEY] as Record<UserPreference, unknown>)[typedKey] = saved[typedKey]
+                    delete saved[typedKey]
                 }
             }
             this._preferences = saved
+            if (didMigrate) {
+                this.savePreferences()
+            }
         } catch (e) {
             console.error(e)
             this._preferences = {}
