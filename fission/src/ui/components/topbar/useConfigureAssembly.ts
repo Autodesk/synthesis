@@ -36,19 +36,12 @@ export const assemblyLabel = (assembly: MirabufSceneObject): string => {
     return `[${scheme}] ${assembly.assemblyName}`
 }
 
-/**
- * Shared assembly-selection state and config-button wiring used by both the
- * desktop `ConfigureControls` and the mobile Configure drawer submenu. Keeps a
- * single source of truth for the spawned-assembly list, the current selection
- * (synced to global state), and opening `ConfigurePanel`.
- */
 export function useConfigureAssembly() {
     const { selectedConfigAssembly, setSelectedConfigAssembly } = useStateContext()
     const { openPanel, addToast } = useUIContext()
     const [assemblies, setAssemblies] = useState<MirabufSceneObject[]>([])
 
-    // A field shows its own config buttons; everything else (incl. the default,
-    // empty selection) shows the robot buttons.
+    // robot configure button set is shown by default
     const isField = selectedConfigAssembly?.miraType === MiraType.FIELD
     const configurationType: ConfigurationType = isField ? "FIELDS" : "ROBOTS"
     const configureButtons = isField ? FIELD_CONFIGURE_BUTTONS : ROBOT_CONFIGURE_BUTTONS
@@ -74,7 +67,7 @@ export function useConfigureAssembly() {
 
     useEffect(() => {
         update()
-        // On spawn the event carries the new assembly; select it. On disposal it's null.
+        // On spawn a new assembly is set as the actively configuring item
         const onChange = (assembly: MirabufSceneObject | null) => {
             update()
             if (assembly) setSelectedConfigAssembly(assembly)
