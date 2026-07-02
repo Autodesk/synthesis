@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Panel } from "@/components/Panel"
 import { Modal } from "./components/Modal"
 import Scoreboard from "./components/Scoreboard"
+import { useStateContext } from "./helpers/StateProviderHelpers"
 import { useUIContext } from "./helpers/UIProviderHelpers"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
@@ -10,6 +11,7 @@ import EventSystem from "@/systems/EventSystem"
 
 export const UIRenderer: React.FC = () => {
     const { modal, panels } = useUIContext()
+    const { appMode } = useStateContext()
 
     const [prefRenderScoreboard, setPrefRenderScoreboard] = useState(
         PreferencesSystem.getGlobalPreference("RenderScoreboard")
@@ -31,7 +33,9 @@ export const UIRenderer: React.FC = () => {
         }
     }, [])
 
-    const showScoreboard = prefRenderScoreboard || inMatchMode
+    // Gameplay mode always shows the scoreboard; leaving it reverts to the
+    // user's RenderScoreboard preference (match mode still forces it on).
+    const showScoreboard = appMode === "Gameplay" || prefRenderScoreboard || inMatchMode
 
     return (
         <>

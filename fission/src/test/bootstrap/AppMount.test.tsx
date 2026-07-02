@@ -30,21 +30,14 @@ describe("React Mounting", async () => {
         expect(document.getElementById("root")).not.toBeNull()
     })
 
-    test("Static stylesheets load", async () => {
-        await vi.waitUntil(() => document.styleSheets.length >= 2, { timeout: 10000, interval: 200 })
-
-        expect(document.styleSheets.length).toBe(2)
-        const iterable = document.fonts.values()
-        let iterator = iterable.next()
-        let hasArtifaktFont = false
-        while (!iterator.done) {
-            if (iterator.value.family.includes("Artifakt")) {
-                hasArtifaktFont = true
-                break
-            }
-            iterator = iterable.next()
-        }
-        expect(hasArtifaktFont).toBeTruthy()
+    test("Static stylesheet links exist", () => {
+        const links = [...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')]
+        expect(links.map(link => link.href)).toEqual(
+            expect.arrayContaining([
+                expect.stringContaining("artifakt.css"),
+                expect.stringContaining("fonts.googleapis.com"),
+            ])
+        )
     })
 
     // importing main.tsx has side effects that I could not clean up and can only be done once (per file),
@@ -52,6 +45,11 @@ describe("React Mounting", async () => {
     // find it in 4 hours of trying
     test("App fully mounts through main.tsx", async ({ annotate, skip }) => {
         skip(server.browser == "firefox", "WebGL bug in Github Actions on Firefox")
+
+        // The MainMenu/MainHUD "Singleplayer" gate was removed: the app now boots
+        // straight into the scene, so World.initWorld runs automatically on mount.
+        // Spy before importing main.tsx to capture that call.
+        const initWorldSpy = vi.spyOn(World, "initWorld")
 
         // biome-ignore lint/suspicious/noTsIgnore: ts-expect-error doesn't work here for some reason
         // @ts-ignore funky dynamic import
@@ -77,16 +75,13 @@ describe("React Mounting", async () => {
 
         const screenElement = screen.baseElement
         expect(screenElement.querySelector("canvas")).toBeInTheDocument()
-        expect(screen.getByText("Singleplayer")).toBeInTheDocument()
-        await annotate("DOM successfully updated to include Synthesis components")
-        const initWorldSpy = vi.spyOn(World, "initWorld")
-        // for some reason threejs canvas intercepts .click()
-        screen
-            .getByText("Singleplayer")
-            .element()
-            .dispatchEvent(new PointerEvent("click", { bubbles: true }))
-        expect(initWorldSpy).toHaveBeenCalledOnce()
-        await annotate("Singleplayer Button calls initWorld")
+        // The top bar renders icons as inline SVGs exposed through their accessible label.
+        expect(screenElement.querySelector('[role="img"][aria-label="settings"]')).toBeInTheDocument()
+        await annotate("DOM successfully updated to include Synthesis components and the top bar")
+
+        // No Singleplayer button anymore — the world initializes on mount.
+        expect(initWorldSpy).toHaveBeenCalled()
+        await annotate("World initialized automatically on mount")
 
         await wait(50)
 
