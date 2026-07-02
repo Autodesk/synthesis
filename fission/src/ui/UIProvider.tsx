@@ -152,7 +152,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             if (blockingPanel) {
                 const msg = blockingPanel.props.blockingMessage ?? "Close the current panel before opening another."
                 addToast("warning", msg)
-                return blockingPanel.id
+                return null
             }
             const id = uuidv4()
             const panel = {

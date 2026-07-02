@@ -93,7 +93,7 @@ export type OpenPanelFn = <T, P>(
     customProps: P,
     parent?: UIScreen<any, any>,
     props?: Omit<PanelProps<P>, "type" | "configured" | "custom"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept">
-) => string
+) => string | null
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: ReactNode[]) => void
