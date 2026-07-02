@@ -26,7 +26,7 @@ import {
     type SpawnLocation,
     type Station,
 } from "@/systems/preferences/PreferenceTypes"
-import { CameraMode, type CustomTargetControls } from "@/systems/scene/CameraControls"
+import { CameraMode, type CustomTargetControls, getTargetControls } from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
@@ -306,10 +306,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.moveToSpawnLocation()
 
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
-
-        if (this.isOwnObject && (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider)) {
-            cameraControls.focusProvider = this
+        const targetControls = getTargetControls()
+        if (targetControls && this.isOwnObject && (this.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+            targetControls.focusProvider = this
         }
 
         EventSystem.dispatch("MirabufObjectChangeEvent", this)

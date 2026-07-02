@@ -3,6 +3,7 @@ import { ContactType } from "@/mirabuf/ZoneTypes.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes.ts"
 import {
+    type CameraPoint,
     defaultFieldPreferences,
     defaultRobotPreferences,
     type EjectorPreferences,
@@ -17,6 +18,7 @@ export interface DevtoolMiraData {
     "devtool:scoring_zones": ScoringZonePreferences[]
     "devtool:protected_zones": ProtectedZonePreferences[]
     "devtool:spawn_locations": FieldPreferences["spawnLocations"]
+    "devtool:camera_points": FieldPreferences["cameraPoints"]
     "devtool:robot_ejector": RobotPreferences["ejector"]
     "devtool:robot_intake": RobotPreferences["intake"]
     "devtool:a": unknown
@@ -27,6 +29,20 @@ export interface DevtoolMiraData {
     "devtool:bad": unknown
     "devtool:foo": unknown
     // additional devtool keys to be added in future
+}
+
+function isValidCameraLook(look: unknown): look is CameraPoint["look"] {
+    if (typeof look !== "object" || look === null || !("type" in look)) return false
+    switch (look.type) {
+        case "field":
+            return true
+        case "rotation": {
+            const { yaw, pitch } = look as { yaw?: unknown; pitch?: unknown }
+            return typeof yaw === "number" && typeof pitch === "number"
+        }
+        default:
+            return false
+    }
 }
 
 export const devtoolHandlers = {
@@ -133,6 +149,32 @@ export const devtoolHandlers = {
             })
         },
     },
+    "devtool:camera_points": {
+        get(field) {
+            return field.fieldPreferences?.cameraPoints ?? defaultFieldPreferences().cameraPoints
+        },
+        set(field, val) {
+            val ??= defaultFieldPreferences().cameraPoints
+            if (!field.fieldPreferences || !this.validate(val)) {
+                console.warn("validation failed", val, field.fieldPreferences)
+                return
+            }
+            field.fieldPreferences.cameraPoints = val
+        },
+        validate(val): val is CameraPoint[] {
+            if (!Array.isArray(val)) return false
+            return val.every(
+                point =>
+                    typeof point === "object" &&
+                    point !== null &&
+                    typeof point.name === "string" &&
+                    Array.isArray(point.pos) &&
+                    point.pos.length === 3 &&
+                    point.pos.every((c: unknown) => typeof c === "number") &&
+                    isValidCameraLook(point.look)
+            )
+        },
+    },
     "devtool:robot_intake": {
         get(robot) {
             return robot.intakePreferences ?? defaultRobotPreferences().intake
@@ -155,9 +197,9 @@ export const devtoolHandlers = {
             return robot.ejectorPreferences ?? defaultRobotPreferences().ejector
         },
         set(robot, val) {
-            val ??= defaultRobotPreferences().intake
-            if (!robot.intakePreferences || !this.validate(val)) {
-                console.warn("validation failed", val, robot.intakePreferences)
+            val ??= defaultRobotPreferences().ejector
+            if (!robot.ejectorPreferences || !this.validate(val)) {
+                console.warn("validation failed", val, robot.ejectorPreferences)
                 return
             }
             robot.ejectorPreferences = val
