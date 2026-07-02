@@ -3,7 +3,7 @@ import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { CustomTargetControls } from "@/systems/scene/CameraControls"
 import World from "@/systems/World"
 
 interface ViewCubeProps {
@@ -109,7 +109,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
             const controls = World.sceneRenderer.currentCameraControls
-            if (controls instanceof CustomOrbitControls) {
+            if (controls instanceof CustomTargetControls) {
                 const currentCoords = controls.getCurrentCoordinates()
 
                 const newTheta = currentCoords.theta - deltaX * sensitivity
@@ -285,7 +285,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     const getTopBottomOrientation = (isTop: boolean) => {
         if (World && World.sceneRenderer && World.sceneRenderer.currentCameraControls) {
             const controls = World.sceneRenderer.currentCameraControls
-            if (controls instanceof CustomOrbitControls) {
+            if (controls instanceof CustomTargetControls) {
                 const currentCoords = controls.getCurrentCoordinates()
 
                 const quarterTurn = Math.PI / 2
@@ -749,17 +749,11 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         const animate = () => {
             if (rendererRef.current && sceneRef.current && cameraRef.current) {
                 const mainCamera = World.sceneRenderer.mainCamera
-                const controls = World.sceneRenderer.currentCameraControls
 
-                if (mainCamera && cubeRef.current && controls instanceof CustomOrbitControls) {
-                    const coords = controls.getCurrentCoordinates()
-
-                    const camEuler = new THREE.Euler(coords.phi + Math.asin(1 / Math.sqrt(3)), coords.theta, 0, "YXZ")
-                    const camQuat = new THREE.Quaternion().setFromEuler(camEuler).invert()
-
-                    const offsetQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 4, 0))
-
-                    cubeRef.current.quaternion.copy(offsetQuat).multiply(camQuat)
+                if (mainCamera && cubeRef.current) {
+                    cubeRef.current.quaternion
+                        .copy(cameraRef.current.quaternion)
+                        .multiply(mainCamera.quaternion.clone().invert())
 
                     if (axisRef.current) {
                         axisRef.current.quaternion.copy(cubeRef.current.quaternion)
@@ -857,7 +851,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
     const snapToOrientation = (orientation: { theta: number; phi: number }) => {
         const controls = World.sceneRenderer.currentCameraControls
-        if (controls instanceof CustomOrbitControls) {
+        if (controls instanceof CustomTargetControls) {
             const currentCoords = controls.getCurrentCoordinates()
 
             const normalizedCurrentTheta = normalizeTheta(currentCoords.theta)

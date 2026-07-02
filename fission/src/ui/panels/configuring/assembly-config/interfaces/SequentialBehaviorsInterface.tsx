@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material"
+import { Stack, Tooltip } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -8,8 +8,8 @@ import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/s
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import Label from "@/ui/components/Label"
-import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, Spacer } from "@/ui/components/StyledComponents"
+import { FaUnlink } from "react-icons/fa"
 
 interface BehaviorCardProps {
     elementKey: number
@@ -32,67 +32,70 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
     onBehaviorSelected,
     hasChild,
 }) => {
+    const [selectable, setSelectable] = useState(false)
+    const [hasParent, setHasParent] = useState(false)
+    useEffect(() => {
+        setSelectable(
+            lookingForParent !== undefined && lookingForParent !== behavior && behavior.parentJointIndex === undefined
+        )
+    }, [lookingForParent, behavior])
+    useEffect(() => {
+        setHasParent(behavior.parentJointIndex !== undefined)
+    })
+
     return (
-        <Stack textAlign={"center"} key={elementKey} position="relative">
-            <Stack position="absolute" alignSelf={"center"}>
-                {behavior.parentJointIndex !== undefined ? (
-                    <Label
-                        size="sm"
-                        key={`arm-nodes-notation ${elementKey}`}
-                        className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
+        <Stack direction="row" textAlign="center" gap={1} key={elementKey}>
+            {hasParent && Spacer(0, 10)}
+            <Tooltip
+                title={hasParent ? "Following Joint " + behavior.parentJointIndex : selectable ? "Set as parent" : ""}
+            >
+                <div>
+                    <Button
+                        size="small"
+                        className="text-center mx-[5%] h-full"
+                        onClick={() => {
+                            onBehaviorSelected()
+                            update()
+                        }}
+                        disabled={!selectable}
+                        color={"secondary"}
+                        sx={{
+                            borderColor: !selectable ? "transparent" : "#888888",
+                            color: selectable || hasParent ? undefined : "white !important",
+                        }}
                     >
                         {name}
-                    </Label>
-                ) : (
-                    <Label
-                        size="sm"
-                        key={`arm-nodes-notation ${elementKey}`}
-                        className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
-                    >
-                        {name}
-                    </Label>
-                )}
-            </Stack>
-
+                    </Button>
+                </div>
+            </Tooltip>
             {/* Button used for selecting a parent (shows up as an outline) */}
-            <Button
-                fullWidth={true}
-                onClick={() => {
-                    onBehaviorSelected()
-                    update()
-                }}
-                disabled={
-                    lookingForParent === undefined ||
-                    lookingForParent === behavior ||
-                    behavior.parentJointIndex !== undefined
+            <Tooltip
+                title={
+                    hasParent
+                        ? "Unfollow parent"
+                        : selectable
+                          ? ""
+                          : hasChild
+                            ? "This joint has a follower"
+                            : "Follow another joint"
                 }
-                sx={{
-                    borderColor:
-                        lookingForParent === undefined ||
-                        lookingForParent === behavior ||
-                        behavior.parentJointIndex !== undefined
-                            ? "transparent"
-                            : "#888888",
-                }}
-            />
+            >
+                <div>
+                    <Button
+                        onClick={() => {
+                            onSetPressed()
+                            update()
+                        }}
+                        className={"h-full"}
+                        color={hasParent ? "warning" : "primary"}
+                        disabled={selectable || hasChild}
 
-            <Stack position="relative" alignSelf={"center"} alignItems={"center"}>
-                <Button
-                    key="follow"
-                    onClick={() => {
-                        if (hasChild) return
-
-                        onSetPressed()
-                        update()
-                    }}
-                    sx={hasChild ? { bgcolor: "background.default", "&:hover": { filter: "brightness(100%)" } } : {}}
-                >
-                    {lookingForParent === behavior || behavior.parentJointIndex !== undefined
-                        ? SynthesisIcons.XMARK_LARGE
-                        : "follow"}
-                </Button>
-            </Stack>
-            {Spacer(0, 5)}
+                        // sx={hasChild ? { bgcolor: "background.default", "&:hover": { filter: "brightness(100%)" } } : {}}
+                    >
+                        {hasParent ? <FaUnlink /> : lookingForParent == behavior ? "Cancel" : "Follow"}
+                    </Button>
+                </div>
+            </Tooltip>
         </Stack>
     )
 }
@@ -171,20 +174,19 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
     }, [saveEvent])
 
     return (
-        <Stack direction="column" className="flex overflow-y-auto gap-2 bg-background-secondary">
+        <Stack direction="column" gap={2} className="overflow-y-auto bg-background-secondary">
             {behaviors.map(behavior => {
                 const jointIndex = behavior.jointIndex
                 return (
                     <BehaviorCard
                         elementKey={jointIndex}
-                        name={behavior.type === "Arm" ? `Joint ${jointIndex} (Arm)` : `Joint ${jointIndex} (Elevator)`}
+                        name={behavior.type === "Arm" ? `Joint ${jointIndex} (Pivot)` : `Joint ${jointIndex} (Slider)`}
                         behavior={behavior}
                         key={jointIndex}
                         update={update}
                         onSetPressed={() => {
                             if (behavior.parentJointIndex !== undefined) {
                                 behavior.parentJointIndex = undefined
-                                update()
                             } else {
                                 setLookingForParent(lookingForParent === behavior ? undefined : behavior)
                             }

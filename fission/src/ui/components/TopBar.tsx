@@ -10,6 +10,7 @@ import { useUIContext } from "../helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
+import CameraSelectionPanel from "../panels/configuring/CameraSelectionPanel"
 import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import DebugPanel from "../panels/DebugPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
@@ -158,6 +159,17 @@ const TopBar: React.FC = () => {
                         </Tooltip>
                     </>
                 )}
+
+                <Tooltip title="Configure Camera">
+                    <IconButton
+                        size="large"
+                        disableRipple
+                        sx={TOP_BAR_ICON_BUTTON_SX}
+                        onClick={() => openPanel(CameraSelectionPanel, undefined)}
+                    >
+                        <Box sx={{ fontSize: 34, display: "flex" }}>{SynthesisIcons.CAMERA}</Box>
+                    </IconButton>
+                </Tooltip>
 
                 <Tooltip title="Settings">
                     <IconButton

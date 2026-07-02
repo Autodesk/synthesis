@@ -4,6 +4,7 @@ import { afterEach, assert, beforeEach, describe, expect, test } from "vitest"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem, { LayerReserve } from "../../systems/physics/PhysicsSystem"
+import type MirabufParser from "../../mirabuf/MirabufParser"
 
 describe("Physics Sanity Checks", () => {
     let system: PhysicsSystem
@@ -670,5 +671,96 @@ describe("Update Loop", () => {
         system.update(0.001) // Very small delta time
 
         expect(body.GetPosition().GetY()).toBeLessThanOrEqual(10)
+    })
+})
+
+// Minimal mock MirabufParser for sphere body registration tests
+function makeMockParser(physicalData: { volume: number; area: number }, isGamePiece: boolean): MirabufParser {
+    const tetraVerts = [0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0, 100]
+
+    return {
+        assembly: {
+            dynamic: false,
+            data: {
+                parts: {
+                    partInstances: {
+                        "part-0": {
+                            partDefinitionReference: "def-0",
+                            skipCollider: false,
+                            physicalMaterial: undefined,
+                            info: { GUID: "part-0" },
+                        },
+                    },
+                    partDefinitions: {
+                        "def-0": {
+                            bodies: [{ triangleMesh: { mesh: { verts: tetraVerts } } }],
+                            physicalData: {
+                                volume: physicalData.volume,
+                                area: physicalData.area,
+                                com: { x: 0, y: 0, z: 0 },
+                                mass: 0.3,
+                            },
+                        },
+                    },
+                },
+                materials: { physicalMaterials: {} },
+                joints: { jointInstances: {}, rigidGroups: [] },
+            },
+        },
+        rigidNodes: new Map([
+            [
+                "node-0",
+                {
+                    id: "node-0",
+                    parts: new Set(["part-0"]),
+                    isDynamic: true,
+                    isGamePiece,
+                    mass: 0.3,
+                },
+            ],
+        ]),
+        globalTransforms: new Map([["part-0", new THREE.Matrix4()]]),
+    } as unknown as MirabufParser
+}
+
+describe("Sphere Game Piece Body Registration", () => {
+    let system: PhysicsSystem
+
+    const SPHERE_DATA = { volume: 1767.15, area: 706.86 } // 2026 game piece approximate values
+    const CUBE_DATA_2023 = { volume: 8703.98, area: 2146.74 } // 2023 cube game piece approximate values
+    const CUBE_DATA = { volume: 1000, area: 600 } // Cube with side length 10
+
+    beforeEach(() => {
+        system = new PhysicsSystem()
+    })
+
+    afterEach(() => {
+        system.destroy()
+    })
+
+    test("Spherical game piece is added to sphereGamePieceBodies", () => {
+        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
+        expect(system.sphereGamePieceBodies.length).toBe(1)
+    })
+
+    test("Cube game piece is not added to sphereGamePieceBodies", () => {
+        system.createBodiesFromParser(makeMockParser(CUBE_DATA, true))
+        expect(system.sphereGamePieceBodies.length).toBe(0)
+    })
+
+    test("2023 cube game piece is not added to sphereGamePieceBodies", () => {
+        system.createBodiesFromParser(makeMockParser(CUBE_DATA_2023, true))
+        expect(system.sphereGamePieceBodies.length).toBe(0)
+    })
+
+    test("Spherical non-game-piece body is not added to sphereGamePieceBodies", () => {
+        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, false))
+        expect(system.sphereGamePieceBodies.length).toBe(0)
+    })
+
+    test("Multiple parsers accumulate sphere bodies independently", () => {
+        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
+        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
+        expect(system.sphereGamePieceBodies.length).toBe(2)
     })
 })

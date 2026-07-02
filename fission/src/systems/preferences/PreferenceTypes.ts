@@ -92,6 +92,39 @@ export function defaultGraphicsPreferences(): GraphicsPreferences {
     }
 }
 
+export function lowGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: false,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
+        antiAliasing: false,
+    }
+}
+
+export function mediumGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: true,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
+        antiAliasing: true,
+    }
+}
+
+export function highGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: true,
+        maxFar: 100,
+        cascades: 6,
+        shadowMapSize: 8192,
+        antiAliasing: true,
+    }
+}
+
 export type IntakePreferences = {
     deltaTransformation: number[]
     zoneDiameter: number
@@ -213,7 +246,7 @@ export function defaultRobotPreferences(): RobotPreferences {
 
 // The object will be moved such that the y-value specified is the bottom of the object, and the x and z values are the center
 export function defaultFieldSpawnLocation(): SpawnLocation {
-    return { pos: [0, 0.1, 0], yaw: 0 }
+    return { pos: [0, 0, 0], yaw: 0 }
 }
 export function defaultRobotSpawnLocation(): SpawnLocation {
     return { pos: [0, 0.1, 0], yaw: 0 }
