@@ -1,13 +1,13 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import {Button, Stack, TextField} from "@mui/material"
-import {useCallback, useEffect, useMemo, useRef, useState} from "react"
+import { Button, Stack, TextField } from "@mui/material"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
-import type {RigidNodeId} from "@/mirabuf/MirabufParser"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import EventSystem from "@/systems/EventSystem.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import {PAUSE_REF_ASSEMBLY_CONFIG} from "@/systems/physics/PhysicsTypes"
-import type {Alliance} from "@/systems/preferences/PreferenceTypes"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
+import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import SelectButton from "@/ui/components/SelectButton"
@@ -17,7 +17,7 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import {deltaFieldTransformsPhysicalProp} from "@/util/threejs/MeshCreation"
+import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 
 /**
  * Saves zone configuration to selected field.
