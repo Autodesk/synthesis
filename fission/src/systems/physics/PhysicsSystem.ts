@@ -8,6 +8,7 @@ import {
     convertMirabufFloatToArrJoltFloat3,
     convertMirabufFloatToArrJoltVec3,
     convertMirabufVector3ToJoltRVec3,
+    convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
     convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
@@ -610,6 +611,22 @@ class PhysicsSystem extends WorldSystem {
         return this.newConstraint(constraintSettings, bodyA, bodyB)
     }
 
+    private createFixedConstraint(bodyMain: Jolt.Body, bodyWheel: Jolt.Body, anchorPoint: Jolt.RVec3) {
+        const fixedSettings = new JOLT.FixedConstraintSettings()
+        fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
+
+        // TODO
+        // Figure out if this cast is necessary
+        // If not, replace with `this.newConstraint()`
+        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
+        this._joltPhysSystem.AddConstraint(fixedConstraint)
+        this._constraints.push(fixedConstraint)
+
+        JOLT.destroy(fixedSettings)
+
+        return fixedConstraint
+    }
+
     private createVehicleConstraint(wheelSettings: Jolt.WheelSettingsWV, bodyMain: Jolt.Body, maxAcc: number) {
         const vehicleSettings = new JOLT.VehicleConstraintSettings()
 
@@ -661,13 +678,7 @@ class PhysicsSystem extends WorldSystem {
         versionNum: number
     ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
         const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
-
-        const fixedSettings = new JOLT.FixedConstraintSettings()
-        fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
-
-        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
-        this._joltPhysSystem.AddConstraint(fixedConstraint)
-        this._constraints.push(fixedConstraint)
+        const fixedConstraint = this.createFixedConstraint(bodyMain, bodyWheel, anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
         const axis = this.getAxis(rotationalFreedom, versionNum).Mul(0.1)
@@ -702,23 +713,20 @@ class PhysicsSystem extends WorldSystem {
     ): void {
         const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
 
-        const pitchDof = jointDefinition.custom!.dofs!.at(0)
-        const yawDof = jointDefinition.custom!.dofs!.at(1)
-        const rollDof = jointDefinition.custom!.dofs!.at(2)
-        const pitchAxis = new JOLT.Vec3(pitchDof?.axis?.x ?? 0, pitchDof?.axis?.y ?? 0, pitchDof?.axis?.z ?? 0)
-        const yawAxis = new JOLT.Vec3(yawDof?.axis?.x ?? 0, yawDof?.axis?.y ?? 0, yawDof?.axis?.z ?? 0)
-        const rollAxis = new JOLT.Vec3(rollDof?.axis?.x ?? 0, rollDof?.axis?.y ?? 0, rollDof?.axis?.z ?? 0)
+        const dofs = jointDefinition.custom?.dofs
+        if (!dofs || dofs.length < 3) {
+            console.warn("Empty degrees-of-freedom in joint definition for ball constraint")
+            return
+        }
 
-        const constraints: DOFSpecs[] = []
-        if (!pitchDof?.limits || (pitchDof.limits.upper ?? 0) - (pitchDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({ ...pitchDof, axis: pitchAxis, friction: 0 })
-        }
-        if (!yawDof?.limits || (yawDof.limits.upper ?? 0) - (yawDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({ ...yawDof, axis: yawAxis, friction: 0 })
-        }
-        if (!rollDof?.limits || (rollDof.limits.upper ?? 0) - (rollDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({ ...rollDof, axis: rollAxis, friction: 0 })
-        }
+        const axes = dofs.filter(dof => dof.axis).map(dof => convertMirabufVector3ToJoltVec3(dof.axis!))
+
+        const constraints: DOFSpecs[] = axes
+            .map((axis, i) => [axis, dofs[i]] as [Jolt.Vec3, mirabuf.joint.IDOF])
+            .filter(([_, dof]) => !dof.limits || (dof.limits.upper ?? 0) - (dof.limits.lower ?? 0) > 0.001)
+            .map(([axis, dof]) => {
+                return { ...dof, axis, friction: 0 } satisfies DOFSpecs
+            })
 
         let bodyStart = bodyB
         let bodyNext = bodyA
