@@ -46,6 +46,7 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToThreeVector3,
+    convertThreeMatrix4ToArray,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import { createMeshForShape } from "@/util/threejs/MeshCreation.ts"
@@ -292,6 +293,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             simLayer.setBrain(this._brain)
         }
 
+        this.updateBatches()
+
+        if (this.miraType === MiraType.ROBOT) {
+            this.centerDefaultZoneTransformations()
+        }
+
         // Intake
         this.updateIntakeSensor()
         this.updateScoringZones()
@@ -300,8 +307,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.isOwnObject) {
             setSpotlightAssembly(this)
         }
-
-        this.updateBatches()
 
         this._basePositionTransform = this.getPositionTransform()
 
@@ -328,6 +333,34 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getCenter(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
         return this.computeBoundingBox().getCenter(vec)
+    }
+
+    private centerDefaultZoneTransformations() {
+        if (this.intakePreferences.deltaTransformation.length === 0) {
+            this.intakePreferences.deltaTransformation = this.computeCenteredDeltaTransformation(
+                this.intakePreferences.parentNode
+            )
+        }
+
+        if (this.ejectorPreferences.deltaTransformation.length === 0) {
+            this.ejectorPreferences.deltaTransformation = this.computeCenteredDeltaTransformation(
+                this.ejectorPreferences.parentNode
+            )
+        }
+    }
+    private computeCenteredDeltaTransformation(parentNode: string | undefined): number[] {
+        const nodeBodyId =
+            this.mechanism.nodeToBody.get(parentNode ?? this.rootNodeId) ??
+            this.mechanism.nodeToBody.get(this.rootNodeId)!
+
+        const robotTransformation = convertJoltMat44ToThreeMatrix4(
+            World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
+        )
+
+        const centeredTransformation = robotTransformation.clone().setPosition(this.getCenter())
+        const deltaTransformation = centeredTransformation.premultiply(robotTransformation.invert())
+
+        return convertThreeMatrix4ToArray(deltaTransformation)
     }
 
     public moveToSpawnLocation() {

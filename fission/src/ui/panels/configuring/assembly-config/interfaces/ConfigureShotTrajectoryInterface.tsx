@@ -21,10 +21,6 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 
-function isDefaultDelta(delta: number[]): boolean {
-    return !delta || delta.length === 0
-}
-
 // slider constants
 const MIN_VELOCITY = 0.0
 const MAX_VELOCITY = 20.0
@@ -144,11 +140,6 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                     World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
-
-                // Don't set to center if not default delta, as this will override the user's configuration
-                if (isDefaultDelta(selectedRobot.ejectorPreferences!.deltaTransformation)) {
-                    gizmoTransformation.setPosition(selectedRobot.getCenter())
-                }
 
                 gizmo.obj.position.setFromMatrixPosition(gizmoTransformation)
                 gizmo.obj.rotation.setFromRotationMatrix(gizmoTransformation)

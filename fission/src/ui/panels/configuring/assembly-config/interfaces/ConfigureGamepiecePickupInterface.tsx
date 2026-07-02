@@ -23,10 +23,6 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 
-function isDefaultDelta(delta: number[]): boolean {
-    return !delta || delta.length === 0
-}
-
 // slider constants
 const MIN_ZONE_SIZE = 0.1
 const MAX_ZONE_SIZE = 1.0
@@ -166,11 +162,6 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
-
-                // / Don't set to center if not default delta, as this will override the user's configuration
-                if (isDefaultDelta(selectedRobot.intakePreferences!.deltaTransformation)) {
-                    gizmoTransformation.setPosition(selectedRobot.getCenter())
-                }
 
                 gizmo.setTransform(gizmoTransformation)
             }
