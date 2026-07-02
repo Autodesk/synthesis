@@ -225,7 +225,7 @@ export function defaultRobotPreferences(): RobotPreferences {
         inputsSchemes: [],
         motors: [],
         intake: {
-            deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            deltaTransformation: [],
             zoneDiameter: 0.5,
             parentNode: undefined,
             showZoneAlways: false,
@@ -233,7 +233,7 @@ export function defaultRobotPreferences(): RobotPreferences {
             animationDuration: 0.5,
         },
         ejector: {
-            deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            deltaTransformation: [],
             ejectorVelocity: 1,
             parentNode: undefined,
             ejectOrder: "FIFO",

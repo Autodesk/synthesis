@@ -23,9 +23,8 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 
-const IDENTITY_MATRIX = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
 function isDefaultDelta(delta: number[]): boolean {
-    return delta.length === IDENTITY_MATRIX.length && delta.every((v, i) => v === IDENTITY_MATRIX[i])
+    return !delta || delta.length === 0
 }
 
 // slider constants
