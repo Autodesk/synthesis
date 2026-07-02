@@ -78,7 +78,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 acceptText: "Finish",
                 cancelText: "Remove",
                 blocking: true,
-                blockingMessage: "Finish Assembly Setup before spawning another asset.",
+                blockingMessage: "Finish Assembly Setup first!",
             },
             {
                 onBeforeAccept: () => {
