@@ -21,7 +21,7 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
     onClick,
     iconName,
     icon,
-    iconSize = "clamp(36px, 12vw, 56px)",
+    iconSize = "clamp(28px, 8vw, 48px)",
 }) => (
     <Stack alignItems="center" gap={0.5} sx={{ width: "100%" }}>
         <IconButton
@@ -42,7 +42,8 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
                 color: "topBarText.main",
                 textAlign: "center",
                 lineHeight: 1.2,
-                fontSize: "clamp(0.65rem, 3vw, 0.75rem)",
+                fontSize: "clamp(0.75rem, 3.5vw, 0.9rem)",
+                fontWeight: 600,
             }}
         >
             {label}
