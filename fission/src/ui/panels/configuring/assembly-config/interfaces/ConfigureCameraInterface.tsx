@@ -52,7 +52,7 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
 
     const commit = useCallback(() => {
         if (camera && gizmoRef.current) {
-            const nodeBodyId = parentBodyId(selectedRobot, selectedNode)
+            const nodeBodyId = parentBodyId(selectedRobot, camera.parentNode)
             if (nodeBodyId) {
                 const gizmoWorld = gizmoRef.current.obj.matrixWorld.clone()
                 const robotWorld = convertJoltMat44ToThreeMatrix4(
@@ -60,13 +60,12 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                 )
                 const delta = gizmoWorld.premultiply(robotWorld.invert())
                 camera.deltaTransformation = convertThreeMatrix4ToArray(delta)
-                camera.parentNode = selectedNode
             }
         }
         PreferencesSystem.setRobotPreferences(selectedRobot.assemblyName, selectedRobot.robotPreferences)
         PreferencesSystem.savePreferences()
         selectedRobot.updateCameras()
-    }, [camera, selectedRobot, selectedNode])
+    }, [camera, selectedRobot])
 
     useEffect(() => {
         return EventSystem.listen("ConfigurationSavedEvent", commit)
@@ -83,7 +82,7 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
         setSelectedNode(camera?.parentNode)
     }, [selectedIndex, camera])
 
-    // keyed on selectedIndex so the gizmo re-spawns positioned for the newly selected camera
+    // selectedIndex dep so gizmo respawns for newly selected camera
     const placeholderMesh = useMemo(() => {
         return new THREE.Mesh(
             new THREE.BoxGeometry(0.12, 0.08, 0.16).translate(0, 0, 0.08),
@@ -162,7 +161,7 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
     }, [cameras, selectedIndex, commit, forceRender])
 
     return (
-        <Stack gap={2} key={version}>
+        <Stack gap={2} key={`${version}-${selectedIndex}`}>
             <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="center">
                 {cameras.map((c, i) => (
                     <Button

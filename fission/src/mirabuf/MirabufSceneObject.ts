@@ -48,7 +48,6 @@ import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
-import CameraPreviewPanel from "@/ui/panels/simulation/CameraPreviewPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -465,6 +464,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this._cameras.forEach(c => World.sceneRenderer.removeSceneObject(c.id))
         this._cameras = []
+
+        EventSystem.dispatch("RobotCamerasChangeEvent")
 
         this._scoringZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
         this._scoringZones.length = 0
