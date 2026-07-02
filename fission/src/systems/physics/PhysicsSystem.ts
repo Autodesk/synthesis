@@ -8,7 +8,6 @@ import {
     convertMirabufFloatToArrJoltFloat3,
     convertMirabufFloatToArrJoltVec3,
     convertMirabufVector3ToJoltRVec3,
-    convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
     convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
@@ -26,7 +25,6 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
-import { setVec3 } from "@/util/Utility"
 
 /**
  * Layers used for determining enabled/disabled collisions.
