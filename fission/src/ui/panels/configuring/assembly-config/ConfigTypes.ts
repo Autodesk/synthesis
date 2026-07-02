@@ -24,11 +24,10 @@ export function miraTypeToConfigType(config: MiraType): ConfigurationType {
 }
 
 export enum ConfigMode {
-    SUBSYSTEMS,
+    JOINTS,
     EJECTOR,
     INTAKE,
     CONTROLS,
-    SEQUENTIAL,
     SCORING_ZONES,
     PROTECTED_ZONES,
     MOVE,
