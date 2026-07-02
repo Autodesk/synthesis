@@ -14,7 +14,6 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
 import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
-import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
@@ -104,7 +103,6 @@ function Synthesis() {
                 >
                     <StateProvider>
                         <UIProvider>
-                            <GlobalUIComponent />
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
                             <ContextMenu />

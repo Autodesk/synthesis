@@ -95,14 +95,19 @@ export default function InputSchemeSelection({
                         label="Drivetrain Type"
                         value={robotDriveType}
                         onChange={e => {
+                            const newDriveType = e.target.value as DriveType
                             const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
                             if (brain) {
-                                brain.configureDriveBehavior(e.target.value as DriveType)
+                                brain.configureDriveBehavior(newDriveType)
                             }
-                            setRobotDriveType(e.target.value as DriveType)
+                            setRobotDriveType(newDriveType)
+
+                            const scheme = InputSchemeManager.applyCompatibleScheme(brainIndex)
+                            if (scheme) setSelectedScheme(scheme)
+                            EventSystem.dispatch("InputSchemeChanged", { panelId })
                         }}
                     >
-                        {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                        {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
                             <MenuItem key={dt} value={dt}>
                                 {dt}
                             </MenuItem>

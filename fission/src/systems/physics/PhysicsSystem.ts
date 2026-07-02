@@ -57,6 +57,32 @@ const SIGNIFICANT_FRICTION_THRESHOLD = 0.05
 const MAX_ROBOT_MASS = 250.0
 const MAX_GP_MASS = 10.0
 
+// Minimum threshold for Wadell sphericity to consider a convex hull a sphere.
+// 2025 & 2026 spheres have a sphericity of 0.9999
+// 2023 cube has a value of 0.9532
+const MIN_SPHERICITY = 0.99
+
+const SPHERE_GP_ANGULAR_DAMPING = 0.5
+const SPHERE_GP_LINEAR_DAMPING = 0.1
+
+// Threshold needed to overcome to start moving spheres
+const SPHERE_GP_STICTION_LINEAR_SPEED = 0.04 // meters / second
+const SPHERE_GP_STICTION_ANGULAR_SPEED = 0.1 // radians / second
+
+/**
+ * Wadell sphericity of a solid from its volume and surface area. Returns a value in (0, 1],
+ * approaching 1 as the solid approaches a perfect sphere, or 0 when the area is non-positive.
+ * https://en.wikipedia.org/wiki/Sphericity
+ *
+ * @param volume    Solid volume (any unit).
+ * @param area      Solid surface area (consistent unit. The measure is dimensionless).
+ */
+function computeSphericity(volume: number, area: number): number {
+    if (volume <= 0 || area <= 0) return 0
+    const volumeEquivalentSphereArea = Math.cbrt(Math.PI) * Math.pow(6 * volume, 2 / 3)
+    return volumeEquivalentSphereArea / area
+}
+
 let lastDeltaT = STANDARD_SIMULATION_PERIOD
 export function getLastDeltaT(): number {
     return lastDeltaT
@@ -89,6 +115,8 @@ class PhysicsSystem extends WorldSystem {
     private _joltBodyInterface: Jolt.BodyInterface
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
+    // Sphere game-piece bodies that get the resting-stiction pass each step (see update()).
+    private _sphereGamePieceBodies: Array<Jolt.BodyID> = []
 
     private _physicsEventQueue: SynthesisEvent<
         "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
@@ -100,6 +128,10 @@ class PhysicsSystem extends WorldSystem {
 
     public get isPaused(): boolean {
         return this._pauseSet.size > 0
+    }
+
+    public get sphereGamePieceBodies(): readonly Jolt.BodyID[] {
+        return this._sphereGamePieceBodies
     }
 
     /**
@@ -140,10 +172,8 @@ class PhysicsSystem extends WorldSystem {
 
         this._bodyAssociations = new Map()
 
-        // NOTE
-        // Destroying `joltSettings` breaks the physics system for some reason
-        // We've decided not to investigate this further.
-        // JOLT.destroy(joltSettings)
+        // JoltInterface copies the filter pointers, so joltSettings can be freed.
+        JOLT.destroy(joltSettings)
     }
 
     /**
@@ -839,9 +869,13 @@ class PhysicsSystem extends WorldSystem {
 
         nonPhysicsNodes.forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
+
             let shapesAdded = 0
 
             let totalMass = 0
+            // Accumulated geometry used to decide whether a game piece is sphere-like (see below).
+            let totalVolume = 0
+            let totalArea = 0
 
             type FrictionPairing = {
                 dynamic: number
@@ -914,6 +948,9 @@ class PhysicsSystem extends WorldSystem {
                 const [partDefinition, partInstance] = constructPartDefinition(partId)
                 if (!partDefinition) return
 
+                totalVolume += partDefinition.physicalData?.volume ?? 0
+                totalArea += partDefinition.physicalData?.area ?? 0
+
                 const physicalMaterial =
                     parser.assembly.data!.materials!.physicalMaterials![
                         partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY
@@ -974,10 +1011,29 @@ class PhysicsSystem extends WorldSystem {
                     return
                 }
 
-                const shape = shapeResult.Get()
+                let shape = shapeResult.Get()
+                let appliedSphereCollider = false
 
                 if (rn.isDynamic) {
                     if (rn.isGamePiece) {
+                        if (computeSphericity(totalVolume, totalArea) >= MIN_SPHERICITY) {
+                            const center = shape.GetCenterOfMass()
+                            const volumeMeters3 = totalVolume * 1e-6 // Convert cm^3 to m^3
+                            const radius = Math.max(Math.cbrt((3 * volumeMeters3) / (4 * Math.PI)), 0.01)
+
+                            const sphereSettings = new JOLT.SphereShapeSettings(radius)
+                            const identityRotation = new JOLT.Quat(0, 0, 0, 1)
+                            const offsetSettings = new JOLT.RotatedTranslatedShapeSettings(
+                                center,
+                                identityRotation,
+                                sphereSettings
+                            )
+                            shape = offsetSettings.Create().Get()
+                            JOLT.destroy(identityRotation)
+                            JOLT.destroy(sphereSettings)
+                            appliedSphereCollider = true
+                        }
+
                         const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
                         shape.GetMassProperties().mMass = mass
                     } else {
@@ -1020,6 +1076,12 @@ class PhysicsSystem extends WorldSystem {
                 // Little testing components
                 this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
+
+                if (appliedSphereCollider) {
+                    body.GetMotionProperties().SetAngularDamping(SPHERE_GP_ANGULAR_DAMPING)
+                    body.GetMotionProperties().SetLinearDamping(SPHERE_GP_LINEAR_DAMPING)
+                    this._sphereGamePieceBodies.push(body.GetID())
+                }
 
                 JOLT.destroy(bodySettings)
                 JOLT.destroy(p)
@@ -1238,6 +1300,7 @@ class PhysicsSystem extends WorldSystem {
      * @param bodies  Bodies to destroy.
      */
     public destroyBodies(...bodies: Jolt.Body[]) {
+        this.unregisterSphereGamePieceBodies(bodies.map(x => x.GetID()))
         bodies.forEach(x => {
             this._joltBodyInterface.RemoveBody(x.GetID())
             this._joltBodyInterface.DestroyBody(x.GetID())
@@ -1245,6 +1308,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public destroyBodyIds(...bodies: Jolt.BodyID[]) {
+        this.unregisterSphereGamePieceBodies(bodies)
         bodies.forEach(x => {
             if (this.isBodyAdded(x)) {
                 this._joltBodyInterface.RemoveBody(x)
@@ -1260,6 +1324,7 @@ class PhysicsSystem extends WorldSystem {
         mech.constraints.forEach(x => {
             this._joltPhysSystem.RemoveConstraint(x.primaryConstraint)
         })
+        this.unregisterSphereGamePieceBodies([...mech.nodeToBody.values()])
         mech.nodeToBody.forEach(x => {
             this._joltBodyInterface.RemoveBody(x)
             this._joltBodyInterface.DestroyBody(x)
@@ -1268,6 +1333,14 @@ class PhysicsSystem extends WorldSystem {
             this._joltBodyInterface.RemoveBody(x)
             this._joltBodyInterface.DestroyBody(x)
         })
+    }
+
+    private unregisterSphereGamePieceBodies(bodies: Jolt.BodyID[]) {
+        if (this._sphereGamePieceBodies.length === 0) return
+        const removed = new Set(bodies.map(b => b.GetIndexAndSequenceNumber()))
+        this._sphereGamePieceBodies = this._sphereGamePieceBodies.filter(
+            b => !removed.has(b.GetIndexAndSequenceNumber())
+        )
     }
 
     public getBody(bodyId: Jolt.BodyID): Jolt.Body | undefined {
@@ -1279,6 +1352,30 @@ class PhysicsSystem extends WorldSystem {
 
     public hasBody(bodyId: Jolt.BodyID): boolean {
         return this._joltPhysSystem.GetBodyInterface().IsAdded(bodyId)
+    }
+
+    /**
+     * Snaps near-stationary sphere game pieces back to rest.
+     * This is necessary on some fields (ex. 2025, 2026) to prevent them from rolling off the starting positions.
+     */
+    private applySphereGamePieceStiction(): void {
+        if (this._sphereGamePieceBodies.length === 0) return
+
+        const zero = new JOLT.Vec3(0, 0, 0)
+        this._sphereGamePieceBodies.forEach(bodyId => {
+            const body = this.getBody(bodyId)
+            if (!body) return
+
+            const atRest =
+                body.GetLinearVelocity().Length() < SPHERE_GP_STICTION_LINEAR_SPEED &&
+                body.GetAngularVelocity().Length() < SPHERE_GP_STICTION_ANGULAR_SPEED
+
+            if (atRest) {
+                body.SetLinearVelocity(zero)
+                body.SetAngularVelocity(zero)
+            }
+        })
+        JOLT.destroy(zero)
     }
 
     public update(deltaT: number): void {
@@ -1295,6 +1392,8 @@ class PhysicsSystem extends WorldSystem {
         substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))
 
         this._joltInterface.Step(lastDeltaT, substeps)
+
+        this.applySphereGamePieceStiction()
 
         if (World.multiplayerSystem != null) {
             const interObjectCollisions = this._physicsEventQueue
@@ -1354,10 +1453,16 @@ class PhysicsSystem extends WorldSystem {
         // Destroy Jolt Bodies.
         this.destroyBodyIds(...this._bodies)
         this._bodies = []
+        this._sphereGamePieceBodies = []
 
-        JOLT.destroy(this._joltBodyInterface)
+        // Capture the contact listener before destroying JoltInterface, which deletes
+        // PhysicsSystem and leaves _joltPhysSystem dangling.
+        const contactListener = this._joltPhysSystem.GetContactListener()
+
+        // Don't destroy BodyInterface: it's a value member of PhysicsSystem, not a heap
+        // allocation, so freeing it corrupts the heap.
         JOLT.destroy(this._joltInterface)
-        JOLT.destroy(this._joltPhysSystem.GetContactListener())
+        JOLT.destroy(contactListener)
     }
 
     private createGhostBody(position: Jolt.Vec3, destroy: boolean = true) {
