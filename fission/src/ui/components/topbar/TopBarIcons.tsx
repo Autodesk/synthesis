@@ -84,7 +84,7 @@ export const TOP_BAR_ICONS = {
 
 export type TopBarIconName = keyof typeof TOP_BAR_ICONS
 
-export const TopBarIcon: FC<{ name: TopBarIconName; size?: number; className?: string }> = ({
+export const TopBarIcon: FC<{ name: TopBarIconName; size?: number | string; className?: string }> = ({
     name,
     size = 24,
     className,
