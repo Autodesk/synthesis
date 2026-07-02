@@ -86,13 +86,15 @@ const MobileHUD: React.FC = () => {
         })
 
     const rootGrid = (
-        <Stack gap={2}>
+        <Stack gap={2} sx={{ height: "100%" }}>
             <Box
                 sx={{
                     display: "grid",
                     gridTemplateColumns: "repeat(2, 1fr)",
-                    rowGap: 2,
-                    columnGap: 1,
+                    rowGap: { xs: 2, sm: 4 },
+                    columnGap: { xs: 0.5, sm: 1 },
+                    flexGrow: 1,
+                    alignContent: "space-evenly",
                 }}
             >
                 <HUDMenuButton
@@ -115,22 +117,7 @@ const MobileHUD: React.FC = () => {
                     onClick={() => runAction(() => openPanel(MatchModeConfigPanel, undefined))}
                 />
 
-                {import.meta.env.DEV && (
-                    <>
-                        <HUDMenuButton
-                            label="Developer Tool"
-                            icon={SynthesisIcons.CODE_SQUARE}
-                            iconSize={34}
-                            onClick={() => runAction(() => openPanel(DeveloperToolPanel, undefined))}
-                        />
-                        <HUDMenuButton
-                            label="Debug Tools"
-                            icon={SynthesisIcons.BUG}
-                            iconSize={34}
-                            onClick={() => runAction(() => openPanel(DebugPanel, undefined))}
-                        />
-                    </>
-                )}
+
 
                 <HUDMenuButton
                     label="Settings"
@@ -152,7 +139,7 @@ const MobileHUD: React.FC = () => {
     )
 
     const configureGrid = (
-        <Stack gap={2}>
+        <Stack gap={2} sx={{ height: "100%" }}>
             <Stack direction="row" alignItems="center" gap={1}>
                 <IconButton disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => setView("root")}>
                     {SynthesisIcons.LEFT_ARROW_LARGE}
@@ -185,8 +172,10 @@ const MobileHUD: React.FC = () => {
                 sx={{
                     display: "grid",
                     gridTemplateColumns: "repeat(2, 1fr)",
-                    rowGap: 2,
-                    columnGap: 1,
+                    rowGap: { xs: 2, sm: 4 },
+                    columnGap: { xs: 0.5, sm: 1 },
+                    flexGrow: 1,
+                    alignContent: "space-evenly",
                 }}
             >
                 {configureButtons.map(({ name, label, mode }) => (
