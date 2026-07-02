@@ -64,6 +64,7 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                         "&:hover": { bgcolor: theme => theme.palette.action.selected },
                         color: theme => theme.palette.error.main,
                     }}
+                    aria-label="Decline cookies"
                 >
                     <AiOutlineClose />
                 </Button>

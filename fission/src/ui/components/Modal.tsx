@@ -51,7 +51,6 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                         className="select-none"
                         titleTypographyProps={{ variant: "h5" }}
                         sx={{
-                            cursor: "move",
                             py: 1,
                             px: 2,
                             borderBottom: theme => `1px solid ${theme.palette.divider}`,
