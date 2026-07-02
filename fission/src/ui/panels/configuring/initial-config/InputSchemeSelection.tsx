@@ -4,11 +4,10 @@ import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
-import { Button, DeleteButton, PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
+import { Button, PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 
 interface InputSchemeSelectionProps {
     brainIndex: number
@@ -45,7 +44,7 @@ export default function InputSchemeSelection({
         style: React.CSSProperties,
         message: string,
         disabled: boolean = false,
-        status?: InputSchemeUseType
+        _status?: InputSchemeUseType
     ): ReactElement | null => {
         if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
         return (
@@ -79,30 +78,6 @@ export default function InputSchemeSelection({
                                 {SynthesisIcons.SELECT_LARGE}
                             </PositiveButton>
                         </Box>
-
-                        {/** Delete button (only if the scheme is customized and not in use) */}
-                        {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
-                            DeleteButton(() => {
-                                // Fetch current custom schemes
-                                InputSchemeManager.saveSchemes(panelId)
-                                InputSchemeManager.resetDefaultSchemes(panelId)
-                                const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
-
-                                // Find and remove this input scheme
-                                const index = schemes.indexOf(scheme)
-                                schemes.splice(index, 1)
-
-                                // Save to preferences
-                                PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
-                                PreferencesSystem.savePreferences()
-
-                                // Update the available schemes list to reflect the deletion
-                                EventSystem.dispatch("InputSchemeChanged", { panelId })
-                                update()
-                            })
-                        ) : (
-                            <></>
-                        )}
                     </Stack>
                 </Stack>
             </Tooltip>
