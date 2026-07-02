@@ -48,14 +48,14 @@ class InputSystem extends WorldSystem {
         InputSystem._isCommandPaletteOpen = isOpen
     }
 
-    /** Called by TouchControls component to update the left joystick position. Values are normalized percentages from react-joystick-component, scaled to -1..1 range. */
+    /** Called by TouchControls component to update the left joystick position. Values are normalized (-1 to 1) */
     public static setLeftJoystick(x: number, y: number) {
-        InputSystem._leftJoystickPos = { x: x / 100, y: y / 100 }
+        InputSystem._leftJoystickPos = { x, y }
     }
 
-    /** Called by TouchControls component to update the right joystick position. Values are normalized percentages from react-joystick-component, scaled to -1..1 range. */
+    /** Called by TouchControls component to update the right joystick position. Values are normalized (-1 to 1) */
     public static setRightJoystick(x: number, y: number) {
-        InputSystem._rightJoystickPos = { x: x / 100, y: y / 100 }
+        InputSystem._rightJoystickPos = { x, y }
     }
 
     constructor() {

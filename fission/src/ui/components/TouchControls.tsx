@@ -1,3 +1,4 @@
+import { alpha, useTheme } from "@mui/material/styles"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import { Joystick } from "react-joystick-component"
@@ -9,6 +10,8 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 const JOYSTICK_SIZE = 120
 
 const TouchControls: React.FC = () => {
+    const theme = useTheme()
+
     const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
 
     useEffect(() => {
@@ -25,9 +28,20 @@ const TouchControls: React.FC = () => {
             })
         })
 
+        const setVisibilityUnsubscriber = EventSystem.listen("SetTouchControlsVisibilityEvent", (visible: unknown) => {
+            setIsJoystickVisible(prev => {
+                const next = visible as boolean
+                if (prev === next) return prev
+                PreferencesSystem.setGlobalPreference("TouchControls", next)
+                PreferencesSystem.savePreferences()
+                return next
+            })
+        })
+
         return () => {
             placeButtonUnsubscriber()
             visibilityUnsubscriber()
+            setVisibilityUnsubscriber()
         }
     }, [])
 
@@ -63,8 +77,8 @@ const TouchControls: React.FC = () => {
             >
                 <Joystick
                     size={JOYSTICK_SIZE}
-                    baseColor="rgba(255, 255, 255, 0.15)"
-                    stickColor="rgba(255, 255, 255, 0.6)"
+                    baseColor={alpha(theme.palette.primary.main, 0.15)}
+                    stickColor={alpha(theme.palette.primary.main, 0.6)}
                     move={handleLeftMove}
                     stop={handleLeftStop}
                     throttle={16}
@@ -82,8 +96,8 @@ const TouchControls: React.FC = () => {
             >
                 <Joystick
                     size={JOYSTICK_SIZE}
-                    baseColor="rgba(255, 255, 255, 0.15)"
-                    stickColor="rgba(255, 255, 255, 0.6)"
+                    baseColor={alpha(theme.palette.primary.main, 0.15)}
+                    stickColor={alpha(theme.palette.primary.main, 0.6)}
                     move={handleRightMove}
                     stop={handleRightStop}
                     throttle={16}

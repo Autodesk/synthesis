@@ -41,7 +41,15 @@ export default function InputSchemeSelection({
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
 
     const refreshAvailableSchemes = useCallback(() => {
-        setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
+        const schemes = [...InputSchemeManager.availableInputSchemesByType(robotDriveType)]
+        if (matchMedia("(hover: none)").matches) {
+            schemes.sort((a, b) => {
+                if (a.scheme.schemeName === "Brandon" && b.scheme.schemeName !== "Brandon") return -1
+                if (b.scheme.schemeName === "Brandon" && a.scheme.schemeName !== "Brandon") return 1
+                return 0
+            })
+        }
+        setAvailableSchemes(schemes)
     }, [robotDriveType])
 
     useEffect(() => {
@@ -80,7 +88,7 @@ export default function InputSchemeSelection({
                                     InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                                     // TODO: if touch controls, then ensure that they are enabled.
                                     if (scheme.usesTouchControls) {
-                                        EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")
+                                        EventSystem.dispatch("SetTouchControlsVisibilityEvent", true)
                                     }
                                     EventSystem.dispatch("InputSchemeChanged", { panelId })
                                     onSelect?.()
