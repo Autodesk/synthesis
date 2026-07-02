@@ -58,11 +58,16 @@ vi.mock("@/systems/scene/CameraControls", () => ({
         dispose: vi.fn(),
         update: vi.fn(),
     })),
+    CustomFieldViewControls: vi.fn().mockImplementation(() => ({
+        dispose: vi.fn(),
+        update: vi.fn(),
+    })),
     CameraMode: {
         Follow: "Follow",
         Locked: "Locked",
         Face: "Face",
     },
+    getTargetControls: vi.fn().mockReturnValue(undefined),
 }))
 
 vi.mock("@/systems/scene/ScreenInteractionHandler", () => ({
