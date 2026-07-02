@@ -84,7 +84,7 @@ const MobileHUD: React.FC = () => {
         })
 
     const rootGrid = (
-        <Stack gap={2} sx={{ height: "100%" }}>
+        <Stack gap={2} sx={{ minHeight: "100%" }}>
             <Box
                 sx={{
                     display: "grid",
@@ -135,7 +135,7 @@ const MobileHUD: React.FC = () => {
     )
 
     const configureGrid = (
-        <Stack gap={2} sx={{ height: "100%" }}>
+        <Stack gap={2}>
             <Stack direction="row" alignItems="center" gap={1}>
                 <IconButton disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => setView("root")}>
                     {SynthesisIcons.LEFT_ARROW_LARGE}
@@ -168,10 +168,8 @@ const MobileHUD: React.FC = () => {
                 sx={{
                     display: "grid",
                     gridTemplateColumns: "repeat(2, 1fr)",
-                    rowGap: { xs: 2, sm: 4 },
+                    rowGap: { xs: 1, sm: 2 },
                     columnGap: { xs: 0.5, sm: 1 },
-                    flexGrow: 1,
-                    alignContent: "space-evenly",
                 }}
             >
                 {configureButtons.map(({ name, label, mode }) => (
@@ -203,11 +201,12 @@ const MobileHUD: React.FC = () => {
                     bgcolor: "surface.main",
                     color: "topBarText.main",
                     borderRadius: 2,
-                    p: 1,
+                    p: 1.25,
                     "&:hover": { bgcolor: "surface.main" },
+                    "&:focus, &:focus-visible": { outline: "none" },
                 }}
             >
-                <FaBars size={24} />
+                <FaBars size={32} />
             </IconButton>
 
             <Drawer anchor="left" open={open} onClose={closeDrawer} PaperProps={{ sx: DRAWER_SX }}>
