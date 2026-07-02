@@ -14,7 +14,7 @@ import MultiplayerStartModal from "../modals/MultiplayerStartModal"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
-import { globalAddToast } from "./GlobalUIControls"
+import { setAddToast, setOpenModal, setOpenPanel, globalAddToast } from "./GlobalUIControls"
 import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
 import HUDMenuButton from "./topbar/HUDMenuButton"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/topBarConfig"
@@ -47,7 +47,11 @@ const DRAWER_SELECT_SX = {
 type DrawerView = "root" | "configure"
 
 const MobileHUD: React.FC = () => {
-    const { openModal, openPanel } = useUIContext()
+    const { openModal, openPanel, addToast } = useUIContext()
+
+    setAddToast(addToast)
+    setOpenPanel(openPanel)
+    setOpenModal(openModal)
 
     const [open, setOpen] = useState(false)
     const [view, setView] = useState<DrawerView>("root")
