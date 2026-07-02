@@ -13,6 +13,7 @@ import ContextMenu from "./ui/components/ContextMenu.tsx"
 import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
+import PortraitOverlay from "./ui/components/PortraitOverlay.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
@@ -85,6 +86,7 @@ function Synthesis() {
                             <ProgressNotifications key={"progress-notifications"} />
                             <WPILibConnectionStatus />
                             <DragModeIndicator />
+                            <PortraitOverlay />
 
                             {!consentPopupDisable && (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />

@@ -49,10 +49,21 @@ const ConfigureControls: React.FC = () => {
                 ))}
             </Select>
             {configureButtons.map(({ name, label, mode }) => (
-                <Tooltip key={label} title={label}>
-                    <IconButton size="large" disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => openConfig(mode)}>
-                        <TopBarIcon name={name} size={40} />
-                    </IconButton>
+                <Tooltip key={label} title={!selectedConfigAssembly ? "Spawn an assembly first" : label}>
+                    <span>
+                        <IconButton
+                            size="large"
+                            disableRipple
+                            disabled={!selectedConfigAssembly}
+                            sx={{
+                                ...TOP_BAR_ICON_BUTTON_SX,
+                                ...(!selectedConfigAssembly && { opacity: 0.4 }),
+                            }}
+                            onClick={() => openConfig(mode)}
+                        >
+                            <TopBarIcon name={name} size={40} />
+                        </IconButton>
+                    </span>
                 </Tooltip>
             ))}
         </Stack>
