@@ -227,7 +227,7 @@ const MainHUD: React.FC = () => {
                             startIcon={SynthesisIcons.GAMEPAD}
                             onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
                         >
-                            Touch Controls
+                            Toggle Joysticks
                         </MainHUDButton>
                     )}
                 </ButtonGroup>

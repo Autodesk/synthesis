@@ -15,10 +15,6 @@ const TouchControls: React.FC = () => {
     const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
 
     useEffect(() => {
-        const placeButtonUnsubscriber = EventSystem.listen("SetPlaceAssetButtonVisibleEvent", _visible => {
-            // Reserved for future place-asset button on mobile
-        })
-
         const visibilityUnsubscriber = EventSystem.listen("ToggleTouchControlsVisibilityEvent", () => {
             setIsJoystickVisible(prev => {
                 const next = !prev
@@ -39,7 +35,6 @@ const TouchControls: React.FC = () => {
         })
 
         return () => {
-            placeButtonUnsubscriber()
             visibilityUnsubscriber()
             setVisibilityUnsubscriber()
         }
@@ -71,7 +66,6 @@ const TouchControls: React.FC = () => {
                     position: "fixed",
                     bottom: "5vh",
                     left: "5vw",
-                    zIndex: 1000,
                     pointerEvents: "auto",
                 }}
             >
@@ -90,7 +84,6 @@ const TouchControls: React.FC = () => {
                     position: "fixed",
                     bottom: "5vh",
                     right: "5vw",
-                    zIndex: 1000,
                     pointerEvents: "auto",
                 }}
             >

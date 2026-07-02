@@ -105,11 +105,11 @@ function Synthesis() {
                     <StateProvider>
                         <UIProvider>
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
+                            <TouchControls />
                             <SceneOverlay />
                             <ContextMenu />
                             <MultiplayerHUD />
                             <MainHUD key={"main-hud"} />
-                            <TouchControls />
                             <UIRenderer />
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
