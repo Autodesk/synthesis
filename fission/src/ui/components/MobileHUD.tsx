@@ -1,13 +1,12 @@
 import { Box, Drawer, MenuItem, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
+import { FaBars } from "react-icons/fa6"
 import { IoMdArrowDropdown } from "react-icons/io"
 import APS from "@/aps/APS"
-import { APP_MODES, type AppMode } from "@/systems/AppMode"
 import EventSystem from "@/systems/EventSystem.ts"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
@@ -19,7 +18,6 @@ import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { globalAddToast } from "./GlobalUIControls"
 import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
-import { MODE_ICONS } from "./topbar/ModeDropdown"
 import HUDMenuButton from "./topbar/HUDMenuButton"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/topBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
@@ -34,7 +32,7 @@ const DRAWER_SX = {
     p: 2,
 }
 
-// Shared styling for the assembly / mode dropdowns inside the drawer.
+// Shared styling for the assembly dropdown inside the drawer.
 const DRAWER_SELECT_SX = {
     bgcolor: "surface.main",
     color: "topBarText.main",
@@ -52,7 +50,6 @@ type DrawerView = "root" | "configure"
 
 const MobileHUD: React.FC = () => {
     const { openModal, openPanel } = useUIContext()
-    const { appMode, setAppMode } = useStateContext()
 
     const [open, setOpen] = useState(false)
     const [view, setView] = useState<DrawerView>("root")
@@ -90,28 +87,6 @@ const MobileHUD: React.FC = () => {
 
     const rootGrid = (
         <Stack gap={2}>
-            <Select
-                value={appMode}
-                onChange={e => setAppMode(e.target.value as AppMode)}
-                renderValue={value => (
-                    <Stack direction="row" alignItems="center" gap={1.5} sx={{ pointerEvents: "none" }}>
-                        <TopBarIcon name={MODE_ICONS[value as AppMode]} size={22} />
-                        {value as string}
-                    </Stack>
-                )}
-                IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
-                sx={DRAWER_SELECT_SX}
-            >
-                {APP_MODES.map(mode => (
-                    <MenuItem key={mode} value={mode}>
-                        <Stack direction="row" alignItems="center" gap={1.5}>
-                            <TopBarIcon name={MODE_ICONS[mode]} size={22} />
-                            {mode}
-                        </Stack>
-                    </MenuItem>
-                ))}
-            </Select>
-
             <Box
                 sx={{
                     display: "grid",
@@ -130,20 +105,15 @@ const MobileHUD: React.FC = () => {
                     }
                 />
 
-                {appMode === "Configure" && (
-                    <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />
-                )}
+                <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />
 
-                {appMode === "Gameplay" && (
-                    <>
-                        <HUDMenuButton
-                            label="Start Match"
-                            iconName="gp-2"
-                            onClick={() => runAction(() => openPanel(MatchModeConfigPanel, undefined))}
-                        />
-                        <HUDMenuButton label="Multiplayer" iconName="gp-1" onClick={() => runAction(openMultiplayer)} />
-                    </>
-                )}
+                <HUDMenuButton label="Multiplayer" iconName="gp-1" onClick={() => runAction(openMultiplayer)} />
+
+                <HUDMenuButton
+                    label="Start Match"
+                    iconName="gp-2"
+                    onClick={() => runAction(() => openPanel(MatchModeConfigPanel, undefined))}
+                />
 
                 {import.meta.env.DEV && (
                     <>
@@ -187,7 +157,7 @@ const MobileHUD: React.FC = () => {
                 <IconButton disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => setView("root")}>
                     {SynthesisIcons.LEFT_ARROW_LARGE}
                 </IconButton>
-                <TopBarIcon name={MODE_ICONS.Configure} size={24} />
+                <TopBarIcon name="mode-configure" size={24} />
                 <Select
                     displayEmpty
                     value={selectedValue}
@@ -252,7 +222,7 @@ const MobileHUD: React.FC = () => {
                     "&:hover": { bgcolor: "surface.main" },
                 }}
             >
-                <TopBarIcon name={MODE_ICONS[appMode]} size={32} />
+                <FaBars size={24} />
             </IconButton>
 
             <Drawer anchor="left" open={open} onClose={closeDrawer} PaperProps={{ sx: DRAWER_SX }}>
