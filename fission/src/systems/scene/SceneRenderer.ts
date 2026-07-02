@@ -168,7 +168,7 @@ class SceneRenderer extends WorldSystem {
         ]
 
         const ground = new THREE.Mesh(groundGeometry, materials)
-        ground.position.set(0.0, -0.09, 0.0)
+        ground.position.set(0.0, -0.1, 0.0)
         ground.receiveShadow = true
         ground.castShadow = true
         this._scene.add(ground)
