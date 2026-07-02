@@ -107,6 +107,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                 main: redAllianceColor,
             },
         })
+        // biome-ignore lint/correctness: Including `themeOptions` leads to infinite recursion
     }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
 
     const themeContextValue = useMemo(

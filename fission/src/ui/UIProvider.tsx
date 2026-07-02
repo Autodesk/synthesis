@@ -111,7 +111,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
             newModal.props.configured = false
 
-            // don't allow configuring onAccept from open function
+            // Don't allow configuring onAccept from open function
             newModal.onAccept = new UICallback()
 
             newModal.onClose = new UICallback()
@@ -129,6 +129,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         [modal]
     )
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Cannot use `snackbarAction` before it is assigned
     const openPanel: OpenPanelFn = useCallback(
         <T, P>(
             content: FunctionComponent<PanelImplProps<T, P>>,
@@ -210,10 +211,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setPanels([...nextPanels, panel as Panel<any, any>])
             return id
         },
-        [panels]
+        [panels, enqueueSnackbar, DEFAULT_PANEL_PROPS]
     )
 
-    const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
+    const closeCallbacks = useCallback(<T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
         elem.onClose?.(closeType)
         switch (closeType) {
             case CloseType.Accept: {
@@ -227,23 +228,26 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             default:
                 break
         }
-    }
+    }, [])
 
     const closeModal = useCallback(
         <T, P>(closeType: CloseType) => {
             if (modal) closeCallbacks<T, P>(modal as Modal<T, P>, closeType)
             setModal(undefined)
         },
-        [modal]
+        [modal, closeCallbacks]
     )
 
-    const closePanel = useCallback((id: string, closeType: CloseType) => {
-        setPanels(p => {
-            const panel = p.find((p: Panel<any, any>) => p.id === id)
-            if (panel) closeCallbacks(panel, closeType)
-            return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
-        })
-    }, [])
+    const closePanel = useCallback(
+        (id: string, closeType: CloseType) => {
+            setPanels(p => {
+                const panel = p.find((p: Panel<any, any>) => p.id === id)
+                if (panel) closeCallbacks(panel, closeType)
+                return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
+            })
+        },
+        [closeCallbacks]
+    )
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
     const snackbarAction = useCallback(
@@ -252,7 +256,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 <CloseIcon />
             </IconButton>
         ),
-        []
+        [closeSnackbar]
     )
 
     const addToast = useCallback(
@@ -273,7 +277,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 { variant, action: snackbarAction }
             )
         },
-        [enqueueSnackbar]
+        [enqueueSnackbar, snackbarAction]
     )
 
     const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {

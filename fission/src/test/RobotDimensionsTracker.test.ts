@@ -12,7 +12,6 @@ interface MockDimensions {
 }
 
 interface MockRobotObject {
-    _id: number | null
     id: number
     assemblyName: string
     miraType: MiraType
@@ -24,7 +23,6 @@ interface MockRobotObject {
 }
 
 interface MockNonRobotObject {
-    _id: number | null
     id: number
     assemblyName: string
     miraType: MiraType
@@ -109,7 +107,6 @@ describe("RobotDimensionTracker", () => {
         })
 
         mockNonRobot = {
-            _id: 3,
             id: 3,
             assemblyName: "Field",
             miraType: MiraType.FIELD,

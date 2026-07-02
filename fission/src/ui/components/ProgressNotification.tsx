@@ -63,7 +63,7 @@ const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
             currentValue: handle.progress,
             lastUpdate: Date.now(),
         })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // biome-ignore lint: We don't care about `currentValue` changing
     }, [handle.progress])
 
     return (

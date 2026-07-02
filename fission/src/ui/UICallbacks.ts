@@ -1,7 +1,7 @@
+// biome-ignore-all: Naming
 export class UICallback<T extends unknown[], U> extends Function {
     private _userDefinedFunc?: (...args: T) => U
     private _defaultFunc?: (...args: T) => U
-    // @ts-expect-error allow ignored
     private __self__: UICallback<T, U>
 
     constructor() {

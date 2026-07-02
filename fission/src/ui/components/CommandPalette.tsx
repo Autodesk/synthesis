@@ -81,6 +81,7 @@ const CommandPalette: React.FC = () => {
         }
     }, [isOpen])
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: We want to refresh every tick
     const commands = useMemo<CommandDefinition[]>(() => {
         return CommandRegistry.get().getCommands()
     }, [registryTick])
@@ -99,14 +100,14 @@ const CommandPalette: React.FC = () => {
     InputSystem.escapeKeyListeners[0] = () => {
         if (isOpen) {
             closePalette()
-            return true
         }
-        return false
+        return isOpen
     }
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase()
         if (!q) return commands
+
         return fuse.search(q).map(r => r.item)
     }, [commands, fuse, query])
 
@@ -131,18 +132,20 @@ const CommandPalette: React.FC = () => {
 
     useEffect(() => {
         const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "/") {
-                if (isTextInputTarget(e.target)) return
-                e.preventDefault()
-                if (!World.isAlive) return
-                if (isMainMenuOpen) return
-                if (modal) return
-                openPalette()
-            }
+            if (e.key === "/") return
+            if (isTextInputTarget(e.target)) return
+
+            e.preventDefault()
+
+            if (!World.isAlive) return
+            if (isMainMenuOpen) return
+            if (modal) return
+
+            openPalette()
         }
         window.addEventListener("keydown", onKeyDown)
         return () => window.removeEventListener("keydown", onKeyDown)
-    }, [isOpen, isMainMenuOpen, modal, openPalette, closePalette])
+    }, [isMainMenuOpen, modal, openPalette])
 
     useEffect(() => {
         if ((isMainMenuOpen || modal) && isOpen) {
@@ -234,8 +237,8 @@ const CommandPalette: React.FC = () => {
                                     selected={i === activeIndex}
                                     onMouseEnter={() => setActiveIndex(i)}
                                     onClick={() => execute(i)}
-                                    ref={_element => {
-                                        listItemRefs.current[i] = _element
+                                    ref={element => {
+                                        listItemRefs.current[i] = element
                                     }}
                                 >
                                     <ListItemText primary={c.label} secondary={c.description} />

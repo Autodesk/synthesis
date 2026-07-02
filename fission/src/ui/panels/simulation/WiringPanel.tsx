@@ -236,6 +236,7 @@ const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
 
     const [refreshHook, refreshCheckboxes] = useReducer(x => !x, false)
 
+    // biome-ignore: lint/correctness/useExhaustiveDependencies: We want to refresh every tick
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
@@ -320,6 +321,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     const [refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
 
     // Essentially a callback, but it can use itself
+    // biome-ignore lint/correctness/useExhaustiveDependencies: We want to refresh with `refreshHook`
     useEffect(() => {
         const [nodes, edges] = generateGraph(simConfig, refreshGraph, setConfigState)
         setNodes(nodes)
@@ -388,6 +390,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         [screenToFlowPosition, simConfig]
     )
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: We want to refresh with `refreshGraph`
     const onCreateJunction = useCallback(() => {
         SimConfig.addJunctionNode(simConfig)
         refreshGraph()
@@ -425,8 +428,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             return miraObj
         }
         addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
-        // closePanel(panel!.id, CloseType.Cancel)
-    }, [])
+    }, [addToast])
 
     useEffect(() => {
         if (!selectedAssembly) return
@@ -464,7 +466,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "Wiring Panel" }, { onBeforeAccept: save })
-    }, [save])
+    }, [save, configureScreen, panel])
 
     return (
         <>
