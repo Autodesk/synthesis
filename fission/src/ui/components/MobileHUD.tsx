@@ -13,8 +13,6 @@ import SettingsModal from "../modals/configuring/SettingsModal"
 import MultiplayerStartModal from "../modals/MultiplayerStartModal"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
-import DebugPanel from "../panels/DebugPanel"
-import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { globalAddToast } from "./GlobalUIControls"
 import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
@@ -116,8 +114,6 @@ const MobileHUD: React.FC = () => {
                     iconName="gp-2"
                     onClick={() => runAction(() => openPanel(MatchModeConfigPanel, undefined))}
                 />
-
-
 
                 <HUDMenuButton
                     label="Settings"
