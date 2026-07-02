@@ -8,6 +8,7 @@ import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
 import { Button, PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
 interface InputSchemeSelectionProps {
     brainIndex: number
@@ -22,6 +23,7 @@ export default function InputSchemeSelection({
     onCreateNew,
     panelId,
 }: InputSchemeSelectionProps) {
+    const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
