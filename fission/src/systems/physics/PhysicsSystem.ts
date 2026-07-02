@@ -525,7 +525,7 @@ class PhysicsSystem extends WorldSystem {
         const miraAxis = freedom.axis! as mirabuf.Vector3
         // No scaling, these are unit vectors
         const miraAxisX = (versionNum < 5 ? -miraAxis.x : miraAxis.x) ?? 0
-        return new JOLT.Vec3(miraAxisX, miraAxis.y! ?? 0, miraAxis.z! ?? 0)
+        return new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
     }
 
     private setAxes(
