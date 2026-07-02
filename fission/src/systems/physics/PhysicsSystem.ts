@@ -8,7 +8,6 @@ import {
     convertMirabufFloatToArrJoltFloat3,
     convertMirabufFloatToArrJoltVec3,
     convertMirabufVector3ToJoltRVec3,
-    convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
     convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
@@ -26,7 +25,7 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
-import { warn } from "node:console"
+import { setVec3 } from "@/util/Utility"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -531,18 +530,18 @@ class PhysicsSystem extends WorldSystem {
 
     private setAxes(
         freedom: mirabuf.joint.IDOF,
-        axis1: Jolt.Vec3,
-        axis2: Jolt.Vec3,
-        normalAxis1: Jolt.Vec3,
-        normalAxis2: Jolt.Vec3,
+        settings: Jolt.HingeConstraintSettings | Jolt.SliderConstraintSettings,
         versionNum?: number
     ) {
         const axis = this.getAxis(freedom, versionNum)
 
-        axis1 = axis2 = axis.Normalized()
-        normalAxis1 = normalAxis2 = getPerpendicular(axis1)
-
-        JOLT.destroy(axis)
+        let constraintAxis: Jolt.Vec3
+        if ("mHingeAxis1" in settings) {
+            constraintAxis = settings.mHingeAxis1 = settings.mHingeAxis2 = axis.Normalized()
+        } else {
+            constraintAxis = settings.mSliderAxis1 = settings.mSliderAxis2 = axis.Normalized()
+        }
+        settings.mNormalAxis1 = settings.mNormalAxis2 = getPerpendicular(constraintAxis)
     }
 
     /**
@@ -570,8 +569,7 @@ class PhysicsSystem extends WorldSystem {
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
-        const { mHingeAxis1, mHingeAxis2, mNormalAxis1, mNormalAxis2 } = hingeConstraintSettings
-        this.setAxes(rotationalFreedom, mHingeAxis1, mHingeAxis2, mNormalAxis1, mNormalAxis2, versionNum)
+        this.setAxes(rotationalFreedom, hingeConstraintSettings, versionNum)
 
         this.applyHingeLimits(
             {
@@ -611,9 +609,8 @@ class PhysicsSystem extends WorldSystem {
         constraintSettings.mPoint1 = constraintSettings.mPoint2 = anchorPoint
 
         const freedom = jointDefinition.prismatic!.prismaticFreedom!
-        const { mSliderAxis1, mSliderAxis2, mNormalAxis1, mNormalAxis2 } = constraintSettings
 
-        this.setAxes(freedom, mSliderAxis1, mSliderAxis2, mNormalAxis1, mNormalAxis2)
+        this.setAxes(freedom, constraintSettings)
         this.applySliderLimits(freedom, constraintSettings)
 
         constraintSettings.mMotorSettings.mMaxForceLimit = maxForce
@@ -714,6 +711,8 @@ class PhysicsSystem extends WorldSystem {
     ): void {
         const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
 
+        // TODO
+        // Instead of copying DOF data into ConstraintSpecs, just use the DOF data directly
         const pitchDof = jointDefinition.custom!.dofs!.at(0)
         const yawDof = jointDefinition.custom!.dofs!.at(1)
         const rollDof = jointDefinition.custom!.dofs!.at(2)

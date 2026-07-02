@@ -1,3 +1,5 @@
+import Jolt from "@azaleacolburn/jolt-physics"
+
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
 }
@@ -36,4 +38,8 @@ export async function hashBuffer(buffer: ArrayBuffer): Promise<string> {
     return Array.from(new Uint8Array(hashBuffer))
         .map(x => x.toString(16))
         .join("")
+}
+
+export function setVec3(target: Jolt.Vec3, value: Jolt.Vec3): void {
+    target.Set(value.GetX(), value.GetY(), value.GetZ())
 }
