@@ -3,8 +3,8 @@ import { SnackbarProvider } from "notistack"
 import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
 import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
+import MainHUD from "@/components/MainHUD.tsx"
 import Scene from "@/components/Scene.tsx"
-import TopBar from "@/components/TopBar.tsx"
 import World from "@/systems/World.ts"
 import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
@@ -79,7 +79,7 @@ function Synthesis() {
                             <SceneOverlay />
                             <ContextMenu />
                             <MultiplayerHUD />
-                            <TopBar key={"top-bar"} />
+                            <MainHUD key={"main-hud"} />
                             <UIRenderer />
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
