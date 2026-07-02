@@ -512,7 +512,7 @@ class PhysicsSystem extends WorldSystem {
         return anchorPoint
     }
 
-    private addConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
+    private newConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
         const constraint = constraintSettings.Create(bodyA, bodyB)
         this._constraints.push(constraint)
         this._joltPhysSystem.AddConstraint(constraint)
@@ -545,10 +545,6 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(axis)
     }
 
-    private isBeyondLimits(freedom: mirabuf.joint.IDOF): boolean {
-        return (freedom.limits && Math.abs((freedom.limits.upper ?? 0) - (freedom.limits.lower ?? 0)) > 0.001) ?? false
-    }
-
     /**
      * Creates a Hinge constraint.
      *
@@ -577,23 +573,19 @@ class PhysicsSystem extends WorldSystem {
         const { mHingeAxis1, mHingeAxis2, mNormalAxis1, mNormalAxis2 } = hingeConstraintSettings
         this.setAxes(rotationalFreedom, mHingeAxis1, mHingeAxis2, mNormalAxis1, mNormalAxis2, versionNum)
 
-        // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
-        // This safety check caps the values to be within [-PI, PI] with minimal difference in precision.
-        const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
-
-        if (this.isBeyondLimits(rotationalFreedom)) {
-            const currentPos = piSafetyCheck(rotationalFreedom.value ?? 0)
-            const upper = piSafetyCheck(rotationalFreedom.limits!.upper ?? 0) - currentPos
-            const lower = piSafetyCheck(rotationalFreedom.limits!.lower ?? 0) - currentPos
-
-            hingeConstraintSettings.mLimitsMin = -upper
-            hingeConstraintSettings.mLimitsMax = -lower
-        }
+        this.applyHingeLimits(
+            {
+                value: rotationalFreedom.value ?? 0,
+                upper: rotationalFreedom.limits?.upper ?? 0,
+                lower: rotationalFreedom.limits?.lower ?? 0,
+            } satisfies Omit<ConstraintSpecs, "axis" | "friction">,
+            hingeConstraintSettings
+        )
 
         hingeConstraintSettings.mMotorSettings.mMaxTorqueLimit = torque
         hingeConstraintSettings.mMotorSettings.mMinTorqueLimit = -torque
 
-        return this.addConstraint(hingeConstraintSettings, bodyA, bodyB)
+        return this.newConstraint(hingeConstraintSettings, bodyA, bodyB)
     }
 
     /**
@@ -613,35 +605,21 @@ class PhysicsSystem extends WorldSystem {
         bodyA: Jolt.Body,
         bodyB: Jolt.Body
     ): Jolt.Constraint {
-        const sliderConstraintSettings = new JOLT.SliderConstraintSettings()
+        const constraintSettings = new JOLT.SliderConstraintSettings()
 
         const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
-        sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 = anchorPoint
+        constraintSettings.mPoint1 = constraintSettings.mPoint2 = anchorPoint
 
-        const prismaticFreedom = jointDefinition.prismatic!.prismaticFreedom!
-        const { mSliderAxis1, mSliderAxis2, mNormalAxis1, mNormalAxis2 } = sliderConstraintSettings
-        this.setAxes(prismaticFreedom, mSliderAxis1, mSliderAxis2, mNormalAxis1, mNormalAxis2)
+        const freedom = jointDefinition.prismatic!.prismaticFreedom!
+        const { mSliderAxis1, mSliderAxis2, mNormalAxis1, mNormalAxis2 } = constraintSettings
 
-        if (this.isBeyondLimits(prismaticFreedom)) {
-            const currentPos = (prismaticFreedom.value ?? 0) * 0.01
-            const upper = (prismaticFreedom.limits!.upper ?? 0) * 0.01 - currentPos
-            const lower = (prismaticFreedom.limits!.lower ?? 0) * 0.01 - currentPos
+        this.setAxes(freedom, mSliderAxis1, mSliderAxis2, mNormalAxis1, mNormalAxis2)
+        this.applySliderLimits(freedom, constraintSettings)
 
-            // Calculate mid point
-            const midPoint = (upper + lower) / 2.0
-            const halfRange = Math.abs((upper - lower) / 2.0)
+        constraintSettings.mMotorSettings.mMaxForceLimit = maxForce
+        constraintSettings.mMotorSettings.mMinForceLimit = -maxForce
 
-            // Move the anchor points
-            sliderConstraintSettings.mPoint2 = anchorPoint.Add(sliderConstraintSettings.mSliderAxis1.Mul(midPoint))
-
-            sliderConstraintSettings.mLimitsMax = halfRange
-            sliderConstraintSettings.mLimitsMin = -halfRange
-        }
-
-        sliderConstraintSettings.mMotorSettings.mMaxForceLimit = maxForce
-        sliderConstraintSettings.mMotorSettings.mMinForceLimit = -maxForce
-
-        return this.addConstraint(sliderConstraintSettings, bodyA, bodyB)
+        return this.newConstraint(constraintSettings, bodyA, bodyB)
     }
 
     private createVehicleConstraint(wheelSettings: Jolt.WheelSettingsWV, bodyMain: Jolt.Body, maxAcc: number) {
@@ -650,17 +628,7 @@ class PhysicsSystem extends WorldSystem {
         vehicleSettings.mWheels.clear()
         vehicleSettings.mWheels.push_back(wheelSettings)
 
-        // Other than maxTorque, these controller settings are not being used as of now
-        // because ArcadeDriveBehavior goes directly to the WheelDrivers.
-        // maxTorque is only used as communication for WheelDriver to get maxAcceleration
-        const controllerSettings = new JOLT.WheeledVehicleControllerSettings()
-        controllerSettings.mEngine.mMaxTorque = maxAcc
-        controllerSettings.mTransmission.mClutchStrength = 10.0
-        controllerSettings.mTransmission.mGearRatios.clear()
-        controllerSettings.mTransmission.mGearRatios.push_back(2)
-        controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto
-
-        vehicleSettings.mController = controllerSettings
+        vehicleSettings.mController = this.createVehicleController(maxAcc)
         vehicleSettings.mAntiRollBars.clear()
 
         const constraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings)
@@ -670,6 +638,20 @@ class PhysicsSystem extends WorldSystem {
         this._constraints.push(constraint)
 
         return constraint
+    }
+
+    // Other than `maxTorque`, these controller settings are not being used as of now
+    // because `ArcadeDriveBehavior` goes directly to the `WheelDrivers`.
+    // `maxTorque` is only used as communication for `WheelDriver` to get maxAcceleration
+    private createVehicleController(maxAcc: number) {
+        const controllerSettings = new JOLT.WheeledVehicleControllerSettings()
+        controllerSettings.mEngine.mMaxTorque = maxAcc
+        controllerSettings.mTransmission.mClutchStrength = 10.0
+        controllerSettings.mTransmission.mGearRatios.clear()
+        controllerSettings.mTransmission.mGearRatios.push_back(2)
+        controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto
+
+        return controllerSettings
     }
 
     private addVehicleListeners(constraint: Jolt.VehicleConstraint, bodyWheel: Jolt.Body) {
@@ -690,9 +672,9 @@ class PhysicsSystem extends WorldSystem {
         bodyWheel: Jolt.Body,
         versionNum: number
     ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
-        const fixedSettings = new JOLT.FixedConstraintSettings()
-
         const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
+
+        const fixedSettings = new JOLT.FixedConstraintSettings()
         fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
 
         const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
@@ -822,7 +804,10 @@ class PhysicsSystem extends WorldSystem {
 
     // TODO
     // Figure out some way of unifying this logic with the same logic in `createHingeConstraint`
-    private applyHingeLimits(constraint: ConstraintSpecs, hingeSettings: Jolt.HingeConstraintSettings) {
+    private applyHingeLimits(
+        constraint: Omit<ConstraintSpecs, "axis" | "friction">,
+        hingeSettings: Jolt.HingeConstraintSettings
+    ) {
         if (!constraint.upper || !constraint.lower) return
 
         // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
@@ -835,6 +820,26 @@ class PhysicsSystem extends WorldSystem {
 
         hingeSettings.mLimitsMin = -upper
         hingeSettings.mLimitsMax = -lower
+    }
+
+    private applySliderLimits(freedom: mirabuf.joint.IDOF, sliderConstraintSettings: Jolt.SliderConstraintSettings) {
+        if (Math.abs((freedom.limits?.upper ?? 0) - (freedom.limits?.lower ?? 0)) <= 0.001) return
+
+        const currentPos = (freedom.value ?? 0) * 0.01
+        const upper = (freedom.limits!.upper ?? 0) * 0.01 - currentPos
+        const lower = (freedom.limits!.lower ?? 0) * 0.01 - currentPos
+
+        // Calculate mid point
+        const midPoint = (upper + lower) / 2.0
+        const halfRange = Math.abs((upper - lower) / 2.0)
+
+        // Move the anchor points
+        sliderConstraintSettings.mPoint2 = sliderConstraintSettings.mPoint2.Add(
+            sliderConstraintSettings.mSliderAxis1.Mul(midPoint)
+        )
+
+        sliderConstraintSettings.mLimitsMax = halfRange
+        sliderConstraintSettings.mLimitsMin = -halfRange
     }
 
     private isWheel(jDef: mirabuf.joint.Joint): boolean {
