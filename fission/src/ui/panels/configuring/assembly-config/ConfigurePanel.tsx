@@ -27,11 +27,10 @@ import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
-import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import ConfigureJointsInterface from "./interfaces/ConfigureJointsInterface"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
@@ -156,8 +155,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
         case ConfigMode.EJECTOR:
             return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
-        case ConfigMode.SUBSYSTEMS:
-            return <ConfigureSubsystemsInterface selectedRobot={assembly} />
+        case ConfigMode.JOINTS:
+            return <ConfigureJointsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS: {
             const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
             const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
@@ -177,8 +176,6 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                 </>
             )
         }
-        case ConfigMode.SEQUENTIAL:
-            return <SequentialBehaviorsInterface selectedRobot={assembly} />
         case ConfigMode.SCORING_ZONES: {
             const zones = assembly.fieldPreferences?.scoringZones ?? []
             if (zones === undefined) {
@@ -366,15 +363,9 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     ),
 
                     new ConfigModeSelectionOption(
-                        "Configure Joints",
-                        ConfigMode.SUBSYSTEMS,
-                        "Set the velocities, torques, and accelerations of your robot's motors."
-                    ),
-
-                    new ConfigModeSelectionOption(
-                        "Sequence Joints",
-                        ConfigMode.SEQUENTIAL,
-                        "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+                        "Joints",
+                        ConfigMode.JOINTS,
+                        "Configure motor velocities, torques, and accelerations. Optionally link joints to move in unison."
                     ),
 
                     new ConfigModeSelectionOption(

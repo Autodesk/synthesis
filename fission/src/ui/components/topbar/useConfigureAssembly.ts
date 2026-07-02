@@ -18,7 +18,7 @@ export const ROBOT_CONFIGURE_BUTTONS: ConfigureButton[] = [
     { name: "cfg-2", label: "Drivetrain", mode: ConfigMode.DRIVETRAIN },
     { name: "cfg-3", label: "Intake", mode: ConfigMode.INTAKE },
     { name: "cfg-4", label: "Ejector", mode: ConfigMode.EJECTOR },
-    { name: "cfg-5", label: "Joints", mode: ConfigMode.SUBSYSTEMS },
+    { name: "cfg-5", label: "Joints", mode: ConfigMode.JOINTS },
     { name: "cfg-6", label: "Alliance / Station", mode: ConfigMode.ALLIANCE },
 ]
 
