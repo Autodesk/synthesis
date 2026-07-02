@@ -76,7 +76,10 @@ describe("React Mounting", async () => {
         const screenElement = screen.baseElement
         expect(screenElement.querySelector("canvas")).toBeInTheDocument()
         // The top bar renders icons as inline SVGs exposed through their accessible label.
-        expect(screenElement.querySelector('[role="img"][aria-label="settings"]')).toBeInTheDocument()
+        // On mobile view (smaller viewport), a hamburger menu ("Open menu") is rendered instead.
+        const settingsIcon = screenElement.querySelector('[role="img"][aria-label="settings"]')
+        const mobileMenu = screenElement.querySelector('[aria-label="Open menu"]')
+        expect(settingsIcon || mobileMenu).toBeInTheDocument()
         await annotate("DOM successfully updated to include Synthesis components and the top bar")
 
         // No Singleplayer button anymore — the world initializes on mount.
