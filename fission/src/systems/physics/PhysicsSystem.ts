@@ -8,6 +8,7 @@ import {
     convertMirabufFloatToArrJoltFloat3,
     convertMirabufFloatToArrJoltVec3,
     convertMirabufVector3ToJoltRVec3,
+    convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
     convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
@@ -104,13 +105,11 @@ const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 // Motor constant
 const VELOCITY_DEFAULT = 30
 
-type ConstraintSpecs = {
-    axis: Jolt.Vec3
+type DOFSpecs = Omit<mirabuf.joint.IDOF, "name" | "pivotDirection" | "dynamics" | "axis"> & {
     friction: number
-    value: number
-    upper?: number
-    lower?: number
+    axis: Jolt.Vec3
 }
+type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
 type GenericConstraintSettings =
     | Jolt.HingeConstraintSettings
@@ -569,16 +568,9 @@ class PhysicsSystem extends WorldSystem {
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
-        this.setAxes(rotationalFreedom, hingeConstraintSettings, versionNum)
 
-        this.applyHingeLimits(
-            {
-                value: rotationalFreedom.value ?? 0,
-                upper: rotationalFreedom.limits?.upper ?? 0,
-                lower: rotationalFreedom.limits?.lower ?? 0,
-            } satisfies Omit<ConstraintSpecs, "axis" | "friction">,
-            hingeConstraintSettings
-        )
+        this.setAxes(rotationalFreedom, hingeConstraintSettings, versionNum)
+        this.applyHingeLimits(rotationalFreedom, hingeConstraintSettings)
 
         hingeConstraintSettings.mMotorSettings.mMaxTorqueLimit = torque
         hingeConstraintSettings.mMotorSettings.mMinTorqueLimit = -torque
@@ -711,8 +703,6 @@ class PhysicsSystem extends WorldSystem {
     ): void {
         const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
 
-        // TODO
-        // Instead of copying DOF data into ConstraintSpecs, just use the DOF data directly
         const pitchDof = jointDefinition.custom!.dofs!.at(0)
         const yawDof = jointDefinition.custom!.dofs!.at(1)
         const rollDof = jointDefinition.custom!.dofs!.at(2)
@@ -720,36 +710,15 @@ class PhysicsSystem extends WorldSystem {
         const yawAxis = new JOLT.Vec3(yawDof?.axis?.x ?? 0, yawDof?.axis?.y ?? 0, yawDof?.axis?.z ?? 0)
         const rollAxis = new JOLT.Vec3(rollDof?.axis?.x ?? 0, rollDof?.axis?.y ?? 0, rollDof?.axis?.z ?? 0)
 
-        const constraints: ConstraintSpecs[] = []
-
+        const constraints: DOFSpecs[] = []
         if (!pitchDof?.limits || (pitchDof.limits.upper ?? 0) - (pitchDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({
-                axis: pitchAxis,
-                friction: 0.0,
-                value: pitchDof?.value ?? 0,
-                upper: pitchDof?.limits ? (pitchDof.limits.upper ?? 0) : undefined,
-                lower: pitchDof?.limits ? (pitchDof.limits.lower ?? 0) : undefined,
-            })
+            constraints.push({ ...pitchDof, axis: pitchAxis, friction: 0 })
         }
-
         if (!yawDof?.limits || (yawDof.limits.upper ?? 0) - (yawDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({
-                axis: yawAxis,
-                friction: 0.0,
-                value: yawDof?.value ?? 0,
-                upper: yawDof?.limits ? (yawDof.limits.upper ?? 0) : undefined,
-                lower: yawDof?.limits ? (yawDof.limits.lower ?? 0) : undefined,
-            })
+            constraints.push({ ...yawDof, axis: yawAxis, friction: 0 })
         }
-
         if (!rollDof?.limits || (rollDof.limits.upper ?? 0) - (rollDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({
-                axis: rollAxis,
-                friction: 0.0,
-                value: rollDof?.value ?? 0,
-                upper: rollDof?.limits ? (rollDof.limits.upper ?? 0) : undefined,
-                lower: rollDof?.limits ? (rollDof.limits.lower ?? 0) : undefined,
-            })
+            constraints.push({ ...rollDof, axis: rollAxis, friction: 0 })
         }
 
         let bodyStart = bodyB
@@ -764,17 +733,19 @@ class PhysicsSystem extends WorldSystem {
             return gb
         }
 
-        const createHingeSettings = (constraint: ConstraintSpecs) => {
+        const createHingeSettings = (constraint: DOFSpecs) => {
             const hingeSettings = new JOLT.HingeConstraintSettings()
             hingeSettings.mMaxFrictionTorque = constraint.friction
             hingeSettings.mPoint1 = hingeSettings.mPoint2 = anchorPoint
-            hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = constraint.axis.Normalized()
+
+            const axis = constraint.axis.Normalized()
+            hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = axis
             hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = getPerpendicular(hingeSettings.mHingeAxis1)
 
             return hingeSettings
         }
 
-        const createHingeConstraint = (constraint: ConstraintSpecs) => {
+        const createHingeConstraint = (constraint: DOFSpecs) => {
             const hingeSettings = createHingeSettings(constraint)
             this.applyHingeLimits(constraint, hingeSettings)
 
@@ -801,27 +772,22 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(anchorPoint)
     }
 
-    // TODO
-    // Figure out some way of unifying this logic with the same logic in `createHingeConstraint`
-    private applyHingeLimits(
-        constraint: Omit<ConstraintSpecs, "axis" | "friction">,
-        hingeSettings: Jolt.HingeConstraintSettings
-    ) {
-        if (!constraint.upper || !constraint.lower) return
+    private applyHingeLimits(freedom: LimitSpecs, hingeSettings: Jolt.HingeConstraintSettings) {
+        if (!freedom.limits?.upper || !freedom.limits?.lower || !freedom.value) return
 
         // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
         // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
         const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
 
-        const currentPos = piSafetyCheck(constraint.value)
-        const upper = piSafetyCheck(constraint.upper) - currentPos
-        const lower = piSafetyCheck(constraint.lower) - currentPos
+        const currentPos = piSafetyCheck(freedom.value)
+        const upper = piSafetyCheck(freedom.limits.upper) - currentPos
+        const lower = piSafetyCheck(freedom.limits.lower) - currentPos
 
         hingeSettings.mLimitsMin = -upper
         hingeSettings.mLimitsMax = -lower
     }
 
-    private applySliderLimits(freedom: mirabuf.joint.IDOF, sliderConstraintSettings: Jolt.SliderConstraintSettings) {
+    private applySliderLimits(freedom: LimitSpecs, sliderConstraintSettings: Jolt.SliderConstraintSettings) {
         if (Math.abs((freedom.limits?.upper ?? 0) - (freedom.limits?.lower ?? 0)) <= 0.001) return
 
         const currentPos = (freedom.value ?? 0) * 0.01

@@ -115,16 +115,16 @@ export function convertMirabufVector3ToThreeVector3(v: mirabuf.Vector3): THREE.V
     return new THREE.Vector3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
 }
 
-export function convertMirabufVector3ToJoltVec3(v: mirabuf.Vector3): Jolt.Vec3 {
-    return new JOLT.Vec3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
+export function convertMirabufVector3ToJoltVec3(v: mirabuf.Vector3 | mirabuf.IVector3): Jolt.Vec3 {
+    return new JOLT.Vec3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
 }
 
-export function convertMirabufVector3ToJoltRVec3(v: mirabuf.Vector3): Jolt.RVec3 {
-    return new JOLT.RVec3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
+export function convertMirabufVector3ToJoltRVec3(v: mirabuf.Vector3 | mirabuf.IVector3): Jolt.RVec3 {
+    return new JOLT.RVec3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
 }
 
-export function convertMirabufVector3ToJoltFloat3(v: mirabuf.Vector3): Jolt.Float3 {
-    return new JOLT.Float3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
+export function convertMirabufVector3ToJoltFloat3(v: mirabuf.Vector3 | mirabuf.IVector3): Jolt.Float3 {
+    return new JOLT.Float3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
 }
 
 export function convertMirabufFloatToArrJoltVec3(v: number[], offsetIndex: number): Jolt.Vec3 {
