@@ -495,15 +495,6 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    private createGenericConstraint<T>(
-        jointInstance: mirabuf.joint.JointInstance,
-        jointDefinition: mirabuf.joint.Joint,
-        torque: number,
-        bodyA: Jolt.Body,
-        bodyB: Jolt.Body,
-        versionNum?: number
-    ) {}
-
     private createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint) {
         const jointOrigin = jointDefinition.origin
             ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin as mirabuf.Vector3)
