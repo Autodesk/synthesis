@@ -539,6 +539,8 @@ class PhysicsSystem extends WorldSystem {
             constraintAxis = settings.mSliderAxis1 = settings.mSliderAxis2 = axis.Normalized()
         }
         settings.mNormalAxis1 = settings.mNormalAxis2 = getPerpendicular(constraintAxis)
+
+        JOLT.destroy(axis)
     }
 
     /**
@@ -786,7 +788,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     private applySliderLimits(freedom: LimitSpecs, sliderConstraintSettings: Jolt.SliderConstraintSettings) {
-        if (Math.abs((freedom.limits?.upper ?? 0) - (freedom.limits?.lower ?? 0)) <= 0.001) return
+        if (!freedom.limits || Math.abs((freedom.limits?.upper ?? 0) - (freedom.limits?.lower ?? 0)) <= 0.001) return
 
         const currentPos = (freedom.value ?? 0) * 0.01
         const upper = (freedom.limits!.upper ?? 0) * 0.01 - currentPos
@@ -797,8 +799,12 @@ class PhysicsSystem extends WorldSystem {
         const halfRange = Math.abs((upper - lower) / 2.0)
 
         // Move the anchor points
-        sliderConstraintSettings.mPoint2 = sliderConstraintSettings.mPoint2.Add(
-            sliderConstraintSettings.mSliderAxis1.Mul(midPoint)
+        // NOTE
+        // `Add` does modify the "self" vector
+        sliderConstraintSettings.mPoint2.Add(
+            // NOTE
+            // `MulFloat` does not modify its arguments
+            sliderConstraintSettings.mSliderAxis1.MulFloat(midPoint)
         )
 
         sliderConstraintSettings.mLimitsMax = halfRange
