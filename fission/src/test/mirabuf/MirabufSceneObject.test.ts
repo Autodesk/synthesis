@@ -206,7 +206,7 @@ describe("MirabufSceneObject", () => {
 
 describe("MirabufSceneObject - Real Systems Integration", () => {
     test("getDimensions returns proper values for Dozer robot", async context => {
-        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT)
+        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT)
 
         if (!cacheInfo) {
             context.skip()
@@ -236,7 +236,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
         expect(originalDimensions.depth).toBeCloseTo(0.9, 0)
     })
     test("Ejector and Intake are configured for Dozer", async context => {
-        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT)
+        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT)
 
         if (!cacheInfo) {
             context.skip()

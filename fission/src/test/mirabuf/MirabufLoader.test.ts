@@ -80,7 +80,7 @@ describe("MirabufLoader", () => {
             await MirabufLoader.removeAll()
         })
         const tests: [string, MiraType][] = [
-            ["/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT],
+            ["/api/mira/robots/Dozer v11.mira", MiraType.ROBOT],
             ["/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD],
         ]
         test.for(tests)("Loads Asset ($0)", async ([url, miratype]) => {
@@ -99,7 +99,7 @@ describe("MirabufLoader", () => {
 
         test("Remove All Cleans Up", async () => {
             const field1 = await MirabufLoader.cacheRemote("/api/mira/fields/FRC Field 2023_v7.mira", MiraType.FIELD)
-            const robot1 = await MirabufLoader.cacheRemote("/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT)
+            const robot1 = await MirabufLoader.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT)
             assert.exists(field1)
             assert.exists(robot1)
             expect(MirabufLoader.getAll()).toHaveLength(2)
