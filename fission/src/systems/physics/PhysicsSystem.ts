@@ -561,7 +561,6 @@ class PhysicsSystem extends WorldSystem {
         bodyB: Jolt.Body,
         versionNum: number
     ): Jolt.Constraint {
-        // HINGE CONSTRAINT
         const hingeConstraintSettings = new JOLT.HingeConstraintSettings()
 
         const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
@@ -773,15 +772,16 @@ class PhysicsSystem extends WorldSystem {
     }
 
     private applyHingeLimits(freedom: LimitSpecs, hingeSettings: Jolt.HingeConstraintSettings) {
-        if (!freedom.limits?.upper || !freedom.limits?.lower || !freedom.value) return
+        // if (!freedom.limits || !freedom.limits?.upper || !freedom.limits?.lower || !freedom.value) return
+        if (!freedom.limits || Math.abs((freedom.limits?.upper ?? 0) - (freedom.limits?.lower ?? 0)) <= 0.001) return
 
         // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
         // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
         const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
 
-        const currentPos = piSafetyCheck(freedom.value)
-        const upper = piSafetyCheck(freedom.limits.upper) - currentPos
-        const lower = piSafetyCheck(freedom.limits.lower) - currentPos
+        const currentPos = piSafetyCheck(freedom.value ?? 0)
+        const upper = piSafetyCheck(freedom.limits.upper ?? 0) - currentPos
+        const lower = piSafetyCheck(freedom.limits.lower ?? 0) - currentPos
 
         hingeSettings.mLimitsMin = -upper
         hingeSettings.mLimitsMax = -lower
