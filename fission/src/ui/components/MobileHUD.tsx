@@ -139,7 +139,7 @@ const MobileHUD: React.FC = () => {
     )
 
     const configureGrid = (
-        <Stack gap={2}>
+        <Stack gap={2} sx={{ minHeight: "100%" }}>
             <Stack direction="row" alignItems="center" gap={1}>
                 <IconButton disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => setView("root")}>
                     {SynthesisIcons.LEFT_ARROW_LARGE}
@@ -172,8 +172,10 @@ const MobileHUD: React.FC = () => {
                 sx={{
                     display: "grid",
                     gridTemplateColumns: "repeat(2, 1fr)",
-                    rowGap: { xs: 1, sm: 2 },
+                    rowGap: { xs: 2, sm: 4 },
                     columnGap: { xs: 0.5, sm: 1 },
+                    flexGrow: 1,
+                    alignContent: "space-evenly",
                 }}
             >
                 {configureButtons.map(({ name, label, mode }) => (
@@ -181,6 +183,8 @@ const MobileHUD: React.FC = () => {
                         key={label}
                         label={label}
                         iconName={name}
+                        disabled={!selectedConfigAssembly}
+                        disabledTooltip="Spawn an assembly first"
                         onClick={() => {
                             openConfig(mode)
                             if (selectedConfigAssembly) closeDrawer()

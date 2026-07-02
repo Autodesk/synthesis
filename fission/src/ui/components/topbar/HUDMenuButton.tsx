@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material"
+import { Box, Stack, Tooltip, Typography } from "@mui/material"
 import type { FC, ReactNode } from "react"
 import { IconButton } from "../StyledComponents"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topBarConfig"
@@ -10,6 +10,8 @@ type HUDMenuButtonProps = {
     iconName?: TopBarIconName
     icon?: ReactNode
     iconSize?: number | string
+    disabled?: boolean
+    disabledTooltip?: string
 }
 
 /**
@@ -22,33 +24,51 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
     iconName,
     icon,
     iconSize = "clamp(28px, 8vw, 48px)",
-}) => (
-    <Stack alignItems="center" gap={0.5} sx={{ width: "100%" }}>
-        <IconButton
-            size="large"
-            disableRipple
-            sx={{ ...TOP_BAR_ICON_BUTTON_SX, flexDirection: "column" }}
-            onClick={onClick}
+    disabled = false,
+    disabledTooltip,
+}) => {
+    const content = (
+        <Stack
+            alignItems="center"
+            gap={0.5}
+            sx={{ width: "100%", ...(disabled && { opacity: 0.4, pointerEvents: "none" }) }}
         >
-            {iconName ? (
-                <TopBarIcon name={iconName} size={iconSize} />
-            ) : (
-                <Box sx={{ fontSize: iconSize, display: "flex" }}>{icon}</Box>
-            )}
-        </IconButton>
-        <Typography
-            variant="caption"
-            sx={{
-                color: "topBarText.main",
-                textAlign: "center",
-                lineHeight: 1.2,
-                fontSize: "clamp(0.75rem, 3.5vw, 0.9rem)",
-                fontWeight: 600,
-            }}
-        >
-            {label}
-        </Typography>
-    </Stack>
-)
+            <IconButton
+                size="large"
+                disableRipple
+                sx={{ ...TOP_BAR_ICON_BUTTON_SX, flexDirection: "column" }}
+                onClick={disabled ? undefined : onClick}
+            >
+                {iconName ? (
+                    <TopBarIcon name={iconName} size={iconSize} />
+                ) : (
+                    <Box sx={{ fontSize: iconSize, display: "flex" }}>{icon}</Box>
+                )}
+            </IconButton>
+            <Typography
+                variant="caption"
+                sx={{
+                    color: "topBarText.main",
+                    textAlign: "center",
+                    lineHeight: 1.2,
+                    fontSize: "clamp(0.75rem, 3.5vw, 0.9rem)",
+                    fontWeight: 600,
+                }}
+            >
+                {label}
+            </Typography>
+        </Stack>
+    )
+
+    if (disabled && disabledTooltip) {
+        return (
+            <Tooltip title={disabledTooltip}>
+                <span style={{ display: "contents" }}>{content}</span>
+            </Tooltip>
+        )
+    }
+
+    return content
+}
 
 export default HUDMenuButton
