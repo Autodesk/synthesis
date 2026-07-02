@@ -1,4 +1,5 @@
 import InfoIcon from "@mui/icons-material/Info"
+import { forwardRef } from "react"
 import {
     Box,
     type ButtonProps,
@@ -117,13 +118,16 @@ export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, 
     )
 }
 
-export const IconButton: React.FC<IconButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiIconButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiIconButton>
-    )
-}
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+    ({ children, onClick, onMouseDown, onMouseUp, ...props }, ref) => {
+        return (
+            <MuiIconButton ref={ref} onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+                {children}
+            </MuiIconButton>
+        )
+    }
+)
+IconButton.displayName = "IconButton"
 
 export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
     return (
