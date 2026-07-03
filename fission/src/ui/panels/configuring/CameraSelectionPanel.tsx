@@ -148,7 +148,7 @@ const FieldViewSettings: React.FC = () => {
     return (
         <div className="flex flex-col gap-2 w-full">
             <div className="flex flex-col gap-1 w-full">
-                <span className="text-xs opacity-70">Station</span>
+                <span className="text-xs opacity-70 select-none">Station</span>
                 <Select
                     value={activePointIndex}
                     onChange={e => selectView(e.target.value as number)}
@@ -165,7 +165,7 @@ const FieldViewSettings: React.FC = () => {
             </div>
             {activePointIndex !== CENTER_POINT_INDEX && (
                 <div className="flex flex-col gap-1 w-full">
-                    <span className="text-xs opacity-70">Focus Robot</span>
+                    <span className="text-xs opacity-70 select-none">Focus Robot</span>
                     <Select
                         value={focusedRobotId}
                         onChange={e => {
@@ -180,7 +180,7 @@ const FieldViewSettings: React.FC = () => {
                         <MenuItem value={UNFOCUSED_ID}>None</MenuItem>
                         {robots.map(r => (
                             <MenuItem key={r.id} value={r.id}>
-                                {r.assemblyName}
+                                {r.descriptiveName}
                             </MenuItem>
                         ))}
                     </Select>
@@ -256,7 +256,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
         []
     )
 
-    // Selecting a target only updates state; the layout effect switches controls and assigns focus.
+    // Selecting a target only updates state. The layout effect switches controls and assigns focus.
     const onFocusChange = (id: number) => setFocusedId(id)
 
     const targetControls = getTargetControls()
@@ -264,7 +264,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1 w-full">
-                <span className="text-xs opacity-70">Focus Target</span>
+                <span className="text-xs opacity-70 select-none">Focus Target</span>
                 <Select
                     value={focusedId}
                     onChange={e => onFocusChange(e.target.value as number)}
@@ -274,7 +274,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                     <MenuItem value={UNFOCUSED_ID}>None</MenuItem>
                     {sceneObjects.map(t => (
                         <MenuItem key={t.id} value={t.id}>
-                            {t.assemblyName}
+                            {t.miraType === MiraType.ROBOT ? t.descriptiveName : t.assemblyName}
                         </MenuItem>
                     ))}
                 </Select>
