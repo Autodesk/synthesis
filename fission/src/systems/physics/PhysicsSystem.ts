@@ -704,6 +704,10 @@ class PhysicsSystem extends WorldSystem {
         return [fixedConstraint, vehicleConstraint, listener]
     }
 
+    /**
+     * Ball constraints don't really exist in Jolt,
+     * so we mock them by creating a bunch of hinge constraints along each axis connected to ghost bodies
+     */
     private createBallConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
@@ -720,8 +724,7 @@ class PhysicsSystem extends WorldSystem {
         }
 
         const axes = dofs.filter(dof => dof.axis).map(dof => convertMirabufVector3ToJoltVec3(dof.axis!))
-
-        const constraints: DOFSpecs[] = axes
+        const constraintSpecs: DOFSpecs[] = axes
             .map((axis, i) => [axis, dofs[i]] as [Jolt.Vec3, mirabuf.joint.IDOF])
             .filter(([_, dof]) => !dof.limits || (dof.limits.upper ?? 0) - (dof.limits.lower ?? 0) > 0.001)
             .map(([axis, dof]) => {
@@ -763,15 +766,15 @@ class PhysicsSystem extends WorldSystem {
             JOLT.destroy(hingeSettings)
         }
 
-        if (constraints.length > 1) {
+        if (constraintSpecs.length > 1) {
             bodyNext = newGhostBody()
         }
 
-        constraints.forEach((constraintSpecifications, i) => {
+        constraintSpecs.forEach((constraintSpecifications, i) => {
             createHingeConstraint(constraintSpecifications)
 
             bodyStart = bodyNext
-            bodyNext = i + 2 == constraints.length ? bodyA : newGhostBody()
+            bodyNext = i + 2 == constraintSpecs.length ? bodyA : newGhostBody()
 
             JOLT.destroy(constraintSpecifications.axis)
         })
