@@ -85,11 +85,7 @@ class PreferencesSystem {
      * Gets a user preference, or its default value if it does not exist in the preferences map
      */
     public static getUserPreference<K extends UserPreference>(key: K): UserPreferences[K] {
-        const pref = this._userPreferences[key]
-        if (pref === undefined) {
-            throw new Error("Preference '" + key + "' is not assigned a default!")
-        }
-        return pref
+        return this._userPreferences[key] ?? defaultUserPreferences[key]
     }
 
     /**
@@ -181,13 +177,10 @@ class PreferencesSystem {
 
         try {
             const saved: Preferences & UserPreferences = JSON.parse(loadedPrefs)
-            console.log(saved)
             saved[USER_PREFERENCE_KEY] ??= defaultUserPreferences
             let didMigrate = false
             for (const key in defaultUserPreferences) {
                 const typedKey = key as UserPreference
-                // Migrate old settings to new system
-                console.log(key, key in saved, saved[typedKey])
                 if (key in saved) {
                     didMigrate = true
                     ;(saved[USER_PREFERENCE_KEY] as Record<UserPreference, unknown>)[typedKey] = saved[typedKey]

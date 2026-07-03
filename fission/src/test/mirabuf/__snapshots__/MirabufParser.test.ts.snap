@@ -25,7 +25,7 @@ ArrayBuffer [
 ]
 `;
 
-exports[`Mirabuf Parser Tests > Generate Rigid Nodes (Dozer v11.mira) 1`] = `
+exports[`Mirabuf Parser Tests > Generate Rigid Nodes (Dozer) 1`] = `
 ArrayBuffer [
   -58,
   -101,
