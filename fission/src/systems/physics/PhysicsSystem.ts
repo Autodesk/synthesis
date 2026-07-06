@@ -7,7 +7,6 @@ import {
     convertJoltVec3ToJoltRVec3,
     convertMirabufFloatToArrJoltFloat3,
     convertMirabufFloatToArrJoltVec3,
-    convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
     convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
@@ -29,9 +28,11 @@ import {
     applyHingeLimits,
     applySliderLimits,
     createAnchorPoint,
+    createDOFSpecs,
     createVehicleController,
     getAxis,
     getPerpendicular,
+    isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
 
@@ -448,7 +449,7 @@ class PhysicsSystem extends WorldSystem {
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
-                    if (this.isWheel(jDef)) {
+                    if (isWheel(jDef)) {
                         const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
                         if (preferences.driveVelocity > 0) maxVel = preferences.driveVelocity
                         if (preferences.driveAcceleration > 0) maxAcceleration = preferences.driveAcceleration
@@ -472,16 +473,15 @@ class PhysicsSystem extends WorldSystem {
                         break
                     }
 
-                    addConstraint(
-                        this.createHingeConstraint(
-                            jointInst,
-                            jDef,
-                            maxAcceleration ?? 50,
-                            bodyA,
-                            bodyB,
-                            parser.assembly.info!.version!
-                        )
+                    const hinge = this.createHingeConstraint(
+                        jointInst,
+                        jDef,
+                        maxAcceleration ?? 50,
+                        bodyA,
+                        bodyB,
+                        parser.assembly.info!.version!
                     )
+                    addConstraint(hinge)
 
                     break
 
@@ -499,7 +499,7 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    private addConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
+    private createConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
         const constraint = constraintSettings.Create(bodyA, bodyB)
         this._constraints.push(constraint)
         this._joltPhysSystem.AddConstraint(constraint)
@@ -540,7 +540,7 @@ class PhysicsSystem extends WorldSystem {
         hingeConstraintSettings.mMotorSettings.mMaxTorqueLimit = torque
         hingeConstraintSettings.mMotorSettings.mMinTorqueLimit = -torque
 
-        return this.addConstraint(hingeConstraintSettings, bodyA, bodyB)
+        return this.createConstraint(hingeConstraintSettings, bodyA, bodyB)
     }
 
     /**
@@ -573,7 +573,7 @@ class PhysicsSystem extends WorldSystem {
         constraintSettings.mMotorSettings.mMaxForceLimit = maxForce
         constraintSettings.mMotorSettings.mMinForceLimit = -maxForce
 
-        return this.addConstraint(constraintSettings, bodyA, bodyB)
+        return this.createConstraint(constraintSettings, bodyA, bodyB)
     }
 
     private createFixedConstraint(bodyMain: Jolt.Body, bodyWheel: Jolt.Body, anchorPoint: Jolt.RVec3) {
@@ -676,16 +676,6 @@ class PhysicsSystem extends WorldSystem {
             return
         }
 
-        const axes = dofs
-            .filter(dof => dof.axis)
-            .map(dof => [convertMirabufVector3ToJoltVec3(dof.axis!), dof] as [Jolt.Vec3, mirabuf.joint.IDOF])
-
-        const constraintSpecs: DOFSpecs[] = axes
-            .filter(([_, dof]) => !dof.limits || (dof.limits.upper ?? 0) - (dof.limits.lower ?? 0) > 0.001)
-            .map(([axis, dof]) => {
-                return { ...dof, axis, friction: 0 } satisfies DOFSpecs
-            })
-
         let bodyStart = bodyB
         let bodyNext = bodyA
 
@@ -698,7 +688,7 @@ class PhysicsSystem extends WorldSystem {
             return gb
         }
 
-        const createHingeSettings = (constraint: DOFSpecs) => {
+        const createHingeSettingsFromDOFSpecs = (constraint: DOFSpecs) => {
             const hingeSettings = new JOLT.HingeConstraintSettings()
             hingeSettings.mMaxFrictionTorque = constraint.friction
             hingeSettings.mPoint1 = hingeSettings.mPoint2 = anchorPoint
@@ -710,8 +700,8 @@ class PhysicsSystem extends WorldSystem {
             return hingeSettings
         }
 
-        const createHingeConstraint = (constraint: DOFSpecs) => {
-            const hingeSettings = createHingeSettings(constraint)
+        const createHingeConstraintFromDOFSpecs = (constraint: DOFSpecs) => {
+            const hingeSettings = createHingeSettingsFromDOFSpecs(constraint)
             applyHingeLimits(constraint, hingeSettings)
 
             const hingeConstraint = hingeSettings.Create(bodyStart, bodyNext)
@@ -721,12 +711,14 @@ class PhysicsSystem extends WorldSystem {
             JOLT.destroy(hingeSettings)
         }
 
+        const constraintSpecs = createDOFSpecs(dofs)
+
         if (constraintSpecs.length > 1) {
             bodyNext = newGhostBody()
         }
 
         constraintSpecs.forEach((constraintSpecifications, i) => {
-            createHingeConstraint(constraintSpecifications)
+            createHingeConstraintFromDOFSpecs(constraintSpecifications)
 
             bodyStart = bodyNext
             bodyNext = i + 2 == constraintSpecs.length ? bodyA : newGhostBody()
@@ -735,10 +727,6 @@ class PhysicsSystem extends WorldSystem {
         })
 
         JOLT.destroy(anchorPoint)
-    }
-
-    private isWheel(jDef: mirabuf.joint.Joint): boolean {
-        return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
     }
 
     /**
@@ -841,11 +829,6 @@ class PhysicsSystem extends WorldSystem {
 
                 return [partDefinition, partInstance]
             }
-
-            // NOTE
-            // Including these destructions breaks things
-            // JOLT.destroy(minBounds)
-            // JOLT.destroy(maxBounds)
 
             rn.parts.forEach(partId => {
                 const [partDefinition, partInstance] = constructPartDefinition(partId)
