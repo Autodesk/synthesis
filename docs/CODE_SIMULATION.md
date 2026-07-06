@@ -19,4 +19,8 @@ This will open up the simulator, with widgets for NetworkTable entries, HALSim d
 Open Fission, spawn a robot, configure its brain (Configure → Brain), choose WPILib, and you should then see in the top right that it’s connected to the simulator.
 Once the brain is configured, a new Simulation option will show up in the configure menu – enter that menu and choose Wiring Panel to configure the flow of data between Fission and the robot code simulator.
 
-Once code sim is configured in Fission, change the mode from Disconnected to Auto or Teleop depending on the phase you’re trying to test, and the code should simulate; you should see updates both in Fission and in the readouts in the code simulator for the motors and sensors.
+Once code sim is configured in Fission, change the mode from Disconnected to Auto or Teleop depending on the phase you’re trying to test, and the code should simulate.
+You should see updates both in Fission and in the readouts in the code simulator for the motors and sensors.
+The robot code will control the movement of the robot in Fission, and you can expand each of the devices in the robot code simulator GUI to see if their fields are being updated by Fission.
+For example, running the JavaAutoSample should cause the `ADXL362[4]` and `SYN AHRS[0]` devices to update with rotation and acceleration data from Fission
+(note that the names may differ if the code changes).
