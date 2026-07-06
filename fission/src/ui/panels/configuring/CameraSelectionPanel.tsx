@@ -94,15 +94,19 @@ const FieldViewSettings: React.FC = () => {
         getFieldViewControls()?.focusedRobot?.id ?? UNFOCUSED_ID
     )
 
+    const refreshPoints = () => {
+        const freshPoints = getCameraPoints()
+        setPoints(freshPoints)
+        setActivePointIndex(prev => {
+            if (prev !== CENTER_POINT_INDEX && freshPoints[prev] === undefined) return CENTER_POINT_INDEX
+            return prev
+        })
+    }
+
     useEffect(
         () =>
             EventSystem.listen("MirabufObjectChangeEvent", () => {
-                const freshPoints = getCameraPoints()
-                setPoints(freshPoints)
-                setActivePointIndex(prev => {
-                    if (prev !== CENTER_POINT_INDEX && freshPoints[prev] === undefined) return CENTER_POINT_INDEX
-                    return prev
-                })
+                refreshPoints()
                 const freshRobots = World.sceneRenderer.mirabufSceneObjects.getRobots()
                 setRobots(freshRobots)
                 setFocusedRobotId(prev => {
@@ -115,6 +119,8 @@ const FieldViewSettings: React.FC = () => {
             }),
         []
     )
+
+    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", refreshPoints), [])
 
     useEffect(
         () =>
