@@ -2,7 +2,7 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import { DOFSpecs } from "./PhysicsSystem"
 import { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertMirabufVector3ToJoltRVec3 } from "@/util/TypeConversions"
+import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } from "@/util/TypeConversions"
 
 type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
@@ -129,4 +129,22 @@ export function applySliderLimits(freedom: LimitSpecs, sliderConstraintSettings:
 
     sliderConstraintSettings.mLimitsMax = halfRange
     sliderConstraintSettings.mLimitsMin = -halfRange
+}
+
+export function createDOFSpecs(dofs: mirabuf.joint.IDOF[]): DOFSpecs[] {
+    const axes = dofs
+        .filter(dof => dof.axis)
+        .map(dof => [convertMirabufVector3ToJoltVec3(dof.axis!), dof] as [Jolt.Vec3, mirabuf.joint.IDOF])
+
+    const constraintSpecs: DOFSpecs[] = axes
+        .filter(([_, dof]) => !dof.limits || (dof.limits.upper ?? 0) - (dof.limits.lower ?? 0) > 0.001)
+        .map(([axis, dof]) => {
+            return { ...dof, axis, friction: 0 } satisfies DOFSpecs
+        })
+
+    return constraintSpecs
+}
+
+export function isWheel(jDef: mirabuf.joint.Joint): boolean {
+    return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
 }
