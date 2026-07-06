@@ -1,5 +1,5 @@
 import JSZip from "jszip"
-import type { mirabuf } from "@/proto/mirabuf"
+import { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
 import { URDF_WHEEL_TAG } from "./URDFUserData"
@@ -35,6 +35,18 @@ export function applyConservativeURDFImport(assembly: mirabuf.Assembly): void {
         }
 
         if (jointInstance.parentPart && jointInstance.childPart) {
+            // Log the exact URDF-sourced origin/axis being discarded here for any joint that looks like a
+            // wheel (revolute, non-vertical axis) so it can be diffed against WheelJointBuilder's AABB-fit
+            // reconstruction of the same part after a manual wheel assignment.
+            const axis = jointDefinition?.rotational?.rotationalFreedom?.axis
+            if (jointDefinition?.jointMotionType === mirabuf.joint.JointMotion.REVOLUTE && axis) {
+                console.debug(
+                    `[applyConservativeURDFImport] Discarding REVOLUTE joint '${name}' ` +
+                        `parent='${jointInstance.parentPart}' child='${jointInstance.childPart}' -- ` +
+                        `URDF-sourced origin(cm)=(${jointDefinition.origin?.x?.toFixed(4)}, ${jointDefinition.origin?.y?.toFixed(4)}, ${jointDefinition.origin?.z?.toFixed(4)}) ` +
+                        `axis=(${axis.x?.toFixed(6)}, ${axis.y?.toFixed(6)}, ${axis.z?.toFixed(6)})`
+                )
+            }
             rigidGroups.push({
                 name: `${name}_conservative_rigid`,
                 occurrences: [jointInstance.parentPart, jointInstance.childPart],
@@ -113,7 +125,7 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
 
         validateURDFMeshFormats(urdfText)
         const assembly = convertURDF(urdfText, meshFiles)
-        detectAndTagWheels(assembly)
+        // detectAndTagWheels(assembly)
         applyConservativeURDFImport(assembly)
 
         return assembly

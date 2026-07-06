@@ -470,6 +470,15 @@ class PhysicsSystem extends WorldSystem {
                         addConstraint(res[1])
                         listener = res[2]
 
+                        const wheelBounds = bodyTwo.GetWorldSpaceBounds()
+                        const mainBounds = bodyOne.GetWorldSpaceBounds()
+                        const wheelRadiusUsed = res[1].GetWheel(0).GetSettings().mRadius
+                        console.debug(
+                            `[PhysicsSystem] createWheelConstraint OK for '${jointInst.info!.name!}' (${jointGuid}): ` +
+                                `radius=${wheelRadiusUsed.toFixed(4)} wheelBodyBottomY=${wheelBounds.mMin.GetY().toFixed(4)} ` +
+                                `mainBodyBottomY=${mainBounds.mMin.GetY().toFixed(4)}`
+                        )
+
                         break
                     }
 

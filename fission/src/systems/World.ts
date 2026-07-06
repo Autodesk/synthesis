@@ -8,6 +8,7 @@ import type MultiplayerSystem from "./multiplayer/MultiplayerSystem"
 import PhysicsSystem from "./physics/PhysicsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
+import WheelAssignmentMode from "./scene/WheelAssignmentMode"
 import RobotPositionTracker from "./simulation/RobotPositionTracker"
 import SimulationSystem from "./simulation/SimulationSystem"
 
@@ -23,6 +24,7 @@ class World {
     private static _multiplayerSystem?: MultiplayerSystem
     private static _analyticsSystem: AnalyticsSystem | undefined = undefined
     private static _dragModeSystem: DragModeSystem
+    private static _wheelAssignmentMode: WheelAssignmentMode
     private static _performanceMonitorSystem: PerformanceMonitoringSystem
 
     private static _accumTimes: AccumTimes = {
@@ -65,6 +67,9 @@ class World {
     public static get dragModeSystem() {
         return World._dragModeSystem
     }
+    public static get wheelAssignmentMode() {
+        return World._wheelAssignmentMode
+    }
 
     public static getOwnRobots() {
         return World.multiplayerSystem?.getOwnRobots() ?? World.sceneRenderer.mirabufSceneObjects.getRobots()
@@ -100,6 +105,7 @@ class World {
         World._simulationSystem = new SimulationSystem()
         World._inputSystem = new InputSystem()
         World._dragModeSystem = new DragModeSystem()
+        World._wheelAssignmentMode = new WheelAssignmentMode()
         World._performanceMonitorSystem = new PerformanceMonitoringSystem()
 
         try {
@@ -126,6 +132,7 @@ class World {
         World._inputSystem.destroy()
         // World._multiplayerSystem.destroy()
         World._dragModeSystem.destroy()
+        World._wheelAssignmentMode.destroy()
 
         World._performanceMonitorSystem.destroy()
         World._analyticsSystem?.destroy()
@@ -142,6 +149,7 @@ class World {
             this._accumTimes.inputTime += this.time(() => World._inputSystem.update(this._currentDeltaT))
             this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.update(this._currentDeltaT))
             World._dragModeSystem.update(this._currentDeltaT)
+            World._wheelAssignmentMode.update(this._currentDeltaT)
         })
 
         World._analyticsSystem?.update(this._currentDeltaT)

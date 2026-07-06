@@ -63,6 +63,15 @@ class WheelDriver extends Driver {
         this._prevVel = vel
     }
 
+    /** Ground-contact/suspension snapshot for diagnosing why a driven wheel isn't producing motion. */
+    public getDebugContactInfo(): { hasContact: boolean; suspensionLength: number; angularVelocity: number } {
+        return {
+            hasContact: this._wheel.HasContact(),
+            suspensionLength: this._wheel.GetSuspensionLength(),
+            angularVelocity: this._wheel.GetAngularVelocity(),
+        }
+    }
+
     public getReceiverType(): NoraTypes {
         return NoraTypes.NUMBER
     }

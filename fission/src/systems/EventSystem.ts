@@ -48,6 +48,8 @@ interface EventDataMap {
     TouchControlsLoaded: never
 
     DragModeToggled: { enabled: boolean }
+    WheelAssignmentModeToggled: { enabled: boolean }
+    WheelAssignmentPendingCountChanged: { count: number }
 
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }

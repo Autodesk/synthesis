@@ -41,6 +41,7 @@ import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import { dumpAssemblyStructure } from "@/util/DebugAssemblyDump"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -1124,11 +1125,26 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 }
 
+/**
+ * Dumps the assembly's structure (joints, design/joint hierarchy, part metadata -- mesh geometry
+ * stripped) right as it enters the scene, so an import of a known-good robot can be captured in the same
+ * devtools session/log as a manually wheel-jointed one for diffing. Mesh geometry is omitted because
+ * some log-capture/export tools truncate each console argument at a fixed character count -- raw vertex
+ * data alone blows past that limit and would cut the export off before it ever reaches assembly.data.joints.
+ */
+function dumpAssemblyOnImport(assembly: mirabuf.Assembly): void {
+    if (!import.meta.env.DEV) return
+
+    dumpAssemblyStructure(assembly, `[MirabufImport] '${assembly.info?.name}'`)
+}
+
 export async function createMirabuf(
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle,
     multiplayerOwnerId?: string
 ): Promise<MirabufSceneObject | null | undefined> {
+    dumpAssemblyOnImport(assembly)
+
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)

@@ -17,6 +17,7 @@ import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
+import WheelAssignmentDebugPanel from "./ui/components/WheelAssignmentDebugPanel.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
@@ -113,6 +114,7 @@ function Synthesis() {
                             <ProgressNotifications key={"progress-notifications"} />
                             <WPILibConnectionStatus />
                             <DragModeIndicator />
+                        <WheelAssignmentDebugPanel />
 
                             {!consentPopupDisable && (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />

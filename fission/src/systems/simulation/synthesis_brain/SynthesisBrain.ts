@@ -269,6 +269,12 @@ class SynthesisBrain extends Brain {
         }
         JOLT.destroy(rightVector)
 
+        console.debug(
+            `[SynthesisBrain] createSkidSteerDriveBehavior for '${this._assemblyName}': ` +
+                `wheelDrivers=${wheelDrivers.length} left=${leftWheels.length} right=${rightWheels.length} ` +
+                `useLateralZ=${useLateralZ}`
+        )
+
         return new SkidSteerDriveBehavior(
             leftWheels,
             rightWheels,
