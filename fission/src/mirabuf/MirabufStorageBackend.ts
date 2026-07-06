@@ -169,7 +169,7 @@ async function tryOPFS(): Promise<OPFSBackend | null> {
         const dir = await root.getDirectoryHandle(OPFS_DIR_NAME, { create: true })
         if (dir.name !== OPFS_DIR_NAME) return null
 
-        // Probe for createWritable() support — this is what Safari lacks on the main thread
+        // Probe for createWritable() support; this is what Safari (< 26) lacks on the main thread
         const testHandle = await dir.getFileHandle("__opfs_probe__", { create: true })
         const writable = await testHandle.createWritable()
         await writable.close()

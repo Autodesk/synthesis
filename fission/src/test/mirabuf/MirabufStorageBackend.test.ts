@@ -20,7 +20,7 @@ function buffersEqual(a: ArrayBuffer, b: ArrayBuffer): boolean {
 
 /**
  * The full backend contract.  Both OPFSBackend and IndexedDBBackend must
- * pass every test here — proving behavioural parity between them.
+ * pass every test here, proving behavioural parity between them.
  */
 function describeBackendContract(label: string, getBackend: () => MirabufStorageBackend) {
     describe(label, () => {
@@ -194,32 +194,6 @@ function describeBackendContract(label: string, getBackend: () => MirabufStorage
     })
 }
 
-// ─── Backend-specific setup ───────────────────────────────────────────────────
-
-/**
- * Open a fresh IndexedDB under a unique name so tests cannot bleed into
- * the app's real "MirabufCache" database.
- */
-async function openFreshIndexedDB(dbName: string): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-        const req = indexedDB.open(dbName, 1)
-        req.onupgradeneeded = () => {
-            req.result.createObjectStore("assemblies", { keyPath: "hash" })
-        }
-        req.onsuccess = () => resolve(req.result)
-        req.onerror = () => reject(req.error)
-    })
-}
-
-/** Delete an IndexedDB database by name (cleanup between suites). */
-function deleteIndexedDB(dbName: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        const req = indexedDB.deleteDatabase(dbName)
-        req.onsuccess = () => resolve()
-        req.onerror = () => reject(req.error)
-    })
-}
-
 // ─── Run contract tests against each backend ──────────────────────────────────
 
 describe("MirabufStorageBackend", () => {
@@ -254,74 +228,20 @@ describe("MirabufStorageBackend", () => {
 
     // ── IndexedDB backend (Safari-equivalent path) ────────────────────────────
 
-    describe("IndexedDBBackend", async () => {
-        // Use a unique DB name so the suite is hermetic from the real app cache.
-        const TEST_DB_NAME = "MirabufCache__test"
-        let db: IDBDatabase
-        // We need access to IndexedDBBackend, which is not exported.
-        // We obtain it by constructing it via the factory with OPFS disabled,
-        // or by directly passing the IDB handle to a thin wrapper.
-        // Since IndexedDBBackend is private, we test it indirectly through a
-        // helper that mirrors its exact implementation under a test DB name.
+    describe("IndexedDBBackend", () => {
+        // Safari (< 26) supports OPFS but lacks createWritable(), so initStorageBackend()
+        // falls back to IndexedDB. We simulate that here by making OPFS unavailable and
+        // then run the shared contract against the *real* IndexedDBBackend the factory
+        // returns, so the class under test is genuinely exercised (no reimplementation).
         let idbBackend: MirabufStorageBackend
 
         beforeEach(async () => {
-            db = await openFreshIndexedDB(TEST_DB_NAME)
-            // Mirror the IndexedDBBackend interface inline so the class-under-test
-            // isn't duplicated — we exercise every method path.
-            idbBackend = {
-                async hasFile(hash) {
-                    return new Promise((resolve, reject) => {
-                        const req = db.transaction("assemblies", "readonly").objectStore("assemblies").getKey(hash)
-                        req.onsuccess = () => resolve(req.result !== undefined)
-                        req.onerror = () => reject(req.error)
-                    })
-                },
-                async readFile(hash) {
-                    return new Promise((resolve, reject) => {
-                        const req = db.transaction("assemblies", "readonly").objectStore("assemblies").get(hash)
-                        req.onsuccess = () =>
-                            resolve((req.result as { hash: string; data: ArrayBuffer } | undefined)?.data)
-                        req.onerror = () => reject(req.error)
-                    })
-                },
-                async writeFile(hash, buffer) {
-                    return new Promise((resolve, reject) => {
-                        const req = db
-                            .transaction("assemblies", "readwrite")
-                            .objectStore("assemblies")
-                            .put({ hash, data: buffer })
-                        req.onsuccess = () => resolve()
-                        req.onerror = () => reject(req.error)
-                    })
-                },
-                async removeFile(hash) {
-                    return new Promise((resolve, reject) => {
-                        const req = db.transaction("assemblies", "readwrite").objectStore("assemblies").delete(hash)
-                        req.onsuccess = () => resolve()
-                        req.onerror = () => reject(req.error)
-                    })
-                },
-                async listFiles() {
-                    return new Promise((resolve, reject) => {
-                        const req = db.transaction("assemblies", "readonly").objectStore("assemblies").getAllKeys()
-                        req.onsuccess = () => resolve(req.result as string[])
-                        req.onerror = () => reject(req.error)
-                    })
-                },
-                async removeAll() {
-                    return new Promise((resolve, reject) => {
-                        const req = db.transaction("assemblies", "readwrite").objectStore("assemblies").clear()
-                        req.onsuccess = () => resolve()
-                        req.onerror = () => reject(req.error)
-                    })
-                },
-            }
-        })
-
-        afterEach(async () => {
-            db.close()
-            await deleteIndexedDB(TEST_DB_NAME)
+            vi.spyOn(navigator.storage, "getDirectory").mockRejectedValue(
+                new DOMException("Not supported", "NotSupportedError")
+            )
+            const backend = await initStorageBackend()
+            expect(backend).not.toBeNull()
+            idbBackend = backend!
         })
 
         describeBackendContract("IndexedDBBackend contract", () => idbBackend)

@@ -106,9 +106,8 @@ describe("MirabufLoader", () => {
 
             await MirabufLoader.removeAll()
 
-            // Metadata index must be empty.
             expect(MirabufLoader.getAll()).toHaveLength(0)
-            // Assemblies must no longer be retrievable through the public API.
+            // get() should return nothing for the cleared assemblies.
             assert.notExists(await MirabufLoader.get(field1.hash))
             assert.notExists(await MirabufLoader.get(robot1.hash))
         })
