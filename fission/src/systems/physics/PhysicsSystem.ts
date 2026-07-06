@@ -26,6 +26,7 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
+import { applyHingeLimits, applySliderLimits, getAxis, getPerpendicular, setAxes } from "./ConstraintSettingsUtilities"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -104,11 +105,10 @@ const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 // Motor constant
 const VELOCITY_DEFAULT = 30
 
-type DOFSpecs = Omit<mirabuf.joint.IDOF, "name" | "pivotDirection" | "dynamics" | "axis"> & {
+export type DOFSpecs = Omit<mirabuf.joint.IDOF, "name" | "pivotDirection" | "dynamics" | "axis"> & {
     friction: number
     axis: Jolt.Vec3
 }
-type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
 type GenericConstraintSettings =
     | Jolt.HingeConstraintSettings
@@ -494,11 +494,11 @@ class PhysicsSystem extends WorldSystem {
 
     private createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint) {
         const jointOrigin = jointDefinition.origin
-            ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin as mirabuf.Vector3)
+            ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin)
             : new JOLT.RVec3(0, 0, 0)
         // TODO: Offset transformation for robot builder.
         const jointOriginOffset = jointInstance.offset
-            ? convertMirabufVector3ToJoltRVec3(jointInstance.offset as mirabuf.Vector3)
+            ? convertMirabufVector3ToJoltRVec3(jointInstance.offset)
             : new JOLT.RVec3(0, 0, 0)
 
         const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
@@ -509,7 +509,7 @@ class PhysicsSystem extends WorldSystem {
         return anchorPoint
     }
 
-    private newConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
+    private addConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
         const constraint = constraintSettings.Create(bodyA, bodyB)
         this._constraints.push(constraint)
         this._joltPhysSystem.AddConstraint(constraint)
@@ -517,31 +517,6 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(constraintSettings)
 
         return constraint
-    }
-
-    private getAxis(freedom: mirabuf.joint.IDOF, versionNum: number = 6) {
-        const miraAxis = freedom.axis! as mirabuf.Vector3
-        // No scaling, these are unit vectors
-        const miraAxisX = (versionNum < 5 ? -miraAxis.x : miraAxis.x) ?? 0
-        return new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
-    }
-
-    private setAxes(
-        freedom: mirabuf.joint.IDOF,
-        settings: Jolt.HingeConstraintSettings | Jolt.SliderConstraintSettings,
-        versionNum?: number
-    ) {
-        const axis = this.getAxis(freedom, versionNum)
-
-        let constraintAxis: Jolt.Vec3
-        if ("mHingeAxis1" in settings) {
-            constraintAxis = settings.mHingeAxis1 = settings.mHingeAxis2 = axis.Normalized()
-        } else {
-            constraintAxis = settings.mSliderAxis1 = settings.mSliderAxis2 = axis.Normalized()
-        }
-        settings.mNormalAxis1 = settings.mNormalAxis2 = getPerpendicular(constraintAxis)
-
-        JOLT.destroy(axis)
     }
 
     /**
@@ -569,13 +544,13 @@ class PhysicsSystem extends WorldSystem {
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
-        this.setAxes(rotationalFreedom, hingeConstraintSettings, versionNum)
-        this.applyHingeLimits(rotationalFreedom, hingeConstraintSettings)
+        setAxes(rotationalFreedom, hingeConstraintSettings, versionNum)
+        applyHingeLimits(rotationalFreedom, hingeConstraintSettings)
 
         hingeConstraintSettings.mMotorSettings.mMaxTorqueLimit = torque
         hingeConstraintSettings.mMotorSettings.mMinTorqueLimit = -torque
 
-        return this.newConstraint(hingeConstraintSettings, bodyA, bodyB)
+        return this.addConstraint(hingeConstraintSettings, bodyA, bodyB)
     }
 
     /**
@@ -602,13 +577,13 @@ class PhysicsSystem extends WorldSystem {
 
         const freedom = jointDefinition.prismatic!.prismaticFreedom!
 
-        this.setAxes(freedom, constraintSettings)
-        this.applySliderLimits(freedom, constraintSettings)
+        setAxes(freedom, constraintSettings)
+        applySliderLimits(freedom, constraintSettings)
 
         constraintSettings.mMotorSettings.mMaxForceLimit = maxForce
         constraintSettings.mMotorSettings.mMinForceLimit = -maxForce
 
-        return this.newConstraint(constraintSettings, bodyA, bodyB)
+        return this.addConstraint(constraintSettings, bodyA, bodyB)
     }
 
     private createFixedConstraint(bodyMain: Jolt.Body, bodyWheel: Jolt.Body, anchorPoint: Jolt.RVec3) {
@@ -681,7 +656,7 @@ class PhysicsSystem extends WorldSystem {
         const fixedConstraint = this.createFixedConstraint(bodyMain, bodyWheel, anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
-        const axis = this.getAxis(rotationalFreedom, versionNum).Mul(0.1)
+        const axis = getAxis(rotationalFreedom, versionNum).Mul(0.1)
 
         const bounds = bodyWheel.GetShape().GetLocalBounds()
         const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
@@ -757,7 +732,7 @@ class PhysicsSystem extends WorldSystem {
 
         const createHingeConstraint = (constraint: DOFSpecs) => {
             const hingeSettings = createHingeSettings(constraint)
-            this.applyHingeLimits(constraint, hingeSettings)
+            applyHingeLimits(constraint, hingeSettings)
 
             const hingeConstraint = hingeSettings.Create(bodyStart, bodyNext)
             this._joltPhysSystem.AddConstraint(hingeConstraint)
@@ -780,46 +755,6 @@ class PhysicsSystem extends WorldSystem {
         })
 
         JOLT.destroy(anchorPoint)
-    }
-
-    private applyHingeLimits(freedom: LimitSpecs, hingeSettings: Jolt.HingeConstraintSettings) {
-        // if (!freedom.limits || !freedom.limits?.upper || !freedom.limits?.lower || !freedom.value) return
-        if (!freedom.limits || Math.abs((freedom.limits?.upper ?? 0) - (freedom.limits?.lower ?? 0)) <= 0.001) return
-
-        // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
-        // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
-        const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
-
-        const currentPos = piSafetyCheck(freedom.value ?? 0)
-        const upper = piSafetyCheck(freedom.limits.upper ?? 0) - currentPos
-        const lower = piSafetyCheck(freedom.limits.lower ?? 0) - currentPos
-
-        hingeSettings.mLimitsMin = -upper
-        hingeSettings.mLimitsMax = -lower
-    }
-
-    private applySliderLimits(freedom: LimitSpecs, sliderConstraintSettings: Jolt.SliderConstraintSettings) {
-        if (!freedom.limits || Math.abs((freedom.limits?.upper ?? 0) - (freedom.limits?.lower ?? 0)) <= 0.001) return
-
-        const currentPos = (freedom.value ?? 0) * 0.01
-        const upper = (freedom.limits!.upper ?? 0) * 0.01 - currentPos
-        const lower = (freedom.limits!.lower ?? 0) * 0.01 - currentPos
-
-        // Calculate mid point
-        const midPoint = (upper + lower) / 2.0
-        const halfRange = Math.abs((upper - lower) / 2.0)
-
-        // Move the anchor points
-        // NOTE
-        // `Add` does modify the "self" vector
-        sliderConstraintSettings.mPoint2.Add(
-            // NOTE
-            // `MulFloat` does not modify its arguments
-            sliderConstraintSettings.mSliderAxis1.MulFloat(midPoint)
-        )
-
-        sliderConstraintSettings.mLimitsMax = halfRange
-        sliderConstraintSettings.mLimitsMin = -halfRange
     }
 
     private isWheel(jDef: mirabuf.joint.Joint): boolean {
@@ -1847,29 +1782,6 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
         }
         return false
     })
-}
-
-function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
-    const v1 = new JOLT.Vec3(0, 1, 0)
-    const v2 = new JOLT.Vec3(0, 0, 1)
-
-    const perp = tryGetPerpendicular(vec, v1) ?? tryGetPerpendicular(vec, v2)!
-
-    JOLT.destroy(v1)
-    JOLT.destroy(v2)
-
-    return perp
-}
-
-function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | undefined {
-    if (Math.abs(Math.abs(vec.Dot(toCheck)) - 1.0) < 0.0001) return undefined
-
-    const a = vec.Dot(toCheck)
-    return new JOLT.Vec3(
-        toCheck.GetX() - vec.GetX() * a,
-        toCheck.GetY() - vec.GetY() * a,
-        toCheck.GetZ() - vec.GetZ() * a
-    ).Normalized()
 }
 
 export type RayCastHit = {

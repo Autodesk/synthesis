@@ -111,20 +111,12 @@ export function convertMirabufTransformToThreeMatrix(m: mirabuf.ITransform): THR
     return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1))
 }
 
-export function convertMirabufVector3ToThreeVector3(v: mirabuf.Vector3): THREE.Vector3 {
-    return new THREE.Vector3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
-}
-
-export function convertMirabufVector3ToJoltVec3(v: mirabuf.Vector3 | mirabuf.IVector3): Jolt.Vec3 {
+export function convertMirabufVector3ToJoltVec3(v: mirabuf.IVector3): Jolt.Vec3 {
     return new JOLT.Vec3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
 }
 
-export function convertMirabufVector3ToJoltRVec3(v: mirabuf.Vector3 | mirabuf.IVector3): Jolt.RVec3 {
+export function convertMirabufVector3ToJoltRVec3(v: mirabuf.IVector3): Jolt.RVec3 {
     return new JOLT.RVec3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
-}
-
-export function convertMirabufVector3ToJoltFloat3(v: mirabuf.Vector3 | mirabuf.IVector3): Jolt.Float3 {
-    return new JOLT.Float3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
 }
 
 export function convertMirabufFloatToArrJoltVec3(v: number[], offsetIndex: number): Jolt.Vec3 {
@@ -133,14 +125,6 @@ export function convertMirabufFloatToArrJoltVec3(v: number[], offsetIndex: numbe
 
 export function convertMirabufFloatToArrJoltFloat3(v: number[], offsetIndex: number): Jolt.Float3 {
     return new JOLT.Float3(v[offsetIndex] / 100.0, v[offsetIndex + 1] / 100.0, v[offsetIndex + 2] / 100.0)
-}
-
-export function convertMirabufFloatToArrJoltVec3Arr(v: number[]): Jolt.Vec3[] {
-    const arr = []
-    for (let i = 0; i < v.length; i += 3) {
-        arr.push(convertMirabufFloatToArrJoltVec3(v, i))
-    }
-    return arr
 }
 
 export function convertReactRgbaColorToThreeColor(color: RgbaColor) {
