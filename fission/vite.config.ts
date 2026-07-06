@@ -2,15 +2,14 @@ import fs from "node:fs/promises"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import react from "@vitejs/plugin-react-swc"
 import * as path from "path"
-import {loadEnv, type ProxyOptions} from "vite"
+import { loadEnv, type ProxyOptions } from "vite"
 import glsl from "vite-plugin-glsl"
-import {defineConfig} from "vitest/config"
-import type {TestCase, TestSuite} from "vitest/node";
+import { defineConfig } from "vitest/config"
+import type { TestCase, TestSuite } from "vitest/node"
 
 const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
-
 
 const useLocalAPS = false
 const useSsl = false
@@ -46,8 +45,8 @@ const localAssetsExist = await fs
     .catch(() => false)
 
 // https://vitejs.dev/config/
-export default defineConfig(async ({mode}) => {
-    process.env = {...process.env, ...loadEnv(mode, process.cwd())}
+export default defineConfig(async ({ mode }) => {
+    process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
     process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9002"
     const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
 
@@ -59,40 +58,38 @@ export default defineConfig(async ({mode}) => {
     const proxies: Record<string, ProxyOptions> = {}
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
-            target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
-            changeOrigin: true,
-            secure: false,
-            rewrite: path =>
-                path
-                    .replace(/^\/api/, "/Downloadables")
-        }
+              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+              changeOrigin: true,
+              secure: false,
+              rewrite: path => path.replace(/^\/api/, "/Downloadables"),
+          }
         : {
-            target: `https://synthesis.autodesk.com/`,
-            changeOrigin: true,
-            secure: true,
-        }
+              target: `https://synthesis.autodesk.com/`,
+              changeOrigin: true,
+              secure: true,
+          }
     proxies["/api/mira"] = assetProxy
     proxies["/api/match_configs"] = assetProxy
     proxies["/api/aps"] = useLocalAPS
         ? {
-            target: `http://localhost:${dockerServerPort}/`,
-            changeOrigin: true,
-            secure: false,
-        }
+              target: `http://localhost:${dockerServerPort}/`,
+              changeOrigin: true,
+              secure: false,
+          }
         : {
-            target: `https://synthesis.autodesk.com/`,
-            changeOrigin: true,
-            secure: true,
-        }
+              target: `https://synthesis.autodesk.com/`,
+              changeOrigin: true,
+              secure: true,
+          }
     return {
         plugins: plugins,
         publicDir: "./public",
         resolve: {
             alias: [
-                {find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components")},
-                {find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals")},
-                {find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels")},
-                {find: "@", replacement: path.resolve(__dirname, "src")},
+                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+                { find: "@", replacement: path.resolve(__dirname, "src") },
             ],
         },
         define: {
@@ -104,20 +101,24 @@ export default defineConfig(async ({mode}) => {
             testTimeout: 10000,
             globals: true,
             environment: "jsdom",
-            reporters: (process.env.GITHUB_ACTIONS
-                ? ["github-actions", "default", {
-                    onTestCaseResult(test:TestCase) {
-                        if (!test.ok()) {
-                            console.warn(test.fullName, "failed")
-                        }
-                    },
-                    onTestSuiteResult(testSuite: TestSuite) {
-                        const ok = testSuite.ok()
+            reporters: process.env.GITHUB_ACTIONS
+                ? [
+                      "github-actions",
+                      "default",
+                      {
+                          onTestCaseResult(test: TestCase) {
+                              if (!test.ok()) {
+                                  console.warn(test.fullName, "failed")
+                              }
+                          },
+                          onTestSuiteResult(testSuite: TestSuite) {
+                              const ok = testSuite.ok()
 
-                        if (!ok) setTimeout(() => process.exit(1), 1000)
-                    }
-                }] : ["default"])
-            ,
+                              if (!ok) setTimeout(() => process.exit(1), 1000)
+                          },
+                      },
+                  ]
+                : ["default"],
             browser: {
                 enabled: true,
                 provider: "playwright",
@@ -153,14 +154,13 @@ export default defineConfig(async ({mode}) => {
     }
 })
 
-
 async function getCommitHash() {
     try {
-        const rev = (await fs.readFile('../.git/HEAD')).toString().trim();
-        if (rev.indexOf(':') === -1) {
-            return rev;
+        const rev = (await fs.readFile("../.git/HEAD")).toString().trim()
+        if (rev.indexOf(":") === -1) {
+            return rev
         } else {
-            return (await fs.readFile('../.git/' + rev.substring(5))).toString().trim();
+            return (await fs.readFile("../.git/" + rev.substring(5))).toString().trim()
         }
     } catch (e) {
         console.warn("Could not get git hash", e)

@@ -10,7 +10,7 @@ import { rayCastForRigidBody } from "@/util/RaycastUtils"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
-import type { CustomOrbitControls, SphericalCoords } from "./CameraControls"
+import { CameraMode, type CustomTargetControls } from "./CameraControls"
 import {
     type InteractionEnd,
     type InteractionMove,
@@ -25,16 +25,6 @@ interface DragTarget {
     mass: number
     dragDepth: number
     physicsDisabled: boolean
-}
-
-interface CameraTransition {
-    isTransitioning: boolean
-    transitionProgress: number
-    transitionDuration: number
-    startCoords: SphericalCoords
-    targetCoords: SphericalCoords
-    startFocus: THREE.Matrix4
-    targetSceneObject: MirabufSceneObject | undefined
 }
 
 class DragModeSystem extends WorldSystem {
@@ -82,15 +72,7 @@ class DragModeSystem extends WorldSystem {
     private _originalInteractionMove: ((i: InteractionMove) => void) | undefined
     private _originalInteractionEnd: ((i: InteractionEnd) => void) | undefined
 
-    private _cameraTransition: CameraTransition = {
-        isTransitioning: false,
-        transitionProgress: 0,
-        transitionDuration: 1.0,
-        startCoords: { theta: 0, phi: 0, r: 0 },
-        targetCoords: { theta: 0, phi: 0, r: 0 },
-        startFocus: new THREE.Matrix4(),
-        targetSceneObject: undefined,
-    }
+    private static readonly CAMERA_SETTLE_DURATION = 1.0
 
     private readonly _unsubscriber: () => void
 
@@ -113,10 +95,6 @@ class DragModeSystem extends WorldSystem {
         return this._enabled
     }
 
-    public get isTransitioning(): boolean {
-        return this._cameraTransition.isTransitioning
-    }
-
     public set enabled(enabled: boolean) {
         if (this._enabled === enabled) return
 
@@ -130,10 +108,8 @@ class DragModeSystem extends WorldSystem {
             this.unhookInteractionHandlers()
             this.stopDragging()
 
-            if (this._cameraTransition.isTransitioning) {
-                this._cameraTransition.isTransitioning = false
-                World.sceneRenderer.currentCameraControls.enabled = true
-            }
+            // Re-enable camera controls in case drag mode was disabled mid-drag.
+            World.sceneRenderer.currentCameraControls.enabled = true
 
             if (this._dragModeStartTime !== undefined) {
                 const durationSeconds = (Date.now() - this._dragModeStartTime) / 1000
@@ -145,25 +121,16 @@ class DragModeSystem extends WorldSystem {
         EventSystem.dispatch("DragModeToggled", { enabled })
     }
 
-    public update(deltaT: number): void {
+    public update(_deltaT: number): void {
         if (!this._enabled) return
 
         if (this._isDragging && this._dragTarget) {
             this.updateDragForce()
         }
-
-        if (this._cameraTransition.isTransitioning) {
-            this.updateCameraTransition(deltaT)
-        }
     }
 
     public destroy(): void {
         this.enabled = false
-
-        if (this._cameraTransition.isTransitioning) {
-            this._cameraTransition.isTransitioning = false
-            World.sceneRenderer.currentCameraControls.enabled = true
-        }
 
         // Clean up debug sphere
         this.removeDebugSphere()
@@ -336,7 +303,11 @@ class DragModeSystem extends WorldSystem {
             World.physicsSystem.disablePhysicsForBody(bodyId)
         }
 
-        World.sceneRenderer.currentCameraControls.enabled = false
+        // Face mode should keep the camera enabled tracking the target
+        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
+        if (cameraControls.mode !== CameraMode.Face) {
+            cameraControls.enabled = false
+        }
     }
 
     private stopDragging(): void {
@@ -365,6 +336,9 @@ class DragModeSystem extends WorldSystem {
                     -angularVel.GetZ() * angularStopBraking
                 )
                 body.AddTorque(angularStopTorque)
+
+                JOLT.destroy(stopBrakingForce)
+                JOLT.destroy(angularStopTorque)
             }
         }
 
@@ -385,78 +359,11 @@ class DragModeSystem extends WorldSystem {
         // Remove debug sphere when dragging stops
         this.removeDebugSphere()
 
-        if (shouldTransition) {
-            this.startCameraTransition(targetSceneObject)
-        } else {
-            World.sceneRenderer.currentCameraControls.enabled = true
-        }
-    }
-
-    private startCameraTransition(targetSceneObject: MirabufSceneObject | undefined): void {
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
-
-        this._cameraTransition.startCoords = {
-            theta: cameraControls.coords.theta,
-            phi: cameraControls.coords.phi,
-            r: cameraControls.coords.r,
-        }
-        this._cameraTransition.startFocus.copy(cameraControls.focus)
-
-        this._cameraTransition.targetCoords = {
-            theta: this._cameraTransition.startCoords.theta,
-            phi: this._cameraTransition.startCoords.phi,
-            r: this._cameraTransition.startCoords.r,
-        }
-
-        this._cameraTransition.targetSceneObject = targetSceneObject
-
-        this._cameraTransition.isTransitioning = true
-        this._cameraTransition.transitionProgress = 0
-
+        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
         cameraControls.enabled = true
-        cameraControls.focusProvider = undefined
-    }
-
-    private updateCameraTransition(deltaT: number): void {
-        if (!this._cameraTransition.isTransitioning) return
-
-        this._cameraTransition.transitionProgress += deltaT / this._cameraTransition.transitionDuration
-
-        if (this._cameraTransition.transitionProgress >= 1.0) {
-            this._cameraTransition.isTransitioning = false
-            this._cameraTransition.transitionProgress = 1.0
-
-            const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
-
-            if (this._cameraTransition.targetSceneObject) {
-                cameraControls.focusProvider = this._cameraTransition.targetSceneObject
-            }
-            return
+        if (shouldTransition) {
+            cameraControls.settleOntoFocus(targetSceneObject, DragModeSystem.CAMERA_SETTLE_DURATION)
         }
-
-        const t = this.easeInOutCubic(this._cameraTransition.transitionProgress)
-
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomOrbitControls
-
-        const currentFocus = new THREE.Matrix4()
-        if (this._cameraTransition.targetSceneObject) {
-            const targetFocus = new THREE.Matrix4()
-            this._cameraTransition.targetSceneObject.loadFocusTransform(targetFocus)
-
-            const startPos = new THREE.Vector3().setFromMatrixPosition(this._cameraTransition.startFocus)
-            const targetPos = new THREE.Vector3().setFromMatrixPosition(targetFocus)
-            const currentPos = new THREE.Vector3().lerpVectors(startPos, targetPos, t)
-
-            currentFocus.makeTranslation(currentPos.x, currentPos.y, currentPos.z)
-        } else {
-            currentFocus.copy(this._cameraTransition.startFocus)
-        }
-
-        cameraControls.focus = currentFocus
-    }
-
-    private easeInOutCubic(t: number): number {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
     }
 
     private updateDragForce(): void {

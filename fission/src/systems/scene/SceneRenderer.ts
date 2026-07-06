@@ -8,7 +8,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
 import EventSystem from "@/systems/EventSystem.ts"
-import { type CameraControls, type CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { type CameraControls, type CameraControlsType, CustomTargetControls } from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
@@ -163,7 +163,7 @@ class SceneRenderer extends WorldSystem {
         ]
 
         const ground = new THREE.Mesh(groundGeometry, materials)
-        ground.position.set(0.0, -0.09, 0.0)
+        ground.position.set(0.0, -0.1, 0.0)
         ground.receiveShadow = true
         ground.castShadow = true
         this._scene.add(ground)
@@ -198,18 +198,18 @@ class SceneRenderer extends WorldSystem {
             this._composer.addPass(antiAliasPass)
         }
 
-        // Orbit controls
+        // Target controls
         this._screenInteractionHandler = new ScreenInteractionHandler(this._renderer.domElement)
         this._screenInteractionHandler.contextMenu = e => this.onContextMenu(e)
 
-        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
+        this._cameraControls = new CustomTargetControls(this._mainCamera, this._screenInteractionHandler)
     }
 
     public setCameraControls(controlsType: CameraControlsType) {
         this._cameraControls.dispose()
         switch (controlsType) {
-            case "Orbit":
-                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
+            case "Target":
+                this._cameraControls = new CustomTargetControls(this._mainCamera, this._screenInteractionHandler)
                 break
         }
     }
@@ -370,17 +370,21 @@ class SceneRenderer extends WorldSystem {
         if (nextSceneObjectId <= id) {
             nextSceneObjectId = id + 1
         }
+
         if (this._sceneObjects.has(id)) {
             console.error("Trying to add with existing ID!", obj, idOverride)
             return -1 as LocalSceneObjectId
         }
+
         obj.id = id
         this._sceneObjects.set(id, obj)
+
         obj.setup()
+
         return id as LocalSceneObjectId
     }
 
-    /** Registers gizmos that are attached to a parent mirabufsceneobject  */
+    /** Registers gizmos that are attached to a parent `MirabufSceneObject`  */
     public registerGizmoSceneObject(obj: GizmoSceneObject): number {
         if (obj.hasParent()) this._gizmosOnMirabuf.set(obj.parentObjectId!, obj)
         return this.registerSceneObject(obj)
@@ -388,6 +392,7 @@ class SceneRenderer extends WorldSystem {
 
     public removeAllSceneObjects() {
         this._sceneObjects.forEach(obj => obj.dispose())
+        this._gizmosOnMirabuf.forEach(obj => obj.dispose())
         this._gizmosOnMirabuf.clear()
         this._sceneObjects.clear()
     }
@@ -395,10 +400,13 @@ class SceneRenderer extends WorldSystem {
     public removeSceneObject(id: number) {
         const obj = this._sceneObjects.get(id)
 
+        if (!obj) return
+
         // If the object is a mirabuf object, remove the gizmo as well
         if (obj instanceof MirabufSceneObject) {
             const objGizmo = this._gizmosOnMirabuf.get(id)
             if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
+
             World?.multiplayerSystem?.broadcast({
                 type: "deleteObject",
                 data: id as RemoteSceneObjectId,
@@ -408,7 +416,7 @@ class SceneRenderer extends WorldSystem {
         }
 
         if (this._sceneObjects.delete(id)) {
-            obj!.dispose()
+            obj.dispose()
         }
     }
 
@@ -445,13 +453,16 @@ class SceneRenderer extends WorldSystem {
         for (let c = 0; c < colors.length; c++) {
             colors[c] = 128 + (c / colors.length) * 128
         }
+
         const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format)
         gradientMap.needsUpdate = true
+
         const material = new THREE.MeshToonMaterial({
             color: color,
             shadowSide: THREE.DoubleSide,
             gradientMap: gradientMap,
         })
+
         if (this._light instanceof CSM) this._light.setupMaterial(material)
         return material
     }
@@ -477,12 +488,13 @@ class SceneRenderer extends WorldSystem {
     /**
      * Convert world space coordinates to screen space coordinates
      *
-     * @param world World space coordinates
+     * @param worldPosition World space coordinates
      * @returns Pixel space coordinates
      */
-    public worldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
+    public worldToPixelSpace(worldPosition: THREE.Vector3): PixelSpaceCoord {
         this._mainCamera.updateMatrixWorld()
-        const screenSpace = world.project(this._mainCamera)
+        const screenSpace = worldPosition.project(this._mainCamera)
+
         return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
 

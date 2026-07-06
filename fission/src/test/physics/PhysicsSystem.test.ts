@@ -4,6 +4,7 @@ import { afterEach, assert, beforeEach, describe, expect, test } from "vitest"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem, { LayerReserve } from "../../systems/physics/PhysicsSystem"
+import type MirabufParser from "../../mirabuf/MirabufParser"
 
 describe("Physics Sanity Checks", () => {
     let system: PhysicsSystem
@@ -241,8 +242,6 @@ describe("Body Position and Rotation Manipulation", () => {
         expect(bodyPosition.GetX()).toBeCloseTo(10, 2)
         expect(bodyPosition.GetY()).toBeCloseTo(20, 2)
         expect(bodyPosition.GetZ()).toBeCloseTo(30, 2)
-
-        JOLT.destroy(newPosition)
     })
 
     test("Set Body Rotation", () => {
@@ -253,8 +252,6 @@ describe("Body Position and Rotation Manipulation", () => {
         const bodyRotation = body.GetRotation()
         expect(bodyRotation.GetZ()).toBeCloseTo(Math.sin(Math.PI / 8), 2)
         expect(bodyRotation.GetW()).toBeCloseTo(Math.cos(Math.PI / 8), 2)
-
-        JOLT.destroy(newRotation)
     })
 
     test("Set Body Position and Rotation", () => {
@@ -270,9 +267,6 @@ describe("Body Position and Rotation Manipulation", () => {
         expect(bodyPosition.GetY()).toBeCloseTo(10, 2)
         expect(bodyPosition.GetZ()).toBeCloseTo(15, 2)
         expect(bodyRotation.GetW()).toBeCloseTo(1, 2)
-
-        JOLT.destroy(newPosition)
-        JOLT.destroy(newRotation)
     })
 
     test("Set Body Position Rotation and Velocity", () => {
@@ -288,11 +282,6 @@ describe("Body Position and Rotation Manipulation", () => {
 
         expect(bodyLinearVel.GetX()).toBeCloseTo(5, 2)
         expect(bodyAngularVel.GetY()).toBeCloseTo(1, 2)
-
-        JOLT.destroy(newPosition)
-        JOLT.destroy(newRotation)
-        JOLT.destroy(linearVel)
-        JOLT.destroy(angularVel)
     })
 
     test("Set Body Position on Non-Added Body", () => {
@@ -311,8 +300,6 @@ describe("Body Position and Rotation Manipulation", () => {
         expect(nonAddedBody.GetPosition().GetX()).toBeCloseTo(0, 2)
         expect(nonAddedBody.GetPosition().GetY()).toBeCloseTo(0, 2)
         expect(nonAddedBody.GetPosition().GetZ()).toBeCloseTo(0, 2)
-
-        JOLT.destroy(newPosition)
     })
 })
 
@@ -431,9 +418,6 @@ describe("Raycast System", () => {
         expect(hit).toBeDefined()
         expect(hit!.point.GetY()).toBeGreaterThan(0)
         expect(hit!.point.GetY()).toBeLessThan(6)
-
-        JOLT.destroy(from)
-        JOLT.destroy(direction)
     })
 
     test("Raycast Miss", () => {
@@ -441,23 +425,16 @@ describe("Raycast System", () => {
         const direction = new JOLT.Vec3(0, 5, 0) // Ray pointing up but offset
 
         const hit = system.rayCast(from, direction)
-
         expect(hit).toBeUndefined()
-
-        JOLT.destroy(from)
-        JOLT.destroy(direction)
     })
 
     test("Raycast with Ignored Bodies", () => {
         const from = new JOLT.Vec3(0, 0, 0)
         const direction = new JOLT.Vec3(0, 10, 0)
 
-        const hit = system.rayCast(from, direction, targetBody.GetID())
+        const hit = system.rayCast(from, direction, true, targetBody.GetID())
 
         expect(hit).toBeUndefined() // Should miss because target body is ignored
-
-        JOLT.destroy(from)
-        JOLT.destroy(direction)
     })
 })
 
@@ -481,11 +458,11 @@ describe("Sensor Creation", () => {
         expect(sensorId).toBeDefined()
         expect(system.isBodyAdded(sensorId!)).toBe(true)
 
-        const sensorBody = system.getBody(sensorId!)
+        const sensorBody = system.getBody(sensorId!)!
         expect(sensorBody.IsSensor()).toBe(true)
 
         JOLT.destroy(size)
-        JOLT.destroy(shapeSettings)
+        // shapeSettings already destroyed by createSensor (destroy=true by default)
     })
 
     test("Create Invalid Sensor", () => {
@@ -501,8 +478,7 @@ describe("Sensor Creation", () => {
             const sensorId = system.createSensor(shapeSettings)
 
             expect(sensorId).toBeUndefined()
-
-            JOLT.destroy(shapeSettings)
+            // shapeSettings already destroyed by createSensor on error path (destroy=true by default)
         } finally {
             // Always restore console.error
             console.error = originalConsoleError
@@ -695,5 +671,96 @@ describe("Update Loop", () => {
         system.update(0.001) // Very small delta time
 
         expect(body.GetPosition().GetY()).toBeLessThanOrEqual(10)
+    })
+})
+
+// Minimal mock MirabufParser for sphere body registration tests
+function makeMockParser(physicalData: { volume: number; area: number }, isGamePiece: boolean): MirabufParser {
+    const tetraVerts = [0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0, 100]
+
+    return {
+        assembly: {
+            dynamic: false,
+            data: {
+                parts: {
+                    partInstances: {
+                        "part-0": {
+                            partDefinitionReference: "def-0",
+                            skipCollider: false,
+                            physicalMaterial: undefined,
+                            info: { GUID: "part-0" },
+                        },
+                    },
+                    partDefinitions: {
+                        "def-0": {
+                            bodies: [{ triangleMesh: { mesh: { verts: tetraVerts } } }],
+                            physicalData: {
+                                volume: physicalData.volume,
+                                area: physicalData.area,
+                                com: { x: 0, y: 0, z: 0 },
+                                mass: 0.3,
+                            },
+                        },
+                    },
+                },
+                materials: { physicalMaterials: {} },
+                joints: { jointInstances: {}, rigidGroups: [] },
+            },
+        },
+        rigidNodes: new Map([
+            [
+                "node-0",
+                {
+                    id: "node-0",
+                    parts: new Set(["part-0"]),
+                    isDynamic: true,
+                    isGamePiece,
+                    mass: 0.3,
+                },
+            ],
+        ]),
+        globalTransforms: new Map([["part-0", new THREE.Matrix4()]]),
+    } as unknown as MirabufParser
+}
+
+describe("Sphere Game Piece Body Registration", () => {
+    let system: PhysicsSystem
+
+    const SPHERE_DATA = { volume: 1767.15, area: 706.86 } // 2026 game piece approximate values
+    const CUBE_DATA_2023 = { volume: 8703.98, area: 2146.74 } // 2023 cube game piece approximate values
+    const CUBE_DATA = { volume: 1000, area: 600 } // Cube with side length 10
+
+    beforeEach(() => {
+        system = new PhysicsSystem()
+    })
+
+    afterEach(() => {
+        system.destroy()
+    })
+
+    test("Spherical game piece is added to sphereGamePieceBodies", () => {
+        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
+        expect(system.sphereGamePieceBodies.length).toBe(1)
+    })
+
+    test("Cube game piece is not added to sphereGamePieceBodies", () => {
+        system.createBodiesFromParser(makeMockParser(CUBE_DATA, true))
+        expect(system.sphereGamePieceBodies.length).toBe(0)
+    })
+
+    test("2023 cube game piece is not added to sphereGamePieceBodies", () => {
+        system.createBodiesFromParser(makeMockParser(CUBE_DATA_2023, true))
+        expect(system.sphereGamePieceBodies.length).toBe(0)
+    })
+
+    test("Spherical non-game-piece body is not added to sphereGamePieceBodies", () => {
+        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, false))
+        expect(system.sphereGamePieceBodies.length).toBe(0)
+    })
+
+    test("Multiple parsers accumulate sphere bodies independently", () => {
+        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
+        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
+        expect(system.sphereGamePieceBodies.length).toBe(2)
     })
 })
