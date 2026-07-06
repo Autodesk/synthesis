@@ -7,7 +7,6 @@ import {
     convertJoltVec3ToJoltRVec3,
     convertMirabufFloatToArrJoltFloat3,
     convertMirabufFloatToArrJoltVec3,
-    convertMirabufVector3ToJoltRVec3,
     convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
     convertThreeToJoltQuat,
@@ -26,7 +25,15 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
-import { applyHingeLimits, applySliderLimits, getAxis, getPerpendicular, setAxes } from "./ConstraintSettingsUtilities"
+import {
+    applyHingeLimits,
+    applySliderLimits,
+    createAnchorPoint,
+    createVehicleController,
+    getAxis,
+    getPerpendicular,
+    setAxes,
+} from "./ConstraintSettingsUtilities"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -492,23 +499,6 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    private createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint) {
-        const jointOrigin = jointDefinition.origin
-            ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin)
-            : new JOLT.RVec3(0, 0, 0)
-        // TODO: Offset transformation for robot builder.
-        const jointOriginOffset = jointInstance.offset
-            ? convertMirabufVector3ToJoltRVec3(jointInstance.offset)
-            : new JOLT.RVec3(0, 0, 0)
-
-        const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
-
-        JOLT.destroy(jointOrigin)
-        JOLT.destroy(jointOriginOffset)
-
-        return anchorPoint
-    }
-
     private addConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
         const constraint = constraintSettings.Create(bodyA, bodyB)
         this._constraints.push(constraint)
@@ -539,7 +529,7 @@ class PhysicsSystem extends WorldSystem {
     ): Jolt.Constraint {
         const hingeConstraintSettings = new JOLT.HingeConstraintSettings()
 
-        const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
+        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
@@ -572,7 +562,7 @@ class PhysicsSystem extends WorldSystem {
     ): Jolt.Constraint {
         const constraintSettings = new JOLT.SliderConstraintSettings()
 
-        const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
+        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         constraintSettings.mPoint1 = constraintSettings.mPoint2 = anchorPoint
 
         const freedom = jointDefinition.prismatic!.prismaticFreedom!
@@ -608,7 +598,7 @@ class PhysicsSystem extends WorldSystem {
         vehicleSettings.mWheels.clear()
         vehicleSettings.mWheels.push_back(wheelSettings)
 
-        vehicleSettings.mController = this.createVehicleController(maxAcc)
+        vehicleSettings.mController = createVehicleController(maxAcc)
         vehicleSettings.mAntiRollBars.clear()
 
         const constraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings)
@@ -618,20 +608,6 @@ class PhysicsSystem extends WorldSystem {
         this._constraints.push(constraint)
 
         return constraint
-    }
-
-    // Other than `maxTorque`, these controller settings are not being used as of now
-    // because `ArcadeDriveBehavior` goes directly to the `WheelDrivers`.
-    // `maxTorque` is only used as communication for `WheelDriver` to get maxAcceleration
-    private createVehicleController(maxAcc: number) {
-        const controllerSettings = new JOLT.WheeledVehicleControllerSettings()
-        controllerSettings.mEngine.mMaxTorque = maxAcc
-        controllerSettings.mTransmission.mClutchStrength = 10.0
-        controllerSettings.mTransmission.mGearRatios.clear()
-        controllerSettings.mTransmission.mGearRatios.push_back(2)
-        controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto
-
-        return controllerSettings
     }
 
     private addVehicleListeners(constraint: Jolt.VehicleConstraint, bodyWheel: Jolt.Body) {
@@ -652,7 +628,7 @@ class PhysicsSystem extends WorldSystem {
         bodyWheel: Jolt.Body,
         versionNum: number
     ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
-        const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
+        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         const fixedConstraint = this.createFixedConstraint(bodyMain, bodyWheel, anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
@@ -690,7 +666,7 @@ class PhysicsSystem extends WorldSystem {
         bodyB: Jolt.Body,
         mechanism: Mechanism
     ): void {
-        const anchorPoint = this.createAnchorPoint(jointInstance, jointDefinition)
+        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
 
         const dofs = jointDefinition.custom?.dofs
         if (!dofs || dofs.length < 3) {
