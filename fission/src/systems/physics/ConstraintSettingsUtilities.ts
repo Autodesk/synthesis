@@ -2,8 +2,40 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import { DOFSpecs } from "./PhysicsSystem"
 import { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertMirabufVector3ToJoltRVec3 } from "@/util/TypeConversions"
 
 type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
+
+export function createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint) {
+    const jointOrigin = jointDefinition.origin
+        ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin)
+        : new JOLT.RVec3(0, 0, 0)
+    // TODO: Offset transformation for robot builder.
+    const jointOriginOffset = jointInstance.offset
+        ? convertMirabufVector3ToJoltRVec3(jointInstance.offset)
+        : new JOLT.RVec3(0, 0, 0)
+
+    const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
+
+    JOLT.destroy(jointOrigin)
+    JOLT.destroy(jointOriginOffset)
+
+    return anchorPoint
+}
+
+// Other than `maxTorque`, these controller settings are not being used as of now
+// because `ArcadeDriveBehavior` goes directly to the `WheelDrivers`.
+// `maxTorque` is only used as communication for `WheelDriver` to get maxAcceleration
+export function createVehicleController(maxAcc: number) {
+    const controllerSettings = new JOLT.WheeledVehicleControllerSettings()
+    controllerSettings.mEngine.mMaxTorque = maxAcc
+    controllerSettings.mTransmission.mClutchStrength = 10.0
+    controllerSettings.mTransmission.mGearRatios.clear()
+    controllerSettings.mTransmission.mGearRatios.push_back(2)
+    controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto
+
+    return controllerSettings
+}
 
 function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | undefined {
     if (Math.abs(Math.abs(vec.Dot(toCheck)) - 1.0) < 0.0001) return undefined
