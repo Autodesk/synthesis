@@ -448,7 +448,7 @@ class PhysicsSystem extends WorldSystem {
             }
 
             switch (jDef.jointMotionType!) {
-                case mirabuf.joint.JointMotion.REVOLUTE:
+                case mirabuf.joint.JointMotion.REVOLUTE: {
                     if (isWheel(jDef)) {
                         const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
                         if (preferences.driveVelocity > 0) maxVel = preferences.driveVelocity
@@ -484,7 +484,7 @@ class PhysicsSystem extends WorldSystem {
                     addConstraint(hinge)
 
                     break
-
+                }
                 case mirabuf.joint.JointMotion.SLIDER:
                     addConstraint(this.createSliderConstraint(jointInst, jDef, maxAcceleration ?? 200, bodyA, bodyB))
                     break
