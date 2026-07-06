@@ -41,11 +41,16 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
     if (Math.abs(Math.abs(vec.Dot(toCheck)) - 1.0) < 0.0001) return undefined
 
     const a = vec.Dot(toCheck)
-    return new JOLT.Vec3(
+    const original = new JOLT.Vec3(
         toCheck.GetX() - vec.GetX() * a,
         toCheck.GetY() - vec.GetY() * a,
         toCheck.GetZ() - vec.GetZ() * a
-    ).Normalized()
+    )
+
+    const perp = original.Normalized()
+    JOLT.destroy(original)
+
+    return perp
 }
 
 export function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
@@ -63,7 +68,8 @@ export function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
 export function getAxis(freedom: mirabuf.joint.IDOF, versionNum: number = 6): Jolt.Vec3 {
     const miraAxis = freedom.axis! as mirabuf.Vector3
     // No scaling, these are unit vectors
-    const miraAxisX = (versionNum < 5 ? -miraAxis.x : miraAxis.x) ?? 0
+    const x = miraAxis.x ?? 0
+    const miraAxisX = versionNum < 5 ? -x : x
     return new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
 }
 

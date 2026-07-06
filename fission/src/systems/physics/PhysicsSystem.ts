@@ -671,12 +671,16 @@ class PhysicsSystem extends WorldSystem {
         const dofs = jointDefinition.custom?.dofs
         if (!dofs || dofs.length < 3) {
             console.warn("Empty degrees-of-freedom in joint definition for ball constraint")
+            JOLT.destroy(anchorPoint)
+
             return
         }
 
-        const axes = dofs.filter(dof => dof.axis).map(dof => convertMirabufVector3ToJoltVec3(dof.axis!))
+        const axes = dofs
+            .filter(dof => dof.axis)
+            .map(dof => [convertMirabufVector3ToJoltVec3(dof.axis!), dof] as [Jolt.Vec3, mirabuf.joint.IDOF])
+
         const constraintSpecs: DOFSpecs[] = axes
-            .map((axis, i) => [axis, dofs[i]] as [Jolt.Vec3, mirabuf.joint.IDOF])
             .filter(([_, dof]) => !dof.limits || (dof.limits.upper ?? 0) - (dof.limits.lower ?? 0) > 0.001)
             .map(([axis, dof]) => {
                 return { ...dof, axis, friction: 0 } satisfies DOFSpecs
