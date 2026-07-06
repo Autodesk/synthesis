@@ -899,7 +899,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     ...this._fieldPreferences,
                     ...editor.getUserData("synthesis:field_preferences"),
                 }
-            } else if (!PreferencesSystem.hasRobotPreferences(this.assemblyHash)) {
+            } else if (this.miraType === MiraType.ROBOT && !PreferencesSystem.hasRobotPreferences(this.assemblyHash)) {
                 this._robotPreferences = defaultRobotPreferences()
                 editor.migrateDevtoolRobotData(this._robotPreferences)
                 this._robotPreferences = {
