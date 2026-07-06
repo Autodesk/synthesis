@@ -212,11 +212,15 @@ class MirabufCachingService {
                 fileSize: miraBuff.byteLength,
             })
 
-            const cached = await MirabufCachingService.storeInCache(miraBuff, {
-                miraType,
-                name,
-                remotePath: fetchLocation,
-            })
+            const cached = await MirabufCachingService.storeInCache(
+                miraBuff,
+                {
+                    miraType,
+                    name,
+                    remotePath: fetchLocation,
+                },
+                expectedHash
+            )
 
             if (expectedHash != null && cached?.hash != null && cached?.hash != expectedHash) {
                 globalAddToast("warning", "Hash Mismatch", `Try downloading again`)
@@ -445,10 +449,11 @@ class MirabufCachingService {
     // Optional name for when assembly is being decoded anyway like in CacheAndGetLocal()
     private static async storeInCache(
         buffer: ArrayBuffer,
-        extra: Omit<MirabufCacheInfo, "hash">
+        extra: Omit<MirabufCacheInfo, "hash">,
+        expectedHash?: string
     ): Promise<MirabufCacheInfo | undefined> {
         try {
-            const hash = await hashBuffer(buffer)
+            const hash = await hashBuffer(buffer, expectedHash)
 
             this._inMemoryCache[hash] = buffer
             const existing = this._cacheMap.get(hash)
