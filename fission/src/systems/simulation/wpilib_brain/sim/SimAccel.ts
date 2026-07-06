@@ -56,14 +56,14 @@ export class SimAccelInput extends SimInput {
         if (!this._joltID) return
         const body = World.physicsSystem.getBody(this._joltID)!
 
-        const worldVel = convertJoltVec3ToThreeVector3(body.GetLinearVelocity())
+        const worldVel = convertJoltVec3ToThreeVector3(body.GetLinearVelocity(), false)
 
         if (deltaT > 0) {
             const worldAccel = worldVel.clone().sub(this._prevVel).divideScalar(deltaT)
 
             const specificForce = worldAccel.sub(SimAccelInput.GRAVITY).divideScalar(SimAccelInput.GRAVITY_MAGNITUDE)
 
-            const rot = convertJoltQuatToThreeQuaternion(body.GetRotation(), true)
+            const rot = convertJoltQuatToThreeQuaternion(body.GetRotation(), false)
             const localAccel = specificForce.applyQuaternion(rot.invert())
 
             SimAccel.setX(this._device, localAccel.x)

@@ -74,8 +74,8 @@ export class SimGyroInput extends SimInput {
     private getBodyAngularVelocity(): THREE.Vector3 {
         if (!this._joltBody) return new THREE.Vector3(0, 0, 0)
 
-        const worldOmega = convertJoltVec3ToThreeVector3(this._joltBody.GetAngularVelocity(), true)
-        const rot = convertJoltQuatToThreeQuaternion(this._joltBody.GetRotation(), true)
+        const worldOmega = convertJoltVec3ToThreeVector3(this._joltBody.GetAngularVelocity(), false)
+        const rot = convertJoltQuatToThreeQuaternion(this._joltBody.GetRotation(), false)
         return worldOmega.applyQuaternion(rot.invert())
     }
 
