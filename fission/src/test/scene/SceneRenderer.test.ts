@@ -57,10 +57,12 @@ vi.mock("@/systems/scene/CameraControls", () => ({
     CustomTargetControls: vi.fn().mockImplementation(() => ({
         dispose: vi.fn(),
         update: vi.fn(),
+        controlsType: "Target",
     })),
     CustomFieldViewControls: vi.fn().mockImplementation(() => ({
         dispose: vi.fn(),
         update: vi.fn(),
+        controlsType: "FieldView",
     })),
     CameraMode: {
         Follow: "Follow",
@@ -398,11 +400,20 @@ describe("SceneRenderer", () => {
         test("should set camera controls", () => {
             const initialControls = sceneRenderer.currentCameraControls
 
-            sceneRenderer.setCameraControls("Target")
+            sceneRenderer.setCameraControls("FieldView")
 
             expect(initialControls.dispose).toHaveBeenCalled()
             expect(sceneRenderer.currentCameraControls).toBeDefined()
             expect(sceneRenderer.currentCameraControls).not.toBe(initialControls)
+        })
+
+        test("should not recreate or dispose controls when already using the requested type", () => {
+            const initialControls = sceneRenderer.currentCameraControls
+
+            sceneRenderer.setCameraControls("Target")
+
+            expect(initialControls.dispose).not.toHaveBeenCalled()
+            expect(sceneRenderer.currentCameraControls).toBe(initialControls)
         })
     })
 
