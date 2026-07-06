@@ -35,6 +35,7 @@ import {
     isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
+import { trackVec } from "@/util/loading/JoltLeakTracker" // [LEAK-DEBUG]
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -666,7 +667,7 @@ class PhysicsSystem extends WorldSystem {
         bodyB: Jolt.Body,
         mechanism: Mechanism
     ): void {
-        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
+        const anchorPoint = trackVec("createBallConstraint:anchorPoint (CONTROL - is destroyed)", createAnchorPoint(jointInstance, jointDefinition)) // [LEAK-DEBUG]
 
         const dofs = jointDefinition.custom?.dofs
         if (!dofs || dofs.length < 3) {
@@ -693,9 +694,11 @@ class PhysicsSystem extends WorldSystem {
             hingeSettings.mMaxFrictionTorque = constraint.friction
             hingeSettings.mPoint1 = hingeSettings.mPoint2 = anchorPoint
 
-            const axis = constraint.axis.Normalized()
+            const axis = trackVec("createHingeSettings:constraint.axis.Normalized() (suspected LEAK)", constraint.axis.Normalized()) // [LEAK-DEBUG]
             hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = axis
-            hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = getPerpendicular(hingeSettings.mHingeAxis1)
+            const hingeAxisRead = trackVec("createHingeSettings:read hingeSettings.mHingeAxis1 getter (suspected LEAK)", hingeSettings.mHingeAxis1) // [LEAK-DEBUG]
+            const perp = trackVec("createHingeSettings:getPerpendicular() (suspected LEAK)", getPerpendicular(hingeAxisRead)) // [LEAK-DEBUG]
+            hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = perp
 
             return hingeSettings
         }

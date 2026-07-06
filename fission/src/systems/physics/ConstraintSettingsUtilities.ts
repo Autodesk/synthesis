@@ -3,6 +3,7 @@ import { DOFSpecs } from "./PhysicsSystem"
 import { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } from "@/util/TypeConversions"
+import { trackVec } from "@/util/loading/JoltLeakTracker" // [LEAK-DEBUG]
 
 type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
@@ -78,7 +79,7 @@ export function setAxes(
     settings: Jolt.HingeConstraintSettings | Jolt.SliderConstraintSettings,
     versionNum?: number
 ) {
-    const axis = getAxis(freedom, versionNum)
+    const axis = trackVec("setAxes:getAxis (CONTROL - is destroyed below)", getAxis(freedom, versionNum)) // [LEAK-DEBUG]
 
     let constraintAxis: Jolt.Vec3
     if ("mHingeAxis1" in settings) {
@@ -86,7 +87,9 @@ export function setAxes(
     } else {
         constraintAxis = settings.mSliderAxis1 = settings.mSliderAxis2 = axis.Normalized()
     }
-    settings.mNormalAxis1 = settings.mNormalAxis2 = getPerpendicular(constraintAxis)
+    trackVec("setAxes:axis.Normalized() (suspected LEAK)", constraintAxis) // [LEAK-DEBUG]
+    const perp = trackVec("setAxes:getPerpendicular() (suspected LEAK)", getPerpendicular(constraintAxis)) // [LEAK-DEBUG]
+    settings.mNormalAxis1 = settings.mNormalAxis2 = perp
 
     JOLT.destroy(axis)
 }
