@@ -14,13 +14,6 @@ export interface DevtoolMiraData {
     "devtool:spawn_locations": FieldPreferences["spawnLocations"]
     "devtool:robot_ejector": RobotPreferences["ejector"]
     "devtool:robot_intake": RobotPreferences["intake"]
-    "devtool:a": unknown
-    "devtool:b": unknown
-    "devtool:test": unknown
-    "devtool:keep": unknown
-    "devtool:drop": unknown
-    "devtool:bad": unknown
-    "devtool:foo": unknown
     // additional devtool keys to be added in future
 }
 

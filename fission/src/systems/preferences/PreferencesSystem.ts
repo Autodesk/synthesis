@@ -78,14 +78,14 @@ class PreferencesSystem {
     }
 
     private static get _userPreferences(): Preferences[typeof USER_PREFERENCE_KEY] {
-        return this.getPreferenceFamily(USER_PREFERENCE_KEY, defaultUserPreferences)
+        return this.getPreferenceFamily(USER_PREFERENCE_KEY, defaultUserPreferences())
     }
 
     /**
      * Gets a user preference, or its default value if it does not exist in the preferences map
      */
     public static getUserPreference<K extends UserPreference>(key: K): UserPreferences[K] {
-        return this._userPreferences[key] ?? defaultUserPreferences[key]
+        return this._userPreferences[key] ?? defaultUserPreferences()[key]
     }
 
     /**
@@ -177,7 +177,7 @@ class PreferencesSystem {
 
         try {
             const saved: Preferences & UserPreferences = JSON.parse(loadedPrefs)
-            saved[USER_PREFERENCE_KEY] ??= defaultUserPreferences
+            saved[USER_PREFERENCE_KEY] ??= defaultUserPreferences()
             let didMigrate = false
             for (const key in defaultUserPreferences) {
                 const typedKey = key as UserPreference

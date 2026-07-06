@@ -48,28 +48,30 @@ export type Preferences = {
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const defaultUserPreferences: UserPreferences = {
-    ZoomSensitivity: 15,
-    PitchSensitivity: 10,
-    YawSensitivity: 3,
-    SceneRotationSensitivity: 0.5,
-    ViewCubeRotationSensitivity: 0.025,
-    ReportAnalytics: false,
-    UseMetric: false,
-    RenderScoringZones: true,
-    RenderProtectedZones: true,
-    InputSchemes: [],
-    RenderSceneTags: true,
-    RenderScoreboard: true,
-    SubsystemGravity: false,
-    TouchControls: false,
-    SimAutoReconnect: false,
-    ShowViewCube: true,
-    MuteAllSound: false,
-    SFXVolume: 25,
-    ShowCenterOfMassIndicators: false,
-    MultiplayerClientID: "",
-    MultiplayerUsername: "",
+export function defaultUserPreferences(): UserPreferences {
+    return {
+        ZoomSensitivity: 15,
+        PitchSensitivity: 10,
+        YawSensitivity: 3,
+        SceneRotationSensitivity: 0.5,
+        ViewCubeRotationSensitivity: 0.025,
+        ReportAnalytics: false,
+        UseMetric: false,
+        RenderScoringZones: true,
+        RenderProtectedZones: true,
+        InputSchemes: [],
+        RenderSceneTags: true,
+        RenderScoreboard: true,
+        SubsystemGravity: false,
+        TouchControls: false,
+        SimAutoReconnect: false,
+        ShowViewCube: true,
+        MuteAllSound: false,
+        SFXVolume: 25,
+        ShowCenterOfMassIndicators: false,
+        MultiplayerClientID: "",
+        MultiplayerUsername: "",
+    }
 }
 
 export type GraphicsPreferences = {

@@ -4,6 +4,8 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import {
     type Alliance,
+    defaultFieldPreferences,
+    defaultRobotPreferences,
     defaultRobotSpawnLocation,
     type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes.ts"
@@ -65,48 +67,36 @@ describe("Basic Field Mira Editor Tests", () => {
     test("default state: no keys, getUserData yields undefined", () => {
         const editor = new FieldMiraEditor(mockParts())
         expect(editor.getAllKeys()).toEqual([])
-        expect(editor.getUserData("devtool:foo")).toBeUndefined()
-    })
-
-    test("multiple keys round-trip in order of insertion", () => {
-        const editor = new FieldMiraEditor(mockParts())
-        editor.setUserData("devtool:a", { v: 1 })
-        editor.setUserData("devtool:b", [2, 3])
-        expect(editor.getAllKeys()).toEqual(["devtool:a", "devtool:b"])
-        expect(editor.getUserData("devtool:b")).toEqual([2, 3])
+        expect(editor.getUserData("synthesis:robot_preferences")).toBeUndefined()
     })
 
     test("malformed JSON in underlying data is caught and returns undefined", () => {
         const parts = mockParts()
         if (parts.userData?.data) {
-            parts.userData.data["devtool:bad"] = "{ not valid json "
+            parts.userData.data["synthesis:robot_preferences"] = "{ not valid json "
         }
         const editor = new FieldMiraEditor(parts)
-        expect(() => editor.getUserData("devtool:bad")).not.toThrow()
-        expect(editor.getUserData("devtool:bad")).toBeUndefined()
+        expect(() => editor.getUserData("synthesis:robot_preferences")).not.toThrow()
+        expect(editor.getUserData("synthesis:robot_preferences")).toBeUndefined()
     })
 
     test("returned object is a deep clone, not a live reference", () => {
         const editor = new FieldMiraEditor(mockParts())
-        const payload = { nested: { x: 1 } }
-        editor.setUserData("devtool:test", payload)
-        const read = editor.getUserData("devtool:test")!
-        if (read && typeof read === "object" && "nested" in read) {
-            const readNested = read as { nested: { x: number } }
-            readNested.nested.x = 42
-        }
-        const reread = editor.getUserData("devtool:test")!
-        if (reread && typeof reread === "object" && "nested" in reread) {
-            expect((reread as { nested: { x: number } }).nested.x).toBe(1)
-        }
+        const payload = defaultRobotPreferences()
+        editor.setUserData("synthesis:robot_preferences", payload)
+        const read = editor.getUserData("synthesis:robot_preferences")!
+
+        read.ejector.ejectorVelocity = 42
+        const reread = editor.getUserData("synthesis:robot_preferences")!
+        expect(reread.ejector.ejectorVelocity).toBe(defaultRobotPreferences().ejector.ejectorVelocity)
     })
 
     test("removeUserData only deletes the target key", () => {
         const editor = new FieldMiraEditor(mockParts())
-        editor.setUserData("devtool:keep", { a: 1 })
-        editor.setUserData("devtool:drop", { b: 2 })
-        editor.removeUserData("devtool:drop")
-        expect(editor.getAllKeys()).toEqual(["devtool:keep"])
+        editor.setUserData("synthesis:robot_preferences", defaultRobotPreferences())
+        editor.setUserData("synthesis:field_preferences", defaultFieldPreferences())
+        editor.removeUserData("synthesis:field_preferences")
+        expect(editor.getAllKeys()).toEqual(["synthesis:robot_preferences"])
     })
 })
 
