@@ -11,6 +11,7 @@ export type GlobalPreferences = {
     PitchSensitivity: number
     YawSensitivity: number
     SceneRotationSensitivity: number
+    ScenePanSensitivity: number
     ViewCubeRotationSensitivity: number
     ReportAnalytics: boolean
     UseMetric: boolean
@@ -53,6 +54,7 @@ export const defaultGlobalPreferences: GlobalPreferences = {
     PitchSensitivity: 10,
     YawSensitivity: 3,
     SceneRotationSensitivity: 0.5,
+    ScenePanSensitivity: 1.0,
     ViewCubeRotationSensitivity: 0.025,
     ReportAnalytics: false,
     UseMetric: false,

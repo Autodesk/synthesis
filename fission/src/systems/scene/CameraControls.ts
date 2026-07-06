@@ -426,7 +426,9 @@ export class CustomTargetControls extends CameraControls {
 
         const orientation = new THREE.Quaternion().setFromEuler(this._mainCamera.rotation)
         const augmentedMovement = augmentMovement(this._mainCamera, this._coords.r, [movement[0], movement[1]])
-        const pan = new THREE.Vector3(-augmentedMovement[0], augmentedMovement[1], 0).applyQuaternion(orientation)
+        const pan = new THREE.Vector3(-augmentedMovement[0], augmentedMovement[1], 0)
+            .applyQuaternion(orientation)
+            .multiplyScalar(PreferencesSystem.getGlobalPreference("ScenePanSensitivity"))
         const newPos = this.focusWorldPosition()
         newPos.add(pan)
         this._focus.setPosition(newPos)

@@ -130,6 +130,17 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
         />
         {Spacer(5)}
         <StatefulSlider
+            min={0.1}
+            max={3.0}
+            defaultValue={PreferencesSystem.getGlobalPreference("ScenePanSensitivity")}
+            label={"Scene Pan Sensitivity"}
+            onChange={value => writePreference("ScenePanSensitivity", value)}
+            step={0.1}
+            tooltip="Controls how fast the scene pans when dragging with the right mouse button."
+            showValue={false}
+        />
+        {Spacer(5)}
+        <StatefulSlider
             min={0.06}
             max={6.0}
             defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
