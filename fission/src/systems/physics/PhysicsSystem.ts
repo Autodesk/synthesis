@@ -922,39 +922,40 @@ class PhysicsSystem extends WorldSystem {
 
             const physicalMaterial = physicalMaterials![partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY]
 
+            const friction = {
+                dynamic: DEFAULT_FRICTION,
+                static: DEFAULT_FRICTION,
+                weight: partDefinition.physicalData?.area ?? 1.0,
+            } satisfies FrictionPairing
+
             if (physicalMaterial) {
                 let frictionOverride: number | undefined =
                     partDefinition?.frictionOverride == null ? undefined : partDefinition?.frictionOverride
-                if ((partDefinition?.frictionOverride ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD) {
-                    frictionOverride = undefined
-                }
 
-                if (
+                const frictionOverrideIsInsignificant =
+                    (partDefinition?.frictionOverride ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD
+
+                if (frictionOverrideIsInsignificant) frictionOverride = undefined
+
+                const physicalFrictionIsInsignificant =
                     (physicalMaterial.dynamicFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD ||
                     (physicalMaterial.staticFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD
-                ) {
+
+                if (physicalFrictionIsInsignificant) {
                     physicalMaterial.dynamicFriction = DEFAULT_FRICTION
                     physicalMaterial.staticFriction = DEFAULT_FRICTION
                 }
 
                 // TODO: Consider using roughness as dynamic friction.
-                frictionAccumulation.push({
-                    dynamic: frictionOverride ?? physicalMaterial.dynamicFriction!,
-                    static: frictionOverride ?? physicalMaterial.staticFriction!,
-                    weight: partDefinition.physicalData?.area ?? 1.0,
-                } satisfies FrictionPairing)
-            } else {
-                frictionAccumulation.push({
-                    dynamic: DEFAULT_FRICTION,
-                    static: DEFAULT_FRICTION,
-                    weight: partDefinition.physicalData?.area ?? 1.0,
-                } satisfies FrictionPairing)
+                friction.dynamic = frictionOverride ?? physicalMaterial.dynamicFriction!
+                friction.static = frictionOverride ?? physicalMaterial.staticFriction!
             }
+
+            frictionAccumulation.push(friction)
 
             if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
 
             const mass = partDefinition.massOverride ? partDefinition.massOverride! : partDefinition.physicalData.mass!
-
             totalMass += mass
 
             centerOfMass.x += (partDefinition.physicalData.com.x! * mass) / 100.0
