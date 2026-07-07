@@ -621,6 +621,7 @@ export class CustomFieldViewControls extends CameraControls {
     public focusRobot(robot: MirabufSceneObject | undefined): void {
         this._focusRobot = robot
         this.resetView()
+        EventSystem.dispatch("CameraViewChangedEvent", { point: this._point, focusedRobotId: robot?.id })
     }
 
     /** Clears any accumulated zoom. */

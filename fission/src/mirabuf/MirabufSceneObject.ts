@@ -27,7 +27,12 @@ import {
     type SpawnLocation,
     type Station,
 } from "@/systems/preferences/PreferenceTypes"
-import { CameraMode, type CustomTargetControls, getTargetControls } from "@/systems/scene/CameraControls"
+import {
+    CameraMode,
+    CustomFieldViewControls,
+    type CustomTargetControls,
+    getTargetControls,
+} from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
@@ -1057,6 +1062,35 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     },
                 })
             }
+        } else if (
+            World.sceneRenderer.currentCameraControls.controlsType == "FieldView" &&
+            this.miraType === MiraType.ROBOT
+        ) {
+            const fieldViewControls = World.sceneRenderer.currentCameraControls as CustomFieldViewControls
+            if (fieldViewControls.focusedRobot === this) {
+                data.items.push({
+                    name: "Field Camera: Unfocus Robot",
+                    func: () => {
+                        fieldViewControls.focusRobot(undefined)
+                    },
+                })
+            } else {
+                data.items.push({
+                    name: "Field Camera: Focus Robot",
+                    func: () => {
+                        fieldViewControls.focusRobot(this)
+                    },
+                })
+            }
+
+            data.items.push({
+                name: "Robot Camera: Focus",
+                func: () => {
+                    World.sceneRenderer.setCameraControls("Target")
+                    const targetControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
+                    targetControls.focusProvider = this
+                },
+            })
         }
 
         if ((this.brain as SynthesisBrain | undefined)?.driveType === DriveType.SWERVE) {
