@@ -17,12 +17,13 @@ export default class SimAccel {
         return SimGeneric.set(SimType.ACCELEROMETER, device, ">x", accel)
     }
 
+    /// NOTE: z and y swapped since ThreeJS has y up but sensors have z up
     public static setY(device: string, accel: number): boolean {
-        return SimGeneric.set(SimType.ACCELEROMETER, device, ">y", accel)
+        return SimGeneric.set(SimType.ACCELEROMETER, device, ">z", accel)
     }
 
     public static setZ(device: string, accel: number): boolean {
-        return SimGeneric.set(SimType.ACCELEROMETER, device, ">z", accel)
+        return SimGeneric.set(SimType.ACCELEROMETER, device, ">y", accel)
     }
 
     public static genReceiver(device: string): SimReceiver {

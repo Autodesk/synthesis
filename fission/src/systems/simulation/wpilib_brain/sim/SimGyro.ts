@@ -17,12 +17,13 @@ export default class SimGyro {
         return SimGeneric.set(SimType.GYRO, device, ">angle_x", angle)
     }
 
+    /// NOTE: z and y swapped since ThreeJS has y up but sensors have z up
     public static setAngleY(device: string, angle: number): boolean {
-        return SimGeneric.set(SimType.GYRO, device, ">angle_y", angle)
+        return SimGeneric.set(SimType.GYRO, device, ">angle_z", angle)
     }
 
     public static setAngleZ(device: string, angle: number): boolean {
-        return SimGeneric.set(SimType.GYRO, device, ">angle_z", angle)
+        return SimGeneric.set(SimType.GYRO, device, ">angle_y", angle)
     }
 
     public static setRateX(device: string, rate: number): boolean {
@@ -30,11 +31,11 @@ export default class SimGyro {
     }
 
     public static setRateY(device: string, rate: number): boolean {
-        return SimGeneric.set(SimType.GYRO, device, ">rate_y", rate)
+        return SimGeneric.set(SimType.GYRO, device, ">rate_z", rate)
     }
 
     public static setRateZ(device: string, rate: number): boolean {
-        return SimGeneric.set(SimType.GYRO, device, ">rate_z", rate)
+        return SimGeneric.set(SimType.GYRO, device, ">rate_y", rate)
     }
 
     public static genReceiver(device: string): SimReceiver {
@@ -61,7 +62,7 @@ export class SimGyroInput extends SimInput {
     private _accumulated = { x: 0, y: 0, z: 0 }
     private _lastWritten = { x: 0, y: 0, z: 0 }
 
-    private static readonly ANGLE_FIELD = { x: ">angle_x", y: ">angle_y", z: ">angle_z" } as const
+    private static readonly ANGLE_FIELD = { x: ">angle_x", y: ">angle_z", z: ">angle_y" } as const
 
     constructor(device: string, robot: Mechanism) {
         super(device)
