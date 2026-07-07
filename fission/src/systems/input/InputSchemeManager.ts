@@ -87,7 +87,7 @@ class InputSchemeManager {
         const schemesByName = new Map(this.allInputSchemes.map(s => [s.schemeName, s] as const))
         for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap) {
             const reverted = schemesByName.get(scheme.schemeName)
-            if (reverted && reverted !== scheme) {
+            if (reverted && scheme.customized) {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, reverted)
             }
         }
