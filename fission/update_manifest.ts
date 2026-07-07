@@ -4,6 +4,7 @@ import type { ManifestFileType } from "./manifest"
 import { hashBuffer, hexStringToUint8Array, unzipMira } from "@/util/Utility"
 import { mirabuf } from "@/proto/mirabuf"
 import { v4 as uuidV4 } from "uuid"
+import FieldMiraEditor from "@/mirabuf/FieldMiraEditor.ts"
 
 const basepath = "public/Downloadables/Mira"
 const map: ManifestFileType = { fields: [], private: [], robots: [] }
@@ -32,6 +33,19 @@ async function main() {
             // Normalize Mira assembly name to match file name
             assembly.info!.name = file.name.replace(".mira", "").replace("_", " ")
             const name = assembly.info!.name! + ".mira"
+
+            // Auto migrate old system
+            const fieldEditor = new FieldMiraEditor(assembly.data!.parts!)
+            const fieldPrefs = fieldEditor.getUserData("synthesis:field_preferences")
+            if (fieldPrefs) {
+                fieldEditor.migrateDevtoolFieldData(fieldPrefs)
+            }
+
+            const robotPrefs = fieldEditor.getUserData("synthesis:robot_preferences")
+            if (robotPrefs) {
+                fieldEditor.migrateDevtoolRobotData(robotPrefs)
+            }
+
             const updated = mirabuf.Assembly.encode(assembly).finish()
             const updatedHash = await hashBuffer(updated.buffer as ArrayBuffer)
 
