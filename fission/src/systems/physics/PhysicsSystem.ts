@@ -458,7 +458,7 @@ class PhysicsSystem extends WorldSystem {
                             ? [bodyA, bodyB]
                             : [bodyB, bodyA]
 
-                        const res = this.createWheelConstraint(
+                        const [fixedConstraint, vehicleConstraint, vehicleListener] = this.createWheelConstraint(
                             jointInst,
                             jDef,
                             maxAcceleration ?? 1.5,
@@ -466,9 +466,9 @@ class PhysicsSystem extends WorldSystem {
                             bodyTwo,
                             parser.assembly.info!.version!
                         )
-                        addConstraint(res[0])
-                        addConstraint(res[1])
-                        listener = res[2]
+                        addConstraint(fixedConstraint)
+                        addConstraint(vehicleConstraint)
+                        listener = vehicleListener
 
                         break
                     }
@@ -610,7 +610,7 @@ class PhysicsSystem extends WorldSystem {
         return constraint
     }
 
-    private addVehicleListeners(constraint: Jolt.VehicleConstraint, bodyWheel: Jolt.Body) {
+    private createVehicleListeners(constraint: Jolt.VehicleConstraint, bodyWheel: Jolt.Body) {
         const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05)
         constraint.SetVehicleCollisionTester(tester)
 
@@ -650,7 +650,7 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(axis)
 
         const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc)
-        const listener = this.addVehicleListeners(vehicleConstraint, bodyWheel)
+        const listener = this.createVehicleListeners(vehicleConstraint, bodyWheel)
 
         return [fixedConstraint, vehicleConstraint, listener]
     }
