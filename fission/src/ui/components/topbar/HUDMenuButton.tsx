@@ -23,20 +23,20 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
     onClick,
     iconName,
     icon,
-    iconSize = "clamp(28px, 8vw, 48px)",
+    iconSize = "clamp(32px, min(10vw, 12vh), 56px)",
     disabled = false,
     disabledTooltip,
 }) => {
     const content = (
         <Stack
             alignItems="center"
-            gap={0.5}
+            gap={"clamp(0px, 0.5vh, 4px)"}
             sx={{ width: "100%", ...(disabled && { opacity: 0.4, pointerEvents: "none" }) }}
         >
             <IconButton
                 size="large"
                 disableRipple
-                sx={{ ...TOP_BAR_ICON_BUTTON_SX, flexDirection: "column" }}
+                sx={{ ...TOP_BAR_ICON_BUTTON_SX, flexDirection: "column", p: "clamp(4px, 1vh, 8px)" }}
                 onClick={disabled ? undefined : onClick}
             >
                 {iconName ? (
@@ -51,7 +51,7 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
                     color: "topBarText.main",
                     textAlign: "center",
                     lineHeight: 1.2,
-                    fontSize: "clamp(0.75rem, 3.5vw, 0.9rem)",
+                    fontSize: "clamp(0.6rem, min(3.5vw, 2.5vh), 0.9rem)",
                     fontWeight: 600,
                 }}
             >

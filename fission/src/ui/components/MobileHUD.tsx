@@ -23,7 +23,7 @@ import { assemblyLabel, useConfigureAssembly } from "./topbar/useConfigureAssemb
 import UserIcon from "./UserIcon"
 
 const DRAWER_SX = {
-    width: "min(80vw, 320px)",
+    width: "min(92vw, 520px)",
     boxSizing: "border-box",
     bgcolor: "topBar.main",
     color: "topBarText.main",
@@ -92,7 +92,7 @@ const MobileHUD: React.FC = () => {
             <Box
                 sx={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gridTemplateColumns: "repeat(3, 1fr)",
                     rowGap: { xs: 2, sm: 4 },
                     columnGap: { xs: 0.5, sm: 1 },
                     flexGrow: 1,
@@ -171,8 +171,8 @@ const MobileHUD: React.FC = () => {
             <Box
                 sx={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    rowGap: { xs: 2, sm: 4 },
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    rowGap: "clamp(4px, 2vh, 32px)",
                     columnGap: { xs: 0.5, sm: 1 },
                     flexGrow: 1,
                     alignContent: "space-evenly",
