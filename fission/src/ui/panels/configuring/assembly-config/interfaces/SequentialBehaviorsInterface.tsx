@@ -3,7 +3,6 @@ import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
@@ -150,7 +149,7 @@ interface SequentialBehaviorProps {
 
 const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selectedRobot }) => {
     const [behaviors, setBehaviors] = useState<SequentialBehaviorPreferences[]>(
-        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyHash)?.sequentialConfig ??
+        selectedRobot.robotPreferences.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))

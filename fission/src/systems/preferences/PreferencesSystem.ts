@@ -97,42 +97,42 @@ class PreferencesSystem {
     }
 
     /**
-     * @param {string} miraHash - The name of the robot assembly to get preference for.
+     * @param {string} assemblyId - The name of the robot assembly to get preference for.
      * @returns {RobotPreferences} Robot preferences found for the given robot, or default robot preferences if none are found.
      */
-    public static getRobotPreferences(miraHash: string): RobotPreferences {
-        const mergedPrefs = { ...defaultRobotPreferences(), ...(this._robotPreferences[miraHash] ?? {}) }
-        this._robotPreferences[miraHash] = mergedPrefs
+    public static getRobotPreferences(assemblyId: string): RobotPreferences {
+        const mergedPrefs = { ...defaultRobotPreferences(), ...(this._robotPreferences[assemblyId] ?? {}) }
+        this._robotPreferences[assemblyId] = mergedPrefs
 
         return mergedPrefs
     }
 
     /** Sets the RobotPreferences object for the robot of a specific mira name */
-    public static setRobotPreferences(miraHash: string, value: RobotPreferences) {
-        this._robotPreferences[miraHash] = value
+    public static setRobotPreferences(assemblyId: string, value: RobotPreferences) {
+        this._robotPreferences[assemblyId] = value
     }
 
     /** Sets the FieldPreferences object for the field of a specific mira name */
-    public static setFieldPreferences(miraHash: string, value: FieldPreferences) {
-        this._fieldPreferences[miraHash] = value
+    public static setFieldPreferences(assemblyId: string, value: FieldPreferences) {
+        this._fieldPreferences[assemblyId] = value
     }
 
     /**
-     * @param {string} miraHash - The name of the field assembly to get preference for.
+     * @param {string} assemblyId - The name of the field assembly to get preference for.
      * @returns {FieldPreferences} Field preferences found for the given field, or default field preferences if none are found.
      */
-    public static getFieldPreferences(miraHash: string): FieldPreferences {
-        const mergedPrefs = { ...defaultFieldPreferences(), ...(this._fieldPreferences[miraHash] ?? {}) }
-        this._fieldPreferences[miraHash] = mergedPrefs
+    public static getFieldPreferences(assemblyId: string): FieldPreferences {
+        const mergedPrefs = { ...defaultFieldPreferences(), ...(this._fieldPreferences[assemblyId] ?? {}) }
+        this._fieldPreferences[assemblyId] = mergedPrefs
         return mergedPrefs
     }
 
-    public static hasFieldPreferences(miraHash: string): boolean {
-        return this._fieldPreferences[miraHash] !== undefined
+    public static hasFieldPreferences(assemblyId: string): boolean {
+        return this._fieldPreferences[assemblyId] !== undefined
     }
 
-    public static hasRobotPreferences(miraHash: string): boolean {
-        return this._robotPreferences[miraHash] !== undefined
+    public static hasRobotPreferences(assemblyId: string): boolean {
+        return this._robotPreferences[assemblyId] !== undefined
     }
 
     /** Gets simulation quality preferences */

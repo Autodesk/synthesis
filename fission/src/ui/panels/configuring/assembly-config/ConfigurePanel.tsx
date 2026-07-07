@@ -254,10 +254,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         originalStation.current = selectedAssembly?.station
 
         if (selectedAssembly) {
-            const hash = selectedAssembly.assemblyHash
+            const id = selectedAssembly.assemblyId
 
-            const robotPrefs = PreferencesSystem.getRobotPreferences(hash)
-            const fieldPrefs = PreferencesSystem.getFieldPreferences(hash)
+            const robotPrefs = PreferencesSystem.getRobotPreferences(id)
+            const fieldPrefs = PreferencesSystem.getFieldPreferences(id)
 
             if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
             if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
@@ -293,10 +293,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             setPendingDeletes([])
 
             if (selectedAssembly) {
-                const hash = selectedAssembly.assemblyHash
+                const id = selectedAssembly.assemblyId
 
-                if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(hash, originalRobotPrefs.current)
-                if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(hash, originalFieldPrefs.current)
+                if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(id, originalRobotPrefs.current)
+                if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(id, originalFieldPrefs.current)
 
                 selectedAssembly.alliance = originalAlliance.current
                 selectedAssembly.station = originalStation.current

@@ -65,7 +65,9 @@ function handlePeerInfo(data: ClientInfo) {
     globalAddToast("success", "Multiplayer Peer Connected", data.displayName)
     EventSystem.dispatch("MultiplayerStatePeerChange")
 }
+
 const clientToUpdateMap = new Map<string, number>()
+
 function handlePeerUpdate(data: UpdateObjectData[], peerId: string, timestamp: number) {
     const bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)!
 

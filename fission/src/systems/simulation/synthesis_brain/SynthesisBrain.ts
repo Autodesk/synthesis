@@ -39,7 +39,6 @@ class SynthesisBrain extends Brain {
 
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
-    private _assemblyName: string
     private _brainIndex: number
     private _assembly: MirabufSceneObject
     public driveType: DriveType = DriveType.ARCADE
@@ -51,7 +50,7 @@ class SynthesisBrain extends Brain {
     private _prevUnstickPressed = false
 
     public get assemblyName(): string {
-        return this._assemblyName
+        return this._assembly.assemblyName
     }
 
     public get behaviors(): Behavior[] {
@@ -133,14 +132,12 @@ class SynthesisBrain extends Brain {
 
     /**
      * @param assembly
-     * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
      * @param driveType
      */
-    public constructor(assembly: MirabufSceneObject, assemblyName: string) {
+    public constructor(assembly: MirabufSceneObject) {
         super(assembly.mechanism, "synthesis")
         this._assembly = assembly
         this._simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)!
-        this._assemblyName = assemblyName
 
         // I'm not fixing this right now, but this is going to become an issue...
         this._brainIndex = SynthesisBrain.brainIndexMap.size
@@ -343,7 +340,7 @@ class SynthesisBrain extends Brain {
             wheelStimuli,
             hingeStimuli,
             this._brainIndex,
-            this._assemblyName
+            this._assembly.assemblyId
         )
     }
 
@@ -363,7 +360,7 @@ class SynthesisBrain extends Brain {
             hingeDrivers[i].controlMode = DriverControlMode.VELOCITY
 
             let sequentialConfig = PreferencesSystem.getRobotPreferences(
-                this._assembly.assemblyHash
+                this._assembly.assemblyId
             ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
 
             if (sequentialConfig == undefined) {
@@ -399,7 +396,7 @@ class SynthesisBrain extends Brain {
 
         for (let i = 0; i < sliderDrivers.length; i++) {
             let sequentialConfig = PreferencesSystem.getRobotPreferences(
-                this._assembly.assemblyHash
+                this._assembly.assemblyId
             ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
 
             if (sequentialConfig == undefined) {

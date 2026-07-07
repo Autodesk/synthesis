@@ -55,11 +55,13 @@ import EjectableSceneObject from "./EjectableSceneObject"
 import FieldMiraEditor from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
-import { MiraType } from "./MirabufLoader"
+import MirabufCachingService, { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
+import { v4 as uuidV4 } from "uuid"
+import { hexStringToUint8Array } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -125,6 +127,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public get intakePreferences(): IntakePreferences {
         return this.robotPreferences.intake
     }
+
     public set intakePreferences(val: IntakePreferences) {
         this.robotPreferences.intake = val
     }
@@ -137,6 +140,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public get ejectorPreferences(): EjectorPreferences {
         return this.robotPreferences.ejector
     }
+
     public set ejectorPreferences(val: EjectorPreferences) {
         this.robotPreferences.ejector = val
     }
@@ -192,8 +196,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this.mirabufInstance.parser.assembly.info?.name ?? "Unknown"
     }
 
-    public get assemblyHash() {
-        return this.mirabufInstance.parser.hash
+    public get assemblyId() {
+        console.log(this.mirabufInstance.parser.assembly.info)
+        return this.mirabufInstance.parser.assemblyId
     }
 
     public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
@@ -289,7 +294,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.simulationSystem.registerMechanism(this.mechanism)
             const simLayer = World.simulationSystem.getSimulationLayer(this.mechanism)!
 
-            this._brain = new SynthesisBrain(this, this.assemblyName)
+            this._brain = new SynthesisBrain(this)
             simLayer.setBrain(this._brain)
         }
 
@@ -879,9 +884,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public savePreferences(): void {
         if (this.miraType == MiraType.FIELD && this._fieldPreferences) {
-            PreferencesSystem.setFieldPreferences(this.assemblyHash, this._fieldPreferences)
+            PreferencesSystem.setFieldPreferences(this.assemblyId, this._fieldPreferences)
         } else if (this._robotPreferences) {
-            PreferencesSystem.setRobotPreferences(this.assemblyHash, this._robotPreferences)
+            PreferencesSystem.setRobotPreferences(this.assemblyId, this._robotPreferences)
         }
         PreferencesSystem.savePreferences()
         setTimeout(() => this.sendPreferences())
@@ -892,14 +897,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         if (parts) {
             const editor = new FieldMiraEditor(parts)
-            if (this.miraType === MiraType.FIELD && !PreferencesSystem.hasFieldPreferences(this.assemblyHash)) {
+            if (this.miraType === MiraType.FIELD && !PreferencesSystem.hasFieldPreferences(this.assemblyId)) {
                 this._fieldPreferences = defaultFieldPreferences()
                 editor.migrateDevtoolFieldData(this._fieldPreferences)
                 this._fieldPreferences = {
                     ...this._fieldPreferences,
                     ...editor.getUserData("synthesis:field_preferences"),
                 }
-            } else if (this.miraType === MiraType.ROBOT && !PreferencesSystem.hasRobotPreferences(this.assemblyHash)) {
+            } else if (this.miraType === MiraType.ROBOT && !PreferencesSystem.hasRobotPreferences(this.assemblyId)) {
                 this._robotPreferences = defaultRobotPreferences()
                 editor.migrateDevtoolRobotData(this._robotPreferences)
                 this._robotPreferences = {
@@ -909,8 +914,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             }
             this.savePreferences()
         }
-        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyHash)
-        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyHash)
+        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyId)
+        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyId)
         setTimeout(() => this.sendPreferences())
     }
 
@@ -1168,8 +1173,28 @@ export async function createMirabuf(
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle,
     multiplayerOwnerId?: string
-): Promise<MirabufSceneObject | null | undefined> {
-    const parser = new MirabufParser(hash, assembly, progressHandle)
+): Promise<MirabufSceneObject | undefined> {
+    const parser = new MirabufParser(assembly, progressHandle)
+
+    if (!parser.assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)) {
+        parser.assembly.info ??= {}
+        const newGUID = uuidV4({ random: hexStringToUint8Array(hash) }) // using deterministic random to prevent the same model from being assigned different uuids after being imported multiple times. Once initially set, uuid will be persistent across hash changes
+        console.warn("Migrating UUID", parser.assembly.info.GUID, "->", newGUID)
+        parser.assembly.info.GUID = newGUID
+
+        if ((await MirabufCachingService.get(hash)) != null) {
+            await MirabufCachingService.remove(hash)
+        }
+
+        const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
+            miraType: parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD,
+            name: parser.assembly.info?.name ?? "Unknown",
+        })
+
+        if (cacheInfo == null) {
+            globalAddToast("warning", "Migration Error", "Importing failed to save")
+        }
+    }
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
