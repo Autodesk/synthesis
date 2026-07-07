@@ -912,6 +912,10 @@ class PhysicsSystem extends WorldSystem {
         let totalMass = 0
         const frictionAccumulation: FrictionPairing[] = []
 
+        // NOTE
+        // `centerOfMass` if never used, but I'm leaving it in because it might be helpful later
+        const centerOfMass = new mirabuf.Vector3()
+
         parts.forEach(([partDefinition, partInstance]) => {
             totalVolume += partDefinition.physicalData?.volume ?? 0
             totalArea += partDefinition.physicalData?.area ?? 0
@@ -1016,8 +1020,8 @@ class PhysicsSystem extends WorldSystem {
             const rotation = transform.GetQuaternion()
 
             // NOTE
-            // `AddShapeShapeSetting` consumes `translation` and `rotation`
-            compoundShapeSettings.AddShapeShapeSettings(translation, rotation, shapeSettings, 0)
+            // `AddShape` consumes `translation` and `rotation`
+            compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
 
             this.updateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
             this.updateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
