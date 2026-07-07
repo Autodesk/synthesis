@@ -26,9 +26,6 @@ const localStorageEntryName = "MirabufAssets"
 
 const storageBackend: MirabufStorageBackend | null = await initStorageBackend()
 
-/** @deprecated Use storageBackend != null instead. Kept for backward compatibility. */
-export const canOPFS = storageBackend != null
-
 export function unzipMira(buff: Uint8Array): Uint8Array {
     // Check if file is gzipped via magic gzip numbers 31 139
     if (buff[0] == 31 && buff[1] == 139) {

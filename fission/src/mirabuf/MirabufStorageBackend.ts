@@ -8,6 +8,7 @@ export interface MirabufStorageBackend {
 }
 
 const OPFS_DIR_NAME = "MirabufAssets"
+const OPFS_PROBE_NAME = "__opfs_probe__"
 
 class OPFSBackend implements MirabufStorageBackend {
     constructor(
@@ -169,11 +170,14 @@ async function tryOPFS(): Promise<OPFSBackend | null> {
         const dir = await root.getDirectoryHandle(OPFS_DIR_NAME, { create: true })
         if (dir.name !== OPFS_DIR_NAME) return null
 
-        // Probe for createWritable() support; this is what Safari (< 26) lacks on the main thread
-        const testHandle = await dir.getFileHandle("__opfs_probe__", { create: true })
-        const writable = await testHandle.createWritable()
-        await writable.close()
-        await dir.removeEntry("__opfs_probe__")
+        // checking if createWriteable() is supported; Safari (< 26) is missing this
+        const testHandle = await dir.getFileHandle(OPFS_PROBE_NAME, { create: true })
+        try {
+            const writable = await testHandle.createWritable()
+            await writable.close()
+        } finally {
+            await dir.removeEntry(OPFS_PROBE_NAME).catch(() => {})
+        }
 
         return new OPFSBackend(root, dir)
     } catch {
