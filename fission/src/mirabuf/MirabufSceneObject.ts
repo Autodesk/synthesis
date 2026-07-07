@@ -29,7 +29,7 @@ import {
 } from "@/systems/preferences/PreferenceTypes"
 import {
     CameraMode,
-    CustomFieldViewControls,
+    type CustomFieldViewControls,
     type CustomTargetControls,
     getTargetControls,
 } from "@/systems/scene/CameraControls"
@@ -992,16 +992,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             { mode: CameraMode.Face, name: "Camera: Face Robot" },
         ]
 
-        modes.forEach(({ mode, name }) => {
-            if (cameraControls.mode !== mode) {
+        modes
+            .filter(({ mode }) => cameraControls.mode !== mode)
+            .forEach(({ name, mode }) => {
                 data.items.push({
                     name,
                     func: () => {
                         cameraControls.mode = mode
                     },
                 })
-            }
-        })
+            })
     }
 
     public getSupplierData(): ContextData {

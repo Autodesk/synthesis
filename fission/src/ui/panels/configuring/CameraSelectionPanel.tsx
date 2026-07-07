@@ -125,10 +125,10 @@ const FieldViewSettings: React.FC = () => {
     useEffect(
         () =>
             EventSystem.listen("CameraViewChangedEvent", ({ point, focusedRobotId }) => {
-                setActivePointIndex(point ? points.indexOf(point) : CENTER_POINT_INDEX)
+                setActivePointIndex(point ? getCameraPoints().indexOf(point) : CENTER_POINT_INDEX)
                 setFocusedRobotId(focusedRobotId ?? UNFOCUSED_ID)
             }),
-        [points]
+        []
     )
 
     const selectView = (index: number) => {
@@ -146,7 +146,7 @@ const FieldViewSettings: React.FC = () => {
             const field = World.sceneRenderer.mirabufSceneObjects.getField()
             if (point && field) {
                 World.sceneRenderer.setCameraControls("FieldView")
-                ;(World.sceneRenderer.currentCameraControls as CustomFieldViewControls).selectPoint(field, point)
+                ;(World.sceneRenderer.currentCameraControls as CustomFieldViewControls).selectPoint(field, index)
             }
         }
     }

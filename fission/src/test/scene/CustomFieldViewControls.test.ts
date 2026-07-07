@@ -28,6 +28,14 @@ function createMockSceneObject(miraType: MiraType, position: THREE.Vector3): Mir
     return object
 }
 
+/** Registers a single camera point on the field and anchors the controls to it. */
+function anchorToPoint(controls: CustomFieldViewControls, field: MirabufSceneObject, point: CameraPoint): void {
+    vi.spyOn(field, "fieldPreferences", "get").mockReturnValue({
+        cameraPoints: [point],
+    } as unknown as MirabufSceneObject["fieldPreferences"])
+    controls.selectPoint(field, 0)
+}
+
 vi.mock("@/systems/World", () => ({
     default: {
         sceneRenderer: {
@@ -66,7 +74,7 @@ describe("CustomFieldViewControls", () => {
         test("anchors the camera to the field-relative offset of the point", () => {
             const point: CameraPoint = { name: "Station 1", pos: [1, 2, 3], look: { type: "field" } }
 
-            controls.selectPoint(field, point)
+            anchorToPoint(controls, field, point)
             controls.update(1 / 60)
 
             expect(camera.position.x).toBeCloseTo(fieldPosition.x + 1)
@@ -83,7 +91,7 @@ describe("CustomFieldViewControls", () => {
                 look: { type: "rotation", yaw: Math.PI / 4, pitch: -0.2 },
             }
 
-            controls.selectPoint(field, point)
+            anchorToPoint(controls, field, point)
             controls.update(1 / 60)
 
             expect(camera.rotation.y).toBeCloseTo(Math.PI / 4)
@@ -93,7 +101,7 @@ describe("CustomFieldViewControls", () => {
         test("a 'field' point aims the camera at the field's center", () => {
             const point: CameraPoint = { name: "Overview", pos: [5, 5, 0], look: { type: "field" } }
 
-            controls.selectPoint(field, point)
+            anchorToPoint(controls, field, point)
             controls.update(1 / 60)
 
             const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
@@ -105,7 +113,7 @@ describe("CustomFieldViewControls", () => {
     describe("focusRobot", () => {
         test("aims at a focused robot, without moving the camera", () => {
             const point: CameraPoint = { name: "Overview", pos: [5, 5, 0], look: { type: "field" } }
-            controls.selectPoint(field, point)
+            anchorToPoint(controls, field, point)
             controls.update(1 / 60)
             const anchoredPosition = camera.position.clone()
 
@@ -125,7 +133,7 @@ describe("CustomFieldViewControls", () => {
     describe("zoom", () => {
         test("scrolling zooms in and out from the look target", () => {
             const point: CameraPoint = { name: "Overview", pos: [5, 0, 5], look: { type: "field" } }
-            controls.selectPoint(field, point)
+            anchorToPoint(controls, field, point)
             controls.update(1 / 60)
             const initialDistance = camera.position.distanceTo(fieldPosition)
 
@@ -156,7 +164,7 @@ describe("CustomFieldViewControls", () => {
 
         test("a secondary-button drag hands control to Follow controls without a visible jump, then continues the pan", () => {
             const point: CameraPoint = { name: "Overview", pos: [0, 0, 5], look: { type: "field" } }
-            controls.selectPoint(field, point)
+            anchorToPoint(controls, field, point)
             controls.update(1 / 60)
             const positionBeforeHandoff = camera.position.clone()
 

@@ -590,11 +590,15 @@ const FV_VERTICAL_THRESHOLD = 0.01
  */
 export class CustomFieldViewControls extends CameraControls {
     private _field: MirabufSceneObject | undefined
-    private _point: CameraPoint | undefined
+    private _pointIndex = -1
     private _focusRobot: MirabufSceneObject | undefined
 
     /** Accumulated zoom (dolly) offset from the station anchor, in world space. */
     private _viewOffset = new THREE.Vector3()
+
+    private get _point(): CameraPoint | undefined {
+        return this._field?.fieldPreferences?.cameraPoints?.[this._pointIndex]
+    }
 
     public get selectedPoint(): CameraPoint | undefined {
         return this._point
@@ -608,25 +612,19 @@ export class CustomFieldViewControls extends CameraControls {
         super("FieldView", mainCamera, interactionHandler)
     }
 
-    /** Anchor the camera to a camera point belonging to the given field. */
-    public selectPoint(field: MirabufSceneObject, point: CameraPoint): void {
+    /** Anchor the camera to the field's camera point at the given index. */
+    public selectPoint(field: MirabufSceneObject, index: number): void {
         this._field = field
-        this._point = point
+        this._pointIndex = index
         this._viewOffset.set(0, 0, 0)
 
-        EventSystem.dispatch("CameraViewChangedEvent", { point, focusedRobotId: this._focusRobot?.id })
+        EventSystem.dispatch("CameraViewChangedEvent", { point: this._point, focusedRobotId: this._focusRobot?.id })
     }
 
     /** Face a specific robot, or pass undefined to return to the point's default aim. */
     public focusRobot(robot: MirabufSceneObject | undefined): void {
         this._focusRobot = robot
-        this.resetView()
         EventSystem.dispatch("CameraViewChangedEvent", { point: this._point, focusedRobotId: robot?.id })
-    }
-
-    /** Clears any accumulated zoom. */
-    private resetView(): void {
-        this._viewOffset.set(0, 0, 0)
     }
 
     public interactionMove(move: InteractionMove): void {
