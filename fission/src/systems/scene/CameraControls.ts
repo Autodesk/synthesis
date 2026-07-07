@@ -104,7 +104,7 @@ const CO_MAX_PHI = Math.PI / 2.1
 const CO_MIN_PHI = -Math.PI / 2.1
 
 const CO_SENSITIVITY_ZOOM = 4.0
-const CO_FACE_ZOOM_SENSITIVITY = 0.4
+const CO_FACE_ZOOM_SENSITIVITY = 0.3
 
 const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0
@@ -656,10 +656,35 @@ export class CustomFieldViewControls extends CameraControls {
         return target ? Math.max(CO_MIN_ZOOM, this._mainCamera.position.distanceTo(target)) : CO_DEFAULT_ZOOM
     }
 
+    /** World position of the point's authored anchor, before the accumulated zoom offset. */
+    private anchorPosition(field: MirabufSceneObject, point: CameraPoint): THREE.Vector3 {
+        const fieldRef = field.getPositionTransform(new THREE.Vector3())
+        return fieldRef.add(new THREE.Vector3(...point.pos))
+    }
+
     /** Dollies the camera along its view axis (scroll to zoom toward/away from the target). */
     private dolly(scale: number): void {
+        const field = this._field
+        const point = this._point
+        if (!field || !point) return
+
         const forward = cameraForward(this._mainCamera)
-        this._viewOffset.addScaledVector(forward, -scale * CO_FACE_ZOOM_SENSITIVITY * this.referenceDistance())
+        const tentative = this._viewOffset
+            .clone()
+            .addScaledVector(forward, -scale * CO_FACE_ZOOM_SENSITIVITY * this.referenceDistance())
+
+        const target = this.resolveLookTarget()
+        if (!target) {
+            this._viewOffset.copy(tentative).clampLength(CO_MIN_ZOOM, CO_MAX_ZOOM)
+            return
+        }
+
+        const anchor = this.anchorPosition(field, point)
+        const distance = anchor.clone().add(tentative).sub(target)
+        this._viewOffset
+            .copy(distance.setLength(clampZoom(distance.length())))
+            .add(target)
+            .sub(anchor)
     }
 
     /** Resolves the world point the camera should face, or undefined for a fixed-rotation point. */
