@@ -15,7 +15,7 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeId, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -26,6 +26,7 @@ import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
+import { isDefined } from "@/util/Utility"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -103,6 +104,25 @@ const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 
 // Motor constant
 const VELOCITY_DEFAULT = 30
+
+type Part = [mirabuf.IPartDefinition, mirabuf.IPartInstance]
+type FrictionPairing = {
+    dynamic: number
+    static: number
+    weight: number
+}
+
+type PhysicalMaterialsMap = {
+    [k: string]: mirabuf.material.IPhysicalMaterial
+}
+
+type PhysicalProperties = {
+    totalMass: number
+    totalArea: number
+    totalVolume: number
+    frictionAccumulation: FrictionPairing[]
+    centerOfMass: mirabuf.Vector3
+}
 
 /**
  * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
@@ -839,15 +859,260 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Creates a map, mapping the name of `RigidNodes` to Jolt `BodyIds`
+     * Checks if the gamepiece is a spheroid. If it is, this function applies a sphere collider to it, to optimize collision handling.
+     *
+     * @returns Whether the sphere collider was applied
+     */
+    private tryOptimizeSpheroid(shape: Jolt.Shape, totalVolume: number, totalArea: number): boolean {
+        if (computeSphericity(totalVolume, totalArea) < MIN_SPHERICITY) {
+            return false
+        }
+
+        const center = shape.GetCenterOfMass()
+        const volumeMeters3 = totalVolume * 1e-6 // Convert cm^3 to m^3
+        const radius = Math.max(Math.cbrt((3 * volumeMeters3) / (4 * Math.PI)), 0.01)
+
+        const sphereSettings = new JOLT.SphereShapeSettings(radius)
+        const identityRotation = new JOLT.Quat(0, 0, 0, 1)
+
+        const offsetSettings = new JOLT.RotatedTranslatedShapeSettings(center, identityRotation, sphereSettings)
+        shape = offsetSettings.Create().Get()
+
+        JOLT.destroy(identityRotation)
+        JOLT.destroy(sphereSettings)
+
+        return true
+    }
+
+    private calculateAndSetBodyFriction(body: Jolt.Body, frictionAccum: FrictionPairing[]) {
+        // Set Friction Here
+        let staticFriction = 0.0
+        let dynamicFriction = 0.0
+        let weightSum = 0.0
+
+        frictionAccum.forEach(pairing => {
+            staticFriction += pairing.static * pairing.weight
+            dynamicFriction += pairing.dynamic * pairing.weight
+            weightSum += pairing.weight
+        })
+
+        staticFriction /= weightSum == 0.0 ? 1.0 : weightSum
+        dynamicFriction /= weightSum == 0.0 ? 1.0 : weightSum
+
+        // I guess this is an okay substitute.
+        const friction = (staticFriction + dynamicFriction) / 2.0
+        body.SetFriction(friction)
+    }
+
+    private calculatePhysicalProperties(parts: Part[], physicalMaterials: PhysicalMaterialsMap): PhysicalProperties {
+        // Accumulated geometry used to decide whether a game piece is sphere-like (see below).
+        let totalVolume = 0
+        let totalArea = 0
+
+        let totalMass = 0
+        const frictionAccumulation: FrictionPairing[] = []
+
+        parts.forEach(([partDefinition, partInstance]) => {
+            totalVolume += partDefinition.physicalData?.volume ?? 0
+            totalArea += partDefinition.physicalData?.area ?? 0
+
+            const physicalMaterial = physicalMaterials![partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY]
+
+            if (physicalMaterial) {
+                let frictionOverride: number | undefined =
+                    partDefinition?.frictionOverride == null ? undefined : partDefinition?.frictionOverride
+                if ((partDefinition?.frictionOverride ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD) {
+                    frictionOverride = undefined
+                }
+
+                if (
+                    (physicalMaterial.dynamicFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD ||
+                    (physicalMaterial.staticFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD
+                ) {
+                    physicalMaterial.dynamicFriction = DEFAULT_FRICTION
+                    physicalMaterial.staticFriction = DEFAULT_FRICTION
+                }
+
+                // TODO: Consider using roughness as dynamic friction.
+                const frictionPairing: FrictionPairing = {
+                    dynamic: frictionOverride ?? physicalMaterial.dynamicFriction!,
+                    static: frictionOverride ?? physicalMaterial.staticFriction!,
+                    weight: partDefinition.physicalData?.area ?? 1.0,
+                }
+                frictionAccumulation.push(frictionPairing)
+            } else {
+                const frictionPairing: FrictionPairing = {
+                    dynamic: DEFAULT_FRICTION,
+                    static: DEFAULT_FRICTION,
+                    weight: partDefinition.physicalData?.area ?? 1.0,
+                }
+                frictionAccumulation.push(frictionPairing)
+            }
+
+            if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
+
+            const mass = partDefinition.massOverride ? partDefinition.massOverride! : partDefinition.physicalData.mass!
+
+            totalMass += mass
+
+            centerOfMass.x += (partDefinition.physicalData.com.x! * mass) / 100.0
+            centerOfMass.y += (partDefinition.physicalData.com.y! * mass) / 100.0
+            centerOfMass.z += (partDefinition.physicalData.com.z! * mass) / 100.0
+        })
+
+        return {
+            totalMass,
+            totalVolume,
+            totalArea,
+            frictionAccumulation,
+            centerOfMass,
+        } satisfies PhysicalProperties
+    }
+
+    private constructBodyFromRigidNode(
+        rn: RigidNodeReadOnly,
+        parser: MirabufParser,
+        massMod: number,
+        minBounds: Jolt.Vec3,
+        maxBounds: Jolt.Vec3,
+        reservedLayer: number | undefined
+    ): [RigidNodeId, Jolt.BodyID] | undefined {
+        const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
+
+        const rnLayer: number = reservedLayer
+            ? reservedLayer
+            : rn.id.endsWith(GAMEPIECE_SUFFIX)
+              ? LAYER_GENERAL_DYNAMIC
+              : LAYER_FIELD
+
+        const constructPartDefinition = (
+            partId: string
+        ): [mirabuf.IPartDefinition, mirabuf.IPartInstance] | undefined => {
+            const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
+            if (partInstance.skipCollider) return undefined
+
+            const partDefinition = parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
+
+            const debugLabel = {
+                rn: rn.id,
+                partId,
+                defRef: partInstance.partDefinitionReference,
+                name: partDefinition.info?.name ?? partInstance.info?.name ?? "(unnamed)",
+            }
+
+            const partShapeResult = rn.isDynamic
+                ? this.createConvexShapeSettingsFromPart(partDefinition)
+                : this.createConcaveShapeSettingsFromPart(partDefinition, debugLabel)
+
+            if (!partShapeResult) {
+                console.warn("Skipping collider (no valid shape settings)", debugLabel)
+                return undefined
+            }
+
+            const [shapeSettings, partMin, partMax] = partShapeResult
+
+            const transform = convertThreeMatrix4ToJoltMat44(parser.globalTransforms.get(partId)!)
+            const translation = transform.GetTranslation()
+            const rotation = transform.GetQuaternion()
+
+            // NOTE
+            // `AddShapeShapeSetting` consumes `translation` and `rotation`
+            compoundShapeSettings.AddShapeShapeSettings(translation, rotation, shapeSettings, 0)
+
+            this.updateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
+            this.updateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
+
+            JOLT.destroy(shapeSettings)
+            JOLT.destroy(partMin)
+            JOLT.destroy(partMax)
+            JOLT.destroy(transform)
+
+            return [partDefinition, partInstance]
+        }
+
+        const parts = [...rn.parts].map(constructPartDefinition).filter(isDefined)
+        if (parts.length === 0) {
+            JOLT.destroy(compoundShapeSettings)
+            return
+        }
+
+        const { totalMass, totalVolume, totalArea, frictionAccumulation } = this.calculatePhysicalProperties(
+            parts,
+            parser.assembly.data?.materials?.physicalMaterials!
+        )
+
+        const shapeResult = compoundShapeSettings.Create()
+        if (!shapeResult.IsValid || shapeResult.HasError()) {
+            // May want to consider crashing here.
+            // Unclear if the whole import is impossible if we reach this control step.
+            console.error(`Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`)
+            JOLT.destroy(compoundShapeSettings)
+            return
+        }
+
+        let shape = shapeResult.Get()
+        let appliedSphereCollider = false
+
+        if (rn.isDynamic) {
+            if (rn.isGamePiece) {
+                appliedSphereCollider ||= this.tryOptimizeSpheroid(shape, totalVolume, totalArea)
+
+                const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
+                shape.GetMassProperties().mMass = mass
+            } else {
+                shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass * massMod
+            }
+        }
+
+        const p = new JOLT.RVec3(0.0, 0.0, 0.0)
+        const r = new JOLT.Quat(0, 0, 0, 1)
+        const bodySettings = new JOLT.BodyCreationSettings(
+            shape,
+            p,
+            r,
+            rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
+            rnLayer
+        )
+        const body = this._joltBodyInterface.CreateBody(bodySettings)
+        this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
+        body.SetAllowSleeping(false)
+
+        this.calculateAndSetBodyFriction(body, frictionAccumulation)
+
+        // Little testing components
+        this._bodies.push(body.GetID())
+        body.SetRestitution(0.4)
+
+        if (appliedSphereCollider) {
+            body.GetMotionProperties().SetAngularDamping(SPHERE_GP_ANGULAR_DAMPING)
+            body.GetMotionProperties().SetLinearDamping(SPHERE_GP_LINEAR_DAMPING)
+            this._sphereGamePieceBodies.push(body.GetID())
+        }
+
+        JOLT.destroy(compoundShapeSettings)
+        JOLT.destroy(bodySettings)
+        JOLT.destroy(p)
+        JOLT.destroy(r)
+
+        return [rn.id, body.GetID()]
+    }
+
+    private calculateMassModifier(nodes: RigidNodeReadOnly[], dynamic: boolean) {
+        const assemblyMass = nodes.map(x => x.mass).reduce((acc, n) => acc + n)
+
+        return dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
+    }
+
+    /**
+     * Creates a jolt body for each rigid node in the assembly
      *
      * @param   parser  MirabufParser containing properly parsed RigidNodes
-     * @returns Mapping of Jolt BodyIDs
+     * @returns A map from the ids of the rigid nodes to those of the jolt bodies
      */
     public createBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
-        const rnToBodies = new Map<string, Jolt.BodyID>()
+        const dynamic = parser.assembly.dynamic
 
-        if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
+        if ((dynamic && !layerReserve) || layerReserve?.isReleased) {
             throw new Error("No layer reserve for dynamic assembly")
         }
 
@@ -855,244 +1120,17 @@ class PhysicsSystem extends WorldSystem {
 
         const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
 
-        const massMod = (() => {
-            let assemblyMass = 0
-            nonPhysicsNodes.forEach(x => {
-                assemblyMass += x.mass
-            })
-
-            return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
-        })()
+        const massMod = this.calculateMassModifier(nonPhysicsNodes, dynamic)
 
         const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
         const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
-        nonPhysicsNodes.forEach(rn => {
-            const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
+        const createBodyInBounds = (rn: RigidNodeReadOnly) =>
+            this.constructBodyFromRigidNode(rn, parser, massMod, minBounds, maxBounds, reservedLayer)
 
-            let shapesAdded = 0
+        const rnToBodyPairs = nonPhysicsNodes.map(createBodyInBounds).filter(isDefined)
 
-            let totalMass = 0
-            // Accumulated geometry used to decide whether a game piece is sphere-like (see below).
-            let totalVolume = 0
-            let totalArea = 0
-
-            type FrictionPairing = {
-                dynamic: number
-                static: number
-                weight: number
-            }
-            const frictionAccum: FrictionPairing[] = []
-
-            const comAccum = new mirabuf.Vector3()
-
-            const rnLayer: number = reservedLayer
-                ? reservedLayer
-                : rn.id.endsWith(GAMEPIECE_SUFFIX)
-                  ? LAYER_GENERAL_DYNAMIC
-                  : LAYER_FIELD
-
-            const constructPartDefinition = (
-                partId: string
-            ): [mirabuf.IPartDefinition, mirabuf.IPartInstance] | [undefined, undefined] => {
-                const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
-                if (partInstance.skipCollider) return [undefined, undefined]
-
-                const partDefinition =
-                    parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
-
-                const debugLabel = {
-                    rn: rn.id,
-                    partId,
-                    defRef: partInstance.partDefinitionReference,
-                    name: partDefinition.info?.name ?? partInstance.info?.name ?? "(unnamed)",
-                }
-
-                const partShapeResult = rn.isDynamic
-                    ? this.createConvexShapeSettingsFromPart(partDefinition)
-                    : this.createConcaveShapeSettingsFromPart(partDefinition, debugLabel)
-                // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
-
-                if (!partShapeResult) {
-                    console.warn("Skipping collider (no valid shape settings)", debugLabel)
-                    return [undefined, undefined]
-                }
-
-                const [shapeSettings, partMin, partMax] = partShapeResult
-
-                const transform = convertThreeMatrix4ToJoltMat44(parser.globalTransforms.get(partId)!)
-                const translation = transform.GetTranslation()
-                const rotation = transform.GetQuaternion()
-
-                // NOTE
-                // `AddShape` consumes `translation` and `rotation`
-                compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
-                shapesAdded++
-
-                this.updateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
-                this.updateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
-
-                JOLT.destroy(partMin)
-                JOLT.destroy(partMax)
-                JOLT.destroy(transform)
-
-                return [partDefinition, partInstance]
-            }
-
-            // NOTE
-            // Including these destructions breaks things
-            // JOLT.destroy(minBounds)
-            // JOLT.destroy(maxBounds)
-
-            rn.parts.forEach(partId => {
-                const [partDefinition, partInstance] = constructPartDefinition(partId)
-                if (!partDefinition) return
-
-                totalVolume += partDefinition.physicalData?.volume ?? 0
-                totalArea += partDefinition.physicalData?.area ?? 0
-
-                const physicalMaterial =
-                    parser.assembly.data!.materials!.physicalMaterials![
-                        partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY
-                    ]
-
-                if (physicalMaterial) {
-                    let frictionOverride: number | undefined =
-                        partDefinition?.frictionOverride == null ? undefined : partDefinition?.frictionOverride
-                    if ((partDefinition?.frictionOverride ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD) {
-                        frictionOverride = undefined
-                    }
-
-                    if (
-                        (physicalMaterial.dynamicFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD ||
-                        (physicalMaterial.staticFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD
-                    ) {
-                        physicalMaterial.dynamicFriction = DEFAULT_FRICTION
-                        physicalMaterial.staticFriction = DEFAULT_FRICTION
-                    }
-
-                    // TODO: Consider using roughness as dynamic friction.
-                    const frictionPairing: FrictionPairing = {
-                        dynamic: frictionOverride ?? physicalMaterial.dynamicFriction!,
-                        static: frictionOverride ?? physicalMaterial.staticFriction!,
-                        weight: partDefinition.physicalData?.area ?? 1.0,
-                    }
-                    frictionAccum.push(frictionPairing)
-                } else {
-                    const frictionPairing: FrictionPairing = {
-                        dynamic: DEFAULT_FRICTION,
-                        static: DEFAULT_FRICTION,
-                        weight: partDefinition.physicalData?.area ?? 1.0,
-                    }
-                    frictionAccum.push(frictionPairing)
-                }
-
-                if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
-
-                const mass = partDefinition.massOverride
-                    ? partDefinition.massOverride!
-                    : partDefinition.physicalData.mass!
-
-                totalMass += mass
-
-                comAccum.x += (partDefinition.physicalData.com.x! * mass) / 100.0
-                comAccum.y += (partDefinition.physicalData.com.y! * mass) / 100.0
-                comAccum.z += (partDefinition.physicalData.com.z! * mass) / 100.0
-            })
-
-            if (shapesAdded > 0) {
-                const shapeResult = compoundShapeSettings.Create()
-
-                if (!shapeResult.IsValid || shapeResult.HasError()) {
-                    // May want to consider crashing here.
-                    // Unclear if the whole import is impossible if we reach this control step.
-                    console.error(`Failed to create shape for RigidNode ${rn.id}\n${shapeResult.GetError().c_str()}`)
-                    JOLT.destroy(compoundShapeSettings)
-                    return
-                }
-
-                let shape = shapeResult.Get()
-                let appliedSphereCollider = false
-
-                if (rn.isDynamic) {
-                    if (rn.isGamePiece) {
-                        if (computeSphericity(totalVolume, totalArea) >= MIN_SPHERICITY) {
-                            const center = shape.GetCenterOfMass()
-                            const volumeMeters3 = totalVolume * 1e-6 // Convert cm^3 to m^3
-                            const radius = Math.max(Math.cbrt((3 * volumeMeters3) / (4 * Math.PI)), 0.01)
-
-                            const sphereSettings = new JOLT.SphereShapeSettings(radius)
-                            const identityRotation = new JOLT.Quat(0, 0, 0, 1)
-                            const offsetSettings = new JOLT.RotatedTranslatedShapeSettings(
-                                center,
-                                identityRotation,
-                                sphereSettings
-                            )
-                            shape = offsetSettings.Create().Get()
-                            JOLT.destroy(identityRotation)
-                            JOLT.destroy(sphereSettings)
-                            appliedSphereCollider = true
-                        }
-
-                        const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
-                        shape.GetMassProperties().mMass = mass
-                    } else {
-                        shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass * massMod
-                    }
-                }
-
-                const p = new JOLT.RVec3(0.0, 0.0, 0.0)
-                const r = new JOLT.Quat(0, 0, 0, 1)
-                const bodySettings = new JOLT.BodyCreationSettings(
-                    shape,
-                    p,
-                    r,
-                    rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
-                    rnLayer
-                )
-                const body = this._joltBodyInterface.CreateBody(bodySettings)
-                this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
-                body.SetAllowSleeping(false)
-                rnToBodies.set(rn.id, body.GetID())
-
-                // Set Friction Here
-                let staticFriction = 0.0
-                let dynamicFriction = 0.0
-                let weightSum = 0.0
-
-                frictionAccum.forEach(pairing => {
-                    staticFriction += pairing.static * pairing.weight
-                    dynamicFriction += pairing.dynamic * pairing.weight
-                    weightSum += pairing.weight
-                })
-
-                staticFriction /= weightSum == 0.0 ? 1.0 : weightSum
-                dynamicFriction /= weightSum == 0.0 ? 1.0 : weightSum
-
-                // I guess this is an okay substitute.
-                const friction = (staticFriction + dynamicFriction) / 2.0
-                body.SetFriction(friction)
-
-                // Little testing components
-                this._bodies.push(body.GetID())
-                body.SetRestitution(0.4)
-
-                if (appliedSphereCollider) {
-                    body.GetMotionProperties().SetAngularDamping(SPHERE_GP_ANGULAR_DAMPING)
-                    body.GetMotionProperties().SetLinearDamping(SPHERE_GP_LINEAR_DAMPING)
-                    this._sphereGamePieceBodies.push(body.GetID())
-                }
-
-                JOLT.destroy(bodySettings)
-                JOLT.destroy(p)
-                JOLT.destroy(r)
-            }
-
-            // Cleanup
-            JOLT.destroy(compoundShapeSettings)
-        })
-
-        return rnToBodies
+        return new Map<RigidNodeId, Jolt.BodyID>(rnToBodyPairs)
     }
 
     /**

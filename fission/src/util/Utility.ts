@@ -37,3 +37,11 @@ export async function hashBuffer(buffer: ArrayBuffer): Promise<string> {
         .map(x => x.toString(16))
         .join("")
 }
+
+export function isDefined<T extends NonNullable<any>>(a: T | undefined): a is T {
+    return a != undefined
+}
+
+export function isListDefined<P extends NonNullable<any>[]>(a: P | undefined[]): a is P {
+    return a[0] != undefined
+}
