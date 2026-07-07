@@ -62,6 +62,7 @@ dependencies {
 
     // cscore + OpenCV for the simulated USB camera (CameraServer-compatible)
     implementation "edu.wpi.first.cscore:cscore-java:$WPI_Version"
+    implementation "edu.wpi.first.cameraserver:cameraserver-java:$WPI_Version"
     implementation "$OPENCV_Group:opencv-java:$OPENCV_Version"
 
     // WebSocket lib for receiving rendered frames; too large for HALSim's SimDevice

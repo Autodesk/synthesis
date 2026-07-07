@@ -12,7 +12,6 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -23,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 
+import com.autodesk.synthesis.cscore.CameraServer;
 import com.autodesk.synthesis.cscore.CvSink;
 import com.autodesk.synthesis.cscore.UsbCamera;
 import com.autodesk.synthesis.revrobotics.spark.SparkMax;

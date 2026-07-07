@@ -185,7 +185,7 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                         label="Name"
                         size="small"
                         defaultValue={camera.name}
-                        helperText={`Sim device: ${camera.name}[${camera.id}] — must match robot code`}
+                        helperText={`Sim device: ${camera.name}[${camera.id}] (must match robot code)`}
                         onChange={e => {
                             camera.name = e.target.value
                         }}

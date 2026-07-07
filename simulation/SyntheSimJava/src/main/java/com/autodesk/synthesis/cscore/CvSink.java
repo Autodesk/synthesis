@@ -5,9 +5,7 @@ import org.opencv.core.Mat;
 import edu.wpi.first.util.WPIUtilJNI;
 
 /**
- * swap-in for {@code edu.wpi.first.cscore.CvSink}: the frame-grab methods return the frame
- * Synthesis rendered for the associated {@link Camera} instead of a physical source, so
- * existing OpenCV processing keeps working.
+ * Swap-in for {@code edu.wpi.first.cscore.CvSink}
  */
 public class CvSink extends edu.wpi.first.cscore.CvSink {
 

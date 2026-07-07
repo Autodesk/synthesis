@@ -1,8 +1,7 @@
 package com.autodesk.synthesis.cscore;
 
 /**
- * swap-in for {@code edu.wpi.first.cscore.UsbCamera} (mirrors the SparkMax wrapper
- * pattern): frames come from Synthesis instead of a physical device.
+ * Swap-in for {@code edu.wpi.first.cscore.UsbCamera}
  *
  * <pre>
  *     var camera = new com.autodesk.synthesis.cscore.UsbCamera("USB Camera 0", 0);
