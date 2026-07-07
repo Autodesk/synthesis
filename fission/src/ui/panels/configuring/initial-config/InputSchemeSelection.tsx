@@ -43,11 +43,8 @@ export default function InputSchemeSelection({
     const refreshAvailableSchemes = useCallback(() => {
         const schemes = [...InputSchemeManager.availableInputSchemesByType(robotDriveType)]
         if (matchMedia("(hover: none)").matches) {
-            schemes.sort((a, b) => {
-                if (a.scheme.schemeName === "Brandon" && b.scheme.schemeName !== "Brandon") return -1
-                if (b.scheme.schemeName === "Brandon" && a.scheme.schemeName !== "Brandon") return 1
-                return 0
-            })
+            // showing input schemes that support touch controls first (on mobile devices)
+            schemes.sort((a, b) => Number(b.scheme.usesTouchControls) - Number(a.scheme.usesTouchControls))
         }
         setAvailableSchemes(schemes)
     }, [robotDriveType])
