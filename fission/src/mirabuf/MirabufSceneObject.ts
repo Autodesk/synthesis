@@ -892,10 +892,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         setTimeout(() => this.sendPreferences())
     }
 
-    public loadPreferences(): void {
+    public loadPreferences(checkMira: boolean = true): void {
         const parts = this.mirabufInstance.parser.assembly.data?.parts
 
-        if (parts) {
+        if (parts && checkMira) {
             const editor = new FieldMiraEditor(parts)
             if (this.miraType === MiraType.FIELD && !PreferencesSystem.hasFieldPreferences(this.assemblyId)) {
                 this._fieldPreferences = defaultFieldPreferences()

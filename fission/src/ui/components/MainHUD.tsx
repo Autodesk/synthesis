@@ -16,6 +16,7 @@ import type { ConfigurationType } from "../panels/configuring/assembly-config/Co
 import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import DebugPanel from "../panels/DebugPanel"
+import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
@@ -208,6 +209,14 @@ const MainHUD: React.FC = () => {
                     >
                         Configure Camera
                     </MainHUDButton>
+                    {import.meta.env.DEV && (
+                        <MainHUDButton
+                            startIcon={SynthesisIcons.CODE_SQUARE}
+                            onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                        >
+                            Developer Tool
+                        </MainHUDButton>
+                    )}
                     <MainHUDButton
                         startIcon={SynthesisIcons.BUG}
                         onClick={() => {

@@ -1,10 +1,13 @@
 import { mirabuf } from "@/proto/mirabuf"
-import type {
-    FieldPreferences,
-    ProtectedZonePreferences,
-    RobotPreferences,
-    ScoringZonePreferences,
+import {
+    defaultFieldPreferences,
+    type FieldPreferences,
+    type ProtectedZonePreferences,
+    type RobotPreferences,
+    type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 
 export interface DevtoolMiraData {
     "synthesis:field_preferences": FieldPreferences
@@ -15,6 +18,35 @@ export interface DevtoolMiraData {
     "devtool:robot_ejector": RobotPreferences["ejector"]
     "devtool:robot_intake": RobotPreferences["intake"]
     // additional devtool keys to be added in future
+}
+
+export const devtoolHandlers = {
+    "synthesis:field_preferences": {
+        get(object) {
+            return object.fieldPreferences ?? defaultFieldPreferences()
+        },
+        set(object, value) {
+            PreferencesSystem.setFieldPreferences(object.assemblyId, value)
+            object.loadPreferences(false)
+            object.updateProtectedZones()
+            object.updateScoringZones()
+        },
+    },
+    "synthesis:robot_preferences": {
+        get(object) {
+            return object.robotPreferences
+        },
+        set(object, value) {
+            PreferencesSystem.setRobotPreferences(object.assemblyId, value)
+            object.loadPreferences(false)
+            object.updateIntakeSensor()
+        },
+    },
+} as const satisfies {
+    [K in keyof DevtoolMiraData & `synthesis:${string}`]: {
+        get(object: MirabufSceneObject): DevtoolMiraData[K]
+        set(object: MirabufSceneObject, val: DevtoolMiraData[K]): void
+    }
 }
 
 /**
@@ -81,7 +113,7 @@ export default class FieldMiraEditor {
     /**
      * Set data for a devtool key. Value will be stringified as JSON.
      */
-    setUserData<K extends keyof DevtoolMiraData>(key: K, value: DevtoolMiraData[K]): void {
+    setUserData<K extends keyof DevtoolMiraData & `synthesis:${string}`>(key: K, value: DevtoolMiraData[K]): void {
         this._parts.userData!.data![key] = JSON.stringify(value)
     }
 
@@ -96,6 +128,6 @@ export default class FieldMiraEditor {
      * Get all devtool keys currently in userData.
      */
     getAllKeys(): string[] {
-        return Object.keys(this._parts.userData!.data!)
+        return Object.keys(this._parts.userData!.data!).filter(k => k.startsWith("synthesis:"))
     }
 }

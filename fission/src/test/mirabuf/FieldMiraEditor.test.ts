@@ -3,11 +3,9 @@ import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import {
-    type Alliance,
     defaultFieldPreferences,
     defaultRobotPreferences,
     defaultRobotSpawnLocation,
-    type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes.ts"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor.ts"
 
@@ -26,35 +24,13 @@ vi.mock("@/systems/World", () => ({
     },
 }))
 
-const scoringZonePayload: ScoringZonePreferences[] = [
-    {
-        name: "Red Zone",
-        alliance: "red" as Alliance,
-        parentNode: "root",
-        points: 5,
-        destroyGamepiece: false,
-        shouldPointsAccumulate: false,
-        deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-    },
-]
-
 describe("Basic Field Mira Editor Tests", () => {
     test("writes and reads devtool data", () => {
         const parts = mockParts()
         const editor = new FieldMiraEditor(parts)
 
-        const key = "devtool:scoring_zones"
-        const payload: ScoringZonePreferences[] = [
-            {
-                name: "Test Zone",
-                alliance: "blue" as Alliance,
-                parentNode: "root",
-                points: 10,
-                destroyGamepiece: false,
-                shouldPointsAccumulate: true,
-                deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-            },
-        ]
+        const key = "synthesis:robot_preferences"
+        const payload = defaultRobotPreferences()
 
         editor.setUserData(key, payload)
         expect(editor.getUserData(key)).toEqual(payload)
@@ -101,38 +77,15 @@ describe("Basic Field Mira Editor Tests", () => {
 })
 
 describe("Devtool Scoring Zones Caching Tests", () => {
-    test("add scoring zones and read back", () => {
-        const parts = mockParts()
-        const editor = new FieldMiraEditor(parts)
-        editor.setUserData("devtool:scoring_zones", scoringZonePayload)
-        expect(editor.getUserData("devtool:scoring_zones")).toEqual(scoringZonePayload)
-        expect(editor.getAllKeys()).toContain("devtool:scoring_zones")
-    })
-
-    test("overwrite and remove scoring zones", () => {
-        const parts = mockParts()
-        const editor = new FieldMiraEditor(parts)
-        editor.setUserData("devtool:scoring_zones", scoringZonePayload)
-
-        const newPayload: ScoringZonePreferences[] = [
-            { ...scoringZonePayload[0], name: "Blue Zone", alliance: "blue" as Alliance },
-        ]
-        editor.setUserData("devtool:scoring_zones", newPayload)
-        expect(editor.getUserData("devtool:scoring_zones")).toEqual(newPayload)
-
-        editor.removeUserData("devtool:scoring_zones")
-        expect(editor.getUserData("devtool:scoring_zones")).toBeUndefined()
-        expect(editor.getAllKeys()).not.toContain("devtool:scoring_zones")
-    })
     test("cache round-trip preserves devtool scoring zones", () => {
         const parts = mockParts()
         const editor = new FieldMiraEditor(parts)
-        editor.setUserData("devtool:scoring_zones", scoringZonePayload)
+        editor.setUserData("synthesis:robot_preferences", defaultRobotPreferences())
 
         const encoded = mirabuf.Parts.encode(parts).finish()
         const decoded = mirabuf.Parts.decode(encoded)
         const roundTripEditor = new FieldMiraEditor(decoded)
-        expect(roundTripEditor.getUserData("devtool:scoring_zones")).toEqual(scoringZonePayload)
+        expect(roundTripEditor.getUserData("synthesis:robot_preferences")).toEqual(defaultRobotPreferences())
     })
 })
 
