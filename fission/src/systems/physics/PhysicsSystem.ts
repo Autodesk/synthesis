@@ -938,19 +938,17 @@ class PhysicsSystem extends WorldSystem {
                 }
 
                 // TODO: Consider using roughness as dynamic friction.
-                const frictionPairing: FrictionPairing = {
+                frictionAccumulation.push({
                     dynamic: frictionOverride ?? physicalMaterial.dynamicFriction!,
                     static: frictionOverride ?? physicalMaterial.staticFriction!,
                     weight: partDefinition.physicalData?.area ?? 1.0,
-                }
-                frictionAccumulation.push(frictionPairing)
+                } satisfies FrictionPairing)
             } else {
-                const frictionPairing: FrictionPairing = {
+                frictionAccumulation.push({
                     dynamic: DEFAULT_FRICTION,
                     static: DEFAULT_FRICTION,
                     weight: partDefinition.physicalData?.area ?? 1.0,
-                }
-                frictionAccumulation.push(frictionPairing)
+                } satisfies FrictionPairing)
             }
 
             if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
@@ -1026,7 +1024,6 @@ class PhysicsSystem extends WorldSystem {
             this.updateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
             this.updateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
 
-            JOLT.destroy(shapeSettings)
             JOLT.destroy(partMin)
             JOLT.destroy(partMax)
             JOLT.destroy(transform)
@@ -1034,6 +1031,8 @@ class PhysicsSystem extends WorldSystem {
             return [partDefinition, partInstance]
         }
 
+        // NOTE for reviewers
+        // We clone the set here, so it's slightly slower than before, but I think that's worth it for the readability and concision
         const parts = [...rn.parts].map(constructPartDefinition).filter(isDefined)
         if (parts.length === 0) {
             JOLT.destroy(compoundShapeSettings)
