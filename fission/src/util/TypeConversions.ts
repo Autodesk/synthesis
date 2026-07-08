@@ -23,6 +23,7 @@ export function convertArrayToThreeMatrix4(arr: number[]) {
         arr[2], arr[6], arr[10], arr[14],
         arr[3], arr[7], arr[11], arr[15]
     )
+    // biome-ignore-end format: We would prefer to visualize this as a matrix
 }
 
 export function convertThreeMatrix4ToArray(mat: THREE.Matrix4) {
