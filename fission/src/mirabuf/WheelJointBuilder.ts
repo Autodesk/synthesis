@@ -49,9 +49,8 @@ function removeFromRigidGroups(assembly: mirabuf.Assembly, partGuid: string, oth
  * AABB-based inference (createWheelConstraint / resolveWheelRadii) picks those up automatically once the
  * joint exists. This function only needs to get origin + axis right.
  *
- * Joint.origin is stored in centimetres, Y-up, world-space at the assembly's rest pose (see
- * WheelDetector.ts and URDFConverter.ts positionToYup) -- callers must pass a world-space circle fit
- * captured while the assembly is at that rest pose.
+ * Joint.origin is centimetres, Y-up, ASSEMBLY space (`parser.globalTransforms`) NOT a live scene
+ * matrix, which bakes in the physics body's current world transform.
  */
 export function applyWheelAssignments(assembly: mirabuf.Assembly, assignments: WheelAssignment[]): void {
     const joints = assembly.data?.joints
