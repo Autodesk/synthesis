@@ -336,16 +336,25 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public ensureDefaultZoneTransformations() {
+        let changed = false
+
         if (this.intakePreferences.deltaTransformation.length === 0) {
             this.intakePreferences.deltaTransformation = this.computeCenteredDeltaTransformation(
                 this.intakePreferences.parentNode
             )
+            changed = true
         }
 
         if (this.ejectorPreferences.deltaTransformation.length === 0) {
             this.ejectorPreferences.deltaTransformation = this.computeCenteredDeltaTransformation(
                 this.ejectorPreferences.parentNode
             )
+            changed = true
+        }
+
+        if (changed) {
+            PreferencesSystem.setRobotPreferences(this.assemblyName, this.robotPreferences)
+            PreferencesSystem.savePreferences()
         }
     }
 
