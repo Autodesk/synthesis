@@ -50,7 +50,7 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =
         const onCancel = () => openModal(RoboRIOModal, undefined, modal)
 
         configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
-    }, [brain, selectedDevice, selectedStimulus, openModal, modal, configureScreen])
+    }, [brain, selectedDevice, selectedStimulus, openModal, modal])
 
     return (
         <>

@@ -28,17 +28,8 @@ const mockSceneRenderer = {
     scene: { add: vi.fn(), remove: vi.fn() },
     registerSceneObject: vi.fn(),
     removeSceneObject: vi.fn(),
-    createSphere: vi.fn(() => ({
-        material: {},
-        geometry: {},
-        position: {},
-        rotation: {},
-    })),
-    currentCameraControls: {
-        focusProvider: undefined,
-        controlsType: "Target",
-        locked: false,
-    },
+    createSphere: vi.fn(() => ({ material: {}, geometry: {}, position: {}, rotation: {} })),
+    currentCameraControls: { focusProvider: undefined, controlsType: "Target", locked: false },
     worldToPixelSpace: vi.fn(() => [0, 0]),
     createToonMaterial: vi.fn(() => ({ color: 0x123456 })),
     setupMaterial: vi.fn(),
@@ -69,25 +60,11 @@ vi.mock("@/systems/World", () => ({
 vi.mock("@/systems/preferences/PreferencesSystem", () => ({
     default: {
         getRobotPreferences: vi.fn(() => ({
-            intake: {
-                deltaTransformation: [1],
-                zoneDiameter: 1,
-                parentNode: "n",
-                showZoneAlways: false,
-                maxPieces: 1,
-            },
-            ejector: {
-                deltaTransformation: [1],
-                ejectorVelocity: 1,
-                parentNode: "n",
-                ejectOrder: "FIFO",
-            },
+            intake: { deltaTransformation: [1], zoneDiameter: 1, parentNode: "n", showZoneAlways: false, maxPieces: 1 },
+            ejector: { deltaTransformation: [1], ejectorVelocity: 1, parentNode: "n", ejectOrder: "FIFO" },
             simConfig: undefined,
         })),
-        getFieldPreferences: vi.fn(() => ({
-            defaultSpawnLocation: [0, 1, 0],
-            scoringZones: [],
-        })),
+        getFieldPreferences: vi.fn(() => ({ defaultSpawnLocation: [0, 1, 0], scoringZones: [] })),
         getGlobalPreference: vi.fn(() => false),
         addPreferenceEventListener: vi.fn(() => () => {}),
         setRobotPreferences: vi.fn(),
@@ -100,10 +77,7 @@ vi.mock("@/ui/components/SceneOverlayEvents", () => ({
 }))
 
 vi.mock("@/systems/simulation/synthesis_brain/SynthesisBrain", () => ({
-    default: vi.fn(() => ({
-        inputSchemeName: "TestScheme",
-        clearControls: vi.fn(),
-    })),
+    default: vi.fn(() => ({ inputSchemeName: "TestScheme", clearControls: vi.fn() })),
 }))
 
 vi.mock("@/systems/simulation/wpilib_brain/WPILibBrain", () => ({
@@ -136,16 +110,7 @@ function mockMirabufInstance(): MirabufInstance {
             assembly: { dynamic: true, info: { name: "TestAssembly" } },
             rootNode: "root",
             rigidNodes: new Map([
-                [
-                    "root",
-                    {
-                        id: "root",
-                        parts: new Set(),
-                        isDynamic: true,
-                        isGamePiece: false,
-                        mass: 1,
-                    },
-                ],
+                ["root", { id: "root", parts: new Set(), isDynamic: true, isGamePiece: false, mass: 1 }],
             ]),
             globalTransforms: new Map(),
         },

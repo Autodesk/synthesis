@@ -138,7 +138,7 @@ const WSViewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "WS View Panel" }, {})
-    }, [configureScreen, panel])
+    }, [])
 
     return (
         <Stack>

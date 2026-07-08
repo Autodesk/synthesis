@@ -240,9 +240,7 @@ class MirabufCachingService {
                 // await this.remove(cached.hash)
             }
 
-            if (cached) {
-                return cached
-            }
+            if (cached) return cached
 
             globalAddToast("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
 

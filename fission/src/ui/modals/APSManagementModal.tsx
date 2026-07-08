@@ -15,7 +15,7 @@ const APSManagementModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => 
         }
 
         configureScreen(modal!, { title: userInfo?.name ?? "Not signed in", acceptText: "Logout" }, { onBeforeAccept })
-    }, [modal, userInfo?.name, configureScreen])
+    }, [modal, userInfo?.name])
 
     return (
         <Stack spacing={10} direction="row">

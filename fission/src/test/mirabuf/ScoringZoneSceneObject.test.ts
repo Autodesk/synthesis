@@ -11,8 +11,7 @@ const mockPhysicsSystem = {
     destroyBodyIds: vi.fn(),
     setBodyPosition: vi.fn(),
     setBodyRotation: vi.fn(),
-    // This cast is fine as long as we regularly update createBodyMock() to include new methods we call on bodies in functions we're testing
-    getBody: vi.fn(() => createBodyMock() as unknown as Jolt.Body),
+    getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
     getBodyAssociation: vi.fn(),
     disablePhysicsForBody: vi.fn(),
     enablePhysicsForBody: vi.fn(),

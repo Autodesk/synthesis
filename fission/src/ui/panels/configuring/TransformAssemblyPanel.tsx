@@ -22,7 +22,7 @@ const TransformAssemblyPanel: React.FC<PanelImplProps<void, void>> = ({ panel })
 
     useEffect(() => {
         configureScreen(panel!, { title: "Assembly Setup", hideAccept: true, cancelText: "Close" }, {})
-    }, [configureScreen, panel])
+    }, [])
 
     return (
         <Stack gap={2}>

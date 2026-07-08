@@ -186,6 +186,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
                 onClick={checked => {
                     writePreference("RenderScoreboard", checked)
                     if (checked) {
+                        // TODO: figure out scoreboard - I think it should be its own component and not a panel
                         // openPanel("scoreboard");
                     }
                 }}

@@ -2,8 +2,8 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufParser from "@/mirabuf/MirabufParser"
-import type { RigidNodeId } from "@/mirabuf/MirabufParser.ts"
-import type { mirabuf } from "@/proto/mirabuf"
+import type { RigidNodeId } from "../../mirabuf/MirabufParser"
+import type { mirabuf } from "../../proto/mirabuf"
 import Mechanism, { type MechanismConstraint } from "../../systems/physics/Mechanism"
 import PhysicsSystem, { type LayerReserve } from "../../systems/physics/PhysicsSystem"
 
@@ -302,7 +302,7 @@ describe("Mirabuf Mechanism Creation", () => {
         expect(mechanism.constraints.length).toBe(12)
     })
 
-    test("Body Loading (Multi-Joint Robot)", async () => {
+    test("Body Loading (Mutli-Joint Robot)", async () => {
         const assembly = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT

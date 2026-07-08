@@ -66,8 +66,8 @@ class SceneRenderer extends WorldSystem {
         getAll: () => this.filterSceneObjects(obj => obj instanceof MirabufSceneObject),
         findWhere: (predicate: (obj: MirabufSceneObject) => boolean) =>
             this.mirabufSceneObjects.getAll().find(predicate),
-        getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType === MiraType.FIELD),
-        getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType === MiraType.ROBOT),
+        getField: () => this.mirabufSceneObjects.findWhere(obj => obj.miraType == MiraType.FIELD),
+        getRobots: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType == MiraType.ROBOT),
         getPieces: () => this.mirabufSceneObjects.getAll().filter(obj => obj.miraType === MiraType.PIECE),
     } as const
 

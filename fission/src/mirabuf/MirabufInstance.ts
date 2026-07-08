@@ -231,8 +231,9 @@ class MirabufInstance {
             batchedMesh.castShadow = true
             batchedMesh.receiveShadow = true
 
-            materialBodyMap.forEach(([body, instances]) => {
-                instances.forEach(instance => {
+            materialBodyMap.forEach(instances => {
+                const body = instances[0]
+                instances[1].forEach(instance => {
                     const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!
 
                     const geometry = new THREE.BufferGeometry()

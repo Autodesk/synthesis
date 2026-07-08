@@ -701,6 +701,15 @@ class PhysicsSystem extends WorldSystem {
         const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint)
         this._joltPhysSystem.AddStepListener(listener)
 
+        // const callbacks = new JOLT.VehicleConstraintCallbacksJS()
+        // callbacks.GetCombinedFriction = (_wheelIndex, _tireFrictionDirection, tireFriction, _body2Ptr, _subShapeID2) => {
+        //     return tireFriction
+        // }
+        // callbacks.OnPreStepCallback = (_vehicle, _stepContext) => { };
+        // callbacks.OnPostCollideCallback = (_vehicle, _stepContext) => { };
+        // callbacks.OnPostStepCallback = (_vehicle, _stepContext) => { };
+        // callbacks.SetVehicleConstraint(vehicleConstraint)
+
         this._joltPhysSystem.AddConstraint(vehicleConstraint)
         this._joltPhysSystem.AddConstraint(fixedConstraint)
 
@@ -889,7 +898,7 @@ class PhysicsSystem extends WorldSystem {
                 if (partInstance.skipCollider) return [undefined, undefined]
 
                 const partDefinition =
-                    parser.assembly.data!.parts!.partDefinitions![partInstance?.partDefinitionReference]
+                    parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
 
                 const debugLabel = {
                     rn: rn.id,
@@ -977,9 +986,7 @@ class PhysicsSystem extends WorldSystem {
                     frictionAccum.push(frictionPairing)
                 }
 
-                if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) {
-                    return
-                }
+                if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
 
                 const mass = partDefinition.massOverride
                     ? partDefinition.massOverride!

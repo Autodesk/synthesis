@@ -51,7 +51,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) 
         }
 
         configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
-    }, [brain, name, checkedPorts, checkedDrivers, openModal, modal, configureScreen])
+    }, [brain, name, checkedPorts, checkedDrivers, openModal, modal])
 
     return (
         <>

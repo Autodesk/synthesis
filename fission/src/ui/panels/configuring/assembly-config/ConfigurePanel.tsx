@@ -333,7 +333,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedAssembly, pendingDeletes, configureScreen, panel])
+    }, [selectedAssembly, pendingDeletes])
 
     const modes = useMemo(() => {
         switch (configurationType) {

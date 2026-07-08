@@ -64,7 +64,7 @@ const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
             lastUpdate: Date.now(),
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [handle.progress, progressData.currentValue])
+    }, [handle.progress])
 
     return (
         <Box

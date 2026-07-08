@@ -95,7 +95,7 @@ const PokerPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "The Poker", hideAccept: true, cancelText: "Close" }, {})
-    }, [configureScreen, panel])
+    }, [])
 
     return (
         <Stack>

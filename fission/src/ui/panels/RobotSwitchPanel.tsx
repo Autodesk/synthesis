@@ -14,7 +14,7 @@ const RobotSwitchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "MultiBot" }, {})
-    }, [configureScreen, panel])
+    }, [])
 
     return (
         <>

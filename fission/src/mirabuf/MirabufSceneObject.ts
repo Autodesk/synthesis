@@ -324,7 +324,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._basePositionTransform = this.getPositionTransform()
 
         this.moveToSpawnLocation()
-        // }
 
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
 
@@ -693,7 +692,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public setEjectable(bodyId?: Jolt.BodyID): boolean {
-        // 1) still require you’ve configured an ejector
         if (!bodyId) {
             return false
         }

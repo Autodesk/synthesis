@@ -41,39 +41,6 @@ function shallowEqualProps(a: unknown, b: unknown): boolean {
     return aKeys.every(k => a[k] === b[k])
 }
 
-const DEFAULT_PROPS = {
-    hideAccept: false,
-    hideCancel: false,
-    acceptText: "Accept",
-    cancelText: "Cancel",
-} as UIScreenProps<any>
-
-const DEFAULT_MODAL_PROPS = {
-    ...DEFAULT_PROPS,
-    allowClickAway: true,
-}
-
-const DEFAULT_PANEL_PROPS = {
-    ...DEFAULT_PROPS,
-    position: "right",
-} as PanelProps<any>
-
-function closeCallbacks<T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) {
-    elem.onClose?.(closeType)
-    switch (closeType) {
-        case CloseType.Accept: {
-            const beforeAcceptResult = elem.onBeforeAccept?.()
-            elem.onAccept?.(beforeAcceptResult)
-            break
-        }
-        case CloseType.Cancel:
-            elem.onCancel?.()
-            break
-        default:
-            break
-    }
-}
-
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
@@ -82,6 +49,23 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [_, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+    const DEFAULT_PROPS = {
+        hideAccept: false,
+        hideCancel: false,
+        acceptText: "Accept",
+        cancelText: "Cancel",
+    } as UIScreenProps<any>
+
+    const DEFAULT_MODAL_PROPS = {
+        ...DEFAULT_PROPS,
+        allowClickAway: true,
+    }
+
+    const DEFAULT_PANEL_PROPS = {
+        ...DEFAULT_PROPS,
+        position: "right",
+    } as PanelProps<any>
 
     InputSystem.escapeKeyListeners[1] = () => {
         if (modal != null) {
@@ -229,6 +213,22 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         [panels]
     )
 
+    const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
+        elem.onClose?.(closeType)
+        switch (closeType) {
+            case CloseType.Accept: {
+                const beforeAcceptResult = elem.onBeforeAccept?.()
+                elem.onAccept?.(beforeAcceptResult)
+                break
+            }
+            case CloseType.Cancel:
+                elem.onCancel?.()
+                break
+            default:
+                break
+        }
+    }
+
     const closeModal = useCallback(
         <T, P>(closeType: CloseType) => {
             if (modal) closeCallbacks<T, P>(modal as Modal<T, P>, closeType)
@@ -252,7 +252,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 <CloseIcon />
             </IconButton>
         ),
-        [closeSnackbar]
+        []
     )
 
     const addToast = useCallback(
@@ -273,7 +273,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 { variant, action: snackbarAction }
             )
         },
-        [enqueueSnackbar, snackbarAction]
+        [enqueueSnackbar]
     )
 
     const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {

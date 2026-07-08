@@ -10,8 +10,9 @@ const DriverStationPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const [enabled, setEnabled] = useState(false)
 
     useEffect(() => {
+        // TODO: update Not Connected dynamically when implemented
         configureScreen(panel!, { title: "Driver Station (Not Connected)" }, {})
-    }, [configureScreen, panel])
+    }, [])
 
     return (
         <Stack direction="row">
