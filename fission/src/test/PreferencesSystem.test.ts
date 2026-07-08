@@ -72,6 +72,18 @@ describe("Preferences System Global Values", () => {
         expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(true)
     })
 
+    test("Onboarding tour flag defaults to false and persists", () => {
+        // First-visit detection relies on this defaulting to false for a fresh browser.
+        PreferencesSystem.clearPreferences()
+        expect(PreferencesSystem.getGlobalPreference("HasSeenOnboardingTour")).toBe(false)
+
+        PreferencesSystem.setGlobalPreference("HasSeenOnboardingTour", true)
+        PreferencesSystem.savePreferences()
+        PreferencesSystem.loadPreferences()
+
+        expect(PreferencesSystem.getGlobalPreference("HasSeenOnboardingTour")).toBe(true)
+    })
+
     test("Graphics preferences", () => {
         PreferencesSystem.getGraphicsPreferences()
 
