@@ -1,5 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
@@ -16,6 +16,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import { Button, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
@@ -100,6 +101,7 @@ interface ConfigPickupProps {
 }
 
 const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ selectedRobot }) => {
+    const showZoneRef = useTourAnchor("intake-show-zone")
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
@@ -286,7 +288,13 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             />
 
             {/* Checkbox for showing intake zone indicator at all times */}
-            <Checkbox label="Show intake zone indicator always" checked={showZoneAlways} onClick={setShowZoneAlways} />
+            <Box ref={showZoneRef}>
+                <Checkbox
+                    label="Show intake zone indicator always"
+                    checked={showZoneAlways}
+                    onClick={setShowZoneAlways}
+                />
+            </Box>
             {gizmoComponent}
             {Spacer(10)}
             <Button

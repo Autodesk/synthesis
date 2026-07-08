@@ -28,6 +28,7 @@ import {
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
 import {
@@ -171,6 +172,7 @@ interface ImportMirabufPanelCustomProps {
 const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustomProps>> = ({ panel, parent }) => {
     const { addToast, closePanel, openModal, configureScreen } = useUIContext()
     const { unconfirmedImport } = useStateContext()
+    const spawnPanelRef = useTourAnchor("spawn-panel")
 
     const { configurationType } = panel!.props.custom
 
@@ -424,7 +426,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         setViewType(configTypeToMiraType(configurationType) ?? MiraType.ROBOT)
     }, [configurationType])
     return (
-        <Stack direction="column" gap={2} className="overflow-y-auto">
+        <Stack direction="column" gap={2} className="overflow-y-auto" ref={spawnPanelRef}>
             <Tabs
                 value={viewType}
                 onChange={(_, newValue) => setViewType(newValue)}

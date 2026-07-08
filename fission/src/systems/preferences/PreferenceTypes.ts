@@ -28,6 +28,7 @@ export type GlobalPreferences = {
     ShowCenterOfMassIndicators: boolean
     MultiplayerUsername: string
     MultiplayerClientID: string
+    HasSeenOnboardingTour: boolean
 }
 
 export type GlobalPreference = keyof GlobalPreferences
@@ -70,6 +71,7 @@ export const defaultGlobalPreferences: GlobalPreferences = {
     ShowCenterOfMassIndicators: false,
     MultiplayerClientID: "",
     MultiplayerUsername: "",
+    HasSeenOnboardingTour: false,
 }
 
 export type GraphicsPreferences = {
