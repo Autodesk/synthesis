@@ -399,7 +399,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         JOLT.destroy(yUnitVec)
-        JOLT.destroy(identityRot)
         JOLT.destroy(blankVec)
         this.updateMeshTransforms()
     }
