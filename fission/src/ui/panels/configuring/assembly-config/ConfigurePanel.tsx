@@ -258,7 +258,9 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         if (selectedAssembly) {
             const name = selectedAssembly.assemblyName
 
-            const robotPrefs = PreferencesSystem.getRobotPreferences(name)
+            selectedAssembly.ensureDefaultZoneTransformations()
+
+            const robotPrefs = selectedAssembly.robotPreferences
             const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
             const motorPrefs = PreferencesSystem.getMotorPreferences(name)
 

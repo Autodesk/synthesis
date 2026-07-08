@@ -335,7 +335,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this.computeBoundingBox().getCenter(vec)
     }
 
-    private centerDefaultZoneTransformations() {
+    public ensureDefaultZoneTransformations() {
         if (this.intakePreferences.deltaTransformation.length === 0) {
             this.intakePreferences.deltaTransformation = this.computeCenteredDeltaTransformation(
                 this.intakePreferences.parentNode
@@ -347,6 +347,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 this.ejectorPreferences.parentNode
             )
         }
+    }
+
+    private centerDefaultZoneTransformations() {
+        this.ensureDefaultZoneTransformations()
     }
     private computeCenteredDeltaTransformation(parentNode: string | undefined): number[] {
         const nodeBodyId =
@@ -906,6 +910,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // Ensure backwards compatibility for showZoneAlways field
         this._robotPreferences.intake.showZoneAlways ??= false
+
+        if (this.miraType === MiraType.ROBOT) {
+            this.centerDefaultZoneTransformations()
+        }
 
         setTimeout(() => this.sendPreferences())
 
