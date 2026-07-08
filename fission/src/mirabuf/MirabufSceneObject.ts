@@ -48,6 +48,7 @@ import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import CameraPreviewPanel from "@/ui/panels/simulation/CameraPreviewPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -1119,6 +1120,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             data.items.push({
                 name: "Auto Testing",
                 screen: AutoTestPanel,
+                type: "panel",
+            })
+        }
+
+        if (this.miraType === MiraType.ROBOT && this._cameras.length > 0) {
+            data.items.push({
+                name: "Camera Preview",
+                screen: CameraPreviewPanel,
                 type: "panel",
             })
         }

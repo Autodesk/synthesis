@@ -25,6 +25,8 @@ public class Camera {
     private final String m_deviceName;
     private final CameraFrameServer m_frameServer;
 
+    private byte[] m_lastFrame;
+
     public Camera(String name, int deviceId, int width, int height, int fps) {
         m_device = SimDevice.create("Camera:" + name, deviceId);
 
@@ -64,9 +66,11 @@ public class Camera {
         if (m_frameServer == null) return false;
 
         byte[] bytes = m_frameServer.getFrame(m_deviceName);
-        if (bytes == null || bytes.length == 0) {
+        // check bytes ref against m_lastFrame, only republish if new frame
+        if (bytes == null || bytes.length == 0 || bytes == m_lastFrame) {
             return false;
         }
+        m_lastFrame = bytes;
 
         MatOfByte buffer = new MatOfByte(bytes);
         Mat decoded = Imgcodecs.imdecode(buffer, Imgcodecs.IMREAD_COLOR);

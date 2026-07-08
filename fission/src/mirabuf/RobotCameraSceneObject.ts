@@ -110,15 +110,24 @@ class RobotCameraSceneObject extends SceneObject {
     public update(): void {
         if (!this._parentBodyId || !this._renderTarget || !this._pixelBuffer || !this._imageData) return
 
+        if (World.physicsSystem.isPaused) return
+
         const device = this.deviceName
         const streaming = SimCamera.isPresent(device)
-        // readback below is a synchronous GPU stall; skip unless a frame is consumed, else a
-        // configured camera would freeze the app
+
         if (!streaming && RobotCameraSceneObject.previewConsumers === 0) return
 
-        const reqWidth = SimCamera.getWidth(device, this._prefs.resolutionWidth)
-        const reqHeight = SimCamera.getHeight(device, this._prefs.resolutionHeight)
-        const fps = Math.max(1, Math.min(MAX_FPS, SimCamera.getFps(device, this._prefs.fps)))
+        let reqWidth = this._prefs.resolutionWidth
+        let reqHeight = this._prefs.resolutionHeight
+        let reqFps = this._prefs.fps
+
+        // lets the camera preview panel work without robot code sim running
+        if (streaming) {
+            reqWidth = SimCamera.getWidth(device, reqWidth)
+            reqHeight = SimCamera.getHeight(device, reqHeight)
+            reqFps = SimCamera.getFps(device, reqFps)
+        }
+        const fps = Math.max(1, Math.min(MAX_FPS, reqFps))
         this.resize(reqWidth, reqHeight)
 
         if (this._camera.fov !== this._prefs.fovDegrees) {
@@ -141,9 +150,6 @@ class RobotCameraSceneObject extends SceneObject {
         this._camera.updateMatrixWorld()
 
         const renderer = World.sceneRenderer.renderer
-        // EffectComposer leaves autoClear=false, so clear the depth buffer ourselves or the
-        // view is partially depth-rejected. setRenderTarget already sets the full-size
-        // viewport; setViewport would re-scale by devicePixelRatio and crop the capture
         const prevTarget = renderer.getRenderTarget()
         const prevAutoClear = renderer.autoClear
         try {
@@ -158,8 +164,10 @@ class RobotCameraSceneObject extends SceneObject {
 
             if (streaming && this._frameCanvas) {
                 const dataUrl = this._frameCanvas.toDataURL("image/jpeg", JPEG_QUALITY)
-                const base64 = dataUrl.slice(dataUrl.indexOf(",") + 1)
-                sendCameraFrame(device, base64)
+                const base64 = atob(dataUrl.slice(dataUrl.indexOf(",") + 1))
+                const bytes = new Uint8Array(base64.length)
+                for (let i = 0; i < base64.length; i++) bytes[i] = base64.charCodeAt(i)
+                sendCameraFrame(device, bytes)
             }
         } catch (e) {
             console.error(`Camera capture failed for '${device}'`, e)

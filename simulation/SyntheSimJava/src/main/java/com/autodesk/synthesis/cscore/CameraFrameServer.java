@@ -1,6 +1,9 @@
 package com.autodesk.synthesis.cscore;
 
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,10 +13,9 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 /**
- * Localhost WebSocket server that receives rendered camera frames from Synthesis. Frames
- * can't ride HALSim (SimDevice carries only numbers/booleans), so Synthesis streams them
- * here as {@code "<device>\n<base64-jpeg>"}; the latest frame per device is kept for
- * {@link Camera#grabFrame}.
+ * localhost WebSocket server that receives rendered camera frames from Synthesis. Frames
+ * can't use HALSim, so Synthesis streams them here as binary {@code "<device>\n<jpeg-bytes>"}
+ * messages; the latest frame per device is kept for {@link Camera#grabFrame}.
  */
 public class CameraFrameServer extends WebSocketServer {
 
@@ -42,16 +44,33 @@ public class CameraFrameServer extends WebSocketServer {
     }
 
     @Override
+    public void onMessage(WebSocket conn, ByteBuffer message) {
+        byte[] data = new byte[message.remaining()];
+        message.get(data);
+
+        int idx = -1;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] == '\n') {
+                idx = i;
+                break;
+            }
+        }
+        if (idx < 0) {
+            return;
+        }
+
+        String device = new String(data, 0, idx, StandardCharsets.UTF_8);
+        m_frames.put(device, Arrays.copyOfRange(data, idx + 1, data.length));
+    }
+
+    @Override
     public void onMessage(WebSocket conn, String message) {
         int idx = message.indexOf('\n');
         if (idx < 0) {
             return;
         }
-
-        String device = message.substring(0, idx);
-        String encoded = message.substring(idx + 1);
         try {
-            m_frames.put(device, Base64.getDecoder().decode(encoded));
+            m_frames.put(message.substring(0, idx), Base64.getDecoder().decode(message.substring(idx + 1)));
         } catch (IllegalArgumentException e) {
             // ignore malformed frames
         }

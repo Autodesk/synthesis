@@ -78,6 +78,8 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     backgroundColor: "#2e2e2e",
                     boxShadow: 6,
                     maxHeight: "85vh",
+                    width: props.width,
+                    height: props.height,
                     flexDirection: "column",
                 }}
                 ref={nodeRef}
