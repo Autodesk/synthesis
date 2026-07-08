@@ -1034,6 +1034,7 @@ class PhysicsSystem extends WorldSystem {
         const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
         nonPhysicsNodes.forEach(rn => {
+            // Note: CompoundShapeSubShape.GetPositionCOM() is COM-relative, not assembly-space.
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
 
             let shapesAdded = 0
