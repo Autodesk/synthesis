@@ -8,7 +8,14 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
-import { Button, DeleteButton, EditButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
+import {
+    Button,
+    DeleteButton,
+    EditButton,
+    SynthesisIcons,
+    Select,
+    PositiveButton,
+} from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
 interface SchemeSelectorProps {
@@ -54,8 +61,8 @@ const SchemeSelector: React.FC<SchemeSelectorProps> = ({
                 <Stack direction="row-reverse" gap="0.25rem" justifyContent={"center"} alignItems={"center"}>
                     {/** Select button */}
                     <Box>
-                        <Button
-                            color={conflict ? "error" : "success"}
+                        <PositiveButton
+                            style={conflict ? { filter: "brightness(60%)" } : {}}
                             disabled={disabled}
                             onClick={() => {
                                 InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
@@ -68,7 +75,7 @@ const SchemeSelector: React.FC<SchemeSelectorProps> = ({
                             }}
                         >
                             <SynthesisIcons.SELECT_LARGE />
-                        </Button>
+                        </PositiveButton>
                     </Box>
                     {/** Edit button - same as select but opens the inputs modal */}
                     <EditButton
