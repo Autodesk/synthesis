@@ -125,6 +125,8 @@ export class SynthesisIcons {
     })
 }
 
+// TODO: pass one props object instead of multiple arguments to components
+
 export const Spacer = (heightPx?: number, widthPx?: number) => {
     return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
 }

@@ -82,10 +82,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primar
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                {PositiveIconButton({
-                    children: primaryButtonNode,
-                    onClick: primaryOnClick,
-                })}
+                <PositiveIconButton children={primaryButtonNode} onClick={primaryOnClick} />
                 {secondaryOnClick && DeleteButton(secondaryOnClick)}
             </Stack>
         </Stack>
@@ -279,16 +276,16 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         (items: MirabufCacheInfo[]) => {
             return items
                 .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
-                .map(info =>
-                    ItemCard({
-                        name: info.name || "Unnamed",
-                        id: info.hash,
-                        primaryButtonNode: <SynthesisIcons.ADD_LARGE />,
-                        primaryOnClick: async () => {
+                .map(info => (
+                    <ItemCard
+                        name={info.name || "Unnamed"}
+                        id={info.hash}
+                        primaryButtonNode={<SynthesisIcons.ADD_LARGE />}
+                        primaryOnClick={async () => {
                             console.log(`Selecting cached: ${info.name}`)
                             await selectCache(info)
-                        },
-                        secondaryOnClick: async () => {
+                        }}
+                        secondaryOnClick={async () => {
                             console.log(`Deleting cache of: ${info.name}`)
                             await MirabufCachingService.remove(info.hash)
                             if (info.miraType == MiraType.ROBOT) {
@@ -296,9 +293,9 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                             } else {
                                 setCachedFields(MirabufCachingService.getAll(MiraType.FIELD))
                             }
-                        },
-                    })
-                )
+                        }}
+                    />
+                ))
         },
         [selectCache]
     )
@@ -321,17 +318,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         )
         return remoteRobots
             ?.sort((a, b) => a.name.localeCompare(b.name))
-            .map(item =>
-                ItemCard({
-                    name: item.name,
-                    id: item.hash,
-                    primaryButtonNode: <SynthesisIcons.DOWNLOAD_LARGE />,
-                    primaryOnClick: () => {
+            .map(item => (
+                <ItemCard
+                    name={item.name}
+                    id={item.hash}
+                    primaryButtonNode={<SynthesisIcons.DOWNLOAD_LARGE />}
+                    primaryOnClick={() => {
                         console.log(`Selecting remote: ${item.remotePath}`)
                         selectRemote(item)
-                    },
-                })
-            )
+                    }}
+                />
+            ))
     }, [manifestRobots, cachedRobots, selectRemote])
 
     // Generate Item cards for remote fields.
@@ -406,17 +403,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         () =>
             files
                 ?.sort((a, b) => a.attributes.displayName!.localeCompare(b.attributes.displayName!))
-                .map(file =>
-                    ItemCard({
-                        name: `${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`,
-                        id: file.id,
-                        primaryButtonNode: <SynthesisIcons.DOWNLOAD_LARGE />,
-                        primaryOnClick: () => {
+                .map(file => (
+                    <ItemCard
+                        name={`${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`}
+                        id={file.id}
+                        primaryButtonNode={<SynthesisIcons.DOWNLOAD_LARGE />} 
+                        primaryOnClick={() => {
                             console.debug(file.raw)
                             selectAPS(file, viewType)
-                        },
-                    })
-                ),
+                        }}
+                    />
+                )),
         [files, selectAPS, viewType]
     )
     useEffect(() => {
