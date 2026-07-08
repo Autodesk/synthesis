@@ -6,6 +6,7 @@ import { loadEnv, type ProxyOptions } from "vite"
 import glsl from "vite-plugin-glsl"
 import { defineConfig } from "vitest/config"
 import type { TestRunEndReason } from "vitest/node"
+import { playwright } from "@vitest/browser-playwright"
 
 const basePath = "/fission/"
 const serverPort = 3000
@@ -118,7 +119,7 @@ export default defineConfig(async ({ mode }) => {
                 : ["default"],
             browser: {
                 enabled: true,
-                provider: "playwright",
+                provider: playwright(),
                 instances: [
                     {
                         name: "chromium",
