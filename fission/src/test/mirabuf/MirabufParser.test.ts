@@ -27,11 +27,11 @@ describe("Mirabuf Parser Tests", () => {
      * - 4 wheels (4 revolute joints)
      * - 2 additional revolute joints
      * - 2 slider joints
-     * Mira File: https://synthesis.autodesk.com/api/mira/private/Multi-Joint_Wheels_v0.mira
+     * Mira File: https://synthesis.autodesk.com/api/mira/private/Multi-Joint Wheels v0.mira
      */
     test("Generate Rigid Nodes (Multi-Joint Wheels)", async () => {
         const spikeMira = await MirabufCachingService.cacheRemote(
-            "/api/mira/private/Multi-Joint_Wheels_v0.mira",
+            "/api/mira/private/Multi-Joint Wheels v0.mira",
             MiraType.ROBOT
         ).then(x => MirabufCachingService.get(x!.hash))
 

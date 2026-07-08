@@ -197,7 +197,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get assemblyId() {
-        console.log(this.mirabufInstance.parser.assembly.info)
         return this.mirabufInstance.parser.assemblyId
     }
 
