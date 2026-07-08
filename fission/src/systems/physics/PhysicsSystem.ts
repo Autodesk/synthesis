@@ -27,6 +27,7 @@ import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import {
+    alignWheelCenterToChassisSupportPlane,
     inferURDFAutoWheelBasis,
     inferWheelDimensionsFromAxle,
     inferWheelRadius,
@@ -470,14 +471,7 @@ class PhysicsSystem extends WorldSystem {
                         addConstraint(res[1])
                         listener = res[2]
 
-                        const wheelBounds = bodyTwo.GetWorldSpaceBounds()
-                        const mainBounds = bodyOne.GetWorldSpaceBounds()
-                        const wheelRadiusUsed = res[1].GetWheel(0).GetSettings().mRadius
-                        console.debug(
-                            `[PhysicsSystem] createWheelConstraint OK for '${jointInst.info!.name!}' (${jointGuid}): ` +
-                                `radius=${wheelRadiusUsed.toFixed(4)} wheelBodyBottomY=${wheelBounds.mMin.GetY().toFixed(4)} ` +
-                                `mainBodyBottomY=${mainBounds.mMin.GetY().toFixed(4)}`
-                        )
+                        this.logWheelConstraintDiagnostics(jointGuid, jointInst, jDef, bodyOne, bodyTwo, res[1])
 
                         break
                     }
@@ -727,6 +721,54 @@ class PhysicsSystem extends WorldSystem {
         return radii
     }
 
+    /**
+     * Dumps everything that differs between the "native" and "URDF auto-wheel" branches of
+     * createWheelConstraint, plus the actual runtime placement of the bodies/wheel, so a native-mira
+     * robot and a URDF-reconstructed one can be diffed side by side to find why one drives and the other
+     * never registers ground contact. Bounds-based logging was dropped here because
+     * Body.GetWorldSpaceBounds() reads back (0,0,0) for both wheel and main body at this point in loading
+     * (bodies aren't added to the broadphase yet) -- GetPosition() and the vehicle's own wheel-world
+     * transform are queried instead, since those reflect the body's actual placement regardless of
+     * broadphase state.
+     */
+    private logWheelConstraintDiagnostics(
+        jointGuid: string,
+        jointInstance: mirabuf.joint.JointInstance,
+        jointDefinition: mirabuf.joint.Joint,
+        bodyMain: Jolt.Body,
+        bodyWheel: Jolt.Body,
+        vehicleConstraint: Jolt.VehicleConstraint
+    ): void {
+        const wheel = vehicleConstraint.GetWheel(0)
+        const settings = wheel.GetSettings()
+
+        const forwardIn = new JOLT.Vec3(1, 0, 0)
+        const upIn = new JOLT.Vec3(0, 1, 0)
+        const wheelWorldTranslation = vehicleConstraint.GetWheelWorldTransform(0, forwardIn, upIn).GetTranslation()
+        JOLT.destroy(forwardIn)
+        JOLT.destroy(upIn)
+
+        const mainPos = bodyMain.GetPosition()
+        const wheelBodyPos = bodyWheel.GetPosition()
+
+        const v3 = (x: number, y: number, z: number) => `(${x.toFixed(4)}, ${y.toFixed(4)}, ${z.toFixed(4)})`
+
+        console.debug(
+            `[PhysicsSystem] createWheelConstraint OK for '${jointInstance.info!.name!}' (${jointGuid}): ` +
+                `urdfAutoWheel=${isURDFWheel(jointDefinition)} ` +
+                `radius=${settings.mRadius.toFixed(4)} width=${settings.mWidth.toFixed(4)} ` +
+                `suspMin=${settings.mSuspensionMinLength.toFixed(6)} suspMax=${settings.mSuspensionMaxLength.toFixed(6)} ` +
+                `localWheelPos=${v3(settings.mPosition.GetX(), settings.mPosition.GetY(), settings.mPosition.GetZ())} ` +
+                `wheelForward=${v3(settings.mWheelForward.GetX(), settings.mWheelForward.GetY(), settings.mWheelForward.GetZ())} ` +
+                `wheelUp=${v3(settings.mWheelUp.GetX(), settings.mWheelUp.GetY(), settings.mWheelUp.GetZ())} ` +
+                `suspensionDirection=${v3(settings.mSuspensionDirection.GetX(), settings.mSuspensionDirection.GetY(), settings.mSuspensionDirection.GetZ())} ` +
+                `steeringAxis=${v3(settings.mSteeringAxis.GetX(), settings.mSteeringAxis.GetY(), settings.mSteeringAxis.GetZ())} ` +
+                `mainBodyWorldPos=${v3(mainPos.GetX(), mainPos.GetY(), mainPos.GetZ())} ` +
+                `wheelBodyWorldPos=${v3(wheelBodyPos.GetX(), wheelBodyPos.GetY(), wheelBodyPos.GetZ())} ` +
+                `wheelRaycastWorldPos=${v3(wheelWorldTranslation.GetX(), wheelWorldTranslation.GetY(), wheelWorldTranslation.GetZ())}`
+        )
+    }
+
     public createWheelConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
@@ -779,11 +821,24 @@ class PhysicsSystem extends WorldSystem {
 
         const wheelSettings = new JOLT.WheelSettingsWV()
 
+        const simulatedRadius = wheelDimensions.radius * 1.05
+        if (urdfWheelBasis) {
+            const chassisMinY = bodyMain.GetShape().GetLocalBounds().mMin.GetY()
+            const alignedY = alignWheelCenterToChassisSupportPlane(wheelPos.GetY(), simulatedRadius, chassisMinY)
+            if (alignedY < wheelPos.GetY()) {
+                console.debug(
+                    `[PhysicsSystem] Lowering reconstructed wheel '${jointInstance.info!.name!}' by ` +
+                        `${(wheelPos.GetY() - alignedY).toFixed(4)}m so its tire reaches the chassis support plane`
+                )
+                wheelPos.SetY(alignedY)
+            }
+        }
+
         wheelSettings.mPosition = wheelPos
 
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
-        wheelSettings.mRadius = wheelDimensions.radius * 1.05
+        wheelSettings.mRadius = simulatedRadius
         wheelSettings.mWidth = wheelDimensions.width
         wheelSettings.mSuspensionMinLength = wheelDimensions.radius * SUSPENSION_MIN_FACTOR
         wheelSettings.mSuspensionMaxLength = wheelDimensions.radius * SUSPENSION_MAX_FACTOR

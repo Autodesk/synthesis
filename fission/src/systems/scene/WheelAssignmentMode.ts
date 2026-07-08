@@ -6,7 +6,12 @@ import { mirabuf } from "@/proto/mirabuf"
 import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { dumpAssemblyStructure } from "@/util/DebugAssemblyDump"
-import { computeWheelAxisFromAABB, transformWheelAxis, type WheelAxis } from "@/util/geometry/WheelAxisFit"
+import {
+    computeWheelAxisFromAABB,
+    computeWheelAxisFromCircleFit,
+    transformWheelAxis,
+    type WheelAxis,
+} from "@/util/geometry/WheelAxisFit"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
@@ -208,13 +213,16 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        const localAxisFit = computeWheelAxisFromAABB(points)
+        const localAxisFit = computeWheelAxisFromCircleFit(points) ?? computeWheelAxisFromAABB(points)
         if (!localAxisFit) {
             globalAddToast("warning", "Wheel Assignment", "Couldn't derive a wheel axis from this part's geometry.")
             return
         }
+        const baseline = computeWheelAxisFromAABB(points)
         console.debug(
-            `[WheelAssignmentMode] guid=${pick.guid} -- axis=(${localAxisFit.axis.x.toFixed(3)}, ${localAxisFit.axis.y.toFixed(3)}, ${localAxisFit.axis.z.toFixed(3)})`
+            `[WheelAssignmentMode] guid=${pick.guid} -- axis=(${localAxisFit.axis.x.toFixed(3)}, ${localAxisFit.axis.y.toFixed(3)}, ${localAxisFit.axis.z.toFixed(3)}) ` +
+                `center=(${localAxisFit.center.x.toFixed(4)}, ${localAxisFit.center.y.toFixed(4)}, ${localAxisFit.center.z.toFixed(4)}) ` +
+                `[AABB-baseline center=(${baseline?.center.x.toFixed(4)}, ${baseline?.center.y.toFixed(4)}, ${baseline?.center.z.toFixed(4)})]`
         )
 
         const matrixWorld = getInstanceWorldMatrix(pick.object, pick.instanceId)
