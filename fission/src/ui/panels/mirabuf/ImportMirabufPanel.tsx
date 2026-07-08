@@ -283,7 +283,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     ItemCard({
                         name: info.name || "Unnamed",
                         id: info.hash,
-                        primaryButtonNode: SynthesisIcons.ADD_LARGE,
+                        primaryButtonNode: <SynthesisIcons.ADD_LARGE />,
                         primaryOnClick: async () => {
                             console.log(`Selecting cached: ${info.name}`)
                             await selectCache(info)
@@ -325,7 +325,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 ItemCard({
                     name: item.name,
                     id: item.hash,
-                    primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
+                    primaryButtonNode: <SynthesisIcons.DOWNLOAD_LARGE />,
                     primaryOnClick: () => {
                         console.log(`Selecting remote: ${item.remotePath}`)
                         selectRemote(item)
@@ -345,7 +345,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 ItemCard({
                     name: asset.name,
                     id: asset.hash,
-                    primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
+                    primaryButtonNode: <SynthesisIcons.DOWNLOAD_LARGE />,
                     primaryOnClick: () => {
                         console.log(`Selecting remote: ${asset.remotePath}`)
                         selectRemote(asset)
@@ -410,7 +410,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     ItemCard({
                         name: `${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`,
                         id: file.id,
-                        primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
+                        primaryButtonNode: <SynthesisIcons.DOWNLOAD_LARGE />,
                         primaryOnClick: () => {
                             console.debug(file.raw)
                             selectAPS(file, viewType)
@@ -436,7 +436,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 <Tab key="fields" value={MiraType.FIELD} label="FIELDS" />
             </Tabs>
             <Accordion defaultExpanded>
-                <AccordionSummary expandIcon={SynthesisIcons.EXPAND_MORE_LARGE}>
+                <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
                     {viewType === MiraType.ROBOT ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedRobotElements
@@ -466,7 +466,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 </AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary expandIcon={SynthesisIcons.EXPAND_MORE_LARGE}>
+                <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
                     <Stack
                         direction="row"
                         key={`remote-label-container`}
@@ -504,7 +504,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 </AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary expandIcon={SynthesisIcons.EXPAND_MORE_LARGE}>
+                <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
                     {viewType === MiraType.ROBOT ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteRobotElements

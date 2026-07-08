@@ -491,7 +491,7 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
             <ColorEditor label="Blue Alliance" color={tempBlue} setColor={setTempBlue} />
             <ColorEditor label="Red Alliance" color={tempRed} setColor={setTempRed} />
             <Button
-                startIcon={SynthesisIcons.DICE}
+                startIcon={<SynthesisIcons.DICE />}
                 onClick={() => {
                     setTempPrimary(randomColor())
                     setTempSecondary(randomColor())

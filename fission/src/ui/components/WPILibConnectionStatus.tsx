@@ -24,9 +24,9 @@ const WPILibConnectionStatus: React.FC = () => {
             className="select-none absolute right-1 top-1 py-2 px-4 rounded-lg gap-2"
         >
             {status ? (
-                <span className="text-green-500 self-center">{SynthesisIcons.CHECK}</span>
+                <SynthesisIcons.CHECK className="text-green-500 self-center" />
             ) : (
-                <span className="text-cancel-button self-center">{SynthesisIcons.XMARK}</span>
+                <SynthesisIcons.XMARK className="text-cancel-button self-center" />
             )}
             <Label size="sm">Code Connection</Label>
         </Stack>

@@ -131,7 +131,7 @@ const MainHUD: React.FC = () => {
                                     },
                                 }}
                             >
-                                {SynthesisIcons.OPEN_HUD_ICON}
+                                <SynthesisIcons.OPEN_HUD_ICON />
                             </IconButton>
                         </Stack>
                     </Box>
@@ -174,11 +174,11 @@ const MainHUD: React.FC = () => {
                         }}
                         onClick={() => setIsOpen(false)}
                     >
-                        {SynthesisIcons.XMARK_LARGE_HUD}
+                        <SynthesisIcons.XMARK_LARGE_HUD />
                     </IconButton>
                 </div>
                 <MainHUDButton
-                    startIcon={SynthesisIcons.ADD}
+                    startIcon={<SynthesisIcons.ADD />}
                     size="large"
                     onClick={() =>
                         openPanel(ImportMirabufPanel, {
@@ -189,11 +189,11 @@ const MainHUD: React.FC = () => {
                     Spawn Asset
                 </MainHUDButton>
                 <ButtonGroup orientation="vertical" variant="contained">
-                    <MainHUDButton startIcon={SynthesisIcons.WRENCH} onClick={() => openPanel(ConfigurePanel, {})}>
+                    <MainHUDButton startIcon={<SynthesisIcons.WRENCH />} onClick={() => openPanel(ConfigurePanel, {})}>
                         Configure Assets
                     </MainHUDButton>
                     <MainHUDButton
-                        startIcon={SynthesisIcons.GEAR}
+                        startIcon={<SynthesisIcons.GEAR />}
                         onClick={() =>
                             openModal(SettingsModal, undefined, undefined, {
                                 allowClickAway: false,
@@ -203,19 +203,19 @@ const MainHUD: React.FC = () => {
                         General Settings
                     </MainHUDButton>
                     <MainHUDButton
-                        startIcon={SynthesisIcons.CAMERA}
+                        startIcon={<SynthesisIcons.CAMERA />}
                         onClick={() => openPanel(CameraSelectionPanel, undefined)}
                     >
                         Configure Camera
                     </MainHUDButton>
                     <MainHUDButton
-                        startIcon={SynthesisIcons.CODE_SQUARE}
+                        startIcon={<SynthesisIcons.CODE_SQUARE />}
                         onClick={() => openPanel(DeveloperToolPanel, undefined)}
                     >
                         Developer Tool
                     </MainHUDButton>
                     <MainHUDButton
-                        startIcon={SynthesisIcons.BUG}
+                        startIcon={<SynthesisIcons.BUG />}
                         onClick={() => {
                             openPanel(DebugPanel, undefined)
                         }}
@@ -224,7 +224,7 @@ const MainHUD: React.FC = () => {
                     </MainHUDButton>
                     {touchCompatibility && (
                         <MainHUDButton
-                            startIcon={SynthesisIcons.GAMEPAD}
+                            startIcon={<SynthesisIcons.GAMEPAD />}
                             onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
                         >
                             Touch Controls
@@ -238,13 +238,17 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal(APSManagementModal, undefined)}
                     >{`Hi, ${userInfo.givenName}`}</MainHUDButton>
                 ) : (
-                    <MainHUDButton startIcon={SynthesisIcons.PEOPLE} onClick={() => APS.requestAuthCode()} size="large">
+                    <MainHUDButton
+                        startIcon={<SynthesisIcons.PEOPLE />}
+                        onClick={() => APS.requestAuthCode()}
+                        size="large"
+                    >
                         APS Login
                     </MainHUDButton>
                 )}
                 {!matchModeRunning ? (
                     <MainHUDButton
-                        startIcon={SynthesisIcons.GAMEPAD}
+                        startIcon={<SynthesisIcons.GAMEPAD />}
                         size="large"
                         onClick={() => {
                             openPanel(MatchModeConfigPanel, undefined)
@@ -255,7 +259,7 @@ const MainHUD: React.FC = () => {
                     </MainHUDButton>
                 ) : (
                     <MainHUDButton
-                        startIcon={SynthesisIcons.XMARK_LARGE}
+                        startIcon={<SynthesisIcons.XMARK_LARGE />}
                         size="large"
                         onClick={() => {
                             MatchMode.getInstance().sandboxModeStart()

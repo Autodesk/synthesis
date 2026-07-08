@@ -22,7 +22,7 @@ const APSManagementModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => 
             {userInfo?.picture ? (
                 <img alt={userInfo?.name} src={userInfo?.picture} className="h-10 rounded-full" />
             ) : (
-                SynthesisIcons.USER
+                <SynthesisIcons.USER />
             )}
         </Stack>
     )

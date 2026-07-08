@@ -91,7 +91,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
 
                         // sx={hasChild ? { bgcolor: "background.default", "&:hover": { filter: "brightness(100%)" } } : {}}
                     >
-                        {hasParent ? SynthesisIcons.UNLINK : lookingForParent == behavior ? "Cancel" : "Follow"}
+                        {hasParent ? <SynthesisIcons.UNLINK /> : lookingForParent == behavior ? "Cancel" : "Follow"}
                     </Button>
                 </div>
             </Tooltip>

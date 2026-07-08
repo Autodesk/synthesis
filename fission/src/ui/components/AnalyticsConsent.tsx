@@ -65,7 +65,7 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                     }}
                     aria-label="Decline cookies"
                 >
-                    {SynthesisIcons.STOP}
+                    <SynthesisIcons.STOP />
                 </Button>
             </Box>
         </Box>

@@ -87,7 +87,7 @@ export default function InputSchemeSelection({
                                     update()
                                 }}
                             >
-                                {SynthesisIcons.SELECT_LARGE}
+                                <SynthesisIcons.SELECT_LARGE />
                             </PositiveButton>
                         </Box>
                         {/** Edit button - same as select but opens the inputs modal */}
@@ -203,7 +203,7 @@ export default function InputSchemeSelection({
                     onCreateNew?.()
                 }}
             >
-                {SynthesisIcons.ADD_LARGE}
+                <SynthesisIcons.ADD_LARGE />
             </Button>
         </>
     )

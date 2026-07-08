@@ -253,7 +253,9 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     <ToggleButton value={15}>15</ToggleButton>
                     <ToggleButton value={20}>20</ToggleButton>
                     <ToggleButton value={30}>30</ToggleButton>
-                    <ToggleButton value={-1}>{SynthesisIcons.INFINITY}</ToggleButton>
+                    <ToggleButton value={-1}>
+                        <SynthesisIcons.INFINITY />
+                    </ToggleButton>
                 </ToggleButtonGroup>
             </Stack>
             <Stack>

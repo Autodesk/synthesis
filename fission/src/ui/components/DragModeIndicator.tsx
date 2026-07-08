@@ -27,7 +27,7 @@ const DragModeIndicator: React.FC = () => {
                 boxShadow: 6,
             }}
         >
-            <span className="self-center">{SynthesisIcons.HAND}</span>
+            <SynthesisIcons.HAND className="self-center" />
             <Label size="sm" color="text.primary">
                 Drag Mode
             </Label>
