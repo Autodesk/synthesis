@@ -23,7 +23,6 @@ interface SchemeSelectorProps {
 
     onSelect?: () => void
     onEdit?: () => void
-    setSelectedScheme: (_scheme: InputScheme | undefined) => void
 }
 
 const SchemeSelector: React.FC<SchemeSelectorProps> = ({
@@ -36,8 +35,9 @@ const SchemeSelector: React.FC<SchemeSelectorProps> = ({
     conflict = false,
     onSelect,
     onEdit,
-    setSelectedScheme,
 }): ReactElement | null => {
+    const { setSelectedScheme } = useStateContext()
+
     if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
     return (
         <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
@@ -191,7 +191,6 @@ export default function InputSchemeSelection({
                                     message="Available"
                                     onEdit={onEdit}
                                     onSelect={onSelect}
-                                    setSelectedScheme={setSelectedScheme}
                                 />
                             </div>
                         )
@@ -210,7 +209,6 @@ export default function InputSchemeSelection({
                                     conflict={true}
                                     onEdit={onEdit}
                                     onSelect={onSelect}
-                                    setSelectedScheme={setSelectedScheme}
                                 />
                             </div>
                         )
@@ -230,7 +228,6 @@ export default function InputSchemeSelection({
                                     disabled={true}
                                     onEdit={onEdit}
                                     onSelect={onSelect}
-                                    setSelectedScheme={setSelectedScheme}
                                 />
                             </div>
                         )
