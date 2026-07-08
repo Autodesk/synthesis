@@ -9,6 +9,7 @@ import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertAABBToOBB } from "@/util/TypeConversions"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -69,14 +70,14 @@ vi.mock("@/systems/match_mode/MatchMode", () => ({
 
 type RobotsInside = "red" | "blue" | "neither" | "both"
 
-const boundingConfigMap: Record<RobotsInside, Jolt.AABox> = {
+const boundingConfigMap: Record<RobotsInside, Jolt.OrientedBox> = {
     // Just `redBox` translated -0.5 along the x-axis
-    red: new JOLT.AABox(new JOLT.Vec3(-0.5, 0, 0), new JOLT.Vec3(0.5, 1, 1)),
+    red: convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(-0.5, 0, 0), new JOLT.Vec3(0.5, 1, 1))),
     // Just `blueBox` translated +0.5 along the x-axis
-    blue: new JOLT.AABox(new JOLT.Vec3(1.5, 0, 0), new JOLT.Vec3(2.5, 1, 1)),
+    blue: convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(1.5, 0, 0), new JOLT.Vec3(2.5, 1, 1))),
 
-    neither: new JOLT.AABox(new JOLT.Vec3(-1, -1, -1), new JOLT.Vec3(-2, -2, -2)),
-    both: new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(3, 3, 3)),
+    neither: convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(-1, -1, -1), new JOLT.Vec3(-2, -2, -2))),
+    both: convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(3, 3, 3))),
 }
 
 describe("ProtectedZoneSceneObject", () => {
@@ -89,8 +90,8 @@ describe("ProtectedZoneSceneObject", () => {
             alliance,
             getBounding: vi.fn(
                 alliance === "red"
-                    ? () => new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(1, 1, 1))
-                    : () => new JOLT.AABox(new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(2, 1, 1))
+                    ? () => convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(1, 1, 1)))
+                    : () => convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(2, 1, 1)))
             ),
         } as unknown as MirabufSceneObject
 

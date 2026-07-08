@@ -59,12 +59,12 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             .map(rn => field.mechanism.nodeToBody.get(rn.id)!) as Jolt.BodyID[]
 
         const gamePiecesContacting = gps.filter(gpID => {
+            // NOTE
+            // I think using an axis-aligned bounding box for game pieces is fine
             const gp = World.physicsSystem.getBody(gpID)!
             const gpBounding = gp.GetWorldSpaceBounds()
 
-            // TODO
-            // Update bindings when `Overlaps` gets exposed
-            const overlaps = this.bounding.Overlaps(gpBounding)
+            const overlaps = this.bounding?.OverlapsAABox(gpBounding)
             JOLT.destroy(gpBounding)
 
             return overlaps

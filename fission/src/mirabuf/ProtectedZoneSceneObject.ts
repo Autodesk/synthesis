@@ -9,10 +9,10 @@ import { ContactType } from "./ZoneTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { findListDifference } from "@/util/Utility"
+import { findListDifference, forPair } from "@/util/Utility"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
-type RobotBox = [MirabufSceneObject, Jolt.AABox]
+type RobotBox = [MirabufSceneObject, Jolt.OrientedBox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
 
 class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences> {
@@ -56,7 +56,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             .getRobots()
             .map(robot => [robot, robot.getBounding()] as RobotBox)
 
-        const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.Overlaps(bounding))
+        const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
         const oldRobotsInZone = [...this._robotsInside.keys()]
 
         const { added, removed } = findListDifference(
@@ -91,19 +91,17 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         const checkCollision = ([robot1, bounding1]: RobotBox, [robot2, bounding2]: RobotBox) => {
             if (robot1.alliance === robot2.alliance) return
 
-            const collided = bounding1.OverlapsAABox(bounding2)
+            console.log(`bounding1: ${JSON.stringify(bounding1)}`)
+            const collided = bounding1.OverlapsOrientedBox(bounding2)
             if (!collided) return
             if (isDuplicateCollision(robot1, robot2)) return
 
             collisions.push([robot1, robot2])
         }
 
-        const checkIn = (firstList: RobotBox[], secondList: RobotBox[]) =>
-            firstList.forEach(one => secondList.forEach(two => checkCollision(one, two)))
-
+        const checkIn = (first: RobotBox[], second: RobotBox[]) => forPair(first, second, checkCollision)
         switch (this.prefs.contactType) {
             case ContactType.BOTH_ROBOTS_INSIDE:
-                // Get collisions between opposing robots inside the zone
                 checkIn(robotsInZone, robotsInZone)
                 break
 

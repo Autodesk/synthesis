@@ -43,6 +43,7 @@ import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePan
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
+    convertAABBToOBB,
     convertJoltMat44ToThreeMatrix4,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToThreeVector3,
@@ -190,12 +191,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getBounding(): Jolt.OrientedBox {
         const box = this.computeBoundingBox()
+
         const aabb = new JOLT.AABox(convertThreeVector3ToJoltVec3(box.min), convertThreeVector3ToJoltVec3(box.max))
+        const obb = convertAABBToOBB(aabb)
 
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
         const transform = rootBody.GetWorldTransform()
-
-        const obb = new JOLT.OrientedBox(aabb, transform)
+        obb.set_mOrientation(transform.ToMat44())
 
         JOLT.destroy(aabb)
 

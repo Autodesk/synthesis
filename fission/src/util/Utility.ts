@@ -1,5 +1,4 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import JOLT from "./loading/JoltSyncLoader"
 import * as THREE from "three"
 import { convertJoltVec3ToThreeVector3 } from "./TypeConversions"
 import World from "@/systems/World"
@@ -62,4 +61,8 @@ export async function hashBuffer(buffer: ArrayBuffer): Promise<string> {
     return Array.from(new Uint8Array(hashBuffer))
         .map(x => x.toString(16))
         .join("")
+}
+
+export function forPair<T, U>(listOne: T[], listTwo: U[], predicate: (one: T, two: U) => void): void {
+    listOne.forEach(a => listTwo.forEach(b => predicate(a, b)))
 }
