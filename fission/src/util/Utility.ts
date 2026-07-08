@@ -38,7 +38,7 @@ export async function hashBuffer(buffer: ArrayBuffer): Promise<string> {
         .join("")
 }
 
-export function isDefined<T extends NonNullable<any>>(a: T | undefined): a is T {
+export function isDefined<T extends NonNullable<B>, B>(a: T | undefined): a is T {
     return a != undefined
 }
 
@@ -46,9 +46,7 @@ export function containsDuplicates<T>(list: T[]): boolean {
     const set = new Set<T>()
 
     for (const item of list) {
-        if (set.has(item)) {
-            return true
-        }
+        if (set.has(item)) return true
 
         set.add(item)
     }
