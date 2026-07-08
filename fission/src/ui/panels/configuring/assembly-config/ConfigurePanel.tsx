@@ -393,11 +393,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             case "FIELDS":
                 return [
                     new ConfigModeSelectionOption(
-                        "Move",
-                        ConfigMode.MOVE,
-                        "Adjust position of field relative to robot."
-                    ),
-                    new ConfigModeSelectionOption(
                         "Scoring Zones",
                         ConfigMode.SCORING_ZONES,
                         "Define and manage zones on the field where robots can earn points during simulation."

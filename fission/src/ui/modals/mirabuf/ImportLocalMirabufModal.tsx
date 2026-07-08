@@ -3,7 +3,6 @@ import { type ChangeEvent, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { mirabuf } from "@/proto/mirabuf"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
@@ -76,29 +75,26 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                             World.sceneRenderer.registerSceneObject(mainSceneObject)
                             gamePieces?.forEach(async instance => {
                                 const assembly = instance.parser.assembly
-                                const buffer = mirabuf.Assembly.encode(assembly).finish().buffer as ArrayBuffer
 
-                                const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
+                                const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
+                                    miraType: MiraType.PIECE,
+                                })
                                 if (!cacheInfo) return
 
-                                if (!cacheInfo.name) {
-                                    MirabufCachingService.cacheInfo(
-                                        cacheInfo.cacheKey,
-                                        MiraType.PIECE,
-                                        assembly.info?.name ?? undefined
-                                    )
-                                }
-
-                                const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, cacheInfo.id)
+                                const sceneObject = new MirabufSceneObject(
+                                    instance,
+                                    assembly.info?.name!,
+                                    cacheInfo.hash
+                                )
                                 World.sceneRenderer.registerSceneObject(sceneObject)
                             })
 
-                            if (mirabufSceneObject.mainSceneObject.miraType == MiraType.ROBOT) {
+                            if (mainSceneObject.miraType == MiraType.ROBOT || mainSceneObject.miraType == MiraType.PIECE) {
                                 openPanel(InitialConfigPanel, undefined, modal)
                             }
                             const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
                             if (miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
-                                cameraControls.focusProvider = mirabufSceneObject
+                                cameraControls.focusProvider = mainSceneObject
                             }
                             closeModal(CloseType.Overwrite)
                         }

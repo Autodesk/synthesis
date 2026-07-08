@@ -158,7 +158,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
 
                         progressHandle.done()
 
-                        if (mainSceneObject.miraType == MiraType.ROBOT) {
+                        if (mainSceneObject.miraType == MiraType.ROBOT || mainSceneObject.miraType == MiraType.PIECE) {
                             globalOpenPanel(InitialConfigPanel, undefined)
                         }
 
@@ -177,18 +177,11 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                                 const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, "")
                                 World.sceneRenderer.registerSceneObject(sceneObject)
                             } else {
-                                const buffer = mirabuf.Assembly.encode(assembly).finish().buffer as ArrayBuffer
-
-                                const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
+                                const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
+                                    miraType: MiraType.PIECE,
+                                })
                                 if (!cacheInfo) return
 
-                                if (!cacheInfo.name) {
-                                    MirabufCachingService.cacheInfo(
-                                        cacheInfo.hash,
-                                        MiraType.PIECE,
-                                        assembly.info?.name ?? undefined
-                                    )
-                                }
                                 const sceneObject = new MirabufSceneObject(
                                     instance,
                                     assembly.info?.name!,

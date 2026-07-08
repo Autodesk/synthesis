@@ -1083,8 +1083,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         const configurationType = miraTypeToConfigType(this.miraType)
 
-        data.items.push(
-            {
+        if (this.miraType !== MiraType.FIELD) {
+            data.items.push({
                 name: "Move",
 
                 customProps: {
@@ -1094,19 +1094,20 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 },
                 screen: ConfigurePanel,
                 type: "panel",
-            },
-            {
-                name: "Configure",
+            })
+        }
 
-                customProps: {
-                    configurationType,
-                    configMode: undefined,
-                    selectedAssembly: this,
-                },
-                screen: ConfigurePanel,
-                type: "panel",
-            }
-        )
+        data.items.push({
+            name: "Configure",
+
+            customProps: {
+                configurationType,
+                configMode: undefined,
+                selectedAssembly: this,
+            },
+            screen: ConfigurePanel,
+            type: "panel",
+        })
 
         if (this.brain?.brainType == "wpilib") {
             data.items.push({
