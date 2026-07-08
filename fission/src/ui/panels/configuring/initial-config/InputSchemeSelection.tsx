@@ -7,22 +7,16 @@ import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } fr
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
-import { Button, PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
+import { PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
 interface InputSchemeSelectionProps {
     brainIndex: number
     onSelect?: () => void
-    onCreateNew?: () => void
     panelId?: string
 }
 
-export default function InputSchemeSelection({
-    brainIndex,
-    onSelect,
-    onCreateNew,
-    panelId,
-}: InputSchemeSelectionProps) {
+export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: InputSchemeSelectionProps) {
     const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
@@ -86,84 +80,72 @@ export default function InputSchemeSelection({
         )
     }
     return (
+        // A scroll view with buttons to select default and custom input schemes
         <>
-            {/** A scroll view with buttons to select default and custom input schemes */}
-            <>
-                {/** The label and divider at the top of the scroll view */}
-                <Divider />
-                <FormControl fullWidth>
-                    <InputLabel id="input-scheme-drivetrain-type-label">Drivetrain Type</InputLabel>
-                    <Select
-                        label="Drivetrain Type"
-                        value={robotDriveType}
-                        onChange={e => {
-                            const newDriveType = e.target.value as DriveType
-                            const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
-                            if (brain) {
-                                brain.configureDriveBehavior(newDriveType)
-                            }
-                            setRobotDriveType(newDriveType)
+            {/** The label and divider at the top of the scroll view */}
+            <Divider />
+            <FormControl fullWidth>
+                <InputLabel id="input-scheme-drivetrain-type-label">Drivetrain Type</InputLabel>
+                <Select
+                    label="Drivetrain Type"
+                    value={robotDriveType}
+                    onChange={e => {
+                        const newDriveType = e.target.value as DriveType
+                        const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
+                        if (brain) {
+                            brain.configureDriveBehavior(newDriveType)
+                        }
+                        setRobotDriveType(newDriveType)
 
-                            const scheme = InputSchemeManager.applyCompatibleScheme(brainIndex)
-                            if (scheme) setSelectedScheme(scheme)
-                            EventSystem.dispatch("InputSchemeChanged", { panelId })
-                        }}
-                    >
-                        {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
-                            <MenuItem key={dt} value={dt}>
-                                {dt}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <Divider />
-                <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                    {`${availableSchemes?.length} Input Schemes`}
-                </Label>
-                <Divider />
+                        const scheme = InputSchemeManager.applyCompatibleScheme(brainIndex)
+                        if (scheme) setSelectedScheme(scheme)
+                        EventSystem.dispatch("InputSchemeChanged", { panelId })
+                    }}
+                >
+                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
+                        <MenuItem key={dt} value={dt}>
+                            {dt}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <Divider />
+            <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                {`${availableSchemes?.length} Input Schemes`}
+            </Label>
+            <Divider />
 
-                {/** Creates list items with buttons */}
-                {availableSchemes
-                    ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
-                    .map(scheme => {
-                        return SchemeSelector(scheme.scheme, {}, "Available", false, scheme.status)
-                    })}
-                {availableSchemes
-                    ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
-                    .map((scheme, i) => {
-                        return (
-                            <div key={`conflict-${scheme.scheme.schemeName}`}>
-                                {i == 0 && <Divider />}
-                                {SchemeSelector(
-                                    scheme.scheme,
-                                    { filter: "brightness(60%)" },
-                                    "Conflicts with " + scheme.conflictingSchemeNames,
-                                    false
-                                )}
-                            </div>
-                        )
-                    })}
-                {availableSchemes
-                    ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
-                    .map((scheme, i) => {
-                        return (
-                            <div key={`in-use-${scheme.scheme.schemeName}`}>
-                                {i == 0 && <Divider />}
-                                {SchemeSelector(scheme.scheme, {}, "In Use", true, scheme.status)}
-                            </div>
-                        )
-                    })}
-            </>
-            {/** New scheme with a randomly assigned name button */}
-            <Button
-                color="success"
-                variant="outlined"
-                onClick={() => {
-                    onCreateNew?.()
-                }}
-            >
-                {SynthesisIcons.ADD_LARGE}
-            </Button>
+            {/** Creates list items with buttons */}
+            {availableSchemes
+                ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
+                .map(scheme => {
+                    return SchemeSelector(scheme.scheme, {}, "Available", false, scheme.status)
+                })}
+            {availableSchemes
+                ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
+                .map((scheme, i) => {
+                    return (
+                        <div key={`conflict-${scheme.scheme.schemeName}`}>
+                            {i == 0 && <Divider />}
+                            {SchemeSelector(
+                                scheme.scheme,
+                                { filter: "brightness(60%)" },
+                                "Conflicts with " + scheme.conflictingSchemeNames,
+                                false
+                            )}
+                        </div>
+                    )
+                })}
+            {availableSchemes
+                ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
+                .map((scheme, i) => {
+                    return (
+                        <div key={`in-use-${scheme.scheme.schemeName}`}>
+                            {i == 0 && <Divider />}
+                            {SchemeSelector(scheme.scheme, {}, "In Use", true, scheme.status)}
+                        </div>
+                    )
+                })}
         </>
     )
 }

@@ -15,7 +15,6 @@ import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -24,7 +23,7 @@ import InputSchemeSelection from "./InputSchemeSelection"
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
     const { setSelectedScheme } = useStateContext()
-    const { openModal, configureScreen, closePanel } = useUIContext()
+    const { configureScreen, closePanel } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -152,12 +151,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 />
             )}
             {brainIndex !== undefined && (
-                <InputSchemeSelection
-                    brainIndex={brainIndex}
-                    onSelect={() => {}}
-                    onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
-                    panelId={panel?.id}
-                />
+                <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
             )}
         </Stack>
     )
