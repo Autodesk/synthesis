@@ -241,9 +241,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 step={0.01}
             />
 
-            {Spacer(10)}
+            <Spacer height={10} />
             {gizmoComponent}
-            {Spacer(10)}
+            <Spacer height={10} />
             <Button
                 onClick={() => {
                     if (gizmoRef.current) {

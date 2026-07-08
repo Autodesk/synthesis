@@ -91,33 +91,39 @@ export default function InputSchemeSelection({
                             </PositiveButton>
                         </Box>
                         {/** Edit button - same as select but opens the inputs modal */}
-                        {EditButton(() => {
-                            InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
+                        {
+                            <EditButton
+                                onClick={() => {
+                                    InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
 
-                            setSelectedScheme(scheme)
-                            onEdit?.()
-                        })}
+                                    setSelectedScheme(scheme)
+                                    onEdit?.()
+                                }}
+                            />
+                        }
 
                         {/** Delete button (only if the scheme is customized and not in use) */}
                         {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
-                            DeleteButton(() => {
-                                // Fetch current custom schemes
-                                InputSchemeManager.saveSchemes(panelId)
-                                InputSchemeManager.resetDefaultSchemes(panelId)
-                                const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+                            <DeleteButton
+                                onClick={() => {
+                                    // Fetch current custom schemes
+                                    InputSchemeManager.saveSchemes(panelId)
+                                    InputSchemeManager.resetDefaultSchemes(panelId)
+                                    const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
-                                // Find and remove this input scheme
-                                const index = schemes.indexOf(scheme)
-                                schemes.splice(index, 1)
+                                    // Find and remove this input scheme
+                                    const index = schemes.indexOf(scheme)
+                                    schemes.splice(index, 1)
 
-                                // Save to preferences
-                                PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
-                                PreferencesSystem.savePreferences()
+                                    // Save to preferences
+                                    PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
+                                    PreferencesSystem.savePreferences()
 
-                                // Update the available schemes list to reflect the deletion
-                                EventSystem.dispatch("InputSchemeChanged", { panelId })
-                                update()
-                            })
+                                    // Update the available schemes list to reflect the deletion
+                                    EventSystem.dispatch("InputSchemeChanged", { panelId })
+                                    update()
+                                }}
+                            />
                         ) : (
                             <></>
                         )}

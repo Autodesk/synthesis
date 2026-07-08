@@ -115,7 +115,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                 }}
                 className="absolute top-0 text-nowrap left-1/2 text-2xl"
             >
-                {tooltip ? CustomTooltip(tooltip) : <></>}
+                {tooltip ? <CustomTooltip text={tooltip} /> : <></>}
                 {title}
             </Box>
             <Box
@@ -140,9 +140,9 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
             </Box>
             {onEdit || onDelete ? (
                 <Box className="flex justify-center px-4">
-                    {onEdit ? EditButton(onEdit) : <></>}
-                    {onRefresh ? RefreshButton(onRefresh) : <></>}
-                    {onDelete ? DeleteButton(onDelete) : <></>}
+                    {onEdit ? <EditButton onClick={onEdit} /> : <></>}
+                    {onRefresh ? <RefreshButton onClick={onRefresh} /> : <></>}
+                    {onDelete ? <DeleteButton onClick={onDelete} /> : <></>}
                 </Box>
             ) : (
                 <></>

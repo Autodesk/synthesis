@@ -115,7 +115,7 @@ const ColorEditor: React.FC<{
 
 const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
     <Stack direction="column" gap={2}>
-        {Spacer(5)}
+        <Spacer height={5} />
         <Label size="sm">Camera Settings</Label>
         <StatefulSlider
             min={0.1}
@@ -127,7 +127,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             tooltip="Controls how fast the scene rotates when dragging with the mouse."
             showValue={false}
         />
-        {Spacer(5)}
+        <Spacer height={5} />
         <StatefulSlider
             min={0.06}
             max={6.0}
@@ -144,7 +144,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             onClick={checked => writePreference("ShowViewCube", checked)}
             tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
         />
-        {Spacer(10)}
+        <Spacer height={10} />
         <Label size="md" sx={{ fontWeight: 600 }}>
             Preferences
         </Label>

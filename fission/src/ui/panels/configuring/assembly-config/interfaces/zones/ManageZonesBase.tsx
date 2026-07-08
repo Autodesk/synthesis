@@ -102,15 +102,19 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                                         justifyContent={"center"}
                                         alignItems={"center"}
                                     >
-                                        {EditButton(() => {
-                                            selectZone(zonePrefs)
-                                            saveZonesGeneric(zones, selectedField, persistZones)
-                                        })}
-                                        {DeleteButton(() => {
-                                            const newZones = zones.filter((_, idx) => idx !== i)
-                                            setZones(newZones)
-                                            saveZonesGeneric(newZones, selectedField, persistZones)
-                                        })}
+                                        <EditButton
+                                            onClick={() => {
+                                                selectZone(zonePrefs)
+                                                saveZonesGeneric(zones, selectedField, persistZones)
+                                            }}
+                                        />
+                                        <DeleteButton
+                                            onClick={() => {
+                                                const newZones = zones.filter((_, idx) => idx !== i)
+                                                setZones(newZones)
+                                                saveZonesGeneric(newZones, selectedField, persistZones)
+                                            }}
+                                        />
                                     </Stack>
                                 </Stack>
                             )
@@ -120,11 +124,13 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
             ) : (
                 <Label size="md">{emptyLabel}</Label>
             )}
-            {AddButton(() => {
-                const newZone = createNewZone()
-                saveZonesGeneric(zones, selectedField, persistZones)
-                selectZone(newZone)
-            })}
+            <AddButton
+                onClick={() => {
+                    const newZone = createNewZone()
+                    saveZonesGeneric(zones, selectedField, persistZones)
+                    selectZone(newZone)
+                }}
+            />
         </>
     )
 }
