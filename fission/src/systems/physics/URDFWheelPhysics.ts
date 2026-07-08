@@ -15,24 +15,6 @@ export type WheelDimensions = {
     width: number
 }
 
-/**
- * Keeps an auto-reconstructed virtual wheel on the same support plane as its chassis collider.
- *
- * URDF compound shapes retain assembly-space vertex translations while every Jolt body starts at the
- * origin. If the chassis extends below a reconstructed wheel, the solver rests the chassis on that lower
- * point and the virtual tire never reaches the floor. Native Mira wheel origins already account for their
- * export convention, so this correction is only used by the URDF auto-wheel path.
- */
-export function alignWheelCenterToChassisSupportPlane(
-    wheelCenterY: number,
-    wheelRadius: number,
-    chassisMinY: number
-): number {
-    const wheelBottomY = wheelCenterY - wheelRadius
-    if (wheelBottomY <= chassisMinY) return wheelCenterY
-    return chassisMinY + wheelRadius
-}
-
 export function isURDFWheel(jDef: mirabuf.joint.Joint): boolean {
     return jDef.userData?.data?.[URDF_WHEEL_TAG] === "true"
 }

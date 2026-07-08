@@ -225,8 +225,12 @@ class WheelAssignmentMode extends WorldSystem {
                 `[AABB-baseline center=(${baseline?.center.x.toFixed(4)}, ${baseline?.center.y.toFixed(4)}, ${baseline?.center.z.toFixed(4)})]`
         )
 
-        const matrixWorld = getInstanceWorldMatrix(pick.object, pick.instanceId)
-        const worldAxisFit = transformWheelAxis(localAxisFit, matrixWorld)
+        // Use the part's assembly-space transform (the frame PhysicsSystem/WheelJointBuilder expect joint
+        // origins in), not the live scene's rendered matrix -- that includes the mechanism's current
+        // physics-body world transform (spawn placement + gravity settling of the single fused pre-split
+        // body), which would bake an incidental vertical offset into the permanently-stored joint origin.
+        const assemblySpaceTransform = pick.sceneObject.mirabufInstance.parser.globalTransforms.get(pick.guid)!
+        const worldAxisFit = transformWheelAxis(localAxisFit, assemblySpaceTransform)
 
         this._draft = { sceneObject: pick.sceneObject, wheelPartGuid: pick.guid, axisFit: worldAxisFit }
         this._stage = PickStage.PARENT
@@ -337,18 +341,6 @@ class WheelAssignmentMode extends WorldSystem {
         EventSystem.dispatch("WheelAssignmentPendingCountChanged", { count: 0 })
         globalAddToast("success", "Wheel Assignment", "Applied wheel joints and rebuilt the affected assembly.")
     }
-}
-
-function getInstanceWorldMatrix(object: THREE.Object3D, instanceId: number): THREE.Matrix4 {
-    const batched = object as THREE.Object3D & {
-        getMatrixAt?: (id: number, target: THREE.Matrix4) => THREE.Matrix4
-    }
-    if (typeof batched.getMatrixAt === "function") {
-        const localMatrix = new THREE.Matrix4()
-        batched.getMatrixAt(instanceId, localMatrix)
-        return object.matrixWorld.clone().multiply(localMatrix)
-    }
-    return object.matrixWorld
 }
 
 export default WheelAssignmentMode

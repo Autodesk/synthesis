@@ -27,7 +27,6 @@ import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import {
-    alignWheelCenterToChassisSupportPlane,
     inferURDFAutoWheelBasis,
     inferWheelDimensionsFromAxle,
     inferWheelRadius,
@@ -822,17 +821,6 @@ class PhysicsSystem extends WorldSystem {
         const wheelSettings = new JOLT.WheelSettingsWV()
 
         const simulatedRadius = wheelDimensions.radius * 1.05
-        if (urdfWheelBasis) {
-            const chassisMinY = bodyMain.GetShape().GetLocalBounds().mMin.GetY()
-            const alignedY = alignWheelCenterToChassisSupportPlane(wheelPos.GetY(), simulatedRadius, chassisMinY)
-            if (alignedY < wheelPos.GetY()) {
-                console.debug(
-                    `[PhysicsSystem] Lowering reconstructed wheel '${jointInstance.info!.name!}' by ` +
-                        `${(wheelPos.GetY() - alignedY).toFixed(4)}m so its tire reaches the chassis support plane`
-                )
-                wheelPos.SetY(alignedY)
-            }
-        }
 
         wheelSettings.mPosition = wheelPos
 
