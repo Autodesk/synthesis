@@ -387,6 +387,50 @@ function createConvexShapeSettingsFromPart(
 }
 
 /**
+ * Generates `Jolt.IndexedTriangle`s for each provided body, pushing them to `settings.mIndexedTriangles`.
+ *
+ * @returns A list containing the minimum bound in space of the triangles, the maximum bound in space of the triangles, and the greatest index of mesh indicies used to create these triangles, in that order
+ */
+function bodiesToTriangles(bodies: mirabuf.IBody[], settings: Jolt.MeshShapeSettings): [Jolt.Vec3, Jolt.Vec3, number] {
+    const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
+    const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
+
+    let maxIndex = -1
+    bodies.forEach(body => {
+        const vertArr = body.triangleMesh?.mesh?.verts
+        const indexArr = body.triangleMesh?.mesh?.indices
+        if (!vertArr || !indexArr) return
+        if (indexArr.length < 3 || indexArr.length % 3 !== 0) return
+
+        // Update Bounds
+        for (let i = 0; i < vertArr.length; i += 3) {
+            const vert = convertMirabufFloatToArrJoltFloat3(vertArr, i)
+            settings.mTriangleVertices.push_back(vert)
+
+            const vertVec = new JOLT.Vec3(vert)
+            updateMinMaxBounds(vertVec, min, max)
+
+            JOLT.destroy(vertVec)
+        }
+
+        // Create Triangles
+        for (let i = 0; i < indexArr.length; i += 3) {
+            const a = indexArr.at(i)!
+            const b = indexArr.at(i + 1)!
+            const c = indexArr.at(i + 2)!
+
+            if (a > maxIndex) maxIndex = a
+            if (b > maxIndex) maxIndex = b
+            if (c > maxIndex) maxIndex = c
+
+            settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(a, b, c, 0))
+        }
+    })
+
+    return [min, max, maxIndex]
+}
+
+/**
  * Creates the Jolt ShapeSettings for a given part using the Part Definition of said part.
  *
  * @param   partDefinition  Definition of the part to create.
@@ -406,38 +450,7 @@ function createConcaveShapeSettingsFromPart(
 
     settings.mMaterials.push_back(new JOLT.PhysicsMaterial())
 
-    const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
-    const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
-
-    let maxIndex = -1
-    partDefinition.bodies!.forEach(body => {
-        const vertArr = body.triangleMesh?.mesh?.verts
-        const indexArr = body.triangleMesh?.mesh?.indices
-        if (!vertArr || !indexArr) return
-        if (indexArr.length < 3 || indexArr.length % 3 !== 0) return
-
-        for (let i = 0; i < vertArr.length; i += 3) {
-            const vert = convertMirabufFloatToArrJoltFloat3(vertArr, i)
-            settings.mTriangleVertices.push_back(vert)
-
-            const vertVec = new JOLT.Vec3(vert)
-            updateMinMaxBounds(vertVec, min, max)
-
-            JOLT.destroy(vertVec)
-        }
-
-        for (let i = 0; i < indexArr.length; i += 3) {
-            const a = indexArr.at(i)!
-            const b = indexArr.at(i + 1)!
-            const c = indexArr.at(i + 2)!
-
-            if (a > maxIndex) maxIndex = a
-            if (b > maxIndex) maxIndex = b
-            if (c > maxIndex) maxIndex = c
-
-            settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(a, b, c, 0))
-        }
-    })
+    const [min, max, maxIndex] = bodiesToTriangles(partDefinition.bodies!, settings)
 
     const vertCount = settings.mTriangleVertices.size()
     const triCountBeforeSanitize = settings.mIndexedTriangles.size()

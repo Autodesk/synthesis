@@ -356,60 +356,6 @@ class PhysicsSystem extends WorldSystem {
         return mechanism
     }
 
-    private getMotorPhysics(
-        motorDefinitions: {
-            [k: string]: mirabuf.motor.IMotor
-        },
-        motorReference: string,
-        jointName: string,
-        assemblyName: string
-    ): [number, number | null] {
-        // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
-        const prefMotors = PreferencesSystem.getRobotPreferences(assemblyName).motors
-        const prefMotor = prefMotors ? prefMotors.filter(x => x.name === jointName) : undefined
-        const miraMotor = motorDefinitions![motorReference]
-
-        let maxVel = VELOCITY_DEFAULT
-        let maxAcceleration = null
-        if (prefMotor && prefMotor[0]) {
-            maxVel = prefMotor[0].maxVelocity
-            maxAcceleration = prefMotor[0].maxAcceleration
-        } else if (miraMotor && miraMotor.simpleMotor) {
-            maxVel = miraMotor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT
-            maxAcceleration = miraMotor.simpleMotor.stallTorque ?? null
-        }
-
-        return [maxVel, maxAcceleration]
-    }
-
-    /**
-     * @returns A list of jolt body ids corresponding to the given part ids in the mechanism, or `undefined` if any part is duplicated or does not have a corresponding body
-     */
-    private partIdsToBodyIds(
-        partIds: string[],
-        parser: MirabufParser,
-        mechanism: Mechanism,
-        jointName: string
-    ): Jolt.BodyID[] | undefined {
-        const nodes = partIds.map(id => parser.partToNodeMap.get(id)).filter(isDefined)
-
-        if (containsDuplicates(nodes)) {
-            console.warn(
-                `Skipping joint '${jointName}'. Jointing the same parts. Likely in issue with Fusion Design structure.`
-            )
-            return
-        }
-
-        const bodyIds = nodes.map(node => mechanism.getBodyByNodeId(node!.id)).filter(isDefined)
-
-        if (bodyIds.length !== partIds.length) {
-            console.warn(`Skipping joint '${jointName}'. Failed to find rigid nodes' associated bodies.`)
-            return
-        }
-
-        return bodyIds
-    }
-
     /**
      * Creates all the joints for a mirabuf assembly given an already compiled mapping of rigid nodes to bodies.
      *
@@ -428,7 +374,7 @@ class PhysicsSystem extends WorldSystem {
             .forEach(jointInstance => {
                 const jointName = jointInstance.info?.name!
 
-                const bodyIds = this.partIdsToBodyIds(
+                const bodyIds = partIdsToBodyIds(
                     [jointInstance.childPart, jointInstance.parentPart],
                     parser,
                     mechanism,
@@ -443,7 +389,7 @@ class PhysicsSystem extends WorldSystem {
                     jointInstance.jointReference!
                 ]! as mirabuf.joint.Joint
 
-                let [maxVel, maxAcceleration] = this.getMotorPhysics(
+                let [maxVel, maxAcceleration] = getMotorPhysics(
                     jointData.motorDefinitions!,
                     jointDefinition.motorReference,
                     jointName,
@@ -1305,6 +1251,60 @@ export class LayerReserve {
         ROBOT_LAYERS.push(this._layer)
         this._isReleased = true
     }
+}
+
+function getMotorPhysics(
+    motorDefinitions: {
+        [k: string]: mirabuf.motor.IMotor
+    },
+    motorReference: string,
+    jointName: string,
+    assemblyName: string
+): [number, number | null] {
+    // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
+    const prefMotors = PreferencesSystem.getRobotPreferences(assemblyName).motors
+    const prefMotor = prefMotors ? prefMotors.filter(x => x.name === jointName) : undefined
+    const miraMotor = motorDefinitions![motorReference]
+
+    let maxVel = VELOCITY_DEFAULT
+    let maxAcceleration = null
+    if (prefMotor && prefMotor[0]) {
+        maxVel = prefMotor[0].maxVelocity
+        maxAcceleration = prefMotor[0].maxAcceleration
+    } else if (miraMotor && miraMotor.simpleMotor) {
+        maxVel = miraMotor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT
+        maxAcceleration = miraMotor.simpleMotor.stallTorque ?? null
+    }
+
+    return [maxVel, maxAcceleration]
+}
+
+/**
+ * @returns A list of jolt body ids corresponding to the given part ids in the mechanism, or `undefined` if any part is duplicated or does not have a corresponding body
+ */
+function partIdsToBodyIds(
+    partIds: string[],
+    parser: MirabufParser,
+    mechanism: Mechanism,
+    jointName: string
+): Jolt.BodyID[] | undefined {
+    const nodes = partIds.map(id => parser.partToNodeMap.get(id)).filter(isDefined)
+
+    if (containsDuplicates(nodes)) {
+        console.warn(
+            `Skipping joint '${jointName}'. Jointing the same parts. Likely in issue with Fusion Design structure.`
+        )
+        return
+    }
+
+    const bodyIds = nodes.map(node => mechanism.getBodyByNodeId(node!.id)).filter(isDefined)
+
+    if (bodyIds.length !== partIds.length) {
+        console.warn(`Skipping joint '${jointName}'. Failed to find rigid nodes' associated bodies.`)
+        return
+    }
+
+    return bodyIds
 }
 
 /**

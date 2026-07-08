@@ -42,14 +42,6 @@ export function isDefined<T extends NonNullable<any>>(a: T | undefined): a is T 
     return a != undefined
 }
 
-export function isUndefined<T extends NonNullable<any>>(a: T | undefined): a is undefined {
-    return a == undefined
-}
-
-export function isListDefined<P extends NonNullable<any>[]>(a: P | undefined[]): a is P {
-    return a[0] != undefined
-}
-
 export function containsDuplicates<T>(list: T[]): boolean {
     const set = new Set<T>()
 
