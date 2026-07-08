@@ -1,11 +1,10 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "synthesis-fission",
       "dependencies": {
-        "@azaleacolburn/jolt-physics": "^0.31.2",
+        "@azaleacolburn/jolt-physics": "1.0.3",
         "@biomejs/biome": "^2.2.0",
         "@haensl/google-analytics": "^1.2.2",
         "@mui/base": "^5.0.0-beta.70",
@@ -70,7 +69,7 @@
 
     "@asamuzakjp/css-color": ["@asamuzakjp/css-color@3.2.0", "", { "dependencies": { "@csstools/css-calc": "^2.1.3", "@csstools/css-color-parser": "^3.0.9", "@csstools/css-parser-algorithms": "^3.0.4", "@csstools/css-tokenizer": "^3.0.3", "lru-cache": "^10.4.3" } }, "sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw=="],
 
-    "@azaleacolburn/jolt-physics": ["@azaleacolburn/jolt-physics@0.31.2", "", {}, "sha512-vNmmWZK0GmmpDA91secxQDxqvydjadDITAib3OO3cBhs8pRA0OawmDtjY1Fu3RiW/h2GE0J4FGZ804eqXwHK5g=="],
+    "@azaleacolburn/jolt-physics": ["@azaleacolburn/jolt-physics@1.0.3", "", {}, "sha512-Qgpr7G9DCBGQCwN+TljmNf+CP9yyHLli8uOWv/fo6lVSoqAde+FocxCRmOzG8DatEuMk8RGfFnUxUrFPlrc2iA=="],
 
     "@babel/code-frame": ["@babel/code-frame@7.27.1", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.27.1", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg=="],
 
