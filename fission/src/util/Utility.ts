@@ -39,7 +39,7 @@ export async function hashBuffer(buffer: ArrayBuffer): Promise<string> {
 }
 
 export function isDefined<T extends NonNullable<B>, B>(a: T | undefined): a is T {
-    return a != undefined
+    return a !== undefined
 }
 
 export function containsDuplicates<T>(list: T[]): boolean {
