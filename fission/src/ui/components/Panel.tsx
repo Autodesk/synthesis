@@ -104,12 +104,13 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     sx={{
                         p: 2,
                         flex: "1 1 auto",
+                        minHeight: 0,
                         overflowY: "auto",
                         "&:last-child": { pb: 2 },
                         backgroundColor: "inherit",
                     }}
                 >
-                    <div className="panel-contents">
+                    <div className="panel-contents" style={{ height: "100%" }}>
                         {React.Children.map(children, child => {
                             if (React.isValidElement(child)) return React.cloneElement(child, { panel, parent })
                         })}

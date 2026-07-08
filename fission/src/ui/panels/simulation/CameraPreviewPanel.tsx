@@ -15,15 +15,13 @@ function resolveCameras(): RobotCameraSceneObject[] {
 const BOX_W = 480
 const BOX_H = 360
 const PANEL_WIDTH = BOX_W + 40
-const PANEL_CHROME_H = 150
+const PANEL_HEIGHT = `min(${BOX_H + 200}px, 85vh)`
 
 const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const canvasRef = useRef<HTMLCanvasElement | null>(null)
-    const contentRef = useRef<HTMLDivElement | null>(null)
+    const previewRef = useRef<HTMLDivElement | null>(null)
     const [cameras, setCameras] = useState<RobotCameraSceneObject[]>(resolveCameras)
     const [selectedIndex, setSelectedIndex] = useState(0)
-    const [contentHeight, setContentHeight] = useState(0)
 
     useEffect(() => {
         configureScreen(
@@ -33,11 +31,11 @@ const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 hideCancel: true,
                 acceptText: "Close",
                 width: PANEL_WIDTH,
-                height: contentHeight ? contentHeight + PANEL_CHROME_H : undefined,
+                height: PANEL_HEIGHT,
             },
             {}
         )
-    }, [contentHeight])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         // cameras don't render if no consumer
@@ -47,40 +45,30 @@ const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
     useEffect(() => EventSystem.listen("RobotCamerasChangeEvent", () => setCameras(resolveCameras())), [])
 
-    useEffect(() => {
-        const el = contentRef.current
-        if (!el) return
-        const observer = new ResizeObserver(() => setContentHeight(el.offsetHeight))
-        observer.observe(el)
-        return () => observer.disconnect()
-    }, [])
-
     const index = Math.min(selectedIndex, Math.max(0, cameras.length - 1))
     const selected = cameras[index]
 
-    const scale = selected ? Math.min(BOX_W / Math.max(1, selected.width), BOX_H / Math.max(1, selected.height)) : 1
-    const displayW = selected ? Math.round(selected.width * scale) : BOX_W
-    const displayH = selected ? Math.round(selected.height * scale) : BOX_H
-
     useEffect(() => {
-        let handle = requestAnimationFrame(function draw() {
-            const dst = canvasRef.current
-            const src = selected?.frameCanvas
+        const preview = previewRef.current
+        const canvas = selected?.frameCanvas
+        if (!preview || !canvas) return
 
-            if (dst && src) {
-                if (dst.width !== selected.width || dst.height !== selected.height) {
-                    dst.width = selected.width
-                    dst.height = selected.height
-                }
-                const ctx = dst.getContext("2d")
-                if (ctx) {
-                    ctx.clearRect(0, 0, dst.width, dst.height)
-                    ctx.drawImage(src, 0, 0)
-                }
-            }
-            handle = requestAnimationFrame(draw)
+        Object.assign(canvas.style, {
+            display: "block",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            maxWidth: "100%",
+            maxHeight: "100%",
+            width: "auto",
+            height: "auto",
+            borderRadius: "8px",
+            background: "#000",
         })
-        return () => cancelAnimationFrame(handle)
+        preview.appendChild(canvas)
+
+        return () => canvas.remove()
     }, [selected])
 
     if (cameras.length === 0) {
@@ -92,44 +80,64 @@ const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }
 
     return (
-        <div ref={contentRef} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "16px",
+                width: "100%",
+                height: "100%",
+                minHeight: 0,
+            }}
+        >
             {cameras.length > 1 && (
                 <div
                     style={{
                         display: "flex",
                         flexDirection: "row",
-                        flexWrap: "wrap",
+                        alignItems: "center",
                         justifyContent: "center",
                         gap: "8px",
                         width: "100%",
+                        flexShrink: 0,
+                        position: "relative",
+                        zIndex: 1,
                     }}
                 >
-                    {cameras.map((cam, i) => (
-                        <Button
-                            key={cam.deviceName}
-                            onClick={() => setSelectedIndex(i)}
-                            sx={i === index ? { outline: "2px solid #2684ff" } : undefined}
-                        >
-                            {cam.deviceName}
-                        </Button>
-                    ))}
+                    <Button onClick={() => setSelectedIndex((index - 1 + cameras.length) % cameras.length)}>
+                        Previous
+                    </Button>
+                    <Label size="sm">
+                        {index + 1} / {cameras.length}
+                    </Label>
+                    <Button onClick={() => setSelectedIndex((index + 1) % cameras.length)}>Next</Button>
                 </div>
             )}
 
             {selected && (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        flex: "1 1 auto",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "8px",
+                        width: "100%",
+                        minHeight: 0,
+                        overflow: "hidden",
+                    }}
+                >
                     <Label size="sm">{selected.displayName}</Label>
-                    <canvas
-                        ref={canvasRef}
-                        width={selected.width}
-                        height={selected.height}
+                    <div
+                        ref={previewRef}
                         style={{
-                            display: "block",
-                            width: `${displayW}px`,
-                            height: `${displayH}px`,
-                            flexShrink: 0,
-                            borderRadius: "8px",
+                            position: "relative",
+                            flex: "1 1 0",
+                            width: "100%",
+                            minHeight: 0,
                             background: "#000",
+                            borderRadius: "8px",
                         }}
                     />
                 </div>
