@@ -81,25 +81,25 @@ function computeSphericity(volume: number, area: number): number {
  *
  * @returns Whether the sphere collider was applied
  */
-function tryOptimizeSpheroid(shape: Jolt.Shape, totalVolume: number, totalArea: number): boolean {
+function tryOptimizeSpheroid(centerOfMass: Jolt.Vec3, totalVolume: number, totalArea: number): Jolt.Shape | undefined {
     if (computeSphericity(totalVolume, totalArea) < MIN_SPHERICITY) {
-        return false
+        return undefined
     }
 
-    const center = shape.GetCenterOfMass()
     const volumeMeters3 = totalVolume * 1e-6 // Convert cm^3 to m^3
     const radius = Math.max(Math.cbrt((3 * volumeMeters3) / (4 * Math.PI)), 0.01)
 
     const sphereSettings = new JOLT.SphereShapeSettings(radius)
     const identityRotation = new JOLT.Quat(0, 0, 0, 1)
 
-    const offsetSettings = new JOLT.RotatedTranslatedShapeSettings(center, identityRotation, sphereSettings)
-    shape = offsetSettings.Create().Get()
+    const offsetSettings = new JOLT.RotatedTranslatedShapeSettings(centerOfMass, identityRotation, sphereSettings)
+
+    const shape = offsetSettings.Create().Get()
 
     JOLT.destroy(identityRotation)
     JOLT.destroy(sphereSettings)
 
-    return true
+    return shape
 }
 
 /**
@@ -223,10 +223,12 @@ function constructPartDefinition(
     minBounds: Jolt.Vec3,
     maxBounds: Jolt.Vec3
 ): [mirabuf.IPartDefinition, mirabuf.IPartInstance] | undefined {
-    const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
+    const parts = parser.assembly.data?.parts!
+
+    const partInstance = parts.partInstances![partId]!
     if (partInstance.skipCollider) return undefined
 
-    const partDefinition = parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
+    const partDefinition = parts.partDefinitions![partInstance.partDefinitionReference!]!
 
     const debugLabel = {
         rn: rn.id,
@@ -305,7 +307,11 @@ function constructBodyFromRigidNode(
 
     if (rn.isDynamic) {
         if (rn.isGamePiece) {
-            appliedSphereCollider ||= tryOptimizeSpheroid(shape, totalVolume, totalArea)
+            const newShape = tryOptimizeSpheroid(shape.GetCenterOfMass(), totalVolume, totalArea)
+            if (newShape) {
+                appliedSphereCollider = true
+                shape = newShape
+            }
 
             const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
             shape.GetMassProperties().mMass = mass
@@ -486,7 +492,6 @@ export default function createBodiesFromParser(
     layerReserve?: LayerReserve
 ): Map<string, Jolt.BodyID> {
     const dynamic = parser.assembly.dynamic
-
     if ((dynamic && !layerReserve) || layerReserve?.isReleased) {
         throw new Error("No layer reserve for dynamic assembly")
     }

@@ -118,7 +118,7 @@ class PhysicsSystem extends WorldSystem {
     private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
 
     public newSphereBody(body: Jolt.BodyID) {
-        this._bodies.push(body)
+        this._sphereGamePieceBodies.push(body)
     }
 
     public get isPaused(): boolean {
@@ -391,7 +391,7 @@ class PhysicsSystem extends WorldSystem {
         mechanism: Mechanism,
         jointName: string
     ): Jolt.BodyID[] | undefined {
-        const nodes = partIds.map(parser.partToNodeMap.get).filter(isDefined)
+        const nodes = partIds.map(id => parser.partToNodeMap.get(id)).filter(isDefined)
 
         if (containsDuplicates(nodes)) {
             console.warn(
@@ -1000,7 +1000,7 @@ class PhysicsSystem extends WorldSystem {
         return body
     }
 
-    public createBodiesFromParser = createBodiesFromParser
+    public createBodiesFromParser = createBodiesFromParser.bind(this)
 
     public createSensor(shapeSettings: Jolt.ShapeSettings, destroy: boolean = true): Jolt.BodyID | undefined {
         const shape = shapeSettings.Create()
