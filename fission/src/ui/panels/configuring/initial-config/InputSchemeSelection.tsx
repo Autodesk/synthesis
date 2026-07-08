@@ -91,16 +91,14 @@ export default function InputSchemeSelection({
                             </PositiveButton>
                         </Box>
                         {/** Edit button - same as select but opens the inputs modal */}
-                        {
-                            <EditButton
-                                onClick={() => {
-                                    InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
+                        <EditButton
+                            onClick={() => {
+                                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
 
-                                    setSelectedScheme(scheme)
-                                    onEdit?.()
-                                }}
-                            />
-                        }
+                                setSelectedScheme(scheme)
+                                onEdit?.()
+                            }}
+                        />
 
                         {/** Delete button (only if the scheme is customized and not in use) */}
                         {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
