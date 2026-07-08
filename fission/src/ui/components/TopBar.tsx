@@ -17,6 +17,7 @@ import DebugPanel from "../panels/DebugPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
+import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import ConfigureControls from "./topbar/ConfigureControls"
 import GameplayControls from "./topbar/GameplayControls"
 import ModeDropdown from "./topbar/ModeDropdown"
@@ -28,6 +29,9 @@ const TopBar: React.FC = () => {
     const { openModal, openPanel, addToast } = useUIContext()
     const { appMode } = useStateContext()
     const isTouchDevice = useIsTouchDevice()
+
+    const addAssemblyRef = useTourAnchor("add-assembly")
+    const modeDropdownRef = useTourAnchor("mode-dropdown")
 
     setAddToast(addToast)
     setOpenPanel(openPanel)
@@ -99,6 +103,7 @@ const TopBar: React.FC = () => {
                     disableInteractive
                 >
                     <Box
+                        ref={modeDropdownRef}
                         component="span"
                         sx={{ display: "inline-flex" }}
                         onMouseEnter={() => setModeHovered(true)}
@@ -116,6 +121,7 @@ const TopBar: React.FC = () => {
                 </Tooltip>
                 <Tooltip title="Add Assembly">
                     <IconButton
+                        ref={addAssemblyRef}
                         size="medium"
                         disableRipple
                         sx={TOP_BAR_ICON_BUTTON_SX}

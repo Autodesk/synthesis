@@ -32,7 +32,8 @@ import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsIn
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
-import { Tab, Tabs } from "@mui/material"
+import { Box, Tab, Tabs } from "@mui/material"
+import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -240,6 +241,8 @@ export interface ConfigurePanelCustomProps {
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
     const { configureScreen, closePanel } = useUIContext()
+    const configurePanelRef = useTourAnchor("configure-panel")
+
     const {
         configMode: initialConfigMode,
         selectedAssembly: initialSelectedAssembly,
@@ -421,7 +424,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     }, [configurationType, selectedAssembly?.brain?.brainType])
 
     return (
-        <>
+        <Box ref={configurePanelRef}>
             <Tabs
                 value={configurationType}
                 onChange={(_, newValue) => setConfigurationType(newValue)}
@@ -490,7 +493,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     )}
                 </>
             )}
-        </>
+        </Box>
     )
 }
 
