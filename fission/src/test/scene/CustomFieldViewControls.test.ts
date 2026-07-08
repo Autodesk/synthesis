@@ -128,6 +128,28 @@ describe("CustomFieldViewControls", () => {
             expect(forward.dot(towardRobot)).toBeCloseTo(1, 2)
             expect(camera.position.distanceTo(anchoredPosition)).toBeCloseTo(0)
         })
+
+        test("keeps its anchor fixed as the focused robot moves, only re-aiming (no chase)", () => {
+            const point: CameraPoint = { name: "Overview", pos: [5, 5, 0], look: { type: "field" } }
+            anchorToPoint(controls, field, point)
+
+            const robotPosition = new THREE.Vector3(-3, 0, -3)
+            const robot = createMockSceneObject(MiraType.ROBOT, robotPosition)
+            controls.focusRobot(robot)
+            controls.update(1 / 60)
+            const anchoredPosition = camera.position.clone()
+
+            // Robot drives away; the mock reports its live position via the shared vector reference.
+            robotPosition.set(15, 0, 15)
+            for (let i = 0; i < 60; i++) controls.update(1 / 60)
+
+            // The anchor must not follow the robot...
+            expect(camera.position.distanceTo(anchoredPosition)).toBeCloseTo(0)
+            // ...but the camera should still be aimed at the robot's new position.
+            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
+            const towardRobot = robotPosition.clone().sub(camera.position).normalize()
+            expect(forward.dot(towardRobot)).toBeCloseTo(1, 2)
+        })
     })
 
     describe("zoom", () => {

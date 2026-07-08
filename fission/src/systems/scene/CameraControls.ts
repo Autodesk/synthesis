@@ -104,7 +104,7 @@ const CO_MAX_PHI = Math.PI / 2.1
 const CO_MIN_PHI = -Math.PI / 2.1
 
 const CO_SENSITIVITY_ZOOM = 4.0
-const CO_FACE_ZOOM_SENSITIVITY = 0.3
+const CO_FIXED_DOLLY_SENSITIVITY = 0.3
 
 const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0
@@ -114,6 +114,51 @@ const DEG2RAD = Math.PI / 180.0
 
 const clampPhi = (phi: number): number => THREE.MathUtils.clamp(phi, CO_MIN_PHI, CO_MAX_PHI)
 const clampZoom = (r: number): number => THREE.MathUtils.clamp(r, CO_MIN_ZOOM, CO_MAX_ZOOM)
+
+/** Eases a zoom distance one frame toward a target, decelerating as it approaches CO_MIN_ZOOM */
+function easeZoomDistance(current: number, target: number, deltaT: number): number {
+    const eased = current + (target - current) * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(current, 1.4)
+    return clampZoom(eased)
+}
+
+/** Accumulates raw scroll/pinch zoom input into a target distance and eases toward it over time (via {@link easeZoomDistance}). */
+class ZoomEase {
+    private _current: number
+    private _target: number
+
+    public constructor(initial: number) {
+        this._current = initial
+        this._target = initial
+    }
+
+    /** The current eased distance. */
+    public get current(): number {
+        return this._current
+    }
+
+    /** Resets to a known-good distance, discarding any zoom input in flight. */
+    public reset(distance: number): void {
+        this._current = distance
+        this._target = distance
+    }
+
+    /** Accumulates raw scroll/pinch input onto the target distance. */
+    public addInput(scale: number): void {
+        this._target += scale
+    }
+
+    /**
+     * Eases the current distance one frame toward the accumulated target and returns the signed change
+     * applied this frame.
+     */
+    public step(deltaT: number): number {
+        const eased = easeZoomDistance(this._current, this._target, deltaT)
+        const delta = eased - this._current
+        this._current = eased
+        this._target = eased
+        return delta
+    }
+}
 
 const defaultCoords = (): SphericalCoords => ({
     theta: CO_DEFAULT_THETA,
@@ -184,7 +229,9 @@ interface FocusBlend {
 }
 
 export class CustomTargetControls extends CameraControls {
-    private _nextCoords: SphericalCoords
+    private _nextTheta = CO_DEFAULT_THETA
+    private _nextPhi = CO_DEFAULT_PHI
+    private _orbitZoom = new ZoomEase(CO_DEFAULT_ZOOM)
     private _coords: SphericalCoords
     private _focus: THREE.Matrix4
 
@@ -195,6 +242,7 @@ export class CustomTargetControls extends CameraControls {
 
     private _mode: CameraMode = CameraMode.Follow
     private _focusPosition: THREE.Vector3 = new THREE.Vector3()
+    private _faceZoom = new ZoomEase(CO_DEFAULT_ZOOM)
 
     public get mode(): CameraMode {
         return this._mode
@@ -212,6 +260,7 @@ export class CustomTargetControls extends CameraControls {
             // Face mode drives the camera directly and ignores target coords
             this._pendingResync = undefined
             this._focusPosition.copy(this._mainCamera.position)
+            this._faceZoom.reset(this._focusPosition.distanceTo(this.focusWorldPosition()))
         } else {
             this.syncCoordsFromWorldPos(this._mainCamera.position)
         }
@@ -251,6 +300,9 @@ export class CustomTargetControls extends CameraControls {
             // Capture the camera's current world position.
             // The coord re-sync is deferred to update() so it runs after _focus is refreshed
             this._pendingResync = this._mainCamera.position.clone()
+        } else {
+            this._focusProvider.loadFocusTransform(this._focus)
+            this._faceZoom.reset(this._focusPosition.distanceTo(this.focusWorldPosition()))
         }
     }
 
@@ -343,7 +395,6 @@ export class CustomTargetControls extends CameraControls {
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
         super("Target", mainCamera, interactionHandler)
 
-        this._nextCoords = defaultCoords()
         this._coords = defaultCoords()
 
         // Identity
@@ -402,12 +453,12 @@ export class CustomTargetControls extends CameraControls {
 
         if (move.movement && this._activePointerType === PRIMARY_MOUSE_INTERACTION) {
             // Orbit: add the movement of the mouse to the target coords
-            this._nextCoords.theta -= move.movement[0]
-            this._nextCoords.phi -= move.movement[1]
+            this._nextTheta -= move.movement[0]
+            this._nextPhi -= move.movement[1]
         }
 
         if (move.scale) {
-            this._nextCoords.r += move.scale
+            this._orbitZoom.addInput(move.scale)
         }
     }
 
@@ -434,22 +485,25 @@ export class CustomTargetControls extends CameraControls {
         this._focus.setPosition(newPos)
     }
 
-    /**
-     * Zooms the fixed Face mode camera by moving it along its view axis toward or away from the robot.
-     * Sensitivity scales with distance so zoom feels consistent at any range.
-     */
+    /** Accumulates raw scroll/pinch zoom input for Face mode. Eased toward every frame in updateFaceModeZoom(). */
     private zoomFaceMode(scale: number): void {
+        this._faceZoom.addInput(scale)
+    }
+
+    /**
+     * Eases the fixed Face mode camera's distance from the robot toward the accumulated scroll/pinch
+     * target, moving its anchor along the view axis.
+     */
+    private updateFaceModeZoom(deltaT: number): void {
+        const delta = this._faceZoom.step(deltaT)
+        if (delta === 0) return
+
         const robotPos = this.focusWorldPosition()
         const offset = this._focusPosition.clone().sub(robotPos)
         const distance = offset.length()
         if (distance < 0.01) return
 
-        const newDistance = THREE.MathUtils.clamp(
-            distance * (1 + scale * CO_FACE_ZOOM_SENSITIVITY),
-            CO_MIN_ZOOM,
-            CO_MAX_ZOOM
-        )
-        this._focusPosition.copy(robotPos).addScaledVector(offset.divideScalar(distance), newDistance)
+        this._focusPosition.addScaledVector(offset.divideScalar(distance), delta)
     }
 
     // Fixed camera position, always faces towards robot
@@ -466,15 +520,15 @@ export class CustomTargetControls extends CameraControls {
     public setImmediateCoordinates(coords: Partial<SphericalCoords>) {
         if (coords.theta !== undefined) {
             this._coords.theta = coords.theta
-            this._nextCoords.theta = coords.theta
+            this._nextTheta = coords.theta
         }
         if (coords.phi !== undefined) {
             this._coords.phi = clampPhi(coords.phi)
-            this._nextCoords.phi = this._coords.phi
+            this._nextPhi = this._coords.phi
         }
         if (coords.r !== undefined) {
             this._coords.r = clampZoom(coords.r)
-            this._nextCoords.r = this._coords.r
+            this._orbitZoom.reset(this._coords.r)
         }
     }
 
@@ -534,25 +588,20 @@ export class CustomTargetControls extends CameraControls {
         }
 
         if (this._mode === CameraMode.Face && this._focusProvider) {
+            this.updateFaceModeZoom(deltaT)
             this.focusMode()
             return
         }
 
-        // Generate delta of spherical coordinates
-        const omega: SphericalCoords = this.enabled
-            ? {
-                  theta: this._nextCoords.theta - this._coords.theta,
-                  phi: this._nextCoords.phi - this._coords.phi,
-                  r: this._nextCoords.r - this._coords.r,
-              }
-            : { theta: 0, phi: 0, r: 0 }
-
-        this._coords.theta += omega.theta * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
-        this._coords.phi += omega.phi * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
-        this._coords.r += omega.r * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(this._coords.r, 1.4)
+        if (this.enabled) {
+            const rotationSensitivity = PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
+            this._coords.theta += (this._nextTheta - this._coords.theta) * deltaT * rotationSensitivity
+            this._coords.phi += (this._nextPhi - this._coords.phi) * deltaT * rotationSensitivity
+            this._orbitZoom.step(deltaT)
+            this._coords.r = this._orbitZoom.current
+        }
 
         this._coords.phi = clampPhi(this._coords.phi)
-        this._coords.r = clampZoom(this._coords.r)
 
         const deltaTransform = new THREE.Matrix4()
             .makeTranslation(0, 0, this._coords.r)
@@ -572,11 +621,8 @@ export class CustomTargetControls extends CameraControls {
         this._mainCamera.position.setFromMatrixPosition(deltaTransform)
         this._mainCamera.rotation.setFromRotationMatrix(deltaTransform)
 
-        this._nextCoords = {
-            theta: this._coords.theta,
-            phi: this._coords.phi,
-            r: this._coords.r,
-        }
+        this._nextTheta = this._coords.theta
+        this._nextPhi = this._coords.phi
     }
 }
 
@@ -595,6 +641,9 @@ export class CustomFieldViewControls extends CameraControls {
 
     /** Accumulated zoom (dolly) offset from the station anchor, in world space. */
     private _viewOffset = new THREE.Vector3()
+
+    /** Eases the dolly distance toward the look target; unused for fixed-rotation points (no target). */
+    private _zoom = new ZoomEase(CO_DEFAULT_ZOOM)
 
     private get _point(): CameraPoint | undefined {
         return this._field?.fieldPreferences?.cameraPoints?.[this._pointIndex]
@@ -617,6 +666,7 @@ export class CustomFieldViewControls extends CameraControls {
         this._field = field
         this._pointIndex = index
         this._viewOffset.set(0, 0, 0)
+        this.resetDollyZoom()
 
         EventSystem.dispatch("CameraViewChangedEvent", { point: this._point, focusedRobotId: this._focusRobot?.id })
     }
@@ -624,7 +674,20 @@ export class CustomFieldViewControls extends CameraControls {
     /** Face a specific robot, or pass undefined to return to the point's default aim. */
     public focusRobot(robot: MirabufSceneObject | undefined): void {
         this._focusRobot = robot
+        this.resetDollyZoom()
         EventSystem.dispatch("CameraViewChangedEvent", { point: this._point, focusedRobotId: robot?.id })
+    }
+
+    /**
+     * Resyncs the dolly zoom target to the current look-target distance, discarding any input in
+     * flight. Needed whenever the look target changes for reasons other than a scroll (new point,
+     * newly focused robot) so the eased zoom doesn't mistake the jump in distance for a dolly.
+     */
+    private resetDollyZoom(): void {
+        const target = this.resolveLookTarget()
+        if (!this._field || !this._point || !target) return
+        const anchor = this.anchorPosition(this._field, this._point)
+        this._zoom.reset(anchor.add(this._viewOffset).distanceTo(target))
     }
 
     public interactionMove(move: InteractionMove): void {
@@ -650,12 +713,6 @@ export class CustomFieldViewControls extends CameraControls {
         controls.interactionMove(move)
     }
 
-    /** Scales zoom relative to the distance to the look target, for consistent feel at any range. */
-    private referenceDistance(): number {
-        const target = this.resolveLookTarget()
-        return target ? Math.max(CO_MIN_ZOOM, this._mainCamera.position.distanceTo(target)) : CO_DEFAULT_ZOOM
-    }
-
     /** World position of the point's authored anchor, before the accumulated zoom offset. */
     private anchorPosition(field: MirabufSceneObject, point: CameraPoint): THREE.Vector3 {
         const fieldRef = field.getPositionTransform(new THREE.Vector3())
@@ -668,23 +725,36 @@ export class CustomFieldViewControls extends CameraControls {
         const point = this._point
         if (!field || !point) return
 
-        const forward = cameraForward(this._mainCamera)
-        const tentative = this._viewOffset
-            .clone()
-            .addScaledVector(forward, -scale * CO_FACE_ZOOM_SENSITIVITY * this.referenceDistance())
-
-        const target = this.resolveLookTarget()
-        if (!target) {
-            this._viewOffset.copy(tentative).clampLength(CO_MIN_ZOOM, CO_MAX_ZOOM)
+        if (!this.resolveLookTarget()) {
+            const forward = cameraForward(this._mainCamera)
+            this._viewOffset
+                .addScaledVector(forward, -scale * CO_FIXED_DOLLY_SENSITIVITY * CO_DEFAULT_ZOOM)
+                .clampLength(CO_MIN_ZOOM, CO_MAX_ZOOM)
             return
         }
 
+        this._zoom.addInput(scale)
+    }
+
+    /**
+     * Eases the dolly distance from the look target toward the accumulated scroll/pinch target,
+     * decelerating as it approaches CO_MIN_ZOOM to match the orbit camera's zoom feel.å
+     */
+    private updateDollyZoom(deltaT: number): void {
+        const delta = this._zoom.step(deltaT)
+        if (delta === 0) return
+
+        const field = this._field
+        const point = this._point
+        const target = this.resolveLookTarget()
+        if (!field || !point || !target) return
+
         const anchor = this.anchorPosition(field, point)
-        const distance = anchor.clone().add(tentative).sub(target)
-        this._viewOffset
-            .copy(distance.setLength(clampZoom(distance.length())))
-            .add(target)
-            .sub(anchor)
+        const toCamera = anchor.clone().add(this._viewOffset).sub(target)
+        const distance = toCamera.length()
+        if (distance < 0.01) return
+
+        this._viewOffset.addScaledVector(toCamera.divideScalar(distance), delta)
     }
 
     /** Resolves the world point the camera should face, or undefined for a fixed-rotation point. */
@@ -701,11 +771,13 @@ export class CustomFieldViewControls extends CameraControls {
         }
     }
 
-    public update(_deltaT: number): void {
+    public update(deltaT: number): void {
         if (!this._enabled || !this._point || !this._field) return
 
         // Recover gracefully if the field was unloaded while this view was active.
         if (!World.sceneRenderer.mirabufSceneObjects.getAll().includes(this._field)) return
+
+        this.updateDollyZoom(deltaT)
 
         const fieldRef = this._field.getPositionTransform(new THREE.Vector3())
         this._mainCamera.position.set(
