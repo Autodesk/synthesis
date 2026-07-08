@@ -142,7 +142,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setModal(newModal as Modal<any, any>)
             return id
         },
-        [modal, DEFAULT_MODAL_PROPS, DEFAULT_PROPS]
+        [modal]
     )
 
     const openPanel: OpenPanelFn = useCallback(
@@ -226,7 +226,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setPanels([...nextPanels, panel as Panel<any, any>])
             return id
         },
-        [panels, DEFAULT_PANEL_PROPS]
+        [panels]
     )
 
     const closeModal = useCallback(
@@ -234,19 +234,16 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             if (modal) closeCallbacks<T, P>(modal as Modal<T, P>, closeType)
             setModal(undefined)
         },
-        [modal, closeCallbacks]
+        [modal]
     )
 
-    const closePanel = useCallback(
-        (id: string, closeType: CloseType) => {
-            setPanels(p => {
-                const panel = p.find((p: Panel<any, any>) => p.id === id)
-                if (panel) closeCallbacks(panel, closeType)
-                return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
-            })
-        },
-        [closeCallbacks]
-    )
+    const closePanel = useCallback((id: string, closeType: CloseType) => {
+        setPanels(p => {
+            const panel = p.find((p: Panel<any, any>) => p.id === id)
+            if (panel) closeCallbacks(panel, closeType)
+            return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
+        })
+    }, [])
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
     const snackbarAction = useCallback(
