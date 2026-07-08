@@ -51,13 +51,21 @@ export default function InputSchemeSelection({
         return EventSystem.listen("InputSchemeChanged", () => refreshAvailableSchemes())
     }, [refreshAvailableSchemes])
 
-    const SchemeSelector = (
-        scheme: InputScheme,
-        style: React.CSSProperties,
-        message: string,
-        disabled: boolean = false,
+    interface SchemeSelectorProps {
+        scheme: InputScheme
+        message: string
+        disabled?: boolean
+        style?: React.CSSProperties
         status?: InputSchemeUseType
-    ): ReactElement | null => {
+    }
+
+    const SchemeSelector: React.FC<SchemeSelectorProps> = ({
+        scheme,
+        message,
+        status,
+        style = {},
+        disabled = false,
+    }): ReactElement | null => {
         if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
         return (
             <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
@@ -171,7 +179,14 @@ export default function InputSchemeSelection({
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
                     .map(scheme => {
-                        return SchemeSelector(scheme.scheme, {}, "Available", false, scheme.status)
+                        return (
+                            <SchemeSelector
+                                scheme={scheme.scheme}
+                                style={{}}
+                                message="Available"
+                                status={scheme.status}
+                            />
+                        )
                     })}
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
@@ -179,12 +194,11 @@ export default function InputSchemeSelection({
                         return (
                             <div key={`conflict-${scheme.scheme.schemeName}`}>
                                 {i == 0 && <Divider />}
-                                {SchemeSelector(
-                                    scheme.scheme,
-                                    { filter: "brightness(60%)" },
-                                    "Conflicts with " + scheme.conflictingSchemeNames,
-                                    false
-                                )}
+                                <SchemeSelector
+                                    scheme={scheme.scheme}
+                                    style={{ filter: "brightness(60%)" }}
+                                    message={"Conflicts with " + scheme.conflictingSchemeNames}
+                                />
                             </div>
                         )
                     })}
@@ -194,7 +208,12 @@ export default function InputSchemeSelection({
                         return (
                             <div key={`in-use-${scheme.scheme.schemeName}`}>
                                 {i == 0 && <Divider />}
-                                {SchemeSelector(scheme.scheme, {}, "In Use", true, scheme.status)}
+                                <SchemeSelector
+                                    scheme={scheme.scheme}
+                                    message={"In Use"}
+                                    disabled={true}
+                                    status={scheme.status}
+                                />
                             </div>
                         )
                     })}
