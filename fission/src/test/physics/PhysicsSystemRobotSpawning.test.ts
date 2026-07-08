@@ -9,7 +9,6 @@ describe("Mirabuf Physics Loading", () => {
             "/api/mira/robots/Dozer_v10.mira",
             MiraType.ROBOT
         ).then(x => MirabufCachingService.get(x!.hash))
-        assert(false)
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())
