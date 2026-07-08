@@ -60,28 +60,46 @@ export function convertThreeMatrix4ToJoltMat44(m: THREE.Matrix4) {
     return jMat
 }
 
-export function convertJoltVec3ToThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3) {
-    return new THREE.Vector3(vec.GetX(), vec.GetY(), vec.GetZ())
+export function convertJoltVec3ToThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3, destroy: boolean = true) {
+    const [x, y, z] = [vec.GetX(), vec.GetY(), vec.GetZ()]
+    if (destroy) JOLT.destroy(vec)
+
+    return new THREE.Vector3(x, y, z)
 }
 
-export function convertJoltQuatToThreeQuaternion(quat: Jolt.Quat) {
-    return new THREE.Quaternion(quat.GetX(), quat.GetY(), quat.GetZ(), quat.GetW())
+export function convertJoltQuatToThreeQuaternion(quat: Jolt.Quat, destroy: boolean = false) {
+    const [x, y, z, w] = [quat.GetX(), quat.GetY(), quat.GetZ(), quat.GetW()]
+    if (destroy) JOLT.destroy(quat)
+
+    return new THREE.Quaternion(x, y, z, w)
 }
 
-export function convertJoltMat44ToThreeMatrix4(m: Jolt.RMat44): THREE.Matrix4 {
-    return new THREE.Matrix4().compose(
-        convertJoltVec3ToThreeVector3(m.GetTranslation()),
-        convertJoltQuatToThreeQuaternion(m.GetQuaternion()),
+export function convertJoltMat44ToThreeMatrix4(m: Jolt.RMat44, destroy: boolean = false): THREE.Matrix4 {
+    const [t, q] = [m.GetTranslation(), m.GetQuaternion()]
+
+    const mat = new THREE.Matrix4().compose(
+        convertJoltVec3ToThreeVector3(t, false),
+        convertJoltQuatToThreeQuaternion(q, false),
         new THREE.Vector3(1, 1, 1)
     )
+
+    if (destroy) JOLT.destroy(m)
+
+    return mat
 }
 
-export function convertJoltVec3ToJoltRVec3(m: Jolt.Vec3): Jolt.RVec3 {
-    return new JOLT.RVec3(m.GetX(), m.GetY(), m.GetZ())
+export function convertJoltVec3ToJoltRVec3(vec: Jolt.Vec3, destroy: boolean = true): Jolt.RVec3 {
+    const [x, y, z] = [vec.GetX(), vec.GetY(), vec.GetZ()]
+    if (destroy) JOLT.destroy(vec)
+
+    return new JOLT.RVec3(x, y, z)
 }
 
-export function convertJoltRVec3ToJoltVec3(m: Jolt.RVec3): Jolt.Vec3 {
-    return new JOLT.Vec3(m.GetX(), m.GetY(), m.GetZ())
+export function convertJoltRVec3ToJoltVec3(vec: Jolt.RVec3, destroy: boolean = true): Jolt.Vec3 {
+    const [x, y, z] = [vec.GetX(), vec.GetY(), vec.GetZ()]
+    if (destroy) JOLT.destroy(vec)
+
+    return new JOLT.Vec3(x, y, z)
 }
 
 export function convertMirabufTransformToThreeMatrix(m: mirabuf.ITransform): THREE.Matrix4 {
@@ -93,20 +111,12 @@ export function convertMirabufTransformToThreeMatrix(m: mirabuf.ITransform): THR
     return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1))
 }
 
-export function convertMirabufVector3ToThreeVector3(v: mirabuf.Vector3): THREE.Vector3 {
-    return new THREE.Vector3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
+export function convertMirabufVector3ToJoltVec3(v: mirabuf.IVector3): Jolt.Vec3 {
+    return new JOLT.Vec3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
 }
 
-export function convertMirabufVector3ToJoltVec3(v: mirabuf.Vector3): Jolt.Vec3 {
-    return new JOLT.Vec3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
-}
-
-export function convertMirabufVector3ToJoltRVec3(v: mirabuf.Vector3): Jolt.RVec3 {
-    return new JOLT.RVec3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
-}
-
-export function convertMirabufVector3ToJoltFloat3(v: mirabuf.Vector3): Jolt.Float3 {
-    return new JOLT.Float3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
+export function convertMirabufVector3ToJoltRVec3(v: mirabuf.IVector3): Jolt.RVec3 {
+    return new JOLT.RVec3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
 }
 
 export function convertMirabufFloatToArrJoltVec3(v: number[], offsetIndex: number): Jolt.Vec3 {
@@ -115,14 +125,6 @@ export function convertMirabufFloatToArrJoltVec3(v: number[], offsetIndex: numbe
 
 export function convertMirabufFloatToArrJoltFloat3(v: number[], offsetIndex: number): Jolt.Float3 {
     return new JOLT.Float3(v[offsetIndex] / 100.0, v[offsetIndex + 1] / 100.0, v[offsetIndex + 2] / 100.0)
-}
-
-export function convertMirabufFloatToArrJoltVec3Arr(v: number[]): Jolt.Vec3[] {
-    const arr = []
-    for (let i = 0; i < v.length; i += 3) {
-        arr.push(convertMirabufFloatToArrJoltVec3(v, i))
-    }
-    return arr
 }
 
 export function convertReactRgbaColorToThreeColor(color: RgbaColor) {

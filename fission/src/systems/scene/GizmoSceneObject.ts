@@ -78,7 +78,7 @@ class GizmoSceneObject extends SceneObject {
                 if (!jBodyId) return
 
                 const worldTransform = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(jBodyId).GetWorldTransform()
+                    World.physicsSystem.getBody(jBodyId)!.GetWorldTransform()
                 )
                 const relativeTransform = worldTransform.premultiply(gizmoTransformInv)
                 this._relativeTransformations!.set(rn.id, relativeTransform)
@@ -96,7 +96,7 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.attach(this._obj)
 
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
-            // disable orbit controls when dragging the transform gizmo
+            // disable target controls when dragging the transform gizmo
             const gizmoDragging = World.sceneRenderer.isAnyGizmoDragging()
             World.sceneRenderer.currentCameraControls.enabled = !event.value && !gizmoDragging
 

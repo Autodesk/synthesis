@@ -1,8 +1,8 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
 import { random } from "@/util/Random"
 import Brain from "../Brain"
+import { SimConfig } from "../SimConfigShared"
 import type { SimulationLayer } from "../SimulationSystem"
 import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import { type SimFlow, validate } from "./SimDataFlow"
@@ -13,7 +13,8 @@ import { SimAnalogInput } from "./sim/SimAI"
 import { SimDigitalInput } from "./sim/SimDIO"
 import { SimGyroInput } from "./sim/SimGyro"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
-import { type DeviceData, SimType, type WSMessage, worker } from "./WPILibTypes"
+import { type DeviceData, type SimType, type WSMessage, worker } from "./WPILibTypes"
+import SimDriverStation from "./sim/SimDriverStation"
 
 worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     let data: WSMessage | undefined
@@ -22,10 +23,15 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
         switch (eventData.data.status) {
             case "open":
                 setConnected(true)
+                SimDriverStation.setDsAttached(true)
                 break
             case "close":
+                setConnected(false)
+                SimDriverStation.setDsAttached(false)
+                break
             case "error":
                 setConnected(false)
+                SimDriverStation.setDsAttached(false)
                 break
             default:
                 return
@@ -39,12 +45,11 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
         try {
             data = JSON.parse(eventData.data)
         } catch (_e) {
-            console.error(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
             return
         }
     }
 
-    if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type)) return
+    if (!data?.type) return
 
     updateSimMap(data.type as SimType, data.device, data.data)
 })
@@ -65,8 +70,6 @@ function updateSimMap(type: SimType, device: string, updateData: DeviceData) {
     }
 
     Object.entries(updateData).forEach(([key, value]) => currentData.set(key, value))
-
-    EventSystem.dispatch("SimMapUpdateEvent", { internalUpdate: false })
 }
 
 class WPILibBrain extends Brain {
@@ -89,7 +92,6 @@ class WPILibBrain extends Brain {
         this._simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
 
         if (!this._simLayer) {
-            console.warn("SimulationLayer is undefined")
             return
         }
 
@@ -130,21 +132,21 @@ class WPILibBrain extends Brain {
         const configData = this._assembly.simConfigData
         if (!configData) return false
 
-        // const flows = SimConfig.Compile(configData, this._assembly)
-        // if (!flows) {
-        //     console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
-        //     return false
-        // }
+        const flows = SimConfig.compile(configData, this._assembly)
+        if (!flows) {
+            console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
+            return false
+        }
 
-        // let counter = 0
-        // flows.forEach(x => {
-        //     if (!this.addSimFlow(x)) {
-        //         console.debug("Failed to validate flow, skipping...")
-        //     } else {
-        //         counter++
-        //     }
-        // })
-        // console.debug(`${counter} Flows added!`)
+        let counter = 0
+        flows.forEach(x => {
+            if (!this.addSimFlow(x)) {
+                console.debug("Failed to validate flow, skipping...")
+            } else {
+                counter++
+            }
+        })
+        console.debug(`${counter} Flows added!`)
         return true
     }
 
