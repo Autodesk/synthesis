@@ -20,7 +20,7 @@ import {
     type ToggleButtonProps,
     Tooltip,
 } from "@mui/material"
-import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
+import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle, AiOutlineClose } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
 import { BsCodeSquare } from "react-icons/bs"
 import {
@@ -31,9 +31,11 @@ import {
     FaCamera,
     FaCar,
     FaChessBoard,
+    FaCheck,
     FaFileImport,
     FaGamepad,
     FaGear,
+    FaInfinity,
     FaMagnifyingGlass,
     FaMinus,
     FaPlus,
@@ -42,10 +44,12 @@ import {
     FaWrench,
     FaXmark,
 } from "react-icons/fa6"
-import { GiSteeringWheel } from "react-icons/gi"
+import { FaHandPaper, FaUnlink } from "react-icons/fa"
+import { GiPerspectiveDiceSixFacesOne, GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
-import { HiDownload } from "react-icons/hi"
+import { HiDownload, HiUser } from "react-icons/hi"
 import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
+import { MdExpandMore, MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
 import React from "react"
@@ -72,9 +76,19 @@ export class SynthesisIcons {
     public static readonly OUTLINED_DOUBLE_RIGHT = <AiOutlineDoubleRight />
     public static readonly CONNECT = <GrConnect />
     public static readonly INFO = <AiOutlineInfoCircle />
+    public static readonly STOP = <AiOutlineClose />
     public static readonly BUG = <FaBug />
     public static readonly PLAY = <IoPlayOutline />
     public static readonly CAMERA = <FaCamera />
+    public static readonly HAND = <FaHandPaper />
+    public static readonly CHECK = <FaCheck />
+    public static readonly FIT_SCREEN = <MdFitScreen />
+    public static readonly ZOOM_IN = <MdZoomInMap />
+    public static readonly ZOOM_OUT = <MdZoomOutMap />
+    public static readonly USER = <HiUser />
+    public static readonly INFINITY = <FaInfinity />
+    public static readonly UNLINK = <FaUnlink />
+    public static readonly DICE = <GiPerspectiveDiceSixFacesOne />
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />
@@ -87,7 +101,9 @@ export class SynthesisIcons {
     public static readonly LEFT_ARROW_LARGE = <FaArrowLeft size={"1.25rem"} />
     public static readonly BUG_LARGE = <FaBug size={"1.25rem"} />
     public static readonly XMARK_LARGE = <FaXmark size={"1.25rem"} />
+    public static readonly XMARK_LARGE_HUD = <FaXmark size={23} />
     public static readonly PLAY_LARGE = <IoPlayOutline size={"1.25rem"} />
+    public static readonly EXPAND_MORE_LARGE = <MdExpandMore size={24} />
 
     public static readonly OPEN_HUD_ICON = (
         <FaAngleRight

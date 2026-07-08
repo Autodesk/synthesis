@@ -2,7 +2,6 @@ import { Box, ButtonGroup, type ButtonProps, Stack } from "@mui/material"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { FaXmark } from "react-icons/fa6"
 import APS from "@/aps/APS"
 import logo from "@/assets/autodesk_logo.png"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
@@ -175,7 +174,7 @@ const MainHUD: React.FC = () => {
                         }}
                         onClick={() => setIsOpen(false)}
                     >
-                        <FaXmark size={23} />
+                        {SynthesisIcons.XMARK_LARGE_HUD}
                     </IconButton>
                 </div>
                 <MainHUDButton

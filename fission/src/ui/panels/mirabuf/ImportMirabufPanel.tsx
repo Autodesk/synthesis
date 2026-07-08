@@ -1,7 +1,6 @@
 import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
-import { MdExpandMore } from "react-icons/md"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
@@ -437,7 +436,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 <Tab key="fields" value={MiraType.FIELD} label="FIELDS" />
             </Tabs>
             <Accordion defaultExpanded>
-                <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
+                <AccordionSummary expandIcon={SynthesisIcons.EXPAND_MORE_LARGE}>
                     {viewType === MiraType.ROBOT ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedRobotElements
@@ -467,7 +466,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 </AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
+                <AccordionSummary expandIcon={SynthesisIcons.EXPAND_MORE_LARGE}>
                     <Stack
                         direction="row"
                         key={`remote-label-container`}
@@ -505,7 +504,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 </AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
+                <AccordionSummary expandIcon={SynthesisIcons.EXPAND_MORE_LARGE}>
                     {viewType === MiraType.ROBOT ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteRobotElements

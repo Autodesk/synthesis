@@ -3,7 +3,6 @@ import { TextField } from "@mui/material"
 import { Stack, styled } from "@mui/system"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
@@ -11,7 +10,7 @@ import { type AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
+import { Button, SynthesisIcons, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -254,9 +253,7 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     <ToggleButton value={15}>15</ToggleButton>
                     <ToggleButton value={20}>20</ToggleButton>
                     <ToggleButton value={30}>30</ToggleButton>
-                    <ToggleButton value={-1}>
-                        <FaInfinity />
-                    </ToggleButton>
+                    <ToggleButton value={-1}>{SynthesisIcons.INFINITY}</ToggleButton>
                 </ToggleButtonGroup>
             </Stack>
             <Stack>
