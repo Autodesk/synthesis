@@ -1,7 +1,7 @@
 import { Box, Stack, Tooltip, Typography } from "@mui/material"
 import type { FC, ReactNode } from "react"
 import { IconButton } from "../StyledComponents"
-import { TOP_BAR_ICON_BUTTON_SX } from "./topBarConfig"
+import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
 import { TopBarIcon, type TopBarIconName } from "./TopBarIcons"
 
 type HUDMenuButtonProps = {

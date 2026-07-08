@@ -17,9 +17,9 @@ import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel, globalAddToast } from "./GlobalUIControls"
 import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
 import HUDMenuButton from "./topbar/HUDMenuButton"
-import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/topBarConfig"
+import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
-import { assemblyLabel, useConfigureAssembly } from "./topbar/useConfigureAssembly"
+import { assemblyLabel, useConfigureAssembly } from "./topbar/UseConfigureAssembly"
 import UserIcon from "./UserIcon"
 
 const DRAWER_SX = {
