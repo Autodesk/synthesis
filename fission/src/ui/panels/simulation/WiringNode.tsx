@@ -29,7 +29,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
 
     const inputHandles = useMemo(
         () =>
-            robotInput ? (
+            robotInput && (
                 <Box
                     sx={{
                         display: "flex",
@@ -61,15 +61,13 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         )
                     })}
                 </Box>
-            ) : (
-                <></>
             ),
         [isConnectable, robotInput, validateConnection]
     )
 
     const outputHandles = useMemo(
         () =>
-            robotOutput ? (
+            robotOutput && (
                 <Box
                     sx={{
                         display: "flex",
@@ -101,8 +99,6 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         )
                     })}
                 </Box>
-            ) : (
-                <></>
             ),
         [isConnectable, robotOutput, validateConnection]
     )
@@ -115,7 +111,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                 }}
                 className="absolute top-0 text-nowrap left-1/2 text-2xl"
             >
-                {tooltip ? <CustomTooltip text={tooltip} /> : <></>}
+                {tooltip && <CustomTooltip text={tooltip} />}
                 {title}
             </Box>
             <Box
@@ -138,14 +134,12 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                 {inputHandles}
                 {outputHandles}
             </Box>
-            {onEdit || onDelete ? (
+            {(onEdit || onDelete) && (
                 <Box className="flex justify-center px-4">
-                    {onEdit ? <EditButton onClick={onEdit} /> : <></>}
-                    {onRefresh ? <RefreshButton onClick={onRefresh} /> : <></>}
-                    {onDelete ? <DeleteButton onClick={onDelete} /> : <></>}
+                    {onEdit && <EditButton onClick={onEdit} />}
+                    {onRefresh && <RefreshButton onClick={onRefresh} />}
+                    {onDelete && <DeleteButton onClick={onDelete} />}
                 </Box>
-            ) : (
-                <></>
             )}
         </Box>
     )
