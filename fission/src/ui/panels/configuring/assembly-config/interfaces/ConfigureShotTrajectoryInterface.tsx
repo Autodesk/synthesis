@@ -213,10 +213,10 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
 
             {/* Toggle for adjusting eject order */}
             <Stack direction="row" spacing={2} alignItems="center" className="mt-4">
-                {LabelWithTooltip(
-                    "Eject Order",
-                    "Choose how to eject pieces: FIFO (first in, first out) ejects the oldest-loaded item first, or LIFO (last in, first out) ejects the most recently loaded item first."
-                )}
+                <LabelWithTooltip
+                    labelText="Eject Order"
+                    tooltipText="Choose how to eject pieces: FIFO (first in, first out) ejects the oldest-loaded item first, or LIFO (last in, first out) ejects the most recently loaded item first."
+                />
                 <ToggleButtonGroup
                     value={ejectOrder}
                     exclusive

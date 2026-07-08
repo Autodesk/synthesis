@@ -318,7 +318,12 @@ export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipTo
     }
 )
 
-export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
+interface LabelWithTooltipProps {
+    labelText: string
+    tooltipText: string
+}
+
+export const LabelWithTooltip: React.FC<LabelWithTooltipProps> = ({ labelText, tooltipText }) => {
     return (
         <Stack direction="row" alignItems={"center"} textAlign={"center"}>
             <Label size="sm">{labelText}</Label>
