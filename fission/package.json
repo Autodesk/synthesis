@@ -27,7 +27,7 @@
     "playwright:install": "bun x playwright install"
   },
   "dependencies": {
-    "@azaleacolburn/jolt-physics": "^0.31.2",
+    "@azaleacolburn/jolt-physics": "1.0.3",
     "@biomejs/biome": "^2.2.0",
     "@haensl/google-analytics": "^1.2.2",
     "@mui/base": "^5.0.0-beta.70",
