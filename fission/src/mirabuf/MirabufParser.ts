@@ -298,13 +298,14 @@ class MirabufParser {
                 ? (() => {
                       const e = worldTransform.elements
                       return new mirabuf.Transform({
-                          // prettier-ignore
-                          spatialMatrix: [
-                              e[0], e[4], e[8],  e[12] * 100,
-                              e[1], e[5], e[9],  e[13] * 100,
-                              e[2], e[6], e[10], e[14] * 100,
-                              e[3], e[7], e[11], e[15],
-                          ],
+                            // biome-ignore-start format: We would prefer to visualize this as a matrix
+                            spatialMatrix: [
+                                e[0], e[4], e[8],  e[12] * 100,
+                                e[1], e[5], e[9],  e[13] * 100,
+                                e[2], e[6], e[10], e[14] * 100,
+                                e[3], e[7], e[11], e[15],
+                            ],
+                            // biome-ignore-end format: We would prefer to visualize this as a matrix
                       })
                   })()
                 : inst.transform,
@@ -538,6 +539,30 @@ class MirabufParser {
         }
         this._errors.push([severity, message])
     }
+}
+
+export function zeroGamePieceInstancePosition(assembly: mirabuf.Assembly) {
+    const partInstances = assembly.data?.parts?.partInstances
+    const instance = partInstances ? Object.values(partInstances)[0] : undefined
+    if (!instance?.transform) return
+
+    const pos = new THREE.Vector3()
+    const quat = new THREE.Quaternion()
+    const scale = new THREE.Vector3()
+    convertMirabufTransformToThreeMatrix(instance.transform).decompose(pos, quat, scale)
+
+    const zeroed = new THREE.Matrix4().compose(new THREE.Vector3(0, 0, 0), quat, scale)
+    const e = zeroed.elements
+    instance.transform = new mirabuf.Transform({
+        // biome-ignore-start format: We would prefer to visualize this as a matrix
+        spatialMatrix: [
+            e[0], e[4], e[8],  0,
+            e[1], e[5], e[9],  0,
+            e[2], e[6], e[10], 0,
+            e[3], e[7], e[11], e[15],
+        ],
+        // biome-ignore-end format: We would prefer to visualize this as a matrix
+    })
 }
 
 /**

@@ -4,7 +4,8 @@ import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useSt
 import { MdExpandMore } from "react-icons/md"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
-import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { getGamePieceTypeName, type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import { zeroGamePieceInstancePosition } from "@/mirabuf/MirabufParser"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { mirabuf } from "@/proto/mirabuf"
@@ -113,19 +114,6 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                     const { mainSceneObject, gamePieces } = mirabufSceneObjects
 
                     if (mainSceneObject) {
-                        // The point of this code is to prevent the caching of game pieces of the same type
-                        const pieceNames: [string, boolean][] = []
-                        gamePieces
-                            ?.map(gp => gp.parser.assembly?.info?.name)
-                            .filter(name => name != undefined)
-                            .forEach(name => {
-                                if (name.includes(":")) {
-                                    pieceNames.push([name.split(":")[0], false])
-                                } else if (name.includes(" ")) {
-                                    pieceNames.push([name.split(" ")[0], false])
-                                }
-                            })
-
                         World.sceneRenderer.registerSceneObject(mainSceneObject)
 
                         const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
@@ -162,34 +150,33 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                             globalOpenPanel(InitialConfigPanel, undefined)
                         }
 
-                        gamePieces?.forEach(async instance => {
-                            const assembly = instance.parser.assembly
-                            if (
-                                pieceNames.some(([name, hasCached], i, arr) => {
-                                    const hasPrefix = assembly?.info?.name?.includes(name)
-                                    const noCache = hasPrefix && hasCached
-                                    if (hasPrefix && !hasCached) {
-                                        arr[i][1] = true
-                                    }
-                                    return noCache
-                                })
-                            ) {
-                                const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, "")
-                                World.sceneRenderer.registerSceneObject(sceneObject)
-                            } else {
-                                const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
-                                    miraType: MiraType.PIECE,
-                                })
-                                if (!cacheInfo) return
+                        // Only one cache entry is kept per game piece type (e.g. "Cube"), so instances
+                        // sharing a type reuse the existing cached entry instead of accumulating duplicates.
+                        const cachedTypeNames = new Set(MirabufCachingService.getAll(MiraType.PIECE).map(i => i.name))
+                        for (const instance of gamePieces ?? []) {
+                            const pieceAssembly = instance.parser.assembly
+                            const typeName = getGamePieceTypeName(pieceAssembly?.info?.name ?? "Piece")
 
-                                const sceneObject = new MirabufSceneObject(
-                                    instance,
-                                    assembly.info?.name!,
-                                    cacheInfo.hash
+                            if (cachedTypeNames.has(typeName)) {
+                                const existing = MirabufCachingService.getAll(MiraType.PIECE).find(
+                                    i => i.name === typeName
                                 )
+                                const sceneObject = new MirabufSceneObject(instance, typeName, existing?.hash ?? "")
                                 World.sceneRenderer.registerSceneObject(sceneObject)
+                                continue
                             }
-                        })
+                            cachedTypeNames.add(typeName)
+
+                            zeroGamePieceInstancePosition(pieceAssembly)
+                            const cacheInfo = await MirabufCachingService.storeAssemblyInCache(pieceAssembly, {
+                                miraType: MiraType.PIECE,
+                                name: typeName,
+                            })
+                            if (!cacheInfo) continue
+
+                            const sceneObject = new MirabufSceneObject(instance, typeName, cacheInfo.hash)
+                            World.sceneRenderer.registerSceneObject(sceneObject)
+                        }
                     } else {
                         progressHandle.fail("No object!")
                     }
