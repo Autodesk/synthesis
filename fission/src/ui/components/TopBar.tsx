@@ -19,7 +19,7 @@ import { IconButton, SynthesisIcons } from "./StyledComponents"
 import ConfigureControls from "./topbar/ConfigureControls"
 import GameplayControls from "./topbar/GameplayControls"
 import ModeDropdown from "./topbar/ModeDropdown"
-import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/topBarConfig"
+import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
 import UserIcon from "./UserIcon"
 

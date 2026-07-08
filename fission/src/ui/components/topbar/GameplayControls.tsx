@@ -7,7 +7,7 @@ import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import MultiplayerStartModal from "../../modals/MultiplayerStartModal"
 import { globalAddToast } from "../GlobalUIControls"
 import { IconButton } from "../StyledComponents"
-import { TOP_BAR_ICON_BUTTON_SX } from "./topBarConfig"
+import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
 import { TopBarIcon } from "./TopBarIcons"
 
 const GameplayControls: React.FC = () => {
