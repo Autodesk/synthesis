@@ -469,10 +469,11 @@ class PhysicsSystem extends WorldSystem {
                             if (preferences.driveVelocity > 0) maxVel = preferences.driveVelocity
                             if (preferences.driveAcceleration > 0) maxAcceleration = preferences.driveAcceleration
 
-                            const [bodyOne, bodyTwo] = parser.directedGraph.getAdjacencyList(jointInstance.parentPart)
-                                .length
-                                ? [parentBody, childBody]
-                                : [childBody, parentBody]
+                            const parentRnId = parser.partToNodeMap.get(jointInstance.parentPart)?.id!
+                            const [bodyOne, bodyTwo] =
+                                parser.directedGraph.getAdjacencyList(parentRnId).length !== 0
+                                    ? [parentBody, childBody]
+                                    : [childBody, parentBody]
 
                             const [fixedConstraint, vehicleConstraint, vehicleListener] = this.createWheelConstraint(
                                 jointInstance,
@@ -1000,7 +1001,7 @@ class PhysicsSystem extends WorldSystem {
         return body
     }
 
-    public createBodiesFromParser = createBodiesFromParser.bind(this)
+    public createBodiesFromParser = createBodiesFromParser
 
     public createSensor(shapeSettings: Jolt.ShapeSettings, destroy: boolean = true): Jolt.BodyID | undefined {
         const shape = shapeSettings.Create()
