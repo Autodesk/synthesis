@@ -32,7 +32,12 @@ std::string joint_entity_token(const AnyJointPtr& joint) {
 }
 
 adsk::core::Ptr<adsk::fusion::Occurrence> search_for_grounded(const adsk::core::Ptr<adsk::fusion::Component>& root) {
-    for (const auto& occ : root->allOccurrences()) {
+    auto all_occurrences = root->allOccurrences();
+    if (!all_occurrences) {
+        return nullptr;
+    }
+
+    for (const auto& occ : all_occurrences) {
         if (occ->isGrounded()) {
             return occ;
         }
@@ -64,7 +69,8 @@ struct GraphEdge {
 
 adsk::core::Ptr<adsk::fusion::Occurrence> joint_connection(
     const adsk::core::Ptr<adsk::fusion::Joint>& joint, const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
-    bool is_rigid = joint->jointMotion()->jointType() == adsk::fusion::JointTypes::RigidJointType;
+    auto motion   = joint->jointMotion();
+    bool is_rigid = motion && motion->jointType() == adsk::fusion::JointTypes::RigidJointType;
     if (is_rigid) {
         if (joint->occurrenceOne() == occurrence) {
             return joint->occurrenceTwo();
@@ -104,14 +110,17 @@ std::shared_ptr<GraphNode> populate_node(const adsk::core::Ptr<adsk::fusion::Occ
     visited_occurrence_entity_tokens.insert(occurrence->entityToken());
     auto node = std::make_shared<GraphNode>(GraphNode{occurrence});
 
-    for (const auto& occ : occurrence->childOccurrences()) {
-        populate_node(occ, node, TRANSFORM, is_ground, visited_occurrence_entity_tokens, dynamic_joints);
+    auto child_occurrences = occurrence->childOccurrences();
+    if (child_occurrences) {
+        for (const auto& occ : child_occurrences) {
+            populate_node(occ, node, TRANSFORM, is_ground, visited_occurrence_entity_tokens, dynamic_joints);
+        }
     }
 
     auto joint_list = occurrence->joints();
     if (joint_list) {
         for (const auto& joint : joint_list) {
-            if (!joint || !joint->occurrenceOne() || !joint->occurrenceTwo()) {
+            if (!joint || !joint->occurrenceOne() || !joint->occurrenceTwo() || !joint->jointMotion()) {
                 continue;
             }
 
@@ -186,7 +195,7 @@ void get_all_joints(adsk::core::Ptr<adsk::fusion::Component> root_component,
     std::unordered_map<std::string, AnyJointPtr>& dynamic_joints) {
     auto process_joint = [&](const auto& joint) -> void {
         assert(joint);
-        if (!joint->occurrenceOne() || !joint->occurrenceTwo()) {
+        if (!joint->occurrenceOne() || !joint->occurrenceTwo() || !joint->jointMotion()) {
             return;
         }
 

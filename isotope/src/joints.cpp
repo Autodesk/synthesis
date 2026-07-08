@@ -32,6 +32,10 @@ mirabuf::joint::RigidGroup map_rigid_group(const JointT* joint) {
     assert(joint);
     assert(joint->jointMotion()->jointType() == adsk::fusion::JointTypes::RigidJointType);
 
+    if (!joint->occurrenceOne() || !joint->occurrenceTwo()) {
+        return {};
+    }
+
     if (!joint->occurrenceOne()->isLightBulbOn() || !joint->occurrenceTwo()->isLightBulbOn()) {
         return {};
     }
@@ -89,9 +93,11 @@ void fill_slider_joint_motion(
 
     proto_joint->set_joint_motion_type(mirabuf::joint::JointMotion::SLIDER);
     auto dof = proto_joint->mutable_prismatic()->mutable_prismatic_freedom();
-    dof->mutable_axis()->set_x(-motion->slideDirectionVector()->x());
-    dof->mutable_axis()->set_y(-motion->slideDirectionVector()->y());
-    dof->mutable_axis()->set_z(-motion->slideDirectionVector()->z());
+    if (auto slide_direction_vector = motion->slideDirectionVector()) {
+        dof->mutable_axis()->set_x(-slide_direction_vector->x());
+        dof->mutable_axis()->set_y(-slide_direction_vector->y());
+        dof->mutable_axis()->set_z(-slide_direction_vector->z());
+    }
 
     switch (motion->slideDirection()) {
         case adsk::fusion::JointDirections::XAxisJointDirection:
@@ -142,8 +148,17 @@ void fill_motion_from_joint(
 }
 
 adsk::core::Ptr<adsk::core::Point3D> bounding_box_center(const adsk::core::Ptr<adsk::fusion::BRepEdge>& entity) {
-    auto min = entity->boundingBox()->minPoint();
-    auto max = entity->boundingBox()->maxPoint();
+    if (!entity) {
+        return adsk::core::Point3D::create();
+    }
+
+    auto bounding_box = entity->boundingBox();
+    if (!bounding_box) {
+        return adsk::core::Point3D::create();
+    }
+
+    auto min = bounding_box->minPoint();
+    auto max = bounding_box->maxPoint();
     return adsk::core::Point3D::create(
         (max->x() + min->x()) / 2.0, (max->y() + min->y()) / 2.0, (max->z() + min->z()) / 2.0);
 }
@@ -170,7 +185,11 @@ adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_geometry(
             return geometry->origin();
         }
 
-        return face->createForAssemblyContext(occurrence)->centroid();
+        if (auto face_for_context = face->createForAssemblyContext(occurrence)) {
+            return face_for_context->centroid();
+        }
+
+        return adsk::core::Point3D::create();
     }
 
     return geometry->origin();
@@ -181,7 +200,12 @@ adsk::core::Ptr<adsk::core::Point3D> origin_from_joint_origin(const adsk::fusion
         return adsk::core::Point3D::create();
     }
 
-    auto origin     = joint_origin->geometry()->origin();
+    auto geometry = joint_origin->geometry();
+    if (!geometry) {
+        return adsk::core::Point3D::create();
+    }
+
+    auto origin     = geometry->origin();
     double offset_x = joint_origin->offsetX() ? joint_origin->offsetX()->value() : 0;
     double offset_y = joint_origin->offsetY() ? joint_origin->offsetY()->value() : 0;
     double offset_z = joint_origin->offsetZ() ? joint_origin->offsetZ()->value() : 0;
@@ -242,6 +266,10 @@ std::pair<mirabuf::joint::Joints, mirabuf::signal::Signals> populate_joints(
         }
 
         auto motion = joint->jointMotion();
+        if (!motion) {
+            return;
+        }
+
         if (motion->jointType() == adsk::fusion::JointTypes::RigidJointType) {
             auto rigidGroup = map_rigid_group(joint);
             if (!rigidGroup.occurrences().empty()) {

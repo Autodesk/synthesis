@@ -42,9 +42,15 @@ void export_design(const GlobalContext& gctx) {
         return;
     }
 
+    auto parent_document = design->parentDocument();
+    if (!parent_document) {
+        gctx.ui->messageBox("Failed to get parent document from design.");
+        return;
+    }
+
     mirabuf::Assembly assembly;
     assembly.mutable_info()->CopyFrom(create_info_from_fus_obj(design->rootComponent()));
-    assembly.mutable_info()->set_guid(design->parentDocument()->name());
+    assembly.mutable_info()->set_guid(parent_document->name());
 
     assembly.set_dynamic(true);
 
@@ -68,11 +74,16 @@ void export_design(const GlobalContext& gctx) {
     build_joint_part_hierarchy(assembly.mutable_data()->mutable_joints(), design);
 
     auto file_dialog = gctx.ui->createFileDialog();
+    if (!file_dialog) {
+        gctx.ui->messageBox("Failed to create file dialog.");
+        return;
+    }
+
     file_dialog->isMultiSelectEnabled(false);
     file_dialog->title("Export Robot");
     file_dialog->filter("Mirabuf Files (*.mira)");
     file_dialog->filterIndex(0);
-    file_dialog->initialFilename(design->parentDocument()->name());
+    file_dialog->initialFilename(parent_document->name());
 
     if (file_dialog->showSave() != adsk::core::DialogResults::DialogOK) {
         return;

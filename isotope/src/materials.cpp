@@ -49,6 +49,10 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
     result.mutable_albedo()->set_a(127);
 
     auto properties = appearance->appearanceProperties();
+    if (!properties) {
+        return result;
+    }
+
     if (auto p = properties->itemById("surface_roughness")) {
         if (auto fp = dynamic_cast<adsk::core::FloatProperty*>(p.get())) {
             result.set_roughness(fp->value());
@@ -94,13 +98,13 @@ mirabuf::material::Appearance map_appearance(const adsk::core::Ptr<adsk::core::A
     }
 
     if (!base_color) {
-        for (const auto& prop : appearance->appearanceProperties()) {
+        for (const auto& prop : properties) {
             if (prop->name() != "Color") {
                 continue;
             }
 
             auto cp = dynamic_cast<adsk::core::ColorProperty*>(prop.get());
-            if (!cp->value() || cp->id() == "surface_albedo") {
+            if (!cp || !cp->value() || cp->id() == "surface_albedo") {
                 continue;
             }
 
@@ -134,6 +138,10 @@ mirabuf::material::PhysicalMaterial default_physical_material() {
 }
 
 void set_from_prop(const auto& props, const std::string& id, auto callback) {
+    if (!props) {
+        return;
+    }
+
     if (auto p = props->itemById(id)) {
         if (auto fp = dynamic_cast<adsk::core::FloatProperty*>(p.get())) {
             callback(fp->value());
@@ -187,7 +195,9 @@ mirabuf::material::Materials map_all_materials(const adsk::core::Ptr<adsk::core:
     (*materials.mutable_appearances())["default"] = default_appearance();
 
     std::vector<adsk::core::Ptr<adsk::core::Appearance>> appearances;
-    design_appearances->copyTo(std::back_inserter(appearances));
+    if (design_appearances) {
+        design_appearances->copyTo(std::back_inserter(appearances));
+    }
     for (const auto& appearance : appearances) {
         auto& new_appearance = (*materials.mutable_appearances())[appearance->id()];
         new_appearance       = map_appearance(appearance);
@@ -195,7 +205,9 @@ mirabuf::material::Materials map_all_materials(const adsk::core::Ptr<adsk::core:
     }
 
     std::vector<adsk::core::Ptr<adsk::core::Material>> physical_materials;
-    design_materials->copyTo(std::back_inserter(physical_materials));
+    if (design_materials) {
+        design_materials->copyTo(std::back_inserter(physical_materials));
+    }
     for (const auto& material : physical_materials) {
         auto& new_physical_material = (*materials.mutable_physicalmaterials())[material->id()];
         new_physical_material       = map_physical_material(material);

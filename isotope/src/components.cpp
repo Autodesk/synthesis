@@ -97,11 +97,21 @@ adsk::core::Ptr<adsk::core::Matrix3D> get_matrix_world(const adsk::core::Ptr<ads
         return nullptr;
     }
 
-    auto matrix          = occurrence->transform2()->copy();
+    auto transform = occurrence->transform2();
+    if (!transform) {
+        return nullptr;
+    }
+
+    auto matrix          = transform->copy();
     auto next_occurrence = occurrence;
     while (next_occurrence->assemblyContext()) {
-        matrix->transformBy(next_occurrence->assemblyContext()->transform2());
-        next_occurrence = next_occurrence->assemblyContext();
+        next_occurrence     = next_occurrence->assemblyContext();
+        auto next_transform = next_occurrence->transform2();
+        if (!next_transform) {
+            break;
+        }
+
+        matrix->transformBy(next_transform);
     }
 
     return matrix;
@@ -131,25 +141,32 @@ mirabuf::Node parse_child_occurrence(
         part.set_appearance("default");
     }
 
-    if (auto material = occurrence->component()->material()) {
-        part.set_physical_material(material->id());
-    }
+    auto component = occurrence->component();
+    if (component) {
+        if (auto material = component->material()) {
+            part.set_physical_material(material->id());
+        }
 
-    auto& part_defs                 = parts->part_definitions();
-    const std::string component_ref = guid_component(occurrence->component());
-    if (part_defs.find(component_ref) != part_defs.end()) {
-        part.set_part_definition_reference(component_ref);
+        auto& part_defs                 = parts->part_definitions();
+        const std::string component_ref = guid_component(component);
+        if (part_defs.find(component_ref) != part_defs.end()) {
+            part.set_part_definition_reference(component_ref);
+        }
     }
 
     auto transform_array = occurrence->transform()->asArray();
     part.mutable_transform()->mutable_spatial_matrix()->Add(transform_array.begin(), transform_array.end());
 
-    auto world_transform = get_matrix_world(occurrence)->asArray();
-    part.mutable_global_transform()->mutable_spatial_matrix()->Add(world_transform.begin(), world_transform.end());
+    if (auto world_matrix = get_matrix_world(occurrence)) {
+        auto world_transform = world_matrix->asArray();
+        part.mutable_global_transform()->mutable_spatial_matrix()->Add(world_transform.begin(), world_transform.end());
+    }
 
     // final recursive step to parse child occurrences
     std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;
-    occurrence->childOccurrences()->copyTo(std::back_inserter(child_occurrences));
+    if (auto occurrence_list = occurrence->childOccurrences()) {
+        occurrence_list->copyTo(std::back_inserter(child_occurrences));
+    }
     for (const auto& child_occurrence : child_occurrences) {
         if (!child_occurrence->isLightBulbOn()) {
             continue;
@@ -165,6 +182,10 @@ mirabuf::Node parse_child_occurrence(
 mirabuf::Parts build_part_definitions(const adsk::core::Ptr<adsk::fusion::Components>& components,
     const google::protobuf::Map<std::string, mirabuf::material::Appearance>& appearances) {
     mirabuf::Parts parts;
+
+    if (!components) {
+        return parts;
+    }
 
     std::vector<adsk::core::Ptr<adsk::fusion::Component>> fusion_components;
     components->copyTo(std::back_inserter(fusion_components));
@@ -183,7 +204,9 @@ mirabuf::Parts build_part_definitions(const adsk::core::Ptr<adsk::fusion::Compon
         }
 
         std::vector<adsk::core::Ptr<adsk::fusion::BRepBody>> b_rep_bodies;
-        component->bRepBodies()->copyTo(std::back_inserter(b_rep_bodies));
+        if (auto body_list = component->bRepBodies()) {
+            body_list->copyTo(std::back_inserter(b_rep_bodies));
+        }
         for (const auto& body : b_rep_bodies) {
             if (!body->isLightBulbOn()) {
                 continue;
@@ -193,15 +216,18 @@ mirabuf::Parts build_part_definitions(const adsk::core::Ptr<adsk::fusion::Compon
             part_body.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
             part_body.mutable_triangle_mesh()->CopyFrom(map_b_rep_body(body));
 
-            if (appearances.find(body->appearance()->id()) != appearances.end()) {
-                part_body.set_appearance_override(body->appearance()->id());
+            auto appearance = body->appearance();
+            if (appearance && appearances.find(appearance->id()) != appearances.end()) {
+                part_body.set_appearance_override(appearance->id());
             } else {
                 part_body.set_appearance_override("default");
             }
         }
 
         std::vector<adsk::core::Ptr<adsk::fusion::MeshBody>> mesh_bodies;
-        component->meshBodies()->copyTo(std::back_inserter(mesh_bodies));
+        if (auto mesh_body_list = component->meshBodies()) {
+            mesh_body_list->copyTo(std::back_inserter(mesh_bodies));
+        }
         for (const auto& body : mesh_bodies) {
             if (!body->isLightBulbOn()) {
                 continue;
@@ -211,8 +237,9 @@ mirabuf::Parts build_part_definitions(const adsk::core::Ptr<adsk::fusion::Compon
             part_body.mutable_info()->CopyFrom(create_info_from_fus_obj(body));
             part_body.mutable_triangle_mesh()->CopyFrom(map_mesh_body(body));
 
-            if (appearances.find(body->appearance()->id()) != appearances.end()) {
-                part_body.set_appearance_override(body->appearance()->id());
+            auto appearance = body->appearance();
+            if (appearance && appearances.find(appearance->id()) != appearances.end()) {
+                part_body.set_appearance_override(appearance->id());
             } else {
                 part_body.set_appearance_override("default");
             }
@@ -239,7 +266,9 @@ mirabuf::Node parse_component_root(const adsk::core::Ptr<adsk::fusion::Component
     }
 
     std::vector<adsk::core::Ptr<adsk::fusion::Occurrence>> child_occurrences;
-    component->occurrences()->copyTo(std::back_inserter(child_occurrences));
+    if (auto occurrence_list = component->occurrences()) {
+        occurrence_list->copyTo(std::back_inserter(child_occurrences));
+    }
     for (const auto& child_occurrence : child_occurrences) {
         if (!child_occurrence->isLightBulbOn()) {
             continue;
@@ -263,9 +292,19 @@ std::pair<mirabuf::Parts, mirabuf::Node> map_parts(const adsk::core::Ptr<adsk::f
 
 void map_rigid_groups(const adsk::core::Ptr<adsk::fusion::Component>& root, mirabuf::joint::Joints* joints) {
     for (const auto& fus_group : root->allRigidGroups()) {
+        if (!fus_group) {
+            continue;
+        }
+
         auto mira_group = mirabuf::joint::RigidGroup();
         mira_group.set_name(fus_group->entityToken());
-        for (const auto& occurrence : fus_group->occurrences()) {
+
+        auto occurrences = fus_group->occurrences();
+        if (!occurrences) {
+            continue;
+        }
+
+        for (const auto& occurrence : occurrences) {
             if (!occurrence || !occurrence->isLightBulbOn()) {
                 continue;
             }

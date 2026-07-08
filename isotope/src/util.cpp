@@ -10,10 +10,18 @@
 #include <string>
 
 std::string guid_component(const adsk::core::Ptr<adsk::fusion::Component>& component) {
+    if (!component) {
+        return "";
+    }
+
     return component->entityToken() + "_" + component->id();
 }
 
 std::string guid_occurrence(const adsk::core::Ptr<adsk::fusion::Occurrence>& occurrence) {
+    if (!occurrence) {
+        return "";
+    }
+
     return occurrence->entityToken() + "_" + guid_component(occurrence->component());
 }
 
