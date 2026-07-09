@@ -8,15 +8,12 @@ import {
     ToggleButton as MuiToggleButton,
     ToggleButtonGroup as MuiToggleButtonGroup,
     Stack,
-    type ToggleButtonGroupProps,
     Select as MuiSelect,
     type SelectProps,
     Accordion as MuiAccordion,
-    type AccordionProps,
     AccordionSummary as MuiAccordionSummary,
     type AccordionSummaryProps,
     AccordionDetails as MuiAccordionDetails,
-    type AccordionDetailsProps,
     type ToggleButtonProps,
     Tooltip,
 } from "@mui/material"
@@ -133,10 +130,8 @@ export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, o
     )
 }
 
-export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, ...props }) => {
-    // The sound is played by the individual ToggleButton that was clicked
-    return <MuiToggleButtonGroup {...props}>{children}</MuiToggleButtonGroup>
-}
+// The sound is played by the individual ToggleButton that was clicked
+export const ToggleButtonGroup = MuiToggleButtonGroup
 
 export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
     return (
@@ -146,9 +141,7 @@ export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
     )
 }
 
-export const Accordion: React.FC<AccordionProps> = ({ children, ...props }) => {
-    return <MuiAccordion {...props}>{children}</MuiAccordion>
-}
+export const Accordion = MuiAccordion
 
 export const AccordionSummary: React.FC<AccordionSummaryProps> = ({ children, ...props }) => {
     return (
@@ -158,9 +151,7 @@ export const AccordionSummary: React.FC<AccordionSummaryProps> = ({ children, ..
     )
 }
 
-export const AccordionDetails: React.FC<AccordionDetailsProps> = ({ children, ...props }) => {
-    return <MuiAccordionDetails {...props}>{children}</MuiAccordionDetails>
-}
+export const AccordionDetails = MuiAccordionDetails
 
 export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => {
     return (
