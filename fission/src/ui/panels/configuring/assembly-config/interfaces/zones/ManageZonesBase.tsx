@@ -6,7 +6,6 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
-import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import type { BaseZonePreferences } from "./ZoneConfigBase"
 
@@ -71,51 +70,48 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
     return (
         <>
             {zones?.length > 0 ? (
-                <ScrollView>
-                    <Stack gap={4}>
-                        {zones.map((zonePrefs: TZone, i: number) => {
-                            const item = getListItem(zonePrefs)
-                            return (
-                                <Stack
-                                    key={`${item.name}-${item.alliance}-${i}`}
-                                    justifyContent={"space-between"}
-                                    alignItems={"center"}
-                                    gap={"1rem"}
-                                >
-                                    <Stack direction="row" gap={8}>
-                                        <Box
-                                            className={`w-12 h-12 rounded-lg`}
-                                            sx={{
-                                                bgcolor:
-                                                    item.alliance === "red" ? "redAlliance.main" : "blueAlliance.main",
-                                            }}
-                                        />
-                                        <Stack direction="row" gap={4} className="w-max">
-                                            <Label size="sm">{item.name}</Label>
-                                            {item.pointsLabel ? <Label size="sm">{item.pointsLabel}</Label> : null}
-                                        </Stack>
-                                    </Stack>
-                                    <Stack
-                                        direction={"row-reverse"}
-                                        gap={"0.25rem"}
-                                        justifyContent={"center"}
-                                        alignItems={"center"}
-                                    >
-                                        {EditButton(() => {
-                                            selectZone(zonePrefs)
-                                            saveZonesGeneric(zones, selectedField, persistZones)
-                                        })}
-                                        {DeleteButton(() => {
-                                            const newZones = zones.filter((_, idx) => idx !== i)
-                                            setZones(newZones)
-                                            saveZonesGeneric(newZones, selectedField, persistZones)
-                                        })}
+                <Stack gap={4}>
+                    {zones.map((zonePrefs: TZone, i: number) => {
+                        const item = getListItem(zonePrefs)
+                        return (
+                            <Stack
+                                key={`${item.name}-${item.alliance}-${i}`}
+                                justifyContent={"space-between"}
+                                alignItems={"center"}
+                                gap={"1rem"}
+                            >
+                                <Stack direction="row" gap={8}>
+                                    <Box
+                                        className={`w-12 h-12 rounded-lg`}
+                                        sx={{
+                                            bgcolor: item.alliance === "red" ? "redAlliance.main" : "blueAlliance.main",
+                                        }}
+                                    />
+                                    <Stack direction="row" gap={4} className="w-max">
+                                        <Label size="sm">{item.name}</Label>
+                                        {item.pointsLabel ? <Label size="sm">{item.pointsLabel}</Label> : null}
                                     </Stack>
                                 </Stack>
-                            )
-                        })}
-                    </Stack>
-                </ScrollView>
+                                <Stack
+                                    direction={"row-reverse"}
+                                    gap={"0.25rem"}
+                                    justifyContent={"center"}
+                                    alignItems={"center"}
+                                >
+                                    {EditButton(() => {
+                                        selectZone(zonePrefs)
+                                        saveZonesGeneric(zones, selectedField, persistZones)
+                                    })}
+                                    {DeleteButton(() => {
+                                        const newZones = zones.filter((_, idx) => idx !== i)
+                                        setZones(newZones)
+                                        saveZonesGeneric(newZones, selectedField, persistZones)
+                                    })}
+                                </Stack>
+                            </Stack>
+                        )
+                    })}
+                </Stack>
             ) : (
                 <Label size="md">{emptyLabel}</Label>
             )}
