@@ -27,7 +27,7 @@ export function getShapeExtents(bounds: Jolt.AABox): [number, number, number] {
     ]
 }
 
-export function inferWheelDimensionsFromAxle(bounds: Jolt.AABox, axis: Jolt.RVec3): WheelDimensions {
+export function inferWheelDimensionsFromAxle(bounds: Jolt.AABox, axis: Jolt.Vec3): WheelDimensions {
     const extents = getShapeExtents(bounds)
     const axisAbs = [Math.abs(axis.GetX()), Math.abs(axis.GetY()), Math.abs(axis.GetZ())]
     const axleIndex = axisAbs.indexOf(Math.max(...axisAbs))
@@ -42,14 +42,14 @@ export function inferWheelDimensionsFromAxle(bounds: Jolt.AABox, axis: Jolt.RVec
 // Radius used for a simulated wheel before any cross-wheel unification. URDF auto-wheels infer it
 // from the radial extents about the detected axle; native wheels use the vertical extent (their axle
 // is horizontal). Shared by the wheel-creation path and the radius-resolution pass so they can't drift.
-export function inferWheelRadius(jDef: mirabuf.joint.Joint, bounds: Jolt.AABox, axis: Jolt.RVec3): number {
+export function inferWheelRadius(jDef: mirabuf.joint.Joint, bounds: Jolt.AABox, axis: Jolt.Vec3): number {
     const hasHorizontalAxle = Math.abs(axis.GetX()) >= 0.5 || Math.abs(axis.GetZ()) >= 0.5
     return isURDFWheel(jDef) && hasHorizontalAxle
         ? inferWheelDimensionsFromAxle(bounds, axis).radius
         : (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 }
 
-export function inferURDFAutoWheelBasis(axis: Jolt.RVec3): WheelBasis | undefined {
+export function inferURDFAutoWheelBasis(axis: Jolt.Vec3): WheelBasis | undefined {
     const absX = Math.abs(axis.GetX())
     const absZ = Math.abs(axis.GetZ())
 

@@ -7,8 +7,6 @@ import {
     convertJoltVec3ToJoltRVec3,
     convertMirabufFloatToArrJoltFloat3,
     convertMirabufFloatToArrJoltVec3,
-    convertMirabufVector3ToJoltRVec3,
-    convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
     convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
@@ -31,7 +29,19 @@ import {
     inferWheelDimensionsFromAxle,
     inferWheelRadius,
     isURDFWheel,
+    type WheelBasis,
 } from "./URDFWheelPhysics"
+import {
+    applyHingeLimits,
+    applySliderLimits,
+    createAnchorPoint,
+    createDOFSpecs,
+    createVehicleController,
+    getAxis,
+    getPerpendicular,
+    isWheel,
+    setAxes,
+} from "./ConstraintSettingsUtilities"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -114,6 +124,16 @@ const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 
 // Motor constant
 const VELOCITY_DEFAULT = 30
+
+export type DOFSpecs = Omit<mirabuf.joint.IDOF, "name" | "pivotDirection" | "dynamics" | "axis"> & {
+    friction: number
+    axis: Jolt.Vec3
+}
+
+type GenericConstraintSettings =
+    | Jolt.HingeConstraintSettings
+    | Jolt.SliderConstraintSettings
+    | Jolt.FixedConstraintSettings
 
 /**
  * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
@@ -449,8 +469,8 @@ class PhysicsSystem extends WorldSystem {
             }
 
             switch (jDef.jointMotionType!) {
-                case mirabuf.joint.JointMotion.REVOLUTE:
-                    if (this.isWheel(jDef)) {
+                case mirabuf.joint.JointMotion.REVOLUTE: {
+                    if (isWheel(jDef)) {
                         const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
                         if (preferences.driveVelocity > 0) maxVel = preferences.driveVelocity
                         if (preferences.driveAcceleration > 0) maxAcceleration = preferences.driveAcceleration
@@ -459,7 +479,7 @@ class PhysicsSystem extends WorldSystem {
                             ? [bodyA, bodyB]
                             : [bodyB, bodyA]
 
-                        const res = this.createWheelConstraint(
+                        const [fixedConstraint, vehicleConstraint, vehicleListener] = this.createWheelConstraint(
                             jointInst,
                             jDef,
                             maxAcceleration ?? 1.5,
@@ -468,26 +488,25 @@ class PhysicsSystem extends WorldSystem {
                             parser.assembly.info!.version!,
                             wheelRadii.get(jointGuid)
                         )
-                        addConstraint(res[0])
-                        addConstraint(res[1])
-                        listener = res[2]
+                        addConstraint(fixedConstraint)
+                        addConstraint(vehicleConstraint)
+                        listener = vehicleListener
 
                         break
                     }
 
-                    addConstraint(
-                        this.createHingeConstraint(
-                            jointInst,
-                            jDef,
-                            maxAcceleration ?? 50,
-                            bodyA,
-                            bodyB,
-                            parser.assembly.info!.version!
-                        )
+                    const hinge = this.createHingeConstraint(
+                        jointInst,
+                        jDef,
+                        maxAcceleration ?? 50,
+                        bodyA,
+                        bodyB,
+                        parser.assembly.info!.version!
                     )
+                    addConstraint(hinge)
 
                     break
-
+                }
                 case mirabuf.joint.JointMotion.SLIDER:
                     addConstraint(this.createSliderConstraint(jointInst, jDef, maxAcceleration ?? 200, bodyA, bodyB))
                     break
@@ -500,6 +519,16 @@ class PhysicsSystem extends WorldSystem {
             }
             if (listener) mechanism.addStepListener(listener)
         })
+    }
+
+    private createConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
+        const constraint = constraintSettings.Create(bodyA, bodyB)
+        this._constraints.push(constraint)
+        this._joltPhysSystem.AddConstraint(constraint)
+
+        JOLT.destroy(constraintSettings)
+
+        return constraint
     }
 
     /**
@@ -520,62 +549,20 @@ class PhysicsSystem extends WorldSystem {
         bodyB: Jolt.Body,
         versionNum: number
     ): Jolt.Constraint {
-        // HINGE CONSTRAINT
         const hingeConstraintSettings = new JOLT.HingeConstraintSettings()
 
-        const jointOrigin = jointDefinition.origin
-            ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.RVec3(0, 0, 0)
-        // TODO: Offset transformation for robot builder.
-        const jointOriginOffset = jointInstance.offset
-            ? convertMirabufVector3ToJoltRVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.RVec3(0, 0, 0)
-
-        // Gets freed with `hingeConstraintSettings`
-        const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
+        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
-        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3
-        // No scaling, these are unit vectors
-        const miraAxisX = (versionNum < 5 ? -miraAxis.x : miraAxis.x) ?? 0
-        const axis = new JOLT.Vec3(miraAxisX, miraAxis.y! ?? 0, miraAxis.z! ?? 0)
-
-        hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = axis.Normalized()
-        hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = getPerpendicular(
-            hingeConstraintSettings.mHingeAxis1
-        )
-
-        // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
-        // This safety check caps the values to be within [-PI, PI] with minimal difference in precision.
-        const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
-
-        if (
-            rotationalFreedom.limits &&
-            Math.abs((rotationalFreedom.limits.upper ?? 0) - (rotationalFreedom.limits.lower ?? 0)) > 0.001
-        ) {
-            const currentPos = piSafetyCheck(rotationalFreedom.value ?? 0)
-            const upper = piSafetyCheck(rotationalFreedom.limits.upper ?? 0) - currentPos
-            const lower = piSafetyCheck(rotationalFreedom.limits.lower ?? 0) - currentPos
-
-            hingeConstraintSettings.mLimitsMin = -upper
-            hingeConstraintSettings.mLimitsMax = -lower
-        }
+        setAxes(rotationalFreedom, hingeConstraintSettings, versionNum)
+        applyHingeLimits(rotationalFreedom, hingeConstraintSettings)
 
         hingeConstraintSettings.mMotorSettings.mMaxTorqueLimit = torque
         hingeConstraintSettings.mMotorSettings.mMinTorqueLimit = -torque
 
-        const constraint = hingeConstraintSettings.Create(bodyA, bodyB)
-        this._constraints.push(constraint)
-        this._joltPhysSystem.AddConstraint(constraint)
-
-        JOLT.destroy(jointOrigin)
-        JOLT.destroy(jointOriginOffset)
-        JOLT.destroy(hingeConstraintSettings)
-        JOLT.destroy(axis)
-
-        return constraint
+        return this.createConstraint(hingeConstraintSettings, bodyA, bodyB)
     }
 
     /**
@@ -595,60 +582,62 @@ class PhysicsSystem extends WorldSystem {
         bodyA: Jolt.Body,
         bodyB: Jolt.Body
     ): Jolt.Constraint {
-        const sliderConstraintSettings = new JOLT.SliderConstraintSettings()
+        const constraintSettings = new JOLT.SliderConstraintSettings()
 
-        const jointOrigin = jointDefinition.origin
-            ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.RVec3(0, 0, 0)
-        // TODO: Offset transformation for robot builder.
-        const jointOriginOffset = jointInstance.offset
-            ? convertMirabufVector3ToJoltRVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.RVec3(0, 0, 0)
+        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
+        constraintSettings.mPoint1 = constraintSettings.mPoint2 = anchorPoint
 
-        const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
-        sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 = anchorPoint
+        const freedom = jointDefinition.prismatic!.prismaticFreedom!
 
-        const prismaticFreedom = jointDefinition.prismatic!.prismaticFreedom!
+        setAxes(freedom, constraintSettings)
+        applySliderLimits(freedom, constraintSettings)
 
-        const miraAxis = prismaticFreedom.axis! as mirabuf.Vector3
-        const axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0)
+        constraintSettings.mMotorSettings.mMaxForceLimit = maxForce
+        constraintSettings.mMotorSettings.mMinForceLimit = -maxForce
 
-        sliderConstraintSettings.mSliderAxis1 = sliderConstraintSettings.mSliderAxis2 = axis.Normalized()
-        sliderConstraintSettings.mNormalAxis1 = sliderConstraintSettings.mNormalAxis2 = getPerpendicular(
-            sliderConstraintSettings.mSliderAxis1
-        )
+        return this.createConstraint(constraintSettings, bodyA, bodyB)
+    }
 
-        if (
-            prismaticFreedom.limits &&
-            Math.abs((prismaticFreedom.limits.upper ?? 0) - (prismaticFreedom.limits.lower ?? 0)) > 0.001
-        ) {
-            const currentPos = (prismaticFreedom.value ?? 0) * 0.01
-            const upper = (prismaticFreedom.limits.upper ?? 0) * 0.01 - currentPos
-            const lower = (prismaticFreedom.limits.lower ?? 0) * 0.01 - currentPos
+    private createFixedConstraint(bodyMain: Jolt.Body, bodyWheel: Jolt.Body, anchorPoint: Jolt.RVec3) {
+        const fixedSettings = new JOLT.FixedConstraintSettings()
+        fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
 
-            // Calculate mid point
-            const midPoint = (upper + lower) / 2.0
-            const halfRange = Math.abs((upper - lower) / 2.0)
+        // TODO
+        // Figure out if this cast is necessary
+        // If not, replace with `this.newConstraint()`
+        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
+        this._joltPhysSystem.AddConstraint(fixedConstraint)
+        this._constraints.push(fixedConstraint)
 
-            // Move the anchor points
-            sliderConstraintSettings.mPoint2 = anchorPoint.Add(axis.Normalized().Mul(midPoint))
+        JOLT.destroy(fixedSettings)
 
-            sliderConstraintSettings.mLimitsMax = halfRange
-            sliderConstraintSettings.mLimitsMin = -halfRange
+        return fixedConstraint
+    }
+
+    private createVehicleConstraint(
+        wheelSettings: Jolt.WheelSettingsWV,
+        bodyMain: Jolt.Body,
+        maxAcc: number,
+        wheelBasis?: WheelBasis
+    ) {
+        const vehicleSettings = new JOLT.VehicleConstraintSettings()
+
+        if (wheelBasis) {
+            vehicleSettings.mForward = wheelBasis.forward
+            vehicleSettings.mUp = wheelBasis.up
         }
 
-        sliderConstraintSettings.mMotorSettings.mMaxForceLimit = maxForce
-        sliderConstraintSettings.mMotorSettings.mMinForceLimit = -maxForce
+        vehicleSettings.mWheels.clear()
+        vehicleSettings.mWheels.push_back(wheelSettings)
 
-        const constraint = sliderConstraintSettings.Create(bodyA, bodyB)
+        vehicleSettings.mController = createVehicleController(maxAcc)
+        vehicleSettings.mAntiRollBars.clear()
 
-        this._constraints.push(constraint)
+        const constraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings)
+        JOLT.destroy(vehicleSettings)
+
         this._joltPhysSystem.AddConstraint(constraint)
-
-        JOLT.destroy(jointOrigin)
-        JOLT.destroy(jointOriginOffset)
-        JOLT.destroy(sliderConstraintSettings)
-        JOLT.destroy(axis)
+        this._constraints.push(constraint)
 
         return constraint
     }
@@ -676,7 +665,7 @@ class PhysicsSystem extends WorldSystem {
         ][]) {
             if (jointGuid === GROUNDED_JOINT_ID) continue
             const jDef = jointData.jointDefinitions![jointInst.jointReference!] as mirabuf.joint.Joint | undefined
-            if (!jDef || jDef.jointMotionType !== mirabuf.joint.JointMotion.REVOLUTE || !this.isWheel(jDef)) continue
+            if (!jDef || jDef.jointMotionType !== mirabuf.joint.JointMotion.REVOLUTE || !isWheel(jDef)) continue
 
             const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
             const rnB = parser.partToNodeMap.get(jointInst.childPart!)
@@ -691,7 +680,7 @@ class PhysicsSystem extends WorldSystem {
 
             const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
             const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
-            const axis = new JOLT.RVec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
+            const axis = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
             const radius = inferWheelRadius(jDef, bodyWheel.GetShape().GetLocalBounds(), axis)
             JOLT.destroy(axis)
 
@@ -720,6 +709,16 @@ class PhysicsSystem extends WorldSystem {
         return radii
     }
 
+    private createVehicleListeners(constraint: Jolt.VehicleConstraint, bodyWheel: Jolt.Body) {
+        const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05)
+        constraint.SetVehicleCollisionTester(tester)
+
+        const listener = new JOLT.VehicleConstraintStepListener(constraint)
+        this._joltPhysSystem.AddStepListener(listener)
+
+        return listener
+    }
+
     public createWheelConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
@@ -729,25 +728,11 @@ class PhysicsSystem extends WorldSystem {
         versionNum: number,
         resolvedRadius?: number
     ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
-        // HINGE CONSTRAINT
-        const fixedSettings = new JOLT.FixedConstraintSettings()
-
-        const jointOrigin = jointDefinition.origin
-            ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.RVec3(0, 0, 0)
-        const jointOriginOffset = jointInstance.offset
-            ? convertMirabufVector3ToJoltRVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.RVec3(0, 0, 0)
-
-        const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
-        fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
+        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
+        const fixedConstraint = this.createFixedConstraint(bodyMain, bodyWheel, anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
-
-        // No scaling, these are unit vectors
-        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3
-        const miraAxisX: number = (versionNum < 5 ? -miraAxis.x : miraAxis.x) ?? 0
-        const axis: Jolt.RVec3 = new JOLT.RVec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
+        const axis = getAxis(rotationalFreedom, versionNum).Mul(0.1)
 
         const urdfAutoWheel = isURDFWheel(jointDefinition)
         const urdfWheelBasis = urdfAutoWheel ? inferURDFAutoWheelBasis(axis) : undefined
@@ -768,7 +753,7 @@ class PhysicsSystem extends WorldSystem {
 
         const wheelPos = urdfWheelBasis
             ? convertJoltRVec3ToJoltVec3(anchorPoint)
-            : convertJoltRVec3ToJoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))
+            : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis))
 
         const wheelSettings = new JOLT.WheelSettingsWV()
 
@@ -782,63 +767,25 @@ class PhysicsSystem extends WorldSystem {
         wheelSettings.mSuspensionMaxLength = wheelDimensions.radius * SUSPENSION_MAX_FACTOR
         wheelSettings.mInertia = 1
 
-        const vehicleSettings = new JOLT.VehicleConstraintSettings()
-
         if (urdfWheelBasis) {
-            vehicleSettings.mForward = urdfWheelBasis.forward
-            vehicleSettings.mUp = urdfWheelBasis.up
             wheelSettings.mWheelForward = urdfWheelBasis.forward
             wheelSettings.mWheelUp = urdfWheelBasis.up
             wheelSettings.mSuspensionDirection = urdfWheelBasis.suspensionDirection
             wheelSettings.mSteeringAxis = urdfWheelBasis.steeringAxis
         }
 
-        vehicleSettings.mWheels.clear()
-        vehicleSettings.mWheels.push_back(wheelSettings)
-
-        // Other than maxTorque, these controller settings are not being used as of now
-        // because ArcadeDriveBehavior goes directly to the WheelDrivers.
-        // maxTorque is only used as communication for WheelDriver to get maxAcceleration
-        const controllerSettings = new JOLT.WheeledVehicleControllerSettings()
-        controllerSettings.mEngine.mMaxTorque = maxAcc
-        controllerSettings.mTransmission.mClutchStrength = 10.0
-        controllerSettings.mTransmission.mGearRatios.clear()
-        controllerSettings.mTransmission.mGearRatios.push_back(2)
-        controllerSettings.mTransmission.mMode = JOLT.ETransmissionMode_Auto
-        vehicleSettings.mController = controllerSettings
-
-        vehicleSettings.mAntiRollBars.clear()
-
-        const vehicleConstraint = new JOLT.VehicleConstraint(bodyMain, vehicleSettings)
-        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
-
-        // Wheel Collision Tester
-        const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05)
-        vehicleConstraint.SetVehicleCollisionTester(tester)
-        const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint)
-        this._joltPhysSystem.AddStepListener(listener)
-
-        // const callbacks = new JOLT.VehicleConstraintCallbacksJS()
-        // callbacks.GetCombinedFriction = (_wheelIndex, _tireFrictionDirection, tireFriction, _body2Ptr, _subShapeID2) => {
-        //     return tireFriction
-        // }
-        // callbacks.OnPreStepCallback = (_vehicle, _stepContext) => { };
-        // callbacks.OnPostCollideCallback = (_vehicle, _stepContext) => { };
-        // callbacks.OnPostStepCallback = (_vehicle, _stepContext) => { };
-        // callbacks.SetVehicleConstraint(vehicleConstraint)
-
-        this._joltPhysSystem.AddConstraint(vehicleConstraint)
-        this._joltPhysSystem.AddConstraint(fixedConstraint)
-
-        JOLT.destroy(jointOrigin)
-        JOLT.destroy(jointOriginOffset)
         JOLT.destroy(axis)
-        JOLT.destroy(vehicleSettings)
 
-        this._constraints.push(fixedConstraint, vehicleConstraint)
+        const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc, urdfWheelBasis)
+        const listener = this.createVehicleListeners(vehicleConstraint, bodyWheel)
+
         return [fixedConstraint, vehicleConstraint, listener]
     }
 
+    /**
+     * Ball constraints don't really exist in Jolt,
+     * so we mock them by creating a bunch of hinge constraints along each axis connected to ghost bodies
+     */
     private createBallConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
@@ -846,112 +793,67 @@ class PhysicsSystem extends WorldSystem {
         bodyB: Jolt.Body,
         mechanism: Mechanism
     ): void {
-        const jointOrigin = jointDefinition.origin
-            ? convertMirabufVector3ToJoltVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0)
-        // TODO: Offset transformation for robot builder.
-        const jointOriginOffset = jointInstance.offset
-            ? convertMirabufVector3ToJoltVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0)
+        const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
 
-        const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        const dofs = jointDefinition.custom?.dofs
+        if (!dofs || dofs.length < 3) {
+            console.warn("Empty degrees-of-freedom in joint definition for ball constraint")
+            JOLT.destroy(anchorPoint)
 
-        const pitchDof = jointDefinition.custom!.dofs!.at(0)
-        const yawDof = jointDefinition.custom!.dofs!.at(1)
-        const rollDof = jointDefinition.custom!.dofs!.at(2)
-        const pitchAxis = new JOLT.Vec3(pitchDof?.axis?.x ?? 0, pitchDof?.axis?.y ?? 0, pitchDof?.axis?.z ?? 0)
-        const yawAxis = new JOLT.Vec3(yawDof?.axis?.x ?? 0, yawDof?.axis?.y ?? 0, yawDof?.axis?.z ?? 0)
-        const rollAxis = new JOLT.Vec3(rollDof?.axis?.x ?? 0, rollDof?.axis?.y ?? 0, rollDof?.axis?.z ?? 0)
-
-        const constraints: {
-            axis: Jolt.Vec3
-            friction: number
-            value: number
-            upper?: number
-            lower?: number
-        }[] = []
-
-        if (!pitchDof?.limits || (pitchDof.limits.upper ?? 0) - (pitchDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({
-                axis: pitchAxis,
-                friction: 0.0,
-                value: pitchDof?.value ?? 0,
-                upper: pitchDof?.limits ? (pitchDof.limits.upper ?? 0) : undefined,
-                lower: pitchDof?.limits ? (pitchDof.limits.lower ?? 0) : undefined,
-            })
-        }
-
-        if (!yawDof?.limits || (yawDof.limits.upper ?? 0) - (yawDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({
-                axis: yawAxis,
-                friction: 0.0,
-                value: yawDof?.value ?? 0,
-                upper: yawDof?.limits ? (yawDof.limits.upper ?? 0) : undefined,
-                lower: yawDof?.limits ? (yawDof.limits.lower ?? 0) : undefined,
-            })
-        }
-
-        if (!rollDof?.limits || (rollDof.limits.upper ?? 0) - (rollDof.limits.lower ?? 0) > 0.001) {
-            constraints.push({
-                axis: rollAxis,
-                friction: 0.0,
-                value: rollDof?.value ?? 0,
-                upper: rollDof?.limits ? (rollDof.limits.upper ?? 0) : undefined,
-                lower: rollDof?.limits ? (rollDof.limits.lower ?? 0) : undefined,
-            })
+            return
         }
 
         let bodyStart = bodyB
         let bodyNext = bodyA
-        if (constraints.length > 1) {
-            bodyNext = this.createGhostBody(anchorPoint, false)
-            this._joltBodyInterface.AddBody(bodyNext.GetID(), JOLT.EActivation_Activate)
-            mechanism.ghostBodies.push(bodyNext.GetID())
+
+        const newGhostBody = () => {
+            const gb = this.createGhostBody(anchorPoint, false)
+
+            this._joltBodyInterface.AddBody(gb.GetID(), JOLT.EActivation_Activate)
+            mechanism.ghostBodies.push(gb.GetID())
+
+            return gb
         }
-        for (let i = 0; i < constraints.length; ++i) {
-            const c = constraints[i]
+
+        const createHingeSettingsFromDOFSpecs = (constraint: DOFSpecs) => {
             const hingeSettings = new JOLT.HingeConstraintSettings()
-            hingeSettings.mMaxFrictionTorque = c.friction
-            hingeSettings.mPoint1 = hingeSettings.mPoint2 = convertJoltVec3ToJoltRVec3(anchorPoint, false)
-            hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = c.axis.Normalized()
+            hingeSettings.mMaxFrictionTorque = constraint.friction
+            hingeSettings.mPoint1 = hingeSettings.mPoint2 = anchorPoint
+
+            const axis = constraint.axis.Normalized()
+            hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = axis
             hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = getPerpendicular(hingeSettings.mHingeAxis1)
 
-            if (c.upper && c.lower) {
-                // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
-                // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
-                const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
+            return hingeSettings
+        }
 
-                const currentPos = piSafetyCheck(c.value)
-                const upper = piSafetyCheck(c.upper) - currentPos
-                const lower = piSafetyCheck(c.lower) - currentPos
-
-                hingeSettings.mLimitsMin = -upper
-                hingeSettings.mLimitsMax = -lower
-            }
+        const createHingeConstraintFromDOFSpecs = (constraint: DOFSpecs) => {
+            const hingeSettings = createHingeSettingsFromDOFSpecs(constraint)
+            applyHingeLimits(constraint, hingeSettings)
 
             const hingeConstraint = hingeSettings.Create(bodyStart, bodyNext)
             this._joltPhysSystem.AddConstraint(hingeConstraint)
             this._constraints.push(hingeConstraint)
-            bodyStart = bodyNext
-            if (i == constraints.length - 2) {
-                bodyNext = bodyA
-            } else {
-                bodyNext = this.createGhostBody(anchorPoint, false)
-                this._joltBodyInterface.AddBody(bodyNext.GetID(), JOLT.EActivation_Activate)
-                mechanism.ghostBodies.push(bodyNext.GetID())
-            }
 
             JOLT.destroy(hingeSettings)
-            JOLT.destroy(c.axis)
         }
 
-        JOLT.destroy(anchorPoint)
-        JOLT.destroy(jointOrigin)
-        JOLT.destroy(jointOriginOffset)
-    }
+        const constraintSpecs = createDOFSpecs(dofs)
 
-    private isWheel(jDef: mirabuf.joint.Joint): boolean {
-        return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
+        if (constraintSpecs.length > 1) {
+            bodyNext = newGhostBody()
+        }
+
+        constraintSpecs.forEach((constraintSpecifications, i) => {
+            createHingeConstraintFromDOFSpecs(constraintSpecifications)
+
+            bodyStart = bodyNext
+            bodyNext = i + 2 == constraintSpecs.length ? bodyA : newGhostBody()
+
+            JOLT.destroy(constraintSpecifications.axis)
+        })
+
+        JOLT.destroy(anchorPoint)
     }
 
     /**
@@ -1058,11 +960,6 @@ class PhysicsSystem extends WorldSystem {
 
                 return [partDefinition, partInstance]
             }
-
-            // NOTE
-            // Including these destructions breaks things
-            // JOLT.destroy(minBounds)
-            // JOLT.destroy(maxBounds)
 
             rn.parts.forEach(partId => {
                 const [partDefinition, partInstance] = constructPartDefinition(partId)
@@ -1591,14 +1488,14 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(contactListener)
     }
 
-    private createGhostBody(position: Jolt.Vec3, destroy: boolean = true) {
+    private createGhostBody(position: Jolt.RVec3, destroy: boolean = true) {
         const size = new JOLT.Vec3(0.05, 0.05, 0.05)
         const shape = new JOLT.BoxShape(size)
 
         const rot = new JOLT.Quat(0, 0, 0, 1)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
-            convertJoltVec3ToJoltRVec3(position, destroy),
+            position,
             rot,
             JOLT.EMotionType_Dynamic,
             LAYER_GHOST
@@ -1609,6 +1506,7 @@ class PhysicsSystem extends WorldSystem {
         const body = this._joltBodyInterface.CreateBody(creationSettings)
         this._bodies.push(body.GetID())
 
+        if (destroy) JOLT.destroy(position)
         JOLT.destroy(size)
         JOLT.destroy(rot)
         JOLT.destroy(creationSettings)
@@ -1984,29 +1882,6 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
         }
         return false
     })
-}
-
-function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
-    const v1 = new JOLT.Vec3(0, 1, 0)
-    const v2 = new JOLT.Vec3(0, 0, 1)
-
-    const perp = tryGetPerpendicular(vec, v1) ?? tryGetPerpendicular(vec, v2)!
-
-    JOLT.destroy(v1)
-    JOLT.destroy(v2)
-
-    return perp
-}
-
-function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | undefined {
-    if (Math.abs(Math.abs(vec.Dot(toCheck)) - 1.0) < 0.0001) return undefined
-
-    const a = vec.Dot(toCheck)
-    return new JOLT.Vec3(
-        toCheck.GetX() - vec.GetX() * a,
-        toCheck.GetY() - vec.GetY() * a,
-        toCheck.GetZ() - vec.GetZ() * a
-    ).Normalized()
 }
 
 export type RayCastHit = {
