@@ -83,6 +83,16 @@ class InputSchemeManager {
         EventSystem.dispatch("InputSchemeChanged", { panelId })
     }
 
+    public static rebindOldBrainSchemes() {
+        const schemesByName = new Map(this.allInputSchemes.map(s => [s.schemeName, s] as const))
+        for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap) {
+            const reverted = schemesByName.get(scheme.schemeName)
+            if (reverted && scheme.customized) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, reverted)
+            }
+        }
+    }
+
     /** Creates an array of every input scheme that is either a default or customized by the user. Custom themes will appear on top. */
     public static get allInputSchemes(): InputScheme[] {
         // Start with custom input schemes

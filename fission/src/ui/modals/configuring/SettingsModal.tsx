@@ -1,7 +1,6 @@
 import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
-import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
@@ -11,7 +10,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { Button, Spacer } from "@/ui/components/StyledComponents"
+import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
@@ -503,7 +502,7 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
             <ColorEditor label="Blue Alliance" color={tempBlue} setColor={setTempBlue} />
             <ColorEditor label="Red Alliance" color={tempRed} setColor={setTempRed} />
             <Button
-                startIcon={<GiPerspectiveDiceSixFacesOne />}
+                startIcon={<SynthesisIcons.DICE />}
                 onClick={() => {
                     setTempPrimary(randomColor())
                     setTempSecondary(randomColor())

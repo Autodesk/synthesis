@@ -13,6 +13,7 @@ import type {
     RobotPreferences,
 } from "@/systems/preferences/PreferenceTypes"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -151,6 +152,15 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
     assembly,
 }) => {
     const { openPanel, closePanel } = useUIContext()
+
+    useEffect(() => {
+        if (configMode !== ConfigMode.MOVE) return
+
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
+        return () => {
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
+        }
+    }, [configMode])
 
     switch (configMode) {
         case ConfigMode.INTAKE:
@@ -319,6 +329,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
                 PreferencesSystem.savePreferences()
                 InputSchemeManager.resetDefaultSchemes(panel?.id)
+                InputSchemeManager.rebindOldBrainSchemes()
             }
 
             originalRobotPrefs.current = null
