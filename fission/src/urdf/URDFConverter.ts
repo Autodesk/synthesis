@@ -252,6 +252,40 @@ function extractLinks(doc: Document): URDFLink[] {
     })
 }
 
+const DEFAULT_STEEL_MATERIAL_NAME = "__urdf_default_steel__"
+const DEFAULT_STEEL_RGBA: [number, number, number, number] = [0.647059, 0.647059, 0.647059, 1]
+
+// If no material try find another instance of same mesh to match with.
+// Otherwise fallback to default steel material.
+function fillMissingMaterials(links: URDFLink[]): void {
+    const meshMaterials = new Map<string, { name: string; rgba: [number, number, number, number] }>()
+    for (const link of links) {
+        for (const visual of link.visuals) {
+            if (
+                visual.visualMeshPath &&
+                visual.materialName &&
+                visual.materialRGBA &&
+                !meshMaterials.has(visual.visualMeshPath)
+            ) {
+                meshMaterials.set(visual.visualMeshPath, { name: visual.materialName, rgba: visual.materialRGBA })
+            }
+        }
+    }
+
+    for (const link of links) {
+        for (const visual of link.visuals) {
+            if (visual.materialName && visual.materialRGBA) continue
+            const fallback = (visual.visualMeshPath && meshMaterials.get(visual.visualMeshPath)) || {
+                name: DEFAULT_STEEL_MATERIAL_NAME,
+                rgba: DEFAULT_STEEL_RGBA,
+            }
+
+            visual.materialName = fallback.name
+            visual.materialRGBA = fallback.rgba
+        }
+    }
+}
+
 function extractJoints(doc: Document): URDFJoint[] {
     const validTypes = new Set(["fixed", "revolute", "continuous", "prismatic", "floating", "planar"])
     return Array.from(doc.querySelectorAll("joint")).map(joint => {
@@ -817,6 +851,8 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     const joints = extractJoints(doc)
 
     if (links.length === 0) throw new Error("URDF contains no <link> elements")
+
+    fillMissingMaterials(links)
 
     const childSet = new Set(joints.map(j => j.child))
     const rootLink = links.find(l => !childSet.has(l.name))
