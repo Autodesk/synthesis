@@ -206,37 +206,41 @@ export default function InputSchemeSelection({
                     ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
                     .map((scheme, i) => {
                         return (
-                            <div key={`conflict-${scheme.scheme.schemeName}`}>
+                            <>
                                 {i == 0 && <Divider />}
-                                <SchemeSelector
-                                    scheme={scheme.scheme}
-                                    panelId={panelId}
-                                    brainIndex={brainIndex}
-                                    message={"Conflicts with " + scheme.conflictingSchemeNames}
-                                    conflict={true}
-                                    onEdit={onEdit}
-                                    onSelect={onSelect}
-                                />
-                            </div>
+                                <div key={`conflict-${scheme.scheme.schemeName}`}>
+                                    <SchemeSelector
+                                        scheme={scheme.scheme}
+                                        panelId={panelId}
+                                        brainIndex={brainIndex}
+                                        message={"Conflicts with " + scheme.conflictingSchemeNames}
+                                        conflict={true}
+                                        onEdit={onEdit}
+                                        onSelect={onSelect}
+                                    />
+                                </div>
+                            </>
                         )
                     })}
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
                     .map((scheme, i) => {
                         return (
-                            <div key={`in-use-${scheme.scheme.schemeName}`}>
+                            <>
                                 {i == 0 && <Divider />}
-                                <SchemeSelector
-                                    scheme={scheme.scheme}
-                                    status={scheme.status}
-                                    panelId={panelId}
-                                    brainIndex={brainIndex}
-                                    message="In Use"
-                                    disabled={true}
-                                    onEdit={onEdit}
-                                    onSelect={onSelect}
-                                />
-                            </div>
+                                <div key={`in-use-${scheme.scheme.schemeName}`}>
+                                    <SchemeSelector
+                                        scheme={scheme.scheme}
+                                        status={scheme.status}
+                                        panelId={panelId}
+                                        brainIndex={brainIndex}
+                                        message="In Use"
+                                        disabled={true}
+                                        onEdit={onEdit}
+                                        onSelect={onSelect}
+                                    />
+                                </div>
+                            </>
                         )
                     })}
             </>
