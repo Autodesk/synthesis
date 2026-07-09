@@ -93,7 +93,7 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                                         />
                                         <Stack direction="row" gap={4} className="w-max">
                                             <Label size="sm">{item.name}</Label>
-                                            {item.pointsLabel ? <Label size="sm">{item.pointsLabel}</Label> : null}
+                                            {item.pointsLabel && <Label size="sm">{item.pointsLabel}</Label>}
                                         </Stack>
                                     </Stack>
                                     <Stack

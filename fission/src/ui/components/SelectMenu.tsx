@@ -169,45 +169,35 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
             <Divider />
             {Spacer(12)}
 
+            {/** List of options */}
             {selectedOption === undefined && (
-                <>
-                    {/** List of options */}
-                    <Stack gap={2}>
-                        {options.length > 0 ? (
-                            options.map((option, i) => {
-                                return (
-                                    <OptionCard
-                                        value={option}
-                                        index={i}
-                                        onSelected={val => {
-                                            setSelectedOption(val)
-                                            onOptionSelected(val)
-                                        }}
-                                        key={option.name + i}
-                                        onDelete={onDelete ? () => onDelete(option) : undefined}
-                                        includeDelete={deleteCondition === undefined || deleteCondition(option)}
-                                    />
-                                )
-                            })
-                        ) : (
-                            <>
-                                {/** No options available text */}
-                                <Label size="sm">{noOptionsText ?? "No options available!"}</Label>
-                            </>
-                        )}
-                        {/** Add button */}
-                        {onAddClicked && (
-                            <Button
-                                variant="outlined"
-                                color="success"
-                                onClick={onAddClicked}
-                                id="select-menu-add-button"
-                            >
-                                {SynthesisIcons.ADD_LARGE}
-                            </Button>
-                        )}
-                    </Stack>
-                </>
+                <Stack gap={2}>
+                    {options.length > 0 ? (
+                        options.map((option, i) => {
+                            return (
+                                <OptionCard
+                                    value={option}
+                                    index={i}
+                                    onSelected={val => {
+                                        setSelectedOption(val)
+                                        onOptionSelected(val)
+                                    }}
+                                    key={option.name + i}
+                                    onDelete={onDelete ? () => onDelete(option) : undefined}
+                                    includeDelete={deleteCondition === undefined || deleteCondition(option)}
+                                />
+                            )
+                        })
+                    ) : (
+                        <Label size="sm">{noOptionsText ?? "No options available!"}</Label>
+                    )}
+                    {/** Add button */}
+                    {onAddClicked && (
+                        <Button variant="outlined" color="success" onClick={onAddClicked} id="select-menu-add-button">
+                            {SynthesisIcons.ADD_LARGE}
+                        </Button>
+                    )}
+                </Stack>
             )}
         </>
     )

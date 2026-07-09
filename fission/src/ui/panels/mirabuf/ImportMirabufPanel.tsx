@@ -438,19 +438,15 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             </Tabs>
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
-                    {viewType === MiraType.ROBOT ? (
-                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                            {cachedRobotElements
+                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        {viewType === MiraType.ROBOT
+                            ? cachedRobotElements
                                 ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length === 1 ? "" : "s"}`
-                                : "Loading Saved Robots"}
-                        </Label>
-                    ) : (
-                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                            {cachedFieldElements
-                                ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
-                                : "Loading Saved Fields"}
-                        </Label>
-                    )}
+                                : "Loading Saved Robots"
+                            : cachedFieldElements
+                              ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
+                              : "Loading Saved Fields"}
+                    </Label>
                 </AccordionSummary>
                 <AccordionDetails>
                     {viewType === MiraType.ROBOT ? (
@@ -497,28 +493,22 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 <AccordionDetails>
                     {hubElements && hubElements.length > 0 ? (
                         hubElements
-                    ) : filesStatus.isDone ? (
-                        <Label size="sm">No Assets Found</Label>
                     ) : (
-                        <Label size="sm">Loading from APS...</Label>
+                        <Label size="sm">{filesStatus.isDone ? "No Assets Found" : "Loading from APS..."}</Label>
                     )}
                 </AccordionDetails>
             </Accordion>
             <Accordion>
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
-                    {viewType === MiraType.ROBOT ? (
-                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                            {remoteRobotElements
+                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        {viewType === MiraType.ROBOT
+                            ? remoteRobotElements
                                 ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length === 1 ? "" : "s"}`
-                                : "Loading Default Robots"}
-                        </Label>
-                    ) : (
-                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                            {remoteFieldElements
-                                ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length === 1 ? "" : "s"}`
-                                : "Loading Default Fields"}
-                        </Label>
-                    )}
+                                : "Loading Default Robots"
+                            : remoteFieldElements
+                              ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length === 1 ? "" : "s"}`
+                              : "Loading Default Fields"}
+                    </Label>
                 </AccordionSummary>
                 <AccordionDetails>
                     {viewType === MiraType.ROBOT ? (
