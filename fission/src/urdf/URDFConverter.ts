@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid"
 import { mirabuf } from "@/proto/mirabuf"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
@@ -562,29 +563,26 @@ function buildRigidGroups(
     // would otherwise destabilise Jolt's constraint solver.
     // union(phantom, parent) keeps the real part as the union-find representative.
     const parentJointOf = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
-    const phantomLinks = new Set<string>()
-    for (const link of links) {
-        if (link.visuals.every(visual => visual.visualMeshPath === null) && link.mass === 0) {
-            phantomLinks.add(link.name)
-            const pj = parentJointOf.get(link.name)
-            if (pj) {
-                union(link.name, pj.parent)
+    const isPhantomLink = (link: URDFLink) =>
+        link.visuals.every(visual => visual.visualMeshPath === null) && link.mass === 0
 
-                // Onshape exports cylindrical mates as prismatic -> massless phantom -> continuous.
-                // The generated translation range is often enormous, and the final continuous joint
-                // makes ordinary bolted hardware like motor housings free to spin or orbit in physics.
-                // Collapse that synthetic chain into a rigid group; true drivetrain wheel/steer joints
-                // are separate non-cylindrical joints and remain physical.
-                if (isCylindricalPhantom(link, pj)) {
-                    for (const childJoint of childJointsByParent.get(link.name) ?? []) {
-                        if (childJoint.type === "continuous" || childJoint.type === "revolute") {
-                            union(childJoint.child, pj.parent)
-                        }
-                    }
-                }
-            }
-        }
-    }
+    const phantomWithParentJoint = links
+        .filter(isPhantomLink)
+        .map(link => ({ link, pj: parentJointOf.get(link.name) }))
+        .filter((x): x is { link: URDFLink; pj: URDFJoint } => x.pj !== undefined)
+
+    phantomWithParentJoint.forEach(({ link, pj }) => union(link.name, pj.parent))
+
+    // Onshape exports cylindrical mates as prismatic -> massless phantom -> continuous.
+    // The generated translation range is often enormous, and the final continuous joint
+    // makes ordinary bolted hardware like motor housings free to spin or orbit in physics.
+    // Collapse that synthetic chain into a rigid group; true drivetrain wheel/steer joints
+    // are separate non-cylindrical joints and remain physical.
+    phantomWithParentJoint
+        .filter(({ link, pj }) => isCylindricalPhantom(link, pj))
+        .flatMap(({ link, pj }) => (childJointsByParent.get(link.name) ?? []).map(childJoint => ({ childJoint, pj })))
+        .filter(({ childJoint }) => childJoint.type === "continuous" || childJoint.type === "revolute")
+        .forEach(({ childJoint, pj }) => union(childJoint.child, pj.parent))
 
     // Loop-closure links are synthetic bookkeeping links. Phantom links, however, must remain
     // in emitted rigid-group occurrences so MirabufParser maps joints that reference them onto
@@ -619,8 +617,10 @@ function mapJointMotion(type: URDFJoint["type"]): mirabuf.joint.JointMotion {
     return mirabuf.joint.JointMotion.RIGID
 }
 
+const ZERO_TRAVEL_EPSILON = 1e-6 // metres, prismatic joints with a range below this are treated as fixed
+
 function isZeroTravelPrismatic(joint: URDFJoint): boolean {
-    return joint.type === "prismatic" && Math.abs(joint.limitUpper - joint.limitLower) <= 1e-6
+    return joint.type === "prismatic" && Math.abs(joint.limitUpper - joint.limitLower) <= ZERO_TRAVEL_EPSILON
 }
 
 function isCylindricalPhantom(link: URDFLink, parentJoint: URDFJoint): boolean {
@@ -775,14 +775,13 @@ function buildJointDefinition(joint: URDFJoint, frame?: JointFrame): mirabuf.joi
 
     if (motionType === mirabuf.joint.JointMotion.REVOLUTE) {
         const axis = axisToYup(...(frame?.axisXYZ ?? joint.axisXYZ))
-        const isContiguous = joint.type === "continuous"
+        const isContinuous = joint.type === "continuous"
         jDef.rotational = {
             rotationalFreedom: {
                 axis,
-                limits: {
-                    lower: isContiguous ? -Math.PI * 1e6 : joint.limitLower,
-                    upper: isContiguous ? Math.PI * 1e6 : joint.limitUpper,
-                },
+                // Omitting limits (rather than a huge fake range) is how ConstraintSettingsUtilities
+                // recognizes an unbounded hinge - applyHingeLimits clamps any explicit range to ±π.
+                limits: isContinuous ? undefined : { lower: joint.limitLower, upper: joint.limitUpper },
                 value: 0,
             },
         }
@@ -791,7 +790,7 @@ function buildJointDefinition(joint: URDFJoint, frame?: JointFrame): mirabuf.joi
         jDef.prismatic = {
             prismaticFreedom: {
                 axis,
-                // PhysicsSystem.ts:574 multiplies limits by 0.01 (cm->m), so store in cm
+                // Prismatic limits are stored in cm; PhysicsSystem multiplies them by 0.01 (cm->m).
                 limits: { lower: joint.limitLower * 100, upper: joint.limitUpper * 100 },
                 value: 0,
             },
@@ -888,7 +887,7 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     const hierarchy = buildDesignHierarchy(joints, rootLink.name)
 
     return mirabuf.Assembly.create({
-        info: { GUID: robotName, name: robotName, version: 5 },
+        info: { GUID: uuidv4(), name: robotName, version: 5 },
         dynamic: true,
         designHierarchy: hierarchy,
         data: {

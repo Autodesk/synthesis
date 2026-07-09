@@ -118,7 +118,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     })
                 }
             } catch (e) {
-                console.error("[URDF Import]", e)
+                console.error("[Import]", e)
                 globalOpenModal(ImportLocalMirabufModal, {
                     configurationType: miraTypeToConfigType(miraType),
                     errorMessage: e instanceof Error ? e.message : "An unknown error occurred during import.",

@@ -4,7 +4,7 @@ import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
 import { URDF_WHEEL_TAG } from "./URDFUserData"
 
-const MESH_EXTENSIONS = new Set(["stl", "obj", "dae"])
+const MESH_EXTENSIONS = new Set(["stl", "obj"])
 
 export function applyConservativeURDFImport(assembly: mirabuf.Assembly): void {
     const jointData = assembly.data?.joints
@@ -52,12 +52,14 @@ function validateURDFMeshFormats(urdfText: string): void {
     const meshFilenames = [...doc.querySelectorAll("mesh[filename]")].map(el => el.getAttribute("filename")!)
     const unsupported = meshFilenames.filter(f => {
         const ext = f.split(".").pop()?.toLowerCase()
-        return ext !== "stl"
+        return ext !== "stl" && ext !== "obj"
     })
 
     if (unsupported.length > 0) {
         const formats = [...new Set(unsupported.map(f => `.${f.split(".").pop()?.toLowerCase() ?? "unknown"}`))]
-        throw new Error(`Unsupported mesh format(s) in URDF: ${formats.join(", ")}. Only STL exports are supported.`)
+        throw new Error(
+            `Unsupported mesh format(s) in URDF: ${formats.join(", ")}. Only STL and OBJ exports are supported.`
+        )
     }
 }
 
