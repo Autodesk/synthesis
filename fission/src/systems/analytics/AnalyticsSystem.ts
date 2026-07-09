@@ -116,7 +116,7 @@ class AnalyticsSystem extends WorldSystem {
     public constructor() {
         super()
 
-        this._consent = PreferencesSystem.getGlobalPreference("ReportAnalytics")
+        this._consent = PreferencesSystem.getUserPreference("ReportAnalytics")
         init({
             measurementId: "G-6XNCRD7QNC",
             debug: import.meta.env.DEV,

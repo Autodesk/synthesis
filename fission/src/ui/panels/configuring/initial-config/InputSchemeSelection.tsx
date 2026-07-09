@@ -104,14 +104,14 @@ export default function InputSchemeSelection({
                                 // Fetch current custom schemes
                                 InputSchemeManager.saveSchemes(panelId)
                                 InputSchemeManager.resetDefaultSchemes(panelId)
-                                const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+                                const schemes = PreferencesSystem.getUserPreference("InputSchemes")
 
                                 // Find and remove this input scheme
                                 const index = schemes.indexOf(scheme)
                                 schemes.splice(index, 1)
 
                                 // Save to preferences
-                                PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
+                                PreferencesSystem.setUserPreference("InputSchemes", schemes)
                                 PreferencesSystem.savePreferences()
 
                                 // Update the available schemes list to reflect the deletion

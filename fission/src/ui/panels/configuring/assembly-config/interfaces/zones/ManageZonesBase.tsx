@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
@@ -37,7 +36,7 @@ function saveZonesGeneric<TZone extends BaseZonePreferences>(
 ) {
     if (!zones || !field) return
     persistZones(zones, field)
-    PreferencesSystem.savePreferences()
+    field.savePreferences()
 }
 
 export default function ManageZonesBase<TZone extends BaseZonePreferences>(props: ManageZonesBaseProps<TZone>) {

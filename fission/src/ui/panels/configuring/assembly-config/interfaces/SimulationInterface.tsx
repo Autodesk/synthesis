@@ -19,9 +19,7 @@ export default function SimulationInterface({
     panel,
 }: SimulationInterfaceProps & PanelImplProps<void, ConfigurePanelCustomProps>) {
     const { openPanel, closePanel } = useUIContext()
-    const [autoReconnect, setAutoReconnect] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference("SimAutoReconnect")
-    )
+    const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
 
     return (
         <>
@@ -29,7 +27,7 @@ export default function SimulationInterface({
                 label="Auto Reconnect?"
                 checked={autoReconnect}
                 onClick={_ => {
-                    PreferencesSystem.setGlobalPreference("SimAutoReconnect", !autoReconnect)
+                    PreferencesSystem.setUserPreference("SimAutoReconnect", !autoReconnect)
                     setAutoReconnect(!autoReconnect)
                 }}
             />
