@@ -46,9 +46,6 @@ describe("React Mounting", async () => {
     test("App fully mounts through main.tsx", async ({ annotate, skip }) => {
         skip(server.browser == "firefox", "WebGL bug in Github Actions on Firefox")
 
-        // The MainMenu/MainHUD "Singleplayer" gate was removed: the app now boots
-        // straight into the scene, so World.initWorld runs automatically on mount.
-        // Spy before importing main.tsx to capture that call.
         const initWorldSpy = vi.spyOn(World, "initWorld")
 
         // biome-ignore lint/suspicious/noTsIgnore: ts-expect-error doesn't work here for some reason
