@@ -1,223 +1,57 @@
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
-import { ContactType } from "@/mirabuf/ZoneTypes.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import { MatchModeType } from "@/systems/match_mode/MatchModeTypes.ts"
 import {
-    type CameraPoint,
     defaultFieldPreferences,
-    defaultRobotPreferences,
-    type EjectorPreferences,
     type FieldPreferences,
-    type IntakePreferences,
     type ProtectedZonePreferences,
     type RobotPreferences,
     type ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 
 export interface DevtoolMiraData {
+    "synthesis:field_preferences": FieldPreferences
+    "synthesis:robot_preferences": RobotPreferences
     "devtool:scoring_zones": ScoringZonePreferences[]
     "devtool:protected_zones": ProtectedZonePreferences[]
     "devtool:spawn_locations": FieldPreferences["spawnLocations"]
-    "devtool:camera_points": FieldPreferences["cameraPoints"]
     "devtool:robot_ejector": RobotPreferences["ejector"]
     "devtool:robot_intake": RobotPreferences["intake"]
-    "devtool:a": unknown
-    "devtool:b": unknown
-    "devtool:test": unknown
-    "devtool:keep": unknown
-    "devtool:drop": unknown
-    "devtool:bad": unknown
-    "devtool:foo": unknown
     // additional devtool keys to be added in future
 }
 
-function isValidCameraLook(look: unknown): look is CameraPoint["look"] {
-    if (typeof look !== "object" || look === null || !("type" in look)) return false
-    switch (look.type) {
-        case "field":
-            return true
-        case "rotation": {
-            const { yaw, pitch } = look as { yaw?: unknown; pitch?: unknown }
-            return typeof yaw === "number" && typeof pitch === "number"
-        }
-        default:
-            return false
+export type SynthesisDevtoolKey = keyof DevtoolMiraData & `synthesis:${string}`
+
+export type DevtoolHandlerMap = {
+    [K in SynthesisDevtoolKey]: {
+        get(object: MirabufSceneObject): DevtoolMiraData[K]
+        set(object: MirabufSceneObject, val: DevtoolMiraData[K]): void
     }
 }
 
-export const devtoolHandlers = {
-    "devtool:scoring_zones": {
-        get(field) {
-            return field.fieldPreferences?.scoringZones ?? defaultFieldPreferences().scoringZones
+export const devtoolHandlers: DevtoolHandlerMap = {
+    "synthesis:field_preferences": {
+        get(object) {
+            return object.fieldPreferences ?? defaultFieldPreferences()
         },
-        set(field, val) {
-            val ??= defaultFieldPreferences().scoringZones
-            if (!field.fieldPreferences || !this.validate(val)) {
-                console.warn("validation failed", val, field.fieldPreferences)
-                return
-            }
-            field.fieldPreferences.scoringZones = val
-            field.updateScoringZones()
-        },
-        validate(val): val is ScoringZonePreferences[] {
-            if (!Array.isArray(val)) return false
-            return val.every(
-                z =>
-                    typeof z === "object" &&
-                    z !== null &&
-                    typeof z.name === "string" &&
-                    (z.alliance === "red" || z.alliance === "blue") &&
-                    (typeof z.parentNode === "string" || z.parentNode === undefined) &&
-                    typeof z.points === "number" &&
-                    typeof z.destroyGamepiece === "boolean" &&
-                    (typeof z.shouldPointsAccumulate === "boolean" || typeof z.persistentPoints === "boolean") &&
-                    Array.isArray(z.deltaTransformation)
-            )
+        set(object, value) {
+            PreferencesSystem.setFieldPreferences(object.assemblyId, value)
+            object.loadPreferences(false)
+            object.updateProtectedZones()
+            object.updateScoringZones()
         },
     },
-    "devtool:protected_zones": {
-        get(field) {
-            return field.fieldPreferences?.protectedZones ?? defaultFieldPreferences().protectedZones
+    "synthesis:robot_preferences": {
+        get(object) {
+            return object.robotPreferences
         },
-        set(field, val) {
-            val ??= defaultFieldPreferences().protectedZones
-            if (!field.fieldPreferences || !this.validate(val)) {
-                console.warn("validation failed", val, field.fieldPreferences)
-                return
-            }
-            field.fieldPreferences.protectedZones = val
-            field.updateProtectedZones()
-        },
-        validate(val): val is ProtectedZonePreferences[] {
-            if (!Array.isArray(val)) return false
-            return val.every(
-                z =>
-                    typeof z === "object" &&
-                    z !== null &&
-                    typeof z.name === "string" &&
-                    (z.alliance === "red" || z.alliance === "blue") &&
-                    (typeof z.parentNode === "string" || z.parentNode === undefined) &&
-                    typeof z.penaltyPoints === "number" &&
-                    typeof z.contactType === "string" &&
-                    Object.values(ContactType).includes(z.contactType as ContactType) &&
-                    Array.isArray(z.activeDuring) &&
-                    z.activeDuring.every(
-                        (v: unknown) =>
-                            typeof v === "string" && Object.values(MatchModeType).includes(v as MatchModeType)
-                    ) &&
-                    Array.isArray(z.deltaTransformation)
-            )
+        set(object, value) {
+            PreferencesSystem.setRobotPreferences(object.assemblyId, value)
+            object.loadPreferences(false)
+            object.updateIntakeSensor()
         },
     },
-    "devtool:spawn_locations": {
-        get(field) {
-            return field.fieldPreferences?.spawnLocations ?? defaultFieldPreferences().spawnLocations
-        },
-        set(field, val) {
-            val ??= defaultFieldPreferences().spawnLocations
-            if (!field.fieldPreferences || !this.validate(val)) {
-                console.warn("validation failed", val, field.fieldPreferences)
-                return
-            }
-            field.fieldPreferences.spawnLocations = val
-        },
-        validate(val: unknown): val is FieldPreferences["spawnLocations"] {
-            const isStructureCorrect =
-                typeof val === "object" &&
-                val != null &&
-                "red" in val &&
-                "blue" in val &&
-                "default" in val &&
-                "hasConfiguredLocations" in val
-
-            if (!isStructureCorrect) return false
-            return (["red", "blue"] as const).every(v => {
-                const obj = val[v]
-                if (!(typeof obj === "object" && obj != null && 1 in obj && 2 in obj && 3 in obj)) return false
-                return ([1, 2, 3] as const).every(v => {
-                    const spawnposition = obj[v]
-                    return (
-                        typeof spawnposition == "object" &&
-                        spawnposition != null &&
-                        "pos" in spawnposition &&
-                        "yaw" in spawnposition &&
-                        Array.isArray(spawnposition["pos"]) &&
-                        spawnposition["pos"].length == 3 &&
-                        typeof spawnposition["yaw"] == "number"
-                    )
-                })
-            })
-        },
-    },
-    "devtool:camera_points": {
-        get(field) {
-            return field.fieldPreferences?.cameraPoints ?? defaultFieldPreferences().cameraPoints
-        },
-        set(field, val) {
-            val ??= defaultFieldPreferences().cameraPoints
-            if (!field.fieldPreferences || !this.validate(val)) {
-                console.warn("validation failed", val, field.fieldPreferences)
-                return
-            }
-            field.fieldPreferences.cameraPoints = val
-        },
-        validate(val): val is CameraPoint[] {
-            if (!Array.isArray(val)) return false
-            return val.every(
-                point =>
-                    typeof point === "object" &&
-                    point !== null &&
-                    typeof point.name === "string" &&
-                    Array.isArray(point.pos) &&
-                    point.pos.length === 3 &&
-                    point.pos.every((c: unknown) => typeof c === "number") &&
-                    isValidCameraLook(point.look)
-            )
-        },
-    },
-    "devtool:robot_intake": {
-        get(robot) {
-            return robot.intakePreferences ?? defaultRobotPreferences().intake
-        },
-        set(robot, val) {
-            val ??= defaultRobotPreferences().intake
-            if (!robot.intakePreferences || !this.validate(val)) {
-                console.warn("validation failed", val, robot.intakePreferences)
-                return
-            }
-            robot.intakePreferences = val
-            robot.updateIntakeSensor()
-        },
-        validate(z): z is IntakePreferences {
-            return typeof z === "object" && z !== null
-        },
-    },
-    "devtool:robot_ejector": {
-        get(robot) {
-            return robot.ejectorPreferences ?? defaultRobotPreferences().ejector
-        },
-        set(robot, val) {
-            val ??= defaultRobotPreferences().ejector
-            if (!robot.ejectorPreferences || !this.validate(val)) {
-                console.warn("validation failed", val, robot.ejectorPreferences)
-                return
-            }
-            robot.ejectorPreferences = val
-        },
-        validate(z): z is EjectorPreferences {
-            return typeof z === "object" && z !== null
-        },
-    },
-} as const satisfies Partial<{
-    [K in keyof DevtoolMiraData]: {
-        get(object: MirabufSceneObject): DevtoolMiraData[K]
-        set(object: MirabufSceneObject, val: unknown | null): void
-        validate(val: unknown): val is DevtoolMiraData[K]
-    }
-}>
-
-export type DevtoolKey = keyof typeof devtoolHandlers
-export const devtoolKeys = Object.keys(devtoolHandlers) as DevtoolKey[]
+}
 
 /**
  * Utility for reading and writing developer tool data in the mira file's UserData field.
@@ -236,6 +70,37 @@ export default class FieldMiraEditor {
         }
     }
 
+    migrateDevtoolFieldData(prefs: FieldPreferences): void {
+        const scoringZones = this.getUserData("devtool:scoring_zones")
+        if (scoringZones !== undefined) {
+            prefs.scoringZones = scoringZones
+        }
+        const protectedZones = this.getUserData("devtool:protected_zones")
+        if (protectedZones !== undefined) {
+            prefs.protectedZones = protectedZones
+        }
+        const spawnLocations = this.getUserData("devtool:spawn_locations")
+        if (spawnLocations !== undefined) {
+            prefs.spawnLocations = spawnLocations
+        }
+
+        this.removeUserData("devtool:scoring_zones")
+        this.removeUserData("devtool:protected_zones")
+        this.removeUserData("devtool:spawn_locations")
+    }
+
+    migrateDevtoolRobotData(prefs: RobotPreferences): void {
+        const intakeSettings = this.getUserData("devtool:robot_intake")
+        if (intakeSettings !== undefined) {
+            prefs.intake = intakeSettings
+        }
+        const ejectorSettings = this.getUserData("devtool:robot_ejector")
+        if (ejectorSettings !== undefined) {
+            prefs.ejector = ejectorSettings
+        }
+        this.removeUserData("devtool:robot_intake")
+        this.removeUserData("devtool:robot_ejector")
+    }
     /**
      * Get parsed data for a devtool key (e.g., 'devtool:scoring_zones').
      */
@@ -252,7 +117,7 @@ export default class FieldMiraEditor {
     /**
      * Set data for a devtool key. Value will be stringified as JSON.
      */
-    setUserData<K extends keyof DevtoolMiraData>(key: K, value: DevtoolMiraData[K]): void {
+    setUserData<K extends keyof DevtoolMiraData & `synthesis:${string}`>(key: K, value: DevtoolMiraData[K]): void {
         this._parts.userData!.data![key] = JSON.stringify(value)
     }
 
@@ -266,7 +131,9 @@ export default class FieldMiraEditor {
     /**
      * Get all devtool keys currently in userData.
      */
-    getAllDevtoolKeys(): string[] {
-        return Object.keys(this._parts.userData!.data!).filter(k => k.startsWith("devtool:"))
+    getSynthesisKeys(): SynthesisDevtoolKey[] {
+        return Object.keys(this._parts.userData!.data!)
+            .filter(k => k.startsWith("synthesis:"))
+            .map(key => key as SynthesisDevtoolKey)
     }
 }

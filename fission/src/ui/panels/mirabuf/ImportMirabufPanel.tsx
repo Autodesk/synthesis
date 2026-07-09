@@ -106,7 +106,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
     await MirabufCachingService.get(info.hash)
         .then(async assembly => {
             if (assembly) {
-                await createMirabuf(assembly, progressHandle).then(async mirabufSceneObject => {
+                await createMirabuf(info.hash, assembly, progressHandle).then(async mirabufSceneObject => {
                     if (mirabufSceneObject) {
                         World.sceneRenderer.registerSceneObject(mirabufSceneObject)
 

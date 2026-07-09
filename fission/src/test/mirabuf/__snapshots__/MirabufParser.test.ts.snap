@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Mirabuf Parser Tests > Generate Rigid Nodes (Dozer_v10.mira) 1`] = `
+exports[`Mirabuf Parser Tests > Generate Rigid Nodes (Dozer) 1`] = `
 ArrayBuffer [
   -58,
   -101,
@@ -25,7 +25,7 @@ ArrayBuffer [
 ]
 `;
 
-exports[`Mirabuf Parser Tests > Generate Rigid Nodes (FRC Field 2018_v13.mira) 1`] = `
+exports[`Mirabuf Parser Tests > Generate Rigid Nodes (FRC Field 2018) 1`] = `
 ArrayBuffer [
   49,
   4,

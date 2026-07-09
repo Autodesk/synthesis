@@ -6,70 +6,69 @@ import {
     defaultFieldPreferences,
     type FieldPreferences,
     type GraphicsPreferences,
-    type MotorPreferences,
     type RobotPreferences,
 } from "@/systems/preferences/PreferenceTypes"
 
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", 7)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", false)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ZoomSensitivity", 7)
+        PreferencesSystem.setUserPreference("RenderSceneTags", false)
+        PreferencesSystem.setUserPreference("RenderScoreboard", false)
 
-        expect(PreferencesSystem.getGlobalPreference("ZoomSensitivity")).toBe(7)
-        expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(false)
-        expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(7)
+        expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
     })
 
     test("Setting without saving", async () => {
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", 13)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", false)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", true)
+        PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
+        PreferencesSystem.setUserPreference("RenderSceneTags", false)
+        PreferencesSystem.setUserPreference("RenderScoreboard", true)
 
         window.localStorage.setItem("Preferences", "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
 
-        expect(PreferencesSystem.getGlobalPreference("ZoomSensitivity")).toBe(15)
-        expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
+        expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
     })
 
     test("Reset to default if undefined", () => {
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", undefined as unknown as number)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", undefined as unknown as boolean)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", undefined as unknown as boolean)
+        PreferencesSystem.setUserPreference("ZoomSensitivity", undefined as unknown as number)
+        PreferencesSystem.setUserPreference("RenderSceneTags", undefined as unknown as boolean)
+        PreferencesSystem.setUserPreference("RenderScoreboard", undefined as unknown as boolean)
 
-        expect(PreferencesSystem.getGlobalPreference("ZoomSensitivity")).toBe(15)
-        expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
+        expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
     })
 
     test("Setting then saving", () => {
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", 13)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", true)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
+        PreferencesSystem.setUserPreference("RenderSceneTags", true)
+        PreferencesSystem.setUserPreference("RenderScoreboard", false)
 
         PreferencesSystem.savePreferences()
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", 20)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", false)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", true)
+        PreferencesSystem.setUserPreference("ZoomSensitivity", 20)
+        PreferencesSystem.setUserPreference("RenderSceneTags", false)
+        PreferencesSystem.setUserPreference("RenderScoreboard", true)
         PreferencesSystem.loadPreferences()
 
-        expect(PreferencesSystem.getGlobalPreference("ZoomSensitivity")).toBe(13)
-        expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(13)
+        expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
     })
 
     test("Clearing preferences", () => {
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", 13)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", true)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
+        PreferencesSystem.setUserPreference("RenderSceneTags", true)
+        PreferencesSystem.setUserPreference("RenderScoreboard", false)
 
         PreferencesSystem.clearPreferences()
 
-        expect(PreferencesSystem.getGlobalPreference("ZoomSensitivity")).toBe(15)
-        expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
+        expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
     })
 
     test("Graphics preferences", () => {
@@ -101,21 +100,6 @@ describe("Preferences System Global Values", () => {
 })
 
 describe("Preference System Robot/Field", () => {
-    test("Setting motor preferences", () => {
-        const motorPreferences1: MotorPreferences = { name: "testName", maxAcceleration: 10, maxVelocity: 5 }
-        const motorPreferences2: MotorPreferences = { name: "testName2", maxAcceleration: 20, maxVelocity: 10 }
-
-        PreferencesSystem.setMotorPreferences("MotorPreferences1", motorPreferences1)
-        PreferencesSystem.setMotorPreferences("MotorPreferences2", motorPreferences2)
-
-        expect(PreferencesSystem.getMotorPreferences("MotorPreferences1")).toEqual(motorPreferences1)
-        expect(PreferencesSystem.getMotorPreferences("MotorPreferences2")).toEqual(motorPreferences2)
-        expect(PreferencesSystem.getAllMotorPreferences()).toEqual({
-            MotorPreferences1: motorPreferences1,
-            MotorPreferences2: motorPreferences2,
-        })
-    })
-
     test("Setting robot preferences", () => {
         const robotPreferences1: RobotPreferences = {
             inputsSchemes: [],
@@ -165,10 +149,6 @@ describe("Preference System Robot/Field", () => {
 
         expect(PreferencesSystem.getRobotPreferences("RobotPreferences1")).toEqual(robotPreferences1)
         expect(PreferencesSystem.getRobotPreferences("RobotPreferences2")).toEqual(robotPreferences2)
-        expect(PreferencesSystem.getAllRobotPreferences()).toEqual({
-            RobotPreferences1: robotPreferences1,
-            RobotPreferences2: robotPreferences2,
-        })
     })
 
     test("Setting field preferences", () => {
@@ -220,9 +200,5 @@ describe("Preference System Robot/Field", () => {
 
         expect(PreferencesSystem.getFieldPreferences("FieldPreferences1")).toEqual(fieldPreferences1)
         expect(PreferencesSystem.getFieldPreferences("FieldPreferences2")).toEqual(fieldPreferences2)
-        expect(PreferencesSystem.getAllFieldPreferences()).toEqual({
-            FieldPreferences1: fieldPreferences1,
-            FieldPreferences2: fieldPreferences2,
-        })
     })
 })

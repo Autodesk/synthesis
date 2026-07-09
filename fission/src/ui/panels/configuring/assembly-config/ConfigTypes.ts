@@ -37,4 +37,5 @@ export enum ConfigMode {
     BRAIN,
     DRIVETRAIN,
     ALLIANCE,
+    METADATA,
 }

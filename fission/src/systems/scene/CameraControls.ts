@@ -479,7 +479,7 @@ export class CustomTargetControls extends CameraControls {
         const augmentedMovement = augmentMovement(this._mainCamera, this._coords.r, [movement[0], movement[1]])
         const pan = new THREE.Vector3(-augmentedMovement[0], augmentedMovement[1], 0)
             .applyQuaternion(orientation)
-            .multiplyScalar(PreferencesSystem.getGlobalPreference("ScenePanSensitivity"))
+            .multiplyScalar(PreferencesSystem.getUserPreference("ScenePanSensitivity"))
         const newPos = this.focusWorldPosition()
         newPos.add(pan)
         this._focus.setPosition(newPos)
@@ -594,7 +594,7 @@ export class CustomTargetControls extends CameraControls {
         }
 
         if (this.enabled) {
-            const rotationSensitivity = PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
+            const rotationSensitivity = PreferencesSystem.getUserPreference("SceneRotationSensitivity")
             this._coords.theta += (this._nextTheta - this._coords.theta) * deltaT * rotationSensitivity
             this._coords.phi += (this._nextPhi - this._coords.phi) * deltaT * rotationSensitivity
             this._orbitZoom.step(deltaT)

@@ -74,7 +74,7 @@ class SliderDriver extends Driver {
         motorSettings.mSpringSettings = springSettings
 
         this._maxForceWithGrav = motorSettings.get_mMaxForceLimit()
-        if (!PreferencesSystem.getGlobalPreference("SubsystemGravity")) {
+        if (!PreferencesSystem.getUserPreference("SubsystemGravity")) {
             motorSettings.set_mMaxForceLimit(MAX_FORCE_WITHOUT_GRAV)
             motorSettings.set_mMinForceLimit(-MAX_FORCE_WITHOUT_GRAV)
         }
