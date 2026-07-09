@@ -67,5 +67,10 @@ export function parseOBJ(data: Uint8Array): ParsedMesh {
         }
     }
 
-    return { verts: outVerts, normals: outNormals, indices: outIndices, uv: outUVs }
+    return {
+        verts: Float32Array.from(outVerts),
+        normals: Float32Array.from(outNormals),
+        indices: Uint32Array.from(outIndices),
+        uv: Float32Array.from(outUVs),
+    }
 }

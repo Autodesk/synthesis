@@ -354,7 +354,9 @@ class PhysicsSystem extends WorldSystem {
         settings.mDensity = density
 
         for (let i = 0; i < points.length; i += 3) {
-            settings.mPoints.push_back(new JOLT.Vec3(points[i], points[i + 1], points[i + 2]))
+            const point = new JOLT.Vec3(points[i], points[i + 1], points[i + 2])
+            settings.mPoints.push_back(point)
+            JOLT.destroy(point)
         }
 
         return settings.Create()
@@ -1043,9 +1045,13 @@ class PhysicsSystem extends WorldSystem {
                 compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
                 shapesAdded++
 
-                this.updateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
-                this.updateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
+                const worldMin = transform.Multiply3x3(partMin)
+                const worldMax = transform.Multiply3x3(partMax)
+                this.updateMinMaxBounds(worldMin, minBounds, maxBounds)
+                this.updateMinMaxBounds(worldMax, minBounds, maxBounds)
 
+                JOLT.destroy(worldMin)
+                JOLT.destroy(worldMax)
                 JOLT.destroy(partMin)
                 JOLT.destroy(partMax)
                 JOLT.destroy(transform)
@@ -1232,6 +1238,7 @@ class PhysicsSystem extends WorldSystem {
                 const vert = convertMirabufFloatToArrJoltVec3(verts, i)
                 points.push_back(vert)
                 this.updateMinMaxBounds(vert, min, max)
+                JOLT.destroy(vert)
             }
         })
 
@@ -1263,7 +1270,9 @@ class PhysicsSystem extends WorldSystem {
         settings.mIndexedTriangles = new JOLT.IndexedTriangleList()
         settings.mMaterials = new JOLT.PhysicsMaterialList()
 
-        settings.mMaterials.push_back(new JOLT.PhysicsMaterial())
+        const material = new JOLT.PhysicsMaterial()
+        settings.mMaterials.push_back(material)
+        JOLT.destroy(material)
 
         const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
@@ -1283,6 +1292,7 @@ class PhysicsSystem extends WorldSystem {
                 this.updateMinMaxBounds(vertVec, min, max)
 
                 JOLT.destroy(vertVec)
+                JOLT.destroy(vert)
             }
 
             for (let i = 0; i < indexArr.length; i += 3) {
@@ -1294,7 +1304,9 @@ class PhysicsSystem extends WorldSystem {
                 if (b > maxIndex) maxIndex = b
                 if (c > maxIndex) maxIndex = c
 
-                settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(a, b, c, 0))
+                const triangle = new JOLT.IndexedTriangle(a, b, c, 0)
+                settings.mIndexedTriangles.push_back(triangle)
+                JOLT.destroy(triangle)
             }
         })
 
