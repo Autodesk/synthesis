@@ -1,9 +1,9 @@
 import { Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { FaCheck, FaXmark } from "react-icons/fa6"
 import { getIsConnected, hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 import Label from "@/ui/components/Label"
+import { SynthesisIcons } from "./StyledComponents"
 
 const WPILibConnectionStatus: React.FC = () => {
     const [status, setStatus] = useState<boolean>(false)
@@ -24,9 +24,9 @@ const WPILibConnectionStatus: React.FC = () => {
             className="select-none absolute right-1 top-1 py-2 px-4 rounded-lg gap-2"
         >
             {status ? (
-                <FaCheck className="text-green-500 self-center" />
+                <SynthesisIcons.CHECK className="text-green-500 self-center" />
             ) : (
-                <FaXmark className="text-cancel-button self-center" />
+                <SynthesisIcons.XMARK className="text-cancel-button self-center" />
             )}
             <Label size="sm">Code Connection</Label>
         </Stack>

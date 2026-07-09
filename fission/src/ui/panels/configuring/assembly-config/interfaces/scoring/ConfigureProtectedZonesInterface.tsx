@@ -43,7 +43,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
 
                         {/** Back arrow button when an option is selected */}
                         <Button
-                            startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
+                            startIcon={<SynthesisIcons.LEFT_ARROW_LARGE />}
                             onClick={() => {
                                 EventSystem.dispatch("ConfigurationSavedEvent")
                                 setSelectedZone(undefined)
