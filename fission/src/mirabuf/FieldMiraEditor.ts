@@ -132,6 +132,8 @@ export default class FieldMiraEditor {
      * Get all devtool keys currently in userData.
      */
     getSynthesisKeys(): SynthesisDevtoolKey[] {
-        return Object.keys(this._parts.userData!.data!).filter(k => k.startsWith("synthesis:")).map((key) => key as SynthesisDevtoolKey)
+        return Object.keys(this._parts.userData!.data!)
+            .filter(k => k.startsWith("synthesis:"))
+            .map(key => key as SynthesisDevtoolKey)
     }
 }

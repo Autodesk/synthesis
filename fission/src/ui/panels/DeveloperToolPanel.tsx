@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
-import FieldMiraEditor, {devtoolHandlers, SynthesisDevtoolKey} from "../../mirabuf/FieldMiraEditor"
+import FieldMiraEditor, { devtoolHandlers, type SynthesisDevtoolKey } from "../../mirabuf/FieldMiraEditor"
 import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { Button } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import SelectMenu from "@/components/SelectMenu.tsx"
 import { AssemblySelectionOption } from "@/panels/configuring/assembly-config/configure/AssemblySelection.tsx"
-import {tryParse} from "@/util/Utility.ts";
+import { tryParse } from "@/util/Utility.ts"
 
 const devtoolKeys = Object.keys(devtoolHandlers) as SynthesisDevtoolKey[]
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
@@ -78,7 +78,6 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         setKeys(editor.getSynthesisKeys())
 
         devtoolHandlers[selectedKey]?.set(activeObj, parsed)
-
     }
 
     const handleExport = () => {
@@ -140,7 +139,10 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                                 {keys.length === 0 && <li className="text-gray-400 italic">No devtool data</li>}
                                 {keys.map(key => (
                                     <li key={key} className="mb-1">
-                                        <Button onClick={() => setSelectedKey(key as SynthesisDevtoolKey)} className="w-full">
+                                        <Button
+                                            onClick={() => setSelectedKey(key as SynthesisDevtoolKey)}
+                                            className="w-full"
+                                        >
                                             {key}
                                         </Button>
                                     </li>
@@ -156,7 +158,10 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                                     .filter(k => !keys.includes(k))
                                     .map(key => (
                                         <li key={key} className="mb-1">
-                                            <Button onClick={() => setSelectedKey(key as SynthesisDevtoolKey)} className="w-full">
+                                            <Button
+                                                onClick={() => setSelectedKey(key as SynthesisDevtoolKey)}
+                                                className="w-full"
+                                            >
                                                 {key}
                                             </Button>
                                         </li>

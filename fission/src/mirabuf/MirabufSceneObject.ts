@@ -1186,9 +1186,9 @@ export async function createMirabuf(
     return new MirabufSceneObject(new MirabufInstance(parser), progressHandle, multiplayerOwnerId)
 }
 
-async function migrateUUID(parser:MirabufParser, hash:string) {
+async function migrateUUID(parser: MirabufParser, hash: string) {
     parser.assembly.info ??= {}
-    const newGUID = uuidV4({ random: hexStringToUint8Array(hash).slice(0,16) }) // using deterministic random to prevent the same model from being assigned different uuids after being imported multiple times. Once initially set, uuid will be persistent across hash changes
+    const newGUID = uuidV4({ random: hexStringToUint8Array(hash).slice(0, 16) }) // using deterministic random to prevent the same model from being assigned different uuids after being imported multiple times. Once initially set, uuid will be persistent across hash changes
     console.warn("Migrating UUID", parser.assembly.info.GUID, "->", newGUID)
     parser.assembly.info.GUID = newGUID
 

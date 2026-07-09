@@ -57,7 +57,7 @@ export function hexStringToUint8Array(hexString: string) {
     return arrayBuffer
 }
 // biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`
-export function tryParse(data:string):any {
+export function tryParse(data: string): any {
     try {
         return JSON.parse(data)
     } catch (error) {
@@ -66,8 +66,7 @@ export function tryParse(data:string):any {
     }
 }
 
-
-export function downloadBlob(filename:string, data:BlobPart):void {
+export function downloadBlob(filename: string, data: BlobPart): void {
     const blob = new Blob([data], {
         type: "application/octet-stream",
     })

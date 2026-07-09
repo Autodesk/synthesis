@@ -26,7 +26,7 @@ async function main() {
 
             // Add GUID because the exporter doesn't
             if (!assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)) {
-                assembly.info!.GUID = uuidV4({ random: hexStringToUint8Array(originalHash).slice(0,16) })
+                assembly.info!.GUID = uuidV4({ random: hexStringToUint8Array(originalHash).slice(0, 16) })
                 console.log("Generated GUID for", file.name, "->", assembly.info!.GUID)
             }
 
