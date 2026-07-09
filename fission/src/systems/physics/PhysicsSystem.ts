@@ -732,13 +732,19 @@ class PhysicsSystem extends WorldSystem {
         const fixedConstraint = this.createFixedConstraint(bodyMain, bodyWheel, anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
-        const axis = getAxis(rotationalFreedom, versionNum).Mul(0.1)
+        const unitAxis = getAxis(rotationalFreedom, versionNum)
+
+        // Scaled down for use as a small positional offset (native, non-URDF wheels only, below),
+        // inferURDFAutoWheelBasis needs the unscaled unit-length axis for its magnitude check.
+        // Vec3.Mul mutates its receiver in place (see Jolt-return-value note above), so build a
+        // fresh vector here rather than scaling unitAxis itself.
+        const axis = new JOLT.Vec3(unitAxis.GetX() * 0.1, unitAxis.GetY() * 0.1, unitAxis.GetZ() * 0.1)
 
         const urdfAutoWheel = isURDFWheel(jointDefinition)
-        const urdfWheelBasis = urdfAutoWheel ? inferURDFAutoWheelBasis(axis) : undefined
+        const urdfWheelBasis = urdfAutoWheel ? inferURDFAutoWheelBasis(unitAxis) : undefined
         const bounds = bodyWheel.GetShape().GetLocalBounds()
         const wheelDimensions = urdfWheelBasis
-            ? inferWheelDimensionsFromAxle(bounds, axis)
+            ? inferWheelDimensionsFromAxle(bounds, unitAxis)
             : {
                   radius: (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0,
                   width: 0.1,
@@ -775,6 +781,7 @@ class PhysicsSystem extends WorldSystem {
         }
 
         JOLT.destroy(axis)
+        JOLT.destroy(unitAxis)
 
         const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc, urdfWheelBasis)
         const listener = this.createVehicleListeners(vehicleConstraint, bodyWheel)
