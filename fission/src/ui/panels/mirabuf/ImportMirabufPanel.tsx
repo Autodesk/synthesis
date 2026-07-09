@@ -342,7 +342,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 <ItemCard
                     name={asset.name}
                     key={asset.hash}
-                    primaryButtonNode={<SynthesisIcons.DOWNLOAD_LARGE />} 
+                    primaryButtonNode={<SynthesisIcons.DOWNLOAD_LARGE />}
                     primaryOnClick={() => {
                         console.log(`Selecting remote: ${asset.remotePath}`)
                         selectRemote(asset)
@@ -407,7 +407,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     <ItemCard
                         name={`${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`}
                         key={file.id}
-                        primaryButtonNode={<SynthesisIcons.DOWNLOAD_LARGE />} 
+                        primaryButtonNode={<SynthesisIcons.DOWNLOAD_LARGE />}
                         primaryOnClick={() => {
                             console.debug(file.raw)
                             selectAPS(file, viewType)
