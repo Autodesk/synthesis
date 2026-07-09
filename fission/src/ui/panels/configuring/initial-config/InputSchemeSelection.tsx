@@ -60,18 +60,18 @@ export default function InputSchemeSelection({
     ): ReactElement | null => {
         if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
         return (
-            <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
+            <Tooltip title={message} key={scheme.schemeName} placement="left">
                 <Stack
                     direction="row"
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                    gap={"1rem"}
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap="1rem"
                     key={scheme.schemeName}
                 >
                     <Label size="sm">
                         {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
                     </Label>
-                    <Stack direction="row-reverse" gap="0.25rem" justifyContent={"center"} alignItems={"center"}>
+                    <Stack direction="row-reverse" gap="0.25rem" justifyContent="center" alignItems="center">
                         {/** Select button */}
                         <Box sx={style}>
                             <PositiveButton

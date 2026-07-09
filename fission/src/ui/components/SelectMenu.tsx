@@ -144,7 +144,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     return (
         <>
             {/** Box containing the menu header */}
-            <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item" gap={1}>
+            <Stack direction="row" textAlign="center" minHeight="30px" key="selected-item" gap={1}>
                 {/** Back arrow button when an option is selected */}
                 {selectedOption !== undefined && (
                     <IconButton
@@ -160,7 +160,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 )}
 
                 {/** Label with either the header text, or the name of the selected option if an option is selected */}
-                <Stack alignSelf={"center"}>
+                <Stack alignSelf="center">
                     <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
                     </Label>

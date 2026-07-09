@@ -51,7 +51,7 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
             <InputLabel id="device-type">Type</InputLabel>
             <Select
                 labelId="device-type"
-                label={"Type"}
+                label="Type"
                 onChange={e => {
                     setType(e.target.value as DeviceType)
                 }}

@@ -88,7 +88,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                             EventSystem.dispatch("ConfigurationSavedEvent")
                         }
                     }}
-                    defaultHeaderText={"Select an Input Scheme"}
+                    defaultHeaderText="Select an Input Scheme"
                     onDelete={val => {
                         if (!(val instanceof SchemeSelectionOption)) return
 

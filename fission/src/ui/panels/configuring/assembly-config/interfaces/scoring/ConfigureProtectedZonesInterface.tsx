@@ -39,7 +39,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
             ) : (
                 <>
                     <Stack textAlign="center" minHeight="30px" key="selected-item">
-                        <Box width={`60px`} />
+                        <Box width="60px" />
 
                         {/** Back arrow button when an option is selected */}
                         <Button
@@ -51,7 +51,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                         />
 
                         {/** Label with either the header text, or the name of the selected option if an option is selected */}
-                        <Stack alignSelf={"center"}>
+                        <Stack alignSelf="center">
                             <Box width="8px" />
                             <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 Configuring Zone

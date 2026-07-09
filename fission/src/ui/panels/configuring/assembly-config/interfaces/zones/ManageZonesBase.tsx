@@ -79,13 +79,13 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                             return (
                                 <Stack
                                     key={`${item.name}-${item.alliance}-${i}`}
-                                    justifyContent={"space-between"}
-                                    alignItems={"center"}
-                                    gap={"1rem"}
+                                    justifyContent="space-between"
+                                    alignItems="center"
+                                    gap="1rem"
                                 >
                                     <Stack direction="row" gap={8}>
                                         <Box
-                                            className={`w-12 h-12 rounded-lg`}
+                                            className="w-12 h-12 rounded-lg"
                                             sx={{
                                                 bgcolor:
                                                     item.alliance === "red" ? "redAlliance.main" : "blueAlliance.main",
@@ -97,10 +97,10 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                                         </Stack>
                                     </Stack>
                                     <Stack
-                                        direction={"row-reverse"}
-                                        gap={"0.25rem"}
-                                        justifyContent={"center"}
-                                        alignItems={"center"}
+                                        direction="row-reverse"
+                                        gap="0.25rem"
+                                        justifyContent="center"
+                                        alignItems="center"
                                     >
                                         {EditButton(() => {
                                             selectZone(zonePrefs)

@@ -193,8 +193,8 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     .getAll()
                     .map(obj => new AssemblySelectionOption(obj.descriptiveName, obj))}
                 onOptionSelected={val => setActiveObj((val as AssemblySelectionOption)?.assemblyObject)}
-                defaultHeaderText={`Select an object`}
-                noOptionsText={`Nothing spawned!`}
+                defaultHeaderText="Select an object"
+                noOptionsText="Nothing spawned!"
             />
             {editor && (
                 <Stack gap={2} direction="column">
@@ -246,15 +246,14 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                                         </div>
                                     )}
                                     <textarea
-                                        className={`
+                                        className="
                             w-full h-48 font-mono text-sm
                             bg-gray-700 dark:bg-gray-800
                             border border-gray-600
                             text-gray-100
                             rounded p-2
                             resize-vertical
-                            focus:outline-hidden focus:ring-2 focus:ring-blue-500
-                        `}
+                            focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                         value={jsonValue}
                                         onChange={e => setJsonValue(e.target.value)}
                                         placeholder="Enter JSON data for this key"

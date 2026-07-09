@@ -72,16 +72,16 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
     return (
-        <Stack key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"} direction="row">
+        <Stack key={id} justifyContent="space-between" alignItems="center" gap="1rem" direction="row">
             <Label size="md" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
             </Label>
             <Stack
                 key={`button-box-${id}`}
                 direction="row-reverse"
-                gap={"0.25rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
+                gap="0.25rem"
+                justifyContent="center"
+                alignItems="center"
             >
                 {PositiveIconButton({
                     children: primaryButtonNode,
@@ -470,10 +470,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
                     <Stack
                         direction="row"
-                        key={`remote-label-container`}
-                        gap={"0.25rem"}
-                        justifyContent={"center"}
-                        alignItems={"center"}
+                        key="remote-label-container"
+                        gap="0.25rem"
+                        justifyContent="center"
+                        alignItems="center"
                     >
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {hubElements ? (
@@ -541,7 +541,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     </Stack>
                 </AccordionDetails>
             </Accordion>
-            <Box alignSelf={"center"}>
+            <Box alignSelf="center">
                 <Button
                     onClick={() => {
                         openModal(ImportLocalMirabufModal, {

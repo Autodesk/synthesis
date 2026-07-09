@@ -74,7 +74,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             <Divider sx={{ my: "1rem" }} />
             <Stack>
                 {entries.map(e => (
-                    <Stack key={e.name} direction="row" justifyContent={"space-between"}>
+                    <Stack key={e.name} direction="row" justifyContent="space-between">
                         <Label size="md">{e.name}</Label>
                         <Label size="md">{e.value}</Label>
                     </Stack>
@@ -84,27 +84,27 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             <LabelStyled winnerColor={primaryColor} fontSize="1.25rem">
                 Robot Score Contributions
             </LabelStyled>
-            <Stack direction={"row"} justifyContent={"space-between"} gap={"1rem"}>
-                <Stack direction={"column"}>
+            <Stack direction="row" justifyContent="space-between" gap="1rem">
+                <Stack direction="column">
                     <LabelStyled winnerColor={redAllianceColor} fontSize="1rem">
                         Red Alliance
                     </LabelStyled>
                     <div className="flex flex-col">
                         {redRobotScores.map(e => (
-                            <Stack key={e.name} direction="row" justifyContent={"space-between"}>
+                            <Stack key={e.name} direction="row" justifyContent="space-between">
                                 <Label size="md">{e.name}</Label>
                                 <Label size="md">{e.value}</Label>
                             </Stack>
                         ))}
                     </div>
                 </Stack>
-                <Stack direction={"column"}>
+                <Stack direction="column">
                     <LabelStyled winnerColor={blueAllianceColor} fontSize="1rem">
                         Blue Alliance
                     </LabelStyled>
                     <div className="flex flex-col">
                         {blueRobotScores.map(e => (
-                            <Stack key={e.name} direction="row" justifyContent={"space-between"}>
+                            <Stack key={e.name} direction="row" justifyContent="space-between">
                                 <Label size="md">{e.name}</Label>
                                 <Label size="md">{e.value}</Label>
                             </Stack>

@@ -35,8 +35,8 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
                 alignSelf: "center",
             }}
         >
-            <ToggleButton value={"synthesis"}>Synthesis Brain</ToggleButton>
-            <ToggleButton value={"wpilib"}>WPILib Brain</ToggleButton>
+            <ToggleButton value="synthesis">Synthesis Brain</ToggleButton>
+            <ToggleButton value="wpilib">WPILib Brain</ToggleButton>
         </ToggleButtonGroup>
     )
 }

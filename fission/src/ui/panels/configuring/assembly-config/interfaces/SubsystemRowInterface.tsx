@@ -72,7 +72,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, save
 
     return (
         <>
-            <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+            <Stack justifyContent="space-between" alignItems="center" gap="1rem">
                 <Stack direction="column">
                     {group.controls.map(control => (
                         <ControlSliders key={control.label} robot={robot} control={control} />

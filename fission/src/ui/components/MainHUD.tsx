@@ -96,16 +96,16 @@ const MainHUD: React.FC = () => {
             {!isOpen && (
                 <Stack
                     direction="row"
-                    alignItems={"center"}
+                    alignItems="center"
                     height="100%"
-                    position={"absolute"}
+                    position="absolute"
                     sx={{ top: "0", left: "0" }}
                 >
                     <Box
                         position="absolute"
-                        width={"5vw"}
-                        minWidth={"50px"}
-                        maxWidth={"60px"}
+                        width="5vw"
+                        minWidth="50px"
+                        maxWidth="60px"
                         style={{ aspectRatio: " 1 / 1.5" }}
                         className="transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
                         bgcolor="secondary.dark"

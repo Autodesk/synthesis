@@ -77,21 +77,21 @@ export class SynthesisIcons {
     public static readonly CAMERA = <FaCamera />
 
     /** Large icons: used for icon buttons */
-    public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />
-    public static readonly DOWNLOAD_LARGE = <HiDownload size={"1.25rem"} />
-    public static readonly ADD_LARGE = <FaPlus size={"1.25rem"} />
-    public static readonly GEAR_LARGE = <FaGear size={"1.25rem"} />
-    public static readonly REFRESH_LARGE = <BiRefresh size={"1.25rem"} />
-    public static readonly SELECT_LARGE = <IoCheckmark size={"1.25rem"} />
-    public static readonly EDIT_LARGE = <IoPencil size={"1.25rem"} />
-    public static readonly LEFT_ARROW_LARGE = <FaArrowLeft size={"1.25rem"} />
-    public static readonly BUG_LARGE = <FaBug size={"1.25rem"} />
-    public static readonly XMARK_LARGE = <FaXmark size={"1.25rem"} />
-    public static readonly PLAY_LARGE = <IoPlayOutline size={"1.25rem"} />
+    public static readonly DELETE_LARGE = <IoTrashBin size="1.25rem" />
+    public static readonly DOWNLOAD_LARGE = <HiDownload size="1.25rem" />
+    public static readonly ADD_LARGE = <FaPlus size="1.25rem" />
+    public static readonly GEAR_LARGE = <FaGear size="1.25rem" />
+    public static readonly REFRESH_LARGE = <BiRefresh size="1.25rem" />
+    public static readonly SELECT_LARGE = <IoCheckmark size="1.25rem" />
+    public static readonly EDIT_LARGE = <IoPencil size="1.25rem" />
+    public static readonly LEFT_ARROW_LARGE = <FaArrowLeft size="1.25rem" />
+    public static readonly BUG_LARGE = <FaBug size="1.25rem" />
+    public static readonly XMARK_LARGE = <FaXmark size="1.25rem" />
+    public static readonly PLAY_LARGE = <IoPlayOutline size="1.25rem" />
 
     public static readonly OPEN_HUD_ICON = (
         <FaAngleRight
-            size={"5vh"}
+            size="5vh"
             style={{
                 alignSelf: "middle",
                 justifySelf: "center",
@@ -295,7 +295,7 @@ export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipTo
 
 export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
     return (
-        <Stack direction="row" alignItems={"center"} textAlign={"center"}>
+        <Stack direction="row" alignItems="center" textAlign="center">
             <Label size="sm">{labelText}</Label>
             {CustomTooltip(tooltipText)}
         </Stack>

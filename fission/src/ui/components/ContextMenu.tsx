@@ -67,7 +67,7 @@ const ContextMenu: React.FC = () => {
                 {state.data.items.map(x => (
                     <Button
                         key={x.name}
-                        className={"w-full text-sm"}
+                        className="w-full text-sm"
                         onClick={() => {
                             setState(undefined)
                             if (x.screen) {

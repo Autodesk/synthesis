@@ -152,9 +152,9 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
         <Stack
             direction="row"
             key={id}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            gap={"1rem"}
+            justifyContent="space-between"
+            alignItems="center"
+            gap="1rem"
             sx={{ px: 1, py: 0.5 }}
         >
             <Label size="sm" className="text-wrap break-all">
@@ -163,9 +163,9 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
             <Stack
                 key={`button-box-${id}`}
                 direction="row-reverse"
-                gap={"0.5rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
+                gap="0.5rem"
+                justifyContent="center"
+                alignItems="center"
             >
                 {secondaryOnClick && (
                     <NegativeButton onClick={secondaryOnClick}>{SynthesisIcons.DELETE_LARGE}</NegativeButton>
@@ -342,13 +342,13 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                         : "Spawn positions are not configured for this field"
                 }
                 checked={useSpawnPositions}
-                label={"Move Robots to Starting Positions"}
+                label="Move Robots to Starting Positions"
                 onClick={v => setUseSpawnPositions(v)}
             />
             <Divider />
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
 
-            <Box alignSelf={"center"} sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
+            <Box alignSelf="center" sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
                 <Button
                     onClick={() => {
                         createNewMatchModeConfig()

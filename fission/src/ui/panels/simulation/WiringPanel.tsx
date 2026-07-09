@@ -177,7 +177,7 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
     }, [simConfig])
 
     return (
-        <Stack gap={4} direction={"column"} sx={{ width: "stretch" }}>
+        <Stack gap={4} direction="column" sx={{ width: "stretch" }}>
             <Label size="lg">Configure the Simulation's IO Modules</Label>
             <Box
                 sx={{
@@ -193,7 +193,7 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
                             .sort(handleInfoDisplayCompare)
                             .map(handle => (
                                 <Checkbox
-                                    label={`${handle.displayName}`}
+                                    label={handle.displayName}
                                     key={handle.id}
                                     checked={handle.enabled}
                                     onClick={checked => {
@@ -212,7 +212,7 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
                             .sort(handleInfoDisplayCompare)
                             .map(handle => (
                                 <Checkbox
-                                    label={`${handle.displayName}`}
+                                    label={handle.displayName}
                                     key={handle.id}
                                     checked={handle.enabled}
                                     onClick={checked => {
