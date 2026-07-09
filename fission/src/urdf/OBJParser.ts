@@ -1,5 +1,6 @@
 import type { ParsedMesh } from "./STLParser"
 
+// https://en.wikipedia.org/wiki/Wavefront_.obj_file
 export function parseOBJ(data: Uint8Array): ParsedMesh {
     const text = new TextDecoder().decode(data)
 
@@ -57,6 +58,7 @@ export function parseOBJ(data: Uint8Array): ParsedMesh {
                 })
 
                 // Fan triangulation for quads/ngons
+                // https://en.wikipedia.org/wiki/Polygon_triangulation#Convex_polygon_triangulation
                 for (let i = 1; i < face.length - 1; i++) {
                     addVertex(face[0].vi, face[0].ni, face[0].ui)
                     addVertex(face[i].vi, face[i].ni, face[i].ui)
