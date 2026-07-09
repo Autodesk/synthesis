@@ -68,6 +68,22 @@ describe("Input Scheme Manager Checks", () => {
             names.push(name)
         }
     })
+
+    test("Restore Old Scheme", () => {
+        const brainIndex = 7
+        const edited = DefaultInputs.ernie()
+        InputSystem.setBrainIndexSchemeMapping(brainIndex, edited)
+
+        edited.usesGamepad = !edited.usesGamepad
+        edited.customized = true
+
+        InputSchemeManager.resetDefaultSchemes()
+        InputSchemeManager.rebindOldBrainSchemes()
+
+        const rebound = InputSystem.brainIndexSchemeMap.get(brainIndex)!
+        expect(rebound).not.toBe(edited)
+        expect(rebound.schemeName).toBe(DefaultInputs.ernie().schemeName)
+    })
 })
 
 describe("Input System Checks", () => {

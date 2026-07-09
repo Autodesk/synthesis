@@ -7,8 +7,7 @@ import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/s
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { Button, Spacer } from "@/ui/components/StyledComponents"
-import { FaUnlink } from "react-icons/fa"
+import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 interface BehaviorCardProps {
     elementKey: number
@@ -91,7 +90,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
 
                         // sx={hasChild ? { bgcolor: "background.default", "&:hover": { filter: "brightness(100%)" } } : {}}
                     >
-                        {hasParent ? <FaUnlink /> : lookingForParent == behavior ? "Cancel" : "Follow"}
+                        {hasParent ? <SynthesisIcons.UNLINK /> : lookingForParent == behavior ? "Cancel" : "Follow"}
                     </Button>
                 </div>
             </Tooltip>

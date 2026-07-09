@@ -318,6 +318,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 PreferencesSystem.setUserPreference("InputSchemes", originalInputSchemes.current)
                 PreferencesSystem.savePreferences()
                 InputSchemeManager.resetDefaultSchemes(panel?.id)
+                InputSchemeManager.rebindOldBrainSchemes()
             }
 
             originalRobotPrefs.current = null
