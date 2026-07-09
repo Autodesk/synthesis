@@ -132,6 +132,14 @@ class MirabufParser {
         // 5. Remove Empty RNs
         this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0)
 
+        // A parser representing a standalone game piece asset never runs pruneGamePieceNodes
+        // on itself, so its own rigid nodes need to be flagged directly.
+        if (this._isGamePiece) {
+            this._rigidNodes.forEach(rn => {
+                rn.isGamePiece = true
+            })
+        }
+
         // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
         this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
         if (!assembly.dynamic && this._groundedNode) this._groundedNode.isDynamic = false
