@@ -1176,23 +1176,7 @@ export async function createMirabuf(
     const parser = new MirabufParser(assembly, progressHandle)
 
     if (!parser.assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)) {
-        parser.assembly.info ??= {}
-        const newGUID = uuidV4({ random: hexStringToUint8Array(hash) }) // using deterministic random to prevent the same model from being assigned different uuids after being imported multiple times. Once initially set, uuid will be persistent across hash changes
-        console.warn("Migrating UUID", parser.assembly.info.GUID, "->", newGUID)
-        parser.assembly.info.GUID = newGUID
-
-        if ((await MirabufCachingService.get(hash)) != null) {
-            await MirabufCachingService.remove(hash)
-        }
-
-        const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
-            miraType: parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD,
-            name: parser.assembly.info?.name ?? "Unknown",
-        })
-
-        if (cacheInfo == null) {
-            globalAddToast("warning", "Migration Error", "Importing failed to save")
-        }
+        await migrateUUID(parser, hash)
     }
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
@@ -1202,6 +1186,25 @@ export async function createMirabuf(
     return new MirabufSceneObject(new MirabufInstance(parser), progressHandle, multiplayerOwnerId)
 }
 
+async function migrateUUID(parser:MirabufParser, hash:string) {
+    parser.assembly.info ??= {}
+    const newGUID = uuidV4({ random: hexStringToUint8Array(hash).slice(0,16) }) // using deterministic random to prevent the same model from being assigned different uuids after being imported multiple times. Once initially set, uuid will be persistent across hash changes
+    console.warn("Migrating UUID", parser.assembly.info.GUID, "->", newGUID)
+    parser.assembly.info.GUID = newGUID
+
+    if ((await MirabufCachingService.get(hash)) != null) {
+        await MirabufCachingService.remove(hash)
+    }
+
+    const cacheInfo = await MirabufCachingService.storeAssemblyInCache(parser.assembly, {
+        miraType: parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD,
+        name: parser.assembly.info?.name ?? "Unknown",
+    })
+
+    if (cacheInfo == null) {
+        globalAddToast("warning", "Migration Error", "Importing failed to save")
+    }
+}
 /**
  * Body association to a rigid node with a given mirabuf scene object.
  */

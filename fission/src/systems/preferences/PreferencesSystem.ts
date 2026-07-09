@@ -178,17 +178,19 @@ class PreferencesSystem {
         try {
             const saved: Preferences & UserPreferences = JSON.parse(loadedPrefs)
             saved[USER_PREFERENCE_KEY] ??= defaultUserPreferences()
-            let didMigrate = false
-            for (const key in defaultUserPreferences()) {
-                const typedKey = key as UserPreference
-                if (key in saved) {
-                    didMigrate = true
-                    ;(saved[USER_PREFERENCE_KEY] as Record<UserPreference, unknown>)[typedKey] = saved[typedKey]
-                    delete saved[typedKey]
-                }
-            }
+            const unmigratedKeys = Object.keys(defaultUserPreferences())
+                .filter(key => key in saved) // If the key is in the top level preferences, it hasn't been migrated
+                .map(key => key as UserPreference)
+
+            unmigratedKeys.forEach(key => {
+                const userPreferences = saved[USER_PREFERENCE_KEY] as Record<UserPreference, unknown>
+                userPreferences[key] = saved[key]
+
+                delete saved[key]
+            })
+
             this._preferences = saved
-            if (didMigrate) {
+            if (unmigratedKeys.length > 0) {
                 this.savePreferences()
             }
         } catch (e) {

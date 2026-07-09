@@ -20,7 +20,16 @@ export interface DevtoolMiraData {
     // additional devtool keys to be added in future
 }
 
-export const devtoolHandlers = {
+export type SynthesisDevtoolKey = keyof DevtoolMiraData & `synthesis:${string}`
+
+export type DevtoolHandlerMap = {
+    [K in SynthesisDevtoolKey]: {
+        get(object: MirabufSceneObject): DevtoolMiraData[K]
+        set(object: MirabufSceneObject, val: DevtoolMiraData[K]): void
+    }
+}
+
+export const devtoolHandlers: DevtoolHandlerMap = {
     "synthesis:field_preferences": {
         get(object) {
             return object.fieldPreferences ?? defaultFieldPreferences()
@@ -42,11 +51,6 @@ export const devtoolHandlers = {
             object.updateIntakeSensor()
         },
     },
-} as const satisfies {
-    [K in keyof DevtoolMiraData & `synthesis:${string}`]: {
-        get(object: MirabufSceneObject): DevtoolMiraData[K]
-        set(object: MirabufSceneObject, val: DevtoolMiraData[K]): void
-    }
 }
 
 /**
@@ -127,7 +131,7 @@ export default class FieldMiraEditor {
     /**
      * Get all devtool keys currently in userData.
      */
-    getAllKeys(): string[] {
-        return Object.keys(this._parts.userData!.data!).filter(k => k.startsWith("synthesis:"))
+    getSynthesisKeys(): SynthesisDevtoolKey[] {
+        return Object.keys(this._parts.userData!.data!).filter(k => k.startsWith("synthesis:")).map((key) => key as SynthesisDevtoolKey)
     }
 }

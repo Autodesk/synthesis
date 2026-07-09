@@ -56,3 +56,30 @@ export function hexStringToUint8Array(hexString: string) {
     }
     return arrayBuffer
 }
+// biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`
+export function tryParse(data:string):any {
+    try {
+        return JSON.parse(data)
+    } catch (error) {
+        console.error("Could not parse JSON", error)
+        return null
+    }
+}
+
+
+export function downloadBlob(filename:string, data:BlobPart):void {
+    const blob = new Blob([data], {
+        type: "application/octet-stream",
+    })
+    const url = URL.createObjectURL(blob)
+
+    const a = document.createElement("a")
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    setTimeout(() => {
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+    }, 0)
+}

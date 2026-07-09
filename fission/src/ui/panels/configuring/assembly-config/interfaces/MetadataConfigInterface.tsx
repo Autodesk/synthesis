@@ -13,7 +13,7 @@ const MetadataConfigInterface: React.FC<MetadataConfigInterfaceProps> = ({ selec
     useEffect(() => {
         selectedAssembly.mirabufInstance.parser.assembly.info ??= {}
         selectedAssembly.mirabufInstance.parser.assembly.info.name = name
-    }, [name, selectedAssembly.mirabufInstance.parser.assembly, selectedAssembly.mirabufInstance.parser.assembly.info])
+    }, [name, selectedAssembly])
     return (
         <Stack gap={2} direction="column">
             <Label size={"sm"}>Asset Name</Label>

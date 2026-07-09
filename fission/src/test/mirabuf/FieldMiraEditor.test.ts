@@ -34,7 +34,7 @@ describe("Basic Field Mira Editor Tests", () => {
 
         editor.setUserData(key, payload)
         expect(editor.getUserData(key)).toEqual(payload)
-        expect(editor.getAllKeys()).toContain(key)
+        expect(editor.getSynthesisKeys()).toContain(key)
 
         editor.removeUserData(key)
         expect(editor.getUserData(key)).toBeUndefined()
@@ -42,7 +42,7 @@ describe("Basic Field Mira Editor Tests", () => {
 
     test("default state: no keys, getUserData yields undefined", () => {
         const editor = new FieldMiraEditor(mockParts())
-        expect(editor.getAllKeys()).toEqual([])
+        expect(editor.getSynthesisKeys()).toEqual([])
         expect(editor.getUserData("synthesis:robot_preferences")).toBeUndefined()
     })
 
@@ -72,7 +72,7 @@ describe("Basic Field Mira Editor Tests", () => {
         editor.setUserData("synthesis:robot_preferences", defaultRobotPreferences())
         editor.setUserData("synthesis:field_preferences", defaultFieldPreferences())
         editor.removeUserData("synthesis:field_preferences")
-        expect(editor.getAllKeys()).toEqual(["synthesis:robot_preferences"])
+        expect(editor.getSynthesisKeys()).toEqual(["synthesis:robot_preferences"])
     })
 })
 

@@ -26,7 +26,7 @@ async function main() {
 
             // Add GUID because the exporter doesn't
             if (!assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)) {
-                assembly.info!.GUID = uuidV4({ random: hexStringToUint8Array(originalHash) })
+                assembly.info!.GUID = uuidV4({ random: hexStringToUint8Array(originalHash).slice(0,16) })
                 console.log("Generated GUID for", file.name, "->", assembly.info!.GUID)
             }
 
@@ -49,7 +49,7 @@ async function main() {
             const updated = mirabuf.Assembly.encode(assembly).finish()
             const updatedHash = await hashBuffer(updated.buffer as ArrayBuffer)
 
-            // Update only if changes are made (avoid updating modification times otherwise
+            // Update only if changes are made (avoid updating modification times otherwise)
             if (originalHash !== updatedHash) {
                 const newPath = path.join(file.parentPath, name)
                 await fs.writeFile(newPath, updated)

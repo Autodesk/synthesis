@@ -22,7 +22,7 @@ vi.mock("@/systems/World", () => ({
 //         return uint8ToBase64(new TextEncoder().encode(str))
 //     })
 
-describe.only("MirabufLoader", () => {
+describe("MirabufLoader", () => {
     let fetchMock: MockedFunction<typeof fetch>
     let unhandledRejectionHandler: ((event: PromiseRejectionEvent) => void) | undefined
 
@@ -75,17 +75,11 @@ describe.only("MirabufLoader", () => {
         })
     })
 
-    describe.only("Real Fetch", () => {
+    describe("Real Fetch", () => {
         beforeEach(async () => {
             await MirabufLoader.removeAll()
         })
 
-        test.only("Test Test", async () => {
-            vi.restoreAllMocks()
-            const res = await fetch("/api/mira/manifest.json")
-            console.log(await res.text(), res.status)
-            expect(res.status).toBe(200)
-        })
         const tests: [string, MiraType][] = [
             ["/api/mira/robots/Dozer v11.mira", MiraType.ROBOT],
             ["/api/mira/fields/FRC Field 2023 v7.mira", MiraType.FIELD],
