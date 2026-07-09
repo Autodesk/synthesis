@@ -9,7 +9,6 @@ class SkidSteerDriveBehavior extends DriveBehavior {
     private readonly _rightWheels: WheelDriver[]
     private readonly _brainIndex: number
     public isArcade: boolean
-    private _debugActiveFrames = 0
 
     public get wheels(): WheelDriver[] {
         return this._leftWheels.concat(this._rightWheels)
@@ -41,23 +40,6 @@ class SkidSteerDriveBehavior extends DriveBehavior {
         this._rightWheels.forEach(wheel => {
             wheel.accelerationDirection = rightDirection
         })
-
-        // Throttled diagnostic: once input is non-zero, dump ground-contact/suspension state for one
-        // wheel per side every ~60 updates so a drive attempt's log shows whether the wheels are actually
-        // touching the ground (no contact -> no traction force regardless of commanded angular velocity).
-        if (Math.abs(leftDirection) > 0.02 || Math.abs(rightDirection) > 0.02) {
-            this._debugActiveFrames++
-            if (this._debugActiveFrames % 60 === 1) {
-                const leftInfo = this._leftWheels[0]?.getDebugContactInfo()
-                const rightInfo = this._rightWheels[0]?.getDebugContactInfo()
-                console.debug(
-                    `[SkidSteerDriveBehavior] drive input left=${leftDirection.toFixed(2)} right=${rightDirection.toFixed(2)} -- ` +
-                        `leftWheel0=${JSON.stringify(leftInfo)} rightWheel0=${JSON.stringify(rightInfo)}`
-                )
-            }
-        } else {
-            this._debugActiveFrames = 0
-        }
     }
 
     private arcadeUpdate() {

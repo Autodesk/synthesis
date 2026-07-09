@@ -12,9 +12,8 @@ export interface WheelAssignment {
 }
 
 /**
- * Removes `partGuid` from any RigidGroup it's currently listed in. Logs what else was in the group so a
- * still-fused sibling occurrence (e.g. a separate tire/rim part not caught by this single-GUID removal)
- * is visible instead of silently re-bandaging the wheel to whatever it shared a group with.
+ * Removes `partGuid` from any RigidGroup it's currently listed in. Warns if `otherPartGuid` is still
+ * listed in the same group -- MirabufParser's bandage pass may re-merge them after ungrouping.
  */
 function removeFromRigidGroups(assembly: mirabuf.Assembly, partGuid: string, otherPartGuid: string): void {
     const rigidGroups = assembly.data?.joints?.rigidGroups
@@ -25,15 +24,8 @@ function removeFromRigidGroups(assembly: mirabuf.Assembly, partGuid: string, oth
         const idx = group.occurrences.indexOf(partGuid)
         if (idx === -1) return
 
-        const remaining = group.occurrences.filter(g => g !== partGuid)
-        console.debug(
-            `[WheelJointBuilder] RigidGroup[${index}] contained '${partGuid}' alongside [${remaining.join(", ")}] -- removing '${partGuid}'.`
-        )
-        if (remaining.includes(otherPartGuid)) {
-            console.warn(
-                `[WheelJointBuilder] RigidGroup[${index}] also lists '${otherPartGuid}' directly -- ` +
-                    `after ungrouping, MirabufParser's bandage pass may still merge them back together.`
-            )
+        if (group.occurrences.includes(otherPartGuid)) {
+            console.warn(`[WheelJointBuilder] RigidGroup[${index}] still contains both wheel and parent parts.`)
         }
         group.occurrences.splice(idx, 1)
     })
@@ -100,10 +92,5 @@ export function applyWheelAssignments(assembly: mirabuf.Assembly, assignments: W
             jointReference: token,
             offset: { x: 0, y: 0, z: 0 },
         }
-
-        console.debug(
-            `[WheelJointBuilder] Created joint '${token}': parentPart='${assignment.parentPartGuid}' childPart='${assignment.wheelPartGuid}' ` +
-                `origin(cm)=(${origin.x!.toFixed(2)}, ${origin.y!.toFixed(2)}, ${origin.z!.toFixed(2)}) axis=(${axis.x!.toFixed(3)}, ${axis.y!.toFixed(3)}, ${axis.z!.toFixed(3)})`
-        )
     })
 }

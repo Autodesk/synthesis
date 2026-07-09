@@ -63,53 +63,6 @@ class WheelDriver extends Driver {
         this._prevVel = vel
     }
 
-    /**
-     * Ground-contact/suspension snapshot for diagnosing why a driven wheel isn't producing motion.
-     * Includes the wheel's actual world-space raycast origin (not just local joint numbers) so a
-     * never-contacting wheel can be checked against the ground plane/other bodies at runtime, and the
-     * contact point/body when contact does register so a bad contact (wrong body, off to the side) isn't
-     * mistaken for no contact at all. Also includes the chassis body's live world position: a reconstructed
-     * wheel was observed sitting at ~2x its construction-time height every frame, and telling apart "the
-     * joint math double-applies a world-space origin" from "the chassis itself got shoved upward out of a
-     * ground penetration at spawn" requires seeing where the chassis body actually is at runtime, not just
-     * where it was queried (unreliably, as (0,0,0)) at construction time before being added to the world.
-     */
-    public getDebugContactInfo(): {
-        hasContact: boolean
-        suspensionLength: number
-        angularVelocity: number
-        wheelWorldPos: { x: number; y: number; z: number }
-        chassisWorldPos: { x: number; y: number; z: number }
-        contactPos?: { x: number; y: number; z: number }
-        contactBodyId?: number
-    } {
-        const forwardIn = new JOLT.Vec3(1, 0, 0)
-        const upIn = new JOLT.Vec3(0, 1, 0)
-        const wheelWorldTranslation = this._constraint.GetWheelWorldTransform(0, forwardIn, upIn).GetTranslation()
-        JOLT.destroy(forwardIn)
-        JOLT.destroy(upIn)
-
-        const hasContact = this._wheel.HasContact()
-        const contactPos = hasContact ? this._wheel.GetContactPosition() : undefined
-        const chassisPos = this._constraint.GetVehicleBody().GetPosition()
-
-        return {
-            hasContact,
-            suspensionLength: this._wheel.GetSuspensionLength(),
-            angularVelocity: this._wheel.GetAngularVelocity(),
-            wheelWorldPos: {
-                x: wheelWorldTranslation.GetX(),
-                y: wheelWorldTranslation.GetY(),
-                z: wheelWorldTranslation.GetZ(),
-            },
-            chassisWorldPos: { x: chassisPos.GetX(), y: chassisPos.GetY(), z: chassisPos.GetZ() },
-            contactPos: contactPos
-                ? { x: contactPos.GetX(), y: contactPos.GetY(), z: contactPos.GetZ() }
-                : undefined,
-            contactBodyId: hasContact ? this._wheel.GetContactBodyID().GetIndex() : undefined,
-        }
-    }
-
     public getReceiverType(): NoraTypes {
         return NoraTypes.NUMBER
     }

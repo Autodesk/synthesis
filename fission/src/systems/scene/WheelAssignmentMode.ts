@@ -2,10 +2,8 @@ import * as THREE from "three"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { applyWheelAssignments, type WheelAssignment } from "@/mirabuf/WheelJointBuilder"
-import { mirabuf } from "@/proto/mirabuf"
 import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import { dumpAssemblyStructure } from "@/util/DebugAssemblyDump"
 import {
     computeWheelAxisFromAABB,
     computeWheelAxisFromCircleFit,
@@ -15,26 +13,6 @@ import {
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
-
-/** Dumps an assembly's joints container (the part this feature actually mutates) as loggable JSON. */
-function dumpAssemblyJoints(assembly: mirabuf.Assembly, label: string): void {
-    const joints = mirabuf.joint.Joints.toObject(assembly.data!.joints as mirabuf.joint.Joints, {
-        longs: String,
-        enums: String,
-        bytes: String,
-    })
-    console.log(`[WheelAssignmentMode] ${label} -- assembly.data.joints:`, joints)
-    console.log(`[WheelAssignmentMode] ${label} -- assembly.data.joints (JSON):`, JSON.stringify(joints))
-}
-
-/**
- * Dumps the reconstructed assembly's structure under a label distinct from createMirabuf's generic
- * `[MirabufImport]` dump -- same assembly name as a plain import of the same robot, so a plain label
- * would be ambiguous about which log entry is the manually-wheel-jointed one.
- */
-function dumpFullAssemblyAfterWheelAssignment(assembly: mirabuf.Assembly): void {
-    dumpAssemblyStructure(assembly, "[WheelAssignmentMode] after reconstruction (with new wheel joints)")
-}
 
 enum PickStage {
     WHEEL,
@@ -206,9 +184,6 @@ class WheelAssignmentMode extends WorldSystem {
 
         const points = getPartLocalVertices(pick.object, pick.instanceId)
         if (!points || points.length === 0) {
-            console.debug(
-                `[WheelAssignmentMode] guid=${pick.guid} instanceId=${pick.instanceId} -- couldn't read geometry (${points?.length ?? 0} points)`
-            )
             globalAddToast("warning", "Wheel Assignment", "Couldn't read this part's geometry.")
             return
         }
@@ -218,12 +193,6 @@ class WheelAssignmentMode extends WorldSystem {
             globalAddToast("warning", "Wheel Assignment", "Couldn't derive a wheel axis from this part's geometry.")
             return
         }
-        const baseline = computeWheelAxisFromAABB(points)
-        console.debug(
-            `[WheelAssignmentMode] guid=${pick.guid} -- axis=(${localAxisFit.axis.x.toFixed(3)}, ${localAxisFit.axis.y.toFixed(3)}, ${localAxisFit.axis.z.toFixed(3)}) ` +
-                `center=(${localAxisFit.center.x.toFixed(4)}, ${localAxisFit.center.y.toFixed(4)}, ${localAxisFit.center.z.toFixed(4)}) ` +
-                `[AABB-baseline center=(${baseline?.center.x.toFixed(4)}, ${baseline?.center.y.toFixed(4)}, ${baseline?.center.z.toFixed(4)})]`
-        )
 
         // Use the part's assembly-space transform (the frame PhysicsSystem/WheelJointBuilder expect joint
         // origins in), not the live scene's rendered matrix -- that includes the mechanism's current
@@ -291,10 +260,7 @@ class WheelAssignmentMode extends WorldSystem {
 
         for (const [sceneObject, assignments] of bySceneObject) {
             const assembly = sceneObject.mirabufInstance.parser.assembly
-            dumpAssemblyJoints(assembly, "before applyWheelAssignments")
-
             applyWheelAssignments(assembly, assignments)
-            dumpAssemblyJoints(assembly, "after applyWheelAssignments")
 
             const sceneId = sceneObject.id
             World.sceneRenderer.removeSceneObject(sceneId)
@@ -304,7 +270,6 @@ class WheelAssignmentMode extends WorldSystem {
                 globalAddToast("error", "Wheel Assignment", "Failed to rebuild assembly after applying wheel joints.")
                 continue
             }
-            dumpFullAssemblyAfterWheelAssignment(rebuilt.mirabufInstance.parser.assembly)
             World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
 
             const parser = rebuilt.mirabufInstance.parser
@@ -314,25 +279,10 @@ class WheelAssignmentMode extends WorldSystem {
             for (const assignment of assignments) {
                 const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
                 const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
-                console.log(
-                    `[WheelAssignmentMode] wheel='${assignment.wheelPartGuid}' -> rigidNode=${wheelNode?.id ?? "MISSING"} (${wheelNode?.parts.size ?? 0} parts: ${wheelNode ? [...wheelNode.parts].join(", ") : "n/a"})`
-                )
-                console.log(
-                    `[WheelAssignmentMode] parent='${assignment.parentPartGuid}' -> rigidNode=${parentNode?.id ?? "MISSING"} (${parentNode?.parts.size ?? 0} parts: ${parentNode ? [...parentNode.parts].join(", ") : "n/a"})`
-                )
                 if (!wheelNode || !parentNode) {
-                    console.error(
-                        `[WheelAssignmentMode] Couldn't find a rigid node for the wheel and/or parent part after rebuild -- ` +
-                            `createJointsFromParser will skip this joint ("Couldn't find associated rigid nodes.").`
-                    )
+                    console.error(`[WheelAssignmentMode] No rigid node found for the wheel and/or parent part.`)
                 } else if (wheelNode.id === parentNode.id) {
-                    console.error(
-                        `[WheelAssignmentMode] Wheel and parent ended up in the SAME rigid node (${wheelNode.id}) -- ` +
-                            `PhysicsSystem.createJointsFromParser will silently skip this joint ("Jointing the same parts"), ` +
-                            `so no wheel constraint gets created. This means a RigidGroup (or the default ancestral round-up) ` +
-                            `is still bandaging the wheel occurrence to the chassis; check the RigidGroup[] logs above from ` +
-                            `WheelJointBuilder for other occurrences that share a group with this wheel/parent pair.`
-                    )
+                    console.error(`[WheelAssignmentMode] Wheel and parent ended up in the same rigid node.`)
                 }
             }
         }
