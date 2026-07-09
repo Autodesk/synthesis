@@ -252,6 +252,40 @@ function extractLinks(doc: Document): URDFLink[] {
     })
 }
 
+const DEFAULT_STEEL_MATERIAL_NAME = "__urdf_default_steel__"
+const DEFAULT_STEEL_RGBA: [number, number, number, number] = [0.647059, 0.647059, 0.647059, 1]
+
+// If no material try find another instance of same mesh to match with.
+// Otherwise fallback to default steel material.
+function fillMissingMaterials(links: URDFLink[]): void {
+    const meshMaterials = new Map<string, { name: string; rgba: [number, number, number, number] }>()
+    for (const link of links) {
+        for (const visual of link.visuals) {
+            if (
+                visual.visualMeshPath &&
+                visual.materialName &&
+                visual.materialRGBA &&
+                !meshMaterials.has(visual.visualMeshPath)
+            ) {
+                meshMaterials.set(visual.visualMeshPath, { name: visual.materialName, rgba: visual.materialRGBA })
+            }
+        }
+    }
+
+    for (const link of links) {
+        for (const visual of link.visuals) {
+            if (visual.materialName && visual.materialRGBA) continue
+            const fallback = (visual.visualMeshPath && meshMaterials.get(visual.visualMeshPath)) || {
+                name: DEFAULT_STEEL_MATERIAL_NAME,
+                rgba: DEFAULT_STEEL_RGBA,
+            }
+
+            visual.materialName = fallback.name
+            visual.materialRGBA = fallback.rgba
+        }
+    }
+}
+
 function extractJoints(doc: Document): URDFJoint[] {
     const validTypes = new Set(["fixed", "revolute", "continuous", "prismatic", "floating", "planar"])
     return Array.from(doc.querySelectorAll("joint")).map(joint => {
@@ -283,8 +317,8 @@ function resolveMeshBytes(packagePath: string, meshFiles: Map<string, Uint8Array
     )
 }
 
-function applyMat3(src: number[], r: Mat3, tx = 0, ty = 0, tz = 0): number[] {
-    const out = new Array<number>(src.length)
+function applyMat3(src: ArrayLike<number>, r: Mat3, tx = 0, ty = 0, tz = 0): Float32Array {
+    const out = new Float32Array(src.length)
     for (let i = 0; i < src.length; i += 3) {
         const x = src[i]
         const y = src[i + 1]
@@ -313,8 +347,8 @@ function applyVisualTransform(mesh: ParsedMesh, rotation: Mat3, xyz: [number, nu
 
 // Convert a flat float array of 3D vectors from URDF Z-up to Y-up by applying Rx(-90°):
 // new_x = x, new_y = z, new_z = -y. Works for both positions and direction vectors (normals).
-function toYup(arr: number[]): number[] {
-    const out = new Array<number>(arr.length)
+function toYup(arr: ArrayLike<number>): Float32Array {
+    const out = new Float32Array(arr.length)
     for (let i = 0; i < arr.length; i += 3) {
         out[i] = arr[i]
         out[i + 1] = arr[i + 2]
@@ -326,7 +360,7 @@ function toYup(arr: number[]): number[] {
 
 // Centroid of a flat [x,y,z,...] vertex array, in the mesh's own (untransformed) coordinate space.
 // A centroid magnitude near zero means the mesh is authored in link-LOCAL space.
-function meshCentroid(verts: number[]): { c: [number, number, number]; mag: number } {
+function meshCentroid(verts: ArrayLike<number>): { c: [number, number, number]; mag: number } {
     const n = verts.length / 3
     if (n === 0) return { c: [0, 0, 0], mag: 0 }
     let sx = 0
@@ -342,10 +376,14 @@ function meshCentroid(verts: number[]): { c: [number, number, number]; mag: numb
     return { c, mag: Math.hypot(c[0], c[1], c[2]) }
 }
 
-function visualCentroidInLinkFrame(visual: URDFVisual, meshFiles: Map<string, Uint8Array>) {
+function visualCentroidInLinkFrame(
+    visual: URDFVisual,
+    meshFiles: Map<string, Uint8Array>,
+    meshCache: Map<string, ParsedMesh | null>
+) {
     if (!visual.visualMeshPath) return null
 
-    const parsed = loadMesh(visual.visualMeshPath, meshFiles)
+    const parsed = loadMesh(visual.visualMeshPath, meshFiles, meshCache)
     if (!parsed) return null
 
     const raw = meshCentroid(parsed.verts)
@@ -403,12 +441,13 @@ function visualTransformInLinkFrame(
 function shouldTreatVisualOriginsAsRobotSpace(
     link: URDFLink,
     globalTransform: URDFTransform | undefined,
-    meshFiles: Map<string, Uint8Array>
+    meshFiles: Map<string, Uint8Array>,
+    meshCache: Map<string, ParsedMesh | null>
 ): boolean {
     if (!globalTransform || link.visuals.length < 2) return false
 
     const summaries = link.visuals
-        .map(visual => visualCentroidInLinkFrame(visual, meshFiles))
+        .map(visual => visualCentroidInLinkFrame(visual, meshFiles, meshCache))
         .filter(summary => summary !== null)
     if (summaries.length < 2) return false
 
@@ -434,7 +473,20 @@ function shouldTreatVisualOriginsAsRobotSpace(
     return visualMagnitude > 0.15 && meanVisualOrigin > 0.15
 }
 
-function loadMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): ParsedMesh | null {
+function loadMesh(
+    meshPath: string,
+    meshFiles: Map<string, Uint8Array>,
+    cache: Map<string, ParsedMesh | null>
+): ParsedMesh | null {
+    const cached = cache.get(meshPath)
+    if (cached !== undefined) return cached
+
+    const parsed = parseMesh(meshPath, meshFiles)
+    cache.set(meshPath, parsed)
+    return parsed
+}
+
+function parseMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): ParsedMesh | null {
     const data = resolveMeshBytes(meshPath, meshFiles)
     if (!data) {
         console.warn(`[URDF] Mesh not found: ${meshPath}`)
@@ -584,11 +636,12 @@ function buildLinkBody(
     index: number,
     meshFiles: Map<string, Uint8Array>,
     robotSpaceVisuals: boolean,
+    meshCache: Map<string, ParsedMesh | null>,
     linkGlobalTransform?: URDFTransform
 ): mirabuf.IBody | null {
     if (!visual.visualMeshPath) return null
 
-    const parsed = loadMesh(visual.visualMeshPath, meshFiles)
+    const parsed = loadMesh(visual.visualMeshPath, meshFiles, meshCache)
     if (!parsed) return null
 
     const visualTransform = visualTransformInLinkFrame(visual, robotSpaceVisuals, linkGlobalTransform)
@@ -598,23 +651,24 @@ function buildLinkBody(
     // Jolt VehicleConstraint requires mPosition in body-local Y-up space.
     const [sx, sy, sz] = visual.visualMeshScale.map(s => s * 100)
     const rv = inLinkFrame.verts
-    const scaled = new Array<number>(rv.length)
+    const scaled = new Float32Array(rv.length)
     for (let i = 0; i < rv.length; i += 3) {
         scaled[i] = rv[i] * sx
         scaled[i + 1] = rv[i + 2] * sy // Z-up→Y-up swap
         scaled[i + 2] = -rv[i + 1] * sz
     }
     const yupNormals = toYup(inLinkFrame.normals)
+    const uv = inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Float32Array((scaled.length / 3) * 2)
 
+    // mirabuf.IMesh (protobuf-generated) requires plain number[]
     return {
         info: { GUID: `${link.name}_body_${index}`, name: `${link.name}_body_${index}` },
         triangleMesh: {
             mesh: {
-                verts: scaled,
-                normals: yupNormals,
-                // uv must be non-empty: MirabufInstance.ts:184 checks !mesh.uv
-                uv: inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Array((scaled.length / 3) * 2).fill(0),
-                indices: inLinkFrame.indices,
+                verts: Array.from(scaled),
+                normals: Array.from(yupNormals),
+                uv: Array.from(uv),
+                indices: Array.from(inLinkFrame.indices),
             },
         },
         appearanceOverride: visual.materialName ?? undefined,
@@ -631,13 +685,16 @@ function buildParts(
     const partInstances: Record<string, mirabuf.IPartInstance> = {}
     const parentJoint = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
     const globalTransforms = buildGlobalLinkTransforms(joints, rootLink.name)
+    const meshCache = new Map<string, ParsedMesh | null>()
 
     for (const link of links) {
         const globalTransform = globalTransforms.get(link.name)
-        const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles)
+        const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles, meshCache)
 
         const bodies = link.visuals
-            .map((visual, index) => buildLinkBody(link, visual, index, meshFiles, robotSpaceVisuals, globalTransform))
+            .map((visual, index) =>
+                buildLinkBody(link, visual, index, meshFiles, robotSpaceVisuals, meshCache, globalTransform)
+            )
             .filter((body): body is mirabuf.IBody => body !== null)
 
         partDefinitions[link.name] = {
@@ -794,6 +851,8 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     const joints = extractJoints(doc)
 
     if (links.length === 0) throw new Error("URDF contains no <link> elements")
+
+    fillMissingMaterials(links)
 
     const childSet = new Set(joints.map(j => j.child))
     const rootLink = links.find(l => !childSet.has(l.name))

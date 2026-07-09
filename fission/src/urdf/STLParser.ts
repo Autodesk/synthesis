@@ -1,17 +1,24 @@
 export interface ParsedMesh {
-    verts: number[]
-    normals: number[]
-    indices: number[]
-    uv: number[]
+    verts: Float32Array
+    normals: Float32Array
+    indices: Uint32Array
+    uv: Float32Array
 }
 
 function parseBinarySTL(data: Uint8Array): ParsedMesh {
     const view = new DataView(data.buffer, data.byteOffset, data.byteLength)
     const triCount = view.getUint32(80, true)
 
-    const verts: number[] = []
-    const normals: number[] = []
-    const indices: number[] = []
+    const expectedSize = 84 + 50 * triCount
+    if (expectedSize > data.byteLength) {
+        throw new Error(
+            `Malformed binary STL: header claims ${triCount} triangles (needs ${expectedSize} bytes) but file is only ${data.byteLength} bytes`
+        )
+    }
+
+    const verts = new Float32Array(triCount * 9)
+    const normals = new Float32Array(triCount * 9)
+    const indices = new Uint32Array(triCount * 3)
 
     let offset = 84
     for (let i = 0; i < triCount; i++) {
@@ -20,23 +27,27 @@ function parseBinarySTL(data: Uint8Array): ParsedMesh {
         const nz = view.getFloat32(offset + 8, true)
         offset += 12
 
+        const vBase = i * 9
         for (let v = 0; v < 3; v++) {
-            verts.push(
-                view.getFloat32(offset, true),
-                view.getFloat32(offset + 4, true),
-                view.getFloat32(offset + 8, true)
-            )
-            normals.push(nx, ny, nz)
+            const o = vBase + v * 3
+            verts[o] = view.getFloat32(offset, true)
+            verts[o + 1] = view.getFloat32(offset + 4, true)
+            verts[o + 2] = view.getFloat32(offset + 8, true)
+            normals[o] = nx
+            normals[o + 1] = ny
+            normals[o + 2] = nz
             offset += 12
         }
 
         offset += 2 // attribute byte count
 
         const base = i * 3
-        indices.push(base, base + 1, base + 2)
+        indices[base] = base
+        indices[base + 1] = base + 1
+        indices[base + 2] = base + 2
     }
 
-    return { verts, normals, indices, uv: new Array((verts.length / 3) * 2).fill(0) }
+    return { verts, normals, indices, uv: new Float32Array((verts.length / 3) * 2) }
 }
 
 function parseASCIISTL(text: string): ParsedMesh {
@@ -64,7 +75,12 @@ function parseASCIISTL(text: string): ParsedMesh {
         }
     }
 
-    return { verts, normals, indices, uv: new Array((verts.length / 3) * 2).fill(0) }
+    return {
+        verts: Float32Array.from(verts),
+        normals: Float32Array.from(normals),
+        indices: Uint32Array.from(indices),
+        uv: new Float32Array((verts.length / 3) * 2),
+    }
 }
 
 function isBinarySTL(data: Uint8Array): boolean {
