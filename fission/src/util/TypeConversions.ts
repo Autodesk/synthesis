@@ -133,7 +133,7 @@ export function convertReactRgbaColorToThreeColor(color: RgbaColor) {
 
 export function convertAABBToOBB(aabb: Jolt.AABox): Jolt.OrientedBox {
     const center = aabb.GetCenter()
-    const halfExtent = aabb.GetExtent().Div(2)
+    const halfExtent = aabb.GetExtent()
     const transform = new JOLT.Mat44().sTranslation(center)
 
     return new JOLT.OrientedBox(transform, halfExtent)

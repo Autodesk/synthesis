@@ -16,6 +16,7 @@ import {
     type VisualProperties,
 } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
+import { renderOBB } from "@/util/Utility"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
     private static readonly transparentMaterial = new THREE.MeshPhongMaterial({
@@ -92,23 +93,15 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (!this.mesh) return
         if (this.bounding) JOLT.destroy(this.bounding)
 
-        const halfExtents = convertThreeVector3ToJoltVec3(props.scale).Div(2)
+        const halfExtents = convertThreeVector3ToJoltVec3(props.scale.divideScalar(2))
         const transformMatrix = new JOLT.Mat44().sRotationTranslation(
             convertThreeQuaternionToJoltQuat(props.rotation),
             convertThreeVector3ToJoltVec3(props.translation)
         )
+
         this.bounding = new JOLT.OrientedBox(transformMatrix, halfExtents)
 
-        // const bounding = new THREE.Box3()
-        // bounding.setFromObject(this.mesh)
-        //
-        // const min = convertThreeVector3ToJoltVec3(bounding.min)
-        // const max = convertThreeVector3ToJoltVec3(bounding.max)
-        //
-        // bounding = new JOLT.OrientedBox(min, max)
-        //
-        // JOLT.destroy(min)
-        // JOLT.destroy(max)
+        const points = renderOBB(this.bounding)
     }
 
     private setMeshProperties(props: VisualProperties) {
