@@ -4,3 +4,6 @@
 [submodule "jolt"]
 	path = jolt
 	url = https://github.com/azaleacolburn/JoltPhysics.js.git
+[submodule "protobuf"]
+	path = protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
