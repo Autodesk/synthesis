@@ -140,48 +140,46 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [])
 
     const gizmoComponent = useMemo(() => {
-        if (selectedRobot?.intakePreferences) {
-            const postGizmoCreation = (gizmo: GizmoSceneObject) => {
-                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
-                material.depthTest = false
+        if (!selectedRobot?.intakePreferences) {
+            gizmoRef.current = undefined
+            return null
+        }
 
-                const deltaTransformation = convertArrayToThreeMatrix4(
-                    selectedRobot.intakePreferences!.deltaTransformation
-                )
+        const postGizmoCreation = (gizmo: GizmoSceneObject) => {
+            const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+            material.depthTest = false
 
-                let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
-                    selectedRobot.intakePreferences!.parentNode ?? selectedRobot.rootNodeId
-                )
-                if (!nodeBodyId) {
-                    // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
-                    nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.rootNodeId)!
-                }
+            const deltaTransformation = convertArrayToThreeMatrix4(selectedRobot.intakePreferences!.deltaTransformation)
 
-                /** W = L x R. See save() for math details */
-                const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
-                )
-                const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
-
-                gizmo.setTransform(gizmoTransformation)
+            let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
+                selectedRobot.intakePreferences!.parentNode ?? selectedRobot.rootNodeId
+            )
+            if (!nodeBodyId) {
+                // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+                nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.rootNodeId)!
             }
 
-            return (
-                <TransformGizmoControl
-                    key="pickup-transform-gizmo"
-                    size={1.5}
-                    gizmoRef={gizmoRef}
-                    defaultMode="translate"
-                    defaultMesh={placeholderMesh}
-                    scaleDisabled={true}
-                    rotateDisabled={true}
-                    postGizmoCreation={postGizmoCreation}
-                />
+            /** W = L x R. See save() for math details */
+            const robotTransformation = convertJoltMat44ToThreeMatrix4(
+                World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
             )
-        } else {
-            gizmoRef.current = undefined
-            return <></>
+            const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
+
+            gizmo.setTransform(gizmoTransformation)
         }
+
+        return (
+            <TransformGizmoControl
+                key="pickup-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+                defaultMesh={placeholderMesh}
+                scaleDisabled={true}
+                rotateDisabled={true}
+                postGizmoCreation={postGizmoCreation}
+            />
+        )
     }, [
         selectedRobot?.intakePreferences,
         placeholderMesh,

@@ -17,7 +17,9 @@ const WPILibConnectionStatus: React.FC = () => {
         return () => clearInterval(handle)
     }, [])
 
-    return enabled ? (
+    if (!enabled) return null
+
+    return (
         <Stack
             direction="row"
             sx={{ bgcolor: "background.default" }}
@@ -30,8 +32,6 @@ const WPILibConnectionStatus: React.FC = () => {
             )}
             <Label size="sm">Code Connection</Label>
         </Stack>
-    ) : (
-        <></>
     )
 }
 

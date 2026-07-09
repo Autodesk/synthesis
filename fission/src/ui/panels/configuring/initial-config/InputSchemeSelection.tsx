@@ -99,7 +99,8 @@ export default function InputSchemeSelection({
                         })}
 
                         {/** Delete button (only if the scheme is customized and not in use) */}
-                        {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
+                        {scheme.customized &&
+                            status !== InputSchemeUseType.IN_USE &&
                             DeleteButton(() => {
                                 // Fetch current custom schemes
                                 InputSchemeManager.saveSchemes(panelId)
@@ -117,10 +118,7 @@ export default function InputSchemeSelection({
                                 // Update the available schemes list to reflect the deletion
                                 EventSystem.dispatch("InputSchemeChanged", { panelId })
                                 update()
-                            })
-                        ) : (
-                            <></>
-                        )}
+                            })}
                     </Stack>
                 </Stack>
             </Tooltip>

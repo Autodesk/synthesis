@@ -343,15 +343,15 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         setEnd={setActiveProps}
                         state="Playing"
                     />
-                ) : activeProps.state === "End" ? (
-                    <End
-                        assembly={activeProps.assembly}
-                        setStaging={setActiveProps}
-                        captures={activeProps.captures}
-                        state="End"
-                    />
                 ) : (
-                    <></>
+                    activeProps.state === "End" && (
+                        <End
+                            assembly={activeProps.assembly}
+                            setStaging={setActiveProps}
+                            captures={activeProps.captures}
+                            state="End"
+                        />
+                    )
                 ))}
         </Stack>
     )

@@ -17,7 +17,9 @@ const DragModeIndicator: React.FC = () => {
         globalAddToast("info", "Drag Mode", "Drag mode has been disabled")
     }
 
-    return enabled ? (
+    if (!enabled) return null
+
+    return (
         <Stack
             className="select-none absolute left-1 bottom-1 py-2 px-4 rounded-lg gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             direction="row"
@@ -32,8 +34,6 @@ const DragModeIndicator: React.FC = () => {
                 Drag Mode
             </Label>
         </Stack>
-    ) : (
-        <></>
     )
 }
 
