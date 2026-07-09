@@ -5,6 +5,7 @@ import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ScoringZoneSceneObject from "../../mirabuf/ScoringZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -119,5 +120,85 @@ describe("ScoringZoneSceneObject", () => {
 
         expect(mockMesh.geometry.dispose).toHaveBeenCalled()
         expect(mockSceneRenderer.removeObject).toHaveBeenCalledWith(mockMesh)
+    })
+
+    describe("checkObjectsInZone", () => {
+        const createZoneWithBounding = (alliance: "red" | "blue", points: number) => {
+            const parent = {} as unknown as MirabufSceneObject
+            Reflect.set(parent, "fieldPreferences", {
+                scoringZones: [{ shouldPointsAccumulate: true, alliance, points, name: "Test", parentNode: undefined, deltaTransformation: [] }],
+            })
+            const zone = new ScoringZoneSceneObject(parent, 0)
+            // 2×2×2 OBB centred at origin
+            zone.bounding = new JOLT.OrientedBox(
+                new JOLT.Mat44().sTranslation(new JOLT.Vec3(0, 0, 0)),
+                new JOLT.Vec3(1, 1, 1)
+            )
+            return zone
+        }
+
+        const makeField = (gpId: Jolt.BodyID) => ({
+            mirabufInstance: {
+                parser: {
+                    rigidNodes: new Map([["gp_0", { isGamePiece: true, id: "gp_0" }]]),
+                },
+            },
+            mechanism: {
+                nodeToBody: new Map([["gp_0", gpId]]),
+            },
+        })
+
+        test("scores when game piece overlaps zone", () => {
+            const mockBodyId = {} as unknown as Jolt.BodyID
+            mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => makeField(mockBodyId))
+            // game piece AABB at origin — inside the 2×2×2 zone
+            mockPhysicsSystem.getBody = vi.fn(() => ({
+                GetWorldSpaceBounds: () =>
+                    new JOLT.AABox(new JOLT.Vec3(-0.2, -0.2, -0.2), new JOLT.Vec3(0.2, 0.2, 0.2)),
+            }))
+            mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ robotLastInContactWith: undefined }))
+
+            const zone = createZoneWithBounding("red", 10)
+            zone["checkObjectsInZone"]()
+
+            expect(ScoreTracker.redScore).toBe(10)
+        })
+
+        test("does not score when game piece is outside zone", () => {
+            const mockBodyId = {} as unknown as Jolt.BodyID
+            mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => makeField(mockBodyId))
+            // game piece AABB far from zone
+            mockPhysicsSystem.getBody = vi.fn(() => ({
+                GetWorldSpaceBounds: () =>
+                    new JOLT.AABox(new JOLT.Vec3(10, 10, 10), new JOLT.Vec3(10.2, 10.2, 10.2)),
+            }))
+
+            const zone = createZoneWithBounding("red", 10)
+            zone["checkObjectsInZone"]()
+
+            expect(ScoreTracker.redScore).toBe(0)
+        })
+
+        test("warns when game pieces exist but have no body IDs", () => {
+            const warnSpy = vi.spyOn(console, "warn")
+            const mockField = {
+                mirabufInstance: {
+                    parser: {
+                        rigidNodes: new Map([["gp_0", { isGamePiece: true, id: "gp_0" }]]),
+                    },
+                },
+                mechanism: {
+                    // nodeToBody has no entry for gp_0
+                    nodeToBody: new Map(),
+                },
+            }
+            mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => mockField)
+
+            const zone = createZoneWithBounding("red", 10)
+            zone["checkObjectsInZone"]()
+
+            expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("game piece nodes exist but none have body IDs"))
+            expect(ScoreTracker.redScore).toBe(0)
+        })
     })
 })

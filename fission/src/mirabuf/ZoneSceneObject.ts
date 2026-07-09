@@ -16,7 +16,6 @@ import {
     type VisualProperties,
 } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
-import { renderOBB } from "@/util/Utility"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
     private static readonly transparentMaterial = new THREE.MeshPhongMaterial({
@@ -100,8 +99,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         )
 
         this.bounding = new JOLT.OrientedBox(transformMatrix, halfExtents)
-
-        const points = renderOBB(this.bounding)
     }
 
     private setMeshProperties(props: VisualProperties) {

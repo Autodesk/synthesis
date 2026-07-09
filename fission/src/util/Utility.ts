@@ -27,6 +27,8 @@ export function deobf(s: string) {
 }
 
 export function getOBBPoints(box: Jolt.OrientedBox): Jolt.Vec3[] {
+    // get_mHalfExtents() and get_mOrientation() return REFERENCES to OBB-internal data,
+    // not heap copies. Never call JOLT.destroy() on them.
     const halfExtents = box.get_mHalfExtents()
     const orientation = box.get_mOrientation()
     const corners = []
@@ -40,9 +42,6 @@ export function getOBBPoints(box: Jolt.OrientedBox): Jolt.Vec3[] {
         corners.push(orientation.MulVec3(localPoint))
         JOLT.destroy(localPoint)
     }
-
-    JOLT.destroy(halfExtents)
-    JOLT.destroy(orientation)
 
     return corners
 }

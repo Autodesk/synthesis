@@ -54,21 +54,33 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) return
 
-        const gps = [...field.mirabufInstance.parser.rigidNodes.values()]
-            .filter(rn => rn.isGamePiece)
-            .map(rn => field.mechanism.nodeToBody.get(rn.id)!) as Jolt.BodyID[]
+        const allNodes = [...field.mirabufInstance.parser.rigidNodes.values()]
+        const gamepieces = allNodes.filter(rn => rn.isGamePiece)
+
+        const gps = gamepieces
+            .map(rn => field.mechanism.nodeToBody.get(rn.id))
+            .filter((id): id is Jolt.BodyID => id !== undefined)
+
+        if (gamepieces.length > 0 && gps.length === 0) {
+            console.warn(
+                `ScoringZone: ${gamepieces.length} game piece nodes exist but none have body IDs in nodeToBody`
+            )
+        }
 
         const gamePiecesContacting = gps.filter(gpID => {
-            // NOTE
-            // I think using an axis-aligned bounding box for game pieces is fine
-            const gp = World.physicsSystem.getBody(gpID)!
-            const gpBounding = gp.GetWorldSpaceBounds()
+            const gp = World.physicsSystem.getBody(gpID)
+            if (!gp) return false
 
+            const gpBounding = gp.GetWorldSpaceBounds()
             const overlaps = this.bounding?.OverlapsAABox(gpBounding)
             JOLT.destroy(gpBounding)
 
             return overlaps
         })
+
+        if (gamePiecesContacting.length > 0) {
+            console.log(`Game Pieces Contacting ${gamePiecesContacting.length}`)
+        }
 
         const { added, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
 
