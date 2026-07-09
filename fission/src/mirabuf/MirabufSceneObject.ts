@@ -46,7 +46,6 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToThreeVector3,
-    convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import SceneObject from "../systems/scene/SceneObject"
@@ -54,7 +53,7 @@ import EjectableSceneObject from "./EjectableSceneObject"
 import FieldMiraEditor, { devtoolHandlers, devtoolKeys } from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
-import MirabufCachingService, { type MirabufCacheID, MiraType } from "./MirabufLoader"
+import { type MirabufCacheID, MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
@@ -401,22 +400,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         JOLT.destroy(yUnitVec)
         JOLT.destroy(blankVec)
         this.updateMeshTransforms()
-    }
-
-    private robotSpawnPosition(referencePos: THREE.Vector3): SpawnLocation | undefined {
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        const fieldLocations = field?.fieldPreferences?.spawnLocations
-
-        const pos =
-            this.alliance != null && this.station != null && fieldLocations != null
-                ? fieldLocations[this.alliance][this.station]
-                : fieldLocations?.default
-
-        // TODO
-        // Why are we calling this?
-        field?.getPositionTransform(referencePos)
-
-        return pos
     }
 
     private setObjectPosition(initialPos: SpawnLocation, referencePosition: THREE.Vector3 = new THREE.Vector3()) {
@@ -1195,7 +1178,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private recordRobotCollision(collision: Jolt.BodyID) {
         const objectCollidedWith = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collision)
-        const inGPLayer = World.physicsSystem.getBody(collision).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        const inGPLayer = World.physicsSystem.getBody(collision)?.GetObjectLayer() === LAYER_GENERAL_DYNAMIC
         if (objectCollidedWith && (objectCollidedWith.isGamePiece || inGPLayer)) {
             objectCollidedWith.robotLastInContactWith = this
         }

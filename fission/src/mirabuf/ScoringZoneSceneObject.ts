@@ -123,7 +123,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
     public zoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-        const inGPLayer = World.physicsSystem.getBody(gpID).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        const inGPLayer = World.physicsSystem.getBody(gpID)?.GetObjectLayer() === LAYER_GENERAL_DYNAMIC
         if ((associate?.isGamePiece || inGPLayer) && this.prefs) {
             // If persistent, Update() will handle points
             if (!this.prefs.shouldPointsAccumulate) {
