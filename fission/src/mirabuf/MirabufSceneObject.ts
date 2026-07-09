@@ -879,6 +879,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._robotPreferences = { ...this._robotPreferences, ...editor.getUserData("synthesis:robot_preferences") }
         }
         this.savePreferences()
+        this.updateScoringZones()
+        this.updateIntakeSensor()
+        this.updateProtectedZones()
     }
 
     public savePreferences(): void {
