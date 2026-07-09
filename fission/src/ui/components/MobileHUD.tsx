@@ -19,7 +19,7 @@ import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
 import HUDMenuButton from "./topbar/HUDMenuButton"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
-import { assemblyLabel, useConfigureAssembly } from "./topbar/UseConfigureAssembly"
+import { useConfigureAssembly } from "./topbar/UseConfigureAssembly"
 import UserIcon from "./UserIcon"
 
 const DRAWER_SX = {
@@ -150,7 +150,7 @@ const MobileHUD: React.FC = () => {
                     value={selectedValue}
                     onChange={e => selectAssemblyById(e.target.value as string)}
                     renderValue={() =>
-                        selectedConfigAssembly ? assemblyLabel(selectedConfigAssembly) : "Select an assembly"
+                        selectedConfigAssembly ? selectedConfigAssembly.descriptiveName : "Select an assembly"
                     }
                     IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
                     sx={{ ...DRAWER_SELECT_SX, flexGrow: 1, minWidth: 0 }}
@@ -162,7 +162,7 @@ const MobileHUD: React.FC = () => {
                     )}
                     {assemblies.map(assembly => (
                         <MenuItem key={assembly.id} value={assembly.id.toString()}>
-                            {assemblyLabel(assembly)}
+                            {assembly.descriptiveName}
                         </MenuItem>
                     ))}
                 </Select>

@@ -2,8 +2,6 @@ import { useCallback, useEffect, useState } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import InputSystem from "@/systems/input/InputSystem"
-import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -26,15 +24,6 @@ export const FIELD_CONFIGURE_BUTTONS: ConfigureButton[] = [
     { name: "cfg-8", label: "Scoring Zones", mode: ConfigMode.SCORING_ZONES },
     { name: "cfg-7", label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
 ]
-
-export const assemblyLabel = (assembly: MirabufSceneObject): string => {
-    if (assembly.miraType !== MiraType.ROBOT) return assembly.assemblyName
-    const scheme =
-        assembly.multiplayerOwnerName ??
-        InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ??
-        "-"
-    return `[${scheme}] ${assembly.assemblyName}`
-}
 
 export function useConfigureAssembly() {
     const { selectedConfigAssembly, setSelectedConfigAssembly } = useStateContext()

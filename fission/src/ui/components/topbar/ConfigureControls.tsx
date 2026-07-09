@@ -4,7 +4,7 @@ import { IoMdArrowDropdown } from "react-icons/io"
 import { IconButton, Select } from "../StyledComponents"
 import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
 import { TopBarIcon } from "./TopBarIcons"
-import { assemblyLabel, useConfigureAssembly } from "./UseConfigureAssembly"
+import { useConfigureAssembly } from "./UseConfigureAssembly"
 
 const ConfigureControls: React.FC = () => {
     const { assemblies, selectedConfigAssembly, configureButtons, openConfig, selectedValue, selectAssemblyById } =
@@ -20,7 +20,7 @@ const ConfigureControls: React.FC = () => {
                 value={selectedValue}
                 onChange={e => selectAssemblyById(e.target.value as string)}
                 renderValue={() =>
-                    selectedConfigAssembly ? assemblyLabel(selectedConfigAssembly) : "Select an assembly"
+                    selectedConfigAssembly ? selectedConfigAssembly.descriptiveName : "Select an assembly"
                 }
                 IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
                 sx={{
@@ -44,7 +44,7 @@ const ConfigureControls: React.FC = () => {
                 )}
                 {assemblies.map(assembly => (
                     <MenuItem key={assembly.id} value={assembly.id.toString()}>
-                        {assemblyLabel(assembly)}
+                        {assembly.descriptiveName}
                     </MenuItem>
                 ))}
             </Select>
