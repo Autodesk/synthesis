@@ -14,7 +14,7 @@ interface MultiplayerStartMenuCustomProps {
 const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuCustomProps>> = ({ modal }) => {
     const { configureScreen, closeModal } = useUIContext()
     const [room, setRoom] = useState<string>("")
-    const [name, setName] = useState<string>(PreferencesSystem.getGlobalPreference("MultiplayerUsername"))
+    const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
     let isValidName: boolean = name.length >= 3
     const { startWorldCallback } = modal!.props.custom
     useLayoutEffect(() => {

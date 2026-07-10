@@ -21,7 +21,7 @@ jobs:
         working-directory: "fission"
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install System Dependencies
         run: |
@@ -35,7 +35,7 @@ jobs:
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: fission/public/Downloadables
           key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
@@ -51,7 +51,7 @@ jobs:
           unzip -o public/assetpack.zip -d public/ || echo
 
       - name: Cache Bun Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           key: "${{runner.os}}-bun-fission-${{hashFiles('fission/bun.lock')}}"
           path: "fission/node_modules"
@@ -76,7 +76,7 @@ jobs:
         working-directory: "fission"
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install System Dependencies
         run: |
@@ -90,13 +90,13 @@ jobs:
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: fission/public/Downloadables
           key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
 
       - name: Cache Bun Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           key: "${{runner.os}}-bun-fission-${{hashFiles('fission/bun.lock')}}"
           path: "fission/node_modules"

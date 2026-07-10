@@ -1,18 +1,17 @@
 import { Alert, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
-import FieldMiraEditor, { type DevtoolKey, devtoolHandlers, devtoolKeys } from "../../mirabuf/FieldMiraEditor"
+import FieldMiraEditor, { devtoolHandlers, type SynthesisDevtoolKey } from "../../mirabuf/FieldMiraEditor"
 import { globalAddToast, globalOpenPanel } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
-import { Button, LabelWithTooltip } from "../components/StyledComponents"
+import { Button } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import SelectMenu from "@/components/SelectMenu.tsx"
 import { AssemblySelectionOption } from "@/panels/configuring/assembly-config/configure/AssemblySelection.tsx"
+import { tryParse } from "@/util/Utility.ts"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 
 // Register command: Open Developer Tool Panel (module-scope side effect)
@@ -24,31 +23,10 @@ CommandRegistry.get().registerCommand({
     perform: () => import("./DeveloperToolPanel").then(m => globalOpenPanel(m.default, undefined)),
 })
 
-async function saveToCache() {
-    const field = World.sceneRenderer.mirabufSceneObjects.getField()
-    if (!field) return
-    const assembly = field.mirabufInstance.parser.assembly
-    const newName = assembly.info?.name != null ? `Edited ${assembly.info.name}` : undefined
-    const existing = MirabufCachingService.getAll().find(info => info.name == newName)
-    const cacheInfo = await MirabufCachingService.storeAssemblyInCache(assembly, {
-        miraType: MiraType.FIELD,
-        name: newName,
-    })
-
-    if (cacheInfo != null) {
-        globalAddToast("info", "Devtool Saved", "Changes have been persisted to cache.")
-    } else {
-        globalAddToast("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
-    }
-
-    if (existing) {
-        await MirabufCachingService.remove(existing.hash)
-    }
-}
-
+const devtoolKeys = Object.keys(devtoolHandlers) as SynthesisDevtoolKey[]
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const [selectedKey, setSelectedKey] = useState<DevtoolKey | undefined>(undefined)
+    const [selectedKey, setSelectedKey] = useState<SynthesisDevtoolKey | undefined>(undefined)
     const [jsonValue, setJsonValue] = useState<string>("")
     const [error, setError] = useState<string>("")
     const [editor, setEditor] = useState<FieldMiraEditor | undefined>(undefined)
@@ -66,7 +44,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     if (parts) {
                         const newEditor = new FieldMiraEditor(parts)
                         setEditor(newEditor)
-                        setKeys(newEditor.getAllDevtoolKeys())
+                        setKeys(newEditor.getSynthesisKeys())
                     } else {
                         setEditor(undefined)
                         setKeys([])
@@ -79,12 +57,9 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 setJsonValue("")
                 setError("")
             } else if (activeObj && editor) {
-                setKeys(editor.getAllDevtoolKeys())
+                setKeys(editor.getSynthesisKeys())
             }
         }
-        const allKeys = editor?.getAllDevtoolKeys()
-        console.log("devtool keys (poll):", allKeys)
-
         updateEditor()
         const interval = setInterval(updateEditor, 1000)
         return () => clearInterval(interval)
@@ -93,61 +68,26 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     // Load value when key changes
     useEffect(() => {
         if (!editor || !activeObj || !selectedKey) return
-
-        const val = devtoolHandlers[selectedKey].get(activeObj)
-        editor.setUserData(selectedKey, val)
+        activeObj.savePreferencesToMirabuf()
+        const val = devtoolHandlers[selectedKey]?.get(activeObj)
         setJsonValue(JSON.stringify(val, null, 2))
         setError("")
-    }, [selectedKey, editor])
+    }, [selectedKey, editor, activeObj])
 
     const handleSave = async () => {
         if (!editor || !selectedKey || !activeObj) return
-        try {
-            setError("")
-            const parsed = JSON.parse(jsonValue) as unknown
-            if (!devtoolHandlers[selectedKey].validate(parsed)) {
-                setError("Value does not match required format")
-                return
-            }
-            editor.setUserData(selectedKey, parsed)
+        setError("")
 
-            setKeys(editor.getAllDevtoolKeys())
-
-            // Persist changes to cache
-            await saveToCache()
-
-            // if (!activeObj.fieldPreferences) { // TODO: remove
-            //     globalAddToast?.("error", "Devtool Error", "Field preferences not available.")
-            //     return
-            // }
-
-            devtoolHandlers[selectedKey].set(activeObj, parsed)
-            PreferencesSystem.savePreferences?.()
-        } catch (_e) {
+        const parsed = tryParse(jsonValue)
+        if (parsed == null) {
             setError("Invalid JSON")
+            return
         }
-    }
+        editor.setUserData(selectedKey, parsed)
 
-    const handleRemove = async () => {
-        if (!editor || !selectedKey || !activeObj) return
+        setKeys(editor.getSynthesisKeys())
 
-        editor.removeUserData(selectedKey)
-        setKeys(editor.getAllDevtoolKeys())
-        setSelectedKey(undefined)
-        setJsonValue("")
-        setError("")
-
-        // Persist removal to cache
-        await saveToCache()
-
-        devtoolHandlers[selectedKey].set(activeObj, null)
-        PreferencesSystem.savePreferences?.()
-    }
-
-    const handleAdd = (key: DevtoolKey) => {
-        setSelectedKey(key)
-        setJsonValue("{}")
-        setError("")
+        devtoolHandlers[selectedKey]?.set(activeObj, parsed)
     }
 
     const handleExport = () => {
@@ -167,15 +107,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             })
             const url = URL.createObjectURL(blob)
 
-            // Check if assembly has devtool data to determine filename
-            let name = assembly.info?.name ?? "unknown"
-            if (assembly.data?.parts?.userData?.data) {
-                const devtoolKeys = Object.keys(assembly.data.parts.userData.data).filter(k => k.startsWith("devtool:"))
-                if (devtoolKeys.length > 0) {
-                    name = `edited-${name}`
-                }
-            }
-            const filename = `${name}.mira`
+            const filename = `${assembly.info?.name ?? "unknown"}.mira`
 
             const a = document.createElement("a")
             a.href = url
@@ -217,7 +149,10 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                                 {keys.length === 0 && <li className="text-gray-400 italic">No devtool data</li>}
                                 {keys.map(key => (
                                     <li key={key} className="mb-1">
-                                        <Button onClick={() => setSelectedKey(key as DevtoolKey)} className="w-full">
+                                        <Button
+                                            onClick={() => setSelectedKey(key as SynthesisDevtoolKey)}
+                                            className="w-full"
+                                        >
                                             {key}
                                         </Button>
                                     </li>
@@ -233,7 +168,10 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                                     .filter(k => !keys.includes(k))
                                     .map(key => (
                                         <li key={key} className="mb-1">
-                                            <Button onClick={() => handleAdd(key)} className="w-full">
+                                            <Button
+                                                onClick={() => setSelectedKey(key as SynthesisDevtoolKey)}
+                                                className="w-full"
+                                            >
                                                 {key}
                                             </Button>
                                         </li>
@@ -245,16 +183,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                             {selectedKey ? (
                                 <>
                                     {/* strip off the prefix here */}
-                                    {selectedKey === "devtool:scoring_zones" ? (
-                                        LabelWithTooltip(
-                                            "scoring_zones",
-                                            'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "shouldPointsAccumulate": false,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]'
-                                        )
-                                    ) : (
-                                        <div className="font-bold text-sm mb-2">
-                                            {selectedKey.replace(/^devtool:/, "")}
-                                        </div>
-                                    )}
+                                    <div className="font-bold text-sm mb-2">{selectedKey}</div>
                                     <textarea
                                         className={`
                             w-full h-48 font-mono text-sm
@@ -276,13 +205,10 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                                     )}
                                     <div className="mt-3 flex gap-2">
                                         <Button onClick={handleSave}>Apply</Button>
-                                        <Button onClick={handleRemove}>Remove</Button>
                                     </div>
                                 </>
                             ) : (
-                                <div className="text-gray-400 italic mt-10 text-center">
-                                    Select a key to edit or add a new one.
-                                </div>
+                                <div className="text-gray-400 italic mt-10 text-center">Select a key to edit.</div>
                             )}
                         </div>
                     </Stack>

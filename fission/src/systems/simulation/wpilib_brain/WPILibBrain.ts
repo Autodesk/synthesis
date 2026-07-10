@@ -84,6 +84,10 @@ class WPILibBrain extends Brain {
         return this._assembly.assemblyName
     }
 
+    public get assemblyId() {
+        return this._assembly.assemblyId
+    }
+
     constructor(assembly: MirabufSceneObject) {
         super(assembly.mechanism, "wpilib")
 
@@ -106,7 +110,7 @@ class WPILibBrain extends Brain {
 
         World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
             if (v.brain?.brainType == "wpilib") {
-                v.brain = new SynthesisBrain(v, v.assemblyName)
+                v.brain = new SynthesisBrain(v)
             }
         })
     }

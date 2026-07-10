@@ -271,7 +271,7 @@ class SceneRenderer extends WorldSystem {
         this._skybox.position.copy(this._mainCamera.position)
 
         // Update the tags each frame if they are enabled in preferences
-        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
+        if (PreferencesSystem.getUserPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
 
         this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)

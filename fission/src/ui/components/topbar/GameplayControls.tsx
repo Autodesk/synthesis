@@ -20,7 +20,7 @@ const GameplayControls: React.FC = () => {
             startWorldCallback: async (name: string, room?: string) => {
                 const isHost = room == null
                 const roomId = room ?? Math.random().toString(10).substring(2, 8)
-                PreferencesSystem.setGlobalPreference("MultiplayerUsername", name)
+                PreferencesSystem.setUserPreference("MultiplayerUsername", name)
                 PreferencesSystem.savePreferences()
                 const success = await MultiplayerSystem.setup(roomId, name, isHost)
                 if (success && isHost) {

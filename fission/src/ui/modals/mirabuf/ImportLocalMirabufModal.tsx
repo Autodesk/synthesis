@@ -61,7 +61,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     .then(result => {
                         if (result) {
-                            return createMirabuf(result.assembly, undefined)
+                            return createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
                         }
                         globalOpenModal(ImportLocalMirabufModal, {
                             configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT),

@@ -79,7 +79,7 @@ const MobileHUD: React.FC = () => {
             startWorldCallback: async (name: string, room?: string) => {
                 const isHost = room == null
                 const roomId = room ?? Math.random().toString(10).substring(2, 8)
-                PreferencesSystem.setGlobalPreference("MultiplayerUsername", name)
+                PreferencesSystem.setUserPreference("MultiplayerUsername", name)
                 PreferencesSystem.savePreferences()
                 const success = await MultiplayerSystem.setup(roomId, name, isHost)
                 if (success && isHost) globalAddToast("info", "Room Code", roomId)
@@ -142,7 +142,7 @@ const MobileHUD: React.FC = () => {
         <Stack gap={2} sx={{ minHeight: "100%" }}>
             <Stack direction="row" alignItems="center" gap={1}>
                 <IconButton disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => setView("root")}>
-                    {SynthesisIcons.LEFT_ARROW_LARGE}
+                    <SynthesisIcons.LEFT_ARROW_LARGE />
                 </IconButton>
                 <TopBarIcon name="mode-configure" size={24} />
                 <Select

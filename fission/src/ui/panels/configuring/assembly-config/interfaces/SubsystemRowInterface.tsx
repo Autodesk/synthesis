@@ -18,12 +18,12 @@ const ControlSliders: React.FC<ControlSlidersProps> = ({ robot, control }) => {
     const [force, setForce] = useState<number>(driverForce(control.drivers[0]))
 
     const showForce =
-        control.force && (control.force.alwaysVisible || PreferencesSystem.getGlobalPreference("SubsystemGravity"))
+        control.force && (control.force.alwaysVisible || PreferencesSystem.getUserPreference("SubsystemGravity"))
 
     const apply = useCallback(
         (vel: number, f: number) => {
             control.drivers.forEach(d => applyDriverConfig(robot, d, vel, f))
-            PreferencesSystem.savePreferences()
+            robot.savePreferences()
         },
         [robot, control]
     )
@@ -66,9 +66,7 @@ type SubsystemRowProps = {
 }
 
 const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, saveBehaviors }) => {
-    const [unstickForce, setUnstickForce] = useState<number>(
-        PreferencesSystem.getRobotPreferences(robot.assemblyName).unstickForce
-    )
+    const [unstickForce, setUnstickForce] = useState<number>(robot.robotPreferences.unstickForce)
 
     return (
         <>
@@ -94,8 +92,8 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, save
                         label="Unstick Force"
                         onChange={(value: number | number[]) => {
                             setUnstickForce(value as number)
-                            PreferencesSystem.getRobotPreferences(robot.assemblyName).unstickForce = value as number
-                            PreferencesSystem.savePreferences()
+                            robot.robotPreferences.unstickForce = value as number
+                            robot.savePreferences()
                         }}
                         step={100}
                     />
