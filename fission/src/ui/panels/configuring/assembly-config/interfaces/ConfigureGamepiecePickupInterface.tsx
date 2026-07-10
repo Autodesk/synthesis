@@ -148,9 +148,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
             material.depthTest = false
 
-            const deltaTransformation = convertArrayToThreeMatrix4(
-                selectedRobot.intakePreferences!.deltaTransformation
-            )
+            const deltaTransformation = convertArrayToThreeMatrix4(selectedRobot.intakePreferences!.deltaTransformation)
 
             let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
                 selectedRobot.intakePreferences!.parentNode ?? selectedRobot.rootNodeId

@@ -159,28 +159,22 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 <>
                     {/** List of options */}
                     <Stack gap={2}>
-                        {options.length > 0 ? (
-                            options.map((option, i) => {
-                                return (
-                                    <OptionCard
-                                        value={option}
-                                        index={i}
-                                        onSelected={val => {
-                                            setSelectedOption(val)
-                                            onOptionSelected(val)
-                                        }}
-                                        key={option.name + i}
-                                        onDelete={onDelete ? () => onDelete(option) : undefined}
-                                        includeDelete={deleteCondition === undefined || deleteCondition(option)}
-                                    />
-                                )
-                            })
-                        ) : (
-                            <>
-                                {/** No options available text */}
-                                <Label size="sm">{noOptionsText ?? "No options available!"}</Label>
-                            </>
-                        )}
+                        {options.length <= 0 && <Label size="sm">{noOptionsText ?? "No options available!"}</Label>}
+                        {options.map((option, i) => {
+                            return (
+                                <OptionCard
+                                    value={option}
+                                    index={i}
+                                    onSelected={val => {
+                                        setSelectedOption(val)
+                                        onOptionSelected(val)
+                                    }}
+                                    key={option.name + i}
+                                    onDelete={onDelete ? () => onDelete(option) : undefined}
+                                    includeDelete={deleteCondition === undefined || deleteCondition(option)}
+                                />
+                            )
+                        })}
                         {/** Add button */}
                         {onAddClicked && (
                             <Button

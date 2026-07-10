@@ -26,34 +26,33 @@ interface ConfigureZonesProps {
 const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selectedField, initialZones }) => {
     const [selectedZone, setSelectedZone] = useState<ProtectedZonePreferences | undefined>(undefined)
 
+    if (selectedZone === undefined)
+        return (
+            <ManageProtectedZonesInterface
+                selectedField={selectedField}
+                initialZones={initialZones}
+                selectZone={setSelectedZone}
+            />
+        )
+
     return (
         <>
-            {selectedZone === undefined ? (
-                <ManageProtectedZonesInterface
-                    selectedField={selectedField}
-                    initialZones={initialZones}
-                    selectZone={setSelectedZone}
-                />
-            ) : (
-                <>
-                    <SelectMenuHeader
-                        label={`Zone ${selectedZone.name}`}
-                        showBackButton={true}
-                        onBackButton={() => {
-                            EventSystem.dispatch("ConfigurationSavedEvent")
-                            setSelectedZone(undefined)
-                        }}
-                    />
-                    <Divider />
-                    <ProtectedZoneConfigInterface
-                        selectedField={selectedField}
-                        selectedZone={selectedZone}
-                        saveAllZones={() => {
-                            saveProtectedZones(selectedField.fieldPreferences?.protectedZones, selectedField)
-                        }}
-                    />
-                </>
-            )}
+            <SelectMenuHeader
+                label={`Zone ${selectedZone.name}`}
+                showBackButton={true}
+                onBackButton={() => {
+                    EventSystem.dispatch("ConfigurationSavedEvent")
+                    setSelectedZone(undefined)
+                }}
+            />
+            <Divider />
+            <ProtectedZoneConfigInterface
+                selectedField={selectedField}
+                selectedZone={selectedZone}
+                saveAllZones={() => {
+                    saveProtectedZones(selectedField.fieldPreferences?.protectedZones, selectedField)
+                }}
+            />
         </>
     )
 }

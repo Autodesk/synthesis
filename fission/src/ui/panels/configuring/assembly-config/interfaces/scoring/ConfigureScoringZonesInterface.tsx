@@ -26,34 +26,33 @@ interface ConfigureZonesProps {
 const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selectedField, initialZones }) => {
     const [selectedZone, setSelectedZone] = useState<ScoringZonePreferences | undefined>(undefined)
 
+    if (selectedZone === undefined)
+        return (
+            <ManageScoringZonesInterface
+                selectedField={selectedField}
+                initialZones={initialZones}
+                selectZone={setSelectedZone}
+            />
+        )
+
     return (
         <>
-            {selectedZone === undefined ? (
-                <ManageScoringZonesInterface
-                    selectedField={selectedField}
-                    initialZones={initialZones}
-                    selectZone={setSelectedZone}
-                />
-            ) : (
-                <>
-                    <SelectMenuHeader
-                        label={`Zone ${selectedZone.name}`}
-                        showBackButton={true}
-                        onBackButton={() => {
-                            EventSystem.dispatch("ConfigurationSavedEvent")
-                            setSelectedZone(undefined)
-                        }}
-                    />
-                    <Divider />
-                    <ScoringZoneConfigInterface
-                        selectedField={selectedField}
-                        selectedZone={selectedZone}
-                        saveAllZones={() => {
-                            saveScoringZones(selectedField.fieldPreferences?.scoringZones, selectedField)
-                        }}
-                    />
-                </>
-            )}
+            <SelectMenuHeader
+                label={`Zone ${selectedZone.name}`}
+                showBackButton={true}
+                onBackButton={() => {
+                    EventSystem.dispatch("ConfigurationSavedEvent")
+                    setSelectedZone(undefined)
+                }}
+            />
+            <Divider />
+            <ScoringZoneConfigInterface
+                selectedField={selectedField}
+                selectedZone={selectedZone}
+                saveAllZones={() => {
+                    saveScoringZones(selectedField.fieldPreferences?.scoringZones, selectedField)
+                }}
+            />
         </>
     )
 }

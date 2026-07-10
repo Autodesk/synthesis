@@ -18,7 +18,7 @@ const WPILibConnectionStatus: React.FC = () => {
     }, [])
 
     if (!enabled) return null
-    
+
     return (
         <Stack
             direction="row"

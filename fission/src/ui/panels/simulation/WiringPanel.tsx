@@ -466,45 +466,41 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         configureScreen(panel!, { title: "Wiring Panel" }, { onBeforeAccept: save })
     }, [save])
 
+    if (!selectedAssembly || !simConfig) return "ERR"
+
     return (
-        <>
-            {selectedAssembly && simConfig ? (
-                <Box
-                    sx={{
-                        display: "flex",
-                        width: "70vw",
-                        height: "70vh",
-                    }}
-                >
-                    {configState === "wiring" && (
-                        <ReactFlowProvider>
-                            <WiringComponent
-                                reset={reset}
-                                simConfig={simConfig}
-                                selectedAssembly={selectedAssembly}
-                                setConfigState={setConfigState}
-                            />
-                        </ReactFlowProvider>
-                    )}
-                    {configState === "robotIO" && (
-                        <RobotIoComponent
-                            simConfig={simConfig}
-                            selectedAssembly={selectedAssembly}
-                            setConfigState={setConfigState}
-                        />
-                    )}
-                    {configState === "simIO" && (
-                        <SimIoComponent
-                            simConfig={simConfig}
-                            selectedAssembly={selectedAssembly}
-                            setConfigState={setConfigState}
-                        />
-                    )}
-                </Box>
-            ) : (
-                "ERRR"
+        <Box
+            sx={{
+                display: "flex",
+                width: "70vw",
+                height: "70vh",
+            }}
+        >
+            {configState === "wiring" && (
+                <ReactFlowProvider>
+                    <WiringComponent
+                        reset={reset}
+                        simConfig={simConfig}
+                        selectedAssembly={selectedAssembly}
+                        setConfigState={setConfigState}
+                    />
+                </ReactFlowProvider>
             )}
-        </>
+            {configState === "robotIO" && (
+                <RobotIoComponent
+                    simConfig={simConfig}
+                    selectedAssembly={selectedAssembly}
+                    setConfigState={setConfigState}
+                />
+            )}
+            {configState === "simIO" && (
+                <SimIoComponent
+                    simConfig={simConfig}
+                    selectedAssembly={selectedAssembly}
+                    setConfigState={setConfigState}
+                />
+            )}
+        </Box>
     )
 }
 

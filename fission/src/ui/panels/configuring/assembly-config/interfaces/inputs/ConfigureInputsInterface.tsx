@@ -76,67 +76,66 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
         return map
     }, [schemes])
 
+    if (selectedScheme)
+        return (
+            <ConfigureSchemeInterface
+                selectedScheme={selectedScheme}
+                panelId={panel?.id}
+                onBack={() => setSelectedScheme(undefined)}
+            />
+        )
+
+    /** Select menu with input schemes */
     return (
-        <>
-            {/** Select menu with input schemes */}
-            {!selectedScheme ? (
-                <SelectMenu
-                    options={[...schemeOptionMap.values()]}
-                    onOptionSelected={val => {
-                        setSelectedScheme((val as SchemeSelectionOption)?.scheme)
-                        if (val == undefined) {
-                            EventSystem.dispatch("ConfigurationSavedEvent")
-                        }
-                    }}
-                    defaultHeaderText={"Select an Input Scheme"}
-                    onDelete={val => {
-                        if (!(val instanceof SchemeSelectionOption)) return
+        <SelectMenu
+            options={[...schemeOptionMap.values()]}
+            onOptionSelected={val => {
+                setSelectedScheme((val as SchemeSelectionOption)?.scheme)
+                if (val == undefined) {
+                    EventSystem.dispatch("ConfigurationSavedEvent")
+                }
+            }}
+            defaultHeaderText={"Select an Input Scheme"}
+            onDelete={val => {
+                if (!(val instanceof SchemeSelectionOption)) return
 
-                        // Fetch current custom schemes
-                        InputSchemeManager.saveSchemes(panel?.id)
-                        InputSchemeManager.resetDefaultSchemes(panel?.id)
+                // Fetch current custom schemes
+                InputSchemeManager.saveSchemes(panel?.id)
+                InputSchemeManager.resetDefaultSchemes(panel?.id)
 
-                        // Find the scheme to remove in preferences
-                        const schemes = PreferencesSystem.getUserPreference("InputSchemes")
-                        const index = schemes.indexOf(val.scheme)
+                // Find the scheme to remove in preferences
+                const schemes = PreferencesSystem.getUserPreference("InputSchemes")
+                const index = schemes.indexOf(val.scheme)
 
-                        // If currently bound to a robot, remove the binding
-                        for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
-                            if (value == schemes[index]) {
-                                InputSystem.brainIndexSchemeMap.delete(key)
-                            }
-                        }
+                // If currently bound to a robot, remove the binding
+                for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
+                    if (value == schemes[index]) {
+                        InputSystem.brainIndexSchemeMap.delete(key)
+                    }
+                }
 
-                        // Find and remove this input scheme from preferences
-                        schemes.splice(index, 1)
+                // Find and remove this input scheme from preferences
+                schemes.splice(index, 1)
 
-                        // Save to preferences
-                        PreferencesSystem.setUserPreference("InputSchemes", schemes)
-                        PreferencesSystem.savePreferences()
+                // Save to preferences
+                PreferencesSystem.setUserPreference("InputSchemes", schemes)
+                PreferencesSystem.savePreferences()
 
-                        // TODO: use preference event instead?
-                        EventSystem.dispatch("InputSchemeChanged", { panelId: panel?.id })
-                        // Update UI with new schemes
-                        setSchemes(InputSchemeManager.allInputSchemes)
-                    }}
-                    deleteCondition={val => {
-                        if (!(val instanceof SchemeSelectionOption)) return false
+                // TODO: use preference event instead?
+                EventSystem.dispatch("InputSchemeChanged", { panelId: panel?.id })
+                // Update UI with new schemes
+                setSchemes(InputSchemeManager.allInputSchemes)
+            }}
+            deleteCondition={val => {
+                if (!(val instanceof SchemeSelectionOption)) return false
 
-                        return val.scheme.customized
-                    }}
-                    onAddClicked={() => {
-                        openModal(NewInputSchemeModal, undefined)
-                    }}
-                    defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
-                />
-            ) : (
-                <ConfigureSchemeInterface
-                    selectedScheme={selectedScheme}
-                    panelId={panel?.id}
-                    onBack={() => setSelectedScheme(undefined)}
-                />
-            )}
-        </>
+                return val.scheme.customized
+            }}
+            onAddClicked={() => {
+                openModal(NewInputSchemeModal, undefined)
+            }}
+            defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
+        />
     )
 }
 
