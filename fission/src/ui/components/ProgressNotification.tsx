@@ -146,7 +146,7 @@ const ProgressNotifications: React.FC = () => {
                 gap: "0.5rem",
             }}
         >
-            {progressElements ?? <></>}
+            {progressElements}
         </Box>
     )
 }

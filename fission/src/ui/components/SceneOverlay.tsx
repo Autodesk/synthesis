@@ -19,7 +19,7 @@ const SceneOverlay: React.FC = () => {
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
-        if (isDisabled) return <></> // if the overlay is disabled, return nothing
+        if (isDisabled) return null
 
         return [...tagMap.values()].map(x => (
             <div
