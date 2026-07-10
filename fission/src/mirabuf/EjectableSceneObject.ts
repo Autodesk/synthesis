@@ -83,13 +83,6 @@ class EjectableSceneObject extends SceneObject {
 
             World.physicsSystem.disablePhysicsForBody(this._gamePieceBodyId)
 
-            // TODO Make sure this was unnecessary
-            // Remove from any scoring zones
-            // const zones = World.sceneRenderer.filterSceneObjects(x => x instanceof ScoringZoneSceneObject)
-            // zones.forEach(x => {
-            //     if (this._gamePieceBodyId) ScoringZoneSceneObject.removeGamepiece(x, this._gamePieceBodyId)
-            // })
-
             console.debug("Ejectable created successfully!")
         }
     }

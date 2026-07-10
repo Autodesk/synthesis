@@ -126,7 +126,16 @@ describe("ScoringZoneSceneObject", () => {
         const createZoneWithBounding = (alliance: "red" | "blue", points: number) => {
             const parent = {} as unknown as MirabufSceneObject
             Reflect.set(parent, "fieldPreferences", {
-                scoringZones: [{ shouldPointsAccumulate: true, alliance, points, name: "Test", parentNode: undefined, deltaTransformation: [] }],
+                scoringZones: [
+                    {
+                        shouldPointsAccumulate: true,
+                        alliance,
+                        points,
+                        name: "Test",
+                        parentNode: undefined,
+                        deltaTransformation: [],
+                    },
+                ],
             })
             const zone = new ScoringZoneSceneObject(parent, 0)
             // 2×2×2 OBB centred at origin
@@ -151,11 +160,15 @@ describe("ScoringZoneSceneObject", () => {
         test("scores when game piece overlaps zone", () => {
             const mockBodyId = {} as unknown as Jolt.BodyID
             mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => makeField(mockBodyId))
-            // game piece AABB at origin — inside the 2×2×2 zone
-            mockPhysicsSystem.getBody = vi.fn(() => ({
-                GetWorldSpaceBounds: () =>
-                    new JOLT.AABox(new JOLT.Vec3(-0.2, -0.2, -0.2), new JOLT.Vec3(0.2, 0.2, 0.2)),
-            }))
+
+            mockPhysicsSystem.getBody = vi.fn((_bodyId: Jolt.BodyID) => {
+                const bodyMock = createBodyMock()
+                bodyMock.GetWorldSpaceBounds = vi.fn(
+                    () => new JOLT.AABox(new JOLT.Vec3(-0.2, -0.2, -0.2), new JOLT.Vec3(0.2, 0.2, 0.2))
+                )
+
+                return bodyMock as unknown as Jolt.Body
+            })
             mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ robotLastInContactWith: undefined }))
 
             const zone = createZoneWithBounding("red", 10)
@@ -167,11 +180,15 @@ describe("ScoringZoneSceneObject", () => {
         test("does not score when game piece is outside zone", () => {
             const mockBodyId = {} as unknown as Jolt.BodyID
             mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => makeField(mockBodyId))
-            // game piece AABB far from zone
-            mockPhysicsSystem.getBody = vi.fn(() => ({
-                GetWorldSpaceBounds: () =>
-                    new JOLT.AABox(new JOLT.Vec3(10, 10, 10), new JOLT.Vec3(10.2, 10.2, 10.2)),
-            }))
+
+            mockPhysicsSystem.getBody = vi.fn((_bodyId: Jolt.BodyID) => {
+                const bodyMock = createBodyMock()
+                bodyMock.GetWorldSpaceBounds = vi.fn(
+                    () => new JOLT.AABox(new JOLT.Vec3(10, 10, 10), new JOLT.Vec3(10.2, 10.2, 10.2))
+                )
+
+                return bodyMock as unknown as Jolt.Body
+            })
 
             const zone = createZoneWithBounding("red", 10)
             zone["checkObjectsInZone"]()
@@ -197,7 +214,9 @@ describe("ScoringZoneSceneObject", () => {
             const zone = createZoneWithBounding("red", 10)
             zone["checkObjectsInZone"]()
 
-            expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("game piece nodes exist but none have body IDs"))
+            expect(warnSpy).toHaveBeenCalledWith(
+                expect.stringContaining("game piece nodes exist but none have body IDs")
+            )
             expect(ScoreTracker.redScore).toBe(0)
         })
     })
