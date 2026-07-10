@@ -8,7 +8,6 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
@@ -78,7 +77,7 @@ function save(
 
     selectedRobot.ejectorPreferences.ejectOrder = ejectOrder!
 
-    PreferencesSystem.savePreferences()
+    selectedRobot.savePreferences()
 }
 
 interface ConfigEjectorProps {
@@ -213,10 +212,10 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
 
             {/* Toggle for adjusting eject order */}
             <Stack direction="row" spacing={2} alignItems="center" className="mt-4">
-                {LabelWithTooltip(
-                    "Eject Order",
-                    "Choose how to eject pieces: FIFO (first in, first out) ejects the oldest-loaded item first, or LIFO (last in, first out) ejects the most recently loaded item first."
-                )}
+                <LabelWithTooltip
+                    labelText="Eject Order"
+                    tooltipText="Choose how to eject pieces: FIFO (first in, first out) ejects the oldest-loaded item first, or LIFO (last in, first out) ejects the most recently loaded item first."
+                />
                 <ToggleButtonGroup
                     value={ejectOrder}
                     exclusive
@@ -241,9 +240,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 step={0.01}
             />
 
-            {Spacer(10)}
+            <Spacer height={10} />
             {gizmoComponent}
-            {Spacer(10)}
+            <Spacer height={10} />
             <Button
                 onClick={() => {
                     if (gizmoRef.current) {

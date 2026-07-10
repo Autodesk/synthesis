@@ -41,7 +41,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabe
     return (
         <Stack direction="row" justifyContent="space-between" alignItems="center" textAlign="center">
             {hideLabel ? null : tooltip ? (
-                LabelWithTooltip(label, tooltip)
+                <LabelWithTooltip labelText={label} tooltipText={tooltip} />
             ) : (
                 <Label size="sm" className={`mr-12 ${className} whitespace-nowrap`}>
                     {label}

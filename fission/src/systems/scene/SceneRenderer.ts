@@ -8,7 +8,12 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
 import EventSystem from "@/systems/EventSystem.ts"
-import { type CameraControls, type CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import {
+    type CameraControls,
+    type CameraControlsType,
+    CustomFieldViewControls,
+    CustomTargetControls,
+} from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
@@ -163,7 +168,7 @@ class SceneRenderer extends WorldSystem {
         ]
 
         const ground = new THREE.Mesh(groundGeometry, materials)
-        ground.position.set(0.0, -0.09, 0.0)
+        ground.position.set(0.0, -0.1, 0.0)
         ground.receiveShadow = true
         ground.castShadow = true
         this._scene.add(ground)
@@ -198,20 +203,26 @@ class SceneRenderer extends WorldSystem {
             this._composer.addPass(antiAliasPass)
         }
 
-        // Orbit controls
+        // Target controls
         this._screenInteractionHandler = new ScreenInteractionHandler(this._renderer.domElement)
         this._screenInteractionHandler.contextMenu = e => this.onContextMenu(e)
 
-        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
+        this._cameraControls = new CustomTargetControls(this._mainCamera, this._screenInteractionHandler)
     }
 
     public setCameraControls(controlsType: CameraControlsType) {
+        if (this._cameraControls.controlsType === controlsType) return
+
         this._cameraControls.dispose()
         switch (controlsType) {
-            case "Orbit":
-                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
+            case "Target":
+                this._cameraControls = new CustomTargetControls(this._mainCamera, this._screenInteractionHandler)
+                break
+            case "FieldView":
+                this._cameraControls = new CustomFieldViewControls(this._mainCamera, this._screenInteractionHandler)
                 break
         }
+        EventSystem.dispatch("CameraControlsTypeChangedEvent", { controlsType })
     }
 
     public updateCanvasSize() {
@@ -245,7 +256,7 @@ class SceneRenderer extends WorldSystem {
         this._skybox.position.copy(this._mainCamera.position)
 
         // Update the tags each frame if they are enabled in preferences
-        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
+        if (PreferencesSystem.getUserPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
 
         this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)

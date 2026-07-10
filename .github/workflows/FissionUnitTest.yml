@@ -1,5 +1,8 @@
 name: Fission - Unit Test
 
+env:
+  BUN_VERSION: "1.3.14"
+
 on:
   workflow_dispatch: {}
   push:
@@ -18,15 +21,21 @@ jobs:
         working-directory: "fission"
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: JavaScript Setup
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v7
+
+      - name: Install System Dependencies
+        run: |
+          apt-get update
+          apt-get install -y git-lfs unzip
+
+      - name: Bun Setup
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 24
+          bun-version: ${{ env.BUN_VERSION }}
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: fission/public/Downloadables
           key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
@@ -35,28 +44,26 @@ jobs:
         if: steps.cache-assets.outputs.cache-hit != 'true'
         run: |
           cd ..
-          apt update
-          apt install git-lfs unzip
           git config --global --add safe.directory `pwd`
           git lfs pull
 
           cd fission
           unzip -o public/assetpack.zip -d public/ || echo
 
-      - name: Cache Node Dependencies
-        uses: actions/cache@v3
+      - name: Cache Bun Dependencies
+        uses: actions/cache@v6
         with:
-          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
+          key: "${{runner.os}}-bun-fission-${{hashFiles('fission/bun.lock')}}"
           path: "fission/node_modules"
           restore-keys: |
-            ${{runner.os}}-npm-fission-
-            ${{runner.os}}-npm
+            ${{runner.os}}-bun-fission-
+            ${{runner.os}}-bun
 
       - name: Install Dependencies
-        run: npm install
+        run: bun install --frozen-lockfile
 
       - name: Run Tests
-        run: HOME=/root npm run test --bail=1
+        run: HOME=/root bun run test --bail=1
 
   runAssetpackTests:
     name: Assetpack Tests
@@ -69,29 +76,35 @@ jobs:
         working-directory: "fission"
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: JavaScript Setup
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v7
+
+      - name: Install System Dependencies
+        run: |
+          apt-get update
+          apt-get install -y unzip
+
+      - name: Bun Setup
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
+          bun-version: ${{ env.BUN_VERSION }}
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: fission/public/Downloadables
           key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
 
-      - name: Cache Node Dependencies
-        uses: actions/cache@v3
+      - name: Cache Bun Dependencies
+        uses: actions/cache@v6
         with:
-          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
+          key: "${{runner.os}}-bun-fission-${{hashFiles('fission/bun.lock')}}"
           path: "fission/node_modules"
           restore-keys: |
-            ${{runner.os}}-npm-fission-
-            ${{runner.os}}-npm
+            ${{runner.os}}-bun-fission-
+            ${{runner.os}}-bun
 
       - name: Run Assetpack Tests
-        run: HOME=/root npm run test src/test/mirabuf/DefaultAssets.test.ts --bail=1
+        run: HOME=/root bun run test src/test/mirabuf/DefaultAssets.test.ts --bail=1
         env:
           VITE_RUN_ASSETPACK_TEST: true

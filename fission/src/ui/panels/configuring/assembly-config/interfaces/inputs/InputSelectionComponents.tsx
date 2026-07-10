@@ -120,7 +120,7 @@ export const KeyboardAxisSelection: React.FC<InputSelectionProps> = ({ input, se
                 <Label size="md">{toTitleCase(input.inputName)}</Label>
 
                 <Stack direction="row" gap="10px" alignItems={"center"}>
-                    {SynthesisIcons.ADD}
+                    <SynthesisIcons.ADD />
                     {/* Positive key */}
                     <Button
                         key={`pos${input.inputName}`}
@@ -133,7 +133,7 @@ export const KeyboardAxisSelection: React.FC<InputSelectionProps> = ({ input, se
                             ? "..."
                             : transformKeyName(input.posKeyCode, input.posKeyModifiers)}
                     </Button>
-                    {SynthesisIcons.MINUS}
+                    <SynthesisIcons.MINUS />
                     {/* Negative key */}
                     <Button
                         key={`neg${input.inputName}`}
@@ -162,17 +162,16 @@ export const JoystickButtonSelection: React.FC<InputSelectionProps> = ({ input, 
                 <Label size="md">{toTitleCase(input.inputName)}</Label>
                 <Button
                     key={input.inputName}
-                    value={
-                        input.inputName === selectedInput
-                            ? "..."
-                            : input.gamepadButton === -1
-                              ? "N/A"
-                              : gamepadButtons[input.gamepadButton]
-                    }
                     onClick={() => {
                         setSelectedInput(input.inputName)
                     }}
-                />
+                >
+                    {input.inputName === selectedInput
+                        ? "..."
+                        : input.gamepadButton === -1
+                          ? "N/A"
+                          : gamepadButtons[input.gamepadButton]}
+                </Button>
             </Stack>
             <Divider />
         </>
@@ -222,35 +221,33 @@ export const GamepadButtonAxisSelection: React.FC<InputSelectionProps> = ({
 
             <Stack direction="row" gap="10px" alignItems={"center"}>
                 {/* Positive gamepad button */}
-                {SynthesisIcons.ADD}
+                <SynthesisIcons.ADD />
                 <Button
                     key={`pos${input.inputName}`}
-                    value={
-                        `pos${input.inputName}` === selectedInput
-                            ? "..."
-                            : input.posGamepadButton === -1
-                              ? "N/A"
-                              : gamepadButtons[input.posGamepadButton]
-                    }
                     onClick={() => {
                         setSelectedInput(`pos${input.inputName}`)
                     }}
-                />
+                >
+                    {`pos${input.inputName}` === selectedInput
+                        ? "..."
+                        : input.posGamepadButton === -1
+                          ? "N/A"
+                          : gamepadButtons[input.posGamepadButton]}
+                </Button>
                 {/* // Negative gamepad button */}
-                {SynthesisIcons.MINUS}
+                <SynthesisIcons.MINUS />
                 <Button
                     key={`neg${input.inputName}`}
-                    value={
-                        `neg${input.inputName}` === selectedInput
-                            ? "..."
-                            : input.negGamepadButton === -1
-                              ? "N/A"
-                              : gamepadButtons[input.negGamepadButton]
-                    }
                     onClick={() => {
                         setSelectedInput(`neg${input.inputName}`)
                     }}
-                />
+                >
+                    {`neg${input.inputName}` === selectedInput
+                        ? "..."
+                        : input.negGamepadButton === -1
+                          ? "N/A"
+                          : gamepadButtons[input.negGamepadButton]}
+                </Button>
             </Stack>
         </Stack>
     )

@@ -1,12 +1,31 @@
 import * as THREE from "three"
-import { beforeEach, describe, expect, test } from "vitest"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
-import ScreenInteractionHandler, { type InteractionType } from "@/systems/scene/ScreenInteractionHandler"
+import { beforeEach, describe, expect, test, vi } from "vitest"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { CameraMode, CustomTargetControls } from "@/systems/scene/CameraControls"
+import ScreenInteractionHandler, {
+    type InteractionType,
+    SECONDARY_MOUSE_INTERACTION,
+} from "@/systems/scene/ScreenInteractionHandler"
 
-describe("CustomOrbitControls", () => {
+/** A stand-in focus target that reports a fixed world position, without needing a real loaded mirabuf model. */
+function createMockFocusProvider(
+    miraType: MiraType,
+    position: THREE.Vector3 = new THREE.Vector3()
+): MirabufSceneObject {
+    const provider = Object.create(MirabufSceneObject.prototype) as MirabufSceneObject
+    vi.spyOn(provider, "miraType", "get").mockReturnValue(miraType)
+    const withLoadFocusTransform = provider as unknown as { loadFocusTransform: (mat: THREE.Matrix4) => void }
+    withLoadFocusTransform.loadFocusTransform = vi.fn((mat: THREE.Matrix4) => {
+        mat.identity().setPosition(position)
+    })
+    return provider
+}
+
+describe("CustomTargetControls", () => {
     let camera: THREE.PerspectiveCamera
     let interactionHandler: ScreenInteractionHandler
-    let controls: CustomOrbitControls
+    let controls: CustomTargetControls
 
     beforeEach(() => {
         camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
@@ -15,7 +34,7 @@ describe("CustomOrbitControls", () => {
         const mockElement = document.createElement("div")
         interactionHandler = new ScreenInteractionHandler(mockElement)
 
-        controls = new CustomOrbitControls(camera, interactionHandler)
+        controls = new CustomTargetControls(camera, interactionHandler)
     })
 
     describe("Camera Position and Update", () => {
@@ -165,6 +184,85 @@ describe("CustomOrbitControls", () => {
             })
 
             expect(camera.position.distanceTo(initialPosition)).toBeCloseTo(0)
+        })
+    })
+
+    describe("Camera Mode", () => {
+        test("face mode is only available when focused on a robot, not a field", () => {
+            const field = createMockFocusProvider(MiraType.FIELD)
+            controls.focusProvider = field
+            controls.mode = CameraMode.Face
+            expect(controls.mode).toBe(CameraMode.Follow)
+
+            const robot = createMockFocusProvider(MiraType.ROBOT)
+            controls.focusProvider = robot
+            controls.mode = CameraMode.Face
+            expect(controls.mode).toBe(CameraMode.Face)
+        })
+
+        test("falls back to Follow mode if the focus changes to a field while in Face mode", () => {
+            const robot = createMockFocusProvider(MiraType.ROBOT)
+            controls.focusProvider = robot
+            controls.mode = CameraMode.Face
+
+            const field = createMockFocusProvider(MiraType.FIELD)
+            controls.focusProvider = field
+
+            expect(controls.mode).toBe(CameraMode.Follow)
+        })
+    })
+
+    describe("Face Mode", () => {
+        test("camera sits at the captured position and looks toward the focused robot", () => {
+            const robot = createMockFocusProvider(MiraType.ROBOT, new THREE.Vector3(0, 0, 0))
+            controls.focusProvider = robot
+
+            const positionBeforeFaceMode = camera.position.clone()
+            controls.mode = CameraMode.Face
+            controls.update(1 / 60)
+
+            // Entering Face mode should not itself relocate the camera.
+            expect(camera.position.distanceTo(positionBeforeFaceMode)).toBeCloseTo(0)
+
+            // Verify that the camera is looking toward the robot's position
+            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
+            const towardRobot = new THREE.Vector3(0, 0, 0).sub(camera.position).normalize()
+            expect(forward.dot(towardRobot)).toBeCloseTo(1, 2)
+        })
+
+        test("zooming moves the camera along the view axis toward the robot, clamped to zoom bounds", () => {
+            const robot = createMockFocusProvider(MiraType.ROBOT, new THREE.Vector3(0, 0, 0))
+            controls.focusProvider = robot
+            controls.mode = CameraMode.Face
+            controls.update(1 / 60)
+
+            const initialDistance = camera.position.distanceTo(new THREE.Vector3(0, 0, 0))
+
+            controls.interactionMove({ interactionType: 0, scale: -1 })
+            controls.update(1 / 60)
+            const zoomedInDistance = camera.position.distanceTo(new THREE.Vector3(0, 0, 0))
+            expect(zoomedInDistance).toBeLessThan(initialDistance)
+
+            controls.interactionMove({ interactionType: 0, scale: 1 })
+            controls.update(1 / 60)
+            const zoomedOutDistance = camera.position.distanceTo(new THREE.Vector3(0, 0, 0))
+            expect(zoomedOutDistance).toBeGreaterThan(zoomedInDistance)
+        })
+    })
+
+    describe("Secondary Drag", () => {
+        test("drops focus and returns to Follow mode, even while Locked onto a robot", () => {
+            const robot = createMockFocusProvider(MiraType.ROBOT, new THREE.Vector3(1, 2, 3))
+            controls.focusProvider = robot
+            controls.mode = CameraMode.Locked
+
+            controls.interactionStart({ interactionType: SECONDARY_MOUSE_INTERACTION, position: [0, 0] })
+            controls.interactionMove({ interactionType: SECONDARY_MOUSE_INTERACTION, movement: [0.1, 0.1] })
+
+            expect(controls.mode).toBe(CameraMode.Follow)
+            expect(controls.focusProvider).toBeUndefined()
+
+            controls.interactionEnd({ interactionType: SECONDARY_MOUSE_INTERACTION, position: [10, 10] })
         })
     })
 })

@@ -1,7 +1,6 @@
 import { Box } from "@mui/material"
-import { AiOutlineClose } from "react-icons/ai"
 import Label from "./Label"
-import { Button } from "./StyledComponents"
+import { Button, SynthesisIcons } from "./StyledComponents"
 
 interface AnalyticsConsentProps {
     onClose: () => void
@@ -64,8 +63,9 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                         "&:hover": { bgcolor: theme => theme.palette.action.selected },
                         color: theme => theme.palette.error.main,
                     }}
+                    aria-label="Decline cookies"
                 >
-                    <AiOutlineClose />
+                    <SynthesisIcons.STOP />
                 </Button>
             </Box>
         </Box>

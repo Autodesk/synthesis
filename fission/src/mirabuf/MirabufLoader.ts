@@ -1,10 +1,9 @@
-import Pako from "pako"
 import { type Data, downloadData } from "@/aps/APSDataManagement"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
-import { hashBuffer } from "@/util/Utility.ts"
 import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
+import { hashBuffer, unzipMira } from "@/util/Utility.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -25,15 +24,6 @@ export interface MirabufRemoteInfo {
 const localStorageEntryName = "MirabufAssets"
 
 const storageBackend: MirabufStorageBackend | null = await initStorageBackend()
-
-export function unzipMira(buff: Uint8Array): Uint8Array {
-    // Check if file is gzipped via magic gzip numbers 31 139
-    if (buff[0] == 31 && buff[1] == 139) {
-        return Pako.ungzip(buff)
-    } else {
-        return buff
-    }
-}
 
 class CacheMap {
     private _map: Map<string, MirabufCacheInfo> = new Map()
