@@ -144,28 +144,14 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     return (
         <>
             {/** Box containing the menu header */}
-            <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item" gap={1}>
-                {/** Back arrow button when an option is selected */}
-                {selectedOption !== undefined && (
-                    <IconButton
-                        onClick={() => {
-                            setSelectedOption(undefined)
-                            onOptionSelected(undefined)
-                        }}
-                        id="select-menu-back-button"
-                        sx={{ mr: 1 }}
-                    >
-                        <SynthesisIcons.LEFT_ARROW_LARGE />
-                    </IconButton>
-                )}
-
-                {/** Label with either the header text, or the name of the selected option if an option is selected */}
-                <Stack alignSelf={"center"}>
-                    <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
-                    </Label>
-                </Stack>
-            </Stack>
+            <SelectMenuHeader
+                showBackButton={selectedOption !== undefined}
+                onBackButton={() => {
+                    setSelectedOption(undefined)
+                    onOptionSelected(undefined)
+                }}
+                label={selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
+            />
             <Divider />
             <Spacer height={12} />
 
@@ -210,6 +196,36 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 </>
             )}
         </>
+    )
+}
+
+interface SelectMenuHeaderProps {
+    showBackButton?: boolean
+    onBackButton: () => void
+    label: string
+}
+
+export const SelectMenuHeader = ({
+    showBackButton,
+    onBackButton,
+    label,
+}: SelectMenuHeaderProps): React.ReactElement => {
+    return (
+        <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item" gap={1}>
+            {/** Back arrow button when an option is selected */}
+            {showBackButton && (
+                <IconButton onClick={onBackButton} id="select-menu-back-button" sx={{ mr: 1 }}>
+                    <SynthesisIcons.LEFT_ARROW_LARGE />
+                </IconButton>
+            )}
+
+            {/** Label with either the header text, or the name of the selected option if an option is selected */}
+            <Stack alignSelf={"center"}>
+                <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    {label}
+                </Label>
+            </Stack>
+        </Stack>
     )
 }
 
