@@ -166,6 +166,7 @@ describe("Preference System Robot/Field", () => {
                 },
             ],
             protectedZones: [],
+            cameraPoints: [],
         }
         const fieldPreferences2: FieldPreferences = {
             spawnLocations: defaultFieldPreferences().spawnLocations,
@@ -191,6 +192,7 @@ describe("Preference System Robot/Field", () => {
                     activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP],
                 },
             ],
+            cameraPoints: [],
         }
 
         PreferencesSystem.setFieldPreferences("FieldPreferences1", fieldPreferences1)

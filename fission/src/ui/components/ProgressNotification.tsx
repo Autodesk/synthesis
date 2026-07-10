@@ -91,7 +91,7 @@ const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
                 <TypoStyled fontWeight={"700"} fontSize={"1rem"}>
                     {handle.title}
                 </TypoStyled>
-                {handle.message.length > 0 ? <TypoStyled fontSize={"0.75rem"}>{handle.message}</TypoStyled> : <></>}
+                {handle.message.length > 0 && <TypoStyled fontSize={"0.75rem"}>{handle.message}</TypoStyled>}
             </Box>
             <Box
                 key={"bar"}
