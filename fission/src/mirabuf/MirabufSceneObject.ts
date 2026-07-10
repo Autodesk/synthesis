@@ -107,6 +107,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _robotPreferences: RobotPreferences | undefined
 
     private _ejectables: EjectableSceneObject[] = []
+    private _gamePieces: Array<{ bodyId: Jolt.BodyID; rigidNode: RigidNodeReadOnly }> = []
     private _intakeSensor?: IntakeSensorSceneObject
     private _scoringZones: ScoringZoneSceneObject[] = []
     private _protectedZones: ProtectedZoneSceneObject[] = []
@@ -173,6 +174,37 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public get activeEjectables(): Jolt.BodyID[] {
         return this._ejectables.map(e => e.gamePieceBodyId!).filter(x => x !== undefined)
+    }
+
+    /** Game piece rigid nodes, cached once at {@link setup} to avoid scanning all rigid nodes every frame. */
+    public get gamePieces(): ReadonlyArray<{ bodyId: Jolt.BodyID; rigidNode: RigidNodeReadOnly }> {
+        return this._gamePieces
+    }
+
+    /**
+     * Fully destroys a game piece: removes its physics body, pulls it out of any
+     * scoring zones, and hides its meshes so it disappears from view.
+     */
+    public destroyGamePiece(bodyId: Jolt.BodyID): void {
+        const key = bodyId.GetIndexAndSequenceNumber()
+        const entry = this._gamePieces.find(g => g.bodyId.GetIndexAndSequenceNumber() === key)
+        if (!entry) return
+
+        // Unlikely that the game piece is in a scoring zone, but if it is, remove it from the zone's contact list
+        const zones = World.sceneRenderer.filterSceneObjects(
+            (x): x is ScoringZoneSceneObject => x instanceof ScoringZoneSceneObject
+        )
+        zones.forEach(zone => ScoringZoneSceneObject.removeGamepiece(zone, bodyId))
+
+        World.physicsSystem.removeBodyAssociation(bodyId)
+        World.physicsSystem.destroyBodyIds(bodyId)
+
+        entry.rigidNode.parts.forEach(part => {
+            const meshes = this.mirabufInstance.meshes.get(part) ?? []
+            meshes.forEach(([batch, id]) => batch.setVisibleAt(id, false))
+        })
+
+        this._gamePieces = this._gamePieces.filter(g => g.bodyId.GetIndexAndSequenceNumber() !== key)
     }
 
     public get miraType(): MiraType {
@@ -291,6 +323,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 return
             }
             World.physicsSystem.setBodyAssociation(new RigidNodeAssociate(this, rigidNode, bodyId))
+            if (rigidNode.isGamePiece) this._gamePieces.push({ bodyId, rigidNode })
         })
 
         // Simulation

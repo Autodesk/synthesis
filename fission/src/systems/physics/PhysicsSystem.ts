@@ -101,6 +101,9 @@ export function getLastDeltaT(): number {
 const FLOOR_FRICTION = 0.7
 const DEFAULT_FRICTION = 0.7
 
+// Y level below which anything on the field is considered to have fallen off the map.
+export const MAP_BOUNDARY_Y = -4
+
 // Transition GH-1152, AARD-1885:
 // Temporary workaround to reduce visible levitation of robots by minimizing suspension.
 // Setting these values to 0 causes physics issues (e.g., ground collisionn problems).

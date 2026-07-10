@@ -8,6 +8,7 @@ import type MultiplayerSystem from "./multiplayer/MultiplayerSystem"
 import PhysicsSystem from "./physics/PhysicsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
+import GamePiecePositionTracker from "./simulation/GamePiecePositionTracker"
 import RobotPositionTracker from "./simulation/RobotPositionTracker"
 import SimulationSystem from "./simulation/SimulationSystem"
 
@@ -149,6 +150,7 @@ class World {
 
         RobotDimensionTracker.update()
         RobotPositionTracker.update()
+        GamePiecePositionTracker.update()
     }
 
     public static get currentDeltaT(): number {
