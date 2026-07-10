@@ -10,6 +10,64 @@ import Label from "@/ui/components/Label"
 import { PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
+interface SchemeSelectorProps {
+    scheme: InputScheme
+    panelId?: string
+    brainIndex: number
+
+    style?: React.CSSProperties
+    message: string
+    disabled?: boolean
+
+    onSelect?: () => void
+}
+
+const SchemeSelector: React.FC<SchemeSelectorProps> = ({
+    scheme,
+    panelId,
+    brainIndex,
+    style,
+    message,
+    disabled = false,
+    onSelect,
+}): ReactElement | null => {
+    if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
+    return (
+        <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
+            <Stack
+                direction="row"
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                gap={"1rem"}
+                key={scheme.schemeName}
+            >
+                <Label size="sm">
+                    {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
+                </Label>
+                <Stack direction="row-reverse" gap="0.25rem" justifyContent={"center"} alignItems={"center"}>
+                    {/** Select button */}
+                    <Box sx={style}>
+                        <PositiveButton
+                            disabled={disabled}
+                            onClick={() => {
+                                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
+                                // TODO: if touch controls, then ensure that they are enabled.
+                                if (scheme.usesTouchControls) {
+                                    EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")
+                                }
+                                EventSystem.dispatch("InputSchemeChanged", { panelId })
+                                onSelect?.()
+                            }}
+                        >
+                            <SynthesisIcons.SELECT_LARGE />
+                        </PositiveButton>
+                    </Box>
+                </Stack>
+            </Stack>
+        </Tooltip>
+    )
+}
+
 interface InputSchemeSelectionProps {
     brainIndex: number
     onSelect?: () => void
@@ -35,50 +93,11 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
         return EventSystem.listen("InputSchemeChanged", () => refreshAvailableSchemes())
     }, [refreshAvailableSchemes])
 
-    const SchemeSelector = (
-        scheme: InputScheme,
-        style: React.CSSProperties,
-        message: string,
-        disabled: boolean = false,
-        _status?: InputSchemeUseType
-    ): ReactElement | null => {
-        if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
-        return (
-            <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
-                <Stack
-                    direction="row"
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                    gap={"1rem"}
-                    key={scheme.schemeName}
-                >
-                    <Label size="sm">
-                        {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
-                    </Label>
-                    <Stack direction="row-reverse" gap="0.25rem" justifyContent={"center"} alignItems={"center"}>
-                        {/** Select button */}
-                        <Box sx={style}>
-                            <PositiveButton
-                                disabled={disabled}
-                                onClick={() => {
-                                    InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
-                                    // TODO: if touch controls, then ensure that they are enabled.
-                                    if (scheme.usesTouchControls) {
-                                        EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")
-                                    }
-                                    EventSystem.dispatch("InputSchemeChanged", { panelId })
-                                    onSelect?.()
-                                    update()
-                                }}
-                            >
-                                <SynthesisIcons.SELECT_LARGE />
-                            </PositiveButton>
-                        </Box>
-                    </Stack>
-                </Stack>
-            </Tooltip>
-        )
-    }
+    const onSchemeSelected = useCallback(() => {
+        onSelect?.()
+        update()
+    }, [onSelect])
+
     return (
         // A scroll view with buttons to select default and custom input schemes
         <>
@@ -119,7 +138,16 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
             {availableSchemes
                 ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
                 .map(scheme => {
-                    return SchemeSelector(scheme.scheme, {}, "Available", false, scheme.status)
+                    return (
+                        <SchemeSelector
+                            key={`available-${scheme.scheme.schemeName}`}
+                            scheme={scheme.scheme}
+                            panelId={panelId}
+                            brainIndex={brainIndex}
+                            message="Available"
+                            onSelect={onSchemeSelected}
+                        />
+                    )
                 })}
             {availableSchemes
                 ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
@@ -127,12 +155,14 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                     return (
                         <div key={`conflict-${scheme.scheme.schemeName}`}>
                             {i == 0 && <Divider />}
-                            {SchemeSelector(
-                                scheme.scheme,
-                                { filter: "brightness(60%)" },
-                                "Conflicts with " + scheme.conflictingSchemeNames,
-                                false
-                            )}
+                            <SchemeSelector
+                                scheme={scheme.scheme}
+                                panelId={panelId}
+                                brainIndex={brainIndex}
+                                style={{ filter: "brightness(60%)" }}
+                                message={"Conflicts with " + scheme.conflictingSchemeNames}
+                                onSelect={onSchemeSelected}
+                            />
                         </div>
                     )
                 })}
@@ -142,7 +172,14 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                     return (
                         <div key={`in-use-${scheme.scheme.schemeName}`}>
                             {i == 0 && <Divider />}
-                            {SchemeSelector(scheme.scheme, {}, "In Use", true, scheme.status)}
+                            <SchemeSelector
+                                scheme={scheme.scheme}
+                                panelId={panelId}
+                                brainIndex={brainIndex}
+                                message="In Use"
+                                disabled={true}
+                                onSelect={onSchemeSelected}
+                            />
                         </div>
                     )
                 })}

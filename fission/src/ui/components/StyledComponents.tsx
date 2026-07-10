@@ -125,8 +125,13 @@ export class SynthesisIcons {
     })
 }
 
-export const Spacer = (heightPx?: number, widthPx?: number) => {
-    return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
+interface SpacerProps {
+    height?: number
+    width?: number
+}
+
+export const Spacer: React.FC<SpacerProps> = ({ height = 0, width = 0 }) => {
+    return <Box minHeight={`${height}px`} minWidth={`${width}px`} />
 }
 
 export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
@@ -198,7 +203,7 @@ export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClic
     )
 }
 
-export const DownloadButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const DownloadButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
             <SynthesisIcons.DELETE_LARGE />
@@ -206,7 +211,7 @@ export const DownloadButton = (onClick: () => void, props: IconButtonProps = {})
     )
 }
 
-export const AddButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const AddButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
             <SynthesisIcons.ADD_LARGE />
@@ -214,7 +219,7 @@ export const AddButton = (onClick: () => void, props: IconButtonProps = {}) => {
     )
 }
 
-export const SelectButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const SelectButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
             <SynthesisIcons.SELECT_LARGE />
@@ -222,7 +227,7 @@ export const SelectButton = (onClick: () => void, props: IconButtonProps = {}) =
     )
 }
 
-export const EditButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const EditButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
             <SynthesisIcons.EDIT_LARGE />
@@ -246,7 +251,7 @@ export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClic
     )
 }
 
-export const DeleteButton = (onClick: () => void, id?: string, props: IconButtonProps = {}) => {
+export const DeleteButton: React.FC<IconButtonProps> = ({ onClick, id, ...props }) => {
     return (
         <NegativeIconButton onClick={onClick} id={id} {...props}>
             <SynthesisIcons.DELETE_LARGE />
@@ -254,7 +259,7 @@ export const DeleteButton = (onClick: () => void, id?: string, props: IconButton
     )
 }
 
-export const RefreshButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const RefreshButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <IconButton onClick={onClick} {...props}>
             <SynthesisIcons.REFRESH_LARGE />
@@ -262,7 +267,7 @@ export const RefreshButton = (onClick: () => void, props: IconButtonProps = {}) 
     )
 }
 
-export const CustomTooltip = (text: string) => {
+export const CustomTooltip: React.FC<{ text: string }> = ({ text }) => {
     return (
         <Tooltip title={text}>
             <MuiIconButton
@@ -313,11 +318,16 @@ export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipTo
     }
 )
 
-export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
+interface LabelWithTooltipProps {
+    labelText: string
+    tooltipText: string
+}
+
+export const LabelWithTooltip: React.FC<LabelWithTooltipProps> = ({ labelText, tooltipText }) => {
     return (
         <Stack direction="row" alignItems={"center"} textAlign={"center"}>
             <Label size="sm">{labelText}</Label>
-            {CustomTooltip(tooltipText)}
+            <CustomTooltip text={tooltipText} />
         </Stack>
     )
 }

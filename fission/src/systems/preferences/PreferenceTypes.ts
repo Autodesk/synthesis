@@ -11,6 +11,7 @@ export type UserPreferences = {
     PitchSensitivity: number
     YawSensitivity: number
     SceneRotationSensitivity: number
+    ScenePanSensitivity: number
     ViewCubeRotationSensitivity: number
     ReportAnalytics: boolean
     UseMetric: boolean
@@ -54,6 +55,7 @@ export function defaultUserPreferences(): UserPreferences {
         PitchSensitivity: 10,
         YawSensitivity: 3,
         SceneRotationSensitivity: 0.5,
+        ScenePanSensitivity: 1.0,
         ViewCubeRotationSensitivity: 0.025,
         ReportAnalytics: false,
         UseMetric: false,
@@ -212,6 +214,22 @@ export type SpawnLocation = Readonly<{
     pos: Readonly<Vector3Tuple>
     yaw: number
 }>
+
+/** Where a {@link CameraPoint} aims. */
+export type CameraLook =
+    | { type: "field" } // Look at the field's center.
+    | { type: "rotation"; yaw: number; pitch: number } // Fixed orientation, no target.
+
+/**
+ * A fixed, pre-authored camera position on the field (e.g. a driver station or top-down view).
+ * Modeled on {@link SpawnLocation}: a field-relative point, plus where it looks.
+ */
+export type CameraPoint = Readonly<{
+    name: string
+    pos: Readonly<Vector3Tuple> // Field-relative offset, same convention as SpawnLocation.pos.
+    look: CameraLook
+}>
+
 export type FieldPreferences = {
     spawnLocations: {
         [A in Alliance]: {
@@ -220,6 +238,7 @@ export type FieldPreferences = {
     } & { default: SpawnLocation; hasConfiguredLocations: boolean }
     scoringZones: ScoringZonePreferences[]
     protectedZones: ProtectedZonePreferences[]
+    cameraPoints: CameraPoint[]
 }
 
 export function defaultRobotPreferences(): RobotPreferences {
@@ -271,5 +290,6 @@ export function defaultFieldPreferences(): FieldPreferences {
         },
         scoringZones: [],
         protectedZones: [],
+        cameraPoints: [],
     }
 }

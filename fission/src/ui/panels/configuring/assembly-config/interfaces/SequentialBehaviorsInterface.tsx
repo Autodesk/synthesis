@@ -43,7 +43,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
 
     return (
         <Stack direction="row" textAlign="center" gap={1} key={elementKey}>
-            {hasParent && Spacer(0, 10)}
+            {hasParent && <Spacer width={10} />}
             <Tooltip
                 title={hasParent ? "Following Joint " + behavior.parentJointIndex : selectable ? "Set as parent" : ""}
             >

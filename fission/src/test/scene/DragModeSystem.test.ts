@@ -4,6 +4,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
 import PhysicsSystem from "@/systems/physics/PhysicsSystem"
+import { CameraMode, CustomTargetControls } from "@/systems/scene/CameraControls"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
 import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
 import World from "@/systems/World"
@@ -283,6 +284,52 @@ describe("DragModeSystem Integration Tests", () => {
             screenHandler.interactionEnd?.(endInteraction)
 
             cleanup()
+        })
+
+        describe("Camera Controls Integration", () => {
+            const clickInteraction = {
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                position: [400, 300] as [number, number],
+            }
+
+            function installTargetControls(mode: CameraMode = CameraMode.Follow): CustomTargetControls {
+                const dummyHandler = {} as unknown as ConstructorParameters<typeof CustomTargetControls>[1]
+                const targetControls = new CustomTargetControls(World.sceneRenderer.mainCamera, dummyHandler)
+                targetControls.mode = mode
+
+                const mockSceneRenderer = World.sceneRenderer as unknown as {
+                    currentCameraControls: CustomTargetControls
+                }
+                mockSceneRenderer.currentCameraControls = targetControls
+
+                return targetControls
+            }
+
+            test("disables the active Target camera controls while dragging in Follow mode, and re-enables them on release", () => {
+                const targetControls = installTargetControls()
+                const { cleanup } = setupDraggableCube()
+                const screenHandler = World.sceneRenderer.screenInteractionHandler
+
+                screenHandler?.interactionStart?.(clickInteraction)
+                expect(targetControls.enabled).toBe(false)
+
+                screenHandler?.interactionEnd?.(clickInteraction)
+                expect(targetControls.enabled).toBe(true)
+
+                cleanup()
+            })
+
+            test("keeps Face mode camera controls enabled throughout a drag so it can keep tracking its target", () => {
+                const targetControls = installTargetControls(CameraMode.Face)
+                const { cleanup } = setupDraggableCube()
+                const screenHandler = World.sceneRenderer.screenInteractionHandler
+
+                screenHandler?.interactionStart?.(clickInteraction)
+                expect(targetControls.enabled).toBe(true)
+
+                screenHandler?.interactionEnd?.(clickInteraction)
+                cleanup()
+            })
         })
     })
 })

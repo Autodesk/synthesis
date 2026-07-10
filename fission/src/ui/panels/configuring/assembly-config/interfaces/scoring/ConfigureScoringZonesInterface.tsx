@@ -1,13 +1,12 @@
-import { Box, Divider, Stack } from "@mui/material"
+import { Divider } from "@mui/material"
 import type React from "react"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import Label from "@/ui/components/Label"
-import { Button, SynthesisIcons } from "@/ui/components/StyledComponents"
 import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
 import ScoringZoneConfigInterface from "./ScoringZoneConfigInterface"
+import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
 
 const saveScoringZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -37,26 +36,14 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                 />
             ) : (
                 <>
-                    <Stack textAlign={"center"} minHeight={"30px"} key="selected-item">
-                        <Box width={`60px`} />
-
-                        {/** Back arrow button when an option is selected */}
-                        <Button
-                            startIcon={<SynthesisIcons.LEFT_ARROW_LARGE />}
-                            onClick={() => {
-                                EventSystem.dispatch("ConfigurationSavedEvent")
-                                setSelectedZone(undefined)
-                            }}
-                        />
-
-                        {/** Label with either the header text, or the name of the selected option if an option is selected */}
-                        <Stack alignSelf={"center"}>
-                            <Box width="8px" />
-                            <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                                Configuring Zone
-                            </Label>
-                        </Stack>
-                    </Stack>
+                    <SelectMenuHeader
+                        label={`Zone ${selectedZone.name}`}
+                        showBackButton={true}
+                        onBackButton={() => {
+                            EventSystem.dispatch("ConfigurationSavedEvent")
+                            setSelectedZone(undefined)
+                        }}
+                    />
                     <Divider />
                     <ScoringZoneConfigInterface
                         selectedField={selectedField}
