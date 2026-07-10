@@ -36,7 +36,7 @@ import {
 } from "../configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import CommandRegistry from "@/ui/components/CommandRegistry"
-import type { CustomTargetControls } from "@/systems/scene/CameraControls"
+import { getTargetControls } from "@/systems/scene/CameraControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
@@ -107,7 +107,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                     if (mirabufSceneObject) {
                         World.sceneRenderer.registerSceneObject(mirabufSceneObject)
 
-                        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
+                        const targetControls = getTargetControls()
 
                         if (World.multiplayerSystem != null) {
                             const encodedAssembly =
@@ -133,8 +133,8 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                             World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id as LocalSceneObjectId)
                         }
 
-                        if (info.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
-                            cameraControls.focusProvider = mirabufSceneObject
+                        if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+                            targetControls.focusProvider = mirabufSceneObject
                         }
 
                         progressHandle.done()

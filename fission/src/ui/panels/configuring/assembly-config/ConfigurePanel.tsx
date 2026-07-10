@@ -29,6 +29,7 @@ import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterfa
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
+import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -202,6 +203,10 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                 return <Label size="md">ERROR: Field does not contain protected zone configuration!</Label>
             }
             return <ConfigureProtectedZonesInterface selectedField={assembly} initialZones={zones} />
+        }
+        case ConfigMode.CAMERA_POINTS: {
+            const cameraPoints = assembly.fieldPreferences?.cameraPoints ?? []
+            return <ConfigureCameraPointsInterface selectedField={assembly} initialPoints={cameraPoints} />
         }
         case ConfigMode.MOVE:
             return (
@@ -411,6 +416,11 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         "Protected Zones",
                         ConfigMode.PROTECTED_ZONES,
                         "Define and manage protected zones on the field where robots can not enter."
+                    ),
+                    new ConfigModeSelectionOption(
+                        "Camera Positions",
+                        ConfigMode.CAMERA_POINTS,
+                        "Place and configure driver-station camera views for this field."
                     ),
                     new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the asset's metadata"),
                 ]
