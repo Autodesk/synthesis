@@ -19,7 +19,7 @@ class InputSchemeManager {
         if (this._customSchemes) return this._customSchemes
 
         // Load schemes from preferences and parse into objects
-        this._customSchemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+        this._customSchemes = PreferencesSystem.getUserPreference("InputSchemes")
         this._customSchemes.forEach(scheme => this.parseScheme(scheme))
 
         return this._customSchemes
@@ -81,6 +81,16 @@ class InputSchemeManager {
         this._defaultInputSchemes = DefaultInputs.defaultInputCopies
         this._customSchemes = undefined
         EventSystem.dispatch("InputSchemeChanged", { panelId })
+    }
+
+    public static rebindOldBrainSchemes() {
+        const schemesByName = new Map(this.allInputSchemes.map(s => [s.schemeName, s] as const))
+        for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap) {
+            const reverted = schemesByName.get(scheme.schemeName)
+            if (reverted && scheme.customized) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, reverted)
+            }
+        }
     }
 
     /** Creates an array of every input scheme that is either a default or customized by the user. Custom themes will appear on top. */
@@ -203,7 +213,7 @@ class InputSchemeManager {
             return s.customized
         })
 
-        PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)
+        PreferencesSystem.setUserPreference("InputSchemes", customizedSchemes)
         PreferencesSystem.savePreferences()
         EventSystem.dispatch("InputSchemeChanged", { panelId })
     }

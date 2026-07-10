@@ -4,9 +4,9 @@ import { IoMdArrowDropdown } from "react-icons/io"
 import { ConfigMode } from "../../panels/configuring/assembly-config/ConfigTypes"
 import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import { IconButton, Select } from "../StyledComponents"
-import { TOP_BAR_ICON_BUTTON_SX } from "./topBarConfig"
+import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
 import { TopBarIcon } from "./TopBarIcons"
-import { assemblyLabel, useConfigureAssembly } from "./useConfigureAssembly"
+import { assemblyLabel, useConfigureAssembly } from "./UseConfigureAssembly"
 
 const ConfigureControls: React.FC = () => {
     const { assemblies, selectedConfigAssembly, configureButtons, openConfig, selectedValue, selectAssemblyById } =

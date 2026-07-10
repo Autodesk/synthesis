@@ -20,7 +20,7 @@ import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import ConfigureControls from "./topbar/ConfigureControls"
 import GameplayControls from "./topbar/GameplayControls"
 import ModeDropdown from "./topbar/ModeDropdown"
-import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/topBarConfig"
+import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
 import UserIcon from "./UserIcon"
 
@@ -150,7 +150,9 @@ const TopBar: React.FC = () => {
                             >
                                 {/* Box sets the em-square so the icon scales to 34 px;
                                     color inherits from TOP_BAR_ICON_BUTTON_SX → topBarText.main */}
-                                <Box sx={{ fontSize: 34, display: "flex" }}>{SynthesisIcons.CODE_SQUARE}</Box>
+                                <Box sx={{ fontSize: 34, display: "flex" }}>
+                                    <SynthesisIcons.CODE_SQUARE />
+                                </Box>
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Debug Tools">
@@ -160,7 +162,9 @@ const TopBar: React.FC = () => {
                                 sx={TOP_BAR_ICON_BUTTON_SX}
                                 onClick={() => openPanel(DebugPanel, undefined)}
                             >
-                                <Box sx={{ fontSize: 34, display: "flex" }}>{SynthesisIcons.BUG}</Box>
+                                <Box sx={{ fontSize: 34, display: "flex" }}>
+                                    <SynthesisIcons.BUG />
+                                </Box>
                             </IconButton>
                         </Tooltip>
                     </>
@@ -173,7 +177,9 @@ const TopBar: React.FC = () => {
                         sx={TOP_BAR_ICON_BUTTON_SX}
                         onClick={() => openPanel(CameraSelectionPanel, undefined)}
                     >
-                        <Box sx={{ fontSize: 34, display: "flex" }}>{SynthesisIcons.CAMERA}</Box>
+                        <Box sx={{ fontSize: 34, display: "flex" }}>
+                            <SynthesisIcons.CAMERA />
+                        </Box>
                     </IconButton>
                 </Tooltip>
 

@@ -17,9 +17,9 @@ import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel, globalAddToast } from "./GlobalUIControls"
 import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
 import HUDMenuButton from "./topbar/HUDMenuButton"
-import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/topBarConfig"
+import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
-import { assemblyLabel, useConfigureAssembly } from "./topbar/useConfigureAssembly"
+import { useConfigureAssembly } from "./topbar/UseConfigureAssembly"
 import UserIcon from "./UserIcon"
 
 const DRAWER_SX = {
@@ -79,7 +79,7 @@ const MobileHUD: React.FC = () => {
             startWorldCallback: async (name: string, room?: string) => {
                 const isHost = room == null
                 const roomId = room ?? Math.random().toString(10).substring(2, 8)
-                PreferencesSystem.setGlobalPreference("MultiplayerUsername", name)
+                PreferencesSystem.setUserPreference("MultiplayerUsername", name)
                 PreferencesSystem.savePreferences()
                 const success = await MultiplayerSystem.setup(roomId, name, isHost)
                 if (success && isHost) globalAddToast("info", "Room Code", roomId)
@@ -142,7 +142,7 @@ const MobileHUD: React.FC = () => {
         <Stack gap={2} sx={{ minHeight: "100%" }}>
             <Stack direction="row" alignItems="center" gap={1}>
                 <IconButton disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={() => setView("root")}>
-                    {SynthesisIcons.LEFT_ARROW_LARGE}
+                    <SynthesisIcons.LEFT_ARROW_LARGE />
                 </IconButton>
                 <TopBarIcon name="mode-configure" size={24} />
                 <Select
@@ -150,7 +150,7 @@ const MobileHUD: React.FC = () => {
                     value={selectedValue}
                     onChange={e => selectAssemblyById(e.target.value as string)}
                     renderValue={() =>
-                        selectedConfigAssembly ? assemblyLabel(selectedConfigAssembly) : "Select an assembly"
+                        selectedConfigAssembly ? selectedConfigAssembly.descriptiveName : "Select an assembly"
                     }
                     IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
                     sx={{ ...DRAWER_SELECT_SX, flexGrow: 1, minWidth: 0 }}
@@ -162,7 +162,7 @@ const MobileHUD: React.FC = () => {
                     )}
                     {assemblies.map(assembly => (
                         <MenuItem key={assembly.id} value={assembly.id.toString()}>
-                            {assemblyLabel(assembly)}
+                            {assembly.descriptiveName}
                         </MenuItem>
                     ))}
                 </Select>

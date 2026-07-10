@@ -16,7 +16,7 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import type { CustomTargetControls } from "@/systems/scene/CameraControls"
+import { getTargetControls } from "@/systems/scene/CameraControls"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -61,7 +61,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     .then(result => {
                         if (result) {
-                            return createMirabuf(result.assembly, undefined)
+                            return createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
                         }
                         globalOpenModal(ImportLocalMirabufModal, {
                             configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT),
@@ -75,9 +75,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                             if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                                 openPanel(InitialConfigPanel, undefined, modal)
                             }
-                            const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
-                            if (miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
-                                cameraControls.focusProvider = mirabufSceneObject
+                            const targetControls = getTargetControls()
+                            if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+                                targetControls.focusProvider = mirabufSceneObject
                             }
                             closeModal(CloseType.Overwrite)
                         }

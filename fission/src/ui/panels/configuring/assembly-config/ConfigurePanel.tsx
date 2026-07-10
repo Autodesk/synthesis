@@ -6,17 +6,13 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type {
-    Alliance,
-    FieldPreferences,
-    MotorPreferences,
-    RobotPreferences,
-} from "@/systems/preferences/PreferenceTypes"
+import type { Alliance, FieldPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { Button } from "@/ui/components/StyledComponents"
+import { Button, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
@@ -32,6 +28,7 @@ import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterf
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
+import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -39,7 +36,10 @@ import { Box, Tab, Tabs } from "@mui/material"
 import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
-import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
+import MetadataConfigInterface from "@/panels/configuring/assembly-config/interfaces/MetadataConfigInterface.tsx"
+import { FaArrowsRotate } from "react-icons/fa6"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -151,6 +151,15 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
 }) => {
     const { openPanel, closePanel } = useUIContext()
 
+    useEffect(() => {
+        if (configMode !== ConfigMode.MOVE) return
+
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
+        return () => {
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
+        }
+    }, [configMode])
+
     switch (configMode) {
         case ConfigMode.INTAKE:
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
@@ -193,6 +202,10 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
             }
             return <ConfigureProtectedZonesInterface selectedField={assembly} initialZones={zones} />
         }
+        case ConfigMode.CAMERA_POINTS: {
+            const cameraPoints = assembly.fieldPreferences?.cameraPoints ?? []
+            return <ConfigureCameraPointsInterface selectedField={assembly} initialPoints={cameraPoints} />
+        }
         case ConfigMode.MOVE:
             return (
                 <TransformGizmoControl
@@ -213,6 +226,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
             return <AllianceSelectionInterface selectedAssembly={assembly} />
         case ConfigMode.DRIVETRAIN:
             return <DrivetrainSelectionInterface selectedAssembly={assembly} />
+        case ConfigMode.METADATA:
+            return <MetadataConfigInterface selectedAssembly={assembly}></MetadataConfigInterface>
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -225,8 +240,9 @@ export interface ConfigurePanelCustomProps {
 }
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
-    const { configureScreen } = useUIContext()
+    const { configureScreen, closePanel } = useUIContext()
     const configurePanelRef = useTourAnchor("configure-panel")
+
 
     const {
         configMode: initialConfigMode,
@@ -241,29 +257,26 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
     const originalRobotPrefs = useRef<RobotPreferences | null>(null)
     const originalFieldPrefs = useRef<FieldPreferences | null>(null)
-    const originalMotorPrefs = useRef<MotorPreferences | null>(null)
     const originalInputSchemes = useRef<InputScheme[] | null>(null)
 
     const originalAlliance = useRef<Alliance | undefined>(selectedAssembly?.alliance)
     const originalStation = useRef<MirabufSceneObject["station"]>(selectedAssembly?.station)
 
     useEffect(() => {
-        const allSchemes: InputScheme[] = PreferencesSystem.getGlobalPreference("InputSchemes") || []
+        const allSchemes: InputScheme[] = PreferencesSystem.getUserPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
 
         originalAlliance.current = selectedAssembly?.alliance
         originalStation.current = selectedAssembly?.station
 
         if (selectedAssembly) {
-            const name = selectedAssembly.assemblyName
+            const id = selectedAssembly.assemblyId
 
-            const robotPrefs = PreferencesSystem.getRobotPreferences(name)
-            const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
-            const motorPrefs = PreferencesSystem.getMotorPreferences(name)
+            const robotPrefs = PreferencesSystem.getRobotPreferences(id)
+            const fieldPrefs = PreferencesSystem.getFieldPreferences(id)
 
             if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
             if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
-            if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
 
             originalAlliance.current = selectedAssembly.alliance
             originalStation.current = selectedAssembly.station
@@ -287,7 +300,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
             originalRobotPrefs.current = null
             originalFieldPrefs.current = null
-            originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
             selectedAssembly?.sendPreferences()
@@ -297,27 +309,26 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             setPendingDeletes([])
 
             if (selectedAssembly) {
-                const name = selectedAssembly.assemblyName
+                const id = selectedAssembly.assemblyId
 
-                if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
-                if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
-                if (originalMotorPrefs.current) PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
+                if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(id, originalRobotPrefs.current)
+                if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(id, originalFieldPrefs.current)
 
                 selectedAssembly.alliance = originalAlliance.current
                 selectedAssembly.station = originalStation.current
 
-                selectedAssembly.getPreferences()
+                selectedAssembly.loadPreferences()
             }
 
             if (originalInputSchemes.current) {
-                PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
+                PreferencesSystem.setUserPreference("InputSchemes", originalInputSchemes.current)
                 PreferencesSystem.savePreferences()
                 InputSchemeManager.resetDefaultSchemes(panel?.id)
+                InputSchemeManager.rebindOldBrainSchemes()
             }
 
             originalRobotPrefs.current = null
             originalFieldPrefs.current = null
-            originalMotorPrefs.current = null
             originalInputSchemes.current = null
 
             originalAlliance.current = undefined
@@ -375,6 +386,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         ConfigMode.ALLIANCE,
                         "Set the robot's alliance color for matches. (red or blue)"
                     ),
+                    new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the asset's metadata"),
                     selectedAssembly?.brain?.brainType === "wpilib"
                         ? new ConfigModeSelectionOption(
                               "Simulation",
@@ -400,6 +412,12 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         ConfigMode.PROTECTED_ZONES,
                         "Define and manage protected zones on the field where robots can not enter."
                     ),
+                    new ConfigModeSelectionOption(
+                        "Camera Positions",
+                        ConfigMode.CAMERA_POINTS,
+                        "Place and configure driver-station camera views for this field."
+                    ),
+                    new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the asset's metadata"),
                 ]
             default:
                 return []
@@ -450,6 +468,29 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     )}
                     {configMode !== undefined && selectedAssembly !== undefined && (
                         <ConfigInterface panel={panel!} configMode={configMode} assembly={selectedAssembly} />
+                    )}
+                    {configMode === undefined && selectedAssembly !== undefined && (
+                        <>
+                            <Spacer height={16} />
+                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                            <Spacer height={16} />
+                            <Button
+                                className={"w-full"}
+                                color={"warning"}
+                                onClick={() => {
+                                    closePanel(panel!.id, CloseType.Accept)
+                                    selectedAssembly.resetPreferences()
+                                    globalAddToast(
+                                        "info",
+                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
+                                    )
+                                }}
+                            >
+                                Reset
+                                <Spacer width={5} />
+                                <FaArrowsRotate />
+                            </Button>
+                        </>
                     )}
                 </>
             )}

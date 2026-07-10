@@ -21,7 +21,7 @@ import {
     type ToggleButtonProps,
     Tooltip,
 } from "@mui/material"
-import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
+import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle, AiOutlineClose } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
 import { BsCodeSquare } from "react-icons/bs"
 import {
@@ -32,9 +32,11 @@ import {
     FaCamera,
     FaCar,
     FaChessBoard,
+    FaCheck,
     FaFileImport,
     FaGamepad,
     FaGear,
+    FaInfinity,
     FaMagnifyingGlass,
     FaMinus,
     FaPlus,
@@ -43,71 +45,94 @@ import {
     FaWrench,
     FaXmark,
 } from "react-icons/fa6"
-import { GiSteeringWheel } from "react-icons/gi"
+import { FaHandPaper, FaUnlink } from "react-icons/fa"
+import { GiPerspectiveDiceSixFacesOne, GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
-import { HiDownload } from "react-icons/hi"
+import { HiDownload, HiUser } from "react-icons/hi"
 import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
+import { MdExpandMore, MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
+import type { IconBaseProps, IconType } from "react-icons"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
 import React from "react"
 
-export class SynthesisIcons {
-    /** Regular icons: used for panels, modals, and main hud buttons */
-    public static readonly BASKET_BALL = <FaBasketball />
-    public static readonly GAMEPAD = <FaGamepad />
-    public static readonly GEAR = <FaGear />
-    public static readonly MAGNIFYING_GLASS = <FaMagnifyingGlass />
-    public static readonly ADD = <FaPlus />
-    public static readonly MINUS = <FaMinus />
-    public static readonly IMPORT = <FaFileImport />
-    public static readonly WRENCH = <FaWrench />
-    public static readonly SCREWDRIVER_WRENCH = <FaScrewdriverWrench />
-    public static readonly QUESTION = <FaQuestion />
-    public static readonly XMARK = <FaXmark />
-    public static readonly PEOPLE = <IoPeople />
-    public static readonly CHESS_BOARD = <FaChessBoard />
-    public static readonly FILL_WARNING = <AiFillWarning />
-    public static readonly CAR = <FaCar />
-    public static readonly CODE_SQUARE = <BsCodeSquare />
-    public static readonly STEERING_WHEEL = <GiSteeringWheel />
-    public static readonly OUTLINED_DOUBLE_RIGHT = <AiOutlineDoubleRight />
-    public static readonly CONNECT = <GrConnect />
-    public static readonly INFO = <AiOutlineInfoCircle />
-    public static readonly BUG = <FaBug />
-    public static readonly PLAY = <IoPlayOutline />
-    public static readonly CAMERA = <FaCamera />
-
-    /** Large icons: used for icon buttons */
-    public static readonly DELETE_LARGE = <IoTrashBin size={"1.25rem"} />
-    public static readonly DOWNLOAD_LARGE = <HiDownload size={"1.25rem"} />
-    public static readonly ADD_LARGE = <FaPlus size={"1.25rem"} />
-    public static readonly GEAR_LARGE = <FaGear size={"1.25rem"} />
-    public static readonly REFRESH_LARGE = <BiRefresh size={"1.25rem"} />
-    public static readonly SELECT_LARGE = <IoCheckmark size={"1.25rem"} />
-    public static readonly EDIT_LARGE = <IoPencil size={"1.25rem"} />
-    public static readonly LEFT_ARROW_LARGE = <FaArrowLeft size={"1.25rem"} />
-    public static readonly BUG_LARGE = <FaBug size={"1.25rem"} />
-    public static readonly XMARK_LARGE = <FaXmark size={"1.25rem"} />
-    public static readonly PLAY_LARGE = <IoPlayOutline size={"1.25rem"} />
-
-    public static readonly OPEN_HUD_ICON = (
-        <FaAngleRight
-            size={"5vh"}
-            style={{
-                alignSelf: "middle",
-                justifySelf: "center",
-                minHeight: "40px",
-                minWidth: "40px",
-                maxHeight: "50px",
-                maxWidth: "50px",
-            }}
-            // color={colorNameToVar("BackgroundSecondary")}
-        />
-    )
+/** Wraps an icon with default props (eg. a default size) that callers can still override. */
+function withDefaultProps(icon: IconType, defaultProps: IconBaseProps): IconType {
+    return (props?: IconBaseProps) => React.createElement(icon, { ...defaultProps, ...props })
 }
 
-export const Spacer = (heightPx?: number, widthPx?: number) => {
-    return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
+export class SynthesisIcons {
+    /** Regular icons: used for panels, modals, and main hud buttons */
+    public static readonly BASKET_BALL = FaBasketball
+    public static readonly GAMEPAD = FaGamepad
+    public static readonly GEAR = FaGear
+    public static readonly MAGNIFYING_GLASS = FaMagnifyingGlass
+    public static readonly ADD = FaPlus
+    public static readonly MINUS = FaMinus
+    public static readonly IMPORT = FaFileImport
+    public static readonly WRENCH = FaWrench
+    public static readonly SCREWDRIVER_WRENCH = FaScrewdriverWrench
+    public static readonly QUESTION = FaQuestion
+    public static readonly XMARK = FaXmark
+    public static readonly PEOPLE = IoPeople
+    public static readonly CHESS_BOARD = FaChessBoard
+    public static readonly FILL_WARNING = AiFillWarning
+    public static readonly CAR = FaCar
+    public static readonly CODE_SQUARE = BsCodeSquare
+    public static readonly STEERING_WHEEL = GiSteeringWheel
+    public static readonly OUTLINED_DOUBLE_RIGHT = AiOutlineDoubleRight
+    public static readonly CONNECT = GrConnect
+    public static readonly INFO = AiOutlineInfoCircle
+    public static readonly STOP = AiOutlineClose
+    public static readonly BUG = FaBug
+    public static readonly PLAY = IoPlayOutline
+    public static readonly CAMERA = FaCamera
+    public static readonly HAND = FaHandPaper
+    public static readonly CHECK = FaCheck
+    public static readonly FIT_SCREEN = MdFitScreen
+    public static readonly ZOOM_IN = MdZoomInMap
+    public static readonly ZOOM_OUT = MdZoomOutMap
+    public static readonly USER = HiUser
+    public static readonly INFINITY = FaInfinity
+    public static readonly UNLINK = FaUnlink
+    public static readonly DICE = GiPerspectiveDiceSixFacesOne
+
+    /** Large icons: used for icon buttons */
+    public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })
+    public static readonly DOWNLOAD_LARGE = withDefaultProps(HiDownload, { size: "1.25rem" })
+    public static readonly ADD_LARGE = withDefaultProps(FaPlus, { size: "1.25rem" })
+    public static readonly GEAR_LARGE = withDefaultProps(FaGear, { size: "1.25rem" })
+    public static readonly REFRESH_LARGE = withDefaultProps(BiRefresh, { size: "1.25rem" })
+    public static readonly SELECT_LARGE = withDefaultProps(IoCheckmark, { size: "1.25rem" })
+    public static readonly EDIT_LARGE = withDefaultProps(IoPencil, { size: "1.25rem" })
+    public static readonly LEFT_ARROW_LARGE = withDefaultProps(FaArrowLeft, { size: "1.25rem" })
+    public static readonly BUG_LARGE = withDefaultProps(FaBug, { size: "1.25rem" })
+    public static readonly XMARK_LARGE = withDefaultProps(FaXmark, { size: "1.25rem" })
+    public static readonly XMARK_LARGE_HUD = withDefaultProps(FaXmark, { size: 23 })
+    public static readonly PLAY_LARGE = withDefaultProps(IoPlayOutline, { size: "1.25rem" })
+    public static readonly EXPAND_MORE_LARGE = withDefaultProps(MdExpandMore, { size: 24 })
+
+    public static readonly OPEN_HUD_ICON = withDefaultProps(FaAngleRight, {
+        size: "5vh",
+        style: {
+            alignSelf: "middle",
+            justifySelf: "center",
+            minHeight: "40px",
+            minWidth: "40px",
+            maxHeight: "50px",
+            maxWidth: "50px",
+        },
+        // color={colorNameToVar("BackgroundSecondary")}
+    })
+}
+
+interface SpacerProps {
+    height?: number
+    width?: number
+}
+
+export const Spacer: React.FC<SpacerProps> = ({ height = 0, width = 0 }) => {
+    return <Box minHeight={`${height}px`} minWidth={`${width}px`} />
 }
 
 export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
@@ -182,34 +207,34 @@ export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClic
     )
 }
 
-export const DownloadButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const DownloadButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
-            {SynthesisIcons.DELETE_LARGE}
+            <SynthesisIcons.DELETE_LARGE />
         </PositiveIconButton>
     )
 }
 
-export const AddButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const AddButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
-            {SynthesisIcons.ADD_LARGE}
+            <SynthesisIcons.ADD_LARGE />
         </PositiveIconButton>
     )
 }
 
-export const SelectButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const SelectButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
-            {SynthesisIcons.SELECT_LARGE}
+            <SynthesisIcons.SELECT_LARGE />
         </PositiveIconButton>
     )
 }
 
-export const EditButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const EditButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
-            {SynthesisIcons.EDIT_LARGE}
+            <SynthesisIcons.EDIT_LARGE />
         </PositiveIconButton>
     )
 }
@@ -230,23 +255,23 @@ export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClic
     )
 }
 
-export const DeleteButton = (onClick: () => void, id?: string, props: IconButtonProps = {}) => {
+export const DeleteButton: React.FC<IconButtonProps> = ({ onClick, id, ...props }) => {
     return (
         <NegativeIconButton onClick={onClick} id={id} {...props}>
-            {SynthesisIcons.DELETE_LARGE}
+            <SynthesisIcons.DELETE_LARGE />
         </NegativeIconButton>
     )
 }
 
-export const RefreshButton = (onClick: () => void, props: IconButtonProps = {}) => {
+export const RefreshButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <IconButton onClick={onClick} {...props}>
-            {SynthesisIcons.REFRESH_LARGE}
+            <SynthesisIcons.REFRESH_LARGE />
         </IconButton>
     )
 }
 
-export const CustomTooltip = (text: string) => {
+export const CustomTooltip: React.FC<{ text: string }> = ({ text }) => {
     return (
         <Tooltip title={text}>
             <MuiIconButton
@@ -297,11 +322,16 @@ export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipTo
     }
 )
 
-export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
+interface LabelWithTooltipProps {
+    labelText: string
+    tooltipText: string
+}
+
+export const LabelWithTooltip: React.FC<LabelWithTooltipProps> = ({ labelText, tooltipText }) => {
     return (
         <Stack direction="row" alignItems={"center"} textAlign={"center"}>
             <Label size="sm">{labelText}</Label>
-            {CustomTooltip(tooltipText)}
+            <CustomTooltip text={tooltipText} />
         </Stack>
     )
 }

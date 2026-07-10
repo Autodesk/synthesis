@@ -43,17 +43,34 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         if (useGamepad) {
             // Joystick Button
             if (input instanceof ButtonInput) {
-                return JoystickButtonSelection({ input, setSelectedInput, selectedInput })
+                return (
+                    <JoystickButtonSelection
+                        input={input}
+                        selectedInput={selectedInput}
+                        setSelectedInput={setSelectedInput}
+                    />
+                )
             }
 
             // Gamepad axis
             else if (input instanceof AxisInput) {
                 return (
                     <div key={input.inputName}>
-                        {input.useGamepadButtons
-                            ? GamepadButtonAxisSelection({ input, setSelectedInput, selectedInput })
-                            : // Gamepad joystick axis
-                              JoystickAxisSelection({ input, setSelectedInput, selectedInput, setChosenGamepadAxis })}
+                        {input.useGamepadButtons ? (
+                            <GamepadButtonAxisSelection
+                                input={input}
+                                selectedInput={selectedInput}
+                                setSelectedInput={setSelectedInput}
+                            />
+                        ) : (
+                            // Gamepad joystick axis
+                            <JoystickAxisSelection
+                                input={input}
+                                selectedInput={selectedInput}
+                                setSelectedInput={setSelectedInput}
+                                setChosenGamepadAxis={setChosenGamepadAxis}
+                            />
+                        )}
 
                         {/* // Button to switch between two buttons and a joystick axis */}
                         <Checkbox
@@ -82,12 +99,12 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
             if (input instanceof AxisInput) {
                 return (
                     <div key={input.inputName}>
-                        {TouchControlsAxisSelection({
-                            input,
-                            setSelectedInput,
-                            selectedInput,
-                            setChosenTouchControlsAxis,
-                        })}
+                        <TouchControlsAxisSelection
+                            input={input}
+                            selectedInput={selectedInput}
+                            setSelectedInput={setSelectedInput}
+                            setChosenTouchControlsAxis={setChosenTouchControlsAxis}
+                        />
                         {/* // Button to invert the joystick axis */}
                         <Checkbox
                             label="Invert Joystick"

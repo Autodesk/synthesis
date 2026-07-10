@@ -13,7 +13,7 @@ const SceneOverlay: React.FC = () => {
     const [isDisabled, setIsDisabled] = useState(false)
 
     /* State to determine if the ViewCube should be shown */
-    const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getGlobalPreference("ShowViewCube"))
+    const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getUserPreference("ShowViewCube"))
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {

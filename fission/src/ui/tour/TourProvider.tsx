@@ -41,7 +41,7 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
     const getAnchor = useCallback((id: TourAnchorId) => anchorsRef.current.get(id) ?? null, [])
 
     const markSeen = useCallback(() => {
-        PreferencesSystem.setGlobalPreference("HasSeenOnboardingTour", true)
+        PreferencesSystem.setUserPreference("HasSeenOnboardingTour", true)
         PreferencesSystem.savePreferences()
     }, [])
 
@@ -74,7 +74,7 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
             return
         }
         if (startedRef.current) return
-        if (!PreferencesSystem.getGlobalPreference("HasSeenOnboardingTour")) {
+        if (!PreferencesSystem.getUserPreference("HasSeenOnboardingTour")) {
             startedRef.current = true
             setActive(true)
         }

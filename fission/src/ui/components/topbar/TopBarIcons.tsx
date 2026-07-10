@@ -1,28 +1,8 @@
 import { Box } from "@mui/material"
 import { type FC, useEffect, useMemo, useRef } from "react"
 
-/**
- * Topbar icons are SVGs inlined into the bundle at build time and rendered as
- * real DOM `<svg>` nodes (not `<img src>`). This matters: an `<img>` is a
- * separate, purgeable resource, and the browser will drop its decoded bitmap
- * under memory pressure — which the APS login popup reliably triggers by loading
- * a second copy of the app (Jolt WASM + asset pack). The icon then repaints
- * blank with no error to recover from. Inline SVG paints straight from the DOM
- * every frame, so it survives.
- *
- * To swap a placeholder for final art, replace the matching file in `./icons` —
- * the filename is the value in `TOP_BAR_ICONS` below, no other code change
- * required.
- */
-/**
- * Inlining many SVGs into one document puts their internal ids (clip paths,
- * gradients, embedded `<image>` refs) into a single shared namespace, so ids
- * that repeat across files collide — e.g. `settings.svg` and `add-icon.svg` both
- * define `img1` and reference it with `<use href="#img1">`, so whichever renders
- * second grabs the wrong image. As separate `<img>` documents these were
- * isolated; inlined they are not. Prefix every defined id (and its `href="#…"` /
- * `url(#…)` references) with a per-icon scope to keep each icon self-contained.
- */
+// we render these as real dom svgs instead of <img> so they dont repaint blank when the browser drops decoded bitmaps under memory pressure (the aps login popup loading a 2nd copy of the app causes it)
+// inlining svgs into one doc makes their internal ids collide, so we prefix each icons ids to keep them isolated
 function scopeSvgIds(markup: string, scope: string): string {
     const ids = [...markup.matchAll(/\bid="([^"]+)"/g)].map(match => match[1])
     let scoped = markup
@@ -112,7 +92,7 @@ export const TopBarIcon: FC<{ name: TopBarIconName; size?: number | string; clas
                 display: "inline-flex",
                 width: size,
                 height: size,
-                // The inlined SVGs carry a viewBox, so forcing the box size scales them cleanly.
+                // the svgs carry a viewBox so forcing the box size scales them cleanly
                 "& > svg": { width: "100%", height: "100%", display: "block" },
             }}
         />

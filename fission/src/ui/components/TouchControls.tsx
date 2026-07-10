@@ -7,7 +7,7 @@ const TouchControls: React.FC = () => {
     const inputRef = useRef<HTMLInputElement>(null)
 
     const [_isPlaceButtonVisible, setIsPlaceButtonVisible] = useState(false)
-    const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
+    const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getUserPreference("TouchControls"))
 
     useEffect(() => {
         const placeButtonUnsubscriber = EventSystem.listen("SetPlaceAssetButtonVisibleEvent", visible => {
@@ -15,7 +15,7 @@ const TouchControls: React.FC = () => {
         })
 
         const visibilityUnsubscriber = EventSystem.listen("ToggleTouchControlsVisibilityEvent", () => {
-            PreferencesSystem.setGlobalPreference("TouchControls", !isJoystickVisible)
+            PreferencesSystem.setUserPreference("TouchControls", !isJoystickVisible)
             PreferencesSystem.savePreferences()
             setIsJoystickVisible(!isJoystickVisible)
         })

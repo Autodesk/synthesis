@@ -6,11 +6,12 @@ import type { SimConfigData } from "../simulation/SimConfigShared"
 
 /** Names of all global preferences. */
 
-export type GlobalPreferences = {
+export type UserPreferences = {
     ZoomSensitivity: number
     PitchSensitivity: number
     YawSensitivity: number
     SceneRotationSensitivity: number
+    ScenePanSensitivity: number
     ViewCubeRotationSensitivity: number
     ReportAnalytics: boolean
     UseMetric: boolean
@@ -31,47 +32,50 @@ export type GlobalPreferences = {
     HasSeenOnboardingTour: boolean
 }
 
-export type GlobalPreference = keyof GlobalPreferences
+export type UserPreference = keyof UserPreferences
 
 export const ROBOT_PREFERENCE_KEY = "Robots" as const
 export const FIELD_PREFERENCE_KEY = "Fields" as const
-export const MOTOR_PREFERENCES_KEY = "Motors" as const
 export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
+export const USER_PREFERENCE_KEY = "User" as const
 
-export type Preferences = GlobalPreferences & {
+export type Preferences = {
     [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
     [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
-    [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>
     [GRAPHICS_PREFERENCE_KEY]: GraphicsPreferences
+    [USER_PREFERENCE_KEY]: UserPreferences
 }
 
 /**
- * Default values for GlobalPreferences as a fallback if they are not configured by the user.
- * Every global preference should have a default value.
+ * Default values for UserPreferences as a fallback if they are not configured by the user.
+ * Every user preference should have a default value.
  */
-export const defaultGlobalPreferences: GlobalPreferences = {
-    ZoomSensitivity: 15,
-    PitchSensitivity: 10,
-    YawSensitivity: 3,
-    SceneRotationSensitivity: 0.5,
-    ViewCubeRotationSensitivity: 0.025,
-    ReportAnalytics: false,
-    UseMetric: false,
-    RenderScoringZones: true,
-    RenderProtectedZones: true,
-    InputSchemes: [],
-    RenderSceneTags: true,
-    RenderScoreboard: true,
-    SubsystemGravity: false,
-    TouchControls: false,
-    SimAutoReconnect: false,
-    ShowViewCube: true,
-    MuteAllSound: false,
-    SFXVolume: 25,
-    ShowCenterOfMassIndicators: false,
-    MultiplayerClientID: "",
-    MultiplayerUsername: "",
-    HasSeenOnboardingTour: false,
+export function defaultUserPreferences(): UserPreferences {
+    return {
+        ZoomSensitivity: 15,
+        PitchSensitivity: 10,
+        YawSensitivity: 3,
+        SceneRotationSensitivity: 0.5,
+        ScenePanSensitivity: 1.0,
+        ViewCubeRotationSensitivity: 0.025,
+        ReportAnalytics: false,
+        UseMetric: false,
+        RenderScoringZones: true,
+        RenderProtectedZones: true,
+        InputSchemes: [],
+        RenderSceneTags: true,
+        RenderScoreboard: true,
+        SubsystemGravity: false,
+        TouchControls: false,
+        SimAutoReconnect: false,
+        ShowViewCube: true,
+        MuteAllSound: false,
+        SFXVolume: 25,
+        ShowCenterOfMassIndicators: false,
+        MultiplayerClientID: "",
+        MultiplayerUsername: "",
+        HasSeenOnboardingTour: false,
+    }
 }
 
 export type GraphicsPreferences = {
@@ -212,6 +216,22 @@ export type SpawnLocation = Readonly<{
     pos: Readonly<Vector3Tuple>
     yaw: number
 }>
+
+/** Where a {@link CameraPoint} aims. */
+export type CameraLook =
+    | { type: "field" } // Look at the field's center.
+    | { type: "rotation"; yaw: number; pitch: number } // Fixed orientation, no target.
+
+/**
+ * A fixed, pre-authored camera position on the field (e.g. a driver station or top-down view).
+ * Modeled on {@link SpawnLocation}: a field-relative point, plus where it looks.
+ */
+export type CameraPoint = Readonly<{
+    name: string
+    pos: Readonly<Vector3Tuple> // Field-relative offset, same convention as SpawnLocation.pos.
+    look: CameraLook
+}>
+
 export type FieldPreferences = {
     spawnLocations: {
         [A in Alliance]: {
@@ -220,6 +240,7 @@ export type FieldPreferences = {
     } & { default: SpawnLocation; hasConfiguredLocations: boolean }
     scoringZones: ScoringZonePreferences[]
     protectedZones: ProtectedZonePreferences[]
+    cameraPoints: CameraPoint[]
 }
 
 export function defaultRobotPreferences(): RobotPreferences {
@@ -271,13 +292,6 @@ export function defaultFieldPreferences(): FieldPreferences {
         },
         scoringZones: [],
         protectedZones: [],
-    }
-}
-
-export function defaultMotorPreferences(name: string): MotorPreferences {
-    return {
-        name: name,
-        maxVelocity: 1,
-        maxAcceleration: 1,
+        cameraPoints: [],
     }
 }

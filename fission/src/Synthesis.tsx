@@ -28,7 +28,7 @@ function Synthesis() {
     const mainLoopHandle = useRef(0)
     const startMainLoop = async () => {
         await World.initWorld()
-        if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
+        if (!PreferencesSystem.getUserPreference("ReportAnalytics") && !import.meta.env.DEV) {
             setConsentPopupDisable(false)
         }
 
@@ -49,6 +49,7 @@ function Synthesis() {
 
         startMainLoop()
 
+        // Cleanup
         return () => {
             // TODO: Teardown literally everything
             cancelAnimationFrame(mainLoopHandle.current)
@@ -60,7 +61,7 @@ function Synthesis() {
 
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
-        PreferencesSystem.setGlobalPreference("ReportAnalytics", true)
+        PreferencesSystem.setUserPreference("ReportAnalytics", true)
         PreferencesSystem.savePreferences()
     }, [])
 

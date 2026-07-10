@@ -26,9 +26,9 @@ export class SoundPlayer {
     }
 
     private get _currentVolume(): number {
-        return PreferencesSystem.getGlobalPreference("MuteAllSound")
+        return PreferencesSystem.getUserPreference("MuteAllSound")
             ? 0
-            : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
+            : clamp(PreferencesSystem.getUserPreference("SFXVolume") / 100, 0, 1)
     }
 
     private getTemplate(filePath: string): HTMLAudioElement {

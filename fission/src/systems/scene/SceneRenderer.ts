@@ -8,7 +8,12 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
 import EventSystem from "@/systems/EventSystem.ts"
-import { type CameraControls, type CameraControlsType, CustomTargetControls } from "@/systems/scene/CameraControls"
+import {
+    type CameraControls,
+    type CameraControlsType,
+    CustomFieldViewControls,
+    CustomTargetControls,
+} from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
@@ -231,12 +236,18 @@ class SceneRenderer extends WorldSystem {
     }
 
     public setCameraControls(controlsType: CameraControlsType) {
+        if (this._cameraControls.controlsType === controlsType) return
+
         this._cameraControls.dispose()
         switch (controlsType) {
             case "Target":
                 this._cameraControls = new CustomTargetControls(this._mainCamera, this._screenInteractionHandler)
                 break
+            case "FieldView":
+                this._cameraControls = new CustomFieldViewControls(this._mainCamera, this._screenInteractionHandler)
+                break
         }
+        EventSystem.dispatch("CameraControlsTypeChangedEvent", { controlsType })
     }
 
     public updateCanvasSize() {
@@ -271,7 +282,7 @@ class SceneRenderer extends WorldSystem {
         this._skybox.position.copy(this._mainCamera.position)
 
         // Update the tags each frame if they are enabled in preferences
-        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
+        if (PreferencesSystem.getUserPreference("RenderSceneTags")) EventSystem.dispatch("SceneOverlayUpdateEvent")
 
         this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)

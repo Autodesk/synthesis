@@ -7,15 +7,15 @@ export const simMaps = new Map<string, SimMap>()
 
 let simBrain: WPILibBrain | undefined
 export function setSimBrain(brain: WPILibBrain | undefined) {
-    if (brain && !simMaps.has(brain.assemblyName)) {
-        simMaps.set(brain.assemblyName, new Map())
+    if (brain && !simMaps.has(brain.assemblyId)) {
+        simMaps.set(brain.assemblyId, new Map())
     }
     if (simBrain) worker.getValue().postMessage({ command: "disable" })
     simBrain = brain
     if (simBrain)
         worker.getValue().postMessage({
             command: "enable",
-            reconnect: PreferencesSystem.getGlobalPreference("SimAutoReconnect"),
+            reconnect: PreferencesSystem.getUserPreference("SimAutoReconnect"),
         })
 }
 
@@ -29,7 +29,7 @@ export function hasSimBrain() {
 
 export function getSimMap(): SimMap | undefined {
     if (!simBrain) return undefined
-    return simMaps.get(simBrain.assemblyName)
+    return simMaps.get(simBrain.assemblyId)
 }
 
 let isConnected: boolean = false

@@ -1,4 +1,4 @@
-import { act, fireEvent, getByText, render } from "@testing-library/react"
+import { act, fireEvent, getByText, render, waitFor } from "@testing-library/react"
 import React from "react"
 import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
 import { Panel } from "@/ui/components/Panel"
@@ -81,16 +81,21 @@ describe("MatchModeConfigPanel", () => {
         const testJsonString = JSON.stringify(json)
         const testFile = new File([testJsonString], "test.json", { type: "application/json" })
 
-        const fileInput = container.querySelector("input[type='file']")
+        const fileInput = container.querySelector<HTMLInputElement>("input[type='file']")
         assert(fileInput != undefined)
+        const readSpy = vi.spyOn(testFile, "text")
 
         // Upload the file (wrapped in act to handle React state updates)
         await act(async () => {
             fireEvent.change(fileInput, { target: { files: [testFile] } })
-            await new Promise(resolve => setTimeout(resolve, 100))
         })
 
+        // Wait for the file to be read and processed
+        await waitFor(() => assert(readSpy.mock.calls.length > 0, "File has not been read"))
+        await readSpy.mock.results[0].value
+        await act(async () => {})
         const finalCount = getMatchModeCount(container)
+
         if (validJSON) {
             assert(
                 finalCount === initialCount + 1,
