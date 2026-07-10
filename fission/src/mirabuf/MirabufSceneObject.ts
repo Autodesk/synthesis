@@ -732,7 +732,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     /**
-     * Gets the maximum dimensions (length, width, height) of the mirabuf object.
+     * Gets the dimensions of the axis-aligned bounding box of the robot (aligned to world space)
      *
      * @returns An object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
@@ -749,7 +749,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     /**
-     * Calculates the robot's dimensions as if it had no rotation applied.
+     * Gets the dimensions of the axis-aligned bounding box around the (aligned to robot space)
      *
      * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
@@ -777,43 +777,45 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         const unrotatedBox = new THREE.Box3()
 
-        this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
-            const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
-            if (!bodyId) return
+        // const identity = JOLT.Quat.prototype.sIdentity()
+        // const scale = new JOLT.Vec3(1, 1, 1)
+        // const biggest = JOLT.AABox.prototype.sBiggest()
 
-            const body = World.physicsSystem.getBody(bodyId)!
-            const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
-
-            const shape = body.GetShape()
-            const scale = new JOLT.Vec3(1, 1, 1)
-            const biggest = JOLT.AABox.prototype.sBiggest()
-
-            const identity = JOLT.Quat.prototype.sIdentity()
-            const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
-
-            try {
-                const vertices = new Float32Array(
-                    // I don't think anything needs to be freed here
-                    JOLT.HEAP32.buffer,
-                    triangleContext.GetVerticesData(),
-                    triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
-                )
-
-                for (let i = 0; i < vertices.length; i += 3) {
-                    const vertex = new THREE.Vector3(vertices[i], vertices[i + 1], vertices[i + 2])
-
-                    vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
-
-                    unrotatedBox.expandByPoint(vertex)
-                }
-            } finally {
-                JOLT.destroy(triangleContext)
-                JOLT.destroy(scale)
-                JOLT.destroy(biggest)
-                JOLT.destroy(identity)
+        this.mirabufInstance.batches.forEach(mesh => {
+            const alignedBox = mesh.boundingBox!
+            if (alignedBox) {
+                alignedBox?.applyMatrix4(inverseRotation)
+                unrotatedBox.union(alignedBox)
             }
         })
 
+        // this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
+        //     const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
+        //     if (!bodyId) return
+        //
+        //     const body = World.physicsSystem.getBody(bodyId)!
+        //     const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+        //
+        //     const vertexTransform = new THREE.Matrix4()
+        //     vertexTransform.multiplyMatrices(bodyTransform, inverseRotation)
+        //
+        //     const shape = body.GetShape()
+        //     const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
+        //
+        //     const vertices = triangleContext.GetVerticesData()
+        //     for (let i = 0; i < vertices.length; i += 3) {
+        //         const vertex = new THREE.Vector3(vertices[i], vertices[i + 1], vertices[i + 2])
+        //
+        //         vertex.applyMatrix4(vertexTransform)
+        //         unrotatedBox.expandByPoint(vertex)
+        //     }
+        //     JOLT.destroy(triangleContext)
+        // })
+        //
+        // JOLT.destroy(identity)
+        // JOLT.destroy(scale)
+        // JOLT.destroy(biggest)
+        //
         // Fallback if no vertices were processed
         if (unrotatedBox.isEmpty()) {
             console.warn("Could not process physics shapes, using regular dimensions")
