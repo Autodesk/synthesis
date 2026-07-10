@@ -2,7 +2,6 @@ import type React from "react"
 import { useMemo, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
@@ -29,11 +28,11 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
 
     const behaviors = useMemo<SequentialBehaviorPreferences[]>(
         () =>
-            PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
+            selectedRobot.robotPreferences.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
-        [selectedRobot.assemblyName, selectedRobot.brain]
+        [selectedRobot.robotPreferences, selectedRobot.brain]
     )
 
     const options = useMemo(
@@ -56,8 +55,8 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
                     robot={selectedRobot}
                     group={selectedGroup.group}
                     saveBehaviors={() => {
-                        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
-                        PreferencesSystem.savePreferences()
+                        selectedRobot.robotPreferences.sequentialConfig = behaviors
+                        selectedRobot.savePreferences()
                     }}
                 />
             )}

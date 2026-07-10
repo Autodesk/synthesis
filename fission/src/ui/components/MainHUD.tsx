@@ -208,12 +208,14 @@ const MainHUD: React.FC = () => {
                     >
                         Configure Camera
                     </MainHUDButton>
-                    <MainHUDButton
-                        startIcon={<SynthesisIcons.CODE_SQUARE />}
-                        onClick={() => openPanel(DeveloperToolPanel, undefined)}
-                    >
-                        Developer Tool
-                    </MainHUDButton>
+                    {import.meta.env.DEV && (
+                        <MainHUDButton
+                            startIcon={<SynthesisIcons.CODE_SQUARE />}
+                            onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                        >
+                            Developer Tool
+                        </MainHUDButton>
+                    )}
                     <MainHUDButton
                         startIcon={<SynthesisIcons.BUG />}
                         onClick={() => {

@@ -8,7 +8,6 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
@@ -78,7 +77,7 @@ function save(
 
     selectedRobot.ejectorPreferences.ejectOrder = ejectOrder!
 
-    PreferencesSystem.savePreferences()
+    selectedRobot.savePreferences()
 }
 
 interface ConfigEjectorProps {

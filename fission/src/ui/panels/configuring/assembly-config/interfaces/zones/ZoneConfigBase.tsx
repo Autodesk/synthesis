@@ -7,7 +7,6 @@ import EventSystem from "@/systems/EventSystem.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
@@ -147,7 +146,7 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
 
             applyExtrasOnSave(selectedZone)
             attachAndPersistZone(selectedZone, selectedField)
-            PreferencesSystem.savePreferences()
+            selectedField.savePreferences()
             saveAllZones?.()
         }
     }, [
