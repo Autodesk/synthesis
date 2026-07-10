@@ -30,6 +30,7 @@ export enum ConfigMode {
     CONTROLS,
     SCORING_ZONES,
     PROTECTED_ZONES,
+    CAMERA_POINTS,
     MOVE,
     SIM,
     BRAIN,
