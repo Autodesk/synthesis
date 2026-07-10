@@ -476,9 +476,9 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     )}
                     {configMode === undefined && selectedAssembly !== undefined && (
                         <>
-                            {Spacer(16, 0)}
+                            <Spacer height={16} />
                             <AssemblyExportButton selectedAssembly={selectedAssembly} />
-                            {Spacer(16, 0)}
+                            <Spacer height={16} />
                             <Button
                                 className={"w-full"}
                                 color={"warning"}
@@ -492,7 +492,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                                 }}
                             >
                                 Reset
-                                {Spacer(0, 5)}
+                                <Spacer width={5} />
                                 <FaArrowsRotate />
                             </Button>
                         </>

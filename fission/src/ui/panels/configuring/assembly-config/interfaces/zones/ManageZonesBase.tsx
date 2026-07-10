@@ -96,15 +96,19 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                                     {item.pointsLabel ? <Label size="sm">{item.pointsLabel}</Label> : null}
                                 </Stack>
                                 <Stack direction={"column"} gap={1} justifyContent={"space-evenly"} ml={"auto"}>
-                                    {EditButton(() => {
-                                        selectZone(zonePrefs)
-                                        saveZonesGeneric(zones, selectedField, persistZones)
-                                    })}
-                                    {DeleteButton(() => {
-                                        const newZones = zones.filter((_, idx) => idx !== i)
-                                        setZones(newZones)
-                                        saveZonesGeneric(newZones, selectedField, persistZones)
-                                    })}
+                                    <EditButton
+                                        onClick={() => {
+                                            selectZone(zonePrefs)
+                                            saveZonesGeneric(zones, selectedField, persistZones)
+                                        }}
+                                    />
+                                    <DeleteButton
+                                        onClick={() => {
+                                            const newZones = zones.filter((_, idx) => idx !== i)
+                                            setZones(newZones)
+                                            saveZonesGeneric(newZones, selectedField, persistZones)
+                                        }}
+                                    />
                                 </Stack>
                             </Stack>
                         </Box>

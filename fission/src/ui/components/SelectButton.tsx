@@ -69,10 +69,10 @@ const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, 
 
     return (
         <Stack direction="row">
-            {LabelWithTooltip(
-                "Select parent node",
-                "Select the parent node for this object to follow. Click the button below, then click a part of the robot or field."
-            )}
+            <LabelWithTooltip
+                labelText="Select parent node"
+                tooltipText="Select the parent node for this object to follow. Click the button below, then click a part of the robot or field."
+            />
             <Button
                 sx={{ bgcolor: color }}
                 onClick={() => {

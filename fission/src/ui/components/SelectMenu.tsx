@@ -71,11 +71,11 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
             </Button>
 
             {/* Button used for selecting a parent (shows up as an outline) */}
-            {value.tooltipText && CustomTooltip(value.tooltipText)}
+            {value.tooltipText && <CustomTooltip text={value.tooltipText} />}
             {/** Delete button only if onDelete is defined */}
             {onDelete && includeDelete && !value.disabled && (
                 <>
-                    {Spacer(0, 10)}
+                    <Spacer width={10} />
                     {/*DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")&*/}
                     <Button color="error" onClick={() => onDelete?.()} id="select-menu-delete-button">
                         <SynthesisIcons.DELETE_LARGE />
@@ -153,7 +153,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 label={selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
             />
             <Divider />
-            {Spacer(12)}
+            <Spacer height={12} />
 
             {selectedOption === undefined && (
                 <>
