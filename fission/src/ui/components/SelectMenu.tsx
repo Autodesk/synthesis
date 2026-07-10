@@ -78,7 +78,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                     {Spacer(0, 10)}
                     {/*DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")&*/}
                     <Button color="error" onClick={() => onDelete?.()} id="select-menu-delete-button">
-                        {SynthesisIcons.DELETE_LARGE}
+                        <SynthesisIcons.DELETE_LARGE />
                     </Button>
                 </>
             )}
@@ -155,7 +155,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                         id="select-menu-back-button"
                         sx={{ mr: 1 }}
                     >
-                        {SynthesisIcons.LEFT_ARROW_LARGE}
+                        <SynthesisIcons.LEFT_ARROW_LARGE />
                     </IconButton>
                 )}
 
@@ -203,7 +203,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                                 onClick={onAddClicked}
                                 id="select-menu-add-button"
                             >
-                                {SynthesisIcons.ADD_LARGE}
+                                <SynthesisIcons.ADD_LARGE />
                             </Button>
                         )}
                     </Stack>

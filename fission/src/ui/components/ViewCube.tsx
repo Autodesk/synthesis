@@ -106,7 +106,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 y: prev.y + Math.abs(deltaY),
             }))
 
-            const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
+            const sensitivity = PreferencesSystem.getUserPreference("ViewCubeRotationSensitivity")
 
             const controls = World.sceneRenderer.currentCameraControls
             if (controls instanceof CustomTargetControls) {
