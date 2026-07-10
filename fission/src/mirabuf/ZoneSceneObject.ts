@@ -92,13 +92,13 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (!this.mesh) return
         if (this.bounding) JOLT.destroy(this.bounding)
 
-        const halfExtents = convertThreeVector3ToJoltVec3(props.scale).Div(2)
-        const transformMatrix = new JOLT.Mat44().sRotationTranslation(
+        const halfExtent = convertThreeVector3ToJoltVec3(props.scale).Div(2)
+        const transform = new JOLT.Mat44().sRotationTranslation(
             convertThreeQuaternionToJoltQuat(props.rotation),
             convertThreeVector3ToJoltVec3(props.translation)
         )
 
-        this.bounding = new JOLT.OrientedBox(transformMatrix, halfExtents)
+        this.bounding = new JOLT.OrientedBox(transform, halfExtent)
     }
 
     private setMeshProperties(props: VisualProperties) {

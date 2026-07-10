@@ -1006,7 +1006,6 @@ class PhysicsSystem extends WorldSystem {
             for (let i = 0; i < verts.length; i += 3) {
                 const vert = convertMirabufFloatToArrJoltVec3(verts, i)
                 points.push_back(vert)
-                this.updateMinMaxBounds(vert, min, max)
             }
         })
 

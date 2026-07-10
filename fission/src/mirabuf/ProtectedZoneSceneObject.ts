@@ -9,7 +9,7 @@ import { ContactType } from "./ZoneTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { findListDifference, forPair } from "@/util/Utility"
+import { findListDifference, forPair, renderOrientedBox } from "@/util/Utility"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
 type RobotBox = [MirabufSceneObject, Jolt.OrientedBox]
@@ -31,6 +31,8 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
     private _lastRobotCollisionTime: number = 0
+
+    private robotBounding: THREE.Mesh[] = []
 
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
         return { red: ProtectedZoneSceneObject.redMaterial, blue: ProtectedZoneSceneObject.blueMaterial }
@@ -54,14 +56,13 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
         const robots = World.sceneRenderer.mirabufSceneObjects
             .getRobots()
-            .map(robot => [robot, robot.getBounding()] as RobotBox)
+            .map(robot => [robot, robot.getOrientedBoundingBox()] as RobotBox)
+
+        this.robotBounding?.forEach(m => World.sceneRenderer.removeObject(m))
+        this.robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
 
         const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
         const oldRobotsInZone = [...this._robotsInside.keys()]
-
-        if (robotsInZone.length > 0) {
-            console.log(`Robots in Zone: ${robotsInZone.length}`)
-        }
 
         const { added, removed } = findListDifference(
             oldRobotsInZone,
