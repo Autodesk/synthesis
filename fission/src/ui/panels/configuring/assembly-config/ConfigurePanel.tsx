@@ -374,17 +374,20 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         "Configure the robot’s ejector mechanism, which controls the release or expulsion of game pieces."
                     ),
 
-                    new ConfigModeSelectionOption(
-                        "Configure Joints",
-                        ConfigMode.SUBSYSTEMS,
-                        "Set the velocities, torques, and accelerations of your robot's motors."
-                    ),
-
-                    new ConfigModeSelectionOption(
-                        "Sequence Joints",
-                        ConfigMode.SEQUENTIAL,
-                        "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
-                    ),
+                    ...(selectedAssembly?.brain?.brainType === "synthesis"
+                        ? [
+                              new ConfigModeSelectionOption(
+                                  "Configure Joints",
+                                  ConfigMode.SUBSYSTEMS,
+                                  "Set the velocities, torques, and accelerations of your robot's motors."
+                              ),
+                              new ConfigModeSelectionOption(
+                                  "Sequence Joints",
+                                  ConfigMode.SEQUENTIAL,
+                                  "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+                              ),
+                          ]
+                        : []),
 
                     new ConfigModeSelectionOption(
                         "Alliance / Station",
