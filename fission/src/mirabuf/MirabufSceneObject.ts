@@ -208,8 +208,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const obb = convertAABBToOBB(aabb)
 
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        const transform = rootBody.GetWorldTransform()
-        obb.set_mOrientation(transform.ToMat44())
+        const rotation = rootBody.GetWorldTransform().GetRotation()
+        obb.set_mOrientation(rotation)
 
         JOLT.destroy(aabb)
 

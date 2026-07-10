@@ -59,6 +59,10 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
         const oldRobotsInZone = [...this._robotsInside.keys()]
 
+        if (robotsInZone.length > 0) {
+            console.log(`Robots in Zone: ${robotsInZone.length}`)
+        }
+
         const { added, removed } = findListDifference(
             oldRobotsInZone,
             robotsInZone.map(([robot, _]) => robot)
@@ -90,10 +94,10 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
         const checkCollision = ([robot1, bounding1]: RobotBox, [robot2, bounding2]: RobotBox) => {
             if (robot1.alliance === robot2.alliance) return
+            if (isDuplicateCollision(robot1, robot2)) return
 
             const collided = bounding1.OverlapsOrientedBox(bounding2)
             if (!collided) return
-            if (isDuplicateCollision(robot1, robot2)) return
 
             collisions.push([robot1, robot2])
         }
