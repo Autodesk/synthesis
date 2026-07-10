@@ -138,7 +138,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             tooltip="Controls how fast the scene pans when dragging with the right mouse button."
             showValue={false}
         />
-        {Spacer(5)}
+        <Spacer height={5} />
         <StatefulSlider
             min={0.06}
             max={6.0}

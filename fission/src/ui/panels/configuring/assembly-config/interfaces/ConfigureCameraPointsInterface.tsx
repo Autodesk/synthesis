@@ -68,15 +68,19 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, points, onChange, on
                             >
                                 <Label size="sm">{p.name}</Label>
                                 <Stack direction="row-reverse" gap="0.25rem" alignItems="center">
-                                    {EditButton(() => {
-                                        saveEvent()
-                                        onEdit(i)
-                                    })}
-                                    {DeleteButton(() => {
-                                        const next = points.filter((_, idx) => idx !== i)
-                                        onChange(next)
-                                        persist(next, selectedField)
-                                    })}
+                                    <EditButton
+                                        onClick={() => {
+                                            saveEvent()
+                                            onEdit(i)
+                                        }}
+                                    />
+                                    <DeleteButton
+                                        onClick={() => {
+                                            const next = points.filter((_, idx) => idx !== i)
+                                            onChange(next)
+                                            persist(next, selectedField)
+                                        }}
+                                    />
                                 </Stack>
                             </Stack>
                         ))}
@@ -85,7 +89,7 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, points, onChange, on
             ) : (
                 <Label size="sm">No camera positions</Label>
             )}
-            {AddButton(onAdd)}
+            <AddButton onClick={onAdd} />
         </>
     )
 }
