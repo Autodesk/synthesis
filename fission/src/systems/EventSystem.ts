@@ -7,6 +7,7 @@ import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes.ts"
 import type { CurrentContactData, OnContactValidateData } from "@/systems/physics/ContactEvents.ts"
 import type TaskStatus from "@/util/TaskStatus.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import type { CameraPoint } from "@/systems/preferences/PreferenceTypes.ts"
 
 interface EventDataMap {
     // Mirabuf
@@ -51,6 +52,10 @@ interface EventDataMap {
 
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }
+    // Field View: the active camera point changed (the selected point, or undefined when none).
+    CameraViewChangedEvent: { point: CameraPoint | undefined; focusedRobotId?: number }
+    // The active camera control scheme changed (e.g. "Target" or "FieldView").
+    CameraControlsTypeChangedEvent: { controlsType: string }
 
     APSUserInfoUpdate: never
 

@@ -287,7 +287,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             {/* Checkbox for showing intake zone indicator at all times */}
             <Checkbox label="Show intake zone indicator always" checked={showZoneAlways} onClick={setShowZoneAlways} />
             {gizmoComponent}
-            {Spacer(10)}
+            <Spacer height={10} />
             <Button
                 onClick={() => {
                     if (gizmoRef.current) {

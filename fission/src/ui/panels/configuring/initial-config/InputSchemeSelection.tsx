@@ -1,5 +1,5 @@
 import { Box, Divider, FormControl, InputLabel, MenuItem, Stack, Tooltip } from "@mui/material"
-import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
+import { type ReactElement, useCallback, useEffect, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
@@ -12,11 +12,108 @@ import {
     Button,
     DeleteButton,
     EditButton,
-    PositiveButton,
     SynthesisIcons,
     Select,
+    PositiveButton,
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+
+interface SchemeSelectorProps {
+    scheme: InputScheme
+    status?: InputSchemeUseType
+    panelId?: string
+    brainIndex: number
+
+    message: string
+    disabled?: boolean
+    conflict?: boolean
+
+    onSelect?: () => void
+    onEdit?: () => void
+}
+
+const SchemeSelector: React.FC<SchemeSelectorProps> = ({
+    scheme,
+    status,
+    panelId,
+    brainIndex,
+    message,
+    disabled = false,
+    conflict = false,
+    onSelect,
+    onEdit,
+}): ReactElement | null => {
+    const { setSelectedScheme } = useStateContext()
+
+    if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
+    return (
+        <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
+            <Stack
+                direction="row"
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                gap={"1rem"}
+                key={scheme.schemeName}
+            >
+                <Label size="sm">
+                    {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
+                </Label>
+                <Stack direction="row-reverse" gap="0.25rem" justifyContent={"center"} alignItems={"center"}>
+                    {/** Select button */}
+                    <Box>
+                        <PositiveButton
+                            style={conflict ? { filter: "brightness(60%)" } : {}}
+                            disabled={disabled}
+                            onClick={() => {
+                                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
+                                // Ensure touch controls are shown when a touch scheme is selected
+                                if (scheme.usesTouchControls) {
+                                    EventSystem.dispatch("SetTouchControlsVisibilityEvent", true)
+                                }
+                                EventSystem.dispatch("InputSchemeChanged", { panelId })
+                                onSelect?.()
+                            }}
+                        >
+                            <SynthesisIcons.SELECT_LARGE />
+                        </PositiveButton>
+                    </Box>
+                    {/** Edit button - same as select but opens the inputs modal */}
+                    <EditButton
+                        onClick={() => {
+                            InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
+
+                            setSelectedScheme(scheme)
+                            onEdit?.()
+                        }}
+                    />
+
+                    {/** Delete button (only if the scheme is customized and not in use) */}
+                    {scheme.customized && status !== InputSchemeUseType.IN_USE && (
+                        <DeleteButton
+                            onClick={() => {
+                                // Fetch current custom schemes
+                                InputSchemeManager.saveSchemes(panelId)
+                                InputSchemeManager.resetDefaultSchemes(panelId)
+                                const schemes = PreferencesSystem.getUserPreference("InputSchemes")
+
+                                // Find and remove this input scheme
+                                const index = schemes.indexOf(scheme)
+                                schemes.splice(index, 1)
+
+                                // Save to preferences
+                                PreferencesSystem.setUserPreference("InputSchemes", schemes)
+                                PreferencesSystem.savePreferences()
+
+                                // Update the available schemes list to reflect the deletion
+                                EventSystem.dispatch("InputSchemeChanged", { panelId })
+                            }}
+                        />
+                    )}
+                </Stack>
+            </Stack>
+        </Tooltip>
+    )
+}
 
 interface InputSchemeSelectionProps {
     brainIndex: number
@@ -34,7 +131,6 @@ export default function InputSchemeSelection({
     panelId,
 }: InputSchemeSelectionProps) {
     const { setSelectedScheme } = useStateContext()
-    const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
     )
@@ -56,81 +152,6 @@ export default function InputSchemeSelection({
         return EventSystem.listen("InputSchemeChanged", () => refreshAvailableSchemes())
     }, [refreshAvailableSchemes])
 
-    const SchemeSelector = (
-        scheme: InputScheme,
-        style: React.CSSProperties,
-        message: string,
-        disabled: boolean = false,
-        status?: InputSchemeUseType
-    ): ReactElement | null => {
-        if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
-        return (
-            <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
-                <Stack
-                    direction="row"
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                    gap={"1rem"}
-                    key={scheme.schemeName}
-                >
-                    <Label size="sm">
-                        {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
-                    </Label>
-                    <Stack direction="row-reverse" gap="0.25rem" justifyContent={"center"} alignItems={"center"}>
-                        {/** Select button */}
-                        <Box sx={style}>
-                            <PositiveButton
-                                disabled={disabled}
-                                onClick={() => {
-                                    InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
-                                    // TODO: if touch controls, then ensure that they are enabled.
-                                    if (scheme.usesTouchControls) {
-                                        EventSystem.dispatch("SetTouchControlsVisibilityEvent", true)
-                                    }
-                                    EventSystem.dispatch("InputSchemeChanged", { panelId })
-                                    onSelect?.()
-                                    update()
-                                }}
-                            >
-                                <SynthesisIcons.SELECT_LARGE />
-                            </PositiveButton>
-                        </Box>
-                        {/** Edit button - same as select but opens the inputs modal */}
-                        {EditButton(() => {
-                            InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
-
-                            setSelectedScheme(scheme)
-                            onEdit?.()
-                        })}
-
-                        {/** Delete button (only if the scheme is customized and not in use) */}
-                        {scheme.customized && status !== InputSchemeUseType.IN_USE ? (
-                            DeleteButton(() => {
-                                // Fetch current custom schemes
-                                InputSchemeManager.saveSchemes(panelId)
-                                InputSchemeManager.resetDefaultSchemes(panelId)
-                                const schemes = PreferencesSystem.getUserPreference("InputSchemes")
-
-                                // Find and remove this input scheme
-                                const index = schemes.indexOf(scheme)
-                                schemes.splice(index, 1)
-
-                                // Save to preferences
-                                PreferencesSystem.setUserPreference("InputSchemes", schemes)
-                                PreferencesSystem.savePreferences()
-
-                                // Update the available schemes list to reflect the deletion
-                                EventSystem.dispatch("InputSchemeChanged", { panelId })
-                                update()
-                            })
-                        ) : (
-                            <></>
-                        )}
-                    </Stack>
-                </Stack>
-            </Tooltip>
-        )
-    }
     return (
         <>
             {/** A scroll view with buttons to select default and custom input schemes */}
@@ -172,31 +193,59 @@ export default function InputSchemeSelection({
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
                     .map(scheme => {
-                        return SchemeSelector(scheme.scheme, {}, "Available", false, scheme.status)
+                        return (
+                            <div key={`avaiable-${scheme.scheme.schemeName}`}>
+                                <SchemeSelector
+                                    scheme={scheme.scheme}
+                                    status={scheme.status}
+                                    panelId={panelId}
+                                    brainIndex={brainIndex}
+                                    message="Available"
+                                    onEdit={onEdit}
+                                    onSelect={onSelect}
+                                />
+                            </div>
+                        )
                     })}
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
                     .map((scheme, i) => {
                         return (
-                            <div key={`conflict-${scheme.scheme.schemeName}`}>
+                            <>
                                 {i == 0 && <Divider />}
-                                {SchemeSelector(
-                                    scheme.scheme,
-                                    { filter: "brightness(60%)" },
-                                    "Conflicts with " + scheme.conflictingSchemeNames,
-                                    false
-                                )}
-                            </div>
+                                <div key={`conflict-${scheme.scheme.schemeName}`}>
+                                    <SchemeSelector
+                                        scheme={scheme.scheme}
+                                        panelId={panelId}
+                                        brainIndex={brainIndex}
+                                        message={"Conflicts with " + scheme.conflictingSchemeNames}
+                                        conflict={true}
+                                        onEdit={onEdit}
+                                        onSelect={onSelect}
+                                    />
+                                </div>
+                            </>
                         )
                     })}
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
                     .map((scheme, i) => {
                         return (
-                            <div key={`in-use-${scheme.scheme.schemeName}`}>
+                            <>
                                 {i == 0 && <Divider />}
-                                {SchemeSelector(scheme.scheme, {}, "In Use", true, scheme.status)}
-                            </div>
+                                <div key={`in-use-${scheme.scheme.schemeName}`}>
+                                    <SchemeSelector
+                                        scheme={scheme.scheme}
+                                        status={scheme.status}
+                                        panelId={panelId}
+                                        brainIndex={brainIndex}
+                                        message="In Use"
+                                        disabled={true}
+                                        onEdit={onEdit}
+                                        onSelect={onSelect}
+                                    />
+                                </div>
+                            </>
                         )
                     })}
             </>
