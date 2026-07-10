@@ -70,10 +70,6 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             return overlaps
         })
 
-        if (gamePiecesContacting.length > 0) {
-            console.log(`Game Pieces Contacting ${gamePiecesContacting.length}`)
-        }
-
         const { added, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
 
         added.forEach(gpID => this.zoneCollision(gpID))

@@ -92,7 +92,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (!this.mesh) return
         if (this.bounding) JOLT.destroy(this.bounding)
 
-        const halfExtents = convertThreeVector3ToJoltVec3(props.scale.divideScalar(2))
+        const halfExtents = convertThreeVector3ToJoltVec3(props.scale).Div(2)
         const transformMatrix = new JOLT.Mat44().sRotationTranslation(
             convertThreeQuaternionToJoltQuat(props.rotation),
             convertThreeVector3ToJoltVec3(props.translation)
@@ -136,17 +136,15 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
      * Returns `undefined` when the visual properties for this zone have not changed
      */
     private generateVisualProperties(): VisualProperties | undefined {
-        // Update translation, rotation, and scale only if the field has moved
+        // `GetWorldTransform` returns a reference, destroying it causes a memory out of bounds later
         const newTransform = World.physicsSystem.getBody(this.parentBodyId!)!.GetWorldTransform()
         const transformHasNotUpdated =
             this._cachedFieldTransformation && newTransform.Equals(this._cachedFieldTransformation)
 
+        // Update translation, rotation, and scale only if the field has moved
         if (transformHasNotUpdated && !this._deltaTransHasUpdated) return undefined
 
-        if (this._cachedFieldTransformation) {
-            JOLT.destroy(this._cachedFieldTransformation)
-        }
-
+        if (this._cachedFieldTransformation) JOLT.destroy(this._cachedFieldTransformation)
         this._cachedFieldTransformation = newTransform
         this._deltaTransHasUpdated = false
 

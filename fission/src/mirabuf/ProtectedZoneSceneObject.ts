@@ -91,7 +91,6 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         const checkCollision = ([robot1, bounding1]: RobotBox, [robot2, bounding2]: RobotBox) => {
             if (robot1.alliance === robot2.alliance) return
 
-            console.log(`bounding1: ${JSON.stringify(bounding1)}`)
             const collided = bounding1.OverlapsOrientedBox(bounding2)
             if (!collided) return
             if (isDuplicateCollision(robot1, robot2)) return
