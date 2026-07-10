@@ -30,6 +30,9 @@ const mockSceneRenderer = {
     scene: {
         remove: vi.fn(),
     },
+    addObject: vi.fn(),
+    removeObject: vi.fn(),
+
     mirabufSceneObjects: {
         getField: vi.fn(),
         getRobots: vi.fn(),
@@ -88,7 +91,7 @@ describe("ProtectedZoneSceneObject", () => {
         const robot = {
             miraType: MiraType.ROBOT,
             alliance,
-            getBounding: vi.fn(
+            getOrientedBoundingBox: vi.fn(
                 alliance === "red"
                     ? () => convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(1, 1, 1)))
                     : () => convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(2, 1, 1)))
