@@ -16,7 +16,6 @@ class SwerveDriveBehavior extends DriveBehavior {
     private _wheels: WheelDriver[]
     private _hinges: HingeDriver[]
     private _brainIndex: number
-    private _assemblyName: string
 
     private _forwardSpeed = 30
     private _strafeSpeed = 30
@@ -32,14 +31,13 @@ class SwerveDriveBehavior extends DriveBehavior {
         wheelStimuli: WheelRotationStimulus[],
         hingeStimuli: HingeStimulus[],
         brainIndex: number,
-        assemblyName: string
+        private readonly _assemblyId: string
     ) {
         super((wheels as Driver[]).concat(hinges), (wheelStimuli as Stimulus[]).concat(hingeStimuli))
 
         this._wheels = wheels
         this._hinges = hinges
         this._brainIndex = brainIndex
-        this._assemblyName = assemblyName
 
         hinges.forEach(h => {
             h.controlMode = DriverControlMode.POSITION
@@ -61,7 +59,7 @@ class SwerveDriveBehavior extends DriveBehavior {
         return [...World.sceneRenderer.sceneObjects.entries()]
             .filter(x => x[1] instanceof MirabufSceneObject)
             .map(x => x[1] as MirabufSceneObject)
-            .find(o => o.assemblyName == this._assemblyName)
+            .find(o => o.assemblyId == this._assemblyId)
             ?.getRootNodeId()
     }
 

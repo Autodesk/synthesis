@@ -71,7 +71,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                                     update()
                                 }}
                             >
-                                {SynthesisIcons.SELECT_LARGE}
+                                <SynthesisIcons.SELECT_LARGE />
                             </PositiveButton>
                         </Box>
                     </Stack>
