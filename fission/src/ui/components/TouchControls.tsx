@@ -24,13 +24,12 @@ const TouchControls: React.FC = () => {
             })
         })
 
-        const setVisibilityUnsubscriber = EventSystem.listen("SetTouchControlsVisibilityEvent", (visible: unknown) => {
+        const setVisibilityUnsubscriber = EventSystem.listen("SetTouchControlsVisibilityEvent", (visible: boolean) => {
             setIsJoystickVisible(prev => {
-                const next = visible as boolean
-                if (prev === next) return prev
-                PreferencesSystem.setUserPreference("TouchControls", next)
+                if (prev === visible) return prev
+                PreferencesSystem.setUserPreference("TouchControls", visible)
                 PreferencesSystem.savePreferences()
-                return next
+                return visible
             })
         })
 
