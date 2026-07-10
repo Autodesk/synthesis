@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import EventSystem from "@/systems/EventSystem"
 import World from "../World"
 import type ScreenInteractionHandler from "./ScreenInteractionHandler"
 import {
@@ -12,7 +13,13 @@ import {
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
 
-export type CameraControlsType = "Orbit"
+export type CameraControlsType = "Target"
+
+export enum CameraMode {
+    Follow = "Follow",
+    Locked = "Locked",
+    Face = "Face",
+}
 
 export abstract class CameraControls {
     private _controlsType: CameraControlsType
@@ -47,6 +54,7 @@ const CO_MAX_PHI = Math.PI / 2.1
 const CO_MIN_PHI = -Math.PI / 2.1
 
 const CO_SENSITIVITY_ZOOM = 4.0
+const CO_FACE_ZOOM_SENSITIVITY = 0.4
 
 const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0
@@ -68,7 +76,6 @@ function augmentMovement(
     originalMovement: [number, number]
 ): [number, number] {
     const aspect = (camera as THREE.PerspectiveCamera)?.aspect ?? 1.0
-    // const aspect = 1.0
     const fov: number | undefined = (camera as THREE.PerspectiveCamera)?.getEffectiveFOV()
     if (fov) {
         const res: [number, number] = [
@@ -85,7 +92,35 @@ function augmentMovement(
     }
 }
 
-export class CustomOrbitControls extends CameraControls {
+function easeInOutCubic(t: number): number {
+    return t < 0.5 ? 4 * Math.pow(t, 3) : 1 - Math.pow(2 - 2 * t, 3) / 2
+}
+
+/**
+ * Interpolates between two rotation/translation matrices
+ * Position is lerped and rotation is slerped
+ */
+function blendTransforms(out: THREE.Matrix4, start: THREE.Matrix4, end: THREE.Matrix4, t: number): void {
+    const startPos = new THREE.Vector3()
+    const startRot = new THREE.Quaternion()
+    const endPos = new THREE.Vector3()
+    const endRot = new THREE.Quaternion()
+    const scratch = new THREE.Vector3()
+
+    start.decompose(startPos, startRot, scratch)
+    end.decompose(endPos, endRot, scratch)
+
+    out.compose(startPos.lerp(endPos, t), startRot.slerp(endRot, t), new THREE.Vector3(1, 1, 1))
+}
+
+/** Tracks an in-progress smooth re-settle of the camera onto its focus provider. */
+interface FocusBlend {
+    progress: number
+    duration: number
+    startFocus: THREE.Matrix4
+}
+
+export class CustomTargetControls extends CameraControls {
     private _enabled = true
 
     private _mainCamera: THREE.Camera
@@ -97,7 +132,73 @@ export class CustomOrbitControls extends CameraControls {
 
     private _focusProvider: MirabufSceneObject | undefined
     private _isExplicitlyUnfocused: boolean = false
-    public locked: boolean
+    private _pendingResync: THREE.Vector3 | undefined
+    private _focusBlend: FocusBlend | undefined
+
+    private _mode: CameraMode = CameraMode.Follow
+    private _focusPosition: THREE.Vector3 = new THREE.Vector3()
+
+    public get isFocusedOnRobot(): boolean {
+        return this._focusProvider?.miraType === MiraType.ROBOT
+    }
+
+    public get mode(): CameraMode {
+        return this._mode
+    }
+
+    public set mode(val: CameraMode) {
+        if (val === this._mode) return
+
+        if (val === CameraMode.Face && this._focusProvider?.miraType === MiraType.FIELD) return
+
+        this._mode = val
+        EventSystem.dispatch("CameraModeChangedEvent", { mode: val })
+
+        if (val === CameraMode.Face) {
+            // Face mode drives the camera directly and ignores target coords
+            this._pendingResync = undefined
+            this._focusPosition.copy(this._mainCamera.position)
+        } else {
+            this.syncCoordsFromWorldPos(this._mainCamera.position)
+        }
+    }
+
+    /**
+     * Recalculates target coords so the camera stays at worldPos after the focus changes.
+     * In Locked mode uses robot-local space. in Follow/Face uses world-space offset from focus.
+     */
+    private syncCoordsFromWorldPos(worldPos: THREE.Vector3): void {
+        const ref =
+            this._mode === CameraMode.Locked && this._focusProvider
+                ? worldPos.clone().applyMatrix4(new THREE.Matrix4().copy(this._focus).invert())
+                : worldPos.clone().sub(new THREE.Vector3().setFromMatrixPosition(this._focus))
+
+        const r = ref.length()
+        if (r < 0.01) return
+
+        this.setImmediateCoordinates({
+            theta: Math.atan2(ref.x, ref.z),
+            phi: -Math.asin(THREE.MathUtils.clamp(ref.y / r, -1, 1)),
+            r,
+        })
+    }
+
+    private onFocusProviderChanged(): void {
+        EventSystem.dispatch("CameraFocusChangedEvent", { focusProvider: this._focusProvider })
+
+        if (!this._focusProvider) return
+
+        if (this._focusProvider.miraType === MiraType.FIELD && this._mode === CameraMode.Face) {
+            // Don't allow Face mode for fields, default back to Follow mode
+            this.mode = CameraMode.Follow
+        }
+
+        if (this._mode !== CameraMode.Face) {
+            // Capture the camera's current world position.
+            // The coord re-sync is deferred to update() so it runs after _focus is refreshed
+            this._pendingResync = this._mainCamera.position.clone()
+        }
+    }
 
     private _interactionHandler: ScreenInteractionHandler
 
@@ -113,10 +214,12 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public set focusProvider(provider: MirabufSceneObject | undefined) {
+        if (provider === this._focusProvider) return
         this._focusProvider = provider
         if (provider !== undefined) {
             this._isExplicitlyUnfocused = false
         }
+        this.onFocusProviderChanged()
     }
     public get focusProvider() {
         return this._focusProvider
@@ -128,10 +231,42 @@ export class CustomOrbitControls extends CameraControls {
     public unfocus(): void {
         this._focusProvider = undefined
         this._isExplicitlyUnfocused = true
+        this.onFocusProviderChanged()
+
+        if (this._mode !== CameraMode.Follow) {
+            const worldPos =
+                this._mode === CameraMode.Face ? this._focusPosition.clone() : this._mainCamera.position.clone()
+            this.syncCoordsFromWorldPos(worldPos)
+        }
     }
 
     public get coords(): SphericalCoords {
         return this._coords
+    }
+
+    public get isBlendingFocus(): boolean {
+        return this._focusBlend !== undefined
+    }
+
+    /**
+     * Smoothly re-settles the camera onto a focus provider after that object has moved
+     *  - Follow: the focus point pans to the object's new position.
+     *  - Locked: position and rotation blend together, so the camera ends locked at the
+     *    same relative orientation it had before.
+     *  - Face: no blend is needed because the camera already tracks the object every frame.
+     */
+    public settleOntoFocus(target: MirabufSceneObject | undefined, duration: number = 1.0): void {
+        if (!target) return
+
+        // Attach directly (rather than via the focusProvider setter) so we skip the coord
+        // resync that would otherwise snap the camera and fight the blend.
+        this._focusProvider = target
+        this._isExplicitlyUnfocused = false
+        EventSystem.dispatch("CameraFocusChangedEvent", { focusProvider: target })
+
+        if (this._mode === CameraMode.Face) return
+
+        this._focusBlend = { progress: 0, duration, startFocus: this._focus.clone() }
     }
 
     public get focus(): THREE.Matrix4 {
@@ -143,12 +278,10 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
-        super("Orbit")
+        super("Target")
 
         this._mainCamera = mainCamera
         this._interactionHandler = interactionHandler
-
-        this.locked = false
 
         this._nextCoords = {
             theta: CO_DEFAULT_THETA,
@@ -188,18 +321,22 @@ export class CustomOrbitControls extends CameraControls {
      * If not, automatically finds a suitable replacement.
      */
     private validateFocusProvider(): void {
-        if (!World.sceneRenderer?.sceneObjects || World.dragModeSystem.isTransitioning) {
+        if (!World.sceneRenderer?.sceneObjects || this.isBlendingFocus) {
             return
         }
         const mirabufObjects = World.sceneRenderer.mirabufSceneObjects.getAll()
 
-        if (this._focusProvider) {
-            if (!mirabufObjects.includes(this._focusProvider)) {
-                this._focusProvider = this.findFallbackFocus(mirabufObjects)
+        const currentProviderMissing = this._focusProvider && !mirabufObjects.includes(this._focusProvider)
+        const needsFallback = currentProviderMissing || (!this._focusProvider && !this._isExplicitlyUnfocused)
+
+        if (needsFallback) {
+            const newProvider = this.findFallbackFocus(mirabufObjects)
+            if (newProvider !== undefined) {
+                this._focusProvider = newProvider
                 this._isExplicitlyUnfocused = false
+
+                this.onFocusProviderChanged()
             }
-        } else if (!this._isExplicitlyUnfocused) {
-            this._focusProvider = this.findFallbackFocus(mirabufObjects)
         }
     }
 
@@ -230,12 +367,18 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public interactionMove(move: InteractionMove) {
+        if (this._mode === CameraMode.Face) {
+            // Face mode drives the camera directly, so only zoom is allowed
+            if (move.scale) this.zoomFaceMode(move.scale)
+            return
+        }
+
         if (move.movement) {
             if (this._activePointerType == PRIMARY_MOUSE_INTERACTION) {
                 // Add the movement of the mouse to the _currentPos
                 this._nextCoords.theta -= move.movement[0]
                 this._nextCoords.phi -= move.movement[1]
-            } else if (this._activePointerType == SECONDARY_MOUSE_INTERACTION && !this.locked) {
+            } else if (this._activePointerType == SECONDARY_MOUSE_INTERACTION && this._mode !== CameraMode.Locked) {
                 this._focusProvider = undefined
 
                 const orientation = new THREE.Quaternion().setFromEuler(this._mainCamera.rotation)
@@ -257,6 +400,31 @@ export class CustomOrbitControls extends CameraControls {
         if (move.scale) {
             this._nextCoords.r += move.scale
         }
+    }
+
+    /**
+     * Zooms the fixed Face mode camera by moving it along its view axis toward or away from the robot.
+     * Sensitivity scales with distance so zoom feels consistent at any range.
+     */
+    private zoomFaceMode(scale: number): void {
+        const robotPos = new THREE.Vector3().setFromMatrixPosition(this._focus)
+        const offset = this._focusPosition.clone().sub(robotPos)
+        const distance = offset.length()
+        if (distance < 0.01) return
+
+        const newDistance = THREE.MathUtils.clamp(
+            distance * (1 + scale * CO_FACE_ZOOM_SENSITIVITY),
+            CO_MIN_ZOOM,
+            CO_MAX_ZOOM
+        )
+        this._focusPosition.copy(robotPos).addScaledVector(offset.divideScalar(distance), newDistance)
+    }
+
+    // Fixed camera position, always faces towards robot
+    private focusMode() {
+        const robotPos = new THREE.Vector3().setFromMatrixPosition(this._focus)
+        this._mainCamera.position.copy(this._focusPosition)
+        this._mainCamera.lookAt(robotPos)
     }
 
     public getCurrentCoordinates(): SphericalCoords {
@@ -303,12 +471,40 @@ export class CustomOrbitControls extends CameraControls {
         requestAnimationFrame(animate)
     }
 
+    private updateFocusTransform(deltaT: number): void {
+        if (!this._focusProvider) return
+
+        if (!this._focusBlend) {
+            this._focusProvider.loadFocusTransform(this._focus)
+            return
+        }
+
+        const target = new THREE.Matrix4()
+        this._focusProvider.loadFocusTransform(target)
+
+        this._focusBlend.progress += deltaT / this._focusBlend.duration
+        const t = easeInOutCubic(Math.min(this._focusBlend.progress, 1))
+        blendTransforms(this._focus, this._focusBlend.startFocus, target, t)
+
+        if (this._focusBlend.progress >= 1) this._focusBlend = undefined
+    }
+
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 
         this.validateFocusProvider()
 
-        if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
+        if (this.enabled) this.updateFocusTransform(deltaT)
+
+        if (this._pendingResync) {
+            this.syncCoordsFromWorldPos(this._pendingResync)
+            this._pendingResync = undefined
+        }
+
+        if (this._mode === CameraMode.Face && this._focusProvider) {
+            this.focusMode()
+            return
+        }
 
         // Generate delta of spherical coordinates
         const omega: SphericalCoords = this.enabled
@@ -319,8 +515,8 @@ export class CustomOrbitControls extends CameraControls {
               }
             : { theta: 0, phi: 0, r: 0 }
 
-        this._coords.theta += omega.theta * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
-        this._coords.phi += omega.phi * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
+        this._coords.theta += omega.theta * deltaT * PreferencesSystem.getUserPreference("SceneRotationSensitivity")
+        this._coords.phi += omega.phi * deltaT * PreferencesSystem.getUserPreference("SceneRotationSensitivity")
         this._coords.r += omega.r * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(this._coords.r, 1.4)
 
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, this._coords.phi))
@@ -334,7 +530,7 @@ export class CustomOrbitControls extends CameraControls {
                 )
             )
 
-        if (this.locked && this._focusProvider) {
+        if (this._mode === CameraMode.Locked && this._focusProvider) {
             deltaTransform.premultiply(this._focus)
         } else {
             const focusPosition = new THREE.Matrix4().copyPosition(this._focus)

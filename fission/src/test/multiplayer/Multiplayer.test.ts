@@ -28,7 +28,7 @@ describe("Multiplayer Tests", () => {
     afterEach(() => {
         multiplayer?.destroy()
         multiplayer = undefined
-        PreferencesSystem.setGlobalPreference("MultiplayerClientID", "")
+        PreferencesSystem.setUserPreference("MultiplayerClientID", "")
     })
 
     test("Multiplayer system connects to server", async () => {
@@ -49,7 +49,7 @@ describe("Multiplayer Tests", () => {
             expect(multiplayer).toBeDefined()
             const player1 = multiplayer!
 
-            PreferencesSystem.setGlobalPreference("MultiplayerClientID", "")
+            PreferencesSystem.setUserPreference("MultiplayerClientID", "")
             await MultiplayerSystem.setup(roomId, "User2", false)
             expect(multiplayer).toBeDefined()
             const player2 = multiplayer!
@@ -65,7 +65,7 @@ describe("Multiplayer Tests", () => {
             expect(multiplayer).toBeDefined()
             const player1 = multiplayer!
 
-            PreferencesSystem.setGlobalPreference("MultiplayerClientID", "")
+            PreferencesSystem.setUserPreference("MultiplayerClientID", "")
             await MultiplayerSystem.setup(altRoomId, "User2", true)
             expect(multiplayer).toBeDefined()
             const player2 = multiplayer!

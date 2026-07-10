@@ -6,7 +6,7 @@ import type { SimConfigData } from "../simulation/SimConfigShared"
 
 /** Names of all global preferences. */
 
-export type GlobalPreferences = {
+export type UserPreferences = {
     ZoomSensitivity: number
     PitchSensitivity: number
     YawSensitivity: number
@@ -30,46 +30,48 @@ export type GlobalPreferences = {
     MultiplayerClientID: string
 }
 
-export type GlobalPreference = keyof GlobalPreferences
+export type UserPreference = keyof UserPreferences
 
 export const ROBOT_PREFERENCE_KEY = "Robots" as const
 export const FIELD_PREFERENCE_KEY = "Fields" as const
-export const MOTOR_PREFERENCES_KEY = "Motors" as const
 export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
+export const USER_PREFERENCE_KEY = "User" as const
 
-export type Preferences = GlobalPreferences & {
+export type Preferences = {
     [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
     [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
-    [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>
     [GRAPHICS_PREFERENCE_KEY]: GraphicsPreferences
+    [USER_PREFERENCE_KEY]: UserPreferences
 }
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const defaultGlobalPreferences: GlobalPreferences = {
-    ZoomSensitivity: 15,
-    PitchSensitivity: 10,
-    YawSensitivity: 3,
-    SceneRotationSensitivity: 0.5,
-    ViewCubeRotationSensitivity: 0.025,
-    ReportAnalytics: false,
-    UseMetric: false,
-    RenderScoringZones: true,
-    RenderProtectedZones: true,
-    InputSchemes: [],
-    RenderSceneTags: true,
-    RenderScoreboard: true,
-    SubsystemGravity: false,
-    TouchControls: false,
-    SimAutoReconnect: false,
-    ShowViewCube: true,
-    MuteAllSound: false,
-    SFXVolume: 25,
-    ShowCenterOfMassIndicators: false,
-    MultiplayerClientID: "",
-    MultiplayerUsername: "",
+export function defaultUserPreferences(): UserPreferences {
+    return {
+        ZoomSensitivity: 15,
+        PitchSensitivity: 10,
+        YawSensitivity: 3,
+        SceneRotationSensitivity: 0.5,
+        ViewCubeRotationSensitivity: 0.025,
+        ReportAnalytics: false,
+        UseMetric: false,
+        RenderScoringZones: true,
+        RenderProtectedZones: true,
+        InputSchemes: [],
+        RenderSceneTags: true,
+        RenderScoreboard: true,
+        SubsystemGravity: false,
+        TouchControls: false,
+        SimAutoReconnect: false,
+        ShowViewCube: true,
+        MuteAllSound: false,
+        SFXVolume: 25,
+        ShowCenterOfMassIndicators: false,
+        MultiplayerClientID: "",
+        MultiplayerUsername: "",
+    }
 }
 
 export type GraphicsPreferences = {
@@ -89,6 +91,39 @@ export function defaultGraphicsPreferences(): GraphicsPreferences {
         cascades: 4,
         shadowMapSize: 4096,
         antiAliasing: false,
+    }
+}
+
+export function lowGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: false,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
+        antiAliasing: false,
+    }
+}
+
+export function mediumGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: true,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
+        antiAliasing: true,
+    }
+}
+
+export function highGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: true,
+        maxFar: 100,
+        cascades: 6,
+        shadowMapSize: 8192,
+        antiAliasing: true,
     }
 }
 
@@ -213,7 +248,7 @@ export function defaultRobotPreferences(): RobotPreferences {
 
 // The object will be moved such that the y-value specified is the bottom of the object, and the x and z values are the center
 export function defaultFieldSpawnLocation(): SpawnLocation {
-    return { pos: [0, 0.1, 0], yaw: 0 }
+    return { pos: [0, 0, 0], yaw: 0 }
 }
 export function defaultRobotSpawnLocation(): SpawnLocation {
     return { pos: [0, 0.1, 0], yaw: 0 }
@@ -236,13 +271,5 @@ export function defaultFieldPreferences(): FieldPreferences {
         },
         scoringZones: [],
         protectedZones: [],
-    }
-}
-
-export function defaultMotorPreferences(name: string): MotorPreferences {
-    return {
-        name: name,
-        maxVelocity: 1,
-        maxAcceleration: 1,
     }
 }

@@ -2,7 +2,6 @@ import { Box, ButtonGroup, type ButtonProps, Stack } from "@mui/material"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { FaXmark } from "react-icons/fa6"
 import APS from "@/aps/APS"
 import logo from "@/assets/autodesk_logo.png"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
@@ -21,6 +20,7 @@ import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import UserIcon from "./UserIcon"
+import CameraSelectionPanel from "../panels/configuring/CameraSelectionPanel"
 
 const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => {
     return (
@@ -131,7 +131,7 @@ const MainHUD: React.FC = () => {
                                     },
                                 }}
                             >
-                                {SynthesisIcons.OPEN_HUD_ICON}
+                                <SynthesisIcons.OPEN_HUD_ICON />
                             </IconButton>
                         </Stack>
                     </Box>
@@ -174,11 +174,11 @@ const MainHUD: React.FC = () => {
                         }}
                         onClick={() => setIsOpen(false)}
                     >
-                        <FaXmark size={23} />
+                        <SynthesisIcons.XMARK_LARGE_HUD />
                     </IconButton>
                 </div>
                 <MainHUDButton
-                    startIcon={SynthesisIcons.ADD}
+                    startIcon={<SynthesisIcons.ADD />}
                     size="large"
                     onClick={() =>
                         openPanel(ImportMirabufPanel, {
@@ -189,11 +189,11 @@ const MainHUD: React.FC = () => {
                     Spawn Asset
                 </MainHUDButton>
                 <ButtonGroup orientation="vertical" variant="contained">
-                    <MainHUDButton startIcon={SynthesisIcons.WRENCH} onClick={() => openPanel(ConfigurePanel, {})}>
+                    <MainHUDButton startIcon={<SynthesisIcons.WRENCH />} onClick={() => openPanel(ConfigurePanel, {})}>
                         Configure Assets
                     </MainHUDButton>
                     <MainHUDButton
-                        startIcon={SynthesisIcons.GEAR}
+                        startIcon={<SynthesisIcons.GEAR />}
                         onClick={() =>
                             openModal(SettingsModal, undefined, undefined, {
                                 allowClickAway: false,
@@ -203,19 +203,21 @@ const MainHUD: React.FC = () => {
                         General Settings
                     </MainHUDButton>
                     <MainHUDButton
-                        startIcon={SynthesisIcons.CODE_SQUARE}
-                        onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                        startIcon={<SynthesisIcons.CAMERA />}
+                        onClick={() => openPanel(CameraSelectionPanel, undefined)}
                     >
-                        Developer Tool
+                        Configure Camera
                     </MainHUDButton>
-                    {/** Will be coming soonish...tm */}
-                    {/* <MainHUDButton
-                        value={"View"}
-                        icon={SynthesisIcons.MAGNIFYING_GLASS}
-                        onClick={() => openModal(<ViewModal />, undefined)}
-                    /> */}
+                    {import.meta.env.DEV && (
+                        <MainHUDButton
+                            startIcon={<SynthesisIcons.CODE_SQUARE />}
+                            onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                        >
+                            Developer Tool
+                        </MainHUDButton>
+                    )}
                     <MainHUDButton
-                        startIcon={SynthesisIcons.BUG}
+                        startIcon={<SynthesisIcons.BUG />}
                         onClick={() => {
                             openPanel(DebugPanel, undefined)
                         }}
@@ -224,7 +226,7 @@ const MainHUD: React.FC = () => {
                     </MainHUDButton>
                     {touchCompatibility && (
                         <MainHUDButton
-                            startIcon={SynthesisIcons.GAMEPAD}
+                            startIcon={<SynthesisIcons.GAMEPAD />}
                             onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
                         >
                             Toggle Joysticks
@@ -238,13 +240,17 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal(APSManagementModal, undefined)}
                     >{`Hi, ${userInfo.givenName}`}</MainHUDButton>
                 ) : (
-                    <MainHUDButton startIcon={SynthesisIcons.PEOPLE} onClick={() => APS.requestAuthCode()} size="large">
+                    <MainHUDButton
+                        startIcon={<SynthesisIcons.PEOPLE />}
+                        onClick={() => APS.requestAuthCode()}
+                        size="large"
+                    >
                         APS Login
                     </MainHUDButton>
                 )}
                 {!matchModeRunning ? (
                     <MainHUDButton
-                        startIcon={SynthesisIcons.GAMEPAD}
+                        startIcon={<SynthesisIcons.GAMEPAD />}
                         size="large"
                         onClick={() => {
                             openPanel(MatchModeConfigPanel, undefined)
@@ -255,7 +261,7 @@ const MainHUD: React.FC = () => {
                     </MainHUDButton>
                 ) : (
                     <MainHUDButton
-                        startIcon={SynthesisIcons.XMARK_LARGE}
+                        startIcon={<SynthesisIcons.XMARK_LARGE />}
                         size="large"
                         onClick={() => {
                             MatchMode.getInstance().sandboxModeStart()

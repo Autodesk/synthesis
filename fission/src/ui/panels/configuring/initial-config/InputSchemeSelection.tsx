@@ -92,7 +92,7 @@ export default function InputSchemeSelection({
                                     update()
                                 }}
                             >
-                                {SynthesisIcons.SELECT_LARGE}
+                                <SynthesisIcons.SELECT_LARGE />
                             </PositiveButton>
                         </Box>
                         {/** Edit button - same as select but opens the inputs modal */}
@@ -109,14 +109,14 @@ export default function InputSchemeSelection({
                                 // Fetch current custom schemes
                                 InputSchemeManager.saveSchemes(panelId)
                                 InputSchemeManager.resetDefaultSchemes(panelId)
-                                const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+                                const schemes = PreferencesSystem.getUserPreference("InputSchemes")
 
                                 // Find and remove this input scheme
                                 const index = schemes.indexOf(scheme)
                                 schemes.splice(index, 1)
 
                                 // Save to preferences
-                                PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
+                                PreferencesSystem.setUserPreference("InputSchemes", schemes)
                                 PreferencesSystem.savePreferences()
 
                                 // Update the available schemes list to reflect the deletion
@@ -143,14 +143,19 @@ export default function InputSchemeSelection({
                         label="Drivetrain Type"
                         value={robotDriveType}
                         onChange={e => {
+                            const newDriveType = e.target.value as DriveType
                             const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
                             if (brain) {
-                                brain.configureDriveBehavior(e.target.value as DriveType)
+                                brain.configureDriveBehavior(newDriveType)
                             }
-                            setRobotDriveType(e.target.value as DriveType)
+                            setRobotDriveType(newDriveType)
+
+                            const scheme = InputSchemeManager.applyCompatibleScheme(brainIndex)
+                            if (scheme) setSelectedScheme(scheme)
+                            EventSystem.dispatch("InputSchemeChanged", { panelId })
                         }}
                     >
-                        {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                        {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
                             <MenuItem key={dt} value={dt}>
                                 {dt}
                             </MenuItem>
@@ -203,7 +208,7 @@ export default function InputSchemeSelection({
                     onCreateNew?.()
                 }}
             >
-                {SynthesisIcons.ADD_LARGE}
+                <SynthesisIcons.ADD_LARGE />
             </Button>
         </>
     )

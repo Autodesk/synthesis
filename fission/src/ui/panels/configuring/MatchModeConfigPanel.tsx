@@ -168,9 +168,13 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
                 alignItems={"center"}
             >
                 {secondaryOnClick && (
-                    <NegativeButton onClick={secondaryOnClick}>{SynthesisIcons.DELETE_LARGE}</NegativeButton>
+                    <NegativeButton onClick={secondaryOnClick}>
+                        <SynthesisIcons.DELETE_LARGE />
+                    </NegativeButton>
                 )}
-                <PositiveButton onClick={primaryOnClick}>{SynthesisIcons.PLAY_LARGE}</PositiveButton>
+                <PositiveButton onClick={primaryOnClick}>
+                    <SynthesisIcons.PLAY_LARGE />
+                </PositiveButton>
             </Stack>
         </Stack>
     )

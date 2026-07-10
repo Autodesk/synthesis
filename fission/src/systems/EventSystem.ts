@@ -49,6 +49,9 @@ interface EventDataMap {
 
     DragModeToggled: { enabled: boolean }
 
+    CameraModeChangedEvent: { mode: string }
+    CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }
+
     APSUserInfoUpdate: never
 
     MultiplayerStateJoinRoom: never

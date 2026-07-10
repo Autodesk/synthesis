@@ -12,45 +12,62 @@ type SoundEffect = {
     onMouseUp?: () => void
 }
 export class SoundPlayer {
-    private _audioElements: Map<string, HTMLAudioElement> = new Map()
+    /** Decoded audio elements, kept only to warm the browser cache. */
+    private _templates: Map<string, HTMLAudioElement> = new Map()
+    /** The most recent element actively playing each sound, used to gate follow-up sounds. */
+    private _active: Map<string, HTMLAudioElement> = new Map()
     private static _instance: SoundPlayer | undefined
     public static getInstance() {
         SoundPlayer._instance ??= new SoundPlayer()
         return SoundPlayer._instance
     }
     constructor() {
-        preloadSounds.forEach(sound => {
-            this.loadSound(sound).catch(e => console.warn("failed to load sound", sound, e))
-        })
-    }
-    private async loadSound(filePath: string): Promise<HTMLAudioElement> {
-        let audio = this._audioElements.get(filePath)
-        if (audio == null) {
-            audio = new Audio(filePath)
-            this._audioElements.set(filePath, audio)
-            audio.volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
-                ? 0
-                : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
-        }
-        return audio
+        preloadSounds.forEach(sound => this.getTemplate(sound))
     }
 
-    public async play(filePath: string): Promise<void> {
-        const audio = await this.loadSound(filePath)
-        if (!audio.ended) {
-            audio.pause()
-            audio.currentTime = 0
+    private get _currentVolume(): number {
+        return PreferencesSystem.getUserPreference("MuteAllSound")
+            ? 0
+            : clamp(PreferencesSystem.getUserPreference("SFXVolume") / 100, 0, 1)
+    }
+
+    private getTemplate(filePath: string): HTMLAudioElement {
+        let template = this._templates.get(filePath)
+        if (template == null) {
+            template = new Audio(filePath)
+            this._templates.set(filePath, template)
         }
+        return template
+    }
+
+    public play(filePath: string): Promise<void> {
+        const audio = this.getTemplate(filePath).cloneNode(true) as HTMLAudioElement
+        audio.volume = this._currentVolume
+        this._active.set(filePath, audio)
+        audio.addEventListener(
+            "ended",
+            () => {
+                if (this._active.get(filePath) === audio) {
+                    this._active.delete(filePath)
+                }
+            },
+            { once: true }
+        )
         return audio.play().catch(error => {
             console.error("Error playing the audio file:", error)
         })
+    }
+
+    private isPlaying(filePath: string): boolean {
+        const audio = this._active.get(filePath)
+        return audio != null && !audio.ended && !audio.paused
     }
 
     public buttonSoundEffects(): SoundEffect {
         return {
             onMouseDown: () => this.play(clickdownSound),
             onMouseUp: () => {
-                if (this._audioElements.get(clickdownSound)?.ended) {
+                if (!this.isPlaying(clickdownSound)) {
                     return this.play(clickupSound)
                 }
             },
@@ -60,7 +77,7 @@ export class SoundPlayer {
         return {
             onMouseDown: () => this.play(checkdownSound),
             onMouseUp: () => {
-                if (this._audioElements.get(checkdownSound)?.ended) {
+                if (!this.isPlaying(checkdownSound)) {
                     return this.play(checkupSound)
                 }
             },
@@ -73,11 +90,8 @@ export class SoundPlayer {
     }
 
     public changeVolume(): void {
-        const volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
-            ? 0
-            : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
-        this._audioElements.forEach(audio => {
-            audio.volume = volume
+        this._active.forEach(audio => {
+            audio.volume = this._currentVolume
         })
     }
 }

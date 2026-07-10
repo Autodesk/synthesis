@@ -1,9 +1,9 @@
 import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
-import { FaHandPaper } from "react-icons/fa"
 import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "./GlobalUIControls"
 import Label from "./Label"
+import { SynthesisIcons } from "./StyledComponents"
 
 const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
@@ -27,7 +27,7 @@ const DragModeIndicator: React.FC = () => {
                 boxShadow: 6,
             }}
         >
-            <FaHandPaper className="self-center" />
+            <SynthesisIcons.HAND className="self-center" />
             <Label size="sm" color="text.primary">
                 Drag Mode
             </Label>

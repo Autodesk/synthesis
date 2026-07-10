@@ -73,6 +73,10 @@ class MirabufParser {
         return this._rootNode
     }
 
+    public get assemblyId() {
+        return this.assembly.info!.GUID!
+    }
+
     public constructor(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle) {
         this._assembly = assembly
         this._errors = []

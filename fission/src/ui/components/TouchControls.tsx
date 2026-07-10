@@ -12,13 +12,13 @@ const JOYSTICK_SIZE = 120
 const TouchControls: React.FC = () => {
     const theme = useTheme()
 
-    const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
+    const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getUserPreference("TouchControls"))
 
     useEffect(() => {
         const visibilityUnsubscriber = EventSystem.listen("ToggleTouchControlsVisibilityEvent", () => {
             setIsJoystickVisible(prev => {
                 const next = !prev
-                PreferencesSystem.setGlobalPreference("TouchControls", next)
+                PreferencesSystem.setUserPreference("TouchControls", next)
                 PreferencesSystem.savePreferences()
                 return next
             })
@@ -28,7 +28,7 @@ const TouchControls: React.FC = () => {
             setIsJoystickVisible(prev => {
                 const next = visible as boolean
                 if (prev === next) return prev
-                PreferencesSystem.setGlobalPreference("TouchControls", next)
+                PreferencesSystem.setUserPreference("TouchControls", next)
                 PreferencesSystem.savePreferences()
                 return next
             })

@@ -19,7 +19,7 @@ class InputSchemeManager {
         if (this._customSchemes) return this._customSchemes
 
         // Load schemes from preferences and parse into objects
-        this._customSchemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+        this._customSchemes = PreferencesSystem.getUserPreference("InputSchemes")
         this._customSchemes.forEach(scheme => this.parseScheme(scheme))
 
         return this._customSchemes
@@ -81,6 +81,16 @@ class InputSchemeManager {
         this._defaultInputSchemes = DefaultInputs.defaultInputCopies
         this._customSchemes = undefined
         EventSystem.dispatch("InputSchemeChanged", { panelId })
+    }
+
+    public static rebindOldBrainSchemes() {
+        const schemesByName = new Map(this.allInputSchemes.map(s => [s.schemeName, s] as const))
+        for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap) {
+            const reverted = schemesByName.get(scheme.schemeName)
+            if (reverted && scheme.customized) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, reverted)
+            }
+        }
     }
 
     /** Creates an array of every input scheme that is either a default or customized by the user. Custom themes will appear on top. */
@@ -160,6 +170,28 @@ class InputSchemeManager {
         return this.availableInputSchemesByType(driveType)
     }
 
+    /**
+     * Ensures the brain has an input scheme compatible with its current drivetrain.
+     *
+     * @returns the scheme now bound to the brain, or undefined if no compatible scheme is available.
+     */
+    public static applyCompatibleScheme(brainIndex: number): InputScheme | undefined {
+        const driveType = SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType
+        const current = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        if (current && (driveType == null || current.supportedDrivetrains.includes(driveType))) {
+            return current
+        }
+
+        // Unbind the outgoing scheme before evaluating availability. Otherwise it still counts as in-use.
+        InputSystem.brainIndexSchemeMap.delete(brainIndex)
+
+        const next = this.availableInputSchemesByBrain(brainIndex).find(
+            entry => entry.status === InputSchemeUseType.AVAILABLE
+        )?.scheme
+        if (next) InputSystem.setBrainIndexSchemeMapping(brainIndex, next)
+        return next
+    }
+
     /** @returns a random available robot name */
     public static get randomAvailableName(): string {
         const usedNames = this.allInputSchemes.map(s => s.schemeName)
@@ -181,7 +213,7 @@ class InputSchemeManager {
             return s.customized
         })
 
-        PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)
+        PreferencesSystem.setUserPreference("InputSchemes", customizedSchemes)
         PreferencesSystem.savePreferences()
         EventSystem.dispatch("InputSchemeChanged", { panelId })
     }
