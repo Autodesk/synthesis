@@ -1,3 +1,5 @@
+import Pako from "pako"
+
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
 }
@@ -40,4 +42,47 @@ export async function hashBuffer(buffer: ArrayBuffer): Promise<string> {
 
 export function forPair<T, U>(listOne: T[], listTwo: U[], predicate: (one: T, two: U) => void): void {
     listOne.forEach(a => listTwo.forEach(b => predicate(a, b)))
+}
+
+export function unzipMira(buff: Uint8Array): Uint8Array {
+    // Check if file is gzipped via magic gzip numbers 31 139
+    if (buff[0] == 31 && buff[1] == 139) {
+        return Pako.ungzip(buff)
+    } else {
+        return buff
+    }
+}
+
+export function hexStringToUint8Array(hexString: string) {
+    const arrayBuffer = new Uint8Array(hexString.length / 2)
+    for (let i = 0; i < hexString.length; i += 2) {
+        arrayBuffer[i / 2] = parseInt(hexString.substring(i, i + 2), 16)
+    }
+    return arrayBuffer
+}
+// biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`
+export function tryParse(data: string): any {
+    try {
+        return JSON.parse(data)
+    } catch (error) {
+        console.error("Could not parse JSON", error)
+        return null
+    }
+}
+
+export function downloadBlob(filename: string, data: BlobPart): void {
+    const blob = new Blob([data], {
+        type: "application/octet-stream",
+    })
+    const url = URL.createObjectURL(blob)
+
+    const a = document.createElement("a")
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    setTimeout(() => {
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+    }, 0)
 }

@@ -22,13 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Bun Runtime Setup
       uses: oven-sh/setup-bun@v2
       with:
         bun-version: latest
     - name: Cache Node Dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v6
       with:
         key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/bun.lock')}}"
         path: 'exporter/SynthesisFusionAddin/web/node_modules'
@@ -52,13 +52,13 @@ jobs:
         working-directory: exporter/SynthesisFusionAddin/web
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Bun Runtime Setup
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
       - name: Cache Node Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/bun.lock')}}"
           path: 'exporter/SynthesisFusionAddin/web/node_modules'

@@ -1,6 +1,6 @@
-import Jolt from "@azaleacolburn/jolt-physics"
-import { DOFSpecs } from "./PhysicsSystem"
-import { mirabuf } from "@/proto/mirabuf"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import type { DOFSpecs } from "./PhysicsSystem"
+import type { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } from "@/util/TypeConversions"
 

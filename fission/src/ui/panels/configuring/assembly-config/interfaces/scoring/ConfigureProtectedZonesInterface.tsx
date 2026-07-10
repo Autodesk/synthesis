@@ -3,7 +3,6 @@ import type React from "react"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import { Button, SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -16,7 +15,7 @@ const saveProtectedZones = (zones: ProtectedZonePreferences[] | undefined, field
     const fieldPrefs = field.fieldPreferences
     if (fieldPrefs) fieldPrefs.protectedZones = zones
 
-    PreferencesSystem.savePreferences()
+    field.savePreferences()
     field.updateProtectedZones()
 }
 
@@ -43,7 +42,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
 
                         {/** Back arrow button when an option is selected */}
                         <Button
-                            startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
+                            startIcon={<SynthesisIcons.LEFT_ARROW_LARGE />}
                             onClick={() => {
                                 EventSystem.dispatch("ConfigurationSavedEvent")
                                 setSelectedZone(undefined)

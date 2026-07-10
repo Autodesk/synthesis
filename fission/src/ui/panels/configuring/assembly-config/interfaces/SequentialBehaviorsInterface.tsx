@@ -3,13 +3,11 @@ import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { Button, Spacer } from "@/ui/components/StyledComponents"
-import { FaUnlink } from "react-icons/fa"
+import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 interface BehaviorCardProps {
     elementKey: number
@@ -92,7 +90,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
 
                         // sx={hasChild ? { bgcolor: "background.default", "&:hover": { filter: "brightness(100%)" } } : {}}
                     >
-                        {hasParent ? <FaUnlink /> : lookingForParent == behavior ? "Cancel" : "Follow"}
+                        {hasParent ? <SynthesisIcons.UNLINK /> : lookingForParent == behavior ? "Cancel" : "Follow"}
                     </Button>
                 </div>
             </Tooltip>
@@ -150,7 +148,7 @@ interface SequentialBehaviorProps {
 
 const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selectedRobot }) => {
     const [behaviors, setBehaviors] = useState<SequentialBehaviorPreferences[]>(
-        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
+        selectedRobot.robotPreferences.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))
@@ -165,8 +163,8 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
     const saveEvent = useCallback(() => {
         if (selectedRobot === undefined || behaviors === undefined) return
 
-        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
-        PreferencesSystem.savePreferences()
+        selectedRobot.robotPreferences.sequentialConfig = behaviors
+        selectedRobot.savePreferences()
     }, [behaviors, selectedRobot])
 
     useEffect(() => {

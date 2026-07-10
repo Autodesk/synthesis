@@ -62,7 +62,7 @@ describe("Analytics", () => {
 
         test("gtag calls fetch with appropriate values", async ({ skip }) => {
             skip(server.browser == "firefox", "Firefox blocks Google Analytics")
-            PreferencesSystem.setGlobalPreference("ReportAnalytics", true)
+            PreferencesSystem.setUserPreference("ReportAnalytics", true)
 
             const initialParams = mockRequestParametersHandle()
 

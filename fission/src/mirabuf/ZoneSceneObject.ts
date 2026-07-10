@@ -1,7 +1,7 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { GlobalPreferences, ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"
+import type { UserPreferences, ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -34,7 +34,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private _cachedFieldTransformation?: Jolt.RMat44
 
     public prefs: ZonePreferencesShared & P
-    private preferenceKey: keyof GlobalPreferences
+    private preferenceKey: keyof UserPreferences
 
     public toRender: boolean | undefined
     public mesh?: THREE.Mesh
@@ -51,14 +51,14 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     public constructor(
         parentAssembly: MirabufSceneObject,
         prefs: ZonePreferencesShared & P,
-        preferenceKey: keyof GlobalPreferences
+        preferenceKey: keyof UserPreferences
     ) {
         super()
 
         this._parentAssembly = parentAssembly
         this.prefs = prefs
         this.preferenceKey = preferenceKey
-        this.toRender = PreferencesSystem.getGlobalPreference(preferenceKey) as boolean | undefined
+        this.toRender = PreferencesSystem.getUserPreference(preferenceKey) as boolean | undefined
     }
 
     public setup() {
@@ -125,11 +125,10 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private updateRenderPreferences() {
         if (!this.mesh) {
             console.error("No mesh present in zone")
-
             return
         }
 
-        this.toRender = PreferencesSystem.getGlobalPreference(this.preferenceKey) as boolean | undefined
+        this.toRender = PreferencesSystem.getUserPreference(this.preferenceKey) as boolean | undefined
         this.mesh.material = this.toRender ? this.material() : ZoneSceneObject.transparentMaterial
     }
 
