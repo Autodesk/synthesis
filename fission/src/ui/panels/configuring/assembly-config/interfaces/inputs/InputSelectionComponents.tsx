@@ -119,7 +119,7 @@ export const KeyboardAxisSelection: React.FC<InputSelectionProps> = ({ input, se
             <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
                 <Label size="md">{toTitleCase(input.inputName)}</Label>
 
-                <Stack direction="row" gap="10px" alignItems={"center"}>
+                <Stack direction="row" gap="10px" alignItems="center">
                     <SynthesisIcons.ADD />
                     {/* Positive key */}
                     <Button
@@ -219,7 +219,7 @@ export const GamepadButtonAxisSelection: React.FC<InputSelectionProps> = ({
         <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
             <Label size="md">{toTitleCase(input.inputName)}</Label>
 
-            <Stack direction="row" gap="10px" alignItems={"center"}>
+            <Stack direction="row" gap="10px" alignItems="center">
                 {/* Positive gamepad button */}
                 <SynthesisIcons.ADD />
                 <Button

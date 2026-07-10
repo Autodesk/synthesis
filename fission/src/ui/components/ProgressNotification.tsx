@@ -69,9 +69,9 @@ const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
     return (
         <Box
             key={handle.handleId}
-            component={"div"}
-            display={"flex"}
-            flexDirection={"column"}
+            component="div"
+            display="flex"
+            flexDirection="column"
             sx={{
                 backgroundColor: "#000000",
                 borderWidth: "0rem",
@@ -80,22 +80,22 @@ const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
             }}
         >
             <Box
-                component={"div"}
-                display={"flex"}
-                flexDirection={"column"}
+                component="div"
+                display="flex"
+                flexDirection="column"
                 sx={{
                     paddingY: "0.75rem",
                     paddingX: "1.5rem",
                 }}
             >
-                <TypoStyled fontWeight={"700"} fontSize={"1rem"}>
+                <TypoStyled fontWeight="700" fontSize="1rem">
                     {handle.title}
                 </TypoStyled>
-                {handle.message.length > 0 && <TypoStyled fontSize={"0.75rem"}>{handle.message}</TypoStyled>}
+                {handle.message.length > 0 && <TypoStyled fontSize="0.75rem">{handle.message}</TypoStyled>}
             </Box>
             <Box
-                key={"bar"}
-                component={"div"}
+                key="bar"
+                component="div"
                 sx={{
                     backgroundColor:
                         handle.status == ProgressHandleStatus.IN_PROGRESS
@@ -134,9 +134,9 @@ const ProgressNotifications: React.FC = () => {
 
     return (
         <Box
-            component={"div"}
-            display={"flex"}
-            position={"fixed"}
+            component="div"
+            display="flex"
+            position="fixed"
             sx={{
                 bottom: "0.5rem",
                 left: "50vw",

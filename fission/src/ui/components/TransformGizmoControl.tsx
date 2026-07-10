@@ -58,19 +58,19 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
     const buttons = []
     if (!translateDisabled)
         buttons.push(
-            <ToggleButton key="translate-button" value={"translate"}>
+            <ToggleButton key="translate-button" value="translate">
                 Move
             </ToggleButton>
         )
     if (!rotateDisabled)
         buttons.push(
-            <ToggleButton key="rotate-button" value={"rotate"}>
+            <ToggleButton key="rotate-button" value="rotate">
                 Rotate
             </ToggleButton>
         )
     if (!scaleDisabled)
         buttons.push(
-            <ToggleButton key="scale-button" value={"scale"}>
+            <ToggleButton key="scale-button" value="scale">
                 Scale
             </ToggleButton>
         )

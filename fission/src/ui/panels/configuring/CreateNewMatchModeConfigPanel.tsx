@@ -214,7 +214,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                             <Checkbox
                                 checked={field.value as boolean}
                                 onClick={value => updateField(fieldName, value)}
-                                label={""}
+                                label=""
                             />
                         }
                         label={label}

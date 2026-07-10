@@ -16,7 +16,7 @@ const MetadataConfigInterface: React.FC<MetadataConfigInterfaceProps> = ({ selec
     }, [name, selectedAssembly])
     return (
         <Stack gap={2} direction="column">
-            <Label size={"sm"}>Asset Name</Label>
+            <Label size="sm">Asset Name</Label>
             <TextField
                 placeholder={selectedAssembly.mirabufInstance.parser.assembly.info?.name ?? "Unknown"}
                 className="w-full"

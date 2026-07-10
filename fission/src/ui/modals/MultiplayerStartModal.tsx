@@ -31,7 +31,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     return (
         <Stack direction="column">
             <TextField
-                type={"text"}
+                type="text"
                 value={name}
                 sx={{ input: { color: "#ffffff" } }}
                 placeholder="Name"
@@ -42,7 +42,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 }}
             />
             <Button
-                value={"Create Game"}
+                value="Create Game"
                 onClick={async () => {
                     if (!isValidName) {
                         globalAddToast("warning", "Invalid Name", "Must be at least 3 characters")
@@ -60,7 +60,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
             </Button>
             <Divider />
             <TextField
-                type={"text"}
+                type="text"
                 value={room}
                 sx={{ input: { color: "#ffffff" } }}
                 placeholder="000000"

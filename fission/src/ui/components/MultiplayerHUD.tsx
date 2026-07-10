@@ -46,12 +46,12 @@ const MultiplayerHUD: React.FC = () => {
                     pr: "0.7rem",
                 })}
             >
-                <Label fontWeight={"700"} size={"sm"}>
+                <Label fontWeight="700" size="sm">
                     Room {roomCode}
                 </Label>
                 {peers.map(peer => (
                     <Tooltip placement="right" key={peer.clientId} title={peer.clientId.split("-")[0]}>
-                        <Typography variant={"body1"} key={peer.clientId}>
+                        <Typography variant="body1" key={peer.clientId}>
                             {peer.displayName}
                             {peer.clientId == World.multiplayerSystem?.clientId && " (you)"}
                         </Typography>

@@ -91,11 +91,11 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                                     }}
                                 />
 
-                                <Stack direction={"column"} gap={1} justifyContent={"space-evenly"}>
+                                <Stack direction="column" gap={1} justifyContent="space-evenly">
                                     <Label size="md">{item.name}</Label>
                                     {item.pointsLabel ? <Label size="sm">{item.pointsLabel}</Label> : null}
                                 </Stack>
-                                <Stack direction={"column"} gap={1} justifyContent={"space-evenly"} ml={"auto"}>
+                                <Stack direction="column" gap={1} justifyContent="space-evenly" ml="auto">
                                     <EditButton
                                         onClick={() => {
                                             selectZone(zonePrefs)
@@ -117,7 +117,7 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
             ) : (
                 <Label size="md">{emptyLabel}</Label>
             )}
-            <Button color={"success"} variant={"contained"} onClick={saveHandler} className={"w-full"}>
+            <Button color="success" variant="contained" onClick={saveHandler} className="w-full">
                 <SynthesisIcons.ADD_LARGE />
             </Button>
         </Stack>

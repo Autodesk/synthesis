@@ -94,7 +94,7 @@ function Synthesis() {
     }, [])
 
     return (
-        <AnimatePresence key={"animate-presence"}>
+        <AnimatePresence key="animate-presence">
             <ThemeProvider>
                 <SnackbarProvider
                     maxSnack={5}
@@ -107,10 +107,10 @@ function Synthesis() {
                             <SceneOverlay />
                             <ContextMenu />
                             <MultiplayerHUD />
-                            <MainHUD key={"main-hud"} />
+                            <MainHUD key="main-hud" />
                             <UIRenderer />
                             <CommandPalette />
-                            <ProgressNotifications key={"progress-notifications"} />
+                            <ProgressNotifications key="progress-notifications" />
                             <WPILibConnectionStatus />
                             <DragModeIndicator />
 

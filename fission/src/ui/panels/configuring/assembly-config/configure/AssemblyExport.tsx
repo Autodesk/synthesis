@@ -27,7 +27,7 @@ const AssemblyExportButton: React.FC<ConfigModeSelectionProps> = ({ selectedAsse
         }
     }, [selectedAssembly])
     return (
-        <Button className={"w-full"} color={"secondary"} onClick={exportHandler}>
+        <Button className="w-full" color="secondary" onClick={exportHandler}>
             Export
             <Spacer width={5} />
             <FaFileDownload />

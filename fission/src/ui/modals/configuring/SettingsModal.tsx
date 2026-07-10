@@ -121,7 +121,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             min={0.1}
             max={2.0}
             defaultValue={PreferencesSystem.getUserPreference("SceneRotationSensitivity")}
-            label={"Scene Rotation Sensitivity"}
+            label="Scene Rotation Sensitivity"
             onChange={value => writePreference("SceneRotationSensitivity", value)}
             step={0.1}
             tooltip="Controls how fast the scene rotates when dragging with the mouse."
@@ -132,7 +132,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             min={0.1}
             max={3.0}
             defaultValue={PreferencesSystem.getUserPreference("ScenePanSensitivity")}
-            label={"Scene Pan Sensitivity"}
+            label="Scene Pan Sensitivity"
             onChange={value => writePreference("ScenePanSensitivity", value)}
             step={0.1}
             tooltip="Controls how fast the scene pans when dragging with the right mouse button."
@@ -143,7 +143,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             min={0.06}
             max={6.0}
             defaultValue={PreferencesSystem.getUserPreference("ViewCubeRotationSensitivity")}
-            label={"ViewCube Rotation Sensitivity"}
+            label="ViewCube Rotation Sensitivity"
             onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
             step={0.06}
             tooltip="Controls how fast the view changes when dragging on the view cube."
@@ -216,7 +216,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
                 min={0}
                 max={100}
                 defaultValue={PreferencesSystem.getUserPreference("SFXVolume")}
-                label={"SFX Volume"}
+                label="SFX Volume"
                 onChange={value => writePreference("SFXVolume", value)}
                 tooltip="Volume of sound effects (%)."
             />
@@ -438,7 +438,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                     setAntiAliasing(checked)
                     setReload(true)
                 }}
-                tooltip={"Requires browser refresh to fully apply"}
+                tooltip="Requires browser refresh to fully apply"
             />
         </Stack>
     )

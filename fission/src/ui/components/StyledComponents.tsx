@@ -325,7 +325,7 @@ interface LabelWithTooltipProps {
 
 export const LabelWithTooltip: React.FC<LabelWithTooltipProps> = ({ labelText, tooltipText }) => {
     return (
-        <Stack direction="row" alignItems={"center"} textAlign={"center"}>
+        <Stack direction="row" alignItems="center" textAlign="center">
             <Label size="sm">{labelText}</Label>
             <CustomTooltip text={tooltipText} />
         </Stack>

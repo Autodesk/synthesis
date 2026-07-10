@@ -480,8 +480,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             <AssemblyExportButton selectedAssembly={selectedAssembly} />
                             <Spacer height={16} />
                             <Button
-                                className={"w-full"}
-                                color={"warning"}
+                                className="w-full"
+                                color="warning"
                                 onClick={() => {
                                     closePanel(panel!.id, CloseType.Accept)
                                     selectedAssembly.resetPreferences()

@@ -56,7 +56,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                             update()
                         }}
                         disabled={!selectable}
-                        color={"secondary"}
+                        color="secondary"
                         sx={{
                             borderColor: !selectable ? "transparent" : "#888888",
                             color: selectable || hasParent ? undefined : "white !important",
@@ -84,7 +84,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                             onSetPressed()
                             update()
                         }}
-                        className={"h-full"}
+                        className="h-full"
                         color={hasParent ? "warning" : "primary"}
                         disabled={selectable || hasChild}
 

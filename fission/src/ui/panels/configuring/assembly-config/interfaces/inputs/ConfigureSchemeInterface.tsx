@@ -55,13 +55,13 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
             {/** Back button to return to input scheme selection */}
             {onBack && (
                 <>
-                    <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
+                    <Stack direction="row" textAlign="center" minHeight="30px" key="selected-item">
                         {/** Back arrow button when an option is selected */}
                         <IconButton onClick={onBack} id="select-menu-back-button">
                             <SynthesisIcons.LEFT_ARROW_LARGE />
                         </IconButton>
 
-                        <Stack alignSelf={"center"}>
+                        <Stack alignSelf="center">
                             <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 Back to Input Schemes
                             </Label>
