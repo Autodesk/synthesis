@@ -138,7 +138,6 @@ describe("ScoringZoneSceneObject", () => {
                 ],
             })
             const zone = new ScoringZoneSceneObject(parent, 0)
-            // 2×2×2 OBB centred at origin
             zone.bounding = new JOLT.OrientedBox(
                 new JOLT.Mat44().sTranslation(new JOLT.Vec3(0, 0, 0)),
                 new JOLT.Vec3(1, 1, 1)
@@ -205,7 +204,6 @@ describe("ScoringZoneSceneObject", () => {
                     },
                 },
                 mechanism: {
-                    // nodeToBody has no entry for gp_0
                     nodeToBody: new Map(),
                 },
             }

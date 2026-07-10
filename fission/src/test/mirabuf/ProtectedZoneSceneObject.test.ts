@@ -180,7 +180,6 @@ describe("ProtectedZoneSceneObject", () => {
         const fieldObject = createMockRobot("red")
         Reflect.set(fieldObject, "miraType", MiraType.FIELD)
 
-        // const fieldBodyId = createMockBodyId(3)
         setupMultipleAssociations(new Map([[3, fieldObject]]))
 
         mockSceneRenderer.mirabufSceneObjects.getRobots = vi.fn(() => [fieldObject])
@@ -192,7 +191,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("HandleContactPenalty both robots inside", () => {
+    test("Protected Zone both robots inside", () => {
         const instance = createProtectedZoneInstance(
             {
                 contactType: ContactType.BOTH_ROBOTS_INSIDE,
@@ -205,7 +204,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
 
-    test("HandleContactPenalty any robot inside", () => {
+    test("Protected Zone any robot inside", () => {
         const instance = createProtectedZoneInstance(
             {
                 contactType: ContactType.ANY_ROBOT_INSIDE,
@@ -218,7 +217,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
 
-    test("HandleContactPenalty blue robot inside", () => {
+    test("Protected Zone blue robot inside", () => {
         const instance = createProtectedZoneInstance(
             {
                 contactType: ContactType.BLUE_ROBOT_INSIDE,
@@ -231,7 +230,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
 
-    test("HandleContactPenalty red robot inside", () => {
+    test("Protected Zone red robot inside", () => {
         const instance = createProtectedZoneInstance(
             {
                 contactType: ContactType.RED_ROBOT_INSIDE,
@@ -244,7 +243,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
 
-    test("HandleContactPenalty doesn't penalize if not all robots are inside", () => {
+    test("Protected Zone doesn't penalize if not all robots are inside", () => {
         const instance = createProtectedZoneInstance(
             {
                 contactType: ContactType.BOTH_ROBOTS_INSIDE,
@@ -257,7 +256,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("HandleContactPenalty doesn't penalize if contact type is any and no robots are inside", () => {
+    test("Protected Zone doesn't penalize if contact type is any and no robots are inside", () => {
         const instance = createProtectedZoneInstance(
             {
                 contactType: ContactType.ANY_ROBOT_INSIDE,
@@ -270,7 +269,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("HandleContactPenalty doesn't penalize if contact type is red and red is not inside", () => {
+    test("Protected Zone doesn't penalize if contact type is red and red is not inside", () => {
         const instance = createProtectedZoneInstance(
             {
                 contactType: ContactType.RED_ROBOT_INSIDE,
@@ -283,7 +282,7 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("HandleContactPenalty doesn't penalize if contact type is blue and blue is not inside", () => {
+    test("Protected Zone doesn't penalize if contact type is blue and blue is not inside", () => {
         const instance = createProtectedZoneInstance(
             {
                 contactType: ContactType.BLUE_ROBOT_INSIDE,
@@ -296,9 +295,9 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(ScoreTracker.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("HandleContactPenalty doesn't penalize if robots are from same alliance", () => {
+    test("Protected Zone doesn't penalize if robots are from same alliance", () => {
         const redRobot2 = createMockRobot("red")
-        // const redRobot2BodyId = createMockBodyId(3)
+
         setupMultipleAssociations(
             new Map([
                 [1, redRobot],
