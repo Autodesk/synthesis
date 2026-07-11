@@ -65,7 +65,8 @@ vi.mock("@/systems/preferences/PreferencesSystem", () => ({
             simConfig: undefined,
         })),
         getFieldPreferences: vi.fn(() => ({ defaultSpawnLocation: [0, 1, 0], scoringZones: [] })),
-        getGlobalPreference: vi.fn(() => false),
+        getUserPreference: vi.fn(() => false),
+        hasRobotPreferences: vi.fn(() => true),
         addPreferenceEventListener: vi.fn(() => () => {}),
         setRobotPreferences: vi.fn(),
         savePreferences: vi.fn(),
@@ -140,7 +141,7 @@ describe("MirabufSceneObject", () => {
         vi.clearAllMocks()
         mirabufInstance = mockMirabufInstance()
         progressHandle = undefined
-        instance = new MirabufSceneObject(mirabufInstance, "TestAssembly", progressHandle)
+        instance = new MirabufSceneObject(mirabufInstance, progressHandle)
 
         console.log = vi.fn()
         console.error = vi.fn()
@@ -206,7 +207,7 @@ describe("MirabufSceneObject", () => {
 
 describe("MirabufSceneObject - Real Systems Integration", () => {
     test("getDimensions returns proper values for Dozer robot", async context => {
-        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT)
+        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT)
 
         if (!cacheInfo) {
             context.skip()
@@ -227,7 +228,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
             batch.computeBoundingBox()
         })
 
-        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v10", undefined)
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, undefined)
 
         const originalDimensions = dozerSceneObject.getDimensions()
 
@@ -236,7 +237,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
         expect(originalDimensions.depth).toBeCloseTo(0.9, 0)
     })
     test("Ejector and Intake are configured for Dozer", async context => {
-        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v10.mira", MiraType.ROBOT)
+        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT)
 
         if (!cacheInfo) {
             context.skip()
@@ -253,7 +254,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
         const parser = new MirabufParser(assembly!)
         const mirabufInstance = new MirabufInstanceClass(parser)
 
-        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v10", undefined)
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, undefined)
         expect(dozerSceneObject.intakePreferences).not.toEqual(defaultRobotPreferences().intake)
         expect(dozerSceneObject.ejectorPreferences).not.toEqual(defaultRobotPreferences().ejector)
     })

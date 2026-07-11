@@ -120,7 +120,7 @@ export const KeyboardAxisSelection: React.FC<InputSelectionProps> = ({ input, se
                 <Label size="md">{toTitleCase(input.inputName)}</Label>
 
                 <Stack direction="row" gap="10px" alignItems={"center"}>
-                    {SynthesisIcons.ADD}
+                    <SynthesisIcons.ADD />
                     {/* Positive key */}
                     <Button
                         key={`pos${input.inputName}`}
@@ -133,7 +133,7 @@ export const KeyboardAxisSelection: React.FC<InputSelectionProps> = ({ input, se
                             ? "..."
                             : transformKeyName(input.posKeyCode, input.posKeyModifiers)}
                     </Button>
-                    {SynthesisIcons.MINUS}
+                    <SynthesisIcons.MINUS />
                     {/* Negative key */}
                     <Button
                         key={`neg${input.inputName}`}
@@ -221,7 +221,7 @@ export const GamepadButtonAxisSelection: React.FC<InputSelectionProps> = ({
 
             <Stack direction="row" gap="10px" alignItems={"center"}>
                 {/* Positive gamepad button */}
-                {SynthesisIcons.ADD}
+                <SynthesisIcons.ADD />
                 <Button
                     key={`pos${input.inputName}`}
                     onClick={() => {
@@ -235,7 +235,7 @@ export const GamepadButtonAxisSelection: React.FC<InputSelectionProps> = ({
                           : gamepadButtons[input.posGamepadButton]}
                 </Button>
                 {/* // Negative gamepad button */}
-                {SynthesisIcons.MINUS}
+                <SynthesisIcons.MINUS />
                 <Button
                     key={`neg${input.inputName}`}
                     onClick={() => {

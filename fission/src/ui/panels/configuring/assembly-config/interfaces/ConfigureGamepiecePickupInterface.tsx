@@ -9,7 +9,6 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
@@ -92,7 +91,7 @@ function save(
 
     selectedRobot.intakePreferences.maxPieces = maxPieces!
     selectedRobot.intakePreferences.animationDuration = animationDuration!
-    PreferencesSystem.savePreferences()
+    selectedRobot.savePreferences()
 }
 
 interface ConfigPickupProps {
@@ -279,7 +278,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             <StatefulSlider
                 label="Max Pieces"
                 min={1}
-                max={10}
+                max={50}
                 step={1}
                 defaultValue={maxPieces ?? 1}
                 onChange={v => setMaxPieces(v as number)}
@@ -288,7 +287,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             {/* Checkbox for showing intake zone indicator at all times */}
             <Checkbox label="Show intake zone indicator always" checked={showZoneAlways} onClick={setShowZoneAlways} />
             {gizmoComponent}
-            {Spacer(10)}
+            <Spacer height={10} />
             <Button
                 onClick={() => {
                     if (gizmoRef.current) {

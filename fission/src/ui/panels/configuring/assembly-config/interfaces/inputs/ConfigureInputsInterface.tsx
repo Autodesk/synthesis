@@ -97,7 +97,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                         InputSchemeManager.resetDefaultSchemes(panel?.id)
 
                         // Find the scheme to remove in preferences
-                        const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+                        const schemes = PreferencesSystem.getUserPreference("InputSchemes")
                         const index = schemes.indexOf(val.scheme)
 
                         // If currently bound to a robot, remove the binding
@@ -111,7 +111,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                         schemes.splice(index, 1)
 
                         // Save to preferences
-                        PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
+                        PreferencesSystem.setUserPreference("InputSchemes", schemes)
                         PreferencesSystem.savePreferences()
 
                         // TODO: use preference event instead?

@@ -20,7 +20,6 @@ import type {
     RemoteSceneObjectId,
     UpdateObjectData,
 } from "./types"
-import PreferencesSystem from "../preferences/PreferencesSystem"
 import EventSystem from "@/systems/EventSystem.ts"
 
 export const peerMessageHandlers = {
@@ -66,7 +65,9 @@ function handlePeerInfo(data: ClientInfo) {
     globalAddToast("success", "Multiplayer Peer Connected", data.displayName)
     EventSystem.dispatch("MultiplayerStatePeerChange")
 }
+
 const clientToUpdateMap = new Map<string, number>()
+
 function handlePeerUpdate(data: UpdateObjectData[], peerId: string, timestamp: number) {
     const bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)!
 
@@ -184,7 +185,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
         return
     }
 
-    const object = await createMirabuf(assembly, handle, peerId)
+    const object = await createMirabuf(data.assemblyHash, assembly, handle, peerId)
     if (object == null) return
 
     const clientToObjectMap = World.multiplayerSystem?._clientToObjectMap
@@ -281,7 +282,7 @@ function handleObjectConfiguration(data: ObjectPreferences, peerId: string) {
             return
         }
         sceneObject.setPreferenceData(data.objectConfigurationData)
-        PreferencesSystem.savePreferences()
+        sceneObject.savePreferences()
     } else {
         pendingOperations.push(() => handleObjectConfiguration(data, peerId))
     }
