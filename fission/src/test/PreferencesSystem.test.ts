@@ -30,7 +30,7 @@ describe("Preferences System Global Values", () => {
 
         expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
     })
 
     test("Reset to default if undefined", () => {
@@ -40,7 +40,7 @@ describe("Preferences System Global Values", () => {
 
         expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
     })
 
     test("Setting then saving", () => {
@@ -68,7 +68,7 @@ describe("Preferences System Global Values", () => {
 
         expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
+        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
     })
 
     test("Graphics preferences", () => {
