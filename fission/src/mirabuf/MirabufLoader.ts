@@ -2,6 +2,7 @@ import { type Data, downloadData } from "@/aps/APSDataManagement"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
+import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
@@ -21,35 +22,8 @@ export interface MirabufRemoteInfo {
 }
 
 const localStorageEntryName = "MirabufAssets"
-let root: FileSystemDirectoryHandle
-let fsHandle: FileSystemDirectoryHandle
 
-export const canOPFS = await (async () => {
-    try {
-        root = await navigator.storage.getDirectory()
-        fsHandle = await root.getDirectoryHandle(localStorageEntryName, {
-            create: true,
-        })
-        if (fsHandle.name == localStorageEntryName) {
-            const fileHandle = await fsHandle.getFileHandle("0", {
-                create: true,
-            })
-            const writable = await fileHandle.createWritable()
-            await writable.close()
-            await fileHandle.getFile()
-
-            await fsHandle.removeEntry(fileHandle.name)
-
-            return true
-        } else {
-            console.log(`No access to OPFS`)
-            return false
-        }
-    } catch (_e) {
-        console.log(`No access to OPFS`)
-        return false
-    }
-})()
+const storageBackend: MirabufStorageBackend | null = await initStorageBackend()
 
 class CacheMap {
     private _map: Map<string, MirabufCacheInfo> = new Map()
@@ -71,8 +45,8 @@ class CacheMap {
             this.save()
             return
         }
-        if (!canOPFS) {
-            console.warn("no OPFS, can't load from cache")
+        if (!storageBackend) {
+            console.warn("no storage backend, can't load from cache")
             return
         }
         await Promise.all(
@@ -81,12 +55,9 @@ class CacheMap {
                     console.warn("malformed mirabuf cache info", data)
                     return
                 }
-                const hasFile = await fsHandle
-                    .getFileHandle(data.hash)
-                    .then(() => true)
-                    .catch(() => false)
+                const hasFile = await storageBackend.hasFile(data.hash)
                 if (!hasFile) {
-                    console.warn(`Could not find ${data.hash} (${data.name}) in OPFS`)
+                    console.warn(`Could not find ${data.hash} (${data.name}) in storage`)
                     return
                 }
                 this._map.set(data.hash, data)
@@ -157,7 +128,7 @@ class MirabufCachingService {
             this._cacheMap.clear()
         } else {
             this._cacheMap.load().then(() => {
-                if (canOPFS) {
+                if (storageBackend) {
                     setTimeout(() => this.clearExtraAssets()) // make sure nothing extra got left behind due to preferences clearing / whatever
                 }
             })
@@ -165,10 +136,11 @@ class MirabufCachingService {
     }
 
     private static async clearExtraAssets() {
-        const files = fsHandle.keys()
-        for await (const filename of files) {
+        if (!storageBackend) return
+        const files = await storageBackend.listFiles()
+        for (const filename of files) {
             if (!this._cacheMap.get(filename)) {
-                await fsHandle.removeEntry(filename)
+                await storageBackend.removeFile(filename)
             }
         }
     }
@@ -337,23 +309,14 @@ class MirabufCachingService {
                 console.warn(`${hash} not found in cache`)
                 return
             }
-            if (canOPFS) {
-                const fileHandle = await fsHandle.getFileHandle(hash, {
-                    create: false,
-                })
-                const buffer = await fileHandle
-                    .getFile()
-                    .then(x => x.arrayBuffer())
-                    .catch((e: DOMException) => {
-                        if (e.name != "FileNotFound") console.error("Error accessing OPFS", { error: e, hash })
-                        return undefined
-                    })
+            if (storageBackend) {
+                const buffer = await storageBackend.readFile(hash)
                 if (!buffer) {
-                    console.warn(`Could not find ${hash} in OPFS`)
+                    console.warn(`Could not find ${hash} in storage`)
                     return undefined
                 }
                 this._inMemoryCache[hash] = buffer
-                console.log(`Retrieved ${info?.name ?? hash} from OPFS`)
+                console.log(`Retrieved ${info?.name ?? hash} from storage`)
                 return { buffer: buffer, info }
             }
             console.warn("Could not find assembly for hash", hash, info)
@@ -377,8 +340,8 @@ class MirabufCachingService {
 
             this._cacheMap.remove(hash)
             delete this._inMemoryCache[hash]
-            if (canOPFS) {
-                await fsHandle.removeEntry(hash)
+            if (storageBackend) {
+                await storageBackend.removeFile(hash)
             }
             if (!info) {
                 console.warn("couldn't find cached item to remove", hash)
@@ -406,15 +369,8 @@ class MirabufCachingService {
         localStorage.removeItem("Robots")
         localStorage.removeItem("Fields")
         localStorage.removeItem("Pieces")
-        if (canOPFS) {
-            // Remove old separated directories
-            root.removeEntry("Robots", { recursive: true }).catch(() => {})
-            root.removeEntry("Fields", { recursive: true }).catch(() => {})
-            root.removeEntry("Pieces", { recursive: true }).catch(() => {})
-
-            for await (const key of fsHandle.keys()) {
-                await fsHandle.removeEntry(key).catch(e => console.warn("could not remove file", key, e))
-            }
+        if (storageBackend) {
+            await storageBackend.removeAll()
         }
         Object.keys(this._inMemoryCache).forEach(key => delete this._inMemoryCache[key])
         this._cacheMap.clear()
@@ -450,14 +406,10 @@ class MirabufCachingService {
                 hash: hash,
             }
 
-            // Store buffer
-            if (!canOPFS) return info
+            // Store buffer in persistent storage
+            if (!storageBackend) return info
 
-            // Store in OPFS
-            const fileHandle = await fsHandle.getFileHandle(info.hash, { create: true })
-            const writable = await fileHandle.createWritable()
-            await writable.write(buffer)
-            await writable.close()
+            await storageBackend.writeFile(info.hash, buffer)
 
             this._cacheMap.store(info)
 
