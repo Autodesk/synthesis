@@ -97,6 +97,9 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         )
 
         this.bounding = new JOLT.OrientedBox(transform, halfExtent)
+
+        JOLT.destroy(transform)
+        JOLT.destroy(halfExtent)
     }
 
     private setMeshProperties(props: VisualProperties) {

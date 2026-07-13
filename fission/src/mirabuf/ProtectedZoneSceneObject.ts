@@ -12,7 +12,7 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { findListDifference, forPair, renderOrientedBox } from "@/util/Utility"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
-const DEBUG_BOUNDING_BOXES = true
+const DEBUG_BOUNDING_BOXES = false
 
 type RobotBox = [MirabufSceneObject, Jolt.OrientedBox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
@@ -60,7 +60,12 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             .map(robot => [robot, robot.getOrientedBoundingBox()] as RobotBox)
 
         if (DEBUG_BOUNDING_BOXES) {
-            this.robotBounding?.forEach(m => World.sceneRenderer.removeObject(m))
+            this.robotBounding?.forEach(m => {
+                World.sceneRenderer.removeObject(m)
+                m.geometry.dispose()
+                const materials = Array.isArray(m.material) ? m.material : [m.material]
+                materials.forEach(mat => mat.dispose())
+            })
             this.robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
         }
 

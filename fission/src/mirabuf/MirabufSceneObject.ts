@@ -66,7 +66,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { hexStringToUint8Array } from "@/util/Utility.ts"
+import { hexStringToUint8Array, multiplyMat44ByVec3 } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -776,9 +776,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      */
     private computeFurthestVertices() {
         this._furthestVertices = {
-            x: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
-            y: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
-            z: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
+            x: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
+            y: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
+            z: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
         }
 
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
@@ -805,10 +805,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
             )
 
+            const vertex = new JOLT.RVec3()
+            const transformedVertex = new JOLT.RVec3()
             for (let i = 0; i < vertices.length; i += 3) {
                 // Transform the vertex into the position it would occupy if the robot were axis aligned
-                const vertex = new JOLT.Vec3(vertices[i], vertices[i + 1], vertices[i + 2])
-                const transformedVertex = vertexTransform.MulVec3(vertex)
+                vertex.Set(vertices[i], vertices[i + 1], vertices[i + 2])
+                multiplyMat44ByVec3(transformedVertex, vertex, vertexTransform)
 
                 const transX = transformedVertex.GetX()
                 const transY = transformedVertex.GetY()
@@ -829,6 +831,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             }
 
             JOLT.destroy(triangleContext)
+            JOLT.destroy(vertex)
+            JOLT.destroy(transformedVertex)
         })
 
         JOLT.destroy(scale)

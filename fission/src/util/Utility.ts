@@ -63,6 +63,7 @@ export function hexStringToUint8Array(hexString: string) {
     }
     return arrayBuffer
 }
+
 // biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`
 export function tryParse(data: string): any {
     try {
@@ -137,4 +138,17 @@ export function downloadBlob(filename: string, data: BlobPart): void {
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
     }, 0)
+}
+
+export function multiplyMat44ByVec3(output: Jolt.RVec3, vec: Jolt.RVec3, matrix: Jolt.RMat44): void {
+    const [vecX, vecY, vecZ] = [vec.GetX(), vec.GetY(), vec.GetZ()]
+
+    const col0 = matrix.GetColumn4(0)
+    const col1 = matrix.GetColumn4(1)
+    const col2 = matrix.GetColumn4(2)
+    const col3 = matrix.GetColumn4(3)
+
+    output.SetX(col0.GetX() * vecX + col1.GetX() * vecY + col2.GetX() * vecZ + col3.GetX())
+    output.SetY(col0.GetY() * vecX + col1.GetY() * vecY + col2.GetY() * vecZ + col3.GetY())
+    output.SetZ(col0.GetZ() * vecX + col1.GetZ() * vecY + col2.GetZ() * vecZ + col3.GetZ())
 }
