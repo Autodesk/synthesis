@@ -15,10 +15,9 @@ import {
     CustomTargetControls,
 } from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
-import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
-import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
 import { rayCastForRigidBody } from "@/util/RaycastUtils"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import type { GraphicsPreferences } from "../preferences/PreferenceTypes"
@@ -613,9 +612,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel(ImportMirabufPanel, {
-                        configurationType: "ROBOTS" as ConfigurationType,
-                    })
+                    globalOpenModal(LibraryModal, {})
                 },
             })
         }

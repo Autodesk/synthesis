@@ -8,6 +8,9 @@ export interface StateProviderProps {
 }
 
 export interface AppState {
+    // LibraryModal / ImportLocalMirabufModal
+    unconfirmedImport: boolean
+    setUnconfirmedImport: (_state: boolean) => void
     // ConfigureInputs stuff
     selectedScheme?: InputScheme
     setSelectedScheme: (_scheme: InputScheme | undefined) => void
@@ -20,6 +23,8 @@ export interface AppState {
 }
 
 export const StateContext = createContext<AppState>({
+    unconfirmedImport: false,
+    setUnconfirmedImport: () => {},
     selectedScheme: undefined,
     setSelectedScheme: () => {},
     appMode: "Configure",

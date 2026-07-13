@@ -5,7 +5,7 @@ import World from "@/systems/World.ts"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
 import type { ConfigurationType } from "../ConfigTypes"
 import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -45,7 +45,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     onStageDelete,
     pendingDeletes,
 }) => {
-    const { openPanel, closePanel } = useUIContext()
+    const { openModal, closePanel } = useUIContext()
 
     const getRobots = useCallback(
         () => World.sceneRenderer.mirabufSceneObjects.getRobots().filter(x => !pendingDeletes.includes(x.id)),
@@ -89,7 +89,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
             onAddClicked={() => {
                 // Save current configuration first, then open Spawn panel next tick
                 closePanel(panel!.id, CloseType.Accept)
-                setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
+                setTimeout(() => openModal(LibraryModal, {}), 0)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
             defaultSelectedOption={selectedAssembly ? makeSelectionOption(selectedAssembly) : undefined}

@@ -24,11 +24,13 @@ export type TourAnchorId =
  * - `panel-open`: a panel with the given component name opens (rising edge only, so an
  *   already-open panel does not immediately advance). `configMode` further narrows it to
  *   a ConfigurePanel opened in a specific mode.
+ * - `modal-open`: the modal with the given component name opens (rising edge only).
  * - `spawn`: an asset of the given {@link MiraType} is spawned.
  * - `event`: a one-shot `EventSystem` event fires.
  */
 export type AdvanceTrigger =
     | { kind: "panel-open"; panelName: string; configMode?: ConfigMode }
+    | { kind: "modal-open"; modalName: string }
     | { kind: "spawn"; miraType: MiraType }
     | { kind: "event"; event: "ConfigurationSavedEvent" }
 
@@ -54,11 +56,11 @@ export const TOUR_STEPS: TourStep[] = [
         body: "First we need a field. Open the assets library with the Add Assembly button.",
         anchorId: "add-assembly",
         placement: "bottom-start",
-        advanceOn: { kind: "panel-open", panelName: "ImportMirabufPanel" },
+        advanceOn: { kind: "modal-open", modalName: "LibraryModal" },
     },
     {
         title: "Open the Library",
-        body: "The library lets you search fields and robots by year. Switch to the FIELDS tab and select the 2026 field.",
+        body: "The library groups fields and robots by year. Select the 2026 year tab and spawn the field.",
         anchorId: "spawn-panel",
         placement: "left",
         advanceOn: { kind: "spawn", miraType: MiraType.FIELD },
@@ -71,7 +73,7 @@ export const TOUR_STEPS: TourStep[] = [
     },
     {
         title: "Choose a Robot",
-        body: "With the library open, go to the 2026 section and select a robot.",
+        body: "With the library open, on the 2026 year tab, pick a robot.",
         anchorId: "spawn-panel",
         placement: "left",
         advanceOn: { kind: "spawn", miraType: MiraType.ROBOT },

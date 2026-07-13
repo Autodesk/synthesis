@@ -3,7 +3,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import { useIsMobile } from "@/ui/helpers/useIsMobile"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import type { Panel } from "@/ui/helpers/UIProviderHelpers"
+import type { Modal, Panel } from "@/ui/helpers/UIProviderHelpers"
 import { TourContext, type TourContextValue } from "./TourProviderHelpers"
 import type { AdvanceTrigger, TourAnchorId } from "./tourSteps"
 import { TOUR_STEPS } from "./tourSteps"
@@ -19,8 +19,17 @@ function isPanelOpen(panels: Panel<unknown, unknown>[], trigger: Extract<Advance
     })
 }
 
+/** True when the open modal matches the trigger. */
+function isModalOpen(
+    modal: Modal<unknown, unknown> | undefined,
+    trigger: Extract<AdvanceTrigger, { kind: "modal-open" }>
+) {
+    const name = (modal?.content as unknown as { name?: string })?.name
+    return name === trigger.modalName
+}
+
 export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) => {
-    const { panels } = useUIContext()
+    const { panels, modal } = useUIContext()
     const isMobile = useIsMobile()
 
     const [active, setActive] = useState(false)
@@ -101,6 +110,26 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
         }
         edgeRef.current.wasOpen = openNow
     }, [active, stepIndex, panels, next])
+
+    // Auto-advance on `modal-open` triggers, rising-edge only (same shape as the panel effect).
+    const modalEdgeRef = useRef<{ step: number; wasOpen: boolean }>({ step: -1, wasOpen: false })
+    useEffect(() => {
+        if (!active) return
+        const trigger = TOUR_STEPS[stepIndex]?.advanceOn
+        if (trigger?.kind !== "modal-open") return
+
+        const openNow = isModalOpen(modal, trigger)
+        if (modalEdgeRef.current.step !== stepIndex) {
+            modalEdgeRef.current = { step: stepIndex, wasOpen: openNow }
+            return
+        }
+        if (openNow && !modalEdgeRef.current.wasOpen) {
+            modalEdgeRef.current.wasOpen = true
+            next()
+            return
+        }
+        modalEdgeRef.current.wasOpen = openNow
+    }, [active, stepIndex, modal, next])
 
     // Auto-advance on `spawn` / `event` triggers via EventSystem.
     useEffect(() => {
