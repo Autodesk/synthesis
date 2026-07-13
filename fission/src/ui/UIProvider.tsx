@@ -96,6 +96,25 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             props: Omit<ModalProps<P>, "type" | "configured" | "custom"> &
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS
         ) => {
+            // Block opening the asset Library while an assembly is actively being configured
+            // (mirrors the panel-level guard that used to apply when the Library was a panel).
+            const contentName = (content as unknown as { name?: string })?.name ?? ""
+            if (contentName === "LibraryModal") {
+                const configuring = panels.find(p => {
+                    const name = (p.content as unknown as { name?: string })?.name ?? ""
+                    if (name !== "ConfigurePanel") return false
+                    const custom = (p.props as unknown as { custom?: any })?.custom ?? {}
+                    return Boolean(custom?.selectedAssembly) || custom?.configMode !== undefined
+                })
+                if (configuring) {
+                    enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
+                        variant: "warning",
+                        action: snackbarAction,
+                    })
+                    return ""
+                }
+            }
+
             const id = uuidv4()
             const newModal = {
                 id,
@@ -126,7 +145,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setModal(newModal as Modal<any, any>)
             return id
         },
-        [modal]
+        [modal, panels]
     )
 
     const openPanel: OpenPanelFn = useCallback(
@@ -173,7 +192,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
             const contentName = (content as unknown as { name?: string })?.name ?? ""
-            const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel", "InitialConfigPanel"]
+            const mutuallyExclusive = ["ConfigurePanel", "InitialConfigPanel"]
             const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
             if (mutuallyExclusive.includes(contentName)) {
                 const existing = panels.find(p =>
@@ -184,8 +203,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     // warn the user and keep Configure open. Otherwise, replace existing with the new panel.
                     const existingName = (existing.content as unknown as { name?: string })?.name ?? ""
                     const isExistingConfigure = existingName === "ConfigurePanel"
-                    const isNewSpawnOrInit =
-                        contentName === "ImportMirabufPanel" || contentName === "InitialConfigPanel"
+                    const isNewSpawnOrInit = contentName === "InitialConfigPanel"
                     if (isExistingConfigure && isNewSpawnOrInit) {
                         // Only block if actively configuring an assembly (has selection or a mode set)
                         const custom = (existing.props as unknown as { custom?: any })?.custom ?? {}

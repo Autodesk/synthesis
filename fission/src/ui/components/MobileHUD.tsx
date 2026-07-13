@@ -11,9 +11,8 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
 import MultiplayerStartModal from "../modals/MultiplayerStartModal"
-import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
-import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "../modals/mirabuf/LibraryModal"
 import { setAddToast, setOpenModal, setOpenPanel, globalAddToast } from "./GlobalUIControls"
 import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
 import HUDMenuButton from "./topbar/HUDMenuButton"
@@ -102,11 +101,7 @@ const MobileHUD: React.FC = () => {
                 <HUDMenuButton
                     label="Add Assembly"
                     iconName="add"
-                    onClick={() =>
-                        runAction(() =>
-                            openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
-                        )
-                    }
+                    onClick={() => runAction(() => openModal(LibraryModal, {}))}
                 />
 
                 <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />

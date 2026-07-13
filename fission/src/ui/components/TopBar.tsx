@@ -9,11 +9,10 @@ import { deobf } from "@/util/Utility"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
-import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 import CameraSelectionPanel from "../panels/configuring/CameraSelectionPanel"
 import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import DebugPanel from "../panels/DebugPanel"
-import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "../modals/mirabuf/LibraryModal"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
 import { useTourAnchor } from "@/ui/tour/useTourAnchor"
@@ -123,9 +122,7 @@ const TopBar: React.FC = () => {
                         size="large"
                         disableRipple
                         sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() =>
-                            openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
-                        }
+                        onClick={() => openModal(LibraryModal, {})}
                     >
                         <TopBarIcon name="add" size={40} />
                     </IconButton>

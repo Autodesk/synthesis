@@ -8,7 +8,7 @@ export interface StateProviderProps {
 }
 
 export interface AppState {
-    // ImportMirabufPanel
+    // LibraryModal / ImportLocalMirabufModal
     unconfirmedImport: boolean
     setUnconfirmedImport: (_state: boolean) => void
     // ConfigureInputs stuff
