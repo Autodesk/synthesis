@@ -322,7 +322,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.updateBatches()
 
-        this._basePositionTransform = this.getPositionTransform()
+        this._basePositionTransform = this.getXYPositionTransform()
 
         this.moveToSpawnLocation()
 
@@ -339,13 +339,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     // Centered in x-z plane, bottom surface of object
-    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
+    public getXYPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
         const box = this.computeBoundingBox()
 
         const transform = box.getCenter(vec)
         transform.setY(box.min.y)
 
         return transform
+    }
+
+    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
+        const box = this.computeBoundingBox()
+        return box.getCenter(vec)
     }
 
     public moveToSpawnLocation() {
@@ -369,7 +374,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // TODO
         // Why are we calling this?
-        field?.getPositionTransform(referencePos)
+        field?.getXYPositionTransform(referencePos)
 
         return pos
     }

@@ -12,7 +12,7 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { findListDifference, forPair, renderOrientedBox } from "@/util/Utility"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
-const DEBUG_BOUNDING_BOXES = false
+const DEBUG_BOUNDING_BOXES = true
 
 type RobotBox = [MirabufSceneObject, Jolt.OrientedBox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
