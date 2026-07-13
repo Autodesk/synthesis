@@ -82,11 +82,9 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     }
 
     /**
-     * Draws a bounding box around `this.mesh`
+     * Constructs a bounding box given a set of visual properties, putting it in `this.bounding`
      *
-     * In order for the bounding box to be up-to-date, either `this.createVisualMesh` or `this.setMeshProperties` must be called first
-     *
-     * In the future, we should probably create the bounding box from `VisualProperties`, but I couldn't get that to work
+     * The bounding box should be guaranteed to fit the same physical space as `this.mesh`
      */
     private createBoundingBox(props: VisualProperties) {
         if (!this.mesh) return
@@ -133,7 +131,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     }
 
     /**
-     * Returns `undefined` when the visual properties for this zone have not changed
+     * @returns `undefined` when the visual properties for this zone have not changed
      */
     private generateVisualProperties(): VisualProperties | undefined {
         // `GetWorldTransform` returns a reference, destroying it causes a memory out of bounds later

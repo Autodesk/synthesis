@@ -149,9 +149,6 @@ class PhysicsSystem extends WorldSystem {
         return this._pauseSet.size > 0
     }
 
-    public get bodies(): readonly Jolt.BodyID[] {
-        return this._bodies
-    }
     public get sphereGamePieceBodies(): readonly Jolt.BodyID[] {
         return this._sphereGamePieceBodies
     }

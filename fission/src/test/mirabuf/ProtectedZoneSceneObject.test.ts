@@ -9,7 +9,7 @@ import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertAABBToOBB } from "@/util/TypeConversions"
+import { convertAxisAlignedToOrientedBoundingBox } from "@/util/TypeConversions"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -75,12 +75,14 @@ type RobotsInside = "red" | "blue" | "neither" | "both"
 
 const boundingConfigMap: Record<RobotsInside, Jolt.OrientedBox> = {
     // Just `redBox` translated -0.5 along the x-axis
-    red: convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(-0.5, 0, 0), new JOLT.Vec3(0.5, 1, 1))),
+    red: convertAxisAlignedToOrientedBoundingBox(new JOLT.AABox(new JOLT.Vec3(-0.5, 0, 0), new JOLT.Vec3(0.5, 1, 1))),
     // Just `blueBox` translated +0.5 along the x-axis
-    blue: convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(1.5, 0, 0), new JOLT.Vec3(2.5, 1, 1))),
+    blue: convertAxisAlignedToOrientedBoundingBox(new JOLT.AABox(new JOLT.Vec3(1.5, 0, 0), new JOLT.Vec3(2.5, 1, 1))),
 
-    neither: convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(-1, -1, -1), new JOLT.Vec3(-2, -2, -2))),
-    both: convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(3, 3, 3))),
+    neither: convertAxisAlignedToOrientedBoundingBox(
+        new JOLT.AABox(new JOLT.Vec3(-1, -1, -1), new JOLT.Vec3(-2, -2, -2))
+    ),
+    both: convertAxisAlignedToOrientedBoundingBox(new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(3, 3, 3))),
 }
 
 describe("ProtectedZoneSceneObject", () => {
@@ -93,8 +95,14 @@ describe("ProtectedZoneSceneObject", () => {
             alliance,
             getOrientedBoundingBox: vi.fn(
                 alliance === "red"
-                    ? () => convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(1, 1, 1)))
-                    : () => convertAABBToOBB(new JOLT.AABox(new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(2, 1, 1)))
+                    ? () =>
+                          convertAxisAlignedToOrientedBoundingBox(
+                              new JOLT.AABox(new JOLT.Vec3(0, 0, 0), new JOLT.Vec3(1, 1, 1))
+                          )
+                    : () =>
+                          convertAxisAlignedToOrientedBoundingBox(
+                              new JOLT.AABox(new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(2, 1, 1))
+                          )
             ),
         } as unknown as MirabufSceneObject
 

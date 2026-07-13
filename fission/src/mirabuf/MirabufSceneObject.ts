@@ -761,6 +761,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    /**
+     * Gets the tightest fitting oriented bounding box around the robot, centered at the robot's origin.
+     *
+     * @returns The aforementioned bounding box
+     */
     public getOrientedBoundingBox(): Jolt.OrientedBox {
         if (!this._furthestVertices) {
             this._furthestVertices = {

@@ -12,6 +12,8 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { findListDifference, forPair, renderOrientedBox } from "@/util/Utility"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
+const DEBUG_BOUNDING_BOXES = false
+
 type RobotBox = [MirabufSceneObject, Jolt.OrientedBox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
 
@@ -58,8 +60,10 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             .getRobots()
             .map(robot => [robot, robot.getOrientedBoundingBox()] as RobotBox)
 
-        this.robotBounding?.forEach(m => World.sceneRenderer.removeObject(m))
-        this.robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
+        if (DEBUG_BOUNDING_BOXES) {
+            this.robotBounding?.forEach(m => World.sceneRenderer.removeObject(m))
+            this.robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
+        }
 
         const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
         const oldRobotsInZone = [...this._robotsInside.keys()]
@@ -130,7 +134,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     }
 
     private penalizeEnteringZone(robot: MirabufSceneObject) {
-        if (robot.alliance != this.prefs.alliance)
+        if (robot.alliance !== this.prefs.alliance)
             ScoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
 
         this._robotsInside.set(robot, Date.now())
