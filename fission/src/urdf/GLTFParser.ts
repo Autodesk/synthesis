@@ -137,7 +137,6 @@ function readIndexAccessor(doc: GLTFDocument, accessorIndex: number, buffers: Ui
 }
 
 // Column-major 4x4 multiply: result = a * b
-// https://en.wikipedia.org/wiki/Matrix_multiplication#Matrix_times_matrix
 function mat4Mul(a: Mat4, b: Mat4): Mat4 {
     const out = new Array(16) // every slot is overwritten below, no need to zero it first
     for (let c = 0; c < 4; c++) {
@@ -171,24 +170,15 @@ function quatScaleToMat4(
     const wy = w * y2
     const wz = w * z2
     const [sx, sy, sz] = s
+
+    // biome-ignore-start format: We would prefer to visualize this as a matrix
     return [
-        (1 - (yy + zz)) * sx,
-        (xy + wz) * sx,
-        (xz - wy) * sx,
-        0,
-        (xy - wz) * sy,
-        (1 - (xx + zz)) * sy,
-        (yz + wx) * sy,
-        0,
-        (xz + wy) * sz,
-        (yz - wx) * sz,
-        (1 - (xx + yy)) * sz,
-        0,
-        t[0],
-        t[1],
-        t[2],
-        1,
+        (1 - (yy + zz)) * sx, (xy + wz) * sx, (xz - wy) * sx, 0,
+        (xy - wz) * sy, (1 - (xx + zz)) * sy, (yz + wx) * sy, 0,
+        (xz + wy) * sz, (yz - wx) * sz, (1 - (xx + yy)) * sz, 0,
+        t[0], t[1], t[2], 1,
     ]
+    // biome-ignore-end format
 }
 
 function nodeLocalMatrix(node: GLTFNode): Mat4 {

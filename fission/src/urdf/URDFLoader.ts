@@ -2,7 +2,6 @@ import JSZip from "jszip"
 import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
-import { URDF_WHEEL_TAG } from "./URDFUserData"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "gltf", "bin"])
 
@@ -26,9 +25,6 @@ export function applyConservativeURDFImport(assembly: mirabuf.Assembly): void {
         const isDetectedWheel = jointDefinition?.userData?.data?.["wheel"] === "true"
 
         if (isDetectedWheel && jointInstance.jointReference) {
-            jointDefinition.userData ??= { data: {} }
-            jointDefinition.userData.data ??= {}
-            jointDefinition.userData.data[URDF_WHEEL_TAG] = "true"
             keptJointInstances[name] = jointInstance
             keptJointDefinitions[jointInstance.jointReference] = jointDefinition
             continue

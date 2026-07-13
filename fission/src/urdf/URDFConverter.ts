@@ -3,6 +3,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import { parseGLTF } from "./GLTFParser"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
+import { URDF_IMPORT_TAG } from "./URDFUserData"
 
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
 // Frame change matrix: Rx(-90°) = [[1,0,0],[0,0,1],[0,-1,0]]
@@ -41,17 +42,14 @@ interface URDFJoint {
 
 type Mat3 = number[][]
 
-// https://en.wikipedia.org/wiki/Matrix_multiplication#Matrix_times_matrix
 function mat3Mul(a: Mat3, b: Mat3): Mat3 {
     return [0, 1, 2].map(i => [0, 1, 2].map(j => [0, 1, 2].reduce((s, k) => s + a[i][k] * b[k][j], 0)))
 }
 
-// https://en.wikipedia.org/wiki/Matrix_multiplication#Matrix_times_vector
 function mat3VecMul(m: Mat3, v: [number, number, number]): [number, number, number] {
     return [0, 1, 2].map(i => m[i][0] * v[0] + m[i][1] * v[1] + m[i][2] * v[2]) as [number, number, number]
 }
 
-// https://en.wikipedia.org/wiki/Transpose
 function transpose3(m: Mat3): Mat3 {
     return [0, 1, 2].map(i => [0, 1, 2].map(j => m[j][i]))
 }
@@ -127,22 +125,18 @@ function addVec3(a: [number, number, number], b: [number, number, number]): [num
     return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
 }
 
-// https://en.wikipedia.org/wiki/Affine_transformation#Representation
 function transformPoint(t: URDFTransform, p: [number, number, number]): [number, number, number] {
     return addVec3(t.position, mat3VecMul(t.rotation, p))
 }
 
-// https://en.wikipedia.org/wiki/Linear_map
 function transformDirection(t: URDFTransform, d: [number, number, number]): [number, number, number] {
     return mat3VecMul(t.rotation, d)
 }
 
-// https://en.wikipedia.org/wiki/Affine_transformation#Groups
 function inverseTransformPoint(t: URDFTransform, p: [number, number, number]): [number, number, number] {
     return mat3VecMul(transpose3(t.rotation), [p[0] - t.position[0], p[1] - t.position[1], p[2] - t.position[2]])
 }
 
-// https://en.wikipedia.org/wiki/Forward_kinematics
 function buildGlobalJointFrames(joints: URDFJoint[], rootName: string): Map<string, JointFrame> {
     const childrenOf = new Map<string, URDFJoint[]>()
     for (const joint of joints) {
@@ -180,7 +174,6 @@ function buildGlobalJointFrames(joints: URDFJoint[], rootName: string): Map<stri
 }
 
 // Accumulate each link's global transform (URDF Z-up metres) by walking the joint tree.
-// https://en.wikipedia.org/wiki/Forward_kinematics
 function buildGlobalLinkTransforms(joints: URDFJoint[], rootName: string): Map<string, URDFTransform> {
     const childrenOf = new Map<string, URDFJoint[]>()
     for (const joint of joints) {
@@ -209,7 +202,7 @@ function buildGlobalLinkTransforms(joints: URDFJoint[], rootName: string): Map<s
     return transforms
 }
 
-// Rotation magnitude (radians) of a 3x3 rotation matrix - used to test whether a transform is "trivial".
+// Rotation magnitude (radians) of a 3x3 rotation matrix. Used to test whether a transform is "trivial".
 // https://en.wikipedia.org/wiki/Axis-angle_representation
 function rotationAngle(m: Mat3): number {
     const trace = m[0][0] + m[1][1] + m[2][2]
@@ -903,12 +896,11 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
         dynamic: true,
         designHierarchy: hierarchy,
         data: {
-            parts: { partDefinitions, partInstances },
+            parts: { partDefinitions, partInstances, userData: { data: { [URDF_IMPORT_TAG]: "true" } } },
             // motorDefinitions must be an object: PhysicsSystem.ts:375 indexes it before any null-check
             joints: { jointDefinitions, jointInstances, rigidGroups, motorDefinitions: {} },
             // appearances must be an object (not undefined/null): loadMaterials calls Object.entries on it
-            // physicalMaterials must be an object (not undefined): PhysicsSystem.ts:918 indexes it directly
-            // before the null-check at line 922, so undefined throws, an empty map is fine
+            // physicalMaterials must be an object (not undefined), an empty map is fine here
             materials: { appearances, physicalMaterials: {} },
         },
     })

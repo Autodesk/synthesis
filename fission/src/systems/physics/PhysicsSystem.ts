@@ -28,9 +28,9 @@ import {
     inferURDFAutoWheelBasis,
     inferWheelDimensionsFromAxle,
     inferWheelRadius,
-    isURDFWheel,
     type WheelBasis,
 } from "./URDFWheelPhysics"
+import { isURDFImport } from "@/urdf/URDFUserData"
 import {
     applyHingeLimits,
     applySliderLimits,
@@ -402,6 +402,7 @@ class PhysicsSystem extends WorldSystem {
     public createJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!
         const joints = Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][]
+        const urdfImport = isURDFImport(parser.assembly)
 
         // Resolve a radius per wheel up front, grouping same-size wheels so they rest coplanar.
         // Independently tessellated meshes (URDF) otherwise yield sub-millimeter radius variance that,
@@ -486,6 +487,7 @@ class PhysicsSystem extends WorldSystem {
                             bodyOne,
                             bodyTwo,
                             parser.assembly.info!.version!,
+                            urdfImport,
                             wheelRadii.get(jointGuid)
                         )
                         addConstraint(fixedConstraint)
@@ -657,6 +659,7 @@ class PhysicsSystem extends WorldSystem {
     private resolveWheelRadii(parser: MirabufParser, mechanism: Mechanism): Map<string, number> {
         const jointData = parser.assembly.data!.joints!
         const versionNum = parser.assembly.info!.version!
+        const urdfImport = isURDFImport(parser.assembly)
         const wheels: { guid: string; radius: number }[] = []
 
         for (const [jointGuid, jointInst] of Object.entries(jointData.jointInstances!) as [
@@ -681,7 +684,7 @@ class PhysicsSystem extends WorldSystem {
             const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
             const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
             const axis = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
-            const radius = inferWheelRadius(jDef, bodyWheel.GetShape().GetLocalBounds(), axis)
+            const radius = inferWheelRadius(urdfImport, bodyWheel.GetShape().GetLocalBounds(), axis)
             JOLT.destroy(axis)
 
             wheels.push({ guid: jointGuid, radius })
@@ -726,6 +729,7 @@ class PhysicsSystem extends WorldSystem {
         bodyMain: Jolt.Body,
         bodyWheel: Jolt.Body,
         versionNum: number,
+        urdfImport: boolean,
         resolvedRadius?: number
     ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
@@ -740,8 +744,7 @@ class PhysicsSystem extends WorldSystem {
         // fresh vector here rather than scaling unitAxis itself.
         const axis = new JOLT.Vec3(unitAxis.GetX() * 0.1, unitAxis.GetY() * 0.1, unitAxis.GetZ() * 0.1)
 
-        const urdfAutoWheel = isURDFWheel(jointDefinition)
-        const urdfWheelBasis = urdfAutoWheel ? inferURDFAutoWheelBasis(unitAxis) : undefined
+        const urdfWheelBasis = urdfImport ? inferURDFAutoWheelBasis(unitAxis) : undefined
         const bounds = bodyWheel.GetShape().GetLocalBounds()
         const wheelDimensions = urdfWheelBasis
             ? inferWheelDimensionsFromAxle(bounds, unitAxis)
