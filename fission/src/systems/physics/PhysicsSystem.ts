@@ -1151,9 +1151,12 @@ class PhysicsSystem extends WorldSystem {
         })
 
         if (points.size() < 4) {
+            if (DEBUG_COLLIDER_WARNINGS) console.warn("Could not create convex shape for part")
+
             JOLT.destroy(settings)
             JOLT.destroy(min)
             JOLT.destroy(max)
+
             return
         }
 
