@@ -324,6 +324,25 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.moveToSpawnLocation()
 
+        // [dev-GamePiece logging] Capture final rendered positions after spawn repositioning.
+        // Game piece Jolt bodies sit at (0, fieldRootY, 0); the real world X/Z comes from
+        // premultiplying the part's globalTransform by the body's world transform (see
+        // updateNodeParts), so we mirror that here instead of reading raw body position.
+        this.mirabufInstance.parser.rigidNodes.forEach(rn => {
+            if (!rn.isGamePiece) return
+            const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
+            if (!jBodyId) return
+            const body = World.physicsSystem.getBody(jBodyId)!
+            const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform(), true)
+            const part = rn.parts.values().next().value!
+            const partTransform = this.mirabufInstance.parser.globalTransforms.get(part)!.clone().premultiply(bodyTransform)
+            const pos = new THREE.Vector3().setFromMatrixPosition(partTransform)
+            console.debug(
+                `[dev-GamePiece] '${rn.id}' final rendered position (post-spawn):\n` +
+                `  x=${pos.x}, y=${pos.y}, z=${pos.z}`
+            )
+        })
+
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
 
         if (this.isOwnObject && (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider)) {
@@ -366,10 +385,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.setObjectPosition(pos, referencePos)
     }
 
-    // Game piece bodies are created at origin (0,0,0) by Jolt. Their globalTransforms
-    // encode world-space field positions, so body × globalTransform gives the correct
-    // visual and collision placement without moving X/Z (which would double-offset).
-    // We apply only the field's root body Y so pieces sit on the field surface.
+    // Game piece globalTransforms are relative to the field's unshifted design origin, so
+    // they need the field's current (re-centered) root body transform applied, not just Y.
     private spawnGamePiece() {
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) return
@@ -377,27 +394,24 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const fieldRootBodyId = field.mechanism.getBodyByNodeId(field.mechanism.rootBody)
         if (!fieldRootBodyId) return
 
-        const fieldRootY = World.physicsSystem.getBody(fieldRootBodyId)!.GetPosition().GetY()
-        const yUnitVec = new JOLT.Vec3(0, 1, 0)
-        const identityRot = JOLT.Quat.prototype.sRotation(yUnitVec, 0)
+        const fieldRootBody = World.physicsSystem.getBody(fieldRootBodyId)!
+        const fieldRootPos = fieldRootBody.GetPosition()
+        const fieldRootRot = fieldRootBody.GetRotation()
         const blankVec = new JOLT.Vec3()
 
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
             const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
             if (!jBodyId) return
-            const yPos = new JOLT.RVec3(0, fieldRootY, 0)
             World.physicsSystem.setBodyPositionRotationAndVelocity(
                 jBodyId,
-                yPos,
-                identityRot,
+                fieldRootPos,
+                fieldRootRot,
                 blankVec,
                 blankVec,
                 false
             )
-            JOLT.destroy(yPos)
         })
 
-        JOLT.destroy(yUnitVec)
         JOLT.destroy(blankVec)
         this.updateMeshTransforms()
     }

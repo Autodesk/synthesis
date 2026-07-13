@@ -208,7 +208,10 @@ class MirabufParser {
             .map(inst => {
                 const instNode = this.binarySearchDesignTree(inst.info!.GUID!)
                 if (instNode == null) {
-                    this.NewError(ParseErrorSeverity.LIKELY_ISSUES, "Failed to find game piece in Design Tree")
+                    this.NewError(
+                        ParseErrorSeverity.LIKELY_ISSUES,
+                        `Failed to find game piece in Design Tree: GUID='${inst.info!.GUID}' name='${inst.info!.name}'`
+                    )
                     return
                 }
                 // Trick to capture and delete references to gamePiece
@@ -218,6 +221,8 @@ class MirabufParser {
                 this.movePartToRigidNode(instNode!.value!, gpRn)
                 if (instNode.children)
                     this.traverseTree(instNode.children, x => this.movePartToRigidNode(x.value!, gpRn))
+                // Includes descendants (e.g. a collision sub-part) so their data carries over too
+                const allParts = [...gpRn.parts]
                 this.deleteRigidNode(gpRn)
 
                 // Delete partInstances
@@ -227,7 +232,7 @@ class MirabufParser {
 
                 // Assumes that the game piece is composed of one instance
                 const worldTransform = this._globalTransforms.get(inst.info!.GUID!)
-                return this.convertPartInstanceToAssembly(inst, instNode, false, true, worldTransform)
+                return this.convertPartInstanceToAssembly(inst, instNode, allParts, false, true, worldTransform)
             })
             .filter(asm => asm != undefined)
 
@@ -244,6 +249,7 @@ class MirabufParser {
     private convertPartInstanceToAssembly(
         inst: mirabuf.IPartInstance,
         instNode: mirabuf.INode,
+        allParts: string[],
         isEndEffector: boolean = false,
         isDynamic: boolean = true,
         worldTransform?: THREE.Matrix4
@@ -281,16 +287,25 @@ class MirabufParser {
             this.NewError(ParseErrorSeverity.UNIMPORTABLE, "partInstance does not reference a partDefinition")
             return
         }
-        const partDefinition = this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
+
+        // Register every part in allParts, not just inst, in case of multi-part game pieces
+        const partInstances: { [guid: string]: mirabuf.IPartInstance } = {}
+        const partDefinitions: { [guid: string]: mirabuf.IPartDefinition } = {}
+        allParts.forEach(partGUID => {
+            const partInst = this._assembly.data?.parts?.partInstances?.[partGUID]
+            if (!partInst?.partDefinitionReference) return
+            partInstances[partGUID] = partInst
+            partDefinitions[partInst.partDefinitionReference] =
+                this._assembly.data?.parts?.partDefinitions?.[partInst.partDefinitionReference] ?? {}
+        })
+        partInstances[inst.info?.GUID ?? ""] = inst
+        partDefinitions[partDefinitionReference] =
+            this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
 
         const parts = new mirabuf.Parts({
             info: inst.info,
-            partDefinitions: {
-                [partDefinitionReference]: partDefinition,
-            },
-            partInstances: {
-                [inst.info?.GUID ?? ""]: inst,
-            },
+            partDefinitions,
+            partInstances,
         })
 
         const gamePieceAssembly = new mirabuf.Assembly({
@@ -331,7 +346,9 @@ class MirabufParser {
         assembly.data!.joints!.rigidGroups!.forEach(rg => {
             let rn: RigidNode | null = null
             rg.occurrences!.forEach(y => {
-                const currentRn = this._partToNodeMap.get(y)!
+                // Occurrence may have been extracted as a game piece, leaving no rigid node
+                const currentRn = this._partToNodeMap.get(y)
+                if (!currentRn) return
 
                 rn = !rn ? currentRn : currentRn.id != rn.id ? this.mergeRigidNodes(currentRn, rn) : rn
             })
@@ -442,11 +459,17 @@ class MirabufParser {
             const partInstance = partInstances.get(child.value!)!
             const def = partDefinitions[partInstance.partDefinitionReference!]
 
-            const mat = partInstance.transform
-                ? convertMirabufTransformToThreeMatrix(partInstance.transform)
-                : def.baseTransform
-                  ? convertMirabufTransformToThreeMatrix(def.baseTransform)
-                  : new THREE.Matrix4().identity()
+            // gamePieceTransform is already the resolved world transform; partInstance.transform is only local
+            let mat: THREE.Matrix4
+            if (this._isGamePiece && this._gamePieceTransform) {
+                mat = convertMirabufTransformToThreeMatrix(this._gamePieceTransform)
+            } else if (partInstance.transform) {
+                mat = convertMirabufTransformToThreeMatrix(partInstance.transform)
+            } else if (def.baseTransform) {
+                mat = convertMirabufTransformToThreeMatrix(def.baseTransform)
+            } else {
+                mat = new THREE.Matrix4().identity()
+            }
 
             // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
 
