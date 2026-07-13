@@ -178,12 +178,12 @@ function quatScaleToMat4(
         (xz + wy) * sz, (yz - wx) * sz, (1 - (xx + yy)) * sz, 0,
         t[0], t[1], t[2], 1,
     ]
-    // biome-ignore-end format
+    // biome-ignore-end format: We would prefer to visualize this as a matrix
 }
 
 function nodeLocalMatrix(node: GLTFNode): Mat4 {
     if (node.matrix) return node.matrix
-    // CAD exporters (Onshape) omit TRS entirely on nearly every node - skip the quaternion math
+    // CAD exporters (Onshape) omit TRS entirely on nearly every node. Skip the quaternion math
     // and reuse the shared identity matrix instead of rebuilding an equivalent one from scratch.
     if (!node.translation && !node.rotation && !node.scale) return IDENTITY_MAT4
     return quatScaleToMat4(node.translation ?? [0, 0, 0], node.rotation ?? [0, 0, 0, 1], node.scale ?? [1, 1, 1])
@@ -207,7 +207,7 @@ function transformPositions(positions: Float32Array, m: Mat4): Float32Array {
     return out
 }
 
-// Uses the matrix's linear part only (no inverse-transpose) — correct for the rigid,
+// Uses the matrix's linear part only (no inverse-transpose). Correct for the rigid,
 // uniform-scale node transforms CAD exporters actually emit.
 // https://en.wikipedia.org/wiki/Normal_(geometry)#Transforming_normals
 function transformNormals(normals: Float32Array, m: Mat4): Float32Array {
@@ -291,7 +291,7 @@ export function parseGLTF(data: Uint8Array, meshPath: string, meshFiles: Map<str
     function visit(nodeIndex: number, parentTransform: Mat4) {
         const node = doc.nodes[nodeIndex]
         const local = nodeLocalMatrix(node)
-        // Skip the 4x4 multiply (and its allocation) whenever either side is identity - true for
+        // Skip the 4x4 multiply (and its allocation) whenever either side is identity, true for
         // almost every node in practice, since CAD exporters rarely set node-level transforms.
         const world = isIdentity(local)
             ? parentTransform
