@@ -69,19 +69,13 @@ interface ItemCardProps {
     secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ key, name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
+const ItemCard: React.FC<ItemCardProps> = ({ name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
     return (
         <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"} direction="row">
             <Label size="md" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
             </Label>
-            <Stack
-                key={`button-box-${key}`}
-                direction="row-reverse"
-                gap={"0.25rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
-            >
+            <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
                 <PositiveIconButton children={primaryButtonNode} onClick={primaryOnClick} />
                 {secondaryOnClick && <DeleteButton onClick={secondaryOnClick} />}
             </Stack>

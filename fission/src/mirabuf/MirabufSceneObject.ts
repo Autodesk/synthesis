@@ -38,7 +38,7 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
@@ -46,7 +46,6 @@ import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -194,7 +193,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get descriptiveName(): string {
-        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
+        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.getBrainIndexSchemeMapping((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
     }
 
     public get assemblyName() {
@@ -223,11 +222,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._nameTag = new SceneOverlayTag(() => {
                 const name =
                     this.nameOverride ??
-                    (this._brain instanceof SynthesisBrain
+                    (this._brain?.isSynthesis()
                         ? this._brain.inputSchemeName
-                        : this._brain instanceof WPILibBrain
+                        : this._brain?.isWPILib()
                           ? "Magic"
-                          : "Not Configured")
+                          : "Not Configured!")
                 if (World.multiplayerSystem != null) {
                     return `${name} (${this.alliance === "red" ? "R" : this.alliance === "blue" ? "B" : "..."}${this.station ?? ""})`
                 }
@@ -313,7 +312,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.updateBatches()
 
-        this._basePositionTransform = this.getPositionTransform()
+        this._basePositionTransform = this.getXZPositionTransform()
 
         this.moveToSpawnLocation()
 
@@ -326,7 +325,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     // Centered in x-z plane, bottom surface of object
-    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
+    public getXZPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
         const box = this.computeBoundingBox()
 
         const transform = box.getCenter(vec)
@@ -356,7 +355,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // TODO
         // Why are we calling this?
-        field?.getPositionTransform(referencePos)
+        field?.getXZPositionTransform(referencePos)
 
         return pos
     }
@@ -425,7 +424,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public dispose(): void {
         this.mirabufInstance.dispose(World.sceneRenderer.scene)
 
-        if (this._brain && this._brain instanceof SynthesisBrain) {
+        if (this._brain?.isSynthesis()) {
             this._brain.clearControls()
         }
 
@@ -1003,8 +1002,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return rootBody.IsActive() && !rootBody.IsSensor()
     }
 
-    public getRootNodeId(): Jolt.BodyID | undefined {
+    public getRootNodeId(): Jolt.BodyID {
         return this.mechanism.getBodyByNodeId(this.mechanism.rootBody)!
+    }
+
+    public getRootBody(): Jolt.Body {
+        return World.physicsSystem.getBody(this.getRootNodeId())!
     }
 
     public loadFocusTransform(mat: THREE.Matrix4) {
@@ -1078,14 +1081,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 type: "panel",
             }
         )
-
-        if (this.brain?.brainType == "wpilib") {
-            data.items.push({
-                name: "Auto Testing",
-                screen: AutoTestPanel,
-                type: "panel",
-            })
-        }
 
         if (World.sceneRenderer.currentCameraControls.controlsType == "Target") {
             const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
