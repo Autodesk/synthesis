@@ -11,6 +11,36 @@ const map: ManifestFileType = { fields: [], private: [], robots: [] }
 
 const dirs = Object.keys(map) as (keyof typeof map)[]
 
+/**
+ * Derive the competition year from an asset's (normalized) name.
+ * Prefers an explicitly parenthesized year (e.g. "KitBot (2024)"), otherwise
+ * falls back to the last four-digit 19xx/20xx run in the string (e.g. "FRC Field 2026 v2").
+ * Returns undefined when no year is present so the asset lands in the "Other" group.
+ */
+function parseYear(name: string): number | undefined {
+    const parenthesized = name.match(/\((19|20)\d{2}\)/g)
+    if (parenthesized) {
+        return Number(parenthesized[parenthesized.length - 1].replace(/[()]/g, ""))
+    }
+    const loose = name.match(/(19|20)\d{2}/g)
+    if (loose) {
+        return Number(loose[loose.length - 1])
+    }
+    return undefined
+}
+
+/**
+ * Look for a sibling thumbnail image at "<dir>/thumbnails/<name>.png".
+ * Returns the path relative to the asset directory, or undefined when absent.
+ */
+async function resolveThumbnail(dirname: string, name: string): Promise<string | undefined> {
+    const relative = `thumbnails/${name.replace(/\.mira$/, ".png")}`
+    return fs
+        .access(path.join(basepath, dirname, relative))
+        .then(() => relative)
+        .catch(() => undefined)
+}
+
 async function main() {
     for (const dirname of dirs) {
         const list = map[dirname]
@@ -57,7 +87,12 @@ async function main() {
                     await fs.rm(originalPath)
                 }
             }
-            list.push({ filename: name, hash: updatedHash })
+            list.push({
+                filename: name,
+                hash: updatedHash,
+                year: parseYear(name),
+                thumbnail: await resolveThumbnail(dirname, name),
+            })
         }
     }
     await fs.writeFile(path.join(basepath, "manifest.json"), JSON.stringify(map))
