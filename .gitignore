@@ -10,3 +10,4 @@ renderer/
 *.exe
 .idea
 **/.direnv
+.npmrc
