@@ -80,6 +80,13 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
+        SmartDashboard.putNumber("Accel/X", m_accelerometer.getX());
+        SmartDashboard.putNumber("Accel/Y", m_accelerometer.getY());
+        SmartDashboard.putNumber("Accel/Z", m_accelerometer.getZ());
+
+        SmartDashboard.putNumber("Gyro/Yaw", m_Gyro.getYaw());
+        SmartDashboard.putNumber("Gyro/Pitch", m_Gyro.getPitch());
+        SmartDashboard.putNumber("Gyro/Roll", m_Gyro.getRoll());
     }
 
     /**
