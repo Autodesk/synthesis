@@ -768,14 +768,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private getInverseRotation() {
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        const worldTransform = rootBody.GetWorldTransform()
-        const rotation = worldTransform.GetRotation()
-        const inverseRotation = rotation.Inversed()
-
-        JOLT.destroy(worldTransform)
-        JOLT.destroy(rotation)
-
-        return inverseRotation
+        return rootBody.GetWorldTransform().GetRotation().Inversed()
     }
 
     /**
@@ -786,7 +779,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * The vertices calculated by this function should remain valid as the robot moves through the world
      * However, if the robot modifies its dimensionality in some way(e.g. by extending an arm), this function should be called again to have accurate results.
      */
-    private computeFurthestVertices() {
+    private computeFurthestVertices(): void {
         this._furthestVertices = {
             x: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
             y: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
@@ -816,12 +809,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
             )
 
-            const vertex = new JOLT.RVec3()
-            const transformedVertex = new JOLT.RVec3()
+            // const transformedVertex = new JOLT.RVec3()
             for (let i = 0; i < vertices.length; i += 3) {
                 // Transform the vertex into the position it would occupy if the robot were axis aligned
-                vertex.Set(vertices[i], vertices[i + 1], vertices[i + 2])
-                multiplyMat44ByVec3(transformedVertex, vertex, vertexTransform)
+                const vertex = new JOLT.Vec3(vertices[i], vertices[i + 1], vertices[i + 2])
+                // multiplyMat44ByVec3(transformedVertex, vertex, vertexTransform)
+                const transformedVertex = vertexTransform.MulVec3(vertex)
 
                 const transX = transformedVertex.GetX()
                 const transY = transformedVertex.GetY()
@@ -839,14 +832,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 oldX.max = Math.max(oldX.max, transX)
                 oldY.max = Math.max(oldY.max, transY)
                 oldZ.max = Math.max(oldZ.max, transZ)
+
+                JOLT.destroy(vertex)
+                JOLT.destroy(transformedVertex)
             }
 
-            JOLT.destroy(bodyTransform)
             JOLT.destroy(vertexTransform)
             JOLT.destroy(triangleContext)
-
-            JOLT.destroy(vertex)
-            JOLT.destroy(transformedVertex)
         })
 
         JOLT.destroy(inverseRotation)
@@ -854,6 +846,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         JOLT.destroy(scale)
         JOLT.destroy(biggest)
         JOLT.destroy(identity)
+
+        const mins = [this._furthestVertices.x.min, this._furthestVertices.y.min, this._furthestVertices.z.min]
+        const maxes = [this._furthestVertices.x.max, this._furthestVertices.y.max, this._furthestVertices.z.max]
+        if (mins.some(m => m === Number.POSITIVE_INFINITY) || maxes.some(m => m === Number.NEGATIVE_INFINITY)) {
+            console.warn("Failed to compute furthest vertices")
+        }
     }
 
     /**
