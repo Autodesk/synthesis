@@ -4,7 +4,32 @@ import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import type { TourStep } from "./tourSteps"
 
 const CARD_WIDTH = 265
-const ARROW_SIZE = 12
+/** Length of the pointer's base, running along the card edge. */
+const ARROW_BASE = 16
+/** How far the pointer's tip protrudes past the card edge toward the anchor. */
+const ARROW_HEIGHT = 8
+
+/**
+ * Per-edge geometry for the triangular pointer.
+ *
+ * We carve a real triangle with `clipPath` rather than rotating a square: the MUI Popper
+ * `arrow` modifier positions this element with an inline `transform: translate(...)`, which
+ * would clobber any `transform: rotate(...)` we set (inline style beats the emotion class),
+ * leaving a square poking out. `clipPath` never touches `transform`, so the two never fight.
+ *
+ * For each edge the base sits flush against the card and the tip points toward the anchor;
+ * `width`/`height` size the bounding box (base spans the edge, height is the protrusion) and
+ * the negative `offset` pulls the box fully outside that edge.
+ */
+const ARROW_GEOMETRY: Record<
+    "top" | "bottom" | "left" | "right",
+    { clipPath: string; width: number; height: number; offset: Record<string, number> }
+> = {
+    top: { clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)", width: ARROW_BASE, height: ARROW_HEIGHT, offset: { top: -ARROW_HEIGHT } },
+    bottom: { clipPath: "polygon(50% 100%, 0% 0%, 100% 0%)", width: ARROW_BASE, height: ARROW_HEIGHT, offset: { bottom: -ARROW_HEIGHT } },
+    left: { clipPath: "polygon(0% 50%, 100% 0%, 100% 100%)", width: ARROW_HEIGHT, height: ARROW_BASE, offset: { left: -ARROW_HEIGHT } },
+    right: { clipPath: "polygon(100% 50%, 0% 0%, 0% 100%)", width: ARROW_HEIGHT, height: ARROW_BASE, offset: { right: -ARROW_HEIGHT } },
+}
 
 interface TourCardProps {
     step: TourStep
@@ -56,14 +81,14 @@ const TourCard: React.FC<TourCardProps> = ({
                     ref={setArrowRef}
                     sx={{
                         position: "absolute",
-                        width: ARROW_SIZE,
-                        height: ARROW_SIZE,
                         bgcolor: "topBar.main",
-                        transform: "rotate(45deg)",
-                        // The popper arrow modifier positions the arrow along the main axis
-                        // (left for top/bottom edges, top for left/right); we pin it to the
-                        // card edge it sits on so half the square pokes out toward the anchor.
-                        [arrowEdge]: -ARROW_SIZE / 2,
+                        // The popper arrow modifier centers this element along the card edge (via an
+                        // inline transform); the clip-path + offset below draw the triangle protruding
+                        // from that edge. See ARROW_GEOMETRY for why we clip rather than rotate.
+                        clipPath: ARROW_GEOMETRY[arrowEdge].clipPath,
+                        width: ARROW_GEOMETRY[arrowEdge].width,
+                        height: ARROW_GEOMETRY[arrowEdge].height,
+                        ...ARROW_GEOMETRY[arrowEdge].offset,
                     }}
                 />
             )}
