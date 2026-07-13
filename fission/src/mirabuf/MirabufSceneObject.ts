@@ -324,25 +324,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.moveToSpawnLocation()
 
-        // [dev-GamePiece logging] Capture final rendered positions after spawn repositioning.
-        // Game piece Jolt bodies sit at (0, fieldRootY, 0); the real world X/Z comes from
-        // premultiplying the part's globalTransform by the body's world transform (see
-        // updateNodeParts), so we mirror that here instead of reading raw body position.
-        this.mirabufInstance.parser.rigidNodes.forEach(rn => {
-            if (!rn.isGamePiece) return
-            const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
-            if (!jBodyId) return
-            const body = World.physicsSystem.getBody(jBodyId)!
-            const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform(), true)
-            const part = rn.parts.values().next().value!
-            const partTransform = this.mirabufInstance.parser.globalTransforms.get(part)!.clone().premultiply(bodyTransform)
-            const pos = new THREE.Vector3().setFromMatrixPosition(partTransform)
-            console.debug(
-                `[dev-GamePiece] '${rn.id}' final rendered position (post-spawn):\n` +
-                `  x=${pos.x}, y=${pos.y}, z=${pos.z}`
-            )
-        })
-
         const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
 
         if (this.isOwnObject && (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider)) {
