@@ -130,7 +130,7 @@ class HingeDriver extends Driver {
         motorSettings.mSpringSettings = springSettings
 
         this._maxTorqueWithGrav = motorSettings.get_mMaxTorqueLimit()
-        if (!PreferencesSystem.getGlobalPreference("SubsystemGravity")) {
+        if (!PreferencesSystem.getUserPreference("SubsystemGravity")) {
             motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
             motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
         }

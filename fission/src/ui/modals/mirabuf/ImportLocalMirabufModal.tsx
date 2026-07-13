@@ -17,7 +17,8 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import type { CustomTargetControls } from "@/systems/scene/CameraControls"
+import { getTargetControls } from "@/systems/scene/CameraControls"
+import { hashBuffer } from "@/util/Utility.ts"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -89,7 +90,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
 
                 if (isURDFFile(selectedFile.name)) {
                     const assembly = await loadURDF(buffer, selectedFile.name)
-                    mirabufSceneObject = await createMirabuf(assembly, undefined)
+                    const hash = await hashBuffer(buffer)
+                    mirabufSceneObject = await createMirabuf(hash, assembly, undefined)
                 } else {
                     const result = await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     if (!result) {
@@ -98,7 +100,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                         })
                         return
                     }
-                    mirabufSceneObject = await createMirabuf(result.assembly, undefined)
+                    mirabufSceneObject = await createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
                 }
 
                 if (mirabufSceneObject) {
@@ -107,9 +109,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                         openPanel(InitialConfigPanel, undefined, modal)
                     }
-                    const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
-                    if (miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
-                        cameraControls.focusProvider = mirabufSceneObject
+                    const targetControls = getTargetControls()
+                    if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+                        targetControls.focusProvider = mirabufSceneObject
                     }
                     closeModal(CloseType.Overwrite)
                 } else {
