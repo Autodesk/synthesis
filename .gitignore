@@ -1,4 +1,5 @@
-.*
+.vs/
+.vscode/
 build/
 dist/
 out/
@@ -9,3 +10,4 @@ renderer/
 *.exe
 .idea
 **/.direnv
+.npmrc
