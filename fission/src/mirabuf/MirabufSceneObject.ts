@@ -767,94 +767,96 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     /**
+     * Computes the six furthest vertices along the x, y, and z axes respectively. Stores its result in `this._furthestVertices`
+     *
+     * `this._furthestVertices` is guaranteed to be defined after calling this function
+     *
+     * The vertices calculated by this function should remain valid as the robot moves through the world
+     * However, if the robot modifies its dimensionality in some way(e.g. by extending an arm), this function should be called again to have accurate results.
+     */
+    private computeFurthestVertices() {
+        this._furthestVertices = {
+            x: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
+            y: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
+            z: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
+        }
+
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+        const inverseRotation = rootBody.GetWorldTransform().GetRotation().Inversed()
+
+        const biggest = JOLT.AABox.prototype.sBiggest()
+        const scale = new JOLT.Vec3(1, 1, 1)
+        const identity = JOLT.Quat.prototype.sIdentity()
+
+        this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
+            const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
+            if (!bodyId) return
+
+            const body = World.physicsSystem.getBody(bodyId)!
+            const bodyTransform = body.GetWorldTransform()
+
+            const vertexTransform = bodyTransform.MulMat44(inverseRotation)
+
+            const shape = body.GetShape()
+            const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
+            const vertices = new Float32Array(
+                JOLT.HEAP32.buffer,
+                triangleContext.GetVerticesData(),
+                triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
+            )
+
+            for (let i = 0; i < vertices.length; i += 3) {
+                // Transform the vertex into the position it would occupy if the robot were axis aligned
+                const vertex = new JOLT.Vec3(vertices[i], vertices[i + 1], vertices[i + 2])
+                const transformedVertex = vertexTransform.MulVec3(vertex)
+
+                const transX = transformedVertex.GetX()
+                const transY = transformedVertex.GetY()
+                const transZ = transformedVertex.GetZ()
+
+                // Compute maximum vertex along each axis
+                const oldX = this._furthestVertices!.x
+                const oldY = this._furthestVertices!.y
+                const oldZ = this._furthestVertices!.z
+
+                oldX.min = Math.min(oldX.min, transX)
+                oldY.min = Math.min(oldY.min, transY)
+                oldZ.min = Math.min(oldZ.min, transZ)
+
+                oldX.max = Math.max(oldX.max, transX)
+                oldY.max = Math.max(oldY.max, transY)
+                oldZ.max = Math.max(oldZ.max, transZ)
+            }
+
+            JOLT.destroy(triangleContext)
+        })
+
+        JOLT.destroy(scale)
+        JOLT.destroy(biggest)
+        JOLT.destroy(identity)
+    }
+
+    /**
      * Gets the tightest fitting oriented bounding box around the robot, centered at the robot's origin.
      *
      * @returns The aforementioned bounding box
      */
     public getOrientedBoundingBox(): Jolt.OrientedBox {
-        if (!this._furthestVertices) {
-            this._furthestVertices = {
-                x: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
-                y: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
-                z: { min: Number.MAX_VALUE, max: Number.MIN_VALUE },
-            }
+        if (!this._furthestVertices) this.computeFurthestVertices()
 
-            const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-            const inverseRotation = rootBody.GetWorldTransform().GetRotation().Inversed()
+        // Get dimensions of scene object along each axis
+        const axesVertices = [this._furthestVertices!.x, this._furthestVertices!.y, this._furthestVertices!.z]
+        const axisHalfExtents = axesVertices.map(({ min, max }) => Math.abs(max - min) / 2) as [number, number, number]
 
-            const biggest = JOLT.AABox.prototype.sBiggest()
-            const scale = new JOLT.Vec3(1, 1, 1)
-            const identity = JOLT.Quat.prototype.sIdentity()
+        const halfExtent = new JOLT.Vec3(...axisHalfExtents)
 
-            this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
-                const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
-                if (!bodyId) return
-
-                const body = World.physicsSystem.getBody(bodyId)!
-                const bodyTransform = body.GetWorldTransform()
-
-                const vertexTransform = bodyTransform.MulMat44(inverseRotation)
-
-                const shape = body.GetShape()
-                const triangleContext = new JOLT.ShapeGetTriangles(
-                    shape,
-                    biggest,
-                    shape.GetCenterOfMass(),
-                    identity,
-                    scale
-                )
-                const vertices = new Float32Array(
-                    JOLT.HEAP32.buffer,
-                    triangleContext.GetVerticesData(),
-                    triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
-                )
-
-                for (let i = 0; i < vertices.length; i += 3) {
-                    const vertex = new JOLT.Vec3(vertices[i], vertices[i + 1], vertices[i + 2])
-                    const transformedVertex = vertexTransform.MulVec3(vertex)
-
-                    const [transX, transY, transZ] = [
-                        transformedVertex.GetX(),
-                        transformedVertex.GetY(),
-                        transformedVertex.GetZ(),
-                    ]
-
-                    const oldX = this._furthestVertices!.x
-                    const oldY = this._furthestVertices!.y
-                    const oldZ = this._furthestVertices!.z
-
-                    oldX.min = Math.min(oldX.min, transX)
-                    oldY.min = Math.min(oldY.min, transY)
-                    oldZ.min = Math.min(oldZ.min, transZ)
-
-                    oldX.max = Math.max(oldX.max, transX)
-                    oldY.max = Math.max(oldY.max, transY)
-                    oldZ.max = Math.max(oldZ.max, transZ)
-                }
-
-                JOLT.destroy(triangleContext)
-            })
-
-            JOLT.destroy(scale)
-            JOLT.destroy(biggest)
-            JOLT.destroy(identity)
-        }
-
-        const { min: minX, max: maxX } = this._furthestVertices.x
-        const { min: minY, max: maxY } = this._furthestVertices.y
-        const { min: minZ, max: maxZ } = this._furthestVertices.z
-
-        const halfX = Math.abs(maxX - minX) / 2
-        const halfY = Math.abs(maxY - minY) / 2
-        const halfZ = Math.abs(maxZ - minZ) / 2
-
-        const halfExtent = new JOLT.Vec3(halfX, halfY, halfZ)
-
+        // Get transformation
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
         const rotation = rootBody.GetRotation()
-        const position = convertThreeVector3ToJoltVec3(this.getPositionTransform())
 
+        const position = convertThreeVector3ToJoltVec3(this.getPositionTransform())
         const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position)
+
         return new JOLT.OrientedBox(transform, halfExtent)
     }
 
