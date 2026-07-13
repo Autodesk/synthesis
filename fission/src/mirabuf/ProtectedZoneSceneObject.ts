@@ -9,8 +9,9 @@ import { ContactType } from "./ZoneTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { findListDifference, forPair, renderOrientedBox } from "@/util/Utility"
+import { findListDifference, forPair } from "@/util/Utility"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { renderOrientedBox } from "@/util/Render"
 
 const DEBUG_BOUNDING_BOXES = false
 

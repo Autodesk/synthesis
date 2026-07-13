@@ -782,7 +782,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        const inverseRotation = rootBody.GetWorldTransform().GetRotation().Inversed()
+        const worldTransform = rootBody.GetWorldTransform()
+        const rotation = worldTransform.GetRotation()
+        const inverseRotation = rotation.Inversed()
 
         const biggest = JOLT.AABox.prototype.sBiggest()
         const scale = new JOLT.Vec3(1, 1, 1)
@@ -830,10 +832,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 oldZ.max = Math.max(oldZ.max, transZ)
             }
 
+            JOLT.destroy(bodyTransform)
+            JOLT.destroy(vertexTransform)
+
+            JOLT.destroy(shape)
             JOLT.destroy(triangleContext)
+
             JOLT.destroy(vertex)
             JOLT.destroy(transformedVertex)
         })
+
+        JOLT.destroy(worldTransform)
+        JOLT.destroy(rotation)
+        JOLT.destroy(inverseRotation)
 
         JOLT.destroy(scale)
         JOLT.destroy(biggest)
@@ -861,7 +872,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const position = convertThreeVector3ToJoltVec3(this.getPositionTransform())
         const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position)
 
-        return new JOLT.OrientedBox(transform, halfExtent)
+        const orientedBox = new JOLT.OrientedBox(transform, halfExtent)
+
+        JOLT.destroy(halfExtent)
+        JOLT.destroy(rotation)
+        JOLT.destroy(position)
+        JOLT.destroy(transform)
+
+        return orientedBox
     }
 
     /**
