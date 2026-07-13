@@ -66,7 +66,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { hexStringToUint8Array, multiplyMat44ByVec3 } from "@/util/Utility.ts"
+import { hexStringToUint8Array } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -214,11 +214,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this.mirabufInstance.parser.assemblyId
     }
 
-    public getBounding(): Jolt.AABox {
-        const box = this.computeBoundingBox()
-        return new JOLT.AABox(convertThreeVector3ToJoltVec3(box.min), convertThreeVector3ToJoltVec3(box.max))
-    }
-
     public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
         super()
         this.mirabufInstance = mirabufInstance
@@ -322,7 +317,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.updateBatches()
 
-        this._basePositionTransform = this.getXYPositionTransform()
+        this._basePositionTransform = this.getXZPositionTransform()
 
         this.moveToSpawnLocation()
 
@@ -339,7 +334,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     // Centered in x-z plane, bottom surface of object
-    public getXYPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
+    public getXZPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
         const box = this.computeBoundingBox()
 
         const transform = box.getCenter(vec)
@@ -374,7 +369,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // TODO
         // Why are we calling this?
-        field?.getXYPositionTransform(referencePos)
+        field?.getXZPositionTransform(referencePos)
 
         return pos
     }
@@ -809,11 +804,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
             )
 
-            // const transformedVertex = new JOLT.RVec3()
             for (let i = 0; i < vertices.length; i += 3) {
                 // Transform the vertex into the position it would occupy if the robot were axis aligned
                 const vertex = new JOLT.Vec3(vertices[i], vertices[i + 1], vertices[i + 2])
-                // multiplyMat44ByVec3(transformedVertex, vertex, vertexTransform)
                 const transformedVertex = vertexTransform.MulVec3(vertex)
 
                 const transX = transformedVertex.GetX()

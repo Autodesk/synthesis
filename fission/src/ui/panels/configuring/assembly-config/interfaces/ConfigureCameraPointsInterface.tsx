@@ -111,7 +111,7 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
 
     const postGizmoCreation = useCallback(
         (gizmo: GizmoSceneObject) => {
-            const fieldRef = selectedField.getXYPositionTransform()
+            const fieldRef = selectedField.getXZPositionTransform()
             gizmo.obj.position.set(fieldRef.x + point.pos[0], fieldRef.y + point.pos[1], fieldRef.z + point.pos[2])
         },
         [selectedField, point.pos]
@@ -122,7 +122,7 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
         if (gizmoRef.current) {
             gizmoRef.current.obj.updateWorldMatrix(true, false)
             const worldPos = gizmoRef.current.obj.getWorldPosition(new THREE.Vector3())
-            const fieldRef = selectedField.getXYPositionTransform()
+            const fieldRef = selectedField.getXZPositionTransform()
             pos = [worldPos.x - fieldRef.x, worldPos.y - fieldRef.y, worldPos.z - fieldRef.z]
         }
         const look: CameraLook =
