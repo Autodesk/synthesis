@@ -766,6 +766,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    private getInverseRotation() {
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+        const worldTransform = rootBody.GetWorldTransform()
+        const rotation = worldTransform.GetRotation()
+        const inverseRotation = rotation.Inversed()
+
+        JOLT.destroy(worldTransform)
+        JOLT.destroy(rotation)
+
+        return inverseRotation
+    }
+
     /**
      * Computes the six furthest vertices along the x, y, and z axes respectively. Stores its result in `this._furthestVertices`
      *
@@ -781,10 +793,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             z: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
         }
 
-        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        const worldTransform = rootBody.GetWorldTransform()
-        const rotation = worldTransform.GetRotation()
-        const inverseRotation = rotation.Inversed()
+        const inverseRotation = this.getInverseRotation()
 
         const biggest = JOLT.AABox.prototype.sBiggest()
         const scale = new JOLT.Vec3(1, 1, 1)
@@ -842,8 +851,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             JOLT.destroy(transformedVertex)
         })
 
-        JOLT.destroy(worldTransform)
-        JOLT.destroy(rotation)
         JOLT.destroy(inverseRotation)
 
         JOLT.destroy(scale)
