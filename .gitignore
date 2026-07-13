@@ -1,5 +1,4 @@
-.vs/
-.vscode/
+.*
 build/
 dist/
 out/
