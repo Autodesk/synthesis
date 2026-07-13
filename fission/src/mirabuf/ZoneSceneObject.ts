@@ -139,7 +139,6 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
      * @returns `undefined` when the visual properties for this zone have not changed
      */
     private generateVisualProperties(): VisualProperties | undefined {
-        // `GetWorldTransform` returns a reference, destroying it causes a memory out of bounds later
         const newTransform = World.physicsSystem.getBody(this.parentBodyId!)!.GetWorldTransform()
         const transformHasNotUpdated =
             this._cachedFieldTransformation && newTransform.Equals(this._cachedFieldTransformation)
