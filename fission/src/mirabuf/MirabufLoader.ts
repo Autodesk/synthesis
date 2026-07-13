@@ -13,6 +13,10 @@ export interface MirabufCacheInfo {
     miraType: MiraType
     remotePath?: string
     thumbnailStorageID?: string
+    /** Competition year, when known (defaults from the remote manifest). */
+    year?: number
+    /** Servable URL of a preview thumbnail, when available. */
+    thumbnail?: string
 }
 
 export interface MirabufRemoteInfo {
@@ -186,7 +190,9 @@ class MirabufCachingService {
         fetchLocation: string,
         miraType: MiraType,
         name?: string,
-        expectedHash?: string
+        expectedHash?: string,
+        year?: number,
+        thumbnail?: string
     ): Promise<MirabufCacheInfo | undefined> {
         try {
             // grab file remote
@@ -206,6 +212,8 @@ class MirabufCachingService {
                 miraType,
                 name,
                 remotePath: fetchLocation,
+                year,
+                thumbnail,
             })
 
             if (expectedHash != null && cached?.hash != null && cached?.hash != expectedHash) {
@@ -223,6 +231,8 @@ class MirabufCachingService {
                 hash: await hashBuffer(miraBuff),
                 miraType: miraType,
                 name: name,
+                year,
+                thumbnail,
             }
         } catch (e) {
             console.warn("Caching failed", e)
