@@ -42,9 +42,8 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
     private isZoneActive(): boolean {
         if (!this.prefs?.activeDuring) {
-            return [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME].includes(
-                MatchMode.getInstance().getMatchModeType()
-            )
+            const type = MatchMode.getInstance().getMatchModeType()
+            return [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME].includes(type)
         }
         return this.prefs.activeDuring.includes(MatchMode.getInstance().getMatchModeType())
     }
@@ -93,9 +92,8 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     private checkCollisions(robots: RobotBox[], robotsInZone: RobotBox[]): Collision[] {
         const collisions: Collision[] = []
 
-        const isDuplicateCollision = (robot1: MirabufSceneObject, robot2: MirabufSceneObject): boolean => {
-            return collisions.some(collision => collision[0] === robot2 && collision[1] === robot1)
-        }
+        const isDuplicateCollision = (robot1: MirabufSceneObject, robot2: MirabufSceneObject): boolean =>
+            collisions.some(collision => collision[0] === robot2 && collision[1] === robot1)
 
         const checkCollision = ([robot1, bounding1]: RobotBox, [robot2, bounding2]: RobotBox) => {
             if (robot1.alliance === robot2.alliance) return

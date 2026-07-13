@@ -107,7 +107,9 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         this.mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
     }
 
-    // Creates a mesh for the user to visualize the sensor
+    /**
+     * Constructs a visual THREE.JS mesh  for the user to visualize the sensor and places it in `this.mesh`
+     */
     private createVisualMesh(props: VisualProperties) {
         const unitVector = new JOLT.Vec3(1, 1, 1)
 

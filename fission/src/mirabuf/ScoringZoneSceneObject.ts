@@ -46,18 +46,15 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
         if (!field) return
 
-        const allNodes = [...field.mirabufInstance.parser.rigidNodes.values()]
-        const gamepieces = allNodes.filter(rn => rn.isGamePiece)
-
+        const gamepieces = [...field.mirabufInstance.parser.rigidNodes.values()].filter(rn => rn.isGamePiece)
         const gps = gamepieces
             .map(rn => field.mechanism.nodeToBody.get(rn.id))
             .filter((id): id is Jolt.BodyID => id !== undefined)
 
-        if (gamepieces.length > 0 && gps.length === 0) {
+        if (gamepieces.length > 0 && gps.length === 0)
             console.warn(
                 `ScoringZone: ${gamepieces.length} game piece nodes exist but none have body IDs in nodeToBody`
             )
-        }
 
         const gamePiecesContacting = gps.filter(gpID => {
             const gp = World.physicsSystem.getBody(gpID)
@@ -73,9 +70,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         const { added, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
 
         added.forEach(gpID => this.zoneCollision(gpID))
-        if (!this.prefs.shouldPointsAccumulate) {
-            removed.forEach(gpID => this.zoneCollisionRemovedNoAccumulation(gpID))
-        }
+        if (!this.prefs.shouldPointsAccumulate) removed.forEach(gpID => this.zoneCollisionRemovedNoAccumulation(gpID))
 
         this._prevGPs = gamePiecesContacting
     }
@@ -88,29 +83,30 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
         this._prevGPs.length = 0
     }
 
-    /// Updates points for alliance and robot when game piece enters this scoring zone
+    /**
+     * Updates points for alliance and robot when game piece enters this scoring zone
+     */
     private zoneCollision(gpID: Jolt.BodyID) {
-        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-
-        ScoreTracker.addPoints(this.prefs.alliance, this.prefs.points)
-        const robotAlliancePoints =
-            associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -this.prefs.points : this.prefs.points
-        associate.robotLastInContactWith &&
-            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
+        this.zoneCollisionGeneric(gpID, 1)
     }
 
     /**
      * Updates points for alliance and robot when game piece is removed from this scoring zone and points should not accumulate
-     * Basically removes points from the alliance and robot
+     * i.e. Removes points from the alliance and robot
      */
     private zoneCollisionRemovedNoAccumulation(gpID: Jolt.BodyID) {
-        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
+        this.zoneCollisionGeneric(gpID, -1)
+    }
 
-        ScoreTracker.addPoints(this.prefs.alliance, -this.prefs.points)
+    private zoneCollisionGeneric(gpID: Jolt.BodyID, scoringFactor: number): void {
+        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
         const robotAlliancePoints =
             associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -this.prefs.points : this.prefs.points
-        associate.robotLastInContactWith &&
-            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
+
+        if (associate.robotLastInContactWith)
+            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, scoringFactor * robotAlliancePoints)
+
+        ScoreTracker.addPoints(this.prefs.alliance, scoringFactor * this.prefs.points)
     }
 }
 
