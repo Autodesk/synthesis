@@ -30,15 +30,28 @@ function parseYear(name: string): number | undefined {
 }
 
 /**
- * Look for a sibling thumbnail image at "<dir>/thumbnails/<name>.png".
- * Returns the path relative to the asset directory, or undefined when absent.
+ * Extract the thumbnail Fusion embeds in the Mira metadata and write it to a sibling
+ * "<dir>/thumbnails/<name>.<ext>" so the asset library can preview it without downloading
+ * and unzipping the whole assembly. Returns the path relative to the asset directory, or
+ * undefined when the assembly carries no thumbnail data.
  */
-async function resolveThumbnail(dirname: string, name: string): Promise<string | undefined> {
-    const relative = `thumbnails/${name.replace(/\.mira$/, ".png")}`
-    return fs
-        .access(path.join(basepath, dirname, relative))
-        .then(() => relative)
-        .catch(() => undefined)
+async function extractThumbnail(
+    assembly: mirabuf.Assembly,
+    dirname: string,
+    name: string
+): Promise<string | undefined> {
+    const thumbnail = assembly.thumbnail
+    if (!thumbnail?.data?.length) {
+        return undefined
+    }
+
+    const ext = (thumbnail.extension || "png").replace(/^\./, "")
+    const relative = `thumbnails/${name.replace(/\.mira$/, "")}.${ext}`
+    const absolute = path.join(basepath, dirname, relative)
+
+    await fs.mkdir(path.dirname(absolute), { recursive: true })
+    await fs.writeFile(absolute, thumbnail.data)
+    return relative
 }
 
 async function main() {
@@ -91,7 +104,7 @@ async function main() {
                 filename: name,
                 hash: updatedHash,
                 year: parseYear(name),
-                thumbnail: await resolveThumbnail(dirname, name),
+                thumbnail: await extractThumbnail(assembly, dirname, name),
             })
         }
     }
