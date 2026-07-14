@@ -92,7 +92,7 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
     return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
 }
 
-type MinMax = { min: number; max: number }
+export type MinMax = { min: number; max: number }
 type AxisVertices = {
     x: MinMax
     y: MinMax
@@ -761,7 +761,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
-    private getInverseRotation() {
+    /**
+     * @returns The transformation matrix which corresponds to the reverse of the current spacial rotation of the root node of this scene object, relative to the
+     */
+    private getInverseRotationOfBody(): Jolt.Mat44 {
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
         return rootBody.GetWorldTransform().GetRotation().Inversed()
     }
@@ -781,7 +784,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             z: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
         }
 
-        const inverseRotation = this.getInverseRotation()
+        const inverseRotation = this.getInverseRotationOfBody()
 
         const biggest = JOLT.AABox.prototype.sBiggest()
         const scale = new JOLT.Vec3(1, 1, 1)
@@ -865,8 +868,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
         // Do not destroy
         const rotation = rootBody.GetRotation()
-
         const position = convertThreeVector3ToJoltVec3(this.getPositionTransform())
+
         const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position)
 
         const orientedBoundingBox = new JOLT.OrientedBox(transform, halfExtent)
