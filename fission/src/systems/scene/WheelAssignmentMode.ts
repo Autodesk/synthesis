@@ -71,37 +71,23 @@ interface PendingAssignment {
     assignment: WheelAssignment
 }
 
-/** Raycasts the scene for the part-instance GUID under the mouse, resolved through MirabufInstance.meshes. */
-function pickPart(mousePos: [number, number]): PartPick | undefined {
-    const camera = World.sceneRenderer.mainCamera
-    const ndc = new THREE.Vector2(
-        (mousePos[0] / window.innerWidth) * 2 - 1,
-        -(mousePos[1] / window.innerHeight) * 2 + 1
-    )
-    const raycaster = new THREE.Raycaster()
-    raycaster.setFromCamera(ndc, camera)
+interface HoverHighlight {
+    mesh: THREE.BatchedMesh
+    instanceId: number
+}
 
-    const sceneObjects = World.sceneRenderer.mirabufSceneObjects.getAll()
-    const candidateBatches = sceneObjects.flatMap(obj => obj.mirabufInstance.batches)
+/** Tint applied to the part currently under the cursor so the user can see what a click will select. */
+const HOVER_HIGHLIGHT_COLOR = new THREE.Color(2.2, 1.6, 0.2)
+/** BatchedMesh instance colors default to this (see BatchedMesh._initColorsTexture); used to un-tint on hover-out. */
+const DEFAULT_INSTANCE_COLOR = new THREE.Color(1, 1, 1)
 
-    const hits = raycaster.intersectObjects(candidateBatches, false)
-    if (hits.length === 0) return undefined
+/** Reused across every pickPart() call instead of allocating a new Raycaster/Vector2 per mouse move. */
+const _raycaster = new THREE.Raycaster()
+const _ndc = new THREE.Vector2()
 
-    const hit = hits[0]
-    const object = hit.object
-    const instanceId = (hit as unknown as { batchId?: number }).batchId ?? 0
-
-    for (const sceneObject of sceneObjects) {
-        if (!sceneObject.mirabufInstance.batches.includes(object as THREE.BatchedMesh)) continue
-
-        for (const [guid, entries] of sceneObject.mirabufInstance.meshes) {
-            if (entries.some(([mesh, id]) => mesh === object && id === instanceId)) {
-                return { sceneObject, guid, object, instanceId }
-            }
-        }
-    }
-
-    return undefined
+interface PickIndexEntry {
+    sceneObject: MirabufSceneObject
+    guid: string
 }
 
 /**
@@ -119,6 +105,15 @@ class WheelAssignmentMode extends WorldSystem {
     private _pending: PendingAssignment[] = []
 
     private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
+    private _pointerMoveListener: ((e: PointerEvent) => void) | undefined
+    private _hover: HoverHighlight | undefined
+    private _latestMousePos: [number, number] | undefined
+    private _lastProcessedMousePos: [number, number] | undefined
+
+    // Rebuilt on enable and after apply(); avoids re-flattening batches and re-scanning every part's mesh
+    // entries on every single mouse-move raycast (was O(total mesh entries) per pick).
+    private _candidateBatches: THREE.BatchedMesh[] = []
+    private _pickIndex = new Map<THREE.BatchedMesh, Map<number, PickIndexEntry>>()
 
     public get enabled(): boolean {
         return this._enabled
@@ -148,7 +143,16 @@ class WheelAssignmentMode extends WorldSystem {
         return this._enabled && this._stage === PickStage.PARENT
     }
 
-    public update(_deltaT: number): void {}
+    public update(_deltaT: number): void {
+        if (!this._enabled || !this._latestMousePos) return
+
+        const [x, y] = this._latestMousePos
+        const last = this._lastProcessedMousePos
+        if (last && last[0] === x && last[1] === y) return
+
+        this._lastProcessedMousePos = this._latestMousePos
+        this.updateHover(this._latestMousePos)
+    }
 
     public destroy(): void {
         this.enabled = false
@@ -158,11 +162,98 @@ class WheelAssignmentMode extends WorldSystem {
         const screenHandler = World.sceneRenderer.screenInteractionHandler
         this._originalInteractionStart = screenHandler.interactionStart
         screenHandler.interactionStart = (interaction: InteractionStart) => this.onInteractionStart(interaction)
+
+        this._pointerMoveListener = (e: PointerEvent) => {
+            this._latestMousePos = [e.clientX, e.clientY]
+        }
+        World.sceneRenderer.renderer.domElement.addEventListener("pointermove", this._pointerMoveListener)
+
+        this.rebuildPickIndex()
     }
 
     private unhookInteractionHandlers(): void {
         const screenHandler = World.sceneRenderer.screenInteractionHandler
         if (this._originalInteractionStart) screenHandler.interactionStart = this._originalInteractionStart
+
+        if (this._pointerMoveListener) {
+            World.sceneRenderer.renderer.domElement.removeEventListener("pointermove", this._pointerMoveListener)
+            this._pointerMoveListener = undefined
+        }
+        this._latestMousePos = undefined
+        this._lastProcessedMousePos = undefined
+        this.clearHover()
+
+        this._candidateBatches = []
+        this._pickIndex = new Map()
+    }
+
+    /**
+     * Flattens all scene objects' batches and mesh-entry GUID maps into flat lookup structures once,
+     * instead of re-deriving them on every raycast. Must be re-run whenever the set of registered scene
+     * objects or their batches changes while this mode is active (currently: on enable, and after apply()
+     * rebuilds the affected assemblies).
+     */
+    private rebuildPickIndex(): void {
+        this._candidateBatches = []
+        this._pickIndex = new Map()
+
+        for (const sceneObject of World.sceneRenderer.mirabufSceneObjects.getAll()) {
+            for (const batch of sceneObject.mirabufInstance.batches) {
+                this._candidateBatches.push(batch)
+            }
+
+            for (const [guid, entries] of sceneObject.mirabufInstance.meshes) {
+                for (const [mesh, instanceId] of entries) {
+                    let byInstance = this._pickIndex.get(mesh)
+                    if (!byInstance) {
+                        byInstance = new Map()
+                        this._pickIndex.set(mesh, byInstance)
+                    }
+                    byInstance.set(instanceId, { sceneObject, guid })
+                }
+            }
+        }
+    }
+
+    /** Raycasts the cached candidate batches for the part-instance GUID under the mouse. */
+    private pickPart(mousePos: [number, number]): PartPick | undefined {
+        const camera = World.sceneRenderer.mainCamera
+        _ndc.set((mousePos[0] / window.innerWidth) * 2 - 1, -(mousePos[1] / window.innerHeight) * 2 + 1)
+        _raycaster.setFromCamera(_ndc, camera)
+
+        const hits = _raycaster.intersectObjects(this._candidateBatches, false)
+        if (hits.length === 0) return undefined
+
+        const hit = hits[0]
+        const object = hit.object as THREE.BatchedMesh
+        const instanceId = (hit as unknown as { batchId?: number }).batchId ?? 0
+
+        const resolved = this._pickIndex.get(object)?.get(instanceId)
+        if (!resolved) return undefined
+
+        return { sceneObject: resolved.sceneObject, guid: resolved.guid, object, instanceId }
+    }
+
+    /** Tints whatever part is currently under the cursor so the user can preview what a click will pick. */
+    private updateHover(mousePos: [number, number]): void {
+        const pick = this.pickPart(mousePos)
+        if (!pick) {
+            this.clearHover()
+            return
+        }
+
+        const mesh = pick.object as THREE.BatchedMesh
+        if (this._hover && this._hover.mesh === mesh && this._hover.instanceId === pick.instanceId) return
+
+        this.clearHover()
+        mesh.setColorAt(pick.instanceId, HOVER_HIGHLIGHT_COLOR)
+        this._hover = { mesh, instanceId: pick.instanceId }
+    }
+
+    private clearHover(): void {
+        if (!this._hover) return
+        this._hover.mesh.setColorAt(this._hover.instanceId, DEFAULT_INSTANCE_COLOR)
+        this._hover = undefined
     }
 
     private onInteractionStart(interaction: InteractionStart): void {
@@ -176,7 +267,7 @@ class WheelAssignmentMode extends WorldSystem {
     }
 
     private handleWheelPick(mousePos: [number, number]): void {
-        const pick = pickPart(mousePos)
+        const pick = this.pickPart(mousePos)
         if (!pick) {
             globalAddToast("warning", "Wheel Assignment", "Click directly on a part's mesh.")
             return
@@ -212,7 +303,7 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        const pick = pickPart(mousePos)
+        const pick = this.pickPart(mousePos)
         if (!pick) {
             globalAddToast("warning", "Wheel Assignment", "Click directly on a part's mesh.")
             return
@@ -250,6 +341,10 @@ class WheelAssignmentMode extends WorldSystem {
     /** Mutates each affected assembly and fully rebuilds its MirabufSceneObject. */
     public async apply(): Promise<void> {
         if (this._pending.length === 0) return
+
+        // The hovered mesh's owning scene object may be one of the ones rebuilt below, which destroys its
+        // batches -- clear while the mesh is still valid so _hover can't end up pointing at a dead one.
+        this.clearHover()
 
         const bySceneObject = new Map<MirabufSceneObject, WheelAssignment[]>()
         for (const { sceneObject, assignment } of this._pending) {
@@ -290,6 +385,10 @@ class WheelAssignmentMode extends WorldSystem {
         this._pending = []
         EventSystem.dispatch("WheelAssignmentPendingCountChanged", { count: 0 })
         globalAddToast("success", "Wheel Assignment", "Applied wheel joints and rebuilt the affected assembly.")
+
+        // Rebuilt assemblies got new batches/instance ids -- the cached pick index would point at stale,
+        // now-destroyed meshes otherwise, and this mode may still be enabled for further picks.
+        if (this._enabled) this.rebuildPickIndex()
     }
 }
 

@@ -114,7 +114,7 @@ function Synthesis() {
                             <ProgressNotifications key={"progress-notifications"} />
                             <WPILibConnectionStatus />
                             <DragModeIndicator />
-                        <WheelAssignmentDebugPanel />
+                            <WheelAssignmentDebugPanel />
 
                             {!consentPopupDisable && (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
