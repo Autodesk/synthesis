@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { Data } from "@/aps/APSDataManagement.ts"
 import type { ContextData } from "@/components/ContextMenuData.ts"
 import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"

@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import EventSystem, { type SynthesisEvent } from "@/systems/EventSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -1179,7 +1179,6 @@ class PhysicsSystem extends WorldSystem {
 
         const material = new JOLT.PhysicsMaterial()
         settings.mMaterials.push_back(material)
-        JOLT.destroy(material)
 
         const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)

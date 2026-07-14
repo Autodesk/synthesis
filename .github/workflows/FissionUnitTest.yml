@@ -50,20 +50,22 @@ jobs:
           cd fission
           unzip -o public/assetpack.zip -d public/ || echo
 
-      - name: Cache Bun Dependencies
+      - name: Cache Node Dependencies
         uses: actions/cache@v6
         with:
-          key: "${{runner.os}}-bun-fission-${{hashFiles('fission/bun.lock')}}"
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
           path: "fission/node_modules"
           restore-keys: |
-            ${{runner.os}}-bun-fission-
-            ${{runner.os}}-bun
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
 
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
       - name: Run Tests
-        run: HOME=/root bun run test --bail=1
+        run: |
+          HOME=/root bun run test 2>&1 | tee output.txt
+          grep -q "GH ACTIONS VITEST PASSED" output.txt
 
   runAssetpackTests:
     name: Assetpack Tests
@@ -95,16 +97,18 @@ jobs:
           path: fission/public/Downloadables
           key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
 
-      - name: Cache Bun Dependencies
+      - name: Cache Node Dependencies
         uses: actions/cache@v6
         with:
-          key: "${{runner.os}}-bun-fission-${{hashFiles('fission/bun.lock')}}"
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
           path: "fission/node_modules"
           restore-keys: |
-            ${{runner.os}}-bun-fission-
-            ${{runner.os}}-bun
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
 
       - name: Run Assetpack Tests
-        run: HOME=/root bun run test src/test/mirabuf/DefaultAssets.test.ts
+        run: |
+          HOME=/root bun run test src/test/mirabuf/DefaultAssets.test.ts 2>&1 | tee output.txt
+          grep -q "GH ACTIONS VITEST PASSED" output.txt
         env:
           VITE_RUN_ASSETPACK_TEST: true

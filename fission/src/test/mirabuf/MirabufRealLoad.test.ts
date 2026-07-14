@@ -4,7 +4,8 @@ import {createMirabuf} from "@/mirabuf/MirabufSceneObject.ts";
 import World from "@/systems/World.ts";
 import {server} from "@vitest/browser/context";
 
-describe("Real Load Assets", () => {
+describe("Real Load Assets", ({skipIf}) => {
+    skipIf(server.browser == "firefox")
     beforeAll(async () => {
         await World.initWorld()
         console.warn = vi.fn()
@@ -21,8 +22,7 @@ describe("Real Load Assets", () => {
         ["/api/mira/private/Multi-Joint Wheels v0.mira", MiraType.ROBOT, "Multi-Joint Wheels"],
         ["/api/mira/fields/FRC Field 2023 v8.mira", MiraType.FIELD, "2023 Field"],
     ]
-    test.for(tests)("Loads $2", async ([url, miratype], {skip}) => {
-        skip(server.browser == "firefox", "WebGL bug in Github Actions on Firefox")
+    test.for(tests)("Loads $2", async ([url, miratype]) => {
         const info = await MirabufLoader.cacheRemote(url, miratype)
         expect(info).toBeDefined()
         const assembly = await MirabufLoader.get(info!.hash)

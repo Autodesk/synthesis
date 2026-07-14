@@ -107,7 +107,9 @@ export default defineConfig(async ({ mode }) => {
                       "default",
                         {
                             onTestRunEnd(reason: TestRunEndReason) {
-                                if (reason !== "passed") process.exit(1)
+                                if (reason === "passed") {
+                                    console.error("GH ACTIONS VITEST PASSED")
+                                }
                             },
                         },
                   ]
