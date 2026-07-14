@@ -25,10 +25,30 @@ const ARROW_GEOMETRY: Record<
     "top" | "bottom" | "left" | "right",
     { clipPath: string; width: number; height: number; offset: Record<string, number> }
 > = {
-    top: { clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)", width: ARROW_BASE, height: ARROW_HEIGHT, offset: { top: -ARROW_HEIGHT } },
-    bottom: { clipPath: "polygon(50% 100%, 0% 0%, 100% 0%)", width: ARROW_BASE, height: ARROW_HEIGHT, offset: { bottom: -ARROW_HEIGHT } },
-    left: { clipPath: "polygon(0% 50%, 100% 0%, 100% 100%)", width: ARROW_HEIGHT, height: ARROW_BASE, offset: { left: -ARROW_HEIGHT } },
-    right: { clipPath: "polygon(100% 50%, 0% 0%, 0% 100%)", width: ARROW_HEIGHT, height: ARROW_BASE, offset: { right: -ARROW_HEIGHT } },
+    top: {
+        clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)",
+        width: ARROW_BASE,
+        height: ARROW_HEIGHT,
+        offset: { top: -ARROW_HEIGHT },
+    },
+    bottom: {
+        clipPath: "polygon(50% 100%, 0% 0%, 100% 0%)",
+        width: ARROW_BASE,
+        height: ARROW_HEIGHT,
+        offset: { bottom: -ARROW_HEIGHT },
+    },
+    left: {
+        clipPath: "polygon(0% 50%, 100% 0%, 100% 100%)",
+        width: ARROW_HEIGHT,
+        height: ARROW_BASE,
+        offset: { left: -ARROW_HEIGHT },
+    },
+    right: {
+        clipPath: "polygon(100% 50%, 0% 0%, 0% 100%)",
+        width: ARROW_HEIGHT,
+        height: ARROW_BASE,
+        offset: { right: -ARROW_HEIGHT },
+    },
 }
 
 interface TourCardProps {

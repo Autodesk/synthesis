@@ -19,6 +19,17 @@ export interface MirabufCacheInfo {
     thumbnail?: string
 }
 
+export interface CacheRemoteOptions {
+    /** Display name for the cached file; defaults to the assembly's own name. */
+    name?: string
+    /** When set, warn if the downloaded content's hash differs. */
+    expectedHash?: string
+    /** Competition year to store on the cache entry. */
+    year?: number
+    /** Servable thumbnail URL to store on the cache entry. */
+    thumbnail?: string
+}
+
 export interface MirabufRemoteInfo {
     displayName: string
     src: string
@@ -182,18 +193,17 @@ class MirabufCachingService {
      *
      * @param {string} fetchLocation Location of Mirabuf file.
      * @param {MiraType} miraType Type of Mirabuf Assembly.
-     * @param {string} name Optional display name for the cached file.
+     * @param {CacheRemoteOptions} options Optional metadata to store alongside the cached file.
      *
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
     public static async cacheRemote(
         fetchLocation: string,
         miraType: MiraType,
-        name?: string,
-        expectedHash?: string,
-        year?: number,
-        thumbnail?: string
+        options: CacheRemoteOptions = {}
     ): Promise<MirabufCacheInfo | undefined> {
+        const { expectedHash, year, thumbnail } = options
+        let { name } = options
         try {
             // grab file remote
             const resp = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)

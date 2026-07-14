@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
@@ -112,10 +112,9 @@ const AssetCard: React.FC<AssetCardProps> = ({ name, thumbnail, miraType, cached
                     {name.replace(/\.mira$/, "")}
                 </Label>
                 <Stack direction="row-reverse" gap={0.25} alignItems="center">
-                    <PositiveIconButton
-                        onClick={onSpawn}
-                        children={cached ? <SynthesisIcons.ADD_LARGE /> : <SynthesisIcons.DOWNLOAD_LARGE />}
-                    />
+                    <PositiveIconButton onClick={onSpawn}>
+                        {cached ? <SynthesisIcons.ADD_LARGE /> : <SynthesisIcons.DOWNLOAD_LARGE />}
+                    </PositiveIconButton>
                     {cached && onDelete && <DeleteButton onClick={onDelete} />}
                 </Stack>
             </Stack>
@@ -123,16 +122,23 @@ const AssetCard: React.FC<AssetCardProps> = ({ name, thumbnail, miraType, cached
     )
 }
 
-interface LibraryModalProps {
-    initialYear?: number
-}
+/** Responsive card grid shared by the year view and the Saved section. */
+const AssetCardGrid: React.FC<{ children: ReactNode }> = ({ children }) => (
+    <Box
+        sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" },
+            gap: 2,
+        }}
+    >
+        {children}
+    </Box>
+)
 
-const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal }) => {
+const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { addToast, closeModal, openModal, configureScreen } = useUIContext()
     const { unconfirmedImport } = useStateContext()
     const libraryRef = useTourAnchor("spawn-panel")
-
-    const { initialYear } = modal!.props.custom
 
     // Default library (remote manifest). DefaultAssetLoader loads async ~1s after boot,
     // so snapshot into state and refresh if it wasn't ready yet.
@@ -185,9 +191,9 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
     const [activeYear, setActiveYear] = useState<YearKey | undefined>(undefined)
     useEffect(() => {
         if (activeYear === undefined && years.length > 0) {
-            setActiveYear(initialYear !== undefined && years.includes(initialYear) ? initialYear : years[0])
+            setActiveYear(years[0])
         }
-    }, [years, activeYear, initialYear])
+    }, [years, activeYear])
 
     // Robots + field(s) for the selected year, robots first.
     const assetsForYear = useMemo(
@@ -213,7 +219,7 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
             unsubscribeStatus()
             unsubscribeUpdate()
         }
-    })
+    }, [])
 
     useEffect(() => {
         if (!hasMirabufFiles()) {
@@ -223,7 +229,7 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
         }
     }, [])
 
-    // biome-ignore lint: things break if we don't add the closeModal dep
+    // biome-ignore lint: must run only on mount; the closeModal dep would re-run it and re-close
     useLayoutEffect(() => {
         if (unconfirmedImport) {
             addToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
@@ -269,7 +275,7 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
     )
 
     const downloadAllForYear = useCallback(() => {
-        downloadAll(assetsForYear, cachedInfos)
+        downloadAll(assetsForYear, cachedInfos).catch(console.error)
         closeModal(CloseType.Cancel)
     }, [assetsForYear, cachedInfos, closeModal])
 
@@ -308,13 +314,7 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
                 {activeYear === undefined ? (
                     <Label size="sm">Loading Library...</Label>
                 ) : assetsForYear.length > 0 ? (
-                    <Box
-                        sx={{
-                            display: "grid",
-                            gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(3, 1fr)", lg: "repeat(4, 1fr)" },
-                            gap: 2,
-                        }}
-                    >
+                    <AssetCardGrid>
                         {assetsForYear.map(asset => (
                             <AssetCard
                                 key={asset.hash}
@@ -326,7 +326,7 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
                                 onDelete={cachedByHash.has(asset.hash) ? () => deleteCached(asset.hash) : undefined}
                             />
                         ))}
-                    </Box>
+                    </AssetCardGrid>
                 ) : (
                     <Label size="sm">No Assets Found</Label>
                 )}
@@ -346,17 +346,7 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
                         </AccordionSummary>
                         <AccordionDetails>
                             {savedExtra.length > 0 ? (
-                                <Box
-                                    sx={{
-                                        display: "grid",
-                                        gridTemplateColumns: {
-                                            xs: "repeat(2, 1fr)",
-                                            sm: "repeat(3, 1fr)",
-                                            lg: "repeat(4, 1fr)",
-                                        },
-                                        gap: 2,
-                                    }}
-                                >
+                                <AssetCardGrid>
                                     {savedExtra.map(info => (
                                         <AssetCard
                                             key={info.hash}
@@ -368,7 +358,7 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
                                             onDelete={() => deleteCached(info.hash)}
                                         />
                                     ))}
-                                </Box>
+                                </AssetCardGrid>
                             ) : (
                                 <Label size="sm">No Saved Assets</Label>
                             )}
@@ -451,25 +441,16 @@ const LibraryModal: React.FC<ModalImplProps<void, LibraryModalProps>> = ({ modal
 
 export default LibraryModal
 
-// Command palette entries (module side effect). Registered after definition so the
-// closures reference the fully-initialized component.
+// Command palette entry (module side effect). Registered after definition so the
+// closure references the fully-initialized component.
 CommandRegistry.get().registerCommands([
     {
-        id: "spawn-asset-robots",
-        label: "Spawn Asset (Robots)",
+        id: "spawn-asset",
+        label: "Spawn Asset",
         description: "Open the asset Library.",
-        keywords: ["spawn", "asset", "robot", "import", "mirabuf", "library"],
+        keywords: ["spawn", "asset", "robot", "field", "import", "mirabuf", "library"],
         perform: () => {
-            globalOpenModal<void, LibraryModalProps>(LibraryModal, {})
-        },
-    },
-    {
-        id: "spawn-asset-fields",
-        label: "Spawn Asset (Fields)",
-        description: "Open the asset Library.",
-        keywords: ["spawn", "asset", "field", "import", "mirabuf", "library"],
-        perform: () => {
-            globalOpenModal<void, LibraryModalProps>(LibraryModal, {})
+            globalOpenModal(LibraryModal, undefined)
         },
     },
 ])

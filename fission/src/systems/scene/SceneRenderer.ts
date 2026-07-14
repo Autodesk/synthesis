@@ -612,7 +612,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenModal(LibraryModal, {})
+                    globalOpenModal(LibraryModal, undefined)
                 },
             })
         }

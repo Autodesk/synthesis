@@ -101,7 +101,7 @@ const MobileHUD: React.FC = () => {
                 <HUDMenuButton
                     label="Add Assembly"
                     iconName="add"
-                    onClick={() => runAction(() => openModal(LibraryModal, {}))}
+                    onClick={() => runAction(() => openModal(LibraryModal, undefined))}
                 />
 
                 <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />

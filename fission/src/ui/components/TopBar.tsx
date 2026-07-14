@@ -122,7 +122,7 @@ const TopBar: React.FC = () => {
                         size="large"
                         disableRipple
                         sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() => openModal(LibraryModal, {})}
+                        onClick={() => openModal(LibraryModal, undefined)}
                     >
                         <TopBarIcon name="add" size={40} />
                     </IconButton>

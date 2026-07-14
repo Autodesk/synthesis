@@ -1,6 +1,7 @@
 import type { Data } from "@/aps/APSDataManagement"
 import type { DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
@@ -11,102 +12,114 @@ import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 
+/** Announce a newly spawned scene object to the multiplayer session, if one is active. */
+async function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf.Assembly, info: MirabufCacheInfo) {
+    const multiplayer = World.multiplayerSystem
+    if (multiplayer == null) return
+
+    const encodedAssembly =
+        sceneObject.miraType !== MiraType.FIELD
+            ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
+            : undefined
+
+    const message: Message = {
+        type: "newObject",
+        timestamp: Date.now(),
+        data: {
+            sceneObjectKey: sceneObject.id as RemoteSceneObjectId,
+            assembly: encodedAssembly,
+            assemblyHash: info.hash,
+            miraType: info.miraType,
+            initialPreferences: sceneObject.getPreferenceData(),
+            bodyIds: sceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+        },
+    }
+    await multiplayer.broadcast(message)
+    multiplayer.registerOwnSceneObject(sceneObject.id as LocalSceneObjectId)
+}
+
 /**
  * Spawn a mirabuf assembly that already lives in the cache. Shared by every
  * entry point of the asset Library (cached, remote, and APS spawns all funnel
  * through here once their buffer is cached).
  */
-export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: ProgressHandle) {
+export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = new ProgressHandle(info.name)) {
     // If spawning a field, then remove all other fields
     if (info.miraType === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
     }
 
-    if (!progressHandle) {
-        progressHandle = new ProgressHandle(info.name)
-    }
-
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    await MirabufCachingService.get(info.hash)
-        .then(async assembly => {
-            if (assembly) {
-                await createMirabuf(info.hash, assembly, progressHandle).then(async mirabufSceneObject => {
-                    if (mirabufSceneObject) {
-                        World.sceneRenderer.registerSceneObject(mirabufSceneObject)
-
-                        const targetControls = getTargetControls()
-
-                        if (World.multiplayerSystem != null) {
-                            const encodedAssembly =
-                                mirabufSceneObject.miraType !== MiraType.FIELD
-                                    ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
-                                    : undefined
-
-                            const message: Message = {
-                                type: "newObject",
-                                timestamp: Date.now(),
-                                data: {
-                                    sceneObjectKey: mirabufSceneObject.id as RemoteSceneObjectId,
-                                    assembly: encodedAssembly,
-                                    assemblyHash: info.hash,
-                                    miraType: info.miraType,
-                                    initialPreferences: mirabufSceneObject.getPreferenceData(),
-                                    bodyIds: mirabufSceneObject
-                                        .getAllBodyIds()
-                                        .map(id => id.GetIndexAndSequenceNumber()),
-                                },
-                            }
-                            await World.multiplayerSystem?.broadcast(message)
-                            World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id as LocalSceneObjectId)
-                        }
-
-                        if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                            targetControls.focusProvider = mirabufSceneObject
-                        }
-
-                        progressHandle.done()
-
-                        if (mirabufSceneObject.miraType == MiraType.ROBOT) {
-                            globalOpenPanel(InitialConfigPanel, undefined)
-                        }
-                    } else {
-                        progressHandle.fail("No object!")
-                    }
-                })
-            } else {
-                progressHandle.fail()
-                console.error("Failed to spawn robot")
-            }
-        })
-        .catch(e => {
-            console.error(e)
+    try {
+        const assembly = await MirabufCachingService.get(info.hash)
+        if (!assembly) {
             progressHandle.fail()
-        })
-        .finally(() => {
-            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
-        })
+            console.error(`Failed to load "${info.name}" from cache`)
+            return
+        }
+
+        const sceneObject = await createMirabuf(info.hash, assembly, progressHandle)
+        if (!sceneObject) {
+            progressHandle.fail("No object!")
+            return
+        }
+
+        World.sceneRenderer.registerSceneObject(sceneObject)
+
+        const targetControls = getTargetControls()
+
+        await broadcastSpawn(sceneObject, assembly, info)
+
+        if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+            targetControls.focusProvider = sceneObject
+        }
+
+        progressHandle.done()
+
+        if (sceneObject.miraType === MiraType.ROBOT) {
+            globalOpenPanel(InitialConfigPanel, undefined)
+        }
+    } catch (e) {
+        console.error(e)
+        progressHandle.fail()
+    } finally {
+        setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+    }
+}
+
+/** Cache a default (remote) asset, carrying its year/thumbnail metadata into the cache entry. */
+function cacheDefaultAsset(info: DefaultAssetInfo) {
+    return MirabufCachingService.cacheRemote(info.remotePath, info.miraType, {
+        name: info.name,
+        expectedHash: info.hash,
+        year: info.year,
+        thumbnail: info.thumbnail,
+    })
+}
+
+/** Run `cache`, then spawn the cached assembly, reporting progress and failures on `status`. */
+async function cacheAndSpawn(status: ProgressHandle, cache: () => Promise<MirabufCacheInfo | undefined>) {
+    try {
+        const cacheInfo = await cache()
+        if (cacheInfo) {
+            await spawnCachedMira(cacheInfo, status)
+        } else {
+            status.fail("Failed to cache")
+        }
+    } catch (e) {
+        console.error(e)
+        status.fail()
+    }
 }
 
 /**
- * Download a default (remote) asset into the cache, carrying its year/thumbnail
- * metadata, then spawn it. Fire-and-forget: progress is surfaced via ProgressHandle.
+ * Download a default (remote) asset into the cache, then spawn it.
+ * Fire-and-forget: progress is surfaced via ProgressHandle.
  */
 export function spawnRemote(info: DefaultAssetInfo) {
     const status = new ProgressHandle(info.name)
     status.update("Downloading from Synthesis...", 0.05)
-
-    MirabufCachingService.cacheRemote(info.remotePath, info.miraType, info.name, info.hash, info.year, info.thumbnail)
-        .then(async cacheInfo => {
-            if (cacheInfo) {
-                await spawnCachedMira(cacheInfo, status)
-            } else {
-                status.fail("Failed to cache")
-            }
-        })
-        .catch(e => {
-            console.error(e)
-            status.fail()
-        })
+    void cacheAndSpawn(status, () => cacheDefaultAsset(info))
 }
 
 /**
@@ -115,57 +128,39 @@ export function spawnRemote(info: DefaultAssetInfo) {
 export function spawnAPS(data: Data, miraType: MiraType) {
     const status = new ProgressHandle(data.attributes.displayName ?? data.id)
     status.update("Downloading from APS...", 0.05)
-
-    MirabufCachingService.cacheAPS(data, miraType)
-        .then(async cacheInfo => {
-            if (cacheInfo) {
-                await spawnCachedMira(cacheInfo, status)
-            } else {
-                status.fail("Failed to cache")
-            }
-        })
-        .catch(e => {
-            console.error(e)
-            status.fail()
-        })
+    void cacheAndSpawn(status, () => MirabufCachingService.cacheAPS(data, miraType))
 }
 
 /**
  * Download every remote asset not yet cached (no spawn). Used by "Download All".
  */
-export function downloadAll(manifestAssets: DefaultAssetInfo[], cachedAssets: MirabufCacheInfo[]) {
-    const status = new ProgressHandle("Caching Remote Assets")
+export async function downloadAll(manifestAssets: DefaultAssetInfo[], cachedAssets: MirabufCacheInfo[]) {
+    const cachedHashes = new Set(cachedAssets.map(info => info.hash))
+    const toCache = manifestAssets.filter(asset => !cachedHashes.has(asset.hash))
+    if (toCache.length === 0) return
 
-    const toCache = manifestAssets.filter(asset => !cachedAssets.some(info => info.hash === asset.hash))
+    const status = new ProgressHandle("Caching Remote Assets")
+    status.update(`Downloading... (0/${toCache.length})`, 0.05)
 
     let completeCount = 0
-    const totalCount = toCache.length
-    status.update(`Downloading... (0/${totalCount})`, 0.05)
-
-    toCache.forEach(asset => {
-        MirabufCachingService.cacheRemote(
-            asset.remotePath,
-            asset.miraType,
-            asset.name,
-            asset.hash,
-            asset.year,
-            asset.thumbnail
-        )
-            .then(cacheInfo => {
-                if (cacheInfo) {
-                    completeCount++
-                    if (completeCount == totalCount) {
-                        status.done()
-                    } else {
-                        status.update(`Downloading... (${completeCount}/${totalCount})`, completeCount / totalCount)
-                    }
-                } else {
-                    status.fail("Failed to cache")
-                }
-            })
-            .catch(e => {
+    const results = await Promise.all(
+        toCache.map(async asset => {
+            const cacheInfo = await cacheDefaultAsset(asset).catch(e => {
                 console.error(e)
-                status.fail()
+                return undefined
             })
-    })
+            if (cacheInfo) {
+                completeCount++
+                status.update(`Downloading... (${completeCount}/${toCache.length})`, completeCount / toCache.length)
+            }
+            return cacheInfo
+        })
+    )
+
+    const failedCount = results.filter(cacheInfo => !cacheInfo).length
+    if (failedCount > 0) {
+        status.fail(`Failed to cache ${failedCount} asset${failedCount === 1 ? "" : "s"}`)
+    } else {
+        status.done()
+    }
 }
