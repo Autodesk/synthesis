@@ -763,7 +763,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     /**
-     * @returns The transformation matrix which corresponds to the reverse of the current spacial rotation of the root node of this scene object, relative to the
+     * @returns The transformation matrix which corresponds to the reverse of the current spacial rotation of the root node of this scene object, relative to the origin
      */
     private getInverseRotationOfBody(): Jolt.Mat44 {
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
