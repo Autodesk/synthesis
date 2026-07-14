@@ -207,36 +207,41 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                             camera.fovDegrees = v
                         }}
                     />
-                    <StatefulSlider
-                        label="Width (px)"
-                        min={MIN_RES}
-                        max={MAX_RES}
-                        step={16}
-                        defaultValue={camera.resolutionWidth}
-                        onChange={v => {
-                            camera.resolutionWidth = v
-                        }}
-                    />
-                    <StatefulSlider
-                        label="Height (px)"
-                        min={MIN_RES}
-                        max={MAX_RES}
-                        step={16}
-                        defaultValue={camera.resolutionHeight}
-                        onChange={v => {
-                            camera.resolutionHeight = v
-                        }}
-                    />
-                    <StatefulSlider
-                        label="Frame Rate (fps)"
-                        min={MIN_FPS}
-                        max={MAX_FPS}
-                        step={1}
-                        defaultValue={camera.fps}
-                        onChange={v => {
-                            camera.fps = v
-                        }}
-                    />
+                    {/* NOTE: in code sim mode, these are only configurable through robot code */}
+                    {selectedRobot.brain?.brainType === "synthesis" && (
+                        <>
+                            <StatefulSlider
+                                label="Width (px)"
+                                min={MIN_RES}
+                                max={MAX_RES}
+                                step={16}
+                                defaultValue={camera.resolutionWidth}
+                                onChange={v => {
+                                    camera.resolutionWidth = v
+                                }}
+                            />
+                            <StatefulSlider
+                                label="Height (px)"
+                                min={MIN_RES}
+                                max={MAX_RES}
+                                step={16}
+                                defaultValue={camera.resolutionHeight}
+                                onChange={v => {
+                                    camera.resolutionHeight = v
+                                }}
+                            />
+                            <StatefulSlider
+                                label="Frame Rate (fps)"
+                                min={MIN_FPS}
+                                max={MAX_FPS}
+                                step={1}
+                                defaultValue={camera.fps}
+                                onChange={v => {
+                                    camera.fps = v
+                                }}
+                            />
+                        </>
+                    )}
 
                     {gizmoComponent}
                 </>
