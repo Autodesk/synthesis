@@ -66,7 +66,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { hexStringToUint8Array } from "@/util/Utility.ts"
+import { hexStringToUint8Array, multiplyMat44ByVec3 } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -332,6 +332,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         EventSystem.dispatch("MirabufObjectChangeEvent", this)
+
+        this.computeFurthestVertices()
+        this.computeUnrotatedRootNodeToCenterPositionTranslation()
     }
 
     // Centered in x-z plane, bottom surface of object
@@ -808,9 +811,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
             )
 
+            const vertex = new JOLT.Vec3()
             for (let i = 0; i < vertices.length; i += 3) {
+                vertex.Set(vertices[i], vertices[i + 1], vertices[i + 2])
                 // Transform the vertex into the position it would occupy if the robot were axis aligned
-                const vertex = new JOLT.Vec3(vertices[i], vertices[i + 1], vertices[i + 2])
                 const transformedVertex = vertexTransform.MulVec3(vertex)
 
                 const transX = transformedVertex.GetX()
@@ -830,12 +834,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 oldY.max = Math.max(oldY.max, transY)
                 oldZ.max = Math.max(oldZ.max, transZ)
 
-                JOLT.destroy(vertex)
                 JOLT.destroy(transformedVertex)
             }
 
             JOLT.destroy(vertexTransform)
             JOLT.destroy(triangleContext)
+
+            JOLT.destroy(vertex)
         })
 
         JOLT.destroy(inverseRotation)
@@ -852,13 +857,33 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     /**
+     * Recalculates the unrotated vector between the center of the axis-aligned bounding box around the mirabuf object and the position of the root body.
+     *
+     * The resultant vector is placed in `this._unrotatedRootNodeToCenterPositionTranslation`
+     *
+     * Call this whenever we need to update that translation (e.g. on setup or whenever the dimensions of the robot change)
+     *
+     * WARNING This requires the robot to be axis-aligned initially. This may not always be true.
+     */
+    private computeUnrotatedRootNodeToCenterPositionTranslation() {
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+
+        const rootNodeTransform = convertJoltRVec3ToJoltVec3(rootBody.GetPosition())
+        const alignedPosition = convertThreeVector3ToJoltVec3(this.getPositionTransform())
+
+        this._unrotatedRootNodeToCenterPositionTranslation = alignedPosition.SubVec3(rootNodeTransform)
+    }
+
+    /**
      * Gets the tightest fitting oriented bounding box around the robot, centered at the robot's origin.
+     *
+     * In order for this function to be up-to-date, both the function `this.computeFurthestVertices` and `this.computeUnrotatedRootNodeToCenterPositionTranslation` must have been called since the last time the dimensions of the robot changed.
+     *
+     * This should basically only be on setup, and whenever a non-wheel robot joint moves.
      *
      * @returns The aforementioned bounding box
      */
     public getOrientedBoundingBox(): Jolt.OrientedBox {
-        if (!this._furthestVertices) this.computeFurthestVertices()
-
         // Get dimensions of scene object along each axis
         const axesVertices = [this._furthestVertices!.x, this._furthestVertices!.y, this._furthestVertices!.z]
         const axisHalfExtents = axesVertices.map(({ min, max }) => Math.abs(max - min) / 2) as [number, number, number]
@@ -870,17 +895,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         // NOTE Do not destroy
         const rotation = rootBody.GetRotation()
 
-        // Here, we calculate the vector between the center of the robot when axis-aligned (which is should be initially) and the root node transform
-        // WARNING This requires the robot to be axis-aligned initially. This may not always be true.
-        if (!this._unrotatedRootNodeToCenterPositionTranslation) {
-            const rootNodeTransform = convertJoltRVec3ToJoltVec3(rootBody.GetPosition())
-            const alignedPosition = convertThreeVector3ToJoltVec3(this.getPositionTransform())
-
-            this._unrotatedRootNodeToCenterPositionTranslation = alignedPosition.SubVec3(rootNodeTransform)
-        }
-
-        // Then, we rotate our vector by the rotation of the root body, otherwise any rotation will mess with the translation
-        const offset = rotation.MulVec3(this._unrotatedRootNodeToCenterPositionTranslation)
+        // We rotate our vector by the rotation of the root body, otherwise any rotation will mess with the translation
+        const offset = rotation.MulVec3(this._unrotatedRootNodeToCenterPositionTranslation!)
 
         // Finally, we just offset the root node to get the true center
         const position = convertJoltRVec3ToJoltVec3(rootBody.GetPosition().Add(offset))
