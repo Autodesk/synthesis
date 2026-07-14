@@ -6,7 +6,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import { v4 as uuidV4 } from "uuid"
 import FieldMiraEditor from "@/mirabuf/FieldMiraEditor.ts"
 
-const basepath = "public/Downloadables/Mira"
+const basepath = "public/Downloadables/mira"
 const map: ManifestFileType = { fields: [], private: [], robots: [] }
 
 const dirs = Object.keys(map) as (keyof typeof map)[]
