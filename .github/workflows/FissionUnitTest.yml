@@ -105,6 +105,6 @@ jobs:
             ${{runner.os}}-bun
 
       - name: Run Assetpack Tests
-        run: HOME=/root bun run test src/test/mirabuf/DefaultAssets.test.ts --bail=1
+        run: HOME=/root bun run test src/test/mirabuf/DefaultAssets.test.ts
         env:
           VITE_RUN_ASSETPACK_TEST: true
