@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
-import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
@@ -25,7 +25,6 @@ import {
     AccordionDetails,
     AccordionSummary,
 } from "@/ui/components/StyledComponents"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
@@ -165,9 +164,8 @@ interface ImportMirabufPanelCustomProps {
     configurationType: ConfigurationType
 }
 
-const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustomProps>> = ({ panel, parent }) => {
-    const { addToast, closePanel, openModal, configureScreen } = useUIContext()
-    const { unconfirmedImport } = useStateContext()
+const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustomProps>> = ({ panel }) => {
+    const { closePanel, openModal, configureScreen } = useUIContext()
 
     const { configurationType } = panel!.props.custom
 
@@ -205,17 +203,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         } else {
             setFiles(getMirabufFiles())
         }
-    }, [])
-
-    // biome-ignore lint: things break if we don't add the closePanel dep
-    useLayoutEffect(() => {
-        if (unconfirmedImport) {
-            addToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
-            closePanel(panel!.id, CloseType.Cancel)
-            return
-        }
-
-        if (parent) closePanel(parent.id, CloseType.Cancel)
     }, [])
 
     // Select a mirabuf assembly from the cache.
