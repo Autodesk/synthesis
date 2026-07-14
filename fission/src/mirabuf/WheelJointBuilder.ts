@@ -1,5 +1,4 @@
 import { mirabuf } from "@/proto/mirabuf"
-import { URDF_WHEEL_TAG } from "@/urdf/URDFUserData"
 import type { WheelAxis } from "@/util/geometry/WheelAxisFit"
 
 export interface WheelAssignment {
@@ -79,10 +78,8 @@ export function applyWheelAssignments(assembly: mirabuf.Assembly, assignments: W
                     value: 0,
                 },
             },
-            // Also tag urdfWheel so createWheelConstraint infers the vehicle's forward/up/steering axes
-            // from `axis` instead of assuming the native-Fusion default orientation, which our
-            // arbitrarily-picked axis (from an AABB fit, not a fixed CAD convention) won't generally match.
-            userData: { data: { wheel: "true", wheelType: "0", [URDF_WHEEL_TAG]: "true" } },
+            // Basis/radius inference keys off isURDFImport(assembly), not a per-joint tag.
+            userData: { data: { wheel: "true", wheelType: "0" } },
         }
 
         joints.jointInstances![token] = {

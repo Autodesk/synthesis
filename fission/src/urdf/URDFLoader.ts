@@ -1,7 +1,6 @@
 import JSZip from "jszip"
 import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
-import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "gltf", "bin"])
 
@@ -111,7 +110,6 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
 
         validateURDFMeshFormats(urdfText)
         const assembly = convertURDF(urdfText, meshFiles)
-        // detectAndTagWheels(assembly)
         applyConservativeURDFImport(assembly)
 
         return assembly

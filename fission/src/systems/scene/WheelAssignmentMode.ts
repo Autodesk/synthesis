@@ -265,7 +265,7 @@ class WheelAssignmentMode extends WorldSystem {
             const sceneId = sceneObject.id
             World.sceneRenderer.removeSceneObject(sceneId)
 
-            const rebuilt = await createMirabuf(assembly)
+            const rebuilt = await createMirabuf(assembly.info!.GUID!, assembly)
             if (!rebuilt) {
                 globalAddToast("error", "Wheel Assignment", "Failed to rebuild assembly after applying wheel joints.")
                 continue
