@@ -1,11 +1,10 @@
-import {beforeAll, beforeEach, describe, expect, test, vi} from "vitest"
-import MirabufLoader, {MiraType} from "../../mirabuf/MirabufLoader"
-import {createMirabuf} from "@/mirabuf/MirabufSceneObject.ts";
-import World from "@/systems/World.ts";
-import {server} from "@vitest/browser/context";
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
+import MirabufLoader, { MiraType } from "../../mirabuf/MirabufLoader"
+import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
+import World from "@/systems/World.ts"
+import { server } from "@vitest/browser/context"
 
-describe("Real Load Assets", ({skipIf}) => {
-    skipIf(server.browser == "firefox")
+describe.skipIf(server.browser == "firefox")("Real Load Assets", () => {
     beforeAll(async () => {
         await World.initWorld()
         console.warn = vi.fn()
@@ -31,5 +30,4 @@ describe("Real Load Assets", ({skipIf}) => {
         expect(sceneObject).toBeDefined()
         expect(sceneObject?.miraType).toBe(miratype)
     })
-
 })

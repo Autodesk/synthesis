@@ -49,6 +49,7 @@ export async function teardown() {
                 console.log("testing server stopped.")
                 server = undefined
                 resolve()
+                process.exit(0)
             })
         })
     }

@@ -105,13 +105,13 @@ export default defineConfig(async ({ mode }) => {
                 ? [
                       "github-actions",
                       "default",
-                        {
-                            onTestRunEnd(reason: TestRunEndReason) {
-                                if (reason === "passed") {
-                                    console.error("GH ACTIONS VITEST PASSED")
-                                }
-                            },
-                        },
+                      {
+                          onTestRunEnd(_modules: unknown, _unhandled: unknown, reason: TestRunEndReason) {
+                              if (reason === "passed") {
+                                  console.error("GH ACTIONS VITEST PASSED")
+                              }
+                          },
+                      },
                   ]
                 : ["default"],
             browser: {
