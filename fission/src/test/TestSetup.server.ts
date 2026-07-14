@@ -7,6 +7,15 @@ let server: http.Server | undefined
 const ASSET_PORT = 3001
 const serveDirectory = path.join(process.cwd(), "public/Downloadables")
 export async function setup() {
+    process.on("unhandledRejection", reason => {
+        console.error("Unhandled rejection in test process:", reason)
+        process.exitCode = 1
+    })
+    process.on("uncaughtException", err => {
+        console.error("Uncaught exception in test process:", err)
+        process.exit(1)
+    })
+
     if (server) {
         return
     }
@@ -49,7 +58,6 @@ export async function teardown() {
                 console.log("testing server stopped.")
                 server = undefined
                 resolve()
-                process.exit(0)
             })
         })
     }
