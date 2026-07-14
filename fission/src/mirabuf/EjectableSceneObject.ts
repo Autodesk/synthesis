@@ -28,6 +28,11 @@ class EjectableSceneObject extends SceneObject {
     private _startTranslation?: THREE.Vector3
     private _startRotation?: THREE.Quaternion
 
+    private _desiredQuatRotation?: THREE.Quaternion
+
+    // Set true once the animation has reached the ejection position at least once.
+    private _reachedEndPosition = false
+
     private static _defaultAnimationDuration = 0.5
 
     public static setAnimationDuration(duration: number) {
@@ -125,10 +130,15 @@ class EjectableSceneObject extends SceneObject {
 
             desiredTransform.decompose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
 
+            this._desiredQuatRotation = desiredRotation.clone()
+
             if (t < 1 && this._startTranslation && this._startRotation) {
                 // gradual acceleration via easedT
                 desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
                 desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, easedT)
+            } else {
+                // animation finished pinning the piece at the ejection pose
+                this._reachedEndPosition = true
             }
 
             // apply the transform
@@ -165,13 +175,14 @@ class EjectableSceneObject extends SceneObject {
 
         const parentBody = World.physicsSystem.getBody(this._parentBodyId)!
         const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)!
-        const ejectDir = new THREE.Vector3(0, 0, 1)
-            .applyQuaternion(convertJoltQuatToThreeQuaternion(gpBody.GetRotation()))
-            .normalize()
+        const rot = this._desiredQuatRotation ?? convertJoltQuatToThreeQuaternion(gpBody.GetRotation())
+        const ejectDir = new THREE.Vector3(0, 0, 1).applyQuaternion(rot).normalize()
 
         World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
 
-        const ejectVector = convertThreeVector3ToJoltVec3(ejectDir.multiplyScalar(this._ejectVelocity))
+        const ejectVector = convertThreeVector3ToJoltVec3(
+            ejectDir.multiplyScalar(this._reachedEndPosition ? this._ejectVelocity : 0)
+        )
         // NOTE
         // Don't destroy these because it seems like `gpBody` takes ownership???
         gpBody.SetLinearVelocity(parentBody.GetLinearVelocity().Add(ejectVector))
