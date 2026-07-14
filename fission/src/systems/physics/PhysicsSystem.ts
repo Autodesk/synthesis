@@ -376,6 +376,7 @@ class PhysicsSystem extends WorldSystem {
         for (let i = 0; i < points.length; i += 3) {
             const point = new JOLT.Vec3(points[i], points[i + 1], points[i + 2])
             settings.mPoints.push_back(point)
+            JOLT.destroy(point)
         }
 
         return settings.Create()
@@ -1144,6 +1145,7 @@ class PhysicsSystem extends WorldSystem {
                 const vert = convertMirabufFloatToArrJoltVec3(verts, i)
                 points.push_back(vert)
                 this.updateMinMaxBounds(vert, min, max)
+                JOLT.destroy(vert)
             }
         })
 
@@ -1196,6 +1198,7 @@ class PhysicsSystem extends WorldSystem {
                 this.updateMinMaxBounds(vertVec, min, max)
 
                 JOLT.destroy(vertVec)
+                JOLT.destroy(vert)
             }
 
             for (let i = 0; i < indexArr.length; i += 3) {
@@ -1209,6 +1212,7 @@ class PhysicsSystem extends WorldSystem {
 
                 const triangle = new JOLT.IndexedTriangle(a, b, c, 0)
                 settings.mIndexedTriangles.push_back(triangle)
+                JOLT.destroy(triangle)
             }
         })
 
