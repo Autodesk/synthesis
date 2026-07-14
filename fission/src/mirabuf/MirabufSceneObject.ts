@@ -133,7 +133,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _collisionUnsubscriber?: () => void
 
     private _furthestVertices?: AxisVertices = undefined
-    private _centerPositionOffsetFromRootNodeTransform?: Jolt.Vec3 = undefined
+    private _unrotatedRootNodeToCenterPositionTranslation?: Jolt.Vec3 = undefined
 
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
         return this._scoringZones
@@ -872,15 +872,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // Here, we calculate the vector between the center of the robot when axis-aligned (which is should be initially) and the root node transform
         // WARNING This requires the robot to be axis-aligned initially. This may not always be true.
-        if (!this._centerPositionOffsetFromRootNodeTransform) {
+        if (!this._unrotatedRootNodeToCenterPositionTranslation) {
             const rootNodeTransform = convertJoltRVec3ToJoltVec3(rootBody.GetPosition())
             const alignedPosition = convertThreeVector3ToJoltVec3(this.getPositionTransform())
 
-            this._centerPositionOffsetFromRootNodeTransform = alignedPosition.SubVec3(rootNodeTransform)
+            this._unrotatedRootNodeToCenterPositionTranslation = alignedPosition.SubVec3(rootNodeTransform)
         }
 
         // Then, we rotate our vector by the rotation of the root body, otherwise any rotation will mess with the translation
-        const offset = rotation.MulVec3(this._centerPositionOffsetFromRootNodeTransform)
+        const offset = rotation.MulVec3(this._unrotatedRootNodeToCenterPositionTranslation)
 
         // Finally, we just offset the root node to get the true center
         const position = convertJoltRVec3ToJoltVec3(rootBody.GetPosition().Add(offset))
