@@ -52,7 +52,6 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToThreeVector3,
-    convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import { createMeshForShape } from "@/util/threejs/MeshCreation.ts"
@@ -93,7 +92,7 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
     return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
 }
 
-export type MinMax = { min: number; max: number }
+type MinMax = { min: number; max: number }
 type AxisVertices = {
     x: MinMax
     y: MinMax

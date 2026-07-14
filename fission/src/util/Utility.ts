@@ -1,7 +1,5 @@
-import { AxisVertices, MinMax } from "@/mirabuf/MirabufSceneObject"
 import type Jolt from "@azaleacolburn/jolt-physics"
 import Pako from "pako"
-import JOLT from "./loading/JoltSyncLoader"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
