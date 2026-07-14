@@ -89,7 +89,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
             onAddClicked={() => {
                 // Save current configuration first, then open Spawn panel next tick
                 closePanel(panel!.id, CloseType.Accept)
-                setTimeout(() => openModal(LibraryModal, {}), 0)
+                setTimeout(() => openModal(LibraryModal, undefined), 0)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
             defaultSelectedOption={selectedAssembly ? makeSelectionOption(selectedAssembly) : undefined}

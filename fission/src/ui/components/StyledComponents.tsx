@@ -210,7 +210,7 @@ export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClic
 export const DownloadButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
-            <SynthesisIcons.DELETE_LARGE />
+            <SynthesisIcons.DOWNLOAD_LARGE />
         </PositiveIconButton>
     )
 }

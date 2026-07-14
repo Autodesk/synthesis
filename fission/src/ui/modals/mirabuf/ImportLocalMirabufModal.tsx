@@ -78,7 +78,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
         const onCancel = () => {
             // Both are modals and only one modal exists at a time; closeModal's trailing
             // setModal(undefined) would clobber a synchronous reopen, so defer a tick.
-            setTimeout(() => globalOpenModal(LibraryModal, {}), 0)
+            setTimeout(() => globalOpenModal(LibraryModal, undefined), 0)
         }
 
         const onBeforeAccept = async () => {

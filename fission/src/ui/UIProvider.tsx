@@ -41,6 +41,17 @@ function shallowEqualProps(a: unknown, b: unknown): boolean {
     return aKeys.every(k => a[k] === b[k])
 }
 
+const getContentName = (content: unknown): string => (content as { name?: string } | undefined)?.name ?? ""
+
+/** True for a ConfigurePanel with unsaved work (an assembly selected or a config mode set). */
+function isActivelyConfiguring(panel: { content: unknown; props: unknown }): boolean {
+    if (getContentName(panel.content) !== "ConfigurePanel") return false
+    const custom = (panel.props as { custom?: { selectedAssembly?: unknown; configMode?: unknown } }).custom ?? {}
+    return Boolean(custom.selectedAssembly) || custom.configMode !== undefined
+}
+
+const UNSAVED_CONFIG_WARNING = "You have unsaved configuration open. Close it before spawning."
+
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
@@ -98,21 +109,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         ) => {
             // Block opening the asset Library while an assembly is actively being configured
             // (mirrors the panel-level guard that used to apply when the Library was a panel).
-            const contentName = (content as unknown as { name?: string })?.name ?? ""
-            if (contentName === "LibraryModal") {
-                const configuring = panels.find(p => {
-                    const name = (p.content as unknown as { name?: string })?.name ?? ""
-                    if (name !== "ConfigurePanel") return false
-                    const custom = (p.props as unknown as { custom?: any })?.custom ?? {}
-                    return Boolean(custom?.selectedAssembly) || custom?.configMode !== undefined
-                })
-                if (configuring) {
-                    enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
-                        variant: "warning",
-                        action: snackbarAction,
-                    })
-                    return ""
-                }
+            if (getContentName(content) === "LibraryModal" && panels.some(isActivelyConfiguring)) {
+                enqueueSnackbar(UNSAVED_CONFIG_WARNING, { variant: "warning", action: snackbarAction })
+                return ""
             }
 
             const id = uuidv4()
@@ -199,33 +198,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             panel.onCancel = new UICallback()
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
-            const contentName = (content as unknown as { name?: string })?.name ?? ""
+            const contentName = getContentName(content)
             const mutuallyExclusive = ["ConfigurePanel", "InitialConfigPanel"]
             const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
             if (mutuallyExclusive.includes(contentName)) {
-                const existing = panels.find(p =>
-                    mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
-                )
+                const existing = panels.find(p => mutuallyExclusive.includes(getContentName(p.content)))
                 if (existing) {
-                    // If the existing panel is ConfigurePanel and a spawn/initial panel is being opened while editing,
-                    // warn the user and keep Configure open. Otherwise, replace existing with the new panel.
-                    const existingName = (existing.content as unknown as { name?: string })?.name ?? ""
-                    const isExistingConfigure = existingName === "ConfigurePanel"
-                    const isNewSpawnOrInit = contentName === "InitialConfigPanel"
-                    if (isExistingConfigure && isNewSpawnOrInit) {
-                        // Only block if actively configuring an assembly (has selection or a mode set)
-                        const custom = (existing.props as unknown as { custom?: any })?.custom ?? {}
-                        const isActivelyConfiguring =
-                            Boolean(custom?.selectedAssembly) || custom?.configMode !== undefined
-                        if (isActivelyConfiguring) {
-                            // Show a warning toast about unsaved configuration
-                            enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
-                                variant: "warning",
-                                action: snackbarAction,
-                            })
-                            setPanels(p => [...p.filter(x => x !== existing), existing])
-                            return existing.id
-                        }
+                    // Opening InitialConfigPanel over an actively-edited ConfigurePanel would drop
+                    // unsaved work; warn the user and keep Configure open.
+                    if (contentName === "InitialConfigPanel" && isActivelyConfiguring(existing)) {
+                        enqueueSnackbar(UNSAVED_CONFIG_WARNING, { variant: "warning", action: snackbarAction })
+                        setPanels(p => [...p.filter(x => x !== existing), existing])
+                        return existing.id
                     }
                     // Replace existing with the new one
                     setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])
