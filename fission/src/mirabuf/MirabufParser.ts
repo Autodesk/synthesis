@@ -86,6 +86,10 @@ class MirabufParser {
         return this._gamePieceTransform
     }
 
+    public get assemblyId() {
+        return this.assembly.info!.GUID!
+    }
+
     public constructor(assembly: mirabuf.Assembly, isGamePiece: boolean = false, progressHandle?: ProgressHandle) {
         this._assembly = assembly
         this._errors = []

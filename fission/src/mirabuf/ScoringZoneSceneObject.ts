@@ -36,7 +36,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
         super(parentAssembly, parentAssembly.fieldPreferences?.scoringZones[index]!, "RenderScoringZones", render)
 
-        this.toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")
+        this.toRender = PreferencesSystem.getUserPreference("RenderScoringZones")
     }
 
     public setupCollisionSubscribers() {

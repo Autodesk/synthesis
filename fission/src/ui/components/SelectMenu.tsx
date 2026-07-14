@@ -71,14 +71,14 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
             </Button>
 
             {/* Button used for selecting a parent (shows up as an outline) */}
-            {value.tooltipText && CustomTooltip(value.tooltipText)}
+            {value.tooltipText && <CustomTooltip text={value.tooltipText} />}
             {/** Delete button only if onDelete is defined */}
             {onDelete && includeDelete && !value.disabled && (
                 <>
-                    {Spacer(0, 10)}
+                    <Spacer width={10} />
                     {/*DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")&*/}
                     <Button color="error" onClick={() => onDelete?.()} id="select-menu-delete-button">
-                        {SynthesisIcons.DELETE_LARGE}
+                        <SynthesisIcons.DELETE_LARGE />
                     </Button>
                 </>
             )}
@@ -144,30 +144,16 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     return (
         <>
             {/** Box containing the menu header */}
-            <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item" gap={1}>
-                {/** Back arrow button when an option is selected */}
-                {selectedOption !== undefined && (
-                    <IconButton
-                        onClick={() => {
-                            setSelectedOption(undefined)
-                            onOptionSelected(undefined)
-                        }}
-                        id="select-menu-back-button"
-                        sx={{ mr: 1 }}
-                    >
-                        {SynthesisIcons.LEFT_ARROW_LARGE}
-                    </IconButton>
-                )}
-
-                {/** Label with either the header text, or the name of the selected option if an option is selected */}
-                <Stack alignSelf={"center"}>
-                    <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
-                    </Label>
-                </Stack>
-            </Stack>
+            <SelectMenuHeader
+                showBackButton={selectedOption !== undefined}
+                onBackButton={() => {
+                    setSelectedOption(undefined)
+                    onOptionSelected(undefined)
+                }}
+                label={selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
+            />
             <Divider />
-            {Spacer(12)}
+            <Spacer height={12} />
 
             {selectedOption === undefined && (
                 <>
@@ -203,13 +189,43 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                                 onClick={onAddClicked}
                                 id="select-menu-add-button"
                             >
-                                {SynthesisIcons.ADD_LARGE}
+                                <SynthesisIcons.ADD_LARGE />
                             </Button>
                         )}
                     </Stack>
                 </>
             )}
         </>
+    )
+}
+
+interface SelectMenuHeaderProps {
+    showBackButton?: boolean
+    onBackButton: () => void
+    label: string
+}
+
+export const SelectMenuHeader = ({
+    showBackButton,
+    onBackButton,
+    label,
+}: SelectMenuHeaderProps): React.ReactElement => {
+    return (
+        <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item" gap={1}>
+            {/** Back arrow button when an option is selected */}
+            {showBackButton && (
+                <IconButton onClick={onBackButton} id="select-menu-back-button" sx={{ mr: 1 }}>
+                    <SynthesisIcons.LEFT_ARROW_LARGE />
+                </IconButton>
+            )}
+
+            {/** Label with either the header text, or the name of the selected option if an option is selected */}
+            <Stack alignSelf={"center"}>
+                <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    {label}
+                </Label>
+            </Stack>
+        </Stack>
     )
 }
 

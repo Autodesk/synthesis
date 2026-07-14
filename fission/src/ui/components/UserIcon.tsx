@@ -18,7 +18,7 @@ const UserIcon: React.FC<UserIconProps> = ({ className }) => {
     }, [])
 
     if (!userInfo) {
-        return SynthesisIcons.QUESTION
+        return <SynthesisIcons.QUESTION />
     } else {
         return <img src={userInfo.picture} className={`object-contain aspect-square ${className}`}></img>
     }
