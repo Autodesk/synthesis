@@ -1,0 +1,33 @@
+import {beforeAll, beforeEach, describe, expect, test, vi} from "vitest"
+import MirabufLoader, {MiraType} from "../../mirabuf/MirabufLoader"
+import {createMirabuf} from "@/mirabuf/MirabufSceneObject.ts";
+import World from "@/systems/World.ts";
+
+describe("Real Load Assets", () => {
+    beforeAll(async () => {
+        await World.initWorld()
+        console.warn = vi.fn()
+        console.log = vi.fn()
+        vi.spyOn(World.analyticsSystem!, "event").mockReturnValue()
+        vi.spyOn(World.analyticsSystem!, "exception").mockReturnValue()
+    })
+    beforeEach(async () => {
+        await MirabufLoader.removeAll()
+    })
+
+    const tests: [string, MiraType, string][] = [
+        ["/api/mira/robots/Dozer v11.mira", MiraType.ROBOT, "Dozer"],
+        ["/api/mira/robots/Team 2471 (2018).mira", MiraType.ROBOT, "Team 2471"],
+        ["/api/mira/fields/FRC Field 2023 v8.mira", MiraType.FIELD, "2023 Field"],
+    ]
+    test.for(tests)("Loads $2", async ([url, miratype]) => {
+        const info = await MirabufLoader.cacheRemote(url, miratype)
+        expect(info).toBeDefined()
+        const assembly = await MirabufLoader.get(info!.hash)
+        expect(assembly).toBeDefined()
+        const sceneObject = await createMirabuf(info!.hash, assembly!)
+        expect(sceneObject).toBeDefined()
+        expect(sceneObject?.miraType).toBe(miratype)
+    })
+
+})
