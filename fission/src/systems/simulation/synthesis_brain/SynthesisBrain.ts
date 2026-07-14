@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"

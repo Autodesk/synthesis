@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"

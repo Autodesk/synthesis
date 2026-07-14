@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import EventSystem from "@/systems/EventSystem.ts"
