@@ -134,7 +134,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _collisionUnsubscriber?: () => void
 
     private _furthestVertices?: AxisVertices = undefined
-    private _centerPositionOffsetFromRootNodeTransform?: Jolt.RVec3 = undefined
+    private _centerPositionOffsetFromRootNodeTransform?: Jolt.Vec3 = undefined
 
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
         return this._scoringZones
@@ -866,22 +866,26 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         const halfExtent = new JOLT.Vec3(...axisHalfExtents)
 
-        // Get transformation
+        // Get root body transformation
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        // Do not destroy
+        // NOTE Do not destroy
         const rotation = rootBody.GetRotation()
 
         // Here, we calculate the vector between the center of the robot when axis-aligned (which is should be initially) and the root node transform
+        // WARNING This requires the robot to be axis-aligned initially. This may not always be true.
         if (!this._centerPositionOffsetFromRootNodeTransform) {
-            const rootNodeTransform = rootBody.GetPosition()
-            const alignedPosition = convertThreeVector3ToJoltRVec3(this.getPositionTransform())
+            const rootNodeTransform = convertJoltRVec3ToJoltVec3(rootBody.GetPosition())
+            const alignedPosition = convertThreeVector3ToJoltVec3(this.getPositionTransform())
 
-            this._centerPositionOffsetFromRootNodeTransform = alignedPosition.SubRVec3(rootNodeTransform)
+            this._centerPositionOffsetFromRootNodeTransform = alignedPosition.SubVec3(rootNodeTransform)
         }
 
-        // Then, we just always use the root node transform, offsetting it by the hopefully constant vector
-        const position = rootBody.GetPosition().AddRVec3(this._centerPositionOffsetFromRootNodeTransform!)
-        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, convertJoltRVec3ToJoltVec3(position))
+        // Then, we rotate our vector by the rotation of the root body, otherwise any rotation will mess with the translation
+        const offset = rotation.MulVec3(this._centerPositionOffsetFromRootNodeTransform)
+
+        // Finally, we just offset the root node to get the true center
+        const position = convertJoltRVec3ToJoltVec3(rootBody.GetPosition().Add(offset))
+        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position)
 
         const orientedBoundingBox = new JOLT.OrientedBox(transform, halfExtent)
 
