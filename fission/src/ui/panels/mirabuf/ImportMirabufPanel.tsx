@@ -356,8 +356,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                 .map(info =>
                     ItemCard({
                         name: info.name || "Unnamed Piece",
-                        id: info.hash,
-                        primaryButtonNode: SynthesisIcons.ADD_LARGE,
+                        key: info.hash,
+                        primaryButtonNode: <SynthesisIcons.ADD_LARGE />,
                         primaryOnClick: async () => {
                             console.log(`Selecting cached game pieces: ${info.name}`)
                             await selectCache(info)
