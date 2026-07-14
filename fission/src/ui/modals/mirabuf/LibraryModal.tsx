@@ -135,6 +135,109 @@ const AssetCardGrid: React.FC<{ children: ReactNode }> = ({ children }) => (
     </Box>
 )
 
+/**
+ * Autodesk Hub (APS) section: lists the signed-in user's cloud Mirabuf files and
+ * spawns them. Owns its own APS state and event subscriptions so the Library body
+ * stays focused on the default/cached assets.
+ */
+const AutodeskHubAccordion: React.FC<{ onSpawned: () => void }> = ({ onSpawned }) => {
+    const [apsType, setApsType] = useState<MiraType>(MiraType.ROBOT)
+    const [filesStatus, setFilesStatus] = useState<TaskStatus>({
+        isDone: false,
+        message: "Waiting on APS...",
+        progress: 0,
+    })
+    const [files, setFiles] = useState<Data[] | undefined>(undefined)
+
+    useEffect(() => {
+        const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", v => setFilesStatus(v))
+        const unsubscribeUpdate = EventSystem.listen("MirabufFilesUpdateEvent", v => setFiles(v))
+        return () => {
+            unsubscribeStatus()
+            unsubscribeUpdate()
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!hasMirabufFiles()) {
+            requestMirabufFiles().catch(console.error)
+        } else {
+            setFiles(getMirabufFiles())
+        }
+    }, [])
+
+    const sortedFiles = useMemo(
+        () => files?.slice().sort((a, b) => a.attributes.displayName!.localeCompare(b.attributes.displayName!)),
+        [files]
+    )
+
+    const spawnFile = (file: Data) => {
+        spawnAPS(file, apsType)
+        onSpawned()
+    }
+
+    return (
+        <Accordion>
+            <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
+                <Stack direction="row" gap={0.5} justifyContent="center" alignItems="center">
+                    <Label size="md">
+                        {files ? (
+                            `${files.length} Autodesk Hub Asset${files.length === 1 ? "" : "s"}`
+                        ) : (
+                            <Tooltip title={filesStatus.message}>
+                                <Stack direction="row" gap={1} alignItems="center">
+                                    <Label size="md">Loading from APS...</Label>
+                                    <CircularProgress
+                                        size="1em"
+                                        variant="determinate"
+                                        value={filesStatus.isDone ? 100 : filesStatus.progress * 100}
+                                    />
+                                </Stack>
+                            </Tooltip>
+                        )}
+                    </Label>
+                    {files && <RefreshButton onClick={() => requestMirabufFiles()} />}
+                </Stack>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Stack direction="column" gap={1}>
+                    <ToggleButtonGroup
+                        value={apsType}
+                        exclusive
+                        onChange={(_, v) => v != null && setApsType(v)}
+                        sx={{ alignSelf: "center" }}
+                    >
+                        <ToggleButton value={MiraType.ROBOT}>Robot</ToggleButton>
+                        <ToggleButton value={MiraType.FIELD}>Field</ToggleButton>
+                    </ToggleButtonGroup>
+                    {sortedFiles && sortedFiles.length > 0 ? (
+                        sortedFiles.map(file => (
+                            <Stack
+                                key={file.id}
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                gap={1}
+                            >
+                                <Label size="sm" className="text-wrap break-all">
+                                    {`${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`}
+                                </Label>
+                                <PositiveIconButton onClick={() => spawnFile(file)}>
+                                    <SynthesisIcons.DOWNLOAD_LARGE />
+                                </PositiveIconButton>
+                            </Stack>
+                        ))
+                    ) : filesStatus.isDone ? (
+                        <Label size="sm">No Assets Found</Label>
+                    ) : (
+                        <Label size="sm">Loading from APS...</Label>
+                    )}
+                </Stack>
+            </AccordionDetails>
+        </Accordion>
+    )
+}
+
 const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { addToast, closeModal, openModal, configureScreen } = useUIContext()
     const { unconfirmedImport } = useStateContext()
@@ -159,15 +262,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const [cachedInfos, setCachedInfos] = useState<MirabufCacheInfo[]>(() => MirabufCachingService.getAll())
     const refreshCached = useCallback(() => setCachedInfos(MirabufCachingService.getAll()), [])
     const cachedByHash = useMemo(() => new Map(cachedInfos.map(c => [c.hash, c])), [cachedInfos])
-
-    // APS (Autodesk Hub) files.
-    const [apsType, setApsType] = useState<MiraType>(MiraType.ROBOT)
-    const [filesStatus, setFilesStatus] = useState<TaskStatus>({
-        isDone: false,
-        message: "Waiting on APS...",
-        progress: 0,
-    })
-    const [files, setFiles] = useState<Data[] | undefined>(undefined)
 
     // Merge robots + fields, deduped by hash (the manifest can contain multiple entries
     // that resolve to the same content, which would otherwise collide as React keys).
@@ -212,23 +306,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         configureScreen(modal!, { title: "Library", hideAccept: true, cancelText: "Close", allowClickAway: true }, {})
     }, [])
 
-    useEffect(() => {
-        const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", v => setFilesStatus(v))
-        const unsubscribeUpdate = EventSystem.listen("MirabufFilesUpdateEvent", v => setFiles(v))
-        return () => {
-            unsubscribeStatus()
-            unsubscribeUpdate()
-        }
-    }, [])
-
-    useEffect(() => {
-        if (!hasMirabufFiles()) {
-            requestMirabufFiles().catch(console.error)
-        } else {
-            setFiles(getMirabufFiles())
-        }
-    }, [])
-
     // biome-ignore lint: must run only on mount; the closeModal dep would re-run it and re-close
     useLayoutEffect(() => {
         if (unconfirmedImport) {
@@ -264,14 +341,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             refreshCached()
         },
         [refreshCached]
-    )
-
-    const spawnAPSFile = useCallback(
-        (file: Data) => {
-            spawnAPS(file, apsType)
-            closeModal(CloseType.Cancel)
-        },
-        [apsType, closeModal]
     )
 
     const downloadAllForYear = useCallback(() => {
@@ -365,70 +434,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                         </AccordionDetails>
                     </Accordion>
 
-                    <Accordion>
-                        <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
-                            <Stack direction="row" gap={0.5} justifyContent="center" alignItems="center">
-                                <Label size="md">
-                                    {files ? (
-                                        `${files.length} Autodesk Hub Asset${files.length === 1 ? "" : "s"}`
-                                    ) : (
-                                        <Tooltip title={filesStatus.message}>
-                                            <Stack direction="row" gap={1} alignItems="center">
-                                                <Label size="md">Loading from APS...</Label>
-                                                <CircularProgress
-                                                    size="1em"
-                                                    variant="determinate"
-                                                    value={filesStatus.isDone ? 100 : filesStatus.progress * 100}
-                                                />
-                                            </Stack>
-                                        </Tooltip>
-                                    )}
-                                </Label>
-                                {files && <RefreshButton onClick={() => requestMirabufFiles()} />}
-                            </Stack>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Stack direction="column" gap={1}>
-                                <ToggleButtonGroup
-                                    value={apsType}
-                                    exclusive
-                                    onChange={(_, v) => v != null && setApsType(v)}
-                                    sx={{ alignSelf: "center" }}
-                                >
-                                    <ToggleButton value={MiraType.ROBOT}>Robot</ToggleButton>
-                                    <ToggleButton value={MiraType.FIELD}>Field</ToggleButton>
-                                </ToggleButtonGroup>
-                                {files && files.length > 0 ? (
-                                    files
-                                        .slice()
-                                        .sort((a, b) =>
-                                            a.attributes.displayName!.localeCompare(b.attributes.displayName!)
-                                        )
-                                        .map(file => (
-                                            <Stack
-                                                key={file.id}
-                                                direction="row"
-                                                justifyContent="space-between"
-                                                alignItems="center"
-                                                gap={1}
-                                            >
-                                                <Label size="sm" className="text-wrap break-all">
-                                                    {`${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`}
-                                                </Label>
-                                                <PositiveIconButton
-                                                    onClick={() => spawnAPSFile(file)}
-                                                    children={<SynthesisIcons.DOWNLOAD_LARGE />}
-                                                />
-                                            </Stack>
-                                        ))
-                                ) : filesStatus.isDone ? (
-                                    <Label size="sm">No Assets Found</Label>
-                                ) : (
-                                    <Label size="sm">Loading from APS...</Label>
-                                )}
-                            </Stack>
-                        </AccordionDetails>
-                    </Accordion>
+                    <AutodeskHubAccordion onSpawned={() => closeModal(CloseType.Cancel)} />
                 </Stack>
 
                 <Stack alignItems="center" mt={2}>
