@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { UserPreferences, ZonePreferencesShared } from "@/systems/preferences/PreferenceTypes"

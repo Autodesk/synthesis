@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import JOLT from "../loading/JoltSyncLoader.ts"
 import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "../TypeConversions.ts"

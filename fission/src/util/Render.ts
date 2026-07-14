@@ -1,5 +1,5 @@
 import World from "@/systems/World"
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 
 export function renderAxisAlignedBox(

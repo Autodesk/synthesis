@@ -1,5 +1,5 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import * as Three from "three"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
