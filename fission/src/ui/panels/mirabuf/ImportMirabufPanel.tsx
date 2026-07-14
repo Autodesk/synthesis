@@ -109,9 +109,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                 return
             }
 
-            console.log("here earlier")
             await createMirabuf(info.hash, assembly, progressHandle).then(async mirabufSceneObject => {
-                console.log("here")
                 if (!mirabufSceneObject) {
                     progressHandle.fail("No object!")
                     return
