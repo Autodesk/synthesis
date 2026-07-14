@@ -31,7 +31,7 @@ function Synthesis() {
     const mainLoopHandle = useRef(0)
     const startMainLoop = async () => {
         await World.initWorld()
-        if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
+        if (!PreferencesSystem.getUserPreference("ReportAnalytics") && !import.meta.env.DEV) {
             setConsentPopupDisable(false)
         }
 
@@ -59,7 +59,7 @@ function Synthesis() {
                         if (room == null) {
                             room = Math.random().toString(10).substring(2, 8)
                         }
-                        PreferencesSystem.setGlobalPreference("MultiplayerUsername", name)
+                        PreferencesSystem.setUserPreference("MultiplayerUsername", name)
                         PreferencesSystem.savePreferences()
                         const success = await MultiplayerSystem.setup(room, name, isHost)
                         if (success) {
@@ -86,7 +86,7 @@ function Synthesis() {
 
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
-        PreferencesSystem.setGlobalPreference("ReportAnalytics", true)
+        PreferencesSystem.setUserPreference("ReportAnalytics", true)
         PreferencesSystem.savePreferences()
     }, [])
 

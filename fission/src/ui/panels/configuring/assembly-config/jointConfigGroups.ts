@@ -1,5 +1,4 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import type Driver from "@/systems/simulation/driver/Driver"
@@ -70,7 +69,7 @@ export function applyDriverConfig(
 ): void {
     driver.maxVelocity = velocity
 
-    const prefs = PreferencesSystem.getRobotPreferences(robot.assemblyName)
+    const prefs = robot.robotPreferences
     if (driver instanceof WheelDriver) {
         driver.maxAcceleration = force
         prefs.driveVelocity = velocity

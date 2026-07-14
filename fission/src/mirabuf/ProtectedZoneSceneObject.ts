@@ -39,7 +39,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
         super(parentAssembly, parentAssembly.fieldPreferences?.protectedZones[index]!, "RenderProtectedZones", render)
 
-        this.toRender ??= PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+        this.toRender ??= PreferencesSystem.getUserPreference("RenderProtectedZones")
     }
 
     // This is used by `super.setup`

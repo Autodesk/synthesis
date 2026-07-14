@@ -2,9 +2,8 @@ import JSZip from "jszip"
 import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
-import { URDF_WHEEL_TAG } from "./URDFUserData"
 
-const MESH_EXTENSIONS = new Set(["stl", "obj", "dae"])
+const MESH_EXTENSIONS = new Set(["stl", "obj", "gltf", "bin"])
 
 export function applyConservativeURDFImport(assembly: mirabuf.Assembly): void {
     const jointData = assembly.data?.joints
@@ -26,9 +25,6 @@ export function applyConservativeURDFImport(assembly: mirabuf.Assembly): void {
         const isDetectedWheel = jointDefinition?.userData?.data?.["wheel"] === "true"
 
         if (isDetectedWheel && jointInstance.jointReference) {
-            jointDefinition.userData ??= { data: {} }
-            jointDefinition.userData.data ??= {}
-            jointDefinition.userData.data[URDF_WHEEL_TAG] = "true"
             keptJointInstances[name] = jointInstance
             keptJointDefinitions[jointInstance.jointReference] = jointDefinition
             continue
@@ -52,12 +48,14 @@ function validateURDFMeshFormats(urdfText: string): void {
     const meshFilenames = [...doc.querySelectorAll("mesh[filename]")].map(el => el.getAttribute("filename")!)
     const unsupported = meshFilenames.filter(f => {
         const ext = f.split(".").pop()?.toLowerCase()
-        return ext !== "stl"
+        return ext !== "stl" && ext !== "obj" && ext !== "gltf"
     })
 
     if (unsupported.length > 0) {
         const formats = [...new Set(unsupported.map(f => `.${f.split(".").pop()?.toLowerCase() ?? "unknown"}`))]
-        throw new Error(`Unsupported mesh format(s) in URDF: ${formats.join(", ")}. Only STL exports are supported.`)
+        throw new Error(
+            `Unsupported mesh format(s) in URDF: ${formats.join(", ")}. Only STL, OBJ, and glTF exports are supported.`
+        )
     }
 }
 

@@ -1,7 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import type { mirabuf } from "@/proto/mirabuf"
-import { URDF_WHEEL_TAG } from "@/urdf/URDFUserData"
 
 export type WheelBasis = {
     forward: Jolt.Vec3
@@ -13,10 +11,6 @@ export type WheelBasis = {
 export type WheelDimensions = {
     radius: number
     width: number
-}
-
-export function isURDFWheel(jDef: mirabuf.joint.Joint): boolean {
-    return jDef.userData?.data?.[URDF_WHEEL_TAG] === "true"
 }
 
 export function getShapeExtents(bounds: Jolt.AABox): [number, number, number] {
@@ -42,9 +36,9 @@ export function inferWheelDimensionsFromAxle(bounds: Jolt.AABox, axis: Jolt.Vec3
 // Radius used for a simulated wheel before any cross-wheel unification. URDF auto-wheels infer it
 // from the radial extents about the detected axle; native wheels use the vertical extent (their axle
 // is horizontal). Shared by the wheel-creation path and the radius-resolution pass so they can't drift.
-export function inferWheelRadius(jDef: mirabuf.joint.Joint, bounds: Jolt.AABox, axis: Jolt.Vec3): number {
+export function inferWheelRadius(isURDFImport: boolean, bounds: Jolt.AABox, axis: Jolt.Vec3): number {
     const hasHorizontalAxle = Math.abs(axis.GetX()) >= 0.5 || Math.abs(axis.GetZ()) >= 0.5
-    return isURDFWheel(jDef) && hasHorizontalAxle
+    return isURDFImport && hasHorizontalAxle
         ? inferWheelDimensionsFromAxle(bounds, axis).radius
         : (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 }

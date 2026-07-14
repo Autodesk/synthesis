@@ -94,6 +94,8 @@ const STEER_ORIGIN_DISTANCE = 0.3 // metres, max distance between steer origin a
 const AXIAL_COMPONENT_TOLERANCE = 0.15 // tolerance for canYawAxisToDirection axial-component comparison
 const COINCIDENT_DISTANCE = 1e-4 // metres, same-point guard
 const COLLINEAR_DISTANCE = 0.01 // metres (1 cm), collinear midpoint tolerance
+const MIN_AXIS_LENGTH = 0.5 // unit vectors are length 1; below this the axis is degenerate/missing
+const ZERO_LENGTH_EPSILON = 1e-9 // guards division by span when normalizing a direction vector
 
 interface Vec2 {
     u: number
@@ -163,7 +165,7 @@ function extractCandidates(jointDefs: Record<string, mirabuf.joint.IJoint>): Can
         const axisVec = jDef.rotational?.rotationalFreedom?.axis
         if (!axisVec) continue
         const axisRaw = new THREE.Vector3(axisVec.x ?? 0, axisVec.y ?? 0, axisVec.z ?? 0)
-        if (axisRaw.length() < 0.5) continue
+        if (axisRaw.length() < MIN_AXIS_LENGTH) continue
         const o = jDef.origin ?? {}
 
         // Joint origins stored in cm (positionToYup * 100)
@@ -267,7 +269,7 @@ function largestCollinearSet(points: Vec2[]): number[] {
             const du = points[j].u - points[i].u
             const dv = points[j].v - points[i].v
             const len = Math.sqrt(du * du + dv * dv)
-            if (len < 1e-9) continue
+            if (len < ZERO_LENGTH_EPSILON) continue
             const dir: Vec2 = { u: du / len, v: dv / len }
             onLine.length = 0
             for (let k = 0; k < points.length; k++) {

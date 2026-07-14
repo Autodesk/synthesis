@@ -16,6 +16,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import {
     type Alliance,
+    defaultFieldPreferences,
     defaultFieldSpawnLocation,
     defaultRobotPreferences,
     type EjectorPreferences,
@@ -27,7 +28,12 @@ import {
     type SpawnLocation,
     type Station,
 } from "@/systems/preferences/PreferenceTypes"
-import { CameraMode, type CustomTargetControls } from "@/systems/scene/CameraControls"
+import {
+    CameraMode,
+    type CustomFieldViewControls,
+    type CustomTargetControls,
+    getTargetControls,
+} from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
@@ -51,14 +57,16 @@ import {
 import { createMeshForShape } from "@/util/threejs/MeshCreation.ts"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
-import FieldMiraEditor, { devtoolHandlers, devtoolKeys } from "./FieldMiraEditor"
+import FieldMiraEditor from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
-import { MiraType } from "./MirabufLoader"
+import MirabufCachingService, { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
+import { v4 as uuidV4 } from "uuid"
+import { hexStringToUint8Array } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -85,7 +93,6 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
 }
 
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
-    public readonly assemblyName: string
     public readonly mirabufInstance: MirabufInstance
     public readonly mechanism: Mechanism
 
@@ -125,6 +132,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public get intakePreferences(): IntakePreferences {
         return this.robotPreferences.intake
     }
+
     public set intakePreferences(val: IntakePreferences) {
         this.robotPreferences.intake = val
     }
@@ -137,6 +145,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public get ejectorPreferences(): EjectorPreferences {
         return this.robotPreferences.ejector
     }
+
     public set ejectorPreferences(val: EjectorPreferences) {
         this.robotPreferences.ejector = val
     }
@@ -188,16 +197,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
     }
 
-    public constructor(
-        mirabufInstance: MirabufInstance,
-        assemblyName: string,
-        progressHandle?: ProgressHandle,
-        multiplayerOwnerId?: string
-    ) {
+    public get assemblyName() {
+        return this.mirabufInstance.parser.assembly.info?.name ?? "Unknown"
+    }
+
+    public get assemblyId() {
+        return this.mirabufInstance.parser.assemblyId
+    }
+
+    public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
         super()
         this.mirabufInstance = mirabufInstance
-        this.assemblyName = assemblyName
         this.multiplayerOwningClientId = multiplayerOwnerId
+        this.loadPreferences()
 
         progressHandle?.update("Creating mechanism...", 0.9)
 
@@ -205,8 +217,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.mechanism.layerReserve) this._physicsLayerReserve = this.mechanism.layerReserve
 
         this._debugBodies = null
-
-        this.getPreferences()
 
         if (this.miraType === MiraType.ROBOT) {
             // creating nametag for robots
@@ -288,7 +298,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.simulationSystem.registerMechanism(this.mechanism)
             const simLayer = World.simulationSystem.getSimulationLayer(this.mechanism)!
 
-            this._brain = new SynthesisBrain(this, this.assemblyName)
+            this._brain = new SynthesisBrain(this)
             simLayer.setBrain(this._brain)
         }
 
@@ -307,10 +317,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.moveToSpawnLocation()
 
-        const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
-
-        if (this.isOwnObject && (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider)) {
-            cameraControls.focusProvider = this
+        const targetControls = getTargetControls()
+        if (targetControls && this.isOwnObject && (this.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+            targetControls.focusProvider = this
         }
 
         EventSystem.dispatch("MirabufObjectChangeEvent", this)
@@ -552,8 +561,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this._centerOfMassIndicator) {
             const setPositionAndVisibility = (netCoM: Jolt.RVec3) => {
                 this._centerOfMassIndicator!.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
-                this._centerOfMassIndicator!.visible =
-                    PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+                this._centerOfMassIndicator!.visible = PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")
             }
 
             const com = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
@@ -583,7 +591,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     /** Updates the position of the nametag relative to the robots position */
     private updateNameTag() {
-        if (!this._nameTag || !PreferencesSystem.getGlobalPreference("RenderSceneTags")) return
+        if (!this._nameTag || !PreferencesSystem.getUserPreference("RenderSceneTags")) return
 
         this._nameTag.color = this.alliance
         const boundingBox = this.computeBoundingBox()
@@ -662,7 +670,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.removeSceneObjects(this._scoringZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.scoringZones) return
-        render ??= PreferencesSystem.getGlobalPreference("RenderScoringZones")
+        render ??= PreferencesSystem.getUserPreference("RenderScoringZones")
 
         for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
             const newZone = new ScoringZoneSceneObject(this, i, render)
@@ -676,7 +684,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.removeSceneObjects(this._protectedZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.protectedZones) return
-        render ??= PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+        render ??= PreferencesSystem.getUserPreference("RenderProtectedZones")
 
         for (let i = 0; i < this._fieldPreferences.protectedZones.length; i++) {
             const newZone = new ProtectedZoneSceneObject(this, i, render)
@@ -863,29 +871,73 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
     }
 
-    public getPreferences(): void {
-        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
-        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)
-
-        // Ensure backwards compatibility for showZoneAlways field
-        this._robotPreferences.intake.showZoneAlways ??= false
-
-        setTimeout(() => this.sendPreferences())
-
-        // For fields, sync dev-tool data with field preferences
-
+    public resetPreferences(): void {
+        this._fieldPreferences = defaultFieldPreferences()
+        this._robotPreferences = defaultRobotPreferences()
         const parts = this.mirabufInstance.parser.assembly.data?.parts
         if (parts) {
             const editor = new FieldMiraEditor(parts)
-            devtoolKeys.forEach(key => {
-                devtoolHandlers[key].set(this, editor.getUserData(key))
-            })
-            if (this.miraType === MiraType.FIELD) {
-                PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
-            } else {
-                PreferencesSystem.setRobotPreferences(this.assemblyName, this._robotPreferences)
+            editor.migrateDevtoolFieldData(this._fieldPreferences)
+            editor.migrateDevtoolRobotData(this._robotPreferences)
+            this._fieldPreferences = { ...this._fieldPreferences, ...editor.getUserData("synthesis:field_preferences") }
+            this._robotPreferences = { ...this._robotPreferences, ...editor.getUserData("synthesis:robot_preferences") }
+        }
+        this.savePreferences()
+        this.updateScoringZones()
+        this.updateIntakeSensor()
+        this.updateProtectedZones()
+    }
+
+    public savePreferences(): void {
+        if (this.miraType == MiraType.FIELD && this._fieldPreferences) {
+            PreferencesSystem.setFieldPreferences(this.assemblyId, this._fieldPreferences)
+        } else if (this._robotPreferences) {
+            PreferencesSystem.setRobotPreferences(this.assemblyId, this._robotPreferences)
+        }
+        PreferencesSystem.savePreferences()
+        setTimeout(() => this.sendPreferences())
+    }
+
+    public loadPreferences(checkMira: boolean = true): void {
+        const parts = this.mirabufInstance.parser.assembly.data?.parts
+
+        if (parts && checkMira) {
+            const editor = new FieldMiraEditor(parts)
+            if (this.miraType === MiraType.FIELD && !PreferencesSystem.hasFieldPreferences(this.assemblyId)) {
+                this._fieldPreferences = defaultFieldPreferences()
+                editor.migrateDevtoolFieldData(this._fieldPreferences)
+                this._fieldPreferences = {
+                    ...this._fieldPreferences,
+                    ...editor.getUserData("synthesis:field_preferences"),
+                }
+            } else if (this.miraType === MiraType.ROBOT && !PreferencesSystem.hasRobotPreferences(this.assemblyId)) {
+                this._robotPreferences = defaultRobotPreferences()
+                editor.migrateDevtoolRobotData(this._robotPreferences)
+                this._robotPreferences = {
+                    ...this._robotPreferences,
+                    ...editor.getUserData("synthesis:robot_preferences"),
+                }
             }
-            PreferencesSystem.savePreferences()
+            this.savePreferences()
+        }
+        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyId)
+        this._robotPreferences = PreferencesSystem.getRobotPreferences(this.assemblyId)
+        setTimeout(() => this.sendPreferences())
+    }
+
+    public savePreferencesToMirabuf(): void {
+        const parts = this.mirabufInstance.parser.assembly.data?.parts
+        if (parts) {
+            const editor = new FieldMiraEditor(parts)
+            if (this.miraType === MiraType.FIELD) {
+                if (this._fieldPreferences !== undefined) {
+                    editor.setUserData("synthesis:field_preferences", this._fieldPreferences)
+                }
+            } else {
+                if (this._robotPreferences !== undefined) {
+                    editor.setUserData("synthesis:robot_preferences", this._robotPreferences)
+                }
+            }
         }
     }
 
@@ -919,10 +971,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {
-        this._robotPreferences ??= defaultRobotPreferences()
-        this._robotPreferences.simConfig = config
-        PreferencesSystem.setRobotPreferences(this.assemblyName, this._robotPreferences)
-        PreferencesSystem.savePreferences()
+        this.robotPreferences.simConfig = config
+        this.savePreferences()
         ;(this._brain as WPILibBrain)?.loadSimConfig?.()
     }
 
@@ -988,16 +1038,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             { mode: CameraMode.Face, name: "Camera: Face Robot" },
         ]
 
-        modes.forEach(({ mode, name }) => {
-            if (cameraControls.mode !== mode) {
+        modes
+            .filter(({ mode }) => cameraControls.mode !== mode)
+            .forEach(({ name, mode }) => {
                 data.items.push({
                     name,
                     func: () => {
                         cameraControls.mode = mode
                     },
                 })
-            }
-        })
+            })
     }
 
     public getSupplierData(): ContextData {
@@ -1058,6 +1108,35 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     },
                 })
             }
+        } else if (
+            World.sceneRenderer.currentCameraControls.controlsType == "FieldView" &&
+            this.miraType === MiraType.ROBOT
+        ) {
+            const fieldViewControls = World.sceneRenderer.currentCameraControls as CustomFieldViewControls
+            if (fieldViewControls.focusedRobot === this) {
+                data.items.push({
+                    name: "Field Camera: Unfocus Robot",
+                    func: () => {
+                        fieldViewControls.focusRobot(undefined)
+                    },
+                })
+            } else {
+                data.items.push({
+                    name: "Field Camera: Focus Robot",
+                    func: () => {
+                        fieldViewControls.focusRobot(this)
+                    },
+                })
+            }
+
+            data.items.push({
+                name: "Robot Camera: Focus",
+                func: () => {
+                    World.sceneRenderer.setCameraControls("Target")
+                    const targetControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
+                    targetControls.focusProvider = this
+                },
+            })
         }
 
         if ((this.brain as SynthesisBrain | undefined)?.driveType === DriveType.SWERVE) {
@@ -1125,19 +1204,43 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 }
 
 export async function createMirabuf(
+    hash: string,
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle,
     multiplayerOwnerId?: string
-): Promise<MirabufSceneObject | null | undefined> {
+): Promise<MirabufSceneObject | undefined> {
     const parser = new MirabufParser(assembly, progressHandle)
+
+    if (!parser.assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)) {
+        await migrateUUID(parser, hash)
+    }
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle, multiplayerOwnerId)
+    return new MirabufSceneObject(new MirabufInstance(parser), progressHandle, multiplayerOwnerId)
 }
 
+async function migrateUUID(parser: MirabufParser, hash: string) {
+    parser.assembly.info ??= {}
+    const newGUID = uuidV4({ random: hexStringToUint8Array(hash).slice(0, 16) }) // using deterministic random to prevent the same model from being assigned different uuids after being imported multiple times. Once initially set, uuid will be persistent across hash changes
+    console.warn("Migrating UUID", parser.assembly.info.GUID, "->", newGUID)
+    parser.assembly.info.GUID = newGUID
+
+    if ((await MirabufCachingService.get(hash)) != null) {
+        await MirabufCachingService.remove(hash)
+    }
+
+    const cacheInfo = await MirabufCachingService.storeAssemblyInCache(parser.assembly, {
+        miraType: parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD,
+        name: parser.assembly.info?.name ?? "Unknown",
+    })
+
+    if (cacheInfo == null) {
+        globalAddToast("warning", "Migration Error", "Importing failed to save")
+    }
+}
 /**
  * Body association to a rigid node with a given mirabuf scene object.
  */

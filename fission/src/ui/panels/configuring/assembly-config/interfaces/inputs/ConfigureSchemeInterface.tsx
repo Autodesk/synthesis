@@ -58,7 +58,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                     <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
                         {/** Back arrow button when an option is selected */}
                         <IconButton onClick={onBack} id="select-menu-back-button">
-                            {SynthesisIcons.LEFT_ARROW_LARGE}
+                            <SynthesisIcons.LEFT_ARROW_LARGE />
                         </IconButton>
 
                         <Stack alignSelf={"center"}>
@@ -82,6 +82,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                         selectedScheme.usesTouchControls = false
                     }
                     selectedScheme.usesGamepad = val
+                    selectedScheme.customized = true
                 }}
                 tooltip="Supported controllers: Xbox one, Xbox 360."
             />
@@ -95,6 +96,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                         selectedScheme.usesGamepad = false
                     }
                     selectedScheme.usesTouchControls = val
+                    selectedScheme.customized = true
                 }}
                 tooltip="Enable on-screen touch controls (only for mobile devices)."
             />

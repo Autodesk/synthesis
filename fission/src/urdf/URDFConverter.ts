@@ -1,6 +1,9 @@
+import { v4 as uuidv4 } from "uuid"
 import { mirabuf } from "@/proto/mirabuf"
+import { parseGLTF } from "./GLTFParser"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
+import { URDF_IMPORT_TAG } from "./URDFUserData"
 
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
 // Frame change matrix: Rx(-90°) = [[1,0,0],[0,0,1],[0,-1,0]]
@@ -52,6 +55,7 @@ function transpose3(m: Mat3): Mat3 {
 }
 
 // RPY -> rotation matrix (ZYX Euler, URDF convention: R = Rz(yaw)*Ry(pitch)*Rx(roll))
+// https://en.wikipedia.org/wiki/Euler_angles#Tait–Bryan_angles
 function rpyToMatrix(roll: number, pitch: number, yaw: number): Mat3 {
     const [cr, sr] = [Math.cos(roll), Math.sin(roll)]
     const [cp, sp] = [Math.cos(pitch), Math.sin(pitch)]
@@ -70,6 +74,7 @@ const RZy: Mat3 = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
 // Build mirabuf spatialMatrix (16 floats, row-major) from a URDF joint origin.
 // Converts to Y-up space; mesh vertices are also converted to Y-up (see toYupMesh),
 // so body-local frames are Y-up throughout. This keeps Jolt physics constraints correct.
+// https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations
 function originToSpatialMatrix(xyz: [number, number, number], rpy: [number, number, number]): number[] {
     const RU = rpyToMatrix(rpy[0], rpy[1], rpy[2])
     const RY = mat3Mul(RZy, mat3Mul(RU, transpose3(RZy)))
@@ -197,7 +202,8 @@ function buildGlobalLinkTransforms(joints: URDFJoint[], rootName: string): Map<s
     return transforms
 }
 
-// Rotation magnitude (radians) of a 3x3 rotation matrix — used to test whether a transform is "trivial".
+// Rotation magnitude (radians) of a 3x3 rotation matrix. Used to test whether a transform is "trivial".
+// https://en.wikipedia.org/wiki/Axis-angle_representation
 function rotationAngle(m: Mat3): number {
     const trace = m[0][0] + m[1][1] + m[2][2]
     return Math.acos(Math.min(1, Math.max(-1, (trace - 1) / 2)))
@@ -360,6 +366,7 @@ function toYup(arr: ArrayLike<number>): Float32Array {
 
 // Centroid of a flat [x,y,z,...] vertex array, in the mesh's own (untransformed) coordinate space.
 // A centroid magnitude near zero means the mesh is authored in link-LOCAL space.
+// https://en.wikipedia.org/wiki/Centroid
 function meshCentroid(verts: ArrayLike<number>): { c: [number, number, number]; mag: number } {
     const n = verts.length / 3
     if (n === 0) return { c: [0, 0, 0], mag: 0 }
@@ -496,6 +503,7 @@ function parseMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): Parsed
     const ext = meshPath.split(".").pop()?.toLowerCase()
     if (ext === "stl") return parseSTL(data)
     if (ext === "obj") return parseOBJ(data)
+    if (ext === "gltf") return parseGLTF(data, meshPath, meshFiles)
     console.warn(`[URDF] Unsupported mesh format: .${ext} (${meshPath}) — link will have no geometry`)
     return null
 }
@@ -540,7 +548,7 @@ function buildRigidGroups(
     }
 
     // Onshape emits "_loop_closure" joints to close kinematic loops in gear trains and belt
-    // drives. They carry no real DOF — merge them as fixed so the synthetic loop closure link
+    // drives. They carry no real DOF, merge them as fixed so the synthetic loop closure link
     // attaches to its body rather than spawning as a free-floating orphan in the simulation.
     // union(child, parent) keeps the real part as the union-find representative.
     const loopClosureChildren = new Set<string>()
@@ -562,29 +570,26 @@ function buildRigidGroups(
     // would otherwise destabilise Jolt's constraint solver.
     // union(phantom, parent) keeps the real part as the union-find representative.
     const parentJointOf = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
-    const phantomLinks = new Set<string>()
-    for (const link of links) {
-        if (link.visuals.every(visual => visual.visualMeshPath === null) && link.mass === 0) {
-            phantomLinks.add(link.name)
-            const pj = parentJointOf.get(link.name)
-            if (pj) {
-                union(link.name, pj.parent)
+    const isPhantomLink = (link: URDFLink) =>
+        link.visuals.every(visual => visual.visualMeshPath === null) && link.mass === 0
 
-                // Onshape exports cylindrical mates as prismatic -> massless phantom -> continuous.
-                // The generated translation range is often enormous, and the final continuous joint
-                // makes ordinary bolted hardware like motor housings free to spin or orbit in physics.
-                // Collapse that synthetic chain into a rigid group; true drivetrain wheel/steer joints
-                // are separate non-cylindrical joints and remain physical.
-                if (isCylindricalPhantom(link, pj)) {
-                    for (const childJoint of childJointsByParent.get(link.name) ?? []) {
-                        if (childJoint.type === "continuous" || childJoint.type === "revolute") {
-                            union(childJoint.child, pj.parent)
-                        }
-                    }
-                }
-            }
-        }
-    }
+    const phantomWithParentJoint = links
+        .filter(isPhantomLink)
+        .map(link => ({ link, pj: parentJointOf.get(link.name) }))
+        .filter((x): x is { link: URDFLink; pj: URDFJoint } => x.pj !== undefined)
+
+    phantomWithParentJoint.forEach(({ link, pj }) => union(link.name, pj.parent))
+
+    // Onshape exports cylindrical mates as prismatic -> massless phantom -> continuous.
+    // The generated translation range is often enormous, and the final continuous joint
+    // makes ordinary bolted hardware like motor housings free to spin or orbit in physics.
+    // Collapse that synthetic chain into a rigid group; true drivetrain wheel/steer joints
+    // are separate non-cylindrical joints and remain physical.
+    phantomWithParentJoint
+        .filter(({ link, pj }) => isCylindricalPhantom(link, pj))
+        .flatMap(({ link, pj }) => (childJointsByParent.get(link.name) ?? []).map(childJoint => ({ childJoint, pj })))
+        .filter(({ childJoint }) => childJoint.type === "continuous" || childJoint.type === "revolute")
+        .forEach(({ childJoint, pj }) => union(childJoint.child, pj.parent))
 
     // Loop-closure links are synthetic bookkeeping links. Phantom links, however, must remain
     // in emitted rigid-group occurrences so MirabufParser maps joints that reference them onto
@@ -619,8 +624,10 @@ function mapJointMotion(type: URDFJoint["type"]): mirabuf.joint.JointMotion {
     return mirabuf.joint.JointMotion.RIGID
 }
 
+const ZERO_TRAVEL_EPSILON = 1e-6 // metres, prismatic joints with a range below this are treated as fixed
+
 function isZeroTravelPrismatic(joint: URDFJoint): boolean {
-    return joint.type === "prismatic" && Math.abs(joint.limitUpper - joint.limitLower) <= 1e-6
+    return joint.type === "prismatic" && Math.abs(joint.limitUpper - joint.limitLower) <= ZERO_TRAVEL_EPSILON
 }
 
 function isCylindricalPhantom(link: URDFLink, parentJoint: URDFJoint): boolean {
@@ -647,7 +654,7 @@ function buildLinkBody(
     const visualTransform = visualTransformInLinkFrame(visual, robotSpaceVisuals, linkGlobalTransform)
     const inLinkFrame = applyVisualTransform(parsed, visualTransform.rotation, visualTransform.translation)
 
-    // Convert Z-up→Y-up and scale (metres→cm) in one pass per array.
+    // Convert Z-up->Y-up and scale (metres->cm) in one pass per array.
     // Jolt VehicleConstraint requires mPosition in body-local Y-up space.
     const [sx, sy, sz] = visual.visualMeshScale.map(s => s * 100)
     const rv = inLinkFrame.verts
@@ -775,14 +782,11 @@ function buildJointDefinition(joint: URDFJoint, frame?: JointFrame): mirabuf.joi
 
     if (motionType === mirabuf.joint.JointMotion.REVOLUTE) {
         const axis = axisToYup(...(frame?.axisXYZ ?? joint.axisXYZ))
-        const isContiguous = joint.type === "continuous"
+        const isContinuous = joint.type === "continuous"
         jDef.rotational = {
             rotationalFreedom: {
                 axis,
-                limits: {
-                    lower: isContiguous ? -Math.PI * 1e6 : joint.limitLower,
-                    upper: isContiguous ? Math.PI * 1e6 : joint.limitUpper,
-                },
+                limits: isContinuous ? undefined : { lower: joint.limitLower, upper: joint.limitUpper },
                 value: 0,
             },
         }
@@ -791,7 +795,7 @@ function buildJointDefinition(joint: URDFJoint, frame?: JointFrame): mirabuf.joi
         jDef.prismatic = {
             prismaticFreedom: {
                 axis,
-                // PhysicsSystem.ts:574 multiplies limits by 0.01 (cm->m), so store in cm
+                // Prismatic limits are stored in cm; PhysicsSystem multiplies them by 0.01 (cm->m).
                 limits: { lower: joint.limitLower * 100, upper: joint.limitUpper * 100 },
                 value: 0,
             },
@@ -888,16 +892,15 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     const hierarchy = buildDesignHierarchy(joints, rootLink.name)
 
     return mirabuf.Assembly.create({
-        info: { GUID: robotName, name: robotName, version: 5 },
+        info: { GUID: uuidv4(), name: robotName, version: 5 },
         dynamic: true,
         designHierarchy: hierarchy,
         data: {
-            parts: { partDefinitions, partInstances },
+            parts: { partDefinitions, partInstances, userData: { data: { [URDF_IMPORT_TAG]: "true" } } },
             // motorDefinitions must be an object: PhysicsSystem.ts:375 indexes it before any null-check
             joints: { jointDefinitions, jointInstances, rigidGroups, motorDefinitions: {} },
             // appearances must be an object (not undefined/null): loadMaterials calls Object.entries on it
-            // physicalMaterials must be an object (not undefined): PhysicsSystem.ts:918 indexes it directly
-            // before the null-check at line 922, so undefined throws, an empty map is fine
+            // physicalMaterials must be an object (not undefined), an empty map is fine here
             materials: { appearances, physicalMaterials: {} },
         },
     })

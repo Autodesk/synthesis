@@ -39,7 +39,6 @@ class SynthesisBrain extends Brain {
 
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
-    private _assemblyName: string
     private _brainIndex: number
     private _assembly: MirabufSceneObject
     public driveType: DriveType = DriveType.ARCADE
@@ -51,7 +50,7 @@ class SynthesisBrain extends Brain {
     private _prevUnstickPressed = false
 
     public get assemblyName(): string {
-        return this._assemblyName
+        return this._assembly.assemblyName
     }
 
     public get behaviors(): Behavior[] {
@@ -133,14 +132,12 @@ class SynthesisBrain extends Brain {
 
     /**
      * @param assembly
-     * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
      * @param driveType
      */
-    public constructor(assembly: MirabufSceneObject, assemblyName: string) {
+    public constructor(assembly: MirabufSceneObject) {
         super(assembly.mechanism, "synthesis")
         this._assembly = assembly
         this._simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)!
-        this._assemblyName = assemblyName
 
         // I'm not fixing this right now, but this is going to become an issue...
         this._brainIndex = SynthesisBrain.brainIndexMap.size
@@ -187,7 +184,7 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        const unstickForce = new JOLT.Vec3(0, PreferencesSystem.getRobotPreferences(this._assemblyName).unstickForce, 0)
+        const unstickForce = new JOLT.Vec3(0, this._assembly.robotPreferences.unstickForce, 0)
         body.AddForce(unstickForce)
     }
 
@@ -367,7 +364,7 @@ class SynthesisBrain extends Brain {
             wheelStimuli,
             hingeStimuli,
             this._brainIndex,
-            this._assemblyName
+            this._assembly.assemblyId
         )
     }
 
@@ -386,18 +383,17 @@ class SynthesisBrain extends Brain {
             // hinge was previously left in POSITION mode by a swerve configuration.
             hingeDrivers[i].controlMode = DriverControlMode.VELOCITY
 
-            let sequentialConfig = PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.find(
-                sc => sc.jointIndex == this._currentJointIndex
-            )
+            let sequentialConfig = PreferencesSystem.getRobotPreferences(
+                this._assembly.assemblyId
+            ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
 
             if (sequentialConfig == undefined) {
                 sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Arm")
+                if (this._assembly.robotPreferences.sequentialConfig == undefined)
+                    this._assembly.robotPreferences.sequentialConfig = []
 
-                if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
-                    PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
-
-                PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.push(sequentialConfig)
-                PreferencesSystem.savePreferences()
+                this._assembly.robotPreferences.sequentialConfig?.push(sequentialConfig)
+                this._assembly.savePreferences()
             }
 
             this._behaviors.push(
@@ -423,18 +419,18 @@ class SynthesisBrain extends Brain {
         ) as SliderStimulus[]
 
         for (let i = 0; i < sliderDrivers.length; i++) {
-            let sequentialConfig = PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.find(
-                sc => sc.jointIndex == this._currentJointIndex
-            )
+            let sequentialConfig = PreferencesSystem.getRobotPreferences(
+                this._assembly.assemblyId
+            ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
 
             if (sequentialConfig == undefined) {
                 sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Elevator")
 
-                if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
-                    PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
+                if (this._assembly.robotPreferences.sequentialConfig == undefined)
+                    this._assembly.robotPreferences.sequentialConfig = []
 
-                PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.push(sequentialConfig)
-                PreferencesSystem.savePreferences()
+                this._assembly.robotPreferences.sequentialConfig?.push(sequentialConfig)
+                this._assembly.savePreferences()
             }
 
             this._behaviors.push(
@@ -468,8 +464,6 @@ class SynthesisBrain extends Brain {
 
     /** Gets field preferences and handles any field specific configuration. */
     private configureField() {
-        PreferencesSystem.getFieldPreferences(this._assemblyName)
-
         /** Put any field configuration here */
     }
 

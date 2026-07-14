@@ -5,6 +5,7 @@ export interface ParsedMesh {
     uv: Float32Array
 }
 
+// https://en.wikipedia.org/wiki/STL_(file_format)#Binary
 function parseBinarySTL(data: Uint8Array): ParsedMesh {
     const view = new DataView(data.buffer, data.byteOffset, data.byteLength)
     const triCount = view.getUint32(80, true)
@@ -50,6 +51,7 @@ function parseBinarySTL(data: Uint8Array): ParsedMesh {
     return { verts, normals, indices, uv: new Float32Array((verts.length / 3) * 2) }
 }
 
+// https://en.wikipedia.org/wiki/STL_(file_format)#ASCII
 function parseASCIISTL(text: string): ParsedMesh {
     const verts: number[] = []
     const normals: number[] = []

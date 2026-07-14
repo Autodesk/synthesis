@@ -13,14 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Bun Runtime Setup
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
       - name: Cache Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
           path: "fission/node_modules"
