@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { ContactType } from "@/mirabuf/ZoneTypes"

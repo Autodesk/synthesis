@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import { Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"

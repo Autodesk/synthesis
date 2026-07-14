@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { JoltBodyIndexAndSequence } from "@/systems/physics/PhysicsTypes"
 
 /**
