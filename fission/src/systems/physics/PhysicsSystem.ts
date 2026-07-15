@@ -555,7 +555,6 @@ class PhysicsSystem extends WorldSystem {
 
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
-        JOLT.destroy(anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
@@ -589,7 +588,6 @@ class PhysicsSystem extends WorldSystem {
 
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         constraintSettings.mPoint1 = constraintSettings.mPoint2 = anchorPoint
-        JOLT.destroy(anchorPoint)
 
         const freedom = jointDefinition.prismatic!.prismaticFreedom!
 
@@ -762,7 +760,7 @@ class PhysicsSystem extends WorldSystem {
             wheelDimensions.radius = resolvedRadius
         }
 
-        // convertJoltRVec3ToJoltVec3 destroys `anchorPoint` here
+        // `convertJoltRVec3ToJoltVec3` destroys `anchorPoint` here
         const wheelPos = urdfWheelBasis
             ? convertJoltRVec3ToJoltVec3(anchorPoint)
             : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis))
@@ -770,7 +768,6 @@ class PhysicsSystem extends WorldSystem {
         const wheelSettings = new JOLT.WheelSettingsWV()
 
         wheelSettings.mPosition = wheelPos
-
 
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
