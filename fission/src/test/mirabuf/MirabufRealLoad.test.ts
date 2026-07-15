@@ -4,6 +4,7 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import World from "@/systems/World.ts"
 import { server } from "@vitest/browser/context"
 
+// Skip on firefox due to WebGL bug in github actions
 describe.skipIf(server.browser == "firefox")("Real Load Assets", () => {
     beforeAll(async () => {
         await World.initWorld()

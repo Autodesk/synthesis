@@ -1179,7 +1179,7 @@ class PhysicsSystem extends WorldSystem {
 
         const material = new JOLT.PhysicsMaterial()
         settings.mMaterials.push_back(material)
-
+        JOLT.destroy(material)
         const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
 
