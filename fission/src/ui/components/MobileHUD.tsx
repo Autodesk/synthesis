@@ -11,7 +11,6 @@ import SettingsModal from "../modals/configuring/SettingsModal"
 import MultiplayerStartModal from "../modals/MultiplayerStartModal"
 import { startMultiplayerWorld } from "../modals/startMultiplayerWorld"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
-import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
@@ -102,11 +101,13 @@ const MobileHUD: React.FC = () => {
 
                 <HUDMenuButton label="Multiplayer" iconName="gp-1" onClick={() => runAction(openMultiplayer)} />
 
-                <HUDMenuButton
-                    label="Start Match"
-                    iconName="gp-2"
-                    onClick={() => runAction(() => openPanel(MatchModeConfigPanel, undefined))}
-                />
+                {isTouchDevice && (
+                    <HUDMenuButton
+                        label="Toggle Joysticks"
+                        icon={<SynthesisIcons.GAMEPAD />}
+                        onClick={() => runAction(() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent"))}
+                    />
+                )}
 
                 <HUDMenuButton
                     label="Settings"
