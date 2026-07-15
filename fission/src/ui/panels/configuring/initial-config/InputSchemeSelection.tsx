@@ -51,9 +51,9 @@ const SchemeSelector: React.FC<SchemeSelectorProps> = ({
                             disabled={disabled}
                             onClick={() => {
                                 InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
-                                // TODO: if touch controls, then ensure that they are enabled.
+                                // Ensure touch controls are shown when a touch scheme is selected
                                 if (scheme.usesTouchControls) {
-                                    EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")
+                                    EventSystem.dispatch("SetTouchControlsVisibilityEvent", true)
                                 }
                                 EventSystem.dispatch("InputSchemeChanged", { panelId })
                                 onSelect?.()
@@ -83,7 +83,12 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
 
     const refreshAvailableSchemes = useCallback(() => {
-        setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
+        const schemes = [...InputSchemeManager.availableInputSchemesByType(robotDriveType)]
+        if (matchMedia("(hover: none)").matches) {
+            // showing input schemes that support touch controls first (on mobile devices)
+            schemes.sort((a, b) => (b.scheme.usesTouchControls ? 1 : 0) - (a.scheme.usesTouchControls ? 1 : 0))
+        }
+        setAvailableSchemes(schemes)
     }, [robotDriveType])
 
     useEffect(() => {
