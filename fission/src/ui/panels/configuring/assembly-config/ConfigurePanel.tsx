@@ -30,6 +30,7 @@ import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterfa
 import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsInterface"
+import ConfigureSpawnPositionsInterface from "./interfaces/ConfigureSpawnPositionsInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -207,6 +208,15 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
         case ConfigMode.CAMERA_POINTS: {
             const cameraPoints = assembly.fieldPreferences?.cameraPoints ?? []
             return <ConfigureCameraPointsInterface selectedField={assembly} initialPoints={cameraPoints} />
+        }
+        case ConfigMode.SPAWN_POSITIONS: {
+            const spawnLocations = assembly.fieldPreferences?.spawnLocations
+            // spawnLocations should always be defined (part of defaultFieldPreferences) but we check for undefined just in case
+            if (spawnLocations === undefined) {
+                console.error("Field does not contain spawn location preferences!")
+                return <Label size="md">ERROR: Field does not contain spawn location configuration!</Label>
+            }
+            return <ConfigureSpawnPositionsInterface selectedField={assembly} initialLocations={spawnLocations} />
         }
         case ConfigMode.MOVE:
             return (
@@ -416,6 +426,11 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         "Protected Zones",
                         ConfigMode.PROTECTED_ZONES,
                         "Define and manage protected zones on the field where robots can not enter."
+                    ),
+                    new ConfigModeSelectionOption(
+                        "Robot Spawn Positions",
+                        ConfigMode.SPAWN_POSITIONS,
+                        "Set where robots spawn for the default position and each alliance station."
                     ),
                     new ConfigModeSelectionOption(
                         "Camera Positions",

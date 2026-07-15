@@ -342,7 +342,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 ? defaultFieldSpawnLocation()
                 : (this.robotSpawnPosition(referencePos) ?? defaultFieldSpawnLocation())
 
-        this.setObjectPosition(pos)
+        this.setObjectPosition(pos, referencePos)
     }
 
     private robotSpawnPosition(referencePos: THREE.Vector3): SpawnLocation | undefined {
@@ -354,8 +354,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 ? fieldLocations[this.alliance][this.station]
                 : fieldLocations?.default
 
-        // TODO
-        // Why are we calling this?
         field?.getPositionTransform(referencePos)
 
         return pos

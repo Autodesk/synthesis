@@ -184,9 +184,11 @@ export type MotorPreferences = {
     maxAcceleration: number
 }
 
-export type Alliance = "red" | "blue"
+export const ALLIANCES = ["red", "blue"] as const
+export type Alliance = (typeof ALLIANCES)[number]
 
-export type Station = 1 | 2 | 3
+export const STATIONS = [1, 2, 3] as const
+export type Station = (typeof STATIONS)[number]
 
 export type ZonePreferencesShared = {
     name: string
