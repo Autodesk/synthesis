@@ -121,6 +121,9 @@ export default defineConfig(async ({ mode }) => {
                     {
                         name: "chromium",
                         browser: "chromium",
+                        launch: {
+                            channel:"chrome"
+                        },
                         headless: true,
                     },
                     {
