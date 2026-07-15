@@ -4,7 +4,7 @@
  * SceneRenderer.sceneTopOffset). The top bar is desktop-only; when it is not
  * rendered (mobile) no space is reserved and the scene fills the viewport.
  */
-export const TOP_BAR_HEIGHT = 64
+export const TOP_BAR_HEIGHT = 48
 
 /**
  * Shared `sx` for top bar icon buttons. Strips MUI's default circular hover

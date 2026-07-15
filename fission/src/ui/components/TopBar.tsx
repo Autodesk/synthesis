@@ -76,11 +76,11 @@ const TopBar: React.FC = () => {
     return (
         <Box
             position="fixed"
-            sx={{ top: 0, left: 0, right: 0, height: TOP_BAR_HEIGHT, px: 2, zIndex: 1200 }}
+            sx={{ top: 0, left: 0, right: 0, height: TOP_BAR_HEIGHT, px: 1.5, zIndex: 1200 }}
             bgcolor="topBar.main"
             color="topBarText.main"
         >
-            <Stack direction="row" alignItems="center" height="100%" gap={2}>
+            <Stack direction="row" alignItems="center" height="100%" gap={1.5}>
                 {/*
                  * Fully control the tooltip from our own hover handlers. MUI's built-in
                  * listeners are disabled because the Select's backdrop swallows the trigger's
@@ -114,19 +114,19 @@ const TopBar: React.FC = () => {
                 </Tooltip>
                 <Tooltip title="Add Assembly">
                     <IconButton
-                        size="large"
+                        size="medium"
                         disableRipple
                         sx={TOP_BAR_ICON_BUTTON_SX}
                         onClick={() =>
                             openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
                         }
                     >
-                        <TopBarIcon name="add" size={40} />
+                        <TopBarIcon name="add" size={30} />
                     </IconButton>
                 </Tooltip>
 
                 {/* Divider line */}
-                <Box sx={{ width: "2px", height: 38, bgcolor: "topBarText.main", opacity: 0.4 }} />
+                <Box sx={{ width: "2px", height: 28, bgcolor: "topBarText.main", opacity: 0.4 }} />
 
                 {appMode === "Configure" && <ConfigureControls />}
                 {appMode === "Gameplay" && <GameplayControls />}
@@ -137,26 +137,26 @@ const TopBar: React.FC = () => {
                     <>
                         <Tooltip title="Developer Tool">
                             <IconButton
-                                size="large"
+                                size="medium"
                                 disableRipple
                                 sx={TOP_BAR_ICON_BUTTON_SX}
                                 onClick={() => openPanel(DeveloperToolPanel, undefined)}
                             >
-                                {/* Box sets the em-square so the icon scales to 34 px;
+                                {/* Box sets the em-square so the icon scales to 26 px;
                                     color inherits from TOP_BAR_ICON_BUTTON_SX → topBarText.main */}
-                                <Box sx={{ fontSize: 34, display: "flex" }}>
+                                <Box sx={{ fontSize: 26, display: "flex" }}>
                                     <SynthesisIcons.CODE_SQUARE />
                                 </Box>
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Debug Tools">
                             <IconButton
-                                size="large"
+                                size="medium"
                                 disableRipple
                                 sx={TOP_BAR_ICON_BUTTON_SX}
                                 onClick={() => openPanel(DebugPanel, undefined)}
                             >
-                                <Box sx={{ fontSize: 34, display: "flex" }}>
+                                <Box sx={{ fontSize: 26, display: "flex" }}>
                                     <SynthesisIcons.BUG />
                                 </Box>
                             </IconButton>
@@ -166,12 +166,12 @@ const TopBar: React.FC = () => {
 
                 <Tooltip title="Configure Camera">
                     <IconButton
-                        size="large"
+                        size="medium"
                         disableRipple
                         sx={TOP_BAR_ICON_BUTTON_SX}
                         onClick={() => openPanel(CameraSelectionPanel, undefined)}
                     >
-                        <Box sx={{ fontSize: 34, display: "flex" }}>
+                        <Box sx={{ fontSize: 26, display: "flex" }}>
                             <SynthesisIcons.CAMERA />
                         </Box>
                     </IconButton>
@@ -179,22 +179,22 @@ const TopBar: React.FC = () => {
 
                 <Tooltip title="Settings">
                     <IconButton
-                        size="large"
+                        size="medium"
                         disableRipple
                         sx={TOP_BAR_ICON_BUTTON_SX}
                         onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
                     >
-                        <TopBarIcon name="settings" size={40} />
+                        <TopBarIcon name="settings" size={30} />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title={userInfo ? "Account" : "Login"}>
                     <IconButton
-                        size="large"
+                        size="medium"
                         disableRipple
                         sx={TOP_BAR_ICON_BUTTON_SX}
                         onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
                     >
-                        {userInfo ? <UserIcon className="h-8 rounded-full" /> : <TopBarIcon name="login" size={40} />}
+                        {userInfo ? <UserIcon className="h-6 rounded-full" /> : <TopBarIcon name="login" size={30} />}
                     </IconButton>
                 </Tooltip>
             </Stack>

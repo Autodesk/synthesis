@@ -13,8 +13,8 @@ export const MODE_ICONS: Record<AppMode, TopBarIconName> = {
 }
 
 const ModeLabel: React.FC<{ mode: AppMode }> = ({ mode }) => (
-    <Stack direction="row" alignItems="center" gap={1.5} sx={{ pointerEvents: "none" }}>
-        <TopBarIcon name={MODE_ICONS[mode]} size={24} />
+    <Stack direction="row" alignItems="center" gap={1} sx={{ pointerEvents: "none" }}>
+        <TopBarIcon name={MODE_ICONS[mode]} size={18} />
         {mode}
     </Stack>
 )
@@ -34,9 +34,9 @@ const ModeDropdown: React.FC<{ onOpenChange?: (open: boolean) => void }> = ({ on
                 bgcolor: "surface.main",
                 color: "topBarText.main",
                 borderRadius: 3,
-                height: 46,
-                minWidth: 180,
-                fontSize: 17,
+                height: 34,
+                minWidth: 135,
+                fontSize: 13,
                 cursor: "pointer",
                 alignItems: "stretch", // Ensures the inner select div stretches to full height
                 "& .MuiOutlinedInput-notchedOutline": { border: "none" },
