@@ -147,7 +147,12 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (transformHasNotUpdated && !this._deltaTransHasUpdated) return undefined
 
         if (this._cachedFieldTransformation) JOLT.destroy(this._cachedFieldTransformation)
-        this._cachedFieldTransformation = newTransform
+
+        // NOTE We want a new matrix, otherwise the next comparison will always be true, since they will refer to the same object
+        const rotation = newTransform.GetQuaternion()
+        const translation = newTransform.GetTranslation()
+        this._cachedFieldTransformation = JOLT.RMat44.prototype.sRotationTranslation(rotation, translation)
+
         this._deltaTransHasUpdated = false
 
         const fieldTransformation = convertJoltMat44ToThreeMatrix4(this._cachedFieldTransformation)
@@ -186,7 +191,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         }
 
         if (this._cachedFieldTransformation) {
-            JOLT.destroy(this._cachedFieldTransformation)
+            // JOLT.destroy(this._cachedFieldTransformation)
         }
     }
 }
