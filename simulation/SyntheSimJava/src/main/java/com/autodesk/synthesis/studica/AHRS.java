@@ -24,45 +24,21 @@ public class AHRS extends com.studica.frc.AHRS {
 
     @Override
     public float getYaw() {
-        return (float) m_gyro.getAngleZ();
+        return (float) (-m_gyro.getAngleZ() % 360 - 180);
     }
 
     @Override
     public float getPitch() {
-        return (float) m_gyro.getAngleX();
+        return (float) (m_gyro.getAngleX() % 360 - 180);
     }
 
     @Override
     public float getRoll() {
-        return (float) m_gyro.getAngleY();
+        return (float) (m_gyro.getAngleY() % 360 - 180);
     }
 
     @Override
     public double getRate() {
-        return m_gyro.getRateZ();
-    }
-
-    public double getAngleX() {
-        return m_gyro.getAngleX();
-    }
-
-    public double getAngleY() {
-        return m_gyro.getAngleY();
-    }
-
-    public double getAngleZ() {
-        return m_gyro.getAngleZ();
-    }
-
-    public double getRateX() {
-        return m_gyro.getRateX();
-    }
-
-    public double getRateY() {
-        return m_gyro.getRateY();
-    }
-
-    public double getRateZ() {
         return m_gyro.getRateZ();
     }
 }
