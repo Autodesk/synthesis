@@ -37,11 +37,19 @@ const TourOverlay: React.FC = () => {
     const step = active ? TOUR_STEPS[stepIndex] : undefined
     if (!step) return null
 
+    // Gate the `>` button on steps that advance only when the user performs the real action.
+    const nextDisabled = !!step.advanceOn
+
     // Resolved on every render; the context change from anchor (de)registration drives re-renders.
-    const anchorEl = step.anchorId ? getAnchor(step.anchorId) : null
+    // Guard on `isConnected`: while an anchor's host (a panel/modal) unmounts, the element can be
+    // detached from the document for a tick before its callback ref clears the registry entry.
+    // Feeding a detached node to the Popper throws an MUI "invalid anchorEl" warning, so we treat
+    // it as absent and fall through to the centered card until a live anchor re-registers.
+    const rawAnchor = step.anchorId ? getAnchor(step.anchorId) : null
+    const anchorEl = rawAnchor?.isConnected ? rawAnchor : null
 
     // Anchored card.
-    if (step.anchorId && anchorEl) {
+    if (anchorEl) {
         return (
             <Popper
                 open
@@ -64,6 +72,7 @@ const TourOverlay: React.FC = () => {
                     onSkip={skip}
                     setArrowRef={setArrowRef}
                     arrowEdge={arrowEdgeFor(step.placement)}
+                    nextDisabled={nextDisabled}
                 />
             </Popper>
         )
@@ -88,6 +97,7 @@ const TourOverlay: React.FC = () => {
                 onNext={next}
                 onPrev={prev}
                 onSkip={skip}
+                nextDisabled={nextDisabled}
             />
         </Box>
     )

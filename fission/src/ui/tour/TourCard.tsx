@@ -62,6 +62,12 @@ interface TourCardProps {
     setArrowRef?: (el: HTMLElement | null) => void
     /** Which card edge the pointer sits on. Omit to hide the pointer. */
     arrowEdge?: "top" | "bottom" | "left" | "right"
+    /**
+     * Gate forward navigation. True on steps that advance only once the user performs the
+     * real action (see `TourStep.advanceOn`): the `>` button is disabled so the tour cannot
+     * jump past a required interaction. `<` and Skip stay available as escape hatches.
+     */
+    nextDisabled?: boolean
 }
 
 /**
@@ -78,6 +84,7 @@ const TourCard: React.FC<TourCardProps> = ({
     onSkip,
     setArrowRef,
     arrowEdge,
+    nextDisabled = false,
 }) => {
     const isFirst = stepIndex === 0
     const isLast = stepIndex === total - 1
@@ -174,12 +181,14 @@ const TourCard: React.FC<TourCardProps> = ({
                 ) : (
                     <ButtonBase
                         onClick={onNext}
+                        disabled={nextDisabled}
                         aria-label="Next step"
                         sx={{
                             borderRadius: "50%",
                             p: 0.25,
                             color: "topBarText.main",
-                            "&:hover": { bgcolor: "surface.main" },
+                            opacity: nextDisabled ? 0.25 : 1,
+                            "&:hover": { bgcolor: nextDisabled ? "transparent" : "surface.main" },
                         }}
                     >
                         <MdChevronRight size={20} />

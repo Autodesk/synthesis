@@ -62,7 +62,7 @@ export const TOUR_STEPS: TourStep[] = [
         title: "Open the Library",
         body: "The library groups fields and robots by year. Select the 2026 year tab and spawn the field.",
         anchorId: "spawn-panel",
-        placement: "left",
+        placement: "bottom-end",
         advanceOn: { kind: "spawn", miraType: MiraType.FIELD },
     },
     {
@@ -70,12 +70,13 @@ export const TOUR_STEPS: TourStep[] = [
         body: "Now open the Add Assembly library again to spawn a robot.",
         anchorId: "add-assembly",
         placement: "bottom-start",
+        advanceOn: { kind: "modal-open", modalName: "LibraryModal" },
     },
     {
         title: "Choose a Robot",
         body: "With the library open, on the 2026 year tab, pick a robot.",
         anchorId: "spawn-panel",
-        placement: "left",
+        placement: "bottom-end",
         advanceOn: { kind: "spawn", miraType: MiraType.ROBOT },
     },
     {
