@@ -9,13 +9,11 @@ import { InputSchemeUseType } from "@/systems/input/InputTypes"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import { CloseType, useUIContext } from "../../helpers/UIProviderHelpers"
-import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { openModal, openPanel, closePanel, configureScreen } = useUIContext()
+    const { closePanel, configureScreen } = useUIContext()
     const { setSelectedScheme } = useStateContext()
 
     const targetAssembly = useMemo(() => {
@@ -58,14 +56,6 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
                 <InputSchemeSelection
                     brainIndex={brainIndex}
                     onSelect={() => closePanel(panel!.id, CloseType.Accept)}
-                    onEdit={() => {
-                        openPanel(ConfigurePanel, { configurationType: "INPUTS" })
-                        closePanel(panel!.id, CloseType.Overwrite)
-                    }}
-                    onCreateNew={() => {
-                        openModal(NewInputSchemeModal, undefined)
-                        closePanel(panel!.id, CloseType.Overwrite)
-                    }}
                 />
             )}
         </Stack>

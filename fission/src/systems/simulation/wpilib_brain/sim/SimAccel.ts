@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type Mechanism from "@/systems/physics/Mechanism"
 import World from "@/systems/World"
