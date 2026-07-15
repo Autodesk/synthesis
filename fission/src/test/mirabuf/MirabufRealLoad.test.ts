@@ -24,7 +24,6 @@ describe.skipIf(server.browser == "firefox")("Real Load Assets", () => {
         ["/api/mira/fields/FRC Field 2023 v8.mira", MiraType.FIELD, "2023 Field"],
     ]
     test.for(tests)("Loads $2", async ([url, miratype]) => {
-        console.error("STARTING TEST EVIL DIE", url)
         const info = await MirabufLoader.cacheRemote(url, miratype)
         expect(info).toBeDefined()
         const assembly = await MirabufLoader.get(info!.hash)
