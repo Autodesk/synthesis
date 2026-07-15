@@ -5,16 +5,15 @@ import { FaBars } from "react-icons/fa6"
 import { IoMdArrowDropdown } from "react-icons/io"
 import APS from "@/aps/APS"
 import EventSystem from "@/systems/EventSystem.ts"
-import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
 import MultiplayerStartModal from "../modals/MultiplayerStartModal"
+import { startMultiplayerWorld } from "../modals/startMultiplayerWorld"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
-import { setAddToast, setOpenModal, setOpenPanel, globalAddToast } from "./GlobalUIControls"
+import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
 import HUDMenuButton from "./topbar/HUDMenuButton"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
@@ -75,17 +74,7 @@ const MobileHUD: React.FC = () => {
     }
 
     const openMultiplayer = () =>
-        openModal(MultiplayerStartModal, {
-            startWorldCallback: async (name: string, room?: string) => {
-                const isHost = room == null
-                const roomId = room ?? Math.random().toString(10).substring(2, 8)
-                PreferencesSystem.setUserPreference("MultiplayerUsername", name)
-                PreferencesSystem.savePreferences()
-                const success = await MultiplayerSystem.setup(roomId, name, isHost)
-                if (success && isHost) globalAddToast("info", "Room Code", roomId)
-                return success
-            },
-        })
+        openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
 
     const rootGrid = (
         <Stack gap={2} sx={{ minHeight: "100%" }}>

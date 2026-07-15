@@ -1,11 +1,9 @@
 import { Stack, Tooltip } from "@mui/material"
 import type React from "react"
-import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import MultiplayerStartModal from "../../modals/MultiplayerStartModal"
-import { globalAddToast } from "../GlobalUIControls"
+import { startMultiplayerWorld } from "../../modals/startMultiplayerWorld"
 import { IconButton } from "../StyledComponents"
 import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
 import { TopBarIcon } from "./TopBarIcons"
@@ -15,21 +13,8 @@ const GameplayControls: React.FC = () => {
 
     const openMatchMode = () => openPanel(MatchModeConfigPanel, undefined)
 
-    const openMultiplayer = () => {
-        openModal(MultiplayerStartModal, {
-            startWorldCallback: async (name: string, room?: string) => {
-                const isHost = room == null
-                const roomId = room ?? Math.random().toString(10).substring(2, 8)
-                PreferencesSystem.setUserPreference("MultiplayerUsername", name)
-                PreferencesSystem.savePreferences()
-                const success = await MultiplayerSystem.setup(roomId, name, isHost)
-                if (success && isHost) {
-                    globalAddToast("info", "Room Code", roomId)
-                }
-                return success
-            },
-        })
-    }
+    const openMultiplayer = () =>
+        openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
 
     return (
         <Stack direction="row" alignItems="center" gap={1.5}>
