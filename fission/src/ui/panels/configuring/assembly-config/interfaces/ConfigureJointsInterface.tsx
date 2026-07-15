@@ -1,8 +1,7 @@
-import { Stack, Tooltip, Typography } from "@mui/material"
+import { Stack, Tooltip } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { FaUnlink } from "react-icons/fa"
-import { MdExpandMore } from "react-icons/md"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -12,7 +11,7 @@ import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/Sequen
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import { Accordion, AccordionDetails, AccordionSummary, Button, Spacer } from "@/ui/components/StyledComponents"
+import { Button, Spacer } from "@/ui/components/StyledComponents"
 import { buildJointConfigGroups, type JointConfigGroup } from "../jointConfigGroups"
 import SubsystemRowInterface from "./SubsystemRowInterface"
 
@@ -201,49 +200,44 @@ const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobo
 
             {/* Section 2: Joint Sequencing */}
             {seqBehaviors.length > 0 && (
-                <Accordion defaultExpanded={false} sx={{ mt: 2 }}>
-                    <AccordionSummary expandIcon={<MdExpandMore size={20} />}>
-                        <Typography variant="subtitle2">Joint Sequencing</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Stack direction="column" gap={2} className="overflow-y-auto">
-                            {seqBehaviors.map(behavior => {
-                                const jointIndex = behavior.jointIndex
-                                return (
-                                    <BehaviorCard
-                                        elementKey={jointIndex}
-                                        name={
-                                            behavior.type === "Arm"
-                                                ? `Joint ${jointIndex} (Pivot)`
-                                                : `Joint ${jointIndex} (Slider)`
+                <>
+                    <Label size="md" sx={{ mt: 3, mb: 0.5 }}>
+                        Joint Sequencing
+                    </Label>
+                    <Stack direction="column" gap={2} className="overflow-y-auto">
+                        {seqBehaviors.map(behavior => {
+                            const jointIndex = behavior.jointIndex
+                            return (
+                                <BehaviorCard
+                                    elementKey={jointIndex}
+                                    name={
+                                        behavior.type === "Arm"
+                                            ? `Joint ${jointIndex} (Pivot)`
+                                            : `Joint ${jointIndex} (Slider)`
+                                    }
+                                    behavior={behavior}
+                                    key={jointIndex}
+                                    update={update}
+                                    onSetPressed={() => {
+                                        if (behavior.parentJointIndex !== undefined) {
+                                            behavior.parentJointIndex = undefined
+                                        } else {
+                                            setLookingForParent(lookingForParent === behavior ? undefined : behavior)
                                         }
-                                        behavior={behavior}
-                                        key={jointIndex}
-                                        update={update}
-                                        onSetPressed={() => {
-                                            if (behavior.parentJointIndex !== undefined) {
-                                                behavior.parentJointIndex = undefined
-                                            } else {
-                                                setLookingForParent(
-                                                    lookingForParent === behavior ? undefined : behavior
-                                                )
-                                            }
-                                            update()
-                                        }}
-                                        lookingForParent={lookingForParent}
-                                        onBehaviorSelected={() => {
-                                            if (lookingForParent)
-                                                lookingForParent.parentJointIndex = behavior.jointIndex
-                                            setLookingForParent(undefined)
-                                            update()
-                                        }}
-                                        hasChild={seqBehaviors.some(b => b.parentJointIndex === behavior.jointIndex)}
-                                    />
-                                )
-                            })}
-                        </Stack>
-                    </AccordionDetails>
-                </Accordion>
+                                        update()
+                                    }}
+                                    lookingForParent={lookingForParent}
+                                    onBehaviorSelected={() => {
+                                        if (lookingForParent) lookingForParent.parentJointIndex = behavior.jointIndex
+                                        setLookingForParent(undefined)
+                                        update()
+                                    }}
+                                    hasChild={seqBehaviors.some(b => b.parentJointIndex === behavior.jointIndex)}
+                                />
+                            )
+                        })}
+                    </Stack>
+                </>
             )}
         </>
     )
