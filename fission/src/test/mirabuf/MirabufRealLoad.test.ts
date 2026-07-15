@@ -1,4 +1,4 @@
-import {beforeAll, beforeEach, describe, expect, test, vi} from "vitest"
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
 import MirabufLoader, { MiraType } from "../../mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import World from "@/systems/World.ts"
@@ -34,4 +34,3 @@ describe.skipIf(server.browser == "firefox")("Real Load Assets", () => {
         expect(sceneObject?.miraType).toBe(miratype)
     })
 })
-
