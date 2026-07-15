@@ -34,6 +34,9 @@ export type AdvanceTrigger =
     | { kind: "spawn"; miraType: MiraType }
     | { kind: "event"; event: "ConfigurationSavedEvent" }
 
+/** Where an anchorless card is pinned on screen. Defaults to `"center"`. */
+export type ScreenPosition = "center" | "top-left"
+
 export interface TourStep {
     title: string
     body: string
@@ -41,14 +44,25 @@ export interface TourStep {
     anchorId?: TourAnchorId
     /** Where the card sits relative to its anchor. Ignored for centered steps. */
     placement: PopperPlacementType
+    /** For anchorless steps only: where the card is pinned on screen (default `"center"`). */
+    screenPosition?: ScreenPosition
     /** Optional automatic advance trigger (hybrid model). */
     advanceOn?: AdvanceTrigger
+    /**
+     * Informational ("read this") step: dims the whole screen and blocks every click except this
+     * card's own next/prev/skip. Use for steps that only explain UI the user should not act on yet
+     * (e.g. the auto-selected assembly, or the intake panel before it is time to Save). The card
+     * still anchors and points normally; it just floats above a blocking scrim. Actional ("do this")
+     * steps omit this so the user can interact with the app underneath.
+     */
+    informational?: boolean
 }
 
 /**
- * The onboarding tour, in order. Mirrors the 12-step Figma flow: spawn a field,
- * spawn a robot, configure the robot's intake, then drive. Ambiguous "reading" steps
- * are manual-only; the clear milestones auto-advance.
+ * The onboarding tour, in order: spawn a field, spawn a robot, configure the robot's intake, then
+ * drive. Steps are either *actional* - the user performs the real interaction and (where an
+ * {@link AdvanceTrigger} is set) the tour auto-advances - or *informational* ({@link TourStep.informational}),
+ * which grey out and lock the app so the user can only read and click through.
  */
 export const TOUR_STEPS: TourStep[] = [
     {
@@ -62,7 +76,7 @@ export const TOUR_STEPS: TourStep[] = [
         title: "Open the Library",
         body: "The library groups fields and robots by year. Select the 2026 year tab and spawn the field.",
         anchorId: "spawn-panel",
-        placement: "bottom-end",
+        placement: "left",
         advanceOn: { kind: "spawn", miraType: MiraType.FIELD },
     },
     {
@@ -76,20 +90,15 @@ export const TOUR_STEPS: TourStep[] = [
         title: "Choose a Robot",
         body: "With the library open, on the 2026 year tab, pick a robot.",
         anchorId: "spawn-panel",
-        placement: "bottom-end",
+        placement: "left",
         advanceOn: { kind: "spawn", miraType: MiraType.ROBOT },
     },
     {
         title: "Select an Assembly",
-        body: "Pick which assembly you want to configure from this drop-down menu.",
+        body: "Your spawned robot is automatically selected here for configuration. You could switch to another assembly from this drop-down, but we will stick with your robot.",
         anchorId: "configure-assembly-select",
         placement: "bottom-start",
-    },
-    {
-        title: "Choose Your Robot",
-        body: "Choose the robot you just spawned. You can configure fields too, but that is not what we are after right now.",
-        anchorId: "configure-assembly-select",
-        placement: "bottom-start",
+        informational: true,
     },
     {
         title: "Pick What to Configure",
@@ -100,19 +109,21 @@ export const TOUR_STEPS: TourStep[] = [
     },
     {
         title: "Adjust the Intake",
-        body: "The configure window is open. Move the intake so that it aligns with the robot's intake mechanism.",
+        body: "This is the Configure Assets panel. Here you can align the intake with the robot's intake mechanism and tune how it picks up game pieces.",
         anchorId: "configure-panel",
         placement: "left",
+        informational: true,
     },
     {
         title: "Show the Intake Zone",
-        body: "Enable 'Show intake zone indicator always'. This makes the intake zone much easier to see.",
+        body: "The 'Show intake zone indicator always' toggle keeps the intake's pickup zone visible, making it much easier to see.",
         anchorId: "intake-show-zone",
         placement: "left",
+        informational: true,
     },
     {
         title: "Finish Up",
-        body: "Once the intake is configured, close the configure menu by pressing Save.",
+        body: "When you are happy with the intake, press Save to apply your configuration and close the panel.",
         anchorId: "configure-panel",
         placement: "left",
         advanceOn: { kind: "event", event: "ConfigurationSavedEvent" },
@@ -121,6 +132,7 @@ export const TOUR_STEPS: TourStep[] = [
         title: "Drive Your Robot",
         body: "Now drive using WASD, and E for the intake. When a game piece enters the sphere, your newly configured intake picks it up.",
         placement: "top",
+        screenPosition: "top-left",
     },
     {
         title: "Switch Modes",

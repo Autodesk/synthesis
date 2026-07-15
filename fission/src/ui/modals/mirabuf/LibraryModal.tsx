@@ -356,19 +356,17 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const hasRemoteInYear = assetsForYear.some(asset => !cachedByHash.has(asset.hash))
 
     return (
+        // Tour anchor for the library steps ("Open the Library" / "Choose a Robot"): the whole
+        // modal body, so the callout points at the Library generically rather than at any one tab.
         <Stack
             direction="column"
+            ref={libraryRef}
             sx={{
                 width: { xs: "88vw", lg: "min(90vw, 1120px)" },
                 height: { xs: "76vh", lg: "70vh" },
             }}
         >
             <Tabs
-                // Tour anchor for the library steps: the year-tab bar, not the whole modal. The
-                // modal is centered and nearly full-screen, so a card anchored to it has no room
-                // to sit alongside; anchoring to this slim top bar lets the callout drop just below
-                // it (placement "bottom-end") into the empty area right of the asset cards.
-                ref={libraryRef}
                 value={activeYear ?? false}
                 onChange={(_, newValue) => setActiveYear(newValue)}
                 textColor="inherit"

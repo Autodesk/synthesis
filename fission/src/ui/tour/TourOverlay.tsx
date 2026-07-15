@@ -1,11 +1,27 @@
 import { Box, Popper } from "@mui/material"
 import type React from "react"
 import { useState } from "react"
+import { TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
+import type { ScreenPosition } from "./tourSteps"
 import { TOUR_STEPS } from "./tourSteps"
 import TourCard from "./TourCard"
 import { useTourContext } from "./TourProviderHelpers"
 
 const ZIndex = 1400 // above panels/modals (1300) and the top bar (1200)
+// Full-screen blocking scrim for informational steps: dims the app and swallows every click,
+// so only the tour card (which sits above it at `ZIndex`) stays interactive.
+const ScrimZIndex = ZIndex - 10
+// Gap from the top bar / viewport edge for an anchorless card that is pinned to a corner.
+const SCREEN_EDGE_GAP = 12
+
+/** Fixed-position style for an anchorless card, keyed by its {@link ScreenPosition}. */
+function screenPositionStyle(position: ScreenPosition | undefined) {
+    if (position === "top-left") {
+        return { top: TOP_BAR_HEIGHT + SCREEN_EDGE_GAP, left: SCREEN_EDGE_GAP }
+    }
+    // Default: dead center.
+    return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" }
+}
 
 /** Maps a Popper placement to the card edge its pointer should sit on. */
 function arrowEdgeFor(placement: string): "top" | "bottom" | "left" | "right" {
@@ -48,58 +64,68 @@ const TourOverlay: React.FC = () => {
     const rawAnchor = step.anchorId ? getAnchor(step.anchorId) : null
     const anchorEl = rawAnchor?.isConnected ? rawAnchor : null
 
+    // Informational steps float above a full-screen scrim that dims the app and absorbs every click
+    // (no handler = clicks go nowhere), leaving only the card's buttons live. Rendered as a sibling
+    // beneath the card so it never covers the card itself.
+    const scrim = step.informational ? (
+        <Box sx={{ position: "fixed", inset: 0, bgcolor: "rgba(0,0,0,0.5)", zIndex: ScrimZIndex, pointerEvents: "auto" }} />
+    ) : null
+
+    const card = (
+        <TourCard
+            step={step}
+            stepIndex={stepIndex}
+            total={TOUR_STEPS.length}
+            onNext={next}
+            onPrev={prev}
+            onSkip={skip}
+            nextDisabled={nextDisabled}
+            {...(anchorEl && { setArrowRef, arrowEdge: arrowEdgeFor(step.placement) })}
+        />
+    )
+
     // Anchored card.
     if (anchorEl) {
         return (
-            <Popper
-                open
-                anchorEl={anchorEl}
-                placement={step.placement}
-                sx={{ zIndex: ZIndex, pointerEvents: "none" }}
-                modifiers={[
-                    { name: "offset", options: { offset: [0, 12] } },
-                    { name: "flip", enabled: false },
-                    { name: "preventOverflow", options: { padding: 8 } },
-                    { name: "arrow", enabled: true, options: { element: arrowRef, padding: 12 } },
-                ]}
-            >
-                <TourCard
-                    step={step}
-                    stepIndex={stepIndex}
-                    total={TOUR_STEPS.length}
-                    onNext={next}
-                    onPrev={prev}
-                    onSkip={skip}
-                    setArrowRef={setArrowRef}
-                    arrowEdge={arrowEdgeFor(step.placement)}
-                    nextDisabled={nextDisabled}
-                />
-            </Popper>
+            <>
+                {scrim}
+                <Popper
+                    open
+                    anchorEl={anchorEl}
+                    placement={step.placement}
+                    sx={{ zIndex: ZIndex, pointerEvents: "none" }}
+                    modifiers={[
+                        { name: "offset", options: { offset: [0, 12] } },
+                        { name: "flip", enabled: false },
+                        // altAxis clamps along the placement axis itself (x for a "left" card) and
+                        // tether:false lets it detach from an oversized reference, so the card stays
+                        // fully on-screen instead of running off the edge - e.g. the near-full-screen
+                        // Library modal, whose left edge would otherwise push the card off-viewport.
+                        { name: "preventOverflow", options: { padding: 8, altAxis: true, tether: false } },
+                        { name: "arrow", enabled: true, options: { element: arrowRef, padding: 12 } },
+                    ]}
+                >
+                    {card}
+                </Popper>
+            </>
         )
     }
 
-    // Centered fallback: anchorless steps, or an anchor that has not mounted yet.
+    // Anchorless steps (or an anchor that has not mounted yet): pin the card to a screen position.
     return (
-        <Box
-            sx={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                zIndex: ZIndex,
-                pointerEvents: "none",
-            }}
-        >
-            <TourCard
-                step={step}
-                stepIndex={stepIndex}
-                total={TOUR_STEPS.length}
-                onNext={next}
-                onPrev={prev}
-                onSkip={skip}
-                nextDisabled={nextDisabled}
-            />
-        </Box>
+        <>
+            {scrim}
+            <Box
+                sx={{
+                    position: "fixed",
+                    ...screenPositionStyle(step.screenPosition),
+                    zIndex: ZIndex,
+                    pointerEvents: "none",
+                }}
+            >
+                {card}
+            </Box>
+        </>
     )
 }
 
