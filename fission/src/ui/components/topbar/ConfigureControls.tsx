@@ -26,7 +26,7 @@ const ConfigureControls: React.FC = () => {
                 sx={{
                     bgcolor: "surface.main",
                     color: "topBarText.main",
-                    borderRadius: 3,
+                    borderRadius: 1,
                     height: 34,
                     minWidth: 195,
                     fontSize: 12,
