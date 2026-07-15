@@ -94,6 +94,8 @@ export class SimGyroInput extends SimInput {
     }
 
     public update(deltaT: number) {
+        if (!this._joltBody) return;
+
         const omega = this.getBodyAngularVelocity()
 
         // WPILib uses deg and deg/s
