@@ -5,6 +5,7 @@ import { FaBars } from "react-icons/fa6"
 import { IoMdArrowDropdown } from "react-icons/io"
 import APS from "@/aps/APS"
 import EventSystem from "@/systems/EventSystem.ts"
+import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
@@ -55,6 +56,7 @@ const MobileHUD: React.FC = () => {
     const [open, setOpen] = useState(false)
     const [view, setView] = useState<DrawerView>("root")
     const [userInfo, setUserInfo] = useState(APS.userInfo)
+    const isTouchDevice = useIsTouchDevice()
 
     const { assemblies, selectedConfigAssembly, configureButtons, openConfig, selectedValue, selectAssemblyById } =
         useConfigureAssembly()
@@ -73,8 +75,7 @@ const MobileHUD: React.FC = () => {
         fn()
     }
 
-    const openMultiplayer = () =>
-        openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
+    const openMultiplayer = () => openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
 
     const rootGrid = (
         <Stack gap={2} sx={{ minHeight: "100%" }}>
@@ -123,6 +124,13 @@ const MobileHUD: React.FC = () => {
                         userInfo ? runAction(() => openModal(APSManagementModal, undefined)) : APS.requestAuthCode()
                     }
                 />
+                {isTouchDevice && (
+                    <HUDMenuButton
+                        label="Toggle Joysticks"
+                        icon={<SynthesisIcons.GAMEPAD />}
+                        onClick={() => runAction(() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent"))}
+                    />
+                )}
             </Box>
         </Stack>
     )

@@ -5,6 +5,7 @@ import APS from "@/aps/APS"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
 import { deobf } from "@/util/Utility"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
@@ -26,6 +27,7 @@ import UserIcon from "./UserIcon"
 const TopBar: React.FC = () => {
     const { openModal, openPanel, addToast } = useUIContext()
     const { appMode } = useStateContext()
+    const isTouchDevice = useIsTouchDevice()
 
     setAddToast(addToast)
     setOpenPanel(openPanel)
@@ -162,6 +164,21 @@ const TopBar: React.FC = () => {
                             </IconButton>
                         </Tooltip>
                     </>
+                )}
+
+                {isTouchDevice && (
+                    <Tooltip title="Toggle Joysticks">
+                        <IconButton
+                            size="medium"
+                            disableRipple
+                            sx={TOP_BAR_ICON_BUTTON_SX}
+                            onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
+                        >
+                            <Box sx={{ fontSize: 26, display: "flex" }}>
+                                <SynthesisIcons.GAMEPAD />
+                            </Box>
+                        </IconButton>
+                    </Tooltip>
                 )}
 
                 <Tooltip title="Configure Camera">

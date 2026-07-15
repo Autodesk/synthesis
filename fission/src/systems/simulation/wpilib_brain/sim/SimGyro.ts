@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type Mechanism from "@/systems/physics/Mechanism"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"

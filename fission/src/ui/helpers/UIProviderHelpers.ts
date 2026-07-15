@@ -28,6 +28,8 @@ export interface UIScreenProps<P> {
     disableAccept?: boolean
     cancelText?: string
     acceptText?: string
+    blocking?: boolean // if true, will prevent other panels from opening while this panel is open
+    blockingMessage?: string
     custom: P
 }
 
@@ -45,7 +47,7 @@ export interface ModalProps<P> extends UIScreenProps<P> {
  */
 export interface PanelProps<P> extends UIScreenProps<P> {
     type: "panel"
-    position: PanelPosition
+    position?: PanelPosition
 }
 
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
@@ -91,7 +93,7 @@ export type OpenPanelFn = <T, P>(
     customProps: P,
     parent?: UIScreen<any, any>,
     props?: Omit<PanelProps<P>, "type" | "configured" | "custom"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept">
-) => string
+) => string | null
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: ReactNode[]) => void
