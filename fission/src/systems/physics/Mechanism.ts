@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
@@ -10,6 +10,7 @@ export interface MechanismConstraint {
     primaryConstraint: Jolt.Constraint
     maxVelocity: number
     info?: mirabuf.IInfo
+    jointUserData?: Record<string, string>
     extraConstraints: Jolt.Constraint[]
     extraBodies: Jolt.BodyID[]
 }
