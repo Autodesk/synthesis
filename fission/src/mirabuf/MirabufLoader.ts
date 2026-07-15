@@ -306,7 +306,7 @@ class MirabufCachingService {
 
             const memCache = this._inMemoryCache[hash]
             if (memCache) {
-                console.log(`Retrieved ${info?.name ?? hash} from memory`)
+                console.debug(`Retrieved ${info?.name ?? hash} from memory`)
                 return { buffer: memCache, info }
             }
             if (info == null) {
@@ -320,7 +320,7 @@ class MirabufCachingService {
                     return undefined
                 }
                 this._inMemoryCache[hash] = buffer
-                console.log(`Retrieved ${info?.name ?? hash} from storage`)
+                console.debug(`Retrieved ${info?.name ?? hash} from storage`)
                 return { buffer: buffer, info }
             }
             console.warn("Could not find assembly for hash", hash, info)
@@ -424,7 +424,7 @@ class MirabufCachingService {
                 type: info.miraType == MiraType.ROBOT ? "robot" : "field",
                 fileSize: buffer.byteLength,
             })
-            console.log(`Added cache entry for ${hash}`)
+            console.debug(`Added cache entry for ${hash}`)
             return info
         } catch (e) {
             console.error("Failed to cache mira " + e)
