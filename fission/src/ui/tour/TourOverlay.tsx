@@ -1,6 +1,7 @@
 import { Box, Popper } from "@mui/material"
+import type { Instance as PopperInstance } from "@popperjs/core"
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
 import type { ScreenPosition } from "./tourSteps"
 import { TOUR_STEPS } from "./tourSteps"
@@ -47,10 +48,21 @@ const TourOverlay: React.FC = () => {
     // Consuming the context re-renders this component whenever the provider value changes -
     // including the anchorVersion bump on anchor (de)registration - so the anchor below is
     // always re-resolved when a panel mounts or unmounts.
-    const { active, stepIndex, next, prev, skip, getAnchor } = useTourContext()
+    const { active, stepIndex, next, prev, skip, getAnchor, anchorVersion } = useTourContext()
     const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null)
+    const popperRef = useRef<PopperInstance>(null)
 
     const step = active ? TOUR_STEPS[stepIndex] : undefined
+
+    // Re-sync the Popper position over a short burst after an anchored step (re)mounts. Some anchors
+    // (e.g. the Assembly Setup panel) slide in via a CSS transform, which fires no resize/scroll
+    // event, so the Popper's one-shot measurement lands on the anchor's pre-animation position and
+    // never corrects. Nudging update() as the anchor settles fixes that; it is idempotent otherwise.
+    useEffect(() => {
+        const timers = [0, 100, 250, 450].map(delay => setTimeout(() => popperRef.current?.update(), delay))
+        return () => timers.forEach(clearTimeout)
+    }, [stepIndex, anchorVersion])
+
     if (!step) return null
 
     // Gate the `>` button on steps that advance only when the user performs the real action.
@@ -91,6 +103,7 @@ const TourOverlay: React.FC = () => {
                 {scrim}
                 <Popper
                     open
+                    popperRef={popperRef}
                     anchorEl={anchorEl}
                     placement={step.placement}
                     sx={{ zIndex: ZIndex, pointerEvents: "none" }}

@@ -11,6 +11,7 @@ export type TourAnchorId =
     | "add-assembly"
     | "mode-dropdown"
     | "spawn-panel"
+    | "assembly-setup"
     | "configure-assembly-select"
     | "configure-intake-button"
     | "configure-panel"
@@ -92,6 +93,13 @@ export const TOUR_STEPS: TourStep[] = [
         anchorId: "spawn-panel",
         placement: "left",
         advanceOn: { kind: "spawn", miraType: MiraType.ROBOT },
+    },
+    {
+        title: "Set Up Your Assembly",
+        body: "Select an input scheme for your robot, or just press Finish and the Ernie (WASD) scheme is assigned automatically. You can change the input scheme, alliance, and station later.",
+        anchorId: "assembly-setup",
+        placement: "left",
+        advanceOn: { kind: "event", event: "ConfigurationSavedEvent" },
     },
     {
         title: "Select an Assembly",
