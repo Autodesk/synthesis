@@ -80,6 +80,22 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
+        SmartDashboard.putNumber("Accel/X", m_accelerometer.getX());
+        SmartDashboard.putNumber("Accel/Y", m_accelerometer.getY());
+        SmartDashboard.putNumber("Accel/Z", m_accelerometer.getZ());
+
+        SmartDashboard.putNumber("AHRS/Compass Heading", m_Gyro.getCompassHeading());
+        SmartDashboard.putBoolean("AHRS/Is Rotating", m_Gyro.isRotating());
+        SmartDashboard.putBoolean("AHRS/Is Moving", m_Gyro.isMoving());
+        SmartDashboard.putNumber("AHRS/Yaw", m_Gyro.getYaw());
+        SmartDashboard.putNumber("AHRS/Pitch", m_Gyro.getPitch());
+        SmartDashboard.putNumber("AHRS/Roll", m_Gyro.getRoll());
+        SmartDashboard.putNumber("AHRS/AccelX", m_Gyro.getRawAccelX());
+        SmartDashboard.putNumber("AHRS/AccelY", m_Gyro.getRawAccelY());
+        SmartDashboard.putNumber("AHRS/AccelZ", m_Gyro.getRawAccelZ());
+        SmartDashboard.putNumber("AHRS/VelX", m_Gyro.getVelocityX());
+        SmartDashboard.putNumber("AHRS/VelY", m_Gyro.getVelocityY());
+        SmartDashboard.putNumber("AHRS/VelZ", m_Gyro.getVelocityZ());
     }
 
     /**
@@ -123,6 +139,7 @@ public class Robot extends TimedRobot {
                 if (m_encoder.getPosition() > 36.0) {
                     m_initAngle = m_accelerometer.getY();
                     m_autoState = AutoState.Stage2;
+                    m_Gyro.zeroYaw();
                     System.out.println("--- Transitioning to Stage 2 ---");
                 }
                 break;

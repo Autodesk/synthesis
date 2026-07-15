@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
