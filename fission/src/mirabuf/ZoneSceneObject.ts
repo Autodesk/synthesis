@@ -139,6 +139,8 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
      * @returns `undefined` when the visual properties for this zone have not changed
      */
     private generateVisualProperties(): VisualProperties | undefined {
+        // NOTE I believe that `GetWorldTransform` returns a copy
+        // Source: https://github.com/jrouwe/JoltPhysics/blob/master/Jolt/Physics/Body/Body.inl
         const newTransform = World.physicsSystem.getBody(this.parentBodyId!)!.GetWorldTransform()
         const transformHasNotUpdated =
             this._cachedFieldTransformation && newTransform.Equals(this._cachedFieldTransformation)
@@ -147,11 +149,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (transformHasNotUpdated && !this._deltaTransHasUpdated) return undefined
 
         if (this._cachedFieldTransformation) JOLT.destroy(this._cachedFieldTransformation)
-
-        // NOTE We want a new matrix, otherwise the next comparison will always be true, since they will refer to the same object
-        const rotation = newTransform.GetQuaternion()
-        const translation = newTransform.GetTranslation()
-        this._cachedFieldTransformation = JOLT.RMat44.prototype.sRotationTranslation(rotation, translation)
+        this._cachedFieldTransformation = newTransform
 
         this._deltaTransHasUpdated = false
 
@@ -190,8 +188,9 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
             this.mesh.geometry.dispose()
         }
 
-        if (this._cachedFieldTransformation) {
-            // JOLT.destroy(this._cachedFieldTransformation)
-        }
+        // TODO
+        // I think we need to free `this._cachedFieldTransformation`, but there's some bug with doing so
+        // I think this is related to the fact that we're destroying and re-creating zones every time we update their preferences.
+        // For reviewers: This PR should still be merged, and this question should be resolved in another PR
     }
 }
