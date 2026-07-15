@@ -14,7 +14,7 @@ const ConfigureControls: React.FC = () => {
         /* TODO: add a "..." after a long robot name to ensure it isn't rendered underneath the dropdown arrow */
     }
     return (
-        <Stack direction="row" alignItems="center" gap={2}>
+        <Stack direction="row" alignItems="center" gap={1.5}>
             <Select
                 displayEmpty
                 value={selectedValue}
@@ -27,9 +27,9 @@ const ConfigureControls: React.FC = () => {
                     bgcolor: "surface.main",
                     color: "topBarText.main",
                     borderRadius: 3,
-                    height: 46,
-                    minWidth: 260,
-                    fontSize: 16,
+                    height: 34,
+                    minWidth: 195,
+                    fontSize: 12,
                     cursor: "pointer",
                     alignItems: "stretch",
                     "& .MuiOutlinedInput-notchedOutline": { border: "none" },
@@ -52,7 +52,7 @@ const ConfigureControls: React.FC = () => {
                 <Tooltip key={label} title={!selectedConfigAssembly ? "Spawn an assembly first" : label}>
                     <span>
                         <IconButton
-                            size="large"
+                            size="medium"
                             disableRipple
                             disabled={!selectedConfigAssembly}
                             sx={{
@@ -61,7 +61,7 @@ const ConfigureControls: React.FC = () => {
                             }}
                             onClick={() => openConfig(mode)}
                         >
-                            <TopBarIcon name={name} size={40} />
+                            <TopBarIcon name={name} size={30} />
                         </IconButton>
                     </span>
                 </Tooltip>
