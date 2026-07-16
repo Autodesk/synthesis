@@ -555,6 +555,7 @@ class PhysicsSystem extends WorldSystem {
 
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
+        JOLT.destroy(anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
@@ -588,6 +589,7 @@ class PhysicsSystem extends WorldSystem {
 
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         constraintSettings.mPoint1 = constraintSettings.mPoint2 = anchorPoint
+        JOLT.destroy(anchorPoint)
 
         const freedom = jointDefinition.prismatic!.prismaticFreedom!
 
@@ -760,9 +762,11 @@ class PhysicsSystem extends WorldSystem {
             wheelDimensions.radius = resolvedRadius
         }
 
+        // `Add` mutates its receiver, so this offsets `anchorPoint` itself. It is destroyed below
+        // rather than by the conversion, since both branches need it to survive to the same place.
         const wheelPos = urdfWheelBasis
-            ? convertJoltRVec3ToJoltVec3(anchorPoint)
-            : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis))
+            ? convertJoltRVec3ToJoltVec3(anchorPoint, false)
+            : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis), false)
 
         const wheelSettings = new JOLT.WheelSettingsWV()
 
@@ -783,11 +787,23 @@ class PhysicsSystem extends WorldSystem {
             wheelSettings.mSteeringAxis = urdfWheelBasis.steeringAxis
         }
 
+        // `mPosition` copies the vector into the settings, so the source is ours to free.
+        JOLT.destroy(wheelPos)
         JOLT.destroy(axis)
         JOLT.destroy(unitAxis)
+        JOLT.destroy(anchorPoint)
 
         const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc, urdfWheelBasis)
         const listener = this.createVehicleListeners(vehicleConstraint, bodyWheel)
+
+        // `inferURDFAutoWheelBasis` allocates these, and both the wheel and vehicle settings only ever
+        // copy them in, so they are ours to free once the vehicle constraint has taken its copies.
+        if (urdfWheelBasis) {
+            JOLT.destroy(urdfWheelBasis.forward)
+            JOLT.destroy(urdfWheelBasis.up)
+            JOLT.destroy(urdfWheelBasis.suspensionDirection)
+            JOLT.destroy(urdfWheelBasis.steeringAxis)
+        }
 
         return [fixedConstraint, vehicleConstraint, listener]
     }
@@ -830,9 +846,11 @@ class PhysicsSystem extends WorldSystem {
             hingeSettings.mMaxFrictionTorque = constraint.friction
             hingeSettings.mPoint1 = hingeSettings.mPoint2 = anchorPoint
 
-            const axis = constraint.axis.Normalized()
-            hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = axis
-            hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = getPerpendicular(hingeSettings.mHingeAxis1)
+            hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = constraint.axis.Normalized()
+
+            const normalAxis = getPerpendicular(hingeSettings.mHingeAxis1)
+            hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = normalAxis
+            JOLT.destroy(normalAxis)
 
             return hingeSettings
         }
@@ -1118,6 +1136,9 @@ class PhysicsSystem extends WorldSystem {
             // Cleanup
             JOLT.destroy(compoundShapeSettings)
         })
+
+        JOLT.destroy(minBounds)
+        JOLT.destroy(maxBounds)
 
         return rnToBodies
     }
