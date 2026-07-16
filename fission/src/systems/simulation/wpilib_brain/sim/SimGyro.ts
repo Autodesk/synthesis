@@ -94,7 +94,7 @@ export class SimGyroInput extends SimInput {
     }
 
     public update(deltaT: number) {
-        if (!this._joltBody) return;
+        if (!this._joltBody) return
 
         const omega = this.getBodyAngularVelocity()
 

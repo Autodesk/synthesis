@@ -27,15 +27,15 @@ export default class SimAccel {
     }
 
     public static setVelX(device: string, vel: number): boolean {
-        return SimGeneric.set(SimType.ACCELEROMETER, device, ">vx", vel);
+        return SimGeneric.set(SimType.ACCELEROMETER, device, ">vx", vel)
     }
 
     public static setVelY(device: string, vel: number): boolean {
-        return SimGeneric.set(SimType.ACCELEROMETER, device, ">vz", vel);
+        return SimGeneric.set(SimType.ACCELEROMETER, device, ">vz", vel)
     }
 
     public static setVelZ(device: string, vel: number): boolean {
-        return SimGeneric.set(SimType.ACCELEROMETER, device, ">vy", vel);
+        return SimGeneric.set(SimType.ACCELEROMETER, device, ">vy", vel)
     }
 
     public static genReceiver(device: string): SimReceiver {
@@ -73,11 +73,11 @@ export class SimAccelInput extends SimInput {
 
     public update(deltaT: number) {
         if (!this._joltBody) return
-        const vel = this._joltBody.GetLinearVelocity();
+        const vel = this._joltBody.GetLinearVelocity()
 
-        SimAccel.setVelX(this._device, vel.GetX());
-        SimAccel.setVelY(this._device, vel.GetY());
-        SimAccel.setVelZ(this._device, vel.GetZ());
+        SimAccel.setVelX(this._device, vel.GetX())
+        SimAccel.setVelY(this._device, vel.GetY())
+        SimAccel.setVelZ(this._device, vel.GetZ())
 
         const worldVel = convertJoltVec3ToThreeVector3(vel, false)
 
