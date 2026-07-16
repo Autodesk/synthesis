@@ -95,6 +95,24 @@ export default defineConfig(async ({ mode }) => {
         define: {
             GIT_COMMIT: JSON.stringify(await getCommitHash()),
         },
+        // Pre-bundle every react-icons subpath the app imports. Listing
+        // them here bundles them up front so no reload happens once tests
+        // start.
+        optimizeDeps: {
+            include: [
+                "react-icons/ai",
+                "react-icons/bi",
+                "react-icons/bs",
+                "react-icons/fa",
+                "react-icons/fa6",
+                "react-icons/gi",
+                "react-icons/gr",
+                "react-icons/hi",
+                "react-icons/io",
+                "react-icons/io5",
+                "react-icons/md",
+            ],
+        },
         test: {
             setupFiles: ["src/test/TestSetup.browser.ts"],
             globalSetup: ["src/test/TestSetup.server.ts"],
