@@ -150,6 +150,16 @@ const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobo
         [selectedRobot, behaviors]
     )
 
+    // reusing the joint names from the config groups
+    const jointNamesByIndex = useMemo(() => {
+        const names = new Map<number, string>()
+        for (const option of options) {
+            const sequential = option.group.sequential
+            if (sequential !== undefined) names.set(sequential.jointIndex, option.group.name)
+        }
+        return names
+    }, [options])
+
     const [seqBehaviors, setSeqBehaviors] = useState<SequentialBehaviorPreferences[]>(
         PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
@@ -211,9 +221,10 @@ const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobo
                                 <BehaviorCard
                                     elementKey={jointIndex}
                                     name={
-                                        behavior.type === "Arm"
+                                        jointNamesByIndex.get(jointIndex) ??
+                                        (behavior.type === "Arm"
                                             ? `Joint ${jointIndex} (Pivot)`
-                                            : `Joint ${jointIndex} (Slider)`
+                                            : `Joint ${jointIndex} (Slider)`)
                                     }
                                     behavior={behavior}
                                     key={jointIndex}
