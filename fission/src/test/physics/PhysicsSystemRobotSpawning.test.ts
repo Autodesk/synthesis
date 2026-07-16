@@ -1,9 +1,14 @@
-import { describe, expect, test } from "vitest"
+import { beforeAll, describe, expect, test, vi } from "vitest"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import PhysicsSystem, { LayerReserve } from "@/systems/physics/PhysicsSystem"
 
 describe("Mirabuf Physics Loading", () => {
+    beforeAll(async () => {
+        vi.spyOn(console, "warn").mockReturnValue()
+        vi.spyOn(console, "log").mockReturnValue()
+    })
+
     test("Body Loading (Dozer)", async () => {
         const assembly = await MirabufCachingService.cacheRemote(
             "/api/mira/robots/Dozer v11.mira",
