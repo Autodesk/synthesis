@@ -1,4 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import Pako from "pako"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
@@ -87,16 +86,4 @@ export function downloadBlob(filename: string, data: BlobPart): void {
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
     }, 0)
-}
-
-export function multiplyMat44ByVec3(output: Jolt.RVec3, vec: Jolt.RVec3, matrix: Jolt.RMat44): void {
-    const [vecX, vecY, vecZ] = [vec.GetX(), vec.GetY(), vec.GetZ()]
-
-    const col0 = matrix.GetColumn4(0)
-    const col1 = matrix.GetColumn4(1)
-    const col2 = matrix.GetColumn4(2)
-
-    output.SetX(col0.GetX() * vecX + col1.GetX() * vecY + col2.GetX() * vecZ)
-    output.SetY(col0.GetY() * vecX + col1.GetY() * vecY + col2.GetY() * vecZ)
-    output.SetZ(col0.GetZ() * vecX + col1.GetZ() * vecY + col2.GetZ() * vecZ)
 }

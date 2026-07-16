@@ -66,7 +66,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { hexStringToUint8Array, multiplyMat44ByVec3 } from "@/util/Utility.ts"
+import { hexStringToUint8Array } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
