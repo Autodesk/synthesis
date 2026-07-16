@@ -31,6 +31,7 @@
         "react-dom": "^18.3.1",
         "react-draggable": "^4.5.0",
         "react-icons": "^4.12.0",
+        "react-joystick-component": "^6.2.1",
         "three": "^0.179.1",
         "uuid": "^11.1.0",
         "vitest-browser-react": "^1.0.1",
@@ -1286,6 +1287,8 @@
     "react-icons": ["react-icons@4.12.0", "", { "peerDependencies": { "react": "*" } }, "sha512-IBaDuHiShdZqmfc/TwHu6+d6k2ltNCf3AszxNmjJc1KUfXdEeRJOKyNvLmAHaarhzGmTSVygNdyu8/opXv2gaw=="],
 
     "react-is": ["react-is@19.1.0", "", {}, "sha512-Oe56aUPnkHyyDxxkvqtd7KkdQP5uIUfHxd5XTb3wE9d/kRnZLmKbDB0GWk919tdQ+mxxPtG6EAs6RMT6i1qtHg=="],
+
+    "react-joystick-component": ["react-joystick-component@6.2.1", "", { "peerDependencies": { "react": ">=17.0.2", "react-dom": ">=17.0.2" } }, "sha512-0G5Y5aX4hNuXB3xJCwz6Q+nYQOtC6kprNGKmZxmfoPvhepNYUiid0DbLEGZxmr/UKip3S/LUbcQUobtRCuB8IQ=="],
 
     "react-reconciler": ["react-reconciler@0.27.0", "", { "dependencies": { "loose-envify": "^1.1.0", "scheduler": "^0.21.0" }, "peerDependencies": { "react": "^18.0.0" } }, "sha512-HmMDKciQjYmBRGuuhIaKA1ba/7a+UsM5FzOZsMO2JYHt9Jh8reCb7j1eDC95NOyUlKM9KRyvdx0flBuDvYSBoA=="],
 
