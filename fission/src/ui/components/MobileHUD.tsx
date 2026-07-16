@@ -1,8 +1,7 @@
-import { Box, Drawer, MenuItem, Stack } from "@mui/material"
+import { Box, Drawer, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { FaBars } from "react-icons/fa6"
-import { IoMdArrowDropdown } from "react-icons/io"
 import APS from "@/aps/APS"
 import EventSystem from "@/systems/EventSystem.ts"
 import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
@@ -14,7 +13,8 @@ import { startMultiplayerWorld } from "../helpers/StartMultiplayerWorld"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
-import { IconButton, Select, SynthesisIcons } from "./StyledComponents"
+import { IconButton, SynthesisIcons } from "./StyledComponents"
+import { AssemblySelect } from "./topbar/AssemblySelect"
 import HUDMenuButton from "./topbar/HUDMenuButton"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
@@ -28,20 +28,6 @@ const DRAWER_SX = {
     color: "topBarText.main",
     p: 2,
 }
-
-// Shared styling for the assembly dropdown inside the drawer.
-const DRAWER_SELECT_SX = {
-    bgcolor: "surface.main",
-    color: "topBarText.main",
-    borderRadius: 3,
-    height: 44,
-    fontSize: 15,
-    cursor: "pointer",
-    alignItems: "stretch",
-    "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-    "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0, boxSizing: "border-box" },
-    "& .MuiSelect-icon": { color: "topBarText.main", right: 14, pointerEvents: "none" },
-} as const
 
 type DrawerView = "root" | "configure"
 
@@ -136,27 +122,13 @@ const MobileHUD: React.FC = () => {
                     <SynthesisIcons.LEFT_ARROW_LARGE />
                 </IconButton>
                 <TopBarIcon name="mode-configure" size={24} />
-                <Select
-                    displayEmpty
-                    value={selectedValue}
-                    onChange={e => selectAssemblyById(e.target.value as string)}
-                    renderValue={() =>
-                        selectedConfigAssembly ? selectedConfigAssembly.descriptiveName : "Select an assembly"
-                    }
-                    IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
-                    sx={{ ...DRAWER_SELECT_SX, flexGrow: 1, minWidth: 0 }}
-                >
-                    {assemblies.length === 0 && (
-                        <MenuItem value="" disabled>
-                            No assemblies spawned
-                        </MenuItem>
-                    )}
-                    {assemblies.map(assembly => (
-                        <MenuItem key={assembly.id} value={assembly.id.toString()}>
-                            {assembly.descriptiveName}
-                        </MenuItem>
-                    ))}
-                </Select>
+                <AssemblySelect
+                    assemblies={assemblies}
+                    selectedConfigAssembly={selectedConfigAssembly}
+                    selectedValue={selectedValue}
+                    onSelect={selectAssemblyById}
+                    sx={{ borderRadius: 3, height: 44, fontSize: 15, flexGrow: 1, minWidth: 0 }}
+                />
             </Stack>
 
             <Box
