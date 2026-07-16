@@ -15,3 +15,18 @@ export const TOP_BAR_ICON_BUTTON_SX = {
     "&:hover": { backgroundColor: "transparent" },
     "&:focus, &:focus-visible": { outline: "none" },
 } as const
+
+/**
+ * Shared base `sx` for the borderless MUI `Select` dropdowns in the top bar and
+ * mobile drawer (mode picker, assembly picker). Per-instance sizing (borderRadius,
+ * height, minWidth, fontSize) is layered on at each call site.
+ */
+export const DROPDOWN_SELECT_SX = {
+    bgcolor: "surface.main",
+    color: "topBarText.main",
+    cursor: "pointer",
+    alignItems: "stretch", // ensures the inner select div stretches to full height
+    "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+    "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0, boxSizing: "border-box" },
+    "& .MuiSelect-icon": { color: "topBarText.main", right: 14, pointerEvents: "none" },
+} as const

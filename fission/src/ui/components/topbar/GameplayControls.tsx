@@ -13,8 +13,7 @@ const GameplayControls: React.FC = () => {
 
     const openMatchMode = () => openPanel(MatchModeConfigPanel, undefined)
 
-    const openMultiplayer = () =>
-        openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
+    const openMultiplayer = () => openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
 
     return (
         <Stack direction="row" alignItems="center" gap={1.5}>
