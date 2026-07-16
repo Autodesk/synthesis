@@ -46,7 +46,7 @@ interface EventDataMap {
     // Touch Controls
     SetPlaceAssetButtonVisibleEvent: boolean
     ToggleTouchControlsVisibilityEvent: never
-    TouchControlsLoaded: never
+    SetTouchControlsVisibilityEvent: boolean
 
     DragModeToggled: { enabled: boolean }
 
