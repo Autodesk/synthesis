@@ -120,7 +120,7 @@
                   "kind": "function"
                 },
                 "match": "([^_]*)",
-                "formats": ["camelCase"]
+                "formats": ["camelCase", "PascalCase"]
               },
               {
                 "selector": {
