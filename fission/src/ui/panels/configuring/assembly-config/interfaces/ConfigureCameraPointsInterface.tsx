@@ -5,14 +5,17 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { CameraLook, CameraPoint } from "@/systems/preferences/PreferenceTypes"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     useConfigurationSavedListener,
+    useDirectionIndicatorMesh,
     useFieldRelativeGizmoPosition,
     useHoldPhysicsPauseWhileMounted,
+    useSyncIndicatorRotation,
 } from "./FieldPointEditing"
 
 const RAD_TO_DEG = 180 / Math.PI
@@ -108,6 +111,21 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
         selectedField,
         point.pos
     )
+    // Cameras look down their local -Z axis, so the indicator points -Z instead of the usual +Z "forward".
+    const directionIndicatorMesh = useDirectionIndicatorMesh("-z")
+    useSyncIndicatorRotation(directionIndicatorMesh, yawDeg * DEG_TO_RAD, pitchDeg * DEG_TO_RAD)
+
+    const setupGizmo = useCallback(
+        (gizmo: GizmoSceneObject) => {
+            postGizmoCreation(gizmo)
+            gizmo.obj.add(directionIndicatorMesh)
+        },
+        [postGizmoCreation, directionIndicatorMesh]
+    )
+
+    useEffect(() => {
+        directionIndicatorMesh.visible = lookType === "rotation"
+    }, [directionIndicatorMesh, lookType])
 
     const buildPoint = useCallback((): CameraPoint => {
         const look: CameraLook =
@@ -169,7 +187,7 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
                 defaultMode="translate"
                 rotateDisabled={true}
                 scaleDisabled={true}
-                postGizmoCreation={postGizmoCreation}
+                postGizmoCreation={setupGizmo}
             />
         </Stack>
     )

@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+
+const DIRECTION_INDICATOR_COLOR = 0xffcc33
 
 /** Holds a physics pause for as long as the calling component is mounted (e.g. while editing a field-relative point). */
 export function useHoldPhysicsPauseWhileMounted() {
@@ -48,4 +50,43 @@ export function useFieldRelativeGizmoPosition(
     }, [selectedField, pos])
 
     return { gizmoRef, postGizmoCreation, readFieldRelativePosition }
+}
+
+/**
+ * Creates a cone-shaped mesh used to visualize which way a field-relative point faces,
+ * Keep its rotation in sync with {@link useSyncIndicatorRotation}.
+ */
+export function useDirectionIndicatorMesh(facing: "+z" | "-z" = "+z") {
+    const mesh = useMemo(() => {
+        const material = World.sceneRenderer.createToonMaterial(DIRECTION_INDICATOR_COLOR)
+        material.depthTest = false
+        material.depthWrite = false
+        material.transparent = true
+        const sign = facing === "+z" ? 1 : -1
+        const geometry = new THREE.ConeGeometry(0.12, 0.5, 8).rotateX(sign * (Math.PI / 2)).translate(0, 0, sign * 0.35)
+        const m = new THREE.Mesh(geometry, material)
+        m.renderOrder = 1000
+        return m
+    }, [facing])
+
+    useEffect(() => {
+        return () => {
+            mesh.geometry.dispose()
+            const material = mesh.material as THREE.MeshToonMaterial
+            material.gradientMap?.dispose()
+            material.dispose()
+        }
+    }, [mesh])
+
+    return mesh
+}
+
+/**
+ * Keeps a direction-indicator mesh's own rotation in sync with the given yaw/pitch (radians)
+ * whenever they change.
+ */
+export function useSyncIndicatorRotation(indicatorMesh: THREE.Object3D, yaw: number, pitch: number = 0) {
+    useEffect(() => {
+        indicatorMesh.rotation.set(pitch, yaw, 0, "YXZ")
+    }, [indicatorMesh, yaw, pitch])
 }

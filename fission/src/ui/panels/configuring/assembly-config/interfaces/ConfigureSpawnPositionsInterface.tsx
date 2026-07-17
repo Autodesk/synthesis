@@ -12,14 +12,17 @@ import {
     STATIONS,
     type Station,
 } from "@/systems/preferences/PreferenceTypes"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     useConfigurationSavedListener,
+    useDirectionIndicatorMesh,
     useFieldRelativeGizmoPosition,
     useHoldPhysicsPauseWhileMounted,
+    useSyncIndicatorRotation,
 } from "./FieldPointEditing"
 
 const RAD_TO_DEG = 180 / Math.PI
@@ -131,6 +134,16 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, location, onSave }) 
         selectedField,
         location.pos
     )
+    const directionIndicatorMesh = useDirectionIndicatorMesh()
+    useSyncIndicatorRotation(directionIndicatorMesh, yawDeg * DEG_TO_RAD)
+
+    const setupGizmo = useCallback(
+        (gizmo: GizmoSceneObject) => {
+            postGizmoCreation(gizmo)
+            gizmo.obj.add(directionIndicatorMesh)
+        },
+        [postGizmoCreation, directionIndicatorMesh]
+    )
 
     const buildLocation = useCallback(
         (): SpawnLocation => ({ pos: readFieldRelativePosition(), yaw: yawDeg * DEG_TO_RAD }),
@@ -157,7 +170,7 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, location, onSave }) 
                 defaultMode="translate"
                 rotateDisabled={true}
                 scaleDisabled={true}
-                postGizmoCreation={postGizmoCreation}
+                postGizmoCreation={setupGizmo}
             />
         </Stack>
     )
