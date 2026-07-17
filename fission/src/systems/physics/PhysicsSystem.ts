@@ -1086,7 +1086,9 @@ class PhysicsSystem extends WorldSystem {
 
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
-                body.SetAllowSleeping(false)
+
+                // allowing gamepieces to sleep
+                if (!rn.isGamePiece) body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Set Friction Here
@@ -1406,7 +1408,8 @@ class PhysicsSystem extends WorldSystem {
         const zero = new JOLT.Vec3(0, 0, 0)
         this._sphereGamePieceBodies.forEach(bodyId => {
             const body = this.getBody(bodyId)
-            if (!body) return
+            // Sleeping bodies are already at rest and shouldn't be touched
+            if (!body || !body.IsActive()) return
 
             const atRest =
                 body.GetLinearVelocity().Length() < SPHERE_GP_STICTION_LINEAR_SPEED &&
