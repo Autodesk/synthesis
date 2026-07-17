@@ -184,7 +184,6 @@ class InputSchemeManager {
 
         // Unbind the outgoing scheme before evaluating availability. Otherwise it still counts as in-use.
         InputSystem.brainIndexSchemeMap.delete(brainIndex)
-        console.log("DELETING")
 
         const next = this.availableInputSchemesByBrain(brainIndex).find(
             entry => entry.status === InputSchemeUseType.AVAILABLE

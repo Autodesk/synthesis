@@ -199,11 +199,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     }, [])
 
     const onBeforeAccept = useCallback(async () => {
-        console.log("ACCEPTING")
         for (const callback of confirmCallbacks) {
             await callback()
         }
-        ;[...new Set(accessedAssemblies)].forEach(assembly => {
+        new Set(accessedAssemblies).forEach(assembly => {
             assembly.savePreferences()
         })
 
@@ -220,13 +219,12 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     }, [confirmCallbacks, accessedAssemblies, pendingDeletes])
 
     const onCancel = useCallback(async () => {
-        console.log("CANCELLING")
-        for (const callback of cancelCallbacks.reverse()) {
+        for (const callback of [...cancelCallbacks].reverse()) {
             // If the same subpanel is opened twice, you want to revert in reverse order
             await callback()
         }
 
-        ;[...new Set(accessedAssemblies)].forEach(assembly => {
+        new Set(accessedAssemblies).forEach(assembly => {
             assembly.savePreferences()
         })
 
