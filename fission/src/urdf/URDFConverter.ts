@@ -4,6 +4,7 @@ import { parseGLTF } from "./GLTFParser"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
 import { URDF_IMPORT_TAG } from "./URDFUserData"
+import {ProgressHandle} from "@/components/ProgressNotificationData.ts";
 
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
 // Frame change matrix: Rx(-90°) = [[1,0,0],[0,0,1],[0,-1,0]]
@@ -844,7 +845,7 @@ function buildJoints(
     return { jointDefinitions, jointInstances }
 }
 
-export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>): mirabuf.Assembly {
+export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>, progressHandle?:ProgressHandle): mirabuf.Assembly {
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
 
     const parseError = doc.querySelector("parsererror")
@@ -885,7 +886,7 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     // buildParts uses original joints for transform computation — phantom links still need
     // their correct spatial matrices derived from their original parent joints.
     const { partDefinitions, partInstances } = buildParts(links, rootLink, joints, meshFiles)
-    console.timeLog("URDF Import", "Built Parts")
+    progressHandle?.update("Built parts", 0.8)
     const appearances = buildAppearances(links, doc)
     console.timeLog("URDF Import", "Built Appearances")
     const jointFrames = buildGlobalJointFrames(joints, rootLink.name)

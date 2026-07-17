@@ -97,7 +97,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     const inputHash = await hashBuffer(buffer)
                     const uuid = v4({random: hexStringToUint8Array(inputHash).slice(0, 16)})
 
-                    const assembly = await loadURDF(buffer, selectedFile.name)
+                    const assembly = await loadURDF(buffer, selectedFile.name, progressHandle)
                     console.timeLog("URDF Import", "Assembly generated")
                     // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
                     assembly.info!.name = selectedFile.name.split(".")[0]
