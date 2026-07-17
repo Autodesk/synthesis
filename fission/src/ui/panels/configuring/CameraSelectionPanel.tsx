@@ -59,15 +59,15 @@ const TargetSettings: React.FC<{ controls: CustomTargetControls }> = ({ controls
                 if (v !== null) setMode(v as CameraMode)
             }}
         >
-            <TooltipToggleButton title="Follow the target position, but allow free rotation" value={CameraMode.Follow}>
+            <TooltipToggleButton title="Follow the target position, but allow free rotation" value={CameraMode.FOLLOW}>
                 Follow
             </TooltipToggleButton>
-            <TooltipToggleButton title="Follow the target with camera position and rotation" value={CameraMode.Locked}>
+            <TooltipToggleButton title="Follow the target with camera position and rotation" value={CameraMode.LOCKED}>
                 Locked
             </TooltipToggleButton>
             <TooltipToggleButton
                 title="Lock camera position and orient the camera to face the target"
-                value={CameraMode.Face}
+                value={CameraMode.FACE}
             >
                 Face
             </TooltipToggleButton>

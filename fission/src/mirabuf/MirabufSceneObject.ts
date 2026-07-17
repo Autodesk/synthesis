@@ -1033,9 +1033,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomTargetControls) {
         const modes = [
-            { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
-            { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
-            { mode: CameraMode.Face, name: "Camera: Face Robot" },
+            { mode: CameraMode.FOLLOW, name: "Camera: Follow Robot" },
+            { mode: CameraMode.LOCKED, name: "Camera: Lock to Robot" },
+            { mode: CameraMode.FACE, name: "Camera: Face Robot" },
         ]
 
         modes
