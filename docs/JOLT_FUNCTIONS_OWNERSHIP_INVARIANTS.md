@@ -4,7 +4,7 @@ This document lists every Jolt Physics function used in `fission/src/` (producti
 `fission/src/test/`) together with its memory-ownership invariants. Its purpose is to make correct
 Jolt memory management possible without reading the Jolt source for every call.
 
-Fission uses the WebAssembly port [`@azaleacolburn/jolt-physics`](https://www.npmjs.com/package/jolt-physics)
+Fission uses the WebAssembly port [`@synthesis.adsk/jolt-physics`](https://www.npmjs.com/package/@synthesis.adsk/jolt-physics)
 (a fork of JoltPhysics.js). Ownership semantics are therefore governed by the Emscripten WebIDL
 binding, defined in `jolt/JoltJS.idl` and `jolt/JoltJS.h`, layered on top of Jolt's C++ memory model.
 All invariants below were derived from those two files.

@@ -1,10 +1,14 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
+import * as THREE from "three"
 import type Mechanism from "@/systems/physics/Mechanism"
 import World from "@/systems/World"
-import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import { SimInput } from "../SimInput"
 import { SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
+import type { SimReceiver } from "../SimDataFlow"
+import { receiverTypeMap } from "../WPILibState"
+import type { NoraNumber6 } from "../../Nora"
 
 export default class SimGyro {
     private constructor() {}
@@ -13,12 +17,13 @@ export default class SimGyro {
         return SimGeneric.set(SimType.GYRO, device, ">angle_x", angle)
     }
 
+    /// NOTE: z and y swapped since ThreeJS has y up but sensors have z up
     public static setAngleY(device: string, angle: number): boolean {
-        return SimGeneric.set(SimType.GYRO, device, ">angle_y", angle)
+        return SimGeneric.set(SimType.GYRO, device, ">angle_z", angle)
     }
 
     public static setAngleZ(device: string, angle: number): boolean {
-        return SimGeneric.set(SimType.GYRO, device, ">angle_z", angle)
+        return SimGeneric.set(SimType.GYRO, device, ">angle_y", angle)
     }
 
     public static setRateX(device: string, rate: number): boolean {
@@ -26,11 +31,25 @@ export default class SimGyro {
     }
 
     public static setRateY(device: string, rate: number): boolean {
-        return SimGeneric.set(SimType.GYRO, device, ">rate_y", rate)
+        return SimGeneric.set(SimType.GYRO, device, ">rate_z", rate)
     }
 
     public static setRateZ(device: string, rate: number): boolean {
-        return SimGeneric.set(SimType.GYRO, device, ">rate_z", rate)
+        return SimGeneric.set(SimType.GYRO, device, ">rate_y", rate)
+    }
+
+    public static genReceiver(device: string): SimReceiver {
+        return {
+            getReceiverType: () => receiverTypeMap[SimType.GYRO]!,
+            setReceiverValue: ([ax, ay, az, rx, ry, rz]: NoraNumber6) => {
+                SimGyro.setAngleX(device, ax)
+                SimGyro.setAngleY(device, ay)
+                SimGyro.setAngleZ(device, az)
+                SimGyro.setRateX(device, rx)
+                SimGyro.setRateY(device, ry)
+                SimGyro.setRateZ(device, rz)
+            },
+        }
     }
 }
 
@@ -39,9 +58,11 @@ export class SimGyroInput extends SimInput {
     private _joltID?: Jolt.BodyID
     private _joltBody?: Jolt.Body
 
-    private static readonly AXIS_X: Jolt.Vec3 = new JOLT.Vec3(1, 0, 0)
-    private static readonly AXIS_Y: Jolt.Vec3 = new JOLT.Vec3(0, 1, 0)
-    private static readonly AXIS_Z: Jolt.Vec3 = new JOLT.Vec3(0, 0, 1)
+    private _offset = { x: 0, y: 0, z: 0 }
+    private _accumulated = { x: 0, y: 0, z: 0 }
+    private _lastWritten = { x: 0, y: 0, z: 0 }
+
+    private static readonly ANGLE_FIELD = { x: ">angle_x", y: ">angle_z", z: ">angle_y" } as const
 
     constructor(device: string, robot: Mechanism) {
         super(device)
@@ -51,46 +72,42 @@ export class SimGyroInput extends SimInput {
         if (this._joltID) this._joltBody = World.physicsSystem.getBody(this._joltID)!
     }
 
-    private getAxis(axis: Jolt.Vec3): number {
-        return ((this._joltBody?.GetRotation().GetRotationAngle(axis) ?? 0) * 180) / Math.PI
+    private getBodyAngularVelocity(): THREE.Vector3 {
+        if (!this._joltBody) return new THREE.Vector3(0, 0, 0)
+
+        const worldOmega = convertJoltVec3ToThreeVector3(this._joltBody.GetAngularVelocity(), false)
+        const rot = convertJoltQuatToThreeQuaternion(this._joltBody.GetRotation(), false)
+        return worldOmega.applyQuaternion(rot.invert())
     }
 
-    private getX(): number {
-        return this.getAxis(SimGyroInput.AXIS_X)
-    }
+    private integrateAngle(axis: "x" | "y" | "z", rate: number, deltaT: number): number {
+        this._accumulated[axis] += rate * deltaT
 
-    private getY(): number {
-        return this.getAxis(SimGyroInput.AXIS_Y)
-    }
-
-    private getZ(): number {
-        return this.getAxis(SimGyroInput.AXIS_Z)
-    }
-
-    private getAxisVelocity(axis: "x" | "y" | "z"): number {
-        const axes = this._joltBody?.GetAngularVelocity()
-        if (!axes) return 0
-
-        switch (axis) {
-            case "x":
-                return axes.GetX()
-            case "y":
-                return axes.GetY()
-            case "z":
-                return axes.GetZ()
+        const external = SimGeneric.getUnsafe<number>(SimType.GYRO, this._device, SimGyroInput.ANGLE_FIELD[axis])
+        if (external !== undefined && external !== this._lastWritten[axis]) {
+            this._offset[axis] = this._accumulated[axis] - external
         }
+
+        const angle = this._accumulated[axis] - this._offset[axis]
+        this._lastWritten[axis] = angle
+        return angle
     }
 
-    public update(_deltaT: number) {
-        const x = this.getX()
-        const y = this.getY()
-        const z = this.getZ()
+    public update(deltaT: number) {
+        if (!this._joltBody) return
 
-        SimGyro.setAngleX(this._device, x)
-        SimGyro.setAngleY(this._device, y)
-        SimGyro.setAngleZ(this._device, z)
-        SimGyro.setRateX(this._device, this.getAxisVelocity("x"))
-        SimGyro.setRateY(this._device, this.getAxisVelocity("y"))
-        SimGyro.setRateZ(this._device, this.getAxisVelocity("z"))
+        const omega = this.getBodyAngularVelocity()
+
+        // WPILib uses deg and deg/s
+        const rateX = THREE.MathUtils.radToDeg(omega.x)
+        const rateY = THREE.MathUtils.radToDeg(omega.y)
+        const rateZ = THREE.MathUtils.radToDeg(omega.z)
+
+        SimGyro.setAngleX(this._device, this.integrateAngle("x", rateX, deltaT))
+        SimGyro.setAngleY(this._device, this.integrateAngle("y", rateY, deltaT))
+        SimGyro.setAngleZ(this._device, this.integrateAngle("z", rateZ, deltaT))
+        SimGyro.setRateX(this._device, rateX)
+        SimGyro.setRateY(this._device, rateY)
+        SimGyro.setRateZ(this._device, rateZ)
     }
 }

@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import { type NoraNumber3, NoraTypes } from "../Nora"
