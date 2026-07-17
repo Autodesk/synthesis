@@ -23,16 +23,40 @@ Every Jolt object created in JS lives on the WASM heap and must be explicitly fr
   owning Jolt object is destroyed). The caller **must not** `destroy()` it; doing so double-frees.
 - **`CLONED`** — Jolt only reads the argument or copies its value/contents into its own storage; it
   does **not** take ownership. The argument is a heap Jolt object, so the caller **still owns it and
-  must `destroy()` it**. **Exception — reference-counted types** (`Shape`, `ShapeSettings`,
-  `Constraint`, `ConstraintSettings`, `PhysicsMaterial`, `*ControllerSettings`, `WheelSettings`,
-  `VehicleCollisionTester`, and other `RefTarget` subclasses): the receiving object `AddRef()`s
-  the argument instead of copying it, and `JOLT.destroy()` is a raw `delete`, not `Release()` — it
-  ignores the refcount. Destroying your own handle right after handoff frees memory the new owner
-  still points to (confirmed use-after-free, see
-  `JOLT_REFCOUNTED_DESTROY_SEMANTICS.md`). For these types: **do not `destroy()` after handoff**
-  unless you first explicitly remove/release it from whatever you handed it to.
+  must `destroy()` it**. **Exception — reference-counted (`RefTarget`) types**: see below.
 - **`COPIED`** — the argument is a primitive or enum (`number`, `boolean`, `Jolt.EActivation`,
   `Jolt.EMotionType`, …). Nothing to free.
+
+### Reference-counted (`RefTarget`) exception
+
+`RefTarget` subclasses used here: `Shape`, `ShapeSettings`, `Constraint`, `ConstraintSettings`,
+`PathConstraintPath`, `PhysicsMaterial`, `GroupFilter`, `SoftBodySharedSettings`,
+`VehicleCollisionTester`, `VehicleControllerSettings`, `WheelSettings`, `CharacterBaseSettings`,
+`CharacterBase`, `Skeleton`, `SkeletonAnimation`, `SkeletonMapper`, `PhysicsScene`,
+`RagdollSettings`, `Ragdoll`. These start at **refcount 0**.
+
+A reference is added either manually (`object.AddRef()`, released with `object.Release()`, which
+frees the object once the count hits 0) or automatically when the object is handed to a parent
+(`push_back` into a list, `AddShape`, `SetShape`, `AddConstraint`, …) — the parent calls `AddRef()`
+for you, so no manual `AddRef()`/`Release()` is needed on your end.
+
+`JOLT.destroy(x)` is a raw `delete x`, **not** `Release()` — it ignores the refcount entirely.
+Destroying a handle that's still referenced elsewhere frees memory another owner still points to.
+
+Practical rule for these types:
+
+- **Handed to a parent, never explicitly removed** (`AddShape`, `SetShape`, `mWheels.push_back`,
+  `mController = ...`, `BodyCreationSettings.shape`, …): **do not `destroy()` it.** The parent
+  owns a reference now; its own teardown releases it.
+- **Handed to a parent, later explicitly removed** (`AddConstraint` → `RemoveConstraint`,
+  `AddStepListener` → `RemoveStepListener`): safe to `destroy()` **only after** the removal call
+  has actually dropped the parent's reference.
+- **Never handed to anything** (created, used locally, discarded): safe to `destroy()`
+  immediately.
+
+Plain (non-`RefTarget`) value types (`Vec3`, `RVec3`, `Quat`, `Mat44`, `Float3`,
+`IndexedTriangle`, `AABox`, …) are unaffected — `CLONED` there always means a deep copy; always
+`destroy()` your own handle.
 
 ### Return categories
 
@@ -45,9 +69,6 @@ Every Jolt object created in JS lives on the WASM heap and must be explicitly fr
   and `*Settings.Create()` also produce caller-owned objects and are treated as `COPY` here.
 - **`NONE`** — the function returns `void` or a primitive (`number` / `boolean` / enum). Nothing to
   free.
-
-See `JOLT_REFCOUNTED_DESTROY_SEMANTICS.md` for the refcounted-`CLONED` exception in detail,
-including an empirical test proving it against the real Jolt WASM build.
 
 ### Rules of thumb (from the binding)
 
@@ -464,11 +485,9 @@ Obtained from `PhysicsSystem.GetNarrowPhaseQuery()` (an `INTERNAL_REF`). Do not 
 
 - `new PhysicsMaterial()`
   - Arguments: None
-  - Returns: `COPY` — refcounted; caller owns the handle **only until it's handed to something
-    else** (e.g. `PhysicsMaterialList.push_back`). Once handed off, do not `destroy()` it — see
-    `PhysicsMaterialList.push_back` below and `JOLT_REFCOUNTED_DESTROY_SEMANTICS.md`. Confirmed via
-    real-WASM test: `destroy()` after `push_back` is a use-after-free (was a live bug in
-    `PhysicsSystem.ts`, fixed in PR #1412 / SYNTH-244).
+  - Returns: `COPY` — refcounted (`RefTarget`); caller owns the handle **only until it's handed to
+    something else** (e.g. `PhysicsMaterialList.push_back`). Once handed off, do not `destroy()`
+    it — see `PhysicsMaterialList.push_back` below and the reference-counted exception above.
 
 ## PhysicsMaterialList
 
@@ -479,7 +498,7 @@ Obtained from `PhysicsSystem.GetNarrowPhaseQuery()` (an `INTERNAL_REF`). Do not 
   - Arguments
     - `material`: **CONSUMED** (not CLONED) — the list `AddRef()`s it, taking a reference. The
       caller must **not** `destroy()` it afterward: `JOLT.destroy()` is a raw `delete`, ignores
-      the refcount, and frees memory the list still points to. See `JOLT_REFCOUNTED_DESTROY_SEMANTICS.md`.
+      the refcount, and frees memory the list still points to.
   - Returns: `NONE`
 
 ## PhysicsSettings
