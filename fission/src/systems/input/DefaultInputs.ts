@@ -3,6 +3,7 @@ import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import type { InputScheme, ModifierState } from "./InputTypes"
 import AxisInput from "./inputs/AxisInput"
 import ButtonInput from "./inputs/ButtonInput"
+import * as uuid from "uuid"
 
 type InputSupplier = () => InputScheme
 /** The purpose of this class is to store any defaults related to the input system. */
@@ -15,6 +16,7 @@ class DefaultInputs {
             meta: false,
         }
         return {
+            schemeId: "7e3893a0-bfe1-48f5-b9cb-d0a2e8735aff",
             schemeName: "Ernie",
             descriptiveName: "WASD",
             customized: false,
@@ -46,6 +48,7 @@ class DefaultInputs {
             meta: false,
         }
         return {
+            schemeId: "d3679b65-3660-444b-984e-5f97a1a0f0a1",
             schemeName: "Bert",
             descriptiveName: "WSIK",
             customized: false,
@@ -77,6 +80,7 @@ class DefaultInputs {
             meta: false,
         }
         return {
+            schemeId: "2552cda2-8784-46b6-9661-227b2b6a323f",
             schemeName: "Luna",
             descriptiveName: "Arrow Keys",
             customized: false,
@@ -102,6 +106,7 @@ class DefaultInputs {
 
     public static jax: InputSupplier = () => {
         return {
+            schemeId: "48d1db69-2a71-4244-9b21-cf544af19d5d",
             schemeName: "Jax",
             descriptiveName: "Full Controller",
             customized: false,
@@ -129,6 +134,7 @@ class DefaultInputs {
     /** We like this guy */
     public static hunter: InputSupplier = () => {
         return {
+            schemeId: "1cd109b1-91cc-4458-a5d9-bdaa9c5c38d2",
             schemeName: "Hunter",
             descriptiveName: "Left Stick",
             customized: false,
@@ -151,6 +157,7 @@ class DefaultInputs {
 
     public static carmela: InputSupplier = () => {
         return {
+            schemeId: "fcce7958-1471-420e-b886-4541b236faff",
             schemeName: "Carmela",
             descriptiveName: "Right Stick",
             customized: false,
@@ -173,6 +180,7 @@ class DefaultInputs {
 
     public static brandon: InputSupplier = () => {
         return {
+            schemeId: "416b39da-6019-49ed-b850-b94e350c61f3",
             schemeName: "Brandon",
             descriptiveName: "Touch Controls",
             customized: false,
@@ -187,6 +195,7 @@ class DefaultInputs {
     }
     public static julian: InputSupplier = () => {
         return {
+            schemeId: "39b7c8e4-2253-4f07-aa97-35cad79c473e",
             schemeName: "Julian",
             descriptiveName: "Touch Controls",
             customized: false,
@@ -208,6 +217,7 @@ class DefaultInputs {
             meta: false,
         }
         return {
+            schemeId: "7e9a4167-e2a0-47dd-a596-60e043177c42",
             schemeName: "Felix",
             descriptiveName: "WASD + Arrows (Swerve)",
             customized: false,
@@ -236,6 +246,7 @@ class DefaultInputs {
 
     public static gizmo: InputSupplier = () => {
         return {
+            schemeId: "8cbe6b7e-10ca-4d15-b26b-feedf690f762",
             schemeName: "Gizmo",
             descriptiveName: "Dual Stick (Swerve)",
             customized: false,
@@ -295,6 +306,7 @@ class DefaultInputs {
                 break
         }
         return {
+            schemeId: uuid.v4(),
             schemeName: "",
             descriptiveName: "",
             customized: true,

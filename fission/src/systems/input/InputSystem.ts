@@ -38,6 +38,7 @@ class InputSystem extends WorldSystem {
         this.brainIndexSchemeMap.set(index, scheme)
         World.analyticsSystem?.event("Scheme Applied", {
             isCustomized: scheme.customized,
+            schemeId: scheme.schemeId,
             schemeName: scheme.schemeName,
         })
     }

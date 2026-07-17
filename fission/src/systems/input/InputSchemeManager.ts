@@ -84,9 +84,9 @@ class InputSchemeManager {
     }
 
     public static rebindOldBrainSchemes() {
-        const schemesByName = new Map(this.allInputSchemes.map(s => [s.schemeName, s] as const))
+        const schemesById = new Map(this.allInputSchemes.map(s => [s.schemeId, s] as const))
         for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap) {
-            const reverted = schemesByName.get(scheme.schemeName)
+            const reverted = schemesById.get(scheme.schemeId)
             if (reverted && scheme.customized) {
                 InputSystem.setBrainIndexSchemeMapping(brainIndex, reverted)
             }
@@ -104,9 +104,10 @@ class InputSchemeManager {
 
         // Remove schemes that have conflicts
         const usedKeyMap = new Map<KeyDescriptor, string[]>()
+        // maps scheme ids to availability
         const result: Record<string, InputSchemeAvailability> = {}
         for (const scheme of InputSystem.brainIndexSchemeMap.values()) {
-            result[scheme.schemeName] = {
+            result[scheme.schemeId] = {
                 scheme,
                 status: InputSchemeUseType.IN_USE,
             }
@@ -116,9 +117,9 @@ class InputSchemeManager {
                     .forEach(key => {
                         const entry = usedKeyMap.get(key)
                         if (entry != null) {
-                            entry.push(scheme.schemeName)
+                            entry.push(scheme.schemeId)
                         } else {
-                            usedKeyMap.set(key, [scheme.schemeName])
+                            usedKeyMap.set(key, [scheme.schemeId])
                         }
                     })
             })
@@ -129,13 +130,13 @@ class InputSchemeManager {
                 input.keysUsed.flatMap(key => usedKeyMap.get(key) ?? [])
             )
             if (conflictingSchemes.length > 0) {
-                result[scheme.schemeName] ??= {
+                result[scheme.schemeId] ??= {
                     scheme,
                     status: InputSchemeUseType.CONFLICT,
                     conflictingSchemeNames: [...new Set(conflictingSchemes)].join(", "),
                 }
             } else {
-                result[scheme.schemeName] ??= {
+                result[scheme.schemeId] ??= {
                     scheme,
                     status: InputSchemeUseType.AVAILABLE,
                 }
