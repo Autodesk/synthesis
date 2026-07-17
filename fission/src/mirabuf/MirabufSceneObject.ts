@@ -354,6 +354,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 ? fieldLocations[this.alliance][this.station]
                 : fieldLocations?.default
 
+        // Mutates referencePos in place (Box3.getCenter side effect) so setObjectPosition can offset
+        // this spawn location by the field's own transform instead of treating it as a world-space position.
         field?.getPositionTransform(referencePos)
 
         return pos

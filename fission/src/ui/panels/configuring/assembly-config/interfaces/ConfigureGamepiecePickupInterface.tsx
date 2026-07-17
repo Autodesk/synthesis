@@ -7,8 +7,6 @@ import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
@@ -21,6 +19,7 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
+import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../AssemblyConfigHooks"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -116,9 +115,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         }
     }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useConfigurationSavedListener(saveEvent)
 
     useEffect(() => {
         if (!gizmoRef.current) {
@@ -202,17 +199,15 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         }
     }, [selectedRobot])
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+    useHoldPhysicsPauseWhileMounted()
 
+    useEffect(() => {
         // Hide the visual indicator when entering configuration mode
         if (selectedRobot) {
             selectedRobot.setIntakeVisualIndicatorVisible(false)
         }
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-
             // Show the visual indicator when exiting configuration mode
             if (selectedRobot) {
                 selectedRobot.setIntakeVisualIndicatorVisible(true)

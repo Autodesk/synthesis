@@ -10,13 +10,8 @@ import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import {
-    useConfigurationSavedListener,
-    useDirectionIndicatorMesh,
-    useFieldRelativeGizmoPosition,
-    useHoldPhysicsPauseWhileMounted,
-    useSyncIndicatorRotation,
-} from "./FieldPointEditing"
+import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../AssemblyConfigHooks"
+import { useDirectionIndicatorMesh, useFieldRelativeGizmoPosition, useSyncIndicatorRotation } from "./FieldPointEditing"
 
 const RAD_TO_DEG = 180 / Math.PI
 const DEG_TO_RAD = Math.PI / 180

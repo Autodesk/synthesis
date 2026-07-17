@@ -17,13 +17,9 @@ import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import {
-    useConfigurationSavedListener,
-    useDirectionIndicatorMesh,
-    useFieldRelativeGizmoPosition,
-    useHoldPhysicsPauseWhileMounted,
-    useSyncIndicatorRotation,
-} from "./FieldPointEditing"
+import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../AssemblyConfigHooks"
+import { useDirectionIndicatorMesh, useFieldRelativeGizmoPosition, useSyncIndicatorRotation } from "./FieldPointEditing"
+import { capitalize } from "@/util/Utility"
 
 const RAD_TO_DEG = 180 / Math.PI
 const DEG_TO_RAD = Math.PI / 180
@@ -48,10 +44,6 @@ function getSpawnLocation(locations: SpawnLocations, path: SpawnSlotPath): Spawn
 function setSpawnLocation(locations: SpawnLocations, path: SpawnSlotPath, value: SpawnLocation): SpawnLocations {
     if (path === "default") return { ...locations, default: value }
     return { ...locations, [path.alliance]: { ...locations[path.alliance], [path.station]: value } }
-}
-
-function capitalize(word: string): string {
-    return word[0].toUpperCase() + word.slice(1)
 }
 
 const ALLIANCE_COLORS: Record<Alliance, string> = {

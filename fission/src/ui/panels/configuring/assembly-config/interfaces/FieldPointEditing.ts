@@ -1,27 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef } from "react"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 
 const DIRECTION_INDICATOR_COLOR = 0xffcc33
-
-/** Holds a physics pause for as long as the calling component is mounted (e.g. while editing a field-relative point). */
-export function useHoldPhysicsPauseWhileMounted() {
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
-}
-
-/** Runs `callback` whenever the assembly config panel is saved (e.g. to persist in-progress edits). */
-export function useConfigurationSavedListener(callback: () => void) {
-    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", callback), [callback])
-}
 
 /**
  * Wires a {@link GizmoSceneObject} to a field-relative position at `pos` (relative to the field's
