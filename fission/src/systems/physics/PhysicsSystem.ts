@@ -61,12 +61,9 @@ const LAYER_GHOST = 10
 const COUNT_OBJECT_LAYERS = 11
 
 export const STANDARD_SIMULATION_PERIOD = 1.0 / 60.0
-const MIN_SIMULATION_PERIOD = 1.0 / 120.0
-const MAX_SIMULATION_PERIOD = 1.0 / 10.0
-const MIN_SUBSTEPS = 12
-const MAX_SUBSTEPS = 20
-const STANDARD_SUB_STEPS = 20
-const TIMESTEP_ADJUSTMENT = 0.0001
+// maximum amount of simulation time that can be consumed per render
+// for catching up to slow frame
+const MAX_SIMULATION_TIME_PER_FRAME = 4 * STANDARD_SIMULATION_PERIOD
 
 const SIGNIFICANT_FRICTION_THRESHOLD = 0.05
 
@@ -99,9 +96,9 @@ function computeSphericity(volume: number, area: number): number {
     return volumeEquivalentSphereArea / area
 }
 
-let lastDeltaT = STANDARD_SIMULATION_PERIOD
+// fixing simulation system in STANDARD_SIMULATION_PERIOD increments
 export function getLastDeltaT(): number {
-    return lastDeltaT
+    return STANDARD_SIMULATION_PERIOD
 }
 
 // Friction constants
@@ -154,6 +151,8 @@ class PhysicsSystem extends WorldSystem {
     >[] = []
 
     private _pauseSet = new Set<string>()
+
+    private _simulationTimeDebt = 0
 
     private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
 
@@ -1077,9 +1076,16 @@ class PhysicsSystem extends WorldSystem {
                     rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
                     rnLayer
                 )
+                if (rn.isDynamic) {
+                    // prevents fast bodies from phasing through thin static geometry (like ramps on fields)
+                    bodySettings.mMotionQuality = JOLT.EMotionQuality_LinearCast
+                }
+
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
-                body.SetAllowSleeping(false)
+
+                // allowing gamepieces to sleep
+                if (!rn.isGamePiece) body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Set Friction Here
@@ -1396,7 +1402,8 @@ class PhysicsSystem extends WorldSystem {
         const zero = new JOLT.Vec3(0, 0, 0)
         this._sphereGamePieceBodies.forEach(bodyId => {
             const body = this.getBody(bodyId)
-            if (!body) return
+            // Sleeping bodies are already at rest and shouldn't be touched
+            if (!body || !body.IsActive()) return
 
             const atRest =
                 body.GetLinearVelocity().Length() < SPHERE_GP_STICTION_LINEAR_SPEED &&
@@ -1415,15 +1422,13 @@ class PhysicsSystem extends WorldSystem {
             return
         }
 
-        const diffDeltaT = deltaT - lastDeltaT
+        // timestepping with a catchup for skipped frames
+        this._simulationTimeDebt = Math.min(this._simulationTimeDebt + deltaT, MAX_SIMULATION_TIME_PER_FRAME)
 
-        lastDeltaT += Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
-        lastDeltaT = Math.min(MAX_SIMULATION_PERIOD, Math.max(MIN_SIMULATION_PERIOD, lastDeltaT))
-
-        let substeps = Math.max(1, Math.floor((lastDeltaT / STANDARD_SIMULATION_PERIOD) * STANDARD_SUB_STEPS))
-        substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))
-
-        this._joltInterface.Step(lastDeltaT, substeps)
+        while (this._simulationTimeDebt >= STANDARD_SIMULATION_PERIOD) {
+            this._joltInterface.Step(STANDARD_SIMULATION_PERIOD, 1)
+            this._simulationTimeDebt -= STANDARD_SIMULATION_PERIOD
+        }
 
         this.applySphereGamePieceStiction()
 
