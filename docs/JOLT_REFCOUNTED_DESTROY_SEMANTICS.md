@@ -28,20 +28,6 @@ else *did* take a reference and still holds it, `destroy()` frees the object out
 reference — a use-after-free the moment anyone touches it again. If you need to drop your own
 reference on a shared object, call `.Release()`, not `JOLT.destroy()`.
 
-## Confirmed empirically
-
-`fission/src/test/physics/JoltPushBackOwnership.test.ts`, run against the real Jolt WASM
-(`@azaleacolburn/jolt-physics`, debug build):
-
-- `PhysicsMaterial`: `GetRefCount()` is `0` after `new`, `1` after `PhysicsMaterialList.push_back`.
-  `JOLT.destroy()` the original handle afterward, churn the heap, then read the object back
-  through the list → garbage refcount (e.g. `1240304`). Real corruption. Not destroying it (PR
-  #1412's fix) reads back a correct `1`.
-- `Vec3`, `Float3`, `IndexedTriangle` (plain value types, **not** `RefTarget`, no
-  `AddRef`/`Release` in `jolt/JoltJS.idl`) survive `destroy()`-after-`push_back` with
-  byte-identical values even after heap churn — genuine deep copy. Destroying these is correct
-  and required; skipping it leaks.
-
 ## Practical rule
 
 For any `RefTarget` type:
