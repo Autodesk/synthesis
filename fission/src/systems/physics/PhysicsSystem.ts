@@ -1344,17 +1344,31 @@ class PhysicsSystem extends WorldSystem {
     public destroyBodies(...bodies: Jolt.Body[]) {
         this.unregisterSphereGamePieceBodies(bodies.map(x => x.GetID()))
         const ids = new JOLT.ArrayBodyID()
-        bodies.forEach(x => ids.push_back(x.GetID()))
-        this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
-        this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
+        const seen = new Set<number>()
+        bodies.forEach(x => {
+            const key = x.GetID().GetIndexAndSequenceNumber()
+            if (!seen.has(key)) {
+                ids.push_back(x.GetID())
+                seen.add(key)
+            }
+        })
+        if (ids.size() > 0) {
+            this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
+            this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
+        }
         JOLT.destroy(ids)
     }
 
     public destroyBodyIds(...bodies: Jolt.BodyID[]) {
         this.unregisterSphereGamePieceBodies(bodies)
         const ids = new JOLT.ArrayBodyID()
+        const seen = new Set<number>()
         bodies.forEach(x => {
-            if (this.isBodyAdded(x)) ids.push_back(x)
+            const key = x.GetIndexAndSequenceNumber()
+            if (this.isBodyAdded(x) && !seen.has(key)) {
+                ids.push_back(x)
+                seen.add(key)
+            }
         })
         if (ids.size() > 0) {
             this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
