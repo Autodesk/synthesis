@@ -320,6 +320,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this._basePositionTransform = this.getXZPositionTransform()
 
+        if (this.miraType === MiraType.ROBOT) {
+            this.computeFurthestVertices()
+            this.computeUnrotatedRootNodeToCenterPositionTranslation()
+        }
+
         this.moveToSpawnLocation()
 
         this.updateIntakeSensor()
@@ -332,9 +337,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         EventSystem.dispatch("MirabufObjectChangeEvent", this)
-
-        this.computeFurthestVertices()
-        this.computeUnrotatedRootNodeToCenterPositionTranslation()
     }
 
     // Centered in x-z plane, bottom surface of object
@@ -857,11 +859,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     /**
-     * Recalculates the unrotated vector between the center of the axis-aligned bounding box around the mirabuf object and the position of the root body.
+     * Calculates the vector between the center of the axis-aligned bounding box around the mirabuf object and the position of the root body.
      *
      * The resultant vector is placed in `this._unrotatedRootNodeToCenterPositionTranslation`
      *
-     * Call this whenever we need to update that translation (e.g. on setup or whenever the dimensions of the robot change)
+     * Call this whenever we need to update that translation for reasons besides the robot rotating (e.g. on setup or whenever the dimensions of the robot change)
      *
      * WARNING This requires the robot to be axis-aligned initially. This may not always be true.
      */
