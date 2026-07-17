@@ -1,6 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import { afterEach, assert, beforeEach, describe, expect, test } from "vitest"
+import { GAMEPIECE_SUFFIX } from "@/mirabuf/MirabufParser"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem, { LayerReserve } from "../../systems/physics/PhysicsSystem"
@@ -678,6 +679,9 @@ describe("Update Loop", () => {
 function makeMockParser(physicalData: { volume: number; area: number }, isGamePiece: boolean): MirabufParser {
     const tetraVerts = [0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0, 100]
 
+    // PhysicsSystem picks the collision layer off the node id suffix, not isGamePiece
+    const nodeId = isGamePiece ? `node-0${GAMEPIECE_SUFFIX}` : "node-0"
+
     return {
         assembly: {
             dynamic: false,
@@ -709,9 +713,9 @@ function makeMockParser(physicalData: { volume: number; area: number }, isGamePi
         },
         rigidNodes: new Map([
             [
-                "node-0",
+                nodeId,
                 {
-                    id: "node-0",
+                    id: nodeId,
                     parts: new Set(["part-0"]),
                     isDynamic: true,
                     isGamePiece,
@@ -762,5 +766,48 @@ describe("Sphere Game Piece Body Registration", () => {
         system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
         system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
         expect(system.sphereGamePieceBodies.length).toBe(2)
+    })
+})
+
+describe("Game Piece Sleeping", () => {
+    let system: PhysicsSystem
+
+    const SPHERE_DATA = { volume: 1767.15, area: 706.86 } // 2026 game piece approximate values
+
+    function spawnFromParser(isGamePiece: boolean): Jolt.Body {
+        const bodyIds = system.createBodiesFromParser(makeMockParser(SPHERE_DATA, isGamePiece))
+        const bodyId = [...bodyIds.values()][0]
+        return system.getBody(bodyId)!
+    }
+
+    beforeEach(() => {
+        system = new PhysicsSystem()
+    })
+
+    afterEach(() => {
+        system.destroy()
+    })
+
+    test("Game piece is allowed to sleep", () => {
+        expect(spawnFromParser(true).GetAllowSleeping()).toBe(true)
+    })
+
+    test("Non game piece is not allowed to sleep", () => {
+        expect(spawnFromParser(false).GetAllowSleeping()).toBe(false)
+    })
+
+    test("Game piece resting on the floor falls asleep", () => {
+        const floor = system.createBox(new THREE.Vector3(5, 0.5, 5), undefined, new THREE.Vector3(0, -1, 0), undefined)
+        system.addBodyToSystem(floor.GetID(), false)
+
+        const body = spawnFromParser(true)
+        expect(body.IsActive()).toBe(true)
+
+        // 4 seconds of fixed timestep: enough to drop, settle, and exceed Jolt's 0.5s sleep timer
+        for (let i = 0; i < 240; i++) {
+            system.update(1 / 60)
+        }
+
+        expect(body.IsActive()).toBe(false)
     })
 })
