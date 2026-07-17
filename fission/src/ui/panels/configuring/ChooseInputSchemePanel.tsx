@@ -23,7 +23,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
 
     useEffect(() => {
         configureScreen(panel!, { title: "Choose Input Scheme", hideAccept: true, cancelText: "Close" }, {})
-    }, [])
+    }, [panel])
 
     useEffect(() => {
         if (targetAssembly) return

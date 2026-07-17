@@ -288,7 +288,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             const currentSchemes: InputScheme[] = InputSchemeManager.allInputSchemes
             originalInputSchemes.current = structuredClone(currentSchemes)
         })
-    }, [])
+    }, [panel?.id])
 
     useEffect(() => {
         const onBeforeAccept = () => {
@@ -342,7 +342,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedAssembly, pendingDeletes])
+    }, [selectedAssembly, pendingDeletes, panel])
 
     const modes = useMemo(() => {
         switch (configurationType) {

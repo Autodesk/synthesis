@@ -185,7 +185,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     useEffect(() => {
         configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back" }, {})
-    }, [])
+    }, [panel])
 
     useEffect(() => {
         const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", v => setFilesStatus(v))

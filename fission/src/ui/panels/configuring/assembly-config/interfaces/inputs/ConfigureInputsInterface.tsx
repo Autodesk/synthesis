@@ -43,7 +43,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
 
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes(panel?.id)
-    }, [])
+    }, [panel?.id])
 
     const handleSchemeChange = useCallback(() => {
         const newSchemes = InputSchemeManager.allInputSchemes

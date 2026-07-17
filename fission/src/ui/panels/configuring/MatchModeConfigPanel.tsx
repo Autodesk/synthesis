@@ -255,7 +255,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                     />
                 )
             }),
-        [matchModeConfigs, openModal, closePanel, useSpawnPositions]
+        [matchModeConfigs, openModal, closePanel, useSpawnPositions, panel]
     )
 
     const fileUploadRef = useRef<HTMLInputElement>(null)

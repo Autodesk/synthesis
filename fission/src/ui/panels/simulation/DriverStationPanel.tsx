@@ -12,7 +12,7 @@ const DriverStationPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     useEffect(() => {
         // TODO: update Not Connected dynamically when implemented
         configureScreen(panel!, { title: "Driver Station (Not Connected)" }, {})
-    }, [])
+    }, [panel])
 
     return (
         <Stack direction="row">
