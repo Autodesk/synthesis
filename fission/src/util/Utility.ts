@@ -1,4 +1,6 @@
+import Jolt from "@synthesis.adsk/jolt-physics"
 import Pako from "pako"
+import JOLT from "./loading/JoltSyncLoader"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
@@ -86,4 +88,8 @@ export function downloadBlob(filename: string, data: BlobPart): void {
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
     }, 0)
+}
+
+export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
+    return new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
 }

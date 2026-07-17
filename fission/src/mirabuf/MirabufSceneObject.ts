@@ -66,7 +66,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { hexStringToUint8Array } from "@/util/Utility.ts"
+import { copyVec3, hexStringToUint8Array } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -873,7 +873,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const rootNodeTransform = convertJoltRVec3ToJoltVec3(rootBody.GetPosition())
         const alignedPosition = convertThreeVector3ToJoltVec3(this.getPositionTransform())
 
-        this._unrotatedRootNodeToCenterPositionTranslation = alignedPosition.SubVec3(rootNodeTransform)
+        this._unrotatedRootNodeToCenterPositionTranslation = copyVec3(alignedPosition.SubVec3(rootNodeTransform))
     }
 
     /**
