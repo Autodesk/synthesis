@@ -61,12 +61,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             .map(robot => [robot, robot.getOrientedBoundingBox()] as RobotBox)
 
         if (DEBUG_BOUNDING_BOXES) {
-            this.robotBounding?.forEach(m => {
-                World.sceneRenderer.removeObject(m)
-                m.geometry.dispose()
-                const materials = Array.isArray(m.material) ? m.material : [m.material]
-                materials.forEach(mat => mat.dispose())
-            })
+            this.disposeOfRobotBoundingMeshes()
             this.robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
         }
 
@@ -157,6 +152,20 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
         this._lastRobotCollisionTime = Date.now()
         ScoreTracker.robotPenalty(opposingRobot, this.prefs?.penaltyPoints ?? 0, `Contact penalty in protected zone`)
+    }
+
+    public override dispose() {
+        super.dispose()
+        this.disposeOfRobotBoundingMeshes()
+    }
+
+    private disposeOfRobotBoundingMeshes() {
+        this.robotBounding?.forEach(m => {
+            World.sceneRenderer.removeObject(m)
+            m.geometry.dispose()
+            const materials = Array.isArray(m.material) ? m.material : [m.material]
+            materials.forEach(mat => mat.dispose())
+        })
     }
 }
 
