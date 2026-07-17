@@ -851,8 +851,11 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
 
     const robotName = doc.querySelector("robot")?.getAttribute("name") ?? "robot"
+    console.log(doc.querySelector("robot"))
     const links = extractLinks(doc)
     const joints = extractJoints(doc)
+
+    console.timeLog("URDF Import", "Extracted from XML")
 
     if (links.length === 0) throw new Error("URDF contains no <link> elements")
 
@@ -870,6 +873,7 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     for (const link of links) {
         if (!linkToGroup.has(link.name)) linkToGroup.set(link.name, link.name)
     }
+    console.timeLog("URDF Import", "Built Groups")
 
     // Physics joints: exclude loop closure joints (no real DOF, now merged into rigid groups)
     // and joints whose both endpoints are in the same rigid group (within-body constraints
@@ -881,16 +885,19 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     // buildParts uses original joints for transform computation — phantom links still need
     // their correct spatial matrices derived from their original parent joints.
     const { partDefinitions, partInstances } = buildParts(links, rootLink, joints, meshFiles)
-
+    console.timeLog("URDF Import", "Built Parts")
     const appearances = buildAppearances(links, doc)
+    console.timeLog("URDF Import", "Built Appearances")
     const jointFrames = buildGlobalJointFrames(joints, rootLink.name)
+
     const { jointDefinitions, jointInstances } = buildJoints(physicsJoints, rootLink, jointFrames)
 
+    console.timeLog("URDF Import", "Built Joints")
     // The design hierarchy must stay complete even when physics joints are filtered out.
     // MirabufParser builds _partToNodeMap by walking this tree, and rigidGroups may still
     // reference links connected by filtered fixed/loop-closure joints.
     const hierarchy = buildDesignHierarchy(joints, rootLink.name)
-
+    console.timeLog("URDF Import", "Built hierarchy")
     return mirabuf.Assembly.create({
         info: { GUID: uuidv4(), name: robotName, version: 5 },
         dynamic: true,

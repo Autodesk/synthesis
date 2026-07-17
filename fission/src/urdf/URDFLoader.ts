@@ -103,16 +103,18 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
 
     if (ext === "zip") {
         const zip = await JSZip.loadAsync(buffer)
-
+        console.timeLog("URDF Import", "Unzipped")
         const urdfEntry = Object.values(zip.files).find(f => !f.dir && f.name.endsWith(".urdf"))
         if (!urdfEntry) throw new Error("No .urdf file found in the zip archive")
-
         const [urdfText, meshFiles] = await Promise.all([urdfEntry.async("text"), buildMeshMap(zip, urdfEntry.name)])
-
+        console.timeLog("URDF Import", "Mesh Map Built")
         validateURDFMeshFormats(urdfText)
         const assembly = convertURDF(urdfText, meshFiles)
+        console.timeLog("URDF Import", "Converted")
         detectAndTagWheels(assembly)
+        console.timeLog("URDF Import", "Tagged Wheels")
         applyConservativeURDFImport(assembly)
+        console.timeLog("URDF Import", "Imported")
 
         return assembly
     }
