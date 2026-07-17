@@ -11,6 +11,8 @@ import com.autodesk.synthesis.revrobotics.spark.SparkMax;
 import com.autodesk.synthesis.studica.AHRS;
 import com.autodesk.synthesis.ctre.TalonFX;
 
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -33,6 +35,7 @@ public class Robot extends TimedRobot {
   private XboxController m_Controller = new XboxController(0);
 
   private AHRS m_Gyro = new AHRS();
+  private ADXL362 m_accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
 
   private DigitalInput m_DI = new DigitalInput(0);
   private DigitalOutput m_DO = new DigitalOutput(1);
@@ -57,6 +60,11 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     // Required for TalonFX sim: pushes current motor output and encoder state to Synthesis.
     m_Talon.syncSim();
+
+    SmartDashboard.putNumber("Gyro Angle", m_Gyro.getAngle());
+    SmartDashboard.putNumber("Accel X", m_accelerometer.getX());
+    SmartDashboard.putNumber("Accel Y", m_accelerometer.getY());
+    SmartDashboard.putNumber("Accel Z", m_accelerometer.getZ());
   }
 
   @Override
