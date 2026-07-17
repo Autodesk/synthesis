@@ -1121,6 +1121,12 @@ class PhysicsSystem extends WorldSystem {
         })
 
         if (newBodies.size() > 0) {
+            // This resets the structure of the tree before adding new bodies
+            // Otherwise the old structure will persist and if enough new bodies are spawned, the broadphase tree will still run out of internal nodes
+            // This doesn't feel like this should be the case, but based on my own testing, it is.
+            // This is also a really expensive call, so we should probably figure out a way to run it on a different thread, when we switch to multithreaded Jolt
+            this._joltPhysSystem.OptimizeBroadPhase()
+
             const data = newBodies.data()
             const size = newBodies.size()
             const addState = this._joltBodyInterface.AddBodiesPrepare(data, size)
@@ -1376,17 +1382,8 @@ class PhysicsSystem extends WorldSystem {
         mech.constraints.forEach(x => {
             this._joltPhysSystem.RemoveConstraint(x.primaryConstraint)
         })
-        this.unregisterSphereGamePieceBodies([...mech.nodeToBody.values()])
 
-        const ids = new JOLT.ArrayBodyID()
-        mech.nodeToBody.forEach(x => ids.push_back(x))
-        mech.ghostBodies.forEach(x => ids.push_back(x))
-
-        if (ids.size() > 0) {
-            this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
-            this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
-        }
-        JOLT.destroy(ids)
+        this.destroyBodiesById(...mech.nodeToBody.values(), ...mech.ghostBodies)
     }
 
     private unregisterSphereGamePieceBodies(bodies: Jolt.BodyID[]) {
