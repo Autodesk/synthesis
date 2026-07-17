@@ -75,6 +75,7 @@
     "@vitejs/plugin-react-swc": "^4.0.0",
     "cssnano": "^7.1.0",
     "dev-null-cli": "^2.0.0",
+    "jsdom": "^29.1.1",
     "pako": "^2.1.0",
     "peer": "^1.0.2",
     "postcss": "^8.5.6",
