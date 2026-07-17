@@ -61,6 +61,14 @@ const LAYER_GHOST = 10
 const COUNT_OBJECT_LAYERS = 11
 
 export const STANDARD_SIMULATION_PERIOD = 1.0 / 60.0
+const MAX_COLLISIONS_STEP_PERIOD = 1.0 / 1200.0
+// cap on collision steps per rendered frame
+// when a frame is so slow that the cap is hit, each collision
+// step covers more simulation time
+const MAX_COLLISIONS_STEPS = 20
+// step count will scale depending on how many active bodies
+// there currently are
+const ACTIVE_BODY_STEP_BUDGET = 600
 // maximum amount of simulation time that can be consumed per render
 // for catching up to slow frame
 const MAX_SIMULATION_TIME_PER_FRAME = 4 * STANDARD_SIMULATION_PERIOD
@@ -96,7 +104,9 @@ function computeSphericity(volume: number, area: number): number {
     return volumeEquivalentSphereArea / area
 }
 
-// fixing simulation system in STANDARD_SIMULATION_PERIOD increments
+// simulation period. actual step length tracks the rendered
+// frame time (PhysicsSystem.update), so stable constant keeps
+// driver stiffness independent of construction-time frame rate.
 export function getLastDeltaT(): number {
     return STANDARD_SIMULATION_PERIOD
 }
@@ -152,8 +162,6 @@ class PhysicsSystem extends WorldSystem {
 
     private _pauseSet = new Set<string>()
 
-    private _simulationTimeDebt = 0
-
     private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
 
     public get isPaused(): boolean {
@@ -190,6 +198,7 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.GetPhysicsSettings().mDeterministicSimulation = false
         this._joltPhysSystem.GetPhysicsSettings().mSpeculativeContactDistance = 0.06
         this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
+        this._joltPhysSystem.GetPhysicsSettings().mTimeBeforeSleep = 0.2
 
         const ground = this.createBox(
             new THREE.Vector3(7.5, 0.1, 7.5),
@@ -1082,9 +1091,14 @@ class PhysicsSystem extends WorldSystem {
                 }
 
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
-                this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
 
-                // allowing gamepieces to sleep
+                // Game pieces are allowed to sleep and spawn inactive
+                // they are placed at their resting position by MirabufSceneObject
+                // which activates them.
+                this._joltBodyInterface.AddBody(
+                    body.GetID(),
+                    rn.isGamePiece ? JOLT.EActivation_DontActivate : JOLT.EActivation_Activate
+                )
                 if (!rn.isGamePiece) body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
 
@@ -1422,12 +1436,14 @@ class PhysicsSystem extends WorldSystem {
             return
         }
 
-        // timestepping with a catchup for skipped frames
-        this._simulationTimeDebt = Math.min(this._simulationTimeDebt + deltaT, MAX_SIMULATION_TIME_PER_FRAME)
-
-        while (this._simulationTimeDebt >= STANDARD_SIMULATION_PERIOD) {
-            this._joltInterface.Step(STANDARD_SIMULATION_PERIOD, 1)
-            this._simulationTimeDebt -= STANDARD_SIMULATION_PERIOD
+        // step the simulation by rendered frame's duration so motion is smooth
+        const simTime = Math.min(deltaT, MAX_SIMULATION_TIME_PER_FRAME)
+        if (simTime > 0) {
+            const desiredSteps = Math.ceil(simTime / MAX_COLLISIONS_STEP_PERIOD)
+            const activeBodies = this._joltPhysSystem.GetNumActiveBodies(JOLT.EBodyType_RigidBody)
+            const affordableSteps = Math.floor(ACTIVE_BODY_STEP_BUDGET / Math.max(activeBodies, 1))
+            const collisionSteps = Math.max(1, Math.min(MAX_COLLISIONS_STEPS, desiredSteps, affordableSteps))
+            this._joltInterface.Step(simTime, collisionSteps)
         }
 
         this.applySphereGamePieceStiction()
