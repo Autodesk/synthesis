@@ -883,6 +883,8 @@ class PhysicsSystem extends WorldSystem {
 
         const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
 
+        const newBodies = new JOLT.ArrayBodyID()
+
         const massMod = (() => {
             let assemblyMass = 0
             nonPhysicsNodes.forEach(x => {
@@ -1078,9 +1080,9 @@ class PhysicsSystem extends WorldSystem {
                     rnLayer
                 )
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
-                this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
                 body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
+                newBodies.push_back(body.GetID())
 
                 // Set Friction Here
                 let staticFriction = 0.0
@@ -1118,6 +1120,14 @@ class PhysicsSystem extends WorldSystem {
             // Cleanup
             JOLT.destroy(compoundShapeSettings)
         })
+
+        if (newBodies.size() > 0) {
+            const data = newBodies.data()
+            const size = newBodies.size()
+            const addState = this._joltBodyInterface.AddBodiesPrepare(data, size)
+            this._joltBodyInterface.AddBodiesFinalize(data, size, addState, JOLT.EActivation_Activate)
+        }
+        JOLT.destroy(newBodies)
 
         return rnToBodies
     }
@@ -1333,20 +1343,24 @@ class PhysicsSystem extends WorldSystem {
      */
     public destroyBodies(...bodies: Jolt.Body[]) {
         this.unregisterSphereGamePieceBodies(bodies.map(x => x.GetID()))
-        bodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x.GetID())
-            this._joltBodyInterface.DestroyBody(x.GetID())
-        })
+        const ids = new JOLT.ArrayBodyID()
+        bodies.forEach(x => ids.push_back(x.GetID()))
+        this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
+        this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
+        JOLT.destroy(ids)
     }
 
     public destroyBodyIds(...bodies: Jolt.BodyID[]) {
         this.unregisterSphereGamePieceBodies(bodies)
+        const ids = new JOLT.ArrayBodyID()
         bodies.forEach(x => {
-            if (this.isBodyAdded(x)) {
-                this._joltBodyInterface.RemoveBody(x)
-                this._joltBodyInterface.DestroyBody(x)
-            }
+            if (this.isBodyAdded(x)) ids.push_back(x)
         })
+        if (ids.size() > 0) {
+            this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
+            this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
+        }
+        JOLT.destroy(ids)
     }
 
     public destroyMechanism(mech: Mechanism) {
@@ -1357,14 +1371,14 @@ class PhysicsSystem extends WorldSystem {
             this._joltPhysSystem.RemoveConstraint(x.primaryConstraint)
         })
         this.unregisterSphereGamePieceBodies([...mech.nodeToBody.values()])
-        mech.nodeToBody.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x)
-            this._joltBodyInterface.DestroyBody(x)
-        })
-        mech.ghostBodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x)
-            this._joltBodyInterface.DestroyBody(x)
-        })
+        const ids = new JOLT.ArrayBodyID()
+        mech.nodeToBody.forEach(x => ids.push_back(x))
+        mech.ghostBodies.forEach(x => ids.push_back(x))
+        if (ids.size() > 0) {
+            this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
+            this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
+        }
+        JOLT.destroy(ids)
     }
 
     private unregisterSphereGamePieceBodies(bodies: Jolt.BodyID[]) {
