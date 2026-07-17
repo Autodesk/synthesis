@@ -43,6 +43,8 @@ import {
     setAxes,
 } from "./ConstraintSettingsUtilities"
 
+const DEBUG_COLLIDER_WARNINGS = false
+
 /**
  * Layers used for determining enabled/disabled collisions.
  */
@@ -943,7 +945,6 @@ class PhysicsSystem extends WorldSystem {
                 // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
                 if (!partShapeResult) {
-                    console.warn("Skipping collider (no valid shape settings)", debugLabel)
                     return [undefined, undefined]
                 }
 
@@ -1165,9 +1166,12 @@ class PhysicsSystem extends WorldSystem {
         })
 
         if (points.size() < 4) {
+            if (DEBUG_COLLIDER_WARNINGS) console.warn("Could not create convex shape for part")
+
             JOLT.destroy(settings)
             JOLT.destroy(min)
             JOLT.destroy(max)
+
             return
         }
 
@@ -1235,7 +1239,7 @@ class PhysicsSystem extends WorldSystem {
         const triCountBeforeSanitize = settings.mIndexedTriangles.size()
 
         if (vertCount < 3 || triCountBeforeSanitize === 0 || maxIndex >= vertCount) {
-            if (debugLabel) {
+            if (DEBUG_COLLIDER_WARNINGS && debugLabel) {
                 console.warn("Concave collider invalid (no triangles or bad indices)", {
                     ...debugLabel,
                     vertCount,
@@ -1254,7 +1258,7 @@ class PhysicsSystem extends WorldSystem {
         settings.Sanitize()
         const triCount = settings.mIndexedTriangles.size()
         if (triCount === 0) {
-            if (debugLabel) {
+            if (DEBUG_COLLIDER_WARNINGS && debugLabel) {
                 console.warn("Concave collider sanitized to zero triangles (degenerate)", {
                     ...debugLabel,
                     vertCount,
