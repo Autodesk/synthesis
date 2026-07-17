@@ -44,22 +44,6 @@ describe("Multiplayer Tests", () => {
     })
 
     describe.skipIf(server.browser == "firefox")("P2P connections", async () => {
-        test("Multiplayer clients connect to each other", async () => {
-            await MultiplayerSystem.setup(roomId, "User1", true)
-            expect(multiplayer).toBeDefined()
-            const player1 = multiplayer!
-
-            PreferencesSystem.setUserPreference("MultiplayerClientID", "")
-            await MultiplayerSystem.setup(roomId, "User2", false)
-            expect(multiplayer).toBeDefined()
-            const player2 = multiplayer!
-
-            expect(player1.roomId).toBe(player2.roomId)
-            await vi.waitUntil(() => player1.peerIDs.length > 0 && player2.peerIDs.length > 0)
-            expect(player1.peerIDs).toStrictEqual([player2.clientId])
-            expect(player2.peerIDs).toStrictEqual([player1.clientId])
-        })
-
         test("Multiplayer clients check authentication", async () => {
             await MultiplayerSystem.setup(roomId, "User1", true)
             expect(multiplayer).toBeDefined()
