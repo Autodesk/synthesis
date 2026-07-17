@@ -95,18 +95,7 @@ class InputSchemeManager {
 
     /** Creates an array of every input scheme that is either a default or customized by the user. Custom themes will appear on top. */
     public static get allInputSchemes(): InputScheme[] {
-        // Start with custom input schemes
-        const allSchemes: InputScheme[] = []
-
-        this.customInputSchemes.forEach(s => allSchemes.push(s))
-
-        // Add default schemes if they have not been customized
-        this.defaultInputSchemes.forEach(defaultScheme => {
-            if (allSchemes.some(s => s.schemeName === defaultScheme.schemeName)) return
-            allSchemes.push(defaultScheme)
-        })
-
-        return allSchemes
+        return [...this.customInputSchemes, ...this.defaultInputSchemes]
     }
 
     /** Creates an array of every input scheme that is not currently in use by a robot */
