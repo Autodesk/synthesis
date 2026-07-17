@@ -63,7 +63,9 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run Tests
-        run: HOME=/root bun run test --bail=1
+        run: |
+          HOME=/root bun run test 2>&1 | tee output.txt
+          grep -q "GH ACTIONS VITEST PASSED" output.txt
 
   runAssetpackTests:
     name: Assetpack Tests
@@ -105,6 +107,8 @@ jobs:
             ${{runner.os}}-npm
 
       - name: Run Assetpack Tests
-        run: HOME=/root bun run test src/test/mirabuf/DefaultAssets.test.ts
+        run: |
+          HOME=/root bun run test src/test/mirabuf/DefaultAssets.test.ts 2>&1 | tee output.txt
+          grep -q "GH ACTIONS VITEST PASSED" output.txt
         env:
           VITE_RUN_ASSETPACK_TEST: true
