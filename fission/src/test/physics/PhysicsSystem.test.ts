@@ -602,7 +602,7 @@ describe("Body Cleanup", () => {
         const id1 = body1.GetID()
         const id2 = body2.GetID()
 
-        system.destroyBodyIds(id1, id2)
+        system.destroyBodiesById(id1, id2)
 
         expect(system.isBodyAdded(id1)).toBe(false)
         expect(system.isBodyAdded(id2)).toBe(false)

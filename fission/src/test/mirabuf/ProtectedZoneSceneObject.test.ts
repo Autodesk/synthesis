@@ -11,7 +11,7 @@ import { createBodyMock } from "../mocks/jolt"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
-    destroyBodyIds: vi.fn(),
+    destroyBodiesById: vi.fn(),
     setBodyPosition: vi.fn(),
     setBodyRotation: vi.fn(),
     getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),

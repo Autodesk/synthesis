@@ -86,7 +86,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     // This function disposes of the `ProtectedZoneSceneObject` correctly
     public dispose(): void {
         if (this.joltBodyId) {
-            World.physicsSystem.destroyBodyIds(this.joltBodyId)
+            World.physicsSystem.destroyBodiesById(this.joltBodyId)
             if (this.mesh) {
                 this.mesh.geometry.dispose()
                 ;(this.mesh.material as THREE.Material).dispose()

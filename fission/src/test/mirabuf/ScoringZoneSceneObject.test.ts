@@ -8,7 +8,7 @@ import { createBodyMock } from "../mocks/jolt"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
-    destroyBodyIds: vi.fn(),
+    destroyBodiesById: vi.fn(),
     setBodyPosition: vi.fn(),
     setBodyRotation: vi.fn(),
     getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
@@ -97,7 +97,7 @@ describe("ScoringZoneSceneObject", () => {
         const mockMesh = { geometry: { dispose: vi.fn() }, material: { dispose: vi.fn() } }
         Reflect.set(instance, "mesh", mockMesh)
         instance.dispose()
-        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "joltBodyId"))
+        expect(mockPhysicsSystem.destroyBodiesById).toHaveBeenCalledWith(Reflect.get(instance, "joltBodyId"))
         expect(mockMesh.geometry.dispose).toHaveBeenCalled()
         expect(mockMesh.material.dispose).toHaveBeenCalled()
         expect(mockSceneRenderer.scene.remove).toHaveBeenCalledWith(mockMesh)

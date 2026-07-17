@@ -6,7 +6,7 @@ import { createBodyMock } from "../mocks/jolt"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
-    destroyBodyIds: vi.fn(),
+    destroyBodiesById: vi.fn(),
     setBodyPosition: vi.fn(),
     setBodyRotation: vi.fn(),
     getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
@@ -93,7 +93,7 @@ describe("IntakeSensorSceneObject", () => {
         Reflect.set(instance, "_joltBodyId", mockBodyId)
         Reflect.set(instance, "_collision", vi.fn())
         instance.dispose()
-        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
+        expect(mockPhysicsSystem.destroyBodiesById).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
         expect(mockSceneRenderer.scene.remove).toBeDefined()
     })
 })

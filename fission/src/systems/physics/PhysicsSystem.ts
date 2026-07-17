@@ -308,7 +308,6 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(size)
 
         const body = this.createBody(shape, mass, position, rotation)
-        this._bodies.push(body.GetID())
 
         return body
     }
@@ -1337,39 +1336,32 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Destroys bodies.
+     * Destroys all given bodies and removes them from the physics system.
      *
-     * @param bodies  Bodies to destroy.
+     * @param bodies Bodies to destroy and remove.
      */
     public destroyBodies(...bodies: Jolt.Body[]) {
-        this.unregisterSphereGamePieceBodies(bodies.map(x => x.GetID()))
-        const ids = new JOLT.ArrayBodyID()
-        const seen = new Set<number>()
-        bodies.forEach(x => {
-            const key = x.GetID().GetIndexAndSequenceNumber()
-            if (!seen.has(key)) {
-                ids.push_back(x.GetID())
-                seen.add(key)
-            }
-        })
-        if (ids.size() > 0) {
-            this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
-            this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
-        }
-        JOLT.destroy(ids)
+        this.destroyBodiesById(...bodies.map(body => body.GetID()))
     }
 
-    public destroyBodyIds(...bodies: Jolt.BodyID[]) {
+    public destroyBodiesById(...bodies: Jolt.BodyID[]) {
         this.unregisterSphereGamePieceBodies(bodies)
+
+        // There shouldn't be duplicate bodies, but there have been in the past and likely will be in the future
+        // Because removing duplicates will cause a crash, it's better to be robust here and filter duplicates
         const ids = new JOLT.ArrayBodyID()
+        ids.reserve(bodies.length)
+
         const seen = new Set<number>()
-        bodies.forEach(x => {
-            const key = x.GetIndexAndSequenceNumber()
-            if (this.isBodyAdded(x) && !seen.has(key)) {
-                ids.push_back(x)
-                seen.add(key)
-            }
-        })
+        bodies
+            .filter(id => this.isBodyAdded(id))
+            .map(id => [id, id.GetIndexAndSequenceNumber()] as [Jolt.BodyID, number])
+            .filter(body => !seen.has(body[1]))
+            .forEach(([id, sequenceIdx]) => {
+                ids.push_back(id)
+                seen.add(sequenceIdx)
+            })
+
         if (ids.size() > 0) {
             this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
             this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
@@ -1385,9 +1377,11 @@ class PhysicsSystem extends WorldSystem {
             this._joltPhysSystem.RemoveConstraint(x.primaryConstraint)
         })
         this.unregisterSphereGamePieceBodies([...mech.nodeToBody.values()])
+
         const ids = new JOLT.ArrayBodyID()
         mech.nodeToBody.forEach(x => ids.push_back(x))
         mech.ghostBodies.forEach(x => ids.push_back(x))
+
         if (ids.size() > 0) {
             this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
             this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
@@ -1511,7 +1505,7 @@ class PhysicsSystem extends WorldSystem {
         this._constraints = []
 
         // Destroy Jolt Bodies.
-        this.destroyBodyIds(...this._bodies)
+        this.destroyBodiesById(...this._bodies)
         this._bodies = []
         this._sphereGamePieceBodies = []
 
@@ -1563,7 +1557,6 @@ class PhysicsSystem extends WorldSystem {
         }
 
         const body = this.createBody(shape.Get(), undefined, undefined, undefined)
-        this._bodies.push(body.GetID())
         body.SetIsSensor(true)
 
         if (destroy) JOLT.destroy(shapeSettings)
