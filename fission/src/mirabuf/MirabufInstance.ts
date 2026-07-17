@@ -84,8 +84,8 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
     const newVerts = transformVerts(mesh)
     const newNorms = transformNorms(mesh)
 
-    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(newVerts), 3))
-    geometry.setAttribute("normal", new THREE.BufferAttribute(new Float32Array(newNorms), 3))
+    geometry.setAttribute("position", new THREE.BufferAttribute(newVerts, 3))
+    geometry.setAttribute("normal", new THREE.BufferAttribute(newNorms, 3))
     geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(mesh.uv!), 2))
     geometry.setIndex(mesh.indices!)
 }

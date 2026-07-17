@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
 import MatchMode from "@/systems/match_mode/MatchMode"
