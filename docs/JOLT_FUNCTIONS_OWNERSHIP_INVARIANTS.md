@@ -479,10 +479,7 @@ Obtained from `PhysicsSystem.GetNarrowPhaseQuery()` (an `INTERNAL_REF`). Do not 
   - Arguments
     - `material`: **CONSUMED** (not CLONED) — the list `AddRef()`s it, taking a reference. The
       caller must **not** `destroy()` it afterward: `JOLT.destroy()` is a raw `delete`, ignores
-      the refcount, and frees memory the list still points to. Confirmed via real-WASM test
-      (`fission/src/test/physics/JoltPushBackOwnership.test.ts`): refcount reads `0` → `1` after
-      push_back, then garbage after `destroy()` + heap churn. See
-      `JOLT_REFCOUNTED_DESTROY_SEMANTICS.md`.
+      the refcount, and frees memory the list still points to. See `JOLT_REFCOUNTED_DESTROY_SEMANTICS.md`.
   - Returns: `NONE`
 
 ## PhysicsSettings
