@@ -1,4 +1,4 @@
-import { Stack, TextField } from "@mui/material"
+import { Box, Stack, TextField } from "@mui/material"
 import { useCallback, useState } from "react"
 import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -35,6 +35,7 @@ interface SpawnSlot {
     id: string
     label: string
     path: SpawnSlotPath
+    alliance?: Alliance
 }
 
 function getSpawnLocation(locations: SpawnLocations, path: SpawnSlotPath): SpawnLocation {
@@ -50,6 +51,15 @@ function capitalize(word: string): string {
     return word[0].toUpperCase() + word.slice(1)
 }
 
+const ALLIANCE_COLORS: Record<Alliance, string> = {
+    red: "redAlliance.main",
+    blue: "blueAlliance.main",
+}
+
+function allianceColor(alliance: Alliance | undefined): string {
+    return alliance ? ALLIANCE_COLORS[alliance] : "grey.500"
+}
+
 /** Every configurable spawn slot: the default location, then each alliance's stations. */
 const SPAWN_SLOTS: SpawnSlot[] = [
     { id: "default", label: "Default", path: "default" },
@@ -59,6 +69,7 @@ const SPAWN_SLOTS: SpawnSlot[] = [
                 id: `${alliance}-${station}`,
                 label: `${capitalize(alliance)} Station ${station}`,
                 path: { alliance, station },
+                alliance,
             })
         )
     ),
@@ -84,17 +95,24 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, locations, onEdit })
 
     return (
         <ScrollView>
-            <Stack gap={4}>
+            <Stack gap={2}>
                 {SPAWN_SLOTS.map(slot => (
-                    <Stack direction="row" key={slot.id} justifyContent="space-between" alignItems="center" gap="1rem">
-                        <Label size="sm">{slot.label}</Label>
-                        <EditButton
-                            onClick={() => {
-                                saveEvent()
-                                onEdit(slot)
-                            }}
-                        />
-                    </Stack>
+                    <Box sx={{ bgcolor: "background.paper", p: 2, borderRadius: 5, width: "100%" }} key={slot.id}>
+                        <Stack direction="row" gap={2}>
+                            <Box className="w-12 rounded-lg" sx={{ bgcolor: allianceColor(slot.alliance) }} />
+                            <Stack direction="column" justifyContent="space-evenly">
+                                <Label size="md">{slot.label}</Label>
+                            </Stack>
+                            <Stack direction="column" justifyContent="space-evenly" ml="auto">
+                                <EditButton
+                                    onClick={() => {
+                                        saveEvent()
+                                        onEdit(slot)
+                                    }}
+                                />
+                            </Stack>
+                        </Stack>
+                    </Box>
                 ))}
             </Stack>
         </ScrollView>
