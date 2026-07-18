@@ -463,7 +463,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     }, [selectedAssembly])
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Wiring Panel" }, { onBeforeAccept: save })
+        configureScreen(panel!, { title: "Wiring Panel", acceptText: "Apply" }, { onBeforeAccept: save })
     }, [save])
 
     return (
