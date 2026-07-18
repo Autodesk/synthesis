@@ -715,7 +715,7 @@ export class CustomFieldViewControls extends CameraControls {
 
     /** World position of the point's authored anchor, before the accumulated zoom offset. */
     private anchorPosition(field: MirabufSceneObject, point: CameraPoint): THREE.Vector3 {
-        const fieldRef = field.getPositionTransform(new THREE.Vector3())
+        const fieldRef = field.getXZPositionTransform(new THREE.Vector3())
         return fieldRef.add(new THREE.Vector3(...point.pos))
     }
 
@@ -760,12 +760,12 @@ export class CustomFieldViewControls extends CameraControls {
     /** Resolves the world point the camera should face, or undefined for a fixed-rotation point. */
     private resolveLookTarget(): THREE.Vector3 | undefined {
         if (!this._field || !this._point) return undefined
-        if (this._focusRobot) return this._focusRobot.getPositionTransform(new THREE.Vector3())
+        if (this._focusRobot) return this._focusRobot.getXZPositionTransform(new THREE.Vector3())
 
         const look = this._point.look
         switch (look.type) {
             case "field":
-                return this._field.getPositionTransform(new THREE.Vector3())
+                return this._field.getXZPositionTransform(new THREE.Vector3())
             case "rotation":
                 return undefined
         }
@@ -779,7 +779,7 @@ export class CustomFieldViewControls extends CameraControls {
 
         this.updateDollyZoom(deltaT)
 
-        const fieldRef = this._field.getPositionTransform(new THREE.Vector3())
+        const fieldRef = this._field.getXZPositionTransform(new THREE.Vector3())
         this._mainCamera.position.set(
             fieldRef.x + this._point.pos[0] + this._viewOffset.x,
             fieldRef.y + this._point.pos[1] + this._viewOffset.y,
