@@ -1,4 +1,5 @@
 // biome-ignore-all lint/style/useNamingConvention: Match Jolt functions
+import JOLT from "@/util/loading/JoltSyncLoader"
 import { vi } from "vitest"
 
 interface Vec3Mock {
@@ -48,23 +49,37 @@ export function createQuatMock() {
     }
 }
 
+export function createRotationMock() {
+    return {
+        ...createQuatMock(),
+        set: vi.fn(),
+        clone: vi.fn(() => ({ ...createQuatMock() })),
+        Inversed: vi.fn(() => JOLT.Mat44.prototype.sRotation(JOLT.Quat.prototype.sIdentity())),
+    }
+}
+
+export function createWorldTransform() {
+    return {
+        GetTranslation: vi.fn(() => createVec3Mock()),
+        GetQuaternion: vi.fn(() => createQuatMock()),
+        GetRotation: vi.fn(() => createRotationMock()),
+        MulMat44: vi.fn(() =>
+            JOLT.Mat44.prototype.sRotationTranslation(new JOLT.Quat(1, 1, 1, 1), new JOLT.Vec3(1, 1, 1))
+        ),
+        MulVec3: vi.fn(() => new JOLT.Vec3(1, 1, 1)),
+    }
+}
+
 export function createBodyMock() {
     return {
-        GetWorldTransform: vi.fn(() => ({
-            GetTranslation: vi.fn(() => createVec3Mock()),
-            GetQuaternion: vi.fn(() => createQuatMock()),
-        })),
+        GetWorldTransform: vi.fn(() => createWorldTransform()),
         GetTranslation: vi.fn(() => createVec3Mock()),
         GetQuaternion: vi.fn(() => createQuatMock()),
         GetCenterOfMassTransform: vi.fn(() => ({
             GetTranslation: vi.fn(() => createVec3Mock()),
             GetQuaternion: vi.fn(() => createQuatMock()),
         })),
-        GetRotation: vi.fn(() => ({
-            ...createQuatMock(),
-            set: vi.fn(),
-            clone: vi.fn(() => ({ ...createQuatMock() })),
-        })),
+        GetRotation: vi.fn(() => createRotationMock()),
         GetID: vi.fn(),
         IsActive: vi.fn(),
         IsRigidBody: vi.fn(),
@@ -83,5 +98,15 @@ export function createBodyMock() {
         SetLinearVelocity: vi.fn(),
         SetAngularVelocity: vi.fn(),
         GetAngularVelocity: vi.fn(() => createVec3Mock()),
+        GetWorldSpaceBounds: vi.fn(),
+        GetShape: vi.fn(() => {
+            const settings = new JOLT.BoxShapeSettings(new JOLT.Vec3(1, 1, 1))
+            const result = settings.Create()
+            const shape = result.Get()
+            settings.Release()
+
+            return shape
+        }),
+        GetPosition: vi.fn(() => new JOLT.Vec3(1, 1, 1)),
     }
 }

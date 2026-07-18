@@ -292,8 +292,6 @@ class MirabufParser {
                 if (!partInstance || this.globalTransforms.has(child.value!)) return
                 const mat = convertMirabufTransformToThreeMatrix(partInstance.transform!)!
 
-                // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
-
                 this._globalTransforms.set(child.value!, mat.premultiply(parent))
                 getTransforms(child, mat)
             })
@@ -308,8 +306,6 @@ class MirabufParser {
                 : def.baseTransform
                   ? convertMirabufTransformToThreeMatrix(def.baseTransform)
                   : new THREE.Matrix4().identity()
-
-            // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
 
             this._globalTransforms.set(partInstance.info!.GUID!, mat)
             getTransforms(child, mat)

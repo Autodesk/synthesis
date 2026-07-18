@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import { TextField } from "@mui/material"
 import { Stack, styled } from "@mui/system"
 import type React from "react"
