@@ -1,13 +1,13 @@
 import { Stack, Tooltip } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useState } from "react"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
 interface BehaviorCardProps {
     elementKey: number
@@ -142,14 +142,13 @@ function sortBehaviors(behaviors: SequentialBehaviorPreferences[]): SequentialBe
     return sortedBehaviors
 }
 
-interface SequentialBehaviorProps {
-    selectedRobot: MirabufSceneObject
-}
-
-const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selectedRobot }) => {
+const SequentialBehaviorsInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
+}) => {
     const [behaviors, setBehaviors] = useState<SequentialBehaviorPreferences[]>(
-        selectedRobot.robotPreferences.sequentialConfig ??
-            (selectedRobot.brain as SynthesisBrain).behaviors
+        selectedAssembly.robotPreferences.sequentialConfig ??
+            (selectedAssembly.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))
     )
@@ -161,11 +160,18 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
     }, false)
 
     const saveEvent = useCallback(() => {
-        if (selectedRobot === undefined || behaviors === undefined) return
+        if (selectedAssembly === undefined || behaviors === undefined) return
 
-        selectedRobot.robotPreferences.sequentialConfig = behaviors
-        selectedRobot.savePreferences()
-    }, [behaviors, selectedRobot])
+        selectedAssembly.robotPreferences.sequentialConfig = behaviors
+        selectedAssembly.savePreferences()
+    }, [behaviors, selectedAssembly])
+
+    useEffect(() => {
+        const originalPrefs = structuredClone(selectedAssembly.robotPreferences.sequentialConfig)
+        registerCleanupFunction(undefined, () => {
+            selectedAssembly.robotPreferences.sequentialConfig = originalPrefs
+        })
+    }, [registerCleanupFunction, selectedAssembly])
 
     useEffect(() => {
         return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
