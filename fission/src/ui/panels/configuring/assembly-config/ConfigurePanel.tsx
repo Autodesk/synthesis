@@ -144,12 +144,47 @@ interface ConfigInterfaceProps<T, P> {
     assembly: MirabufSceneObject
 }
 
+const ConfigureInterfaceSetControls = ({
+    brainIndex,
+    panel,
+    assembly,
+}: {
+    brainIndex: number
+    panel: UIScreen<void, ConfigurePanelCustomProps>
+    assembly: MirabufSceneObject
+}) => {
+    const { openPanel, closePanel } = useUIContext()
+
+    const [scheme, setScheme] = useState(InputSystem.brainIndexSchemeMap.get(brainIndex))
+    useEffect(() => {
+        if (!scheme) return
+        InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+    }, [scheme])
+
+    return (
+        <>
+            <Button
+                onClick={() => {
+                    setSpotlightAssembly(assembly)
+                    openPanel(ChooseInputSchemePanel, undefined, panel)
+                    closePanel(panel.id, CloseType.Overwrite)
+                }}
+            >
+                Set Scheme
+            </Button>
+            {scheme && (
+                <ConfigureSchemeInterface selectedScheme={scheme} setSelectedScheme={setScheme} panelId={panel?.id} />
+            )}
+        </>
+    )
+}
+
 const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomProps>> = ({
     panel,
     configMode,
     assembly,
 }) => {
-    const { openPanel, closePanel } = useUIContext()
+    const { closePanel } = useUIContext()
 
     useEffect(() => {
         if (configMode !== ConfigMode.MOVE) return
@@ -169,29 +204,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
             return <ConfigureSubsystemsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS: {
             const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
-            const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
-            const setScheme = (scheme: InputScheme) => InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
-
-            return (
-                <>
-                    <Button
-                        onClick={() => {
-                            setSpotlightAssembly(assembly)
-                            openPanel(ChooseInputSchemePanel, undefined, panel)
-                            closePanel(panel.id, CloseType.Overwrite)
-                        }}
-                    >
-                        Set Scheme
-                    </Button>
-                    {scheme && (
-                        <ConfigureSchemeInterface
-                            selectedScheme={scheme}
-                            setSelectedScheme={setScheme}
-                            panelId={panel?.id}
-                        />
-                    )}
-                </>
-            )
+            return <ConfigureInterfaceSetControls panel={panel} assembly={assembly} brainIndex={brainIndex} />
         }
         case ConfigMode.SEQUENTIAL:
             return <SequentialBehaviorsInterface selectedRobot={assembly} />
