@@ -1092,8 +1092,8 @@ class PhysicsSystem extends WorldSystem {
 
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
 
-                // Game pieces are allowed to sleep and spawn inactive
-                // they are placed at their resting position by MirabufSceneObject
+                // Game pieces are allowed to sleep, but are inactive by default
+                // they are placed at their initial position by their `MirabufSceneObject`
                 // which activates them.
                 this._joltBodyInterface.AddBody(
                     body.GetID(),
