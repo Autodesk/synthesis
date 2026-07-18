@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react-swc"
 import * as path from "path"
 import { loadEnv, type ProxyOptions } from "vite"
 import glsl from "vite-plugin-glsl"
-import { defineConfig } from "vitest/config"
+import { configDefaults, defineConfig } from "vitest/config"
 import type { TestRunEndReason } from "vitest/node"
 
 const basePath = "/fission/"
@@ -81,57 +81,93 @@ export default defineConfig(async ({ mode }) => {
               changeOrigin: true,
               secure: true,
           }
+    const baseAliases = [
+        { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+        { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+        { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+        { find: "@", replacement: path.resolve(__dirname, "src") },
+    ]
+
     return {
         plugins: plugins,
         publicDir: "./public",
         resolve: {
-            alias: [
-                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
-                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
-                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
-                { find: "@", replacement: path.resolve(__dirname, "src") },
-            ],
+            alias: baseAliases,
         },
         define: {
             GIT_COMMIT: JSON.stringify(await getCommitHash()),
         },
         test: {
-            setupFiles: ["src/test/TestSetup.browser.ts"],
-            globalSetup: ["src/test/TestSetup.server.ts"],
-            testTimeout: 10000,
-            globals: true,
-            environment: "jsdom",
-            reporters: process.env.GITHUB_ACTIONS
-                ? [
-                      "github-actions",
-                      "default",
-                      {
-                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
-                              if (reason === "passed" && unhandled.length === 0) {
-                                  console.error("GH ACTIONS VITEST PASSED")
-                              } else {
-                                  console.error(unhandled)
-                              }
-                          },
-                      },
-                  ]
-                : ["default"],
-            browser: {
-                enabled: true,
-                provider: "playwright",
-                instances: [
-                    {
-                        name: "chromium",
-                        browser: "chromium",
-                        headless: true,
+            projects: [
+                {
+                    extends: true,
+                    test: {
+                        name: "fission",
+                        setupFiles: ["src/test/TestSetup.browser.ts"],
+                        globalSetup: ["src/test/TestSetup.server.ts"],
+                        testTimeout: 10000,
+                        globals: true,
+                        environment: "jsdom",
+                        // Real Jolt WASM memory audit suite runs under its own "jolt-memory-audit"
+                        // project (plain Node, no jsdom/Playwright) — see that project below.
+                        exclude: [...configDefaults.exclude, "src/test/jolt-memory-audit/**"],
+                        reporters: process.env.GITHUB_ACTIONS
+                            ? [
+                                  "github-actions",
+                                  "default",
+                                  {
+                                      onTestRunEnd(
+                                          _modules: unknown,
+                                          unhandled: unknown[],
+                                          reason: TestRunEndReason,
+                                      ) {
+                                          if (reason === "passed" && unhandled.length === 0) {
+                                              console.error("GH ACTIONS VITEST PASSED")
+                                          } else {
+                                              console.error(unhandled)
+                                          }
+                                      },
+                                  },
+                              ]
+                            : ["default"],
+                        browser: {
+                            enabled: true,
+                            provider: "playwright",
+                            instances: [
+                                {
+                                    name: "chromium",
+                                    browser: "chromium",
+                                    headless: true,
+                                },
+                                {
+                                    name: "firefox",
+                                    browser: "firefox",
+                                    headless: true,
+                                },
+                            ],
+                        },
                     },
-                    {
-                        name: "firefox",
-                        browser: "firefox",
-                        headless: true,
+                },
+                {
+                    extends: true,
+                    resolve: {
+                        alias: process.env.JOLT_ASAN_DIST
+                            ? [
+                                  ...baseAliases,
+                                  { find: "@synthesis.adsk/jolt-physics", replacement: process.env.JOLT_ASAN_DIST },
+                              ]
+                            : baseAliases,
                     },
-                ],
-            },
+                    test: {
+                        name: "jolt-memory-audit",
+                        include: ["src/test/jolt-memory-audit/**/*.test.ts"],
+                        setupFiles: ["src/test/jolt-memory-audit/setup.ts"],
+                        testTimeout: 10000,
+                        globals: true,
+                        environment: "jsdom",
+                    },
+                },
+            ],
         },
         build: {
             target: "esnext",
