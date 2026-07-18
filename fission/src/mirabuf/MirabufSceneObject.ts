@@ -60,7 +60,12 @@ import FieldMiraEditor from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
 import MirabufCachingService, { type MirabufCacheID, MiraType } from "./MirabufLoader"
-import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
+import MirabufParser, {
+    DEBUG_GAMEPIECE,
+    ParseErrorSeverity,
+    type RigidNodeId,
+    type RigidNodeReadOnly,
+} from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
@@ -337,6 +342,23 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._basePositionTransform = this.getPositionTransform()
 
         this.moveToSpawnLocation()
+
+        // detects any rendered field part orphaned from a live rigid node, a static phantom duplicate
+        if (this.miraType === MiraType.FIELD && DEBUG_GAMEPIECE) {
+            const liveRigidNodeIds = new Set(this.mirabufInstance.parser.rigidNodes.keys())
+            this.mirabufInstance.meshes.forEach((_batches, partGuid) => {
+                const owningNode = this.mirabufInstance.parser.partToNodeMap.get(partGuid)
+                if (owningNode && liveRigidNodeIds.has(owningNode.id)) return
+
+                const transform = this.mirabufInstance.parser.globalTransforms.get(partGuid)
+                const pos = transform ? new THREE.Vector3().setFromMatrixPosition(transform) : undefined
+                console.warn(
+                    `[dev-GamePiece] Orphaned/phantom part rendered by field '${this.assemblyName}': ` +
+                        `guid=${partGuid}, owningRigidNodeId=${owningNode?.id ?? "none"} (not live), ` +
+                        `frozen position: x=${pos?.x}, y=${pos?.y}, z=${pos?.z}`
+                )
+            })
+        }
 
         const targetControls = getTargetControls()
         if (targetControls && this.isOwnObject && (this.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {

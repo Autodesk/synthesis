@@ -15,6 +15,8 @@ export enum ParseErrorSeverity {
 export const GROUNDED_JOINT_ID = "grounded"
 export const GAMEPIECE_SUFFIX = "_gp"
 
+export const DEBUG_GAMEPIECE = import.meta.env.VITE_DEBUG_GAMEPIECE === "true"
+
 export type ParseError = [severity: ParseErrorSeverity, message: string]
 
 /**
@@ -229,14 +231,43 @@ class MirabufParser {
                 const allParts = [...gpRn.parts]
                 this.deleteRigidNode(gpRn)
 
-                // Delete partInstances
-                Object.entries(this._assembly.data?.parts?.partInstances ?? {})
-                    .filter(([_key, subInst]) => inst === subInst)
-                    .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
-
-                // Assumes that the game piece is composed of one instance
+                // Assumes that the game piece is composed of one instance. Build before deleting below
+                // convertPartInstanceToAssembly reads these same partInstances entries.
                 const worldTransform = this._globalTransforms.get(inst.info!.GUID!)
-                return this.convertPartInstanceToAssembly(inst, instNode, allParts, false, true, worldTransform)
+                const gamePieceAssembly = this.convertPartInstanceToAssembly(
+                    inst,
+                    instNode,
+                    allParts,
+                    false,
+                    true,
+                    worldTransform
+                )
+
+                // Skip deleting bystanders shared with a joint rigidGroup (bandageRigidNodes could
+                // otherwise silently re-merge a dangling reference into live field structure).
+                const rigidGroups = this._assembly.data?.joints?.rigidGroups ?? []
+                const entangled = new Set(
+                    allParts.filter(guid => {
+                        const partInst = this._assembly.data?.parts?.partInstances?.[guid]
+                        const isBystander =
+                            !partInst || !gamepieceDefinitions.has(partInst.partDefinitionReference ?? "")
+                        return isBystander && rigidGroups.some(rg => rg.occurrences?.includes(guid))
+                    })
+                )
+
+                if (entangled.size > 0 && DEBUG_GAMEPIECE) {
+                    console.warn(
+                        `[dev-GamePiece] '${inst.info!.name}' kept ${entangled.size} part(s) behind in the ` +
+                            `field (entangled with a joint rigidGroup, unsafe to delete): ${JSON.stringify([...entangled])}`
+                    )
+                }
+
+                allParts.forEach(guid => {
+                    if (entangled.has(guid)) return
+                    delete this._assembly.data?.parts?.partInstances?.[guid]
+                })
+
+                return gamePieceAssembly
             })
             .filter(asm => asm != undefined)
 
@@ -353,6 +384,15 @@ class MirabufParser {
                 // Occurrence may have been extracted as a game piece, leaving no rigid node
                 const currentRn = this._partToNodeMap.get(y)
                 if (!currentRn) return
+
+                // deleteRigidNode doesn't clean up _partToNodeMap, so currentRn can be stale/orphaned
+                if (!this._rigidNodes.includes(currentRn) && DEBUG_GAMEPIECE) {
+                    console.warn(
+                        `[dev-GamePiece] bandageRigidNodes: occurrence '${y}' resolves to stale/orphaned ` +
+                            `rigid node '${currentRn.id}' (not in _rigidNodes) with parts=` +
+                            `${JSON.stringify([...currentRn.parts])}, about to rescue-merge into the live graph`
+                    )
+                }
 
                 rn = !rn ? currentRn : currentRn.id != rn.id ? this.mergeRigidNodes(currentRn, rn) : rn
             })
