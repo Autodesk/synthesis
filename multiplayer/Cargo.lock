@@ -225,7 +225,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "multiplayer-server"
+name = "multiplayer"
 version = "0.1.0"
 dependencies = [
  "futures-channel",
