@@ -23,7 +23,7 @@ describe.skipIf(server.browser == "firefox")("Real Load Assets", () => {
         ["/api/mira/private/Multi-Joint Wheels v0.mira", MiraType.ROBOT, "Multi-Joint Wheels"],
         ["/api/mira/fields/FRC Field 2023 v8.mira", MiraType.FIELD, "2023 Field"],
     ]
-    test.for(tests)("Loads $2", {timeout:20000}, async ([url, miratype]) => {
+    test.for(tests)("Loads $2", { timeout: 20000 }, async ([url, miratype]) => {
         const info = await MirabufLoader.cacheRemote(url, miratype)
         expect(info).toBeDefined()
         const assembly = await MirabufLoader.get(info!.hash)
