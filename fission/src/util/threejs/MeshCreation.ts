@@ -127,9 +127,10 @@ export function deltaFieldTransformsPhysicalProp(
     const rotation = new THREE.Quaternion(0, 0, 0, 1)
     const scale = new THREE.Vector3(1, 1, 1)
     zoneTransformation.decompose(translation, rotation, scale)
+
     return {
-        translation: translation,
-        rotation: rotation,
-        scale: scale,
+        translation,
+        rotation,
+        scale,
     }
 }
