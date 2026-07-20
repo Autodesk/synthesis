@@ -3,6 +3,7 @@ import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
 import {ProgressHandle} from "@/components/ProgressNotificationData.ts";
+import {yieldToMain} from "@/util/Utility.ts";
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "gltf", "bin"])
 
@@ -110,12 +111,12 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string, progressHa
 
         const [urdfText, meshFiles] = await Promise.all([urdfEntry.async("text"), buildMeshMap(zip, urdfEntry.name)])
         progressHandle?.update("Loaded meshes", 0.3)
-        await scheduler.yield()
+        await yieldToMain()
 
         validateURDFMeshFormats(urdfText)
 
         const assembly = await convertURDF(urdfText, meshFiles, progressHandle)
-        await scheduler.yield()
+        await yieldToMain()
 
         detectAndTagWheels(assembly)
 

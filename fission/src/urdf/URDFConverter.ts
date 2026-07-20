@@ -6,6 +6,7 @@ import { parseSTL, type ParsedMesh } from "./STLParser"
 import { URDF_IMPORT_TAG } from "./URDFUserData"
 import type {ProgressHandle} from "@/components/ProgressNotificationData.ts";
 import 'scheduler-polyfill';
+import {yieldToMain} from "@/util/Utility.ts";
 
 
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
@@ -847,6 +848,8 @@ function buildJoints(
     return { jointDefinitions, jointInstances }
 }
 
+
+
 export async function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>, progressHandle?:ProgressHandle): Promise<mirabuf.Assembly> {
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
 
@@ -857,7 +860,7 @@ export async function convertURDF(urdfText: string, meshFiles: Map<string, Uint8
     const links = extractLinks(doc)
     const joints = extractJoints(doc)
 
-    await scheduler.yield()
+    await yieldToMain()
 
     if (links.length === 0) throw new Error("URDF contains no <link> elements")
 
@@ -870,7 +873,7 @@ export async function convertURDF(urdfText: string, meshFiles: Map<string, Uint8
     // rigidGroups must be computed before physicsJoints — filtering depends on group membership.
     // Must be an array (not undefined): bandageRigidNodes calls .forEach on it directly.
     const { rigidGroups, linkToGroup } = buildRigidGroups(links, joints)
-    await scheduler.yield()
+    await yieldToMain()
 
     // Map each ungrouped link to itself so we can identify within-group joints.
     for (const link of links) {
@@ -888,23 +891,23 @@ export async function convertURDF(urdfText: string, meshFiles: Map<string, Uint8
     // their correct spatial matrices derived from their original parent joints.
     const { partDefinitions, partInstances } = buildParts(links, rootLink, joints, meshFiles)
     progressHandle?.update("Built parts", 0.5)
-    await scheduler.yield()
+    await yieldToMain()
 
     const appearances = buildAppearances(links, doc)
-    await scheduler.yield()
+    await yieldToMain()
 
     const jointFrames = buildGlobalJointFrames(joints, rootLink.name)
-    await scheduler.yield()
+    await yieldToMain()
 
     const { jointDefinitions, jointInstances } = buildJoints(physicsJoints, rootLink, jointFrames)
-    await scheduler.yield()
+    await yieldToMain()
 
     // The design hierarchy must stay complete even when physics joints are filtered out.
     // MirabufParser builds _partToNodeMap by walking this tree, and rigidGroups may still
     // reference links connected by filtered fixed/loop-closure joints.
     const hierarchy = buildDesignHierarchy(joints, rootLink.name)
     progressHandle?.update("Built design hierarchy", 0.7)
-    await scheduler.yield()
+    await yieldToMain()
 
     return mirabuf.Assembly.create({
         info: { GUID: uuidv4(), name: robotName, version: 5 },
