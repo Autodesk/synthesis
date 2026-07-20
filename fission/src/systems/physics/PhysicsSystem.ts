@@ -1096,10 +1096,6 @@ class PhysicsSystem extends WorldSystem {
                     rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
                     rnLayer
                 )
-                if (rn.isDynamic) {
-                    // prevents fast bodies from phasing through thin static geometry (like ramps on fields)
-                    bodySettings.mMotionQuality = JOLT.EMotionQuality_LinearCast
-                }
 
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
 
