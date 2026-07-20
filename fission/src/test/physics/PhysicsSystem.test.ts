@@ -1,10 +1,10 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
-import { afterEach, assert, beforeEach, describe, expect, test } from "vitest"
+import { afterEach, assert, beforeEach, describe, expect, test, vi } from "vitest"
 import { GAMEPIECE_SUFFIX } from "@/mirabuf/MirabufParser"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import PhysicsSystem, { LayerReserve } from "../../systems/physics/PhysicsSystem"
+import PhysicsSystem, { LayerReserve, MAX_SUBSTEP_PERIOD } from "../../systems/physics/PhysicsSystem"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 
 describe("Physics Sanity Checks", () => {
@@ -672,6 +672,92 @@ describe("Update Loop", () => {
         system.update(0.001) // Very small delta time
 
         expect(body.GetPosition().GetY()).toBeLessThanOrEqual(10)
+    })
+})
+
+describe("Real-Time Stepping", () => {
+    let system: PhysicsSystem
+
+    beforeEach(() => {
+        system = new PhysicsSystem()
+    })
+
+    afterEach(() => {
+        system.destroy()
+    })
+
+    function spyOnStep() {
+        return vi.spyOn(system["_joltInterface"], "Step")
+    }
+
+    function spawnActiveBoxes(count: number) {
+        for (let i = 0; i < count; i++) {
+            const body = system.createBox(
+                new THREE.Vector3(0.5, 0.5, 0.5),
+                1.0,
+                new THREE.Vector3((i % 10) * 2, 10 + Math.floor(i / 10) * 2, 0),
+                undefined
+            )
+            system.addBodyToSystem(body.GetID(), true)
+        }
+    }
+
+    test("simulates the full frame time at the intended resolution when unloaded", () => {
+        spawnActiveBoxes(1)
+        const step = spyOnStep()
+
+        system.update(1 / 60)
+
+        expect(step).toHaveBeenCalledWith(1 / 60, 20)
+    })
+
+    test("simulates the full frame time even when many bodies are active", () => {
+        spawnActiveBoxes(100)
+        const step = spyOnStep()
+
+        system.update(1 / 60)
+
+        expect(step).toHaveBeenCalledTimes(1)
+        const [simTime, collisionSteps] = step.mock.calls[0]
+        expect(simTime).toBe(1 / 60)
+        expect(collisionSteps).toBeLessThan(20)
+    })
+
+    test("the step budget never coarsens the substep past the stability ceiling", () => {
+        spawnActiveBoxes(300)
+        const step = spyOnStep()
+
+        system.update(1 / 60)
+
+        expect(step).toHaveBeenCalledTimes(1)
+        const [simTime, collisionSteps] = step.mock.calls[0]
+        expect(simTime).toBe(1 / 60)
+        expect(simTime / collisionSteps).toBeLessThanOrEqual(MAX_SUBSTEP_PERIOD)
+    })
+
+    test("caps a huge hitch at the catch-up ceiling instead of spiraling", () => {
+        spawnActiveBoxes(1)
+        const step = spyOnStep()
+
+        system.update(10)
+
+        expect(step).toHaveBeenCalledWith(4 / 60, 20)
+    })
+
+    test("always simulates min(frame time, cap) across frame times and loads", () => {
+        spawnActiveBoxes(40)
+        const step = spyOnStep()
+
+        const frameTimes = [1 / 240, 1 / 120, 1 / 60, 1 / 30, 1 / 15, 0.5]
+        for (const deltaT of frameTimes) {
+            system.update(deltaT)
+        }
+
+        expect(step.mock.calls.length).toBe(frameTimes.length)
+        for (let i = 0; i < frameTimes.length; i++) {
+            const [simTime] = step.mock.calls[i]
+            expect(simTime).toBe(Math.min(frameTimes[i], 4 / 60))
+        }
     })
 })
 

@@ -69,6 +69,7 @@ const MAX_COLLISIONS_STEPS = 20
 // step count will scale depending on how many active bodies
 // there currently are
 const ACTIVE_BODY_STEP_BUDGET = 600
+export const MAX_SUBSTEP_PERIOD = 1.0 / 300.0
 // maximum amount of simulation time that can be consumed per render
 // for catching up to slow frame
 const MAX_SIMULATION_TIME_PER_FRAME = 4 * STANDARD_SIMULATION_PERIOD
@@ -1442,7 +1443,11 @@ class PhysicsSystem extends WorldSystem {
             const desiredSteps = Math.ceil(simTime / MAX_COLLISIONS_STEP_PERIOD)
             const activeBodies = this._joltPhysSystem.GetNumActiveBodies(JOLT.EBodyType_RigidBody)
             const affordableSteps = Math.floor(ACTIVE_BODY_STEP_BUDGET / Math.max(activeBodies, 1))
-            const collisionSteps = Math.max(1, Math.min(MAX_COLLISIONS_STEPS, desiredSteps, affordableSteps))
+            const minStableSteps = Math.ceil(simTime / MAX_SUBSTEP_PERIOD)
+            const collisionSteps = Math.max(
+                1,
+                Math.min(MAX_COLLISIONS_STEPS, desiredSteps, Math.max(affordableSteps, minStableSteps))
+            )
             this._joltInterface.Step(simTime, collisionSteps)
         }
 
