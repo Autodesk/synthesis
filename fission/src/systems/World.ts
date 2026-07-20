@@ -13,7 +13,7 @@ import SimulationSystem from "./simulation/SimulationSystem"
 
 
 class World {
-    private static _instance: World
+    private static _instance?: World
 
     private _isAlive: boolean = false
     private _clock: THREE.Clock
@@ -39,26 +39,26 @@ class World {
     }
 
     public static get accumTimes() {
-        return this._instance?._accumTimes
+        return this._instance?._accumTimes!
     }
 
     public static get isAlive() {
-        return this._instance?._isAlive
+        return this._instance?._isAlive ?? false
     }
 
     public static get sceneRenderer() {
-        return this._instance?._sceneRenderer
+        return this._instance?._sceneRenderer!
     }
 
     public static get physicsSystem() {
-        return this._instance?._physicsSystem
+        return this._instance?._physicsSystem!
     }
 
     public static get simulationSystem() {
-        return this._instance?._simulationSystem
+        return this._instance?._simulationSystem!
     }
     public static get inputSystem() {
-        return this._instance?._inputSystem
+        return this._instance?._inputSystem!
     }
     public static get multiplayerSystem() {
         return this._instance?._multiplayerSystem
@@ -82,7 +82,7 @@ class World {
     }
 
     public static resetAccumTimes() {
-        this._instance._accumTimes = {
+        this._instance!._accumTimes! = {
             frames: 0,
             sceneTime: 0,
             physicsTime: 0,
@@ -93,7 +93,7 @@ class World {
     }
 
     public static setMultiplayerSystem(multiplayerSystem?: MultiplayerSystem) {
-        this._instance._multiplayerSystem = multiplayerSystem
+        this._instance!._multiplayerSystem = multiplayerSystem
     }
 
     public constructor() {
@@ -121,7 +121,6 @@ class World {
             if (import.meta.env.DEV) {
                 window.World = World
             }
-            ScoreTracker.resetScores()
         }
     }
 
@@ -142,7 +141,8 @@ class World {
     }
 
     public static destroyWorld() {
-        this._instance.destroy()
+        this._instance?.destroy()
+        this._instance = undefined
     }
 
     public update() {
@@ -166,11 +166,11 @@ class World {
     }
 
     public static updateWorld() {
-        this._instance.update()
+        this._instance?.update()
     }
 
     public static get currentDeltaT(): number {
-        return this._instance._currentDeltaT
+        return this._instance?._currentDeltaT!
     }
 
     private time(func: () => void): number {
@@ -185,7 +185,6 @@ export default World
 
 if (import.meta.hot) {
     // Restore the instance that survived the HMR reload
-    console.log("HOT!", import.meta.hot)
     if (import.meta.hot.data.world) {
         World["_instance"] = import.meta.hot.data.world
         console.log("HOTL!", import.meta.hot.data.world)
@@ -194,7 +193,6 @@ if (import.meta.hot) {
     // Stash the instance before the module is replaced
     import.meta.hot.on("vite:beforeUpdate", () => {
         import.meta.hot!.data.world = World["_instance"]
-        console.log("HOTBYU!", import.meta.hot!.data.world)
     })
 
 }
