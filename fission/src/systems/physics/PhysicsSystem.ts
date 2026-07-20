@@ -104,13 +104,6 @@ function computeSphericity(volume: number, area: number): number {
     return volumeEquivalentSphereArea / area
 }
 
-// simulation period. actual step length tracks the rendered
-// frame time (PhysicsSystem.update), so stable constant keeps
-// driver stiffness independent of construction-time frame rate.
-export function getLastDeltaT(): number {
-    return STANDARD_SIMULATION_PERIOD
-}
-
 // Friction constants
 const FLOOR_FRICTION = 0.7
 const DEFAULT_FRICTION = 0.7

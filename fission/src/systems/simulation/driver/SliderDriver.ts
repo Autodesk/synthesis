@@ -1,6 +1,6 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
-import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
+import { STANDARD_SIMULATION_PERIOD } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { type NoraNumber, NoraTypes } from "../Nora"
@@ -69,7 +69,7 @@ class SliderDriver extends Driver {
 
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
-        springSettings.mFrequency = 20 * (1.0 / getLastDeltaT())
+        springSettings.mFrequency = 20 * (1.0 / STANDARD_SIMULATION_PERIOD)
         springSettings.mDamping = 0.999
         motorSettings.mSpringSettings = springSettings
 

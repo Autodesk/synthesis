@@ -6,7 +6,7 @@ vi.mock("@/systems/physics/PhysicsSystem", () => ({
         update: vi.fn(),
         destroy: vi.fn(),
     })),
-    getLastDeltaT: vi.fn(() => 0.016),
+    STANDARD_SIMULATION_PERIOD: 1.0 / 60.0,
     BodyAssociate: vi.fn(),
 }))
 
