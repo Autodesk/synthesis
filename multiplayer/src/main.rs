@@ -1,12 +1,16 @@
 mod messaging;
 mod room;
+mod tui;
 
 use futures_util::SinkExt;
 use futures_util::StreamExt;
 use log::error;
 use log::info;
+use std::env;
+use std::process;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::thread;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
@@ -19,13 +23,25 @@ const PORT: u32 = 9002;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // We want the infrastructure for multiple room creation
-    // but at the moment only one room per server will be supported
     let state = Arc::new(Mutex::new(State::new()));
 
     let addr = format!("127.0.0.1:{PORT}");
     let listener = TcpListener::bind(&addr).await?;
     println!("Server listening on port {PORT}");
+
+    if env::args().any(|a| a == "--tui") {
+        let tui_state_handle = state.clone();
+
+        // On an OS thread because crossterm (and thus ratatui) will block on user input
+        // So it wouldn't play nice with tokio's runtime, which expects yielding
+        thread::spawn(move || {
+            if let Err(e) = tui::run(tui_state_handle) {
+                eprintln!("TUI error: {e}");
+            }
+
+            process::exit(0);
+        });
+    }
 
     while let Ok((stream, _)) = listener.accept().await {
         tokio::spawn(handle_connection(state.clone(), stream));
@@ -45,6 +61,10 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
         .expect("Error during websocket handshake");
 
     info!("New WebSoccket connection: {addr}");
+    state
+        .lock()
+        .unwrap()
+        .system_log(format!("connection from {addr}"));
 
     // Each client gets an mpsc channel
     // Other client threads on the server can write to it
@@ -67,12 +87,20 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     // Parse initial message, then user in correct room
     let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
         error!("Client disconnected before first message");
+        state
+            .lock()
+            .unwrap()
+            .system_log(format!("{addr} disconnected before handshake"));
         return;
     };
 
     let Ok(initial_message) = serde_json::from_str::<InitialMessage>(&initial_message_string)
     else {
         error!("Invalid initial message");
+        state
+            .lock()
+            .unwrap()
+            .system_log(format!("{addr} sent an invalid initial message"));
         return;
     };
 
@@ -100,7 +128,12 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
                 let senders: Vec<ClientSender> = {
                     // The lock is relinquished after senders are retreived
                     let mut guard = state.lock().unwrap();
-                    guard.get_senders_from_user_room(addr)
+                    let senders = guard.get_senders_from_user_room(addr);
+                    guard.log_user_room(
+                        addr,
+                        format!("relayed {} bytes to {} peer(s)", text.len(), senders.len()),
+                    );
+                    senders
                 };
 
                 for tx in senders {
