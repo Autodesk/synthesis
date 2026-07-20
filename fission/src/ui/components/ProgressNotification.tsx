@@ -124,6 +124,7 @@ const ProgressNotifications: React.FC = () => {
 
     useEffect(() => {
         return EventSystem.listen("ProgressEvent", handle => {
+            console.log("Progress", handle.message, handle.progress)
             if (handle.status > 0) {
                 setTimeout(() => handleMap.delete(handle.handleId) && updateProgressElements(), 2000)
             }

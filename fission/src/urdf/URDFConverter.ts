@@ -4,7 +4,9 @@ import { parseGLTF } from "./GLTFParser"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
 import { URDF_IMPORT_TAG } from "./URDFUserData"
-import {ProgressHandle} from "@/components/ProgressNotificationData.ts";
+import type {ProgressHandle} from "@/components/ProgressNotificationData.ts";
+import 'scheduler-polyfill';
+
 
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
 // Frame change matrix: Rx(-90°) = [[1,0,0],[0,0,1],[0,-1,0]]
@@ -845,18 +847,17 @@ function buildJoints(
     return { jointDefinitions, jointInstances }
 }
 
-export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>, progressHandle?:ProgressHandle): mirabuf.Assembly {
+export async function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>, progressHandle?:ProgressHandle): Promise<mirabuf.Assembly> {
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
 
     const parseError = doc.querySelector("parsererror")
     if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
 
     const robotName = doc.querySelector("robot")?.getAttribute("name") ?? "robot"
-    console.log(doc.querySelector("robot"))
     const links = extractLinks(doc)
     const joints = extractJoints(doc)
 
-    console.timeLog("URDF Import", "Extracted from XML")
+    await scheduler.yield()
 
     if (links.length === 0) throw new Error("URDF contains no <link> elements")
 
@@ -869,12 +870,12 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     // rigidGroups must be computed before physicsJoints — filtering depends on group membership.
     // Must be an array (not undefined): bandageRigidNodes calls .forEach on it directly.
     const { rigidGroups, linkToGroup } = buildRigidGroups(links, joints)
+    await scheduler.yield()
 
     // Map each ungrouped link to itself so we can identify within-group joints.
     for (const link of links) {
         if (!linkToGroup.has(link.name)) linkToGroup.set(link.name, link.name)
     }
-    console.timeLog("URDF Import", "Built Groups")
 
     // Physics joints: exclude loop closure joints (no real DOF, now merged into rigid groups)
     // and joints whose both endpoints are in the same rigid group (within-body constraints
@@ -886,19 +887,25 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     // buildParts uses original joints for transform computation — phantom links still need
     // their correct spatial matrices derived from their original parent joints.
     const { partDefinitions, partInstances } = buildParts(links, rootLink, joints, meshFiles)
-    progressHandle?.update("Built parts", 0.8)
+    progressHandle?.update("Built parts", 0.5)
+    await scheduler.yield()
+
     const appearances = buildAppearances(links, doc)
-    console.timeLog("URDF Import", "Built Appearances")
+    await scheduler.yield()
+
     const jointFrames = buildGlobalJointFrames(joints, rootLink.name)
+    await scheduler.yield()
 
     const { jointDefinitions, jointInstances } = buildJoints(physicsJoints, rootLink, jointFrames)
+    await scheduler.yield()
 
-    console.timeLog("URDF Import", "Built Joints")
     // The design hierarchy must stay complete even when physics joints are filtered out.
     // MirabufParser builds _partToNodeMap by walking this tree, and rigidGroups may still
     // reference links connected by filtered fixed/loop-closure joints.
     const hierarchy = buildDesignHierarchy(joints, rootLink.name)
-    console.timeLog("URDF Import", "Built hierarchy")
+    progressHandle?.update("Built design hierarchy", 0.7)
+    await scheduler.yield()
+
     return mirabuf.Assembly.create({
         info: { GUID: uuidv4(), name: robotName, version: 5 },
         dynamic: true,
