@@ -132,6 +132,14 @@ export default defineConfig(async ({ mode }) => {
                     },
                 ],
             },
+            coverage: {
+                provider: "istanbul",
+                reporter: ["text", "html"] as const,
+                reportsDirectory: "./coverage",
+                include: ["src/**/*.{ts,tsx}"],
+                exclude: ["src/test/**", "src/proto/**"],
+                reportOnFailure: true,
+            },
         },
         build: {
             target: "esnext",
