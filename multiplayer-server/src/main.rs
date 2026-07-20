@@ -1,38 +1,40 @@
 mod messaging;
 mod room;
 
-use std::collections::HashMap;
-use std::sync::Arc;
-use std::sync::Mutex;
-
+use futures_util::SinkExt;
 use futures_util::StreamExt;
-use futures_util::TryStreamExt;
-use futures_util::future;
 use log::error;
 use log::info;
+use std::sync::Arc;
+use std::sync::Mutex;
 use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
 
-use crate::room::RoomMap;
+use crate::messaging::InitialMessage;
+use crate::room::ClientSender;
+use crate::room::State;
 
 const PORT: u32 = 9002;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let rooms: RoomMap = Arc::new(Mutex::new(HashMap::new()));
+    // We want the infrastructure for multiple room creation
+    // but at the moment only one room per server will be supported
+    let state = Arc::new(Mutex::new(State::new()));
 
     let addr = format!("127.0.0.1:{PORT}");
     let listener = TcpListener::bind(&addr).await?;
     println!("Server listening on port {PORT}");
 
     while let Ok((stream, _)) = listener.accept().await {
-        tokio::spawn(handle_connection(rooms.clone(), stream));
+        tokio::spawn(handle_connection(state.clone(), stream));
     }
 
     Ok(())
 }
 
-async fn handle_connection(rooms: RoomMap, raw_stream: TcpStream) {
+async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     let addr = raw_stream
         .peer_addr()
         .expect("Connected stream missing peer address");
@@ -44,25 +46,65 @@ async fn handle_connection(rooms: RoomMap, raw_stream: TcpStream) {
 
     info!("New WebSoccket connection: {addr}");
 
-    let (write, read) = ws_stream.split();
+    // Each client gets an mpsc channel
+    // Other client threads on the server can write to it
+    // Everything written gets dumped back to its client through the `write` sink
+    let (tx, mut rx) = mpsc::channel::<Message>(64);
+
+    // Order of messages sent from a new client to the server:
+    // 1. Initialization. An instance of the `InitializationMessage` structure.
+    //    Indicating whether the client wishes to create or join a room
+    // 2..n. Any number of messages that will be forwarded to every other client in their room
+    let (mut write, mut read) = ws_stream.split();
+    tokio::spawn(async move {
+        while let Some(msg) = rx.recv().await {
+            if write.send(msg).await.is_err() {
+                break;
+            }
+        }
+    });
+
+    // Parse initial message, then user in correct room
+    let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
+        error!("Client disconnected before first message");
+        return;
+    };
+
+    let Ok(initial_message) = serde_json::from_str::<InitialMessage>(&initial_message_string)
+    else {
+        error!("Invalid initial message");
+        return;
+    };
+
+    {
+        // The lock is relinquished after this match statement
+        let mut guard = state.lock().unwrap();
+        match initial_message {
+            InitialMessage::Create => guard.add_room_and_host(addr, tx),
+            InitialMessage::Join(room_id) => guard.add_client_to_room(addr, tx, room_id),
+        }
+    }
+
+    // Listen for and pass along messages to other client channels in the same room
     while let Some(maybe_message) = read.next().await {
         let Ok(message) = maybe_message else {
             continue;
         };
 
         match message {
-            Message::Text(text) => {
+            Message::Text(ref text) => {
                 if text.trim().is_empty() {
                     continue;
                 }
 
-                match serde_json::from_str(&text) {
-                    Ok(json) => {
-                        println!("Parsed: {:?}", json);
-                    }
-                    Err(e) => {
-                        error!("Failed to parse json");
-                    }
+                let senders: Vec<ClientSender> = {
+                    // The lock gets freed at after senders are retreived
+                    let mut guard = state.lock().unwrap();
+                    guard.get_senders_from_user(addr)
+                };
+
+                for tx in senders {
+                    tx.send(message.clone()).await.ok();
                 }
             }
             Message::Binary(_) => {
