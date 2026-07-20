@@ -1,11 +1,12 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import {afterEach, beforeEach, describe, expect, test, vi} from "vitest"
 import EventSystem from "@/systems/EventSystem.ts"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ScoringZoneSceneObject from "../../mirabuf/ScoringZoneSceneObject"
-import { createBodyMock } from "../mocks/jolt"
+import {createBodyMock} from "../mocks/jolt"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import World from "@/systems/World.ts";
+import ScoreTracker from "@/systems/match_mode/ScoreTracker.ts";
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -32,6 +33,9 @@ const mockSceneRenderer = {
     removeObject: vi.fn(),
 }
 
+
+let scoreTracker: ScoreTracker
+
 vi.mock("@/systems/World", () => ({
     default: {
         get physicsSystem() {
@@ -39,6 +43,9 @@ vi.mock("@/systems/World", () => ({
         },
         get sceneRenderer() {
             return mockSceneRenderer
+        },
+        get scoreTracker() {
+            return scoreTracker
         },
     },
 }))
@@ -48,7 +55,8 @@ describe("ScoringZoneSceneObject", () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-        ScoreTracker.resetScores()
+        scoreTracker = new ScoreTracker()
+        World.scoreTracker.resetScores()
         console.log = vi.fn()
     })
 
@@ -58,7 +66,7 @@ describe("ScoringZoneSceneObject", () => {
     })
 
     test("Setup creates mesh", () => {
-        const mockBodyId = { GetIndexAndSequenceNumber: () => "id" } as unknown
+        const mockBodyId = {GetIndexAndSequenceNumber: () => "id"} as unknown
         const parent = {
             fieldPreferences: {
                 scoringZones: [
@@ -71,7 +79,7 @@ describe("ScoringZoneSceneObject", () => {
                     },
                 ],
             },
-            mechanism: { nodeToBody: new Map([["node1", mockBodyId]]) },
+            mechanism: {nodeToBody: new Map([["node1", mockBodyId]])},
             rootNodeId: "node1",
         } as unknown as MirabufSceneObject
 
@@ -84,19 +92,19 @@ describe("ScoringZoneSceneObject", () => {
     test("ZoneCollision updates score", () => {
         const parent = {} as unknown as MirabufSceneObject
         Reflect.set(parent, "fieldPreferences", {
-            scoringZones: [{ shouldPointsAccumulate: true, alliance: "red", points: 10 }],
+            scoringZones: [{shouldPointsAccumulate: true, alliance: "red", points: 10}],
         })
         const instance = new ScoringZoneSceneObject(parent, 0)
 
         const gamePieceId = {} as unknown as Jolt.BodyID
-        mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, associatedBody: 0 }))
+        mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({isGamePiece: true, associatedBody: 0}))
 
         const dispatchSpy = vi.fn()
         const unsubscribe = EventSystem.listen("ScoreChangedEvent", dispatchSpy)
 
         instance["zoneCollision"](gamePieceId)
 
-        expect(ScoreTracker.redScore).toBe(10)
+        expect(World.scoreTracker.redScore).toBe(10)
         expect(dispatchSpy).toHaveBeenCalled()
 
         unsubscribe()
@@ -105,15 +113,15 @@ describe("ScoringZoneSceneObject", () => {
     test("Dispose destroys mesh and bounding box", () => {
         const parent = {} as unknown as MirabufSceneObject
         Reflect.set(parent, "fieldPreferences", {
-            scoringZones: [{ shouldPointsAccumulate: true, alliance: "red", points: 10 }],
+            scoringZones: [{shouldPointsAccumulate: true, alliance: "red", points: 10}],
         })
 
         const zone = new ScoringZoneSceneObject(parent, 0)
 
-        const mockBodyId = { GetIndexAndSequenceNumber: () => "id" } as unknown
+        const mockBodyId = {GetIndexAndSequenceNumber: () => "id"} as unknown
         Reflect.set(zone, "joltBodyId", mockBodyId)
 
-        const mockMesh = { geometry: { dispose: vi.fn() }, material: { dispose: vi.fn() } }
+        const mockMesh = {geometry: {dispose: vi.fn()}, material: {dispose: vi.fn()}}
         Reflect.set(zone, "mesh", mockMesh)
 
         zone.dispose()
@@ -148,7 +156,7 @@ describe("ScoringZoneSceneObject", () => {
         const makeField = (gpId: Jolt.BodyID) => ({
             mirabufInstance: {
                 parser: {
-                    rigidNodes: new Map([["gp_0", { isGamePiece: true, id: "gp_0" }]]),
+                    rigidNodes: new Map([["gp_0", {isGamePiece: true, id: "gp_0"}]]),
                 },
             },
             mechanism: {
@@ -168,12 +176,12 @@ describe("ScoringZoneSceneObject", () => {
 
                 return bodyMock as unknown as Jolt.Body
             })
-            mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ robotLastInContactWith: undefined }))
+            mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({robotLastInContactWith: undefined}))
 
             const zone = createZoneWithBounding("red", 10)
             zone["checkObjectsInZone"]()
 
-            expect(ScoreTracker.redScore).toBe(10)
+            expect(World.scoreTracker.redScore).toBe(10)
         })
 
         test("does not score when game piece is outside zone", () => {
@@ -192,7 +200,7 @@ describe("ScoringZoneSceneObject", () => {
             const zone = createZoneWithBounding("red", 10)
             zone["checkObjectsInZone"]()
 
-            expect(ScoreTracker.redScore).toBe(0)
+            expect(World.scoreTracker.redScore).toBe(0)
         })
 
         test("warns when game pieces exist but have no body IDs", () => {
@@ -200,7 +208,7 @@ describe("ScoringZoneSceneObject", () => {
             const mockField = {
                 mirabufInstance: {
                     parser: {
-                        rigidNodes: new Map([["gp_0", { isGamePiece: true, id: "gp_0" }]]),
+                        rigidNodes: new Map([["gp_0", {isGamePiece: true, id: "gp_0"}]]),
                     },
                 },
                 mechanism: {
@@ -215,7 +223,7 @@ describe("ScoringZoneSceneObject", () => {
             expect(warnSpy).toHaveBeenCalledWith(
                 expect.stringContaining("game piece nodes exist but none have body IDs")
             )
-            expect(ScoreTracker.redScore).toBe(0)
+            expect(World.scoreTracker.redScore).toBe(0)
         })
     })
 })

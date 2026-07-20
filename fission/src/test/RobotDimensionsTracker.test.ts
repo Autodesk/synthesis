@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import RobotDimensionTracker from "@/systems/match_mode/RobotDimensionTracker"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
+
 import World from "@/systems/World"
 
 interface MockDimensions {
@@ -38,6 +38,8 @@ const mockMatchModeInstance = {
     isMatchEnabled: vi.fn(() => true),
 }
 
+
+
 vi.mock("@/systems/match_mode/MatchMode", () => ({
     default: {
         getInstance: vi.fn(() => mockMatchModeInstance),
@@ -50,21 +52,21 @@ vi.mock("@/systems/match_mode/MatchMode", () => ({
     },
 }))
 
-vi.mock("@/systems/match_mode/ScoreTracker", () => ({
-    default: {
-        robotPenalty: vi.fn(),
-    },
-}))
-
 type RecursivePartial<T> = {
     [P in keyof T]?: RecursivePartial<T[P]>
 }
 
-vi.mock("@/systems/World", (): { default: RecursivePartial<typeof World> } => ({
-    default: {
-        getOwnRobots: vi.fn(),
-    },
-}))
+vi.mock("@/systems/World", (): { default: RecursivePartial<typeof World> } => {
+    const mockScoreTracker = {
+        robotPenalty: vi.fn(),
+    }
+    return {
+        default: {
+            getOwnRobots: vi.fn(),
+            scoreTracker: mockScoreTracker
+        },
+    }
+})
 
 describe("RobotDimensionTracker", () => {
     let mockRobot1: MockRobotObject
@@ -141,8 +143,8 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, expect.any(String))
-        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
+        expect(World.scoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, expect.any(String))
+        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should penalize robot if it exceeds side max extension (width)", () => {
@@ -160,8 +162,8 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 2, expect.any(String))
-        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
+        expect(World.scoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 2, expect.any(String))
+        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should penalize robot if it exceeds side max extension (depth)", () => {
@@ -179,8 +181,8 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(ScoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 3, expect.any(String))
-        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
+        expect(World.scoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 3, expect.any(String))
+        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
     })
 
     test("should not penalize a robot for side extension if initial dimensions were not recorded", () => {
@@ -191,7 +193,7 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalled()
+        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalled()
     })
 
     test("should not penalize robot every frame", () => {
@@ -202,7 +204,7 @@ describe("RobotDimensionTracker", () => {
         RobotDimensionTracker.update()
         RobotDimensionTracker.update()
 
-        expect(ScoreTracker.robotPenalty).toHaveBeenCalledTimes(1)
+        expect(World.scoreTracker.robotPenalty).toHaveBeenCalledTimes(1)
     })
 
     test("should penalize multiple robots", () => {
@@ -213,7 +215,7 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(ScoreTracker.robotPenalty).toHaveBeenCalledTimes(2)
+        expect(World.scoreTracker.robotPenalty).toHaveBeenCalledTimes(2)
     })
 
     test("should not penalize robot if it is not a robot", () => {
@@ -223,6 +225,6 @@ describe("RobotDimensionTracker", () => {
 
         RobotDimensionTracker.update()
 
-        expect(ScoreTracker.robotPenalty).not.toHaveBeenCalled()
+        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalled()
     })
 })

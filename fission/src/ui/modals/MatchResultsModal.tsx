@@ -2,12 +2,12 @@ import { Divider, Stack, styled, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect } from "react"
 import MatchMode from "@/systems/match_mode/MatchMode"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers.ts"
 import Label from "../components/Label"
 import type { ModalImplProps } from "../components/Modal"
 import { Button } from "../components/StyledComponents"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
+import World from "@/systems/World.ts";
 
 type Entry = {
     name: string
@@ -16,9 +16,9 @@ type Entry = {
 
 const getMatchWinner = (): { message: string; color: string } => {
     const { redAllianceColor, blueAllianceColor, secondaryColor } = useThemeContext()
-    if (ScoreTracker.redScore > ScoreTracker.blueScore) {
+    if (World.scoreTracker.redScore > World.scoreTracker.blueScore) {
         return { message: "Red Team Wins!", color: redAllianceColor }
-    } else if (ScoreTracker.blueScore > ScoreTracker.redScore) {
+    } else if (World.scoreTracker.blueScore > World.scoreTracker.redScore) {
         return { message: "Blue Team Wins!", color: blueAllianceColor }
     } else {
         return { message: "It's a Tie!", color: secondaryColor }
@@ -28,7 +28,7 @@ const getMatchWinner = (): { message: string; color: string } => {
 const getPerRobotScores = (): { redRobotScores: Entry[]; blueRobotScores: Entry[] } => {
     const redRobotScores: Entry[] = []
     const blueRobotScores: Entry[] = []
-    ScoreTracker.perRobotScore.forEach((score, robot) => {
+    World.scoreTracker.perRobotScore.forEach((score, robot) => {
         if (robot.alliance === "red") {
             redRobotScores.push({ name: `${robot.nameTag?.text()}`, value: score })
         } else {
@@ -52,8 +52,8 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { message, color } = getMatchWinner()
     const { redAllianceColor, blueAllianceColor, primaryColor } = useThemeContext()
     const entries: Entry[] = [
-        { name: "Red Score", value: ScoreTracker.redScore },
-        { name: "Blue Score", value: ScoreTracker.blueScore },
+        { name: "Red Score", value: World.scoreTracker.redScore },
+        { name: "Blue Score", value: World.scoreTracker.blueScore },
     ]
 
     const { redRobotScores, blueRobotScores } = getPerRobotScores()

@@ -27,7 +27,7 @@ class World {
     private _analyticsSystem: AnalyticsSystem | undefined = undefined
     private _dragModeSystem: DragModeSystem
     private _performanceMonitorSystem: PerformanceMonitoringSystem
-
+    private _scoreTracker: ScoreTracker = new ScoreTracker()
 
     private _accumTimes: AccumTimes = {
         frames: 0,
@@ -67,7 +67,10 @@ class World {
         return this._instance?._analyticsSystem
     }
     public static get dragModeSystem() {
-        return this._instance?._dragModeSystem
+        return this._instance?._dragModeSystem!
+    }
+    public static get scoreTracker() {
+        return this._instance?._scoreTracker!
     }
 
     public static getOwnRobots() {

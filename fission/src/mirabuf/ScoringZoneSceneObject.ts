@@ -2,7 +2,6 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import * as Three from "three"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 import { findListDifference } from "@/util/Utility"
@@ -104,9 +103,9 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -this.prefs.points : this.prefs.points
 
         if (associate.robotLastInContactWith)
-            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, scoringFactor * robotAlliancePoints)
+            World.scoreTracker.addPerRobotScore(associate.robotLastInContactWith, scoringFactor * robotAlliancePoints)
 
-        ScoreTracker.addPoints(this.prefs.alliance, scoringFactor * this.prefs.points)
+        World.scoreTracker.addPoints(this.prefs.alliance, scoringFactor * this.prefs.points)
     }
 }
 
