@@ -1,13 +1,13 @@
-import { assert, describe, expect, test, vi } from "vitest"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader.ts"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
-import { mirabuf } from "@/proto/mirabuf"
+import {assert, describe, expect, test, vi} from "vitest"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import {mirabuf} from "@/proto/mirabuf"
 import {
     defaultFieldPreferences,
     defaultRobotPreferences,
     defaultRobotSpawnLocation,
 } from "@/systems/preferences/PreferenceTypes.ts"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor.ts"
+import {getMiraInstance} from "@/test/GetAssets.ts";
 
 function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }
@@ -91,15 +91,9 @@ describe("Devtool Scoring Zones Caching Tests", () => {
 
 describe("Asset tests", () => {
     test("FRC Field 2018 has spawn locations", async () => {
-        const file = await MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2018 v13.mira", MiraType.FIELD)
-            .then(async x => ({ hash: x!.hash, asset: await MirabufCachingService.get(x!.hash) }))
-            .catch(e => {
-                console.error("Could not get mirabuf file", e)
-                return undefined
-            })
-        assert.exists(file)
-
-        const mirabuf = await createMirabuf(file.hash, file.asset!)
+        const miraInstance = await getMiraInstance(2018)
+        assert.exists(miraInstance)
+        const mirabuf = new MirabufSceneObject(miraInstance)
         assert.exists(mirabuf)
         assert.exists(mirabuf.fieldPreferences)
         expect(mirabuf.fieldPreferences.spawnLocations.hasConfiguredLocations).toBe(true)

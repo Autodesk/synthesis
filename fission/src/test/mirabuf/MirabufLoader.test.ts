@@ -1,5 +1,6 @@
 import { afterEach, assert, beforeEach, describe, expect, type MockedFunction, test, vi } from "vitest"
 import MirabufLoader, { MiraType } from "../../mirabuf/MirabufLoader"
+import {FIELD_MODELS, ROBOT_MODELS} from "@/test/GetAssets.ts";
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -81,8 +82,8 @@ describe("MirabufLoader", () => {
         })
 
         const tests: [string, MiraType][] = [
-            ["/api/mira/robots/Dozer v11.mira", MiraType.ROBOT],
-            ["/api/mira/fields/FRC Field 2023 v8.mira", MiraType.FIELD],
+            [ROBOT_MODELS.DOZER, MiraType.ROBOT],
+            [FIELD_MODELS[2023], MiraType.FIELD],
         ]
         test.for(tests)("Loads Asset ($0)", async ([url, miratype]) => {
             const info = await MirabufLoader.cacheRemote(url, miratype)
@@ -99,8 +100,8 @@ describe("MirabufLoader", () => {
         })
 
         test("Remove All Cleans Up", async () => {
-            const field1 = await MirabufLoader.cacheRemote("/api/mira/fields/FRC Field 2023 v8.mira", MiraType.FIELD)
-            const robot1 = await MirabufLoader.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT)
+            const field1 = await MirabufLoader.cacheRemote(FIELD_MODELS[2023], MiraType.FIELD)
+            const robot1 = await MirabufLoader.cacheRemote(ROBOT_MODELS.DOZER, MiraType.ROBOT)
             assert.exists(field1)
             assert.exists(robot1)
             expect(MirabufLoader.getAll()).toHaveLength(2)

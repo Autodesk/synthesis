@@ -1,11 +1,11 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
-import { beforeEach, describe, expect, test, vi } from "vitest"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import {beforeEach, describe, expect, test, vi} from "vitest"
 import MirabufParser from "@/mirabuf/MirabufParser"
-import type { RigidNodeId } from "../../mirabuf/MirabufParser"
-import type { mirabuf } from "../../proto/mirabuf"
-import Mechanism, { type MechanismConstraint } from "../../systems/physics/Mechanism"
-import PhysicsSystem, { type LayerReserve } from "../../systems/physics/PhysicsSystem"
+import type {RigidNodeId} from "../../mirabuf/MirabufParser"
+import type {mirabuf} from "../../proto/mirabuf"
+import Mechanism, {type MechanismConstraint} from "../../systems/physics/Mechanism"
+import PhysicsSystem, {type LayerReserve} from "../../systems/physics/PhysicsSystem"
+import {getMiraAssembly} from "@/test/GetAssets.ts";
 
 // Mock Jolt types
 const createMockBodyID = (index: number = 123): Jolt.BodyID =>
@@ -289,10 +289,7 @@ describe("Mirabuf Mechanism Creation", () => {
     })
 
     test("Body Loading (Dozer)", async () => {
-        const assembly = await MirabufCachingService.cacheRemote(
-            "/api/mira/robots/Dozer v11.mira",
-            MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
+        const assembly = await getMiraAssembly("DOZER")
         const parser = new MirabufParser(assembly!)
 
         const mechanism = physSystem.createMechanismFromParser(parser)
@@ -303,10 +300,7 @@ describe("Mirabuf Mechanism Creation", () => {
     })
 
     test("Body Loading (Multi-Joint Robot)", async () => {
-        const assembly = await MirabufCachingService.cacheRemote(
-            "/api/mira/private/Multi-Joint Wheels v0.mira",
-            MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
+        const assembly = await getMiraAssembly("MULTI_JOINT")
         const parser = new MirabufParser(assembly!)
 
         const mechanism = physSystem.createMechanismFromParser(parser)
