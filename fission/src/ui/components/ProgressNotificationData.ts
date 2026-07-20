@@ -9,22 +9,15 @@ export enum ProgressHandleStatus {
 }
 
 export class ProgressHandle {
-    private _handleId: number
-    private _title: string
+    public readonly handleId: number
+    public readonly title: string
     public message: string = ""
     public progress: number = 0.0
     public status: ProgressHandleStatus = ProgressHandleStatus.IN_PROGRESS
 
-    public get handleId() {
-        return this._handleId
-    }
-    public get title() {
-        return this._title
-    }
-
     public constructor(title: string) {
-        this._handleId = nextHandleId++
-        this._title = title
+        this.handleId = nextHandleId++
+        this.title = title
 
         this.push()
     }
