@@ -1,14 +1,14 @@
-import {Box, CircularProgress, Stack, Tab, Tabs, Tooltip} from "@mui/material"
+import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
-import {type ReactNode, useCallback, useEffect, useMemo, useState} from "react"
-import {type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles} from "@/aps/APSDataManagement"
-import DefaultAssetLoader, {type DefaultAssetInfo} from "@/mirabuf/DefaultAssetLoader.ts"
-import MirabufCachingService, {type MirabufCacheInfo, MiraType, spawnCachedMira} from "@/mirabuf/MirabufLoader"
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react"
+import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
+import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
+import MirabufCachingService, { type MirabufCacheInfo, MiraType, spawnCachedMira } from "@/mirabuf/MirabufLoader"
 import EventSystem from "@/systems/EventSystem.ts"
-import {globalOpenPanel} from "@/ui/components/GlobalUIControls"
+import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
-import type {PanelImplProps} from "@/ui/components/Panel"
-import {ProgressHandle} from "@/ui/components/ProgressNotificationData"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
     Accordion,
     AccordionDetails,
@@ -20,7 +20,7 @@ import {
     RefreshButton,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import {CloseType, useUIContext} from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
 import {
@@ -29,7 +29,7 @@ import {
     miraTypeToConfigType,
 } from "../configuring/assembly-config/ConfigTypes"
 import CommandRegistry from "@/ui/components/CommandRegistry"
-import {SoundPlayer} from "@/systems/sound/SoundPlayer.ts"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -67,20 +67,13 @@ const ItemCard: React.FC<ItemCardProps> = ({ name, primaryButtonNode, primaryOnC
             <Label size="md" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
             </Label>
-            <Stack
-                direction="row-reverse"
-                gap={"0.25rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
-            >
+            <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
                 <PositiveIconButton children={primaryButtonNode} onClick={primaryOnClick} />
                 {secondaryOnClick && <DeleteButton onClick={secondaryOnClick} />}
             </Stack>
         </Stack>
     )
 }
-
-
 
 interface ImportMirabufPanelCustomProps {
     configurationType: ConfigurationType
@@ -456,7 +449,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                 >
-                    Import from File
+                    Import from File YEAh!
                 </Button>
             </Box>
         </Stack>

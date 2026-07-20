@@ -4,12 +4,12 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import { ContactType } from "@/mirabuf/ZoneTypes"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertAxisAlignedToOrientedBoundingBox } from "@/util/TypeConversions"
-import World from "@/systems/World.ts";
+import World from "@/systems/World.ts"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -39,13 +39,11 @@ const mockSceneRenderer = {
     },
 }
 
-
-
 vi.mock("@/systems/World", () => {
     const mockScoreTracker = {
         robotPenalty: vi.fn(),
     }
-    
+
     return {
         default: {
             get physicsSystem() {
@@ -161,7 +159,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["checkObjectsInZone"]()
 
-        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("ZoneCollision does not penalize same alliance robot", () => {
@@ -215,7 +217,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["checkObjectsInZone"]()
 
-        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("Protected Zone any robot inside", () => {
@@ -228,7 +234,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["checkObjectsInZone"]()
 
-        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("Protected Zone blue robot inside", () => {
@@ -241,7 +251,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["checkObjectsInZone"]()
 
-        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("Protected Zone red robot inside", () => {
@@ -254,7 +268,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["checkObjectsInZone"]()
 
-        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("Protected Zone doesn't penalize if not all robots are inside", () => {

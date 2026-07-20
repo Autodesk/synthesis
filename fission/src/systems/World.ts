@@ -11,7 +11,6 @@ import SceneRenderer from "./scene/SceneRenderer"
 import RobotPositionTracker from "./simulation/RobotPositionTracker"
 import SimulationSystem from "./simulation/SimulationSystem"
 
-
 class World {
     private static _instance?: World
 
@@ -182,7 +181,6 @@ class World {
 
 export default World
 
-
 if (import.meta.hot) {
     // Restore the instance that survived the HMR reload
     if (import.meta.hot.data.world) {
@@ -194,5 +192,4 @@ if (import.meta.hot) {
     import.meta.hot.on("vite:beforeUpdate", () => {
         import.meta.hot!.data.world = World["_instance"]
     })
-
 }

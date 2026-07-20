@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material"
 import type React from "react"
 import { useLayoutEffect } from "react"
-import MirabufCachingService, {MiraType, spawnCachedMira} from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType, spawnCachedMira } from "@/mirabuf/MirabufLoader"
 import type { ModalImplProps } from "../components/Modal"
 import { Button } from "../components/StyledComponents"
 import { useStateContext } from "../helpers/StateProviderHelpers"
@@ -61,7 +61,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                     await Promise.all([
                         MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023 v8.mira", MiraType.FIELD),
                         MirabufCachingService.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT),
-                    ]).then(async (assets) => {
+                    ]).then(async assets => {
                         for (const asset of assets) {
                             if (asset) await spawnCachedMira(asset)
                         }

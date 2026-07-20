@@ -38,8 +38,6 @@ const mockMatchModeInstance = {
     isMatchEnabled: vi.fn(() => true),
 }
 
-
-
 vi.mock("@/systems/match_mode/MatchMode", () => ({
     default: {
         getInstance: vi.fn(() => mockMatchModeInstance),
@@ -63,7 +61,7 @@ vi.mock("@/systems/World", (): { default: RecursivePartial<typeof World> } => {
     return {
         default: {
             getOwnRobots: vi.fn(),
-            scoreTracker: mockScoreTracker
+            scoreTracker: mockScoreTracker,
         },
     }
 })
@@ -144,7 +142,11 @@ describe("RobotDimensionTracker", () => {
         RobotDimensionTracker.update()
 
         expect(World.scoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, expect.any(String))
-        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
+        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(
+            mockRobot1,
+            expect.any(Number),
+            expect.any(String)
+        )
     })
 
     test("should penalize robot if it exceeds side max extension (width)", () => {
@@ -163,7 +165,11 @@ describe("RobotDimensionTracker", () => {
         RobotDimensionTracker.update()
 
         expect(World.scoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 2, expect.any(String))
-        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
+        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(
+            mockRobot1,
+            expect.any(Number),
+            expect.any(String)
+        )
     })
 
     test("should penalize robot if it exceeds side max extension (depth)", () => {
@@ -182,7 +188,11 @@ describe("RobotDimensionTracker", () => {
         RobotDimensionTracker.update()
 
         expect(World.scoreTracker.robotPenalty).toHaveBeenCalledWith(mockRobot2, 3, expect.any(String))
-        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(mockRobot1, expect.any(Number), expect.any(String))
+        expect(World.scoreTracker.robotPenalty).not.toHaveBeenCalledWith(
+            mockRobot1,
+            expect.any(Number),
+            expect.any(String)
+        )
     })
 
     test("should not penalize a robot for side extension if initial dimensions were not recorded", () => {

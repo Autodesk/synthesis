@@ -1,15 +1,15 @@
 import { type Data, downloadData } from "@/aps/APSDataManagement"
-import {globalAddToast, globalOpenPanel} from "@/components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
-import InitialConfigPanel from "@/panels/configuring/initial-config/InitialConfigPanel.tsx";
-import {PAUSE_REF_ASSEMBLY_SPAWNING} from "@/systems/physics/PhysicsTypes.ts";
-import {createMirabuf} from "@/mirabuf/MirabufSceneObject.ts";
-import {getTargetControls} from "@/systems/scene/CameraControls.ts";
-import {EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId} from "@/systems/multiplayer/types.ts";
-import {ProgressHandle} from "@/components/ProgressNotificationData.ts";
+import InitialConfigPanel from "@/panels/configuring/initial-config/InitialConfigPanel.tsx"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
+import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
+import { getTargetControls } from "@/systems/scene/CameraControls.ts"
+import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
+import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -451,8 +451,10 @@ export enum MiraType {
 
 export default MirabufCachingService
 
-
-export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle:ProgressHandle= new ProgressHandle(info.name)) {
+export async function spawnCachedMira(
+    info: MirabufCacheInfo,
+    progressHandle: ProgressHandle = new ProgressHandle(info.name)
+) {
     // If spawning a field, then remove all other fields
     if (info.miraType === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()

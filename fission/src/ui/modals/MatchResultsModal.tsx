@@ -7,7 +7,7 @@ import Label from "../components/Label"
 import type { ModalImplProps } from "../components/Modal"
 import { Button } from "../components/StyledComponents"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
-import World from "@/systems/World.ts";
+import World from "@/systems/World.ts"
 
 type Entry = {
     name: string

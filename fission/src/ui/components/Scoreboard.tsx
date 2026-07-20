@@ -7,7 +7,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import Label from "./Label"
-import World from "@/systems/World.ts";
+import World from "@/systems/World.ts"
 
 const showTime = () => {
     return MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX

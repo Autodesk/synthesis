@@ -150,7 +150,11 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         if (!opposingRobot) return
 
         this._lastRobotCollisionTime = Date.now()
-        World.scoreTracker.robotPenalty(opposingRobot, this.prefs?.penaltyPoints ?? 0, `Contact penalty in protected zone`)
+        World.scoreTracker.robotPenalty(
+            opposingRobot,
+            this.prefs?.penaltyPoints ?? 0,
+            `Contact penalty in protected zone`
+        )
     }
 
     public override dispose() {
