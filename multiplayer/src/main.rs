@@ -98,20 +98,24 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
                 }
 
                 let senders: Vec<ClientSender> = {
-                    // The lock gets freed at after senders are retreived
+                    // The lock is relinquished after senders are retreived
                     let mut guard = state.lock().unwrap();
-                    guard.get_senders_from_user(addr)
+                    guard.get_senders_from_user_room(addr)
                 };
 
                 for tx in senders {
                     tx.send(message.clone()).await.ok();
                 }
             }
+
             Message::Binary(_) => {
                 info!("Received Binary, skipping");
             }
             Message::Close(_) => {
-                info!("Connection with {addr} closed")
+                info!("Connection with {addr} closed");
+
+                state.lock().unwrap().remove_client(addr);
+                return;
             }
             // TODO
             // Handle Ping/Pong

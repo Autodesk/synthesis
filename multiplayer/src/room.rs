@@ -42,27 +42,27 @@ impl State {
         self.users.insert(client_id, room_id);
     }
 
-    pub fn remove_client_from_room(&mut self, client_id: UserId, room_id: RoomId) {
+    pub fn remove_client(&mut self, client_id: UserId) {
+        let Some(room_id) = self.users.get(&client_id) else {
+            warn!("Attempted to remove client that does not exist");
+            return;
+        };
+
         let Some(room) = self.rooms.map.get_mut(&room_id) else {
-            warn!("Attempetd to remove client from room that does not exist");
+            warn!("Attempted to remove client from room that does not exist");
             return;
         };
 
-        let Some(idx) = room
-            .members
-            .iter()
-            .map(|client| client.0)
-            .position(|id| id == client_id)
-        else {
-            warn!("Attempted to remove client from room they are not in");
-            return;
-        };
-
-        room.members.remove(idx);
+        if room.remove_client(&client_id) == RoomStatus::Closed {
+            self.rooms
+                .map
+                .remove(&room_id)
+                .expect("Failed to remove room");
+        }
         self.users.remove(&client_id);
     }
 
-    pub fn get_senders_from_user(&mut self, client_id: UserId) -> Vec<ClientSender> {
+    pub fn get_senders_from_user_room(&mut self, client_id: UserId) -> Vec<ClientSender> {
         let Some(room_id) = self.users.get(&client_id) else {
             warn!("Attempted to broadcast as user that does not exist");
             return Vec::new();
@@ -99,9 +99,18 @@ impl RoomMap {
     }
 }
 
+#[derive(PartialEq)]
+pub enum RoomStatus {
+    Closed,
+    Open,
+}
+
 pub struct Room {
+    /// A list of each connected client and their write channel
     members: Vec<(UserId, ClientSender)>,
+    /// The physics system authority of the room
     authority: UserId,
+    /// The admin of the room (capable of kicking members and ending the room)
     host: UserId,
 }
 
@@ -117,5 +126,28 @@ impl Room {
                 }
             })
             .collect()
+    }
+
+    pub fn remove_client(&mut self, client_id: &UserId) -> RoomStatus {
+        let Some(idx) = self
+            .members
+            .iter()
+            .map(|client| client.0)
+            .position(|id| id == *client_id)
+        else {
+            warn!("Attempted to remove client from room they are not in");
+            return RoomStatus::Open;
+        };
+
+        self.members.remove(idx);
+
+        if *client_id == self.authority {
+            match self.members.first() {
+                Some(next) => self.authority = next.0,
+                None => return RoomStatus::Closed,
+            }
+        }
+
+        RoomStatus::Open
     }
 }
