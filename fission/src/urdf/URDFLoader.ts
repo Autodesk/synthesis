@@ -109,7 +109,6 @@ export async function loadURDF(
 
     if (ext === "zip") {
         const zip = await JSZip.loadAsync(buffer)
-        console.timeLog("URDF Import", "Unzipped")
         const urdfEntry = Object.values(zip.files).find(f => !f.dir && f.name.endsWith(".urdf"))
         if (!urdfEntry) throw new Error("No .urdf file found in the zip archive")
 

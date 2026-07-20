@@ -1,15 +1,15 @@
-import { Stack, styled } from "@mui/material"
-import { type ChangeEvent, useEffect, useState } from "react"
-import { globalOpenModal } from "@/components/GlobalUIControls.ts"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
+import {Stack, styled} from "@mui/material"
+import {type ChangeEvent, useEffect, useState} from "react"
+import {globalOpenModal} from "@/components/GlobalUIControls.ts"
+import MirabufCachingService, {MiraType} from "@/mirabuf/MirabufLoader"
+import {createMirabuf} from "@/mirabuf/MirabufSceneObject"
+import {PAUSE_REF_ASSEMBLY_SPAWNING} from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
-import { loadURDF } from "@/urdf/URDFLoader"
+import {loadURDF} from "@/urdf/URDFLoader"
 import Label from "@/ui/components/Label"
-import type { ModalImplProps } from "@/ui/components/Modal"
-import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
-import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import type {ModalImplProps} from "@/ui/components/Modal"
+import {Button, ToggleButton, ToggleButtonGroup} from "@/ui/components/StyledComponents"
+import {CloseType, useUIContext} from "@/ui/helpers/UIProviderHelpers"
 import {
     configTypeToMiraType,
     type ConfigurationType,
@@ -17,10 +17,10 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { getTargetControls } from "@/systems/scene/CameraControls"
-import { hashBuffer, hexStringToUint8Array } from "@/util/Utility.ts"
-import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
-import { v4 } from "uuid"
+import {getTargetControls} from "@/systems/scene/CameraControls"
+import {hashBuffer, hexStringToUint8Array} from "@/util/Utility.ts"
+import {ProgressHandle} from "@/components/ProgressNotificationData.ts"
+import {v4} from "uuid"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -92,7 +92,6 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 let mirabufSceneObject
 
                 if (isURDFFile(selectedFile.name)) {
-                    console.time("URDF Import")
 
                     const inputHash = await hashBuffer(buffer)
                     const uuid = v4({ random: hexStringToUint8Array(inputHash).slice(0, 16) })
@@ -101,15 +100,20 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
                     assembly.info!.name = selectedFile.name.split(".")[0]
                     assembly.info!.GUID = uuid
-                    const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
 
-                    let hash: string
-                    if (res == null) {
-                        console.warn("Caching URDF failed!")
-                        hash = inputHash
-                    } else {
-                        hash = res.hash
-                    }
+
+                    let hash: string = inputHash
+                    //// TODO: Caching currently requires too much memory due to the size of URDF meshes. Can be re-enabled after simplifying
+
+
+                    // const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
+
+                    // if (res == null) {
+                    //     console.warn("Caching URDF failed!")
+                    //     hash = inputHash
+                    // }
+
+
 
                     mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
                     progressHandle.done("Import complete!")
