@@ -50,8 +50,8 @@ const ProtectedZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField
     // Use the cloned FIRST materials like before
     const materials = useMemo(
         () => ({
-            red: ProtectedZoneSceneObject.darkRedMaterial.clone(),
-            blue: ProtectedZoneSceneObject.darkBlueMaterial.clone(),
+            red: ProtectedZoneSceneObject.redMaterial.clone(),
+            blue: ProtectedZoneSceneObject.blueMaterial.clone(),
         }),
         []
     )

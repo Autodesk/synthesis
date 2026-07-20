@@ -12,15 +12,17 @@ export enum NoraTypes {
     NUMBER = "num",
     NUMBER2 = "(num,num)",
     NUMBER3 = "(num,num,num)",
+    NUMBER6 = "(num,num,num,num,num,num)",
     UNKNOWN = "unknown",
 }
 
 export type NoraNumber = number
 export type NoraNumber2 = [NoraNumber, NoraNumber]
 export type NoraNumber3 = [NoraNumber, NoraNumber, NoraNumber]
+export type NoraNumber6 = [NoraNumber, NoraNumber, NoraNumber, NoraNumber, NoraNumber, NoraNumber]
 export type NoraUnknown = unknown
 
-export type NoraType = NoraNumber | NoraNumber2 | NoraNumber3 | NoraUnknown
+export type NoraType = NoraNumber | NoraNumber2 | NoraNumber3 | NoraNumber6 | NoraUnknown
 
 // Needed?
 // export function constructNoraType(...types: NoraTypes[]): NoraTypes {
@@ -42,6 +44,7 @@ const averageFuncMap: { [k in NoraTypes]: ((...many: NoraType[]) => NoraType) | 
     },
     [NoraTypes.NUMBER2]: undefined,
     [NoraTypes.NUMBER3]: undefined,
+    [NoraTypes.NUMBER6]: undefined,
     [NoraTypes.UNKNOWN]: undefined,
 }
 
