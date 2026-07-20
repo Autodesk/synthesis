@@ -10,7 +10,9 @@ import edu.wpi.first.util.WPIUtilJNI;
 public class CvSink extends edu.wpi.first.cscore.CvSink {
 
     private Camera m_camera;
+    private byte[] m_lastFrame;
 
+    /** If camera is null, behave as real cscore CvSink */
     public CvSink(String name, Camera camera) {
         super(name);
         this.m_camera = camera;
@@ -18,19 +20,25 @@ public class CvSink extends edu.wpi.first.cscore.CvSink {
 
     @Override
     public long grabFrame(Mat image) {
-        return grabFrameNoTimeout(image);
+        return m_camera == null ? super.grabFrame(image) : grabFrameNoTimeout(image);
     }
 
     @Override
     public long grabFrame(Mat image, double timeout) {
-        return grabFrameNoTimeout(image);
+        return m_camera == null ? super.grabFrame(image, timeout) : grabFrameNoTimeout(image);
     }
 
     @Override
     public long grabFrameNoTimeout(Mat image) {
-        if (!m_camera.grabFrame(image)) {
+        if (m_camera == null) {
+            return super.grabFrameNoTimeout(image);
+        }
+
+        byte[] bytes = m_camera.getLatestFrame();
+        if (bytes == null || bytes == m_lastFrame || !Camera.decodeFrame(bytes, image)) {
             return 0L;
         }
+        m_lastFrame = bytes;
 
         return WPIUtilJNI.now();
     }

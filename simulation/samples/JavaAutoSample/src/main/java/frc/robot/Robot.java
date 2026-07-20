@@ -84,11 +84,12 @@ public class Robot extends TimedRobot {
         // Following conversion factor is 1 unit = 1 inch travelled.
         m_encoder.setPositionConversionFactor(2.0);
 
-        m_camera = new UsbCamera("USB Camera 0", 0, kCameraWidth, kCameraHeight, 30);
-        m_cvSink = m_camera.getVideo();
+        m_camera = CameraServer.startAutomaticCapture("USB Camera 0", 0);
+        m_camera.setResolution(kCameraWidth, kCameraHeight);
+        UsbCamera camera1 = CameraServer.startAutomaticCapture("USB Camera 1", 1);
+        camera1.setResolution(kCameraWidth, kCameraHeight);
 
-        // putVideo republishes the feed for dashboards and forces the OpenCV native to load
-        // before we allocate the Mat below
+        m_cvSink = CameraServer.getVideo();
         m_outputStream = CameraServer.putVideo("Synthesis Camera", kCameraWidth, kCameraHeight);
         m_frame = new Mat();
     }

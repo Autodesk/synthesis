@@ -15,7 +15,7 @@ import org.java_websocket.server.WebSocketServer;
 /**
  * localhost WebSocket server that receives rendered camera frames from Synthesis. Frames
  * can't use HALSim, so Synthesis streams them here as binary {@code "<device>\n<jpeg-bytes>"}
- * messages; the latest frame per device is kept for {@link Camera#grabFrame}.
+ * messages; the latest frame per device is kept for {@link Camera#getLatestFrame}.
  */
 public class CameraFrameServer extends WebSocketServer {
 

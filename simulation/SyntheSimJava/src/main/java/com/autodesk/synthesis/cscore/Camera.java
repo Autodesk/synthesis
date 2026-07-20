@@ -22,10 +22,12 @@ public class Camera {
     private SimInt m_fps;
     private SimBoolean m_connected;
 
+    private final int m_defaultWidth;
+    private final int m_defaultHeight;
+    private final int m_defaultFps;
+
     private final String m_deviceName;
     private final CameraFrameServer m_frameServer;
-
-    private byte[] m_lastFrame;
 
     public Camera(String name, int deviceId, int width, int height, int fps) {
         m_device = SimDevice.create("Camera:" + name, deviceId);
@@ -38,8 +40,17 @@ public class Camera {
             m_connected = m_device.createBoolean("connected", Direction.kOutput, true);
         }
 
+        m_defaultWidth = width;
+        m_defaultHeight = height;
+        m_defaultFps = fps;
+
         m_deviceName = name + "[" + deviceId + "]";
         m_frameServer = m_device != null ? CameraFrameServer.getInstance() : null;
+    }
+
+    /** @return true if running in simulation (frames come from Fission) */
+    public boolean isSimulated() {
+        return m_device != null;
     }
 
     public void setResolution(int width, int height) {
@@ -61,16 +72,31 @@ public class Camera {
         }
     }
 
-    /** @return true if a frame was available and decoded into {@code dst} */
-    public boolean grabFrame(Mat dst) {
-        if (m_frameServer == null) return false;
+    public int getWidth() {
+        return m_width != null ? m_width.get() : m_defaultWidth;
+    }
 
-        byte[] bytes = m_frameServer.getFrame(m_deviceName);
-        // check bytes ref against m_lastFrame, only republish if new frame
-        if (bytes == null || bytes.length == 0 || bytes == m_lastFrame) {
+    public int getHeight() {
+        return m_height != null ? m_height.get() : m_defaultHeight;
+    }
+
+    public int getFPS() {
+        return m_fps != null ? m_fps.get() : m_defaultFps;
+    }
+
+    /**
+     * Latest JPEG frame received from Fission, or null. Callers must track the returned
+     * reference themselves to detect new frames (multiple consumers may grab concurrently).
+     */
+    public byte[] getLatestFrame() {
+        return m_frameServer != null ? m_frameServer.getFrame(m_deviceName) : null;
+    }
+
+    /** @return true if {@code bytes} decoded into {@code dst} */
+    public static boolean decodeFrame(byte[] bytes, Mat dst) {
+        if (bytes == null || bytes.length == 0) {
             return false;
         }
-        m_lastFrame = bytes;
 
         MatOfByte buffer = new MatOfByte(bytes);
         Mat decoded = Imgcodecs.imdecode(buffer, Imgcodecs.IMREAD_COLOR);

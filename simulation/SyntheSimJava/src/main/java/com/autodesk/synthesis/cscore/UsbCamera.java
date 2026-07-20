@@ -4,8 +4,8 @@ package com.autodesk.synthesis.cscore;
  * Swap-in for {@code edu.wpi.first.cscore.UsbCamera}
  *
  * <pre>
- *     var camera = new com.autodesk.synthesis.cscore.UsbCamera("USB Camera 0", 0);
- *     var sink = camera.getVideo();
+ *     var camera = CameraServer.startAutomaticCapture();
+ *     var sink = CameraServer.getVideo();
  *     Mat frame = new Mat();
  *     if (sink.grabFrame(frame) != 0) {
  *         // ... run vision processing on frame ...
@@ -25,14 +25,23 @@ public class UsbCamera extends edu.wpi.first.cscore.UsbCamera {
         this.m_camera = new Camera(name, dev, width, height, fps);
     }
 
+    Camera getCamera() {
+        return this.m_camera;
+    }
+
     public CvSink getVideo() {
-        return new CvSink(this.getName() + " - sink", this.m_camera);
+        return CameraServer.getVideo(this);
     }
 
     @Override
     public boolean setResolution(int width, int height) {
         this.m_camera.setResolution(width, height);
-        return super.setResolution(width, height);
+
+        if (!this.m_camera.isSimulated()) {
+            return super.setResolution(width, height);
+        }
+
+        return true;
     }
 
     @Override
