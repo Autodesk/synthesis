@@ -192,14 +192,12 @@ async function tryOPFS(): Promise<OPFSBackend | null> {
 export async function initStorageBackend(): Promise<MirabufStorageBackend | null> {
     const opfs = await tryOPFS()
     if (opfs) {
-        console.log("Mirabuf cache: using OPFS backend")
         return opfs
     }
 
     // Fall back to IndexedDB
     const db = await openIndexedDB()
     if (db) {
-        console.log("Mirabuf cache: using IndexedDB backend")
         return new IndexedDBBackend(db)
     }
 

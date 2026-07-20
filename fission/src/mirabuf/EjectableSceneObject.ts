@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
@@ -11,7 +11,6 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
-import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
 class EjectableSceneObject extends SceneObject {
@@ -83,12 +82,6 @@ class EjectableSceneObject extends SceneObject {
             this._animationStartTime = performance.now()
 
             World.physicsSystem.disablePhysicsForBody(this._gamePieceBodyId)
-
-            // Remove from any scoring zones
-            const zones = World.sceneRenderer.filterSceneObjects(x => x instanceof ScoringZoneSceneObject)
-            zones.forEach(x => {
-                if (this._gamePieceBodyId) ScoringZoneSceneObject.removeGamepiece(x, this._gamePieceBodyId)
-            })
 
             console.debug("Ejectable created successfully!")
         }
