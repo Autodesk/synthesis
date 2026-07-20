@@ -33,7 +33,7 @@ import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsIn
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
-import { Tab, Tabs } from "@mui/material"
+import { Tab, Tabs, type TabsActions } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -261,6 +261,19 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const originalAlliance = useRef<Alliance | undefined>(selectedAssembly?.alliance)
     const originalStation = useRef<MirabufSceneObject["station"]>(selectedAssembly?.station)
 
+    // Resize tab indicator when content changes size
+    const tabsActionsRef = useRef<TabsActions>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const content = contentRef.current
+        if (!content) return
+
+        const observer = new ResizeObserver(() => tabsActionsRef.current?.updateIndicator())
+        observer.observe(content)
+        return () => observer.disconnect()
+    }, [])
+
     useEffect(() => {
         const allSchemes: InputScheme[] = PreferencesSystem.getUserPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
@@ -432,6 +445,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     return (
         <>
             <Tabs
+                action={tabsActionsRef}
                 value={configurationType}
                 onChange={(_, newValue) => setConfigurationType(newValue)}
                 textColor="inherit"
@@ -443,62 +457,64 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 <Tab key="fields" value="FIELDS" label="FIELDS" />
                 <Tab key="inputs" value="INPUTS" label="INPUTS" />
             </Tabs>
-            {configurationType === "INPUTS" && <ConfigureInputsInterface />}
-            {configurationType !== "INPUTS" && (
-                <>
-                    <AssemblySelection
-                        panel={panel!}
-                        configurationType={configurationType}
-                        onAssemblySelected={a => {
-                            if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                            setConfigMode(undefined)
-                            setSelectedAssembly(a as MirabufSceneObject)
-                        }}
-                        selectedAssembly={selectedAssembly}
-                        onStageDelete={opt => {
-                            const id = (opt as AssemblySelectionOption).assemblyObject.id
-                            setPendingDeletes(prev => [...prev, id])
-                        }}
-                        pendingDeletes={pendingDeletes}
-                    />
-                    {selectedAssembly !== undefined && (
-                        <ConfigModeSelection
-                            modes={modes}
-                            configMode={configMode}
-                            onModeSelected={mode => {
+            <div ref={contentRef}>
+                {configurationType === "INPUTS" && <ConfigureInputsInterface />}
+                {configurationType !== "INPUTS" && (
+                    <>
+                        <AssemblySelection
+                            panel={panel!}
+                            configurationType={configurationType}
+                            onAssemblySelected={a => {
                                 if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                                setConfigMode(mode)
+                                setConfigMode(undefined)
+                                setSelectedAssembly(a as MirabufSceneObject)
                             }}
+                            selectedAssembly={selectedAssembly}
+                            onStageDelete={opt => {
+                                const id = (opt as AssemblySelectionOption).assemblyObject.id
+                                setPendingDeletes(prev => [...prev, id])
+                            }}
+                            pendingDeletes={pendingDeletes}
                         />
-                    )}
-                    {configMode !== undefined && selectedAssembly !== undefined && (
-                        <ConfigInterface panel={panel!} configMode={configMode} assembly={selectedAssembly} />
-                    )}
-                    {configMode === undefined && selectedAssembly !== undefined && (
-                        <>
-                            <Spacer height={16} />
-                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
-                            <Spacer height={16} />
-                            <Button
-                                className={"w-full"}
-                                color={"warning"}
-                                onClick={() => {
-                                    closePanel(panel!.id, CloseType.Accept)
-                                    selectedAssembly.resetPreferences()
-                                    globalAddToast(
-                                        "info",
-                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
-                                    )
+                        {selectedAssembly !== undefined && (
+                            <ConfigModeSelection
+                                modes={modes}
+                                configMode={configMode}
+                                onModeSelected={mode => {
+                                    if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
+                                    setConfigMode(mode)
                                 }}
-                            >
-                                Reset
-                                <Spacer width={5} />
-                                <FaArrowsRotate />
-                            </Button>
-                        </>
-                    )}
-                </>
-            )}
+                            />
+                        )}
+                        {configMode !== undefined && selectedAssembly !== undefined && (
+                            <ConfigInterface panel={panel!} configMode={configMode} assembly={selectedAssembly} />
+                        )}
+                        {configMode === undefined && selectedAssembly !== undefined && (
+                            <>
+                                <Spacer height={16} />
+                                <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                                <Spacer height={16} />
+                                <Button
+                                    className={"w-full"}
+                                    color={"warning"}
+                                    onClick={() => {
+                                        closePanel(panel!.id, CloseType.Accept)
+                                        selectedAssembly.resetPreferences()
+                                        globalAddToast(
+                                            "info",
+                                            "Preferences for " + selectedAssembly.descriptiveName + " reset"
+                                        )
+                                    }}
+                                >
+                                    Reset
+                                    <Spacer width={5} />
+                                    <FaArrowsRotate />
+                                </Button>
+                            </>
+                        )}
+                    </>
+                )}
+            </div>
         </>
     )
 }
