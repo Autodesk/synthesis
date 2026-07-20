@@ -4,9 +4,8 @@ import { parseGLTF } from "./GLTFParser"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
 import { URDF_IMPORT_TAG } from "./URDFUserData"
-import type {ProgressHandle} from "@/components/ProgressNotificationData.ts";
-import {yieldToMain} from "@/util/Utility.ts";
-
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import { yieldToMain } from "@/util/Utility.ts"
 
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
 // Frame change matrix: Rx(-90°) = [[1,0,0],[0,0,1],[0,-1,0]]
@@ -847,9 +846,11 @@ function buildJoints(
     return { jointDefinitions, jointInstances }
 }
 
-
-
-export async function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>, progressHandle?:ProgressHandle): Promise<mirabuf.Assembly> {
+export async function convertURDF(
+    urdfText: string,
+    meshFiles: Map<string, Uint8Array>,
+    progressHandle?: ProgressHandle
+): Promise<mirabuf.Assembly> {
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
 
     const parseError = doc.querySelector("parsererror")

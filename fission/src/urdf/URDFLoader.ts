@@ -2,8 +2,8 @@ import JSZip from "jszip"
 import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
-import {ProgressHandle} from "@/components/ProgressNotificationData.ts";
-import {yieldToMain} from "@/util/Utility.ts";
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import { yieldToMain } from "@/util/Utility.ts"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "gltf", "bin"])
 
@@ -94,7 +94,11 @@ async function buildMeshMap(zip: JSZip, urdfPath: string): Promise<Map<string, U
     return meshFiles
 }
 
-export async function loadURDF(buffer: ArrayBuffer, filename: string, progressHandle?:ProgressHandle): Promise<mirabuf.Assembly> {
+export async function loadURDF(
+    buffer: ArrayBuffer,
+    filename: string,
+    progressHandle?: ProgressHandle
+): Promise<mirabuf.Assembly> {
     const ext = filename.split(".").pop()?.toLowerCase()
 
     if (ext === "urdf") {
