@@ -75,7 +75,7 @@ describe("MirabufLoader", () => {
         })
     })
 
-    describe("Real Fetch", () => {
+    describe("Real Fetch", { timeout: 20000 }, () => {
         beforeEach(async () => {
             await MirabufLoader.removeAll()
         })
