@@ -5,7 +5,6 @@ import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
 import { URDF_IMPORT_TAG } from "./URDFUserData"
 import type {ProgressHandle} from "@/components/ProgressNotificationData.ts";
-import 'scheduler-polyfill';
 import {yieldToMain} from "@/util/Utility.ts";
 
 
