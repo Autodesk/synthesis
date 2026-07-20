@@ -284,6 +284,17 @@ class PhysicsSystem extends WorldSystem {
         this.getBody(bodyId)!.SetIsSensor(false)
     }
 
+    /**
+     * Wakes a sleeping body.
+     *
+     * @param bodyId
+     */
+    public activateBody(bodyId: Jolt.BodyID) {
+        if (!this.isBodyAdded(bodyId)) return
+
+        this._joltBodyInterface.ActivateBody(bodyId)
+    }
+
     public isBodyAdded(bodyId: Jolt.BodyID) {
         return this._joltBodyInterface.IsAdded(bodyId)
     }
