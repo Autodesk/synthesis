@@ -133,7 +133,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _collisionUnsubscriber?: () => void
 
-    private _furthestVertices?: AxisVertices = undefined
+    private _hasMovedJointSinceLastUpdate = false
+
+    private _currentFurthestVertices?: AxisVertices = undefined
+    private _initialFurthestVertices?: AxisVertices = undefined
     private _unrotatedRootNodeToCenterPositionTranslation?: Jolt.Vec3 = undefined
 
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
@@ -214,6 +217,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public get assemblyId() {
         return this.mirabufInstance.parser.assemblyId
+    }
+
+    public setJointMoved(): void {
+        this._hasMovedJointSinceLastUpdate = true
     }
 
     public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
@@ -322,7 +329,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._basePositionTransform = this.getXZPositionTransform()
 
         if (this.miraType === MiraType.ROBOT) {
-            this.computeFurthestVertices()
+            this._initialFurthestVertices = this._currentFurthestVertices = this.computeFurthestVertices()
             this.computeUnrotatedRootNodeToCenterPositionTranslation()
         }
 
@@ -440,6 +447,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.updateMeshTransforms()
         this.updateBatches()
         this.updateNameTag()
+
+        this._hasMovedJointSinceLastUpdate = false
     }
 
     public dispose(): void {
@@ -784,8 +793,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * The vertices calculated by this function should remain valid as the robot moves through the world
      * However, if the robot modifies its dimensionality in some way(e.g. by extending an arm), this function should be called again to have accurate results.
      */
-    private computeFurthestVertices(): void {
-        this._furthestVertices = {
+    private computeFurthestVertices(): AxisVertices {
+        const furthestVertices = {
             x: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
             y: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
             z: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
@@ -825,9 +834,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 const transZ = transformedVertex.GetZ()
 
                 // Compute maximum vertex along each axis
-                const oldX = this._furthestVertices!.x
-                const oldY = this._furthestVertices!.y
-                const oldZ = this._furthestVertices!.z
+                const oldX = furthestVertices.x
+                const oldY = furthestVertices.y
+                const oldZ = furthestVertices.z
 
                 oldX.min = Math.min(oldX.min, transX)
                 oldY.min = Math.min(oldY.min, transY)
@@ -852,11 +861,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         JOLT.destroy(biggest)
         JOLT.destroy(identity)
 
-        const mins = [this._furthestVertices.x.min, this._furthestVertices.y.min, this._furthestVertices.z.min]
-        const maxes = [this._furthestVertices.x.max, this._furthestVertices.y.max, this._furthestVertices.z.max]
+        const mins = [furthestVertices.x.min, furthestVertices.y.min, furthestVertices.z.min]
+        const maxes = [furthestVertices.x.max, furthestVertices.y.max, furthestVertices.z.max]
         if (mins.some(m => m === Number.POSITIVE_INFINITY) || maxes.some(m => m === Number.NEGATIVE_INFINITY)) {
             console.warn("Failed to compute furthest vertices")
         }
+
+        return furthestVertices
     }
 
     /**
@@ -886,9 +897,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      *
      * @returns The aforementioned bounding box
      */
-    public getOrientedBoundingBox(): Jolt.OrientedBox {
+    public getOrientedBoundingBox(furthestVertices: AxisVertices = this._initialFurthestVertices!): Jolt.OrientedBox {
         // Get dimensions of scene object along each axis
-        const axesVertices = [this._furthestVertices!.x, this._furthestVertices!.y, this._furthestVertices!.z]
+        const axesVertices = [furthestVertices.x, furthestVertices.y, furthestVertices.z]
         const axisHalfExtents = axesVertices.map(({ min, max }) => Math.abs(max - min) / 2) as [number, number, number]
 
         const halfExtent = new JOLT.Vec3(...axisHalfExtents)
@@ -916,13 +927,25 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     /**
      * Calculates the robot's dimensions as if it had no rotation applied.
      *
+     * WARNING
+     * Currently `this._hasMovedJointSinceLastUpdate` gets updated by the `SynthesisBrain` but not the `WPILibBrain`
+     *
      * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
     public getDimensionsWithoutRotation(): RobotDimensions {
-        // Basically, we want an oriented box for each rigid body
-        // TODO
-        // 1. Check if joints have extended
-        // 2. If they have, recompute tightly fitting oriented box
+        if (this._hasMovedJointSinceLastUpdate) {
+            this._currentFurthestVertices = this.computeFurthestVertices()
+        }
+
+        const x = this._currentFurthestVertices!.x
+        const y = this._currentFurthestVertices!.y
+        const z = this._currentFurthestVertices!.z
+
+        return {
+            width: Math.abs(x.max - x.min),
+            depth: Math.abs(y.max - y.min),
+            height: Math.abs(y.max - z.min),
+        }
     }
 
     /**

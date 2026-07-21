@@ -44,7 +44,7 @@ class SynthesisBrain extends Brain {
     public driveType: DriveType = DriveType.ARCADE
 
     // Tracks how many joins have been made with unique controls
-    private _currentJointIndex = 1
+    private _jointCount = 1
 
     // Track previous unstick button state to detect button press (not hold)
     private _prevUnstickPressed = false
@@ -101,7 +101,7 @@ class SynthesisBrain extends Brain {
 
     public configure(): void {
         this._behaviors = []
-        this._currentJointIndex = 1
+        this._jointCount = 1
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (this._assembly.mechanism.controllable) {
             // In swerve mode, detect the azimuth hinges up front so they can drive the modules and
@@ -158,6 +158,13 @@ class SynthesisBrain extends Brain {
 
         this._assembly.ejectorActive = InputSystem.getInput("eject", this._brainIndex) > 0.5
         this._assembly.intakeActive = InputSystem.getInput("intake", this._brainIndex) > 0.5
+
+        for (let i = 0; i < this._jointCount; i++) {
+            if (InputSystem.getInput(`joint ${i}`, this._brainIndex) > 0.5) {
+                this._assembly.setJointMoved()
+                break
+            }
+        }
 
         // Handle unstick
         const unstickPressed = InputSystem.getInput("unstick", this._brainIndex) === 1
@@ -385,10 +392,10 @@ class SynthesisBrain extends Brain {
 
             let sequentialConfig = PreferencesSystem.getRobotPreferences(
                 this._assembly.assemblyId
-            ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
+            ).sequentialConfig?.find(sc => sc.jointIndex == this._jointCount)
 
             if (sequentialConfig == undefined) {
-                sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Arm")
+                sequentialConfig = defaultSequentialConfig(this._jointCount, "Arm")
                 if (this._assembly.robotPreferences.sequentialConfig == undefined)
                     this._assembly.robotPreferences.sequentialConfig = []
 
@@ -400,12 +407,12 @@ class SynthesisBrain extends Brain {
                 new GenericArmBehavior(
                     hingeDrivers[i],
                     hingeStimuli[i],
-                    this._currentJointIndex,
+                    this._jointCount,
                     this._brainIndex,
                     sequentialConfig
                 )
             )
-            this._currentJointIndex++
+            this._jointCount++
         }
     }
 
@@ -421,10 +428,10 @@ class SynthesisBrain extends Brain {
         for (let i = 0; i < sliderDrivers.length; i++) {
             let sequentialConfig = PreferencesSystem.getRobotPreferences(
                 this._assembly.assemblyId
-            ).sequentialConfig?.find(sc => sc.jointIndex == this._currentJointIndex)
+            ).sequentialConfig?.find(sc => sc.jointIndex == this._jointCount)
 
             if (sequentialConfig == undefined) {
-                sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Elevator")
+                sequentialConfig = defaultSequentialConfig(this._jointCount, "Elevator")
 
                 if (this._assembly.robotPreferences.sequentialConfig == undefined)
                     this._assembly.robotPreferences.sequentialConfig = []
@@ -437,12 +444,12 @@ class SynthesisBrain extends Brain {
                 new GenericElevatorBehavior(
                     sliderDrivers[i],
                     sliderStimuli[i],
-                    this._currentJointIndex,
+                    this._jointCount,
                     this._brainIndex,
                     sequentialConfig
                 )
             )
-            this._currentJointIndex++
+            this._jointCount++
         }
     }
 
