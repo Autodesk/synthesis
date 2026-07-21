@@ -290,11 +290,8 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
         .iter()
         .map(|uid| {
             let mut label = uid.to_string();
-            if *uid == room.host {
-                label.push_str("  [host]");
-            }
             if *uid == room.authority {
-                label.push_str("  [auth]");
+                label.push_str("  [A]");
             }
             ListItem::new(label)
         })

@@ -27,23 +27,22 @@ impl State {
         }
     }
 
-    pub fn add_room_and_host(&mut self, host_tx: ClientSender) -> (ClientId, RoomId) {
-        let host_id = Uuid::new_v4();
+    pub fn add_room_and_authority(&mut self, authority_tx: ClientSender) -> (ClientId, RoomId) {
+        let authority_id = Uuid::new_v4();
         let mut room = Room {
-            members: vec![(host_id, host_tx)],
-            authority: host_id,
-            host: host_id,
+            members: vec![(authority_id, authority_tx)],
+            authority: authority_id,
             logs: VecDeque::new(),
         };
 
         let room_id = self.rooms.idx;
-        info!(room, "Host {host_id} created room {room_id}");
+        info!(room, "Authority {authority_id} created room {room_id}");
 
-        self.users.insert(host_id, room_id);
+        self.users.insert(authority_id, room_id);
         self.rooms.map.insert(room_id, room);
         self.rooms.idx += 1;
 
-        (host_id, room_id)
+        (authority_id, room_id)
     }
 
     pub fn add_client_to_room(
@@ -143,7 +142,6 @@ impl State {
             .iter()
             .map(|(id, room)| RoomSnapshot {
                 id: *id,
-                host: room.host,
                 authority: room.authority,
                 members: room.members.iter().map(|(uid, _)| *uid).collect(),
                 logs: room.logs.iter().cloned().collect(),
@@ -192,8 +190,6 @@ pub struct Room {
     members: Vec<(ClientId, ClientSender)>,
     /// The physics system authority of the room
     authority: ClientId,
-    /// The admin of the room (capable of kicking members and ending the room)
-    host: ClientId,
     /// Recent activity for this room, newest last. Capped at [`MAX_LOG_LINES`].
     logs: VecDeque<Event>,
 }
@@ -254,7 +250,6 @@ pub struct Snapshot {
 
 pub struct RoomSnapshot {
     pub id: RoomId,
-    pub host: ClientId,
     pub authority: ClientId,
     pub members: Vec<ClientId>,
     pub logs: Vec<Event>,
