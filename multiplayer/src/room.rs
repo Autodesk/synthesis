@@ -27,7 +27,7 @@ impl State {
         }
     }
 
-    pub fn add_room_and_host(&mut self, host_tx: ClientSender) -> ClientId {
+    pub fn add_room_and_host(&mut self, host_tx: ClientSender) -> (ClientId, RoomId) {
         let host_id = Uuid::new_v4();
         let mut room = Room {
             members: vec![(host_id, host_tx)],
@@ -43,7 +43,7 @@ impl State {
         self.rooms.map.insert(room_id, room);
         self.rooms.idx += 1;
 
-        host_id
+        (host_id, room_id)
     }
 
     pub fn add_client_to_room(

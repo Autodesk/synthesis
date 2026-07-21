@@ -4,6 +4,7 @@ mod tui;
 #[macro_use]
 mod logging;
 
+use crate::messaging::InitialResponse;
 use crate::room::{ClientSender, State};
 use crate::{logging::EventType, messaging::InitialMessage};
 
@@ -13,7 +14,7 @@ use std::{env, process, thread};
 use futures_util::{SinkExt, StreamExt};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
-use tokio_tungstenite::tungstenite::Message;
+use tokio_tungstenite::tungstenite::{Message, Utf8Bytes};
 
 const PORT: u32 = 9002;
 
@@ -71,13 +72,6 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     //    Indicating whether the client wishes to create or join a room
     // 2..n. Any number of messages that will be forwarded to every other client in their room
     let (mut write, mut read) = ws_stream.split();
-    tokio::spawn(async move {
-        while let Some(msg) = rx.recv().await {
-            if write.send(msg).await.is_err() {
-                break;
-            }
-        }
-    });
 
     // Parse initial message, then user in correct room
     let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
@@ -95,17 +89,37 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
         return;
     };
 
-    let client_id = {
+    let (client_id, room_id) = {
         // The lock is relinquished after this match statement
         let mut guard = state.lock().unwrap();
         match initial_message {
             InitialMessage::Create => guard.add_room_and_host(tx),
             InitialMessage::Join(room_id) => match guard.add_client_to_room(tx, room_id) {
-                Some(n) => n,
+                Some(client_id) => (client_id, room_id),
                 None => return,
             },
         }
     };
+
+    let response = InitialResponse {
+        room_id,
+        client_id: client_id.to_string(),
+    };
+    let bytes = Utf8Bytes::from(serde_json::to_string(&response).unwrap());
+    if write.send(Message::Text(bytes)).await.is_err() {
+        let mut guard = state.lock().unwrap();
+        error!(guard, "Failed to send back initial response");
+
+        return;
+    }
+
+    tokio::spawn(async move {
+        while let Some(msg) = rx.recv().await {
+            if write.send(msg).await.is_err() {
+                break;
+            }
+        }
+    });
 
     // Listen for and pass along messages to other client channels in the same room
     while let Some(maybe_message) = read.next().await {
