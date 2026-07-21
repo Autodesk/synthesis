@@ -20,6 +20,7 @@ export const DROPDOWN_SELECT_SX = {
 
 /** topbar dropdown props */
 export const DROPDOWN_MENU_PROPS = {
+    marginThreshold: 8,
     slotProps: {
         paper: {
             sx: {
@@ -28,6 +29,7 @@ export const DROPDOWN_MENU_PROPS = {
                 "& .MuiMenuItem-root": {
                     color: "topBarText.main",
                     fontSize: 13,
+                    px: 1.75,
                     "&:hover": { bgcolor: "topBar.main" },
                     "&.Mui-selected": {
                         bgcolor: "topBar.main",

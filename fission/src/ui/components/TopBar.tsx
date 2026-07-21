@@ -7,13 +7,13 @@ import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
 import { deobf } from "@/util/Utility"
-import { useUIContext } from "../helpers/UIProviderHelpers"
-import APSManagementModal from "../modals/APSManagementModal"
-import SettingsModal from "../modals/configuring/SettingsModal"
-import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
-import CameraSelectionPanel from "../panels/configuring/CameraSelectionPanel"
-import DeveloperToolPanel from "../panels/DeveloperToolPanel"
-import DebugPanel from "../panels/DebugPanel"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import APSManagementModal from "@/modals/APSManagementModal"
+import SettingsModal from "@/modals/configuring/SettingsModal"
+import type { ConfigurationType } from "@/panels/configuring/assembly-config/ConfigTypes"
+import CameraSelectionPanel from "@/panels/configuring/CameraSelectionPanel"
+import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
+import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
@@ -52,9 +52,7 @@ const TopBar: React.FC = () => {
                     w[deobf("NjE3MDcwNjU2ZTY0NDM2ODY5NmM2NA==")](r)
                 }
             }
-        } catch (_e) {
-            // noop
-        }
+        } catch (_e) {}
         // biome-ignore-end lint/suspicious/noExplicitAny: disallow any
 
         return EventSystem.listen("APSUserInfoUpdate", () => {
@@ -62,10 +60,6 @@ const TopBar: React.FC = () => {
         })
     }, [])
 
-    // Reserve viewport space for the bar so content renders below it, not underneath.
-    // Only applies while the bar is mounted (desktop): the 3D canvas reads the offset
-    // directly, and DOM overlays (ViewCube, Scoreboard) read the --top-bar-height CSS var.
-    // When the bar is absent (mobile) the offset is 0 and the var falls back to 0px.
     useEffect(() => {
         document.documentElement.style.setProperty("--top-bar-height", `${TOP_BAR_HEIGHT}px`)
         if (World.isAlive) World.sceneRenderer.sceneTopOffset = TOP_BAR_HEIGHT
@@ -83,13 +77,6 @@ const TopBar: React.FC = () => {
             color="topBarText.main"
         >
             <Stack direction="row" alignItems="center" height="100%" gap={1.5}>
-                {/*
-                 * Fully control the tooltip from our own hover handlers. MUI's built-in
-                 * listeners are disabled because the Select's backdrop swallows the trigger's
-                 * mouseleave, leaving MUI's internal hover state stuck open after the menu
-                 * closes. Driving `open` purely from React state avoids that — and unlike
-                 * remounting via `key`, it doesn't cancel the Select's first open.
-                 */}
                 <Tooltip
                     title="Change Mode"
                     open={modeHovered && !modeMenuOpen}
