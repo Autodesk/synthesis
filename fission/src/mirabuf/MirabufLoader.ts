@@ -29,14 +29,6 @@ export interface MirabufRemoteInfo {
     src: string
 }
 
-/**
- * Converts "Cube:1" -> "Cube 2"
- */
-export function getGamePieceTypeName(rawName: string): string {
-    const stripped = rawName.replace(/[\s:_-]+\d+$/, "").trim()
-    return stripped || rawName
-}
-
 const localStorageEntryName = "MirabufAssets"
 
 const storageBackend: MirabufStorageBackend | null = await initStorageBackend()

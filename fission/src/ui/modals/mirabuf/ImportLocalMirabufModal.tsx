@@ -1,8 +1,7 @@
 import { Stack, styled } from "@mui/material"
 import { type ChangeEvent, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
-import MirabufCachingService, { getGamePieceTypeName, MiraType } from "@/mirabuf/MirabufLoader"
-import { zeroGamePieceInstancePosition } from "@/mirabuf/MirabufParser"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
@@ -119,29 +118,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 const { mainSceneObject, gamePieces } = result
                 World.sceneRenderer.registerSceneObject(mainSceneObject)
 
-                // Only one cache entry is kept per game piece type (e.g. "Cube"), so instances
-                // sharing a type reuse the existing cached entry instead of accumulating duplicates.
-                const cachedTypeNames = new Set(MirabufCachingService.getAll(MiraType.PIECE).map(i => i.name))
                 for (const instance of gamePieces ?? []) {
-                    const pieceAssembly = instance.parser.assembly
-                    const typeName = getGamePieceTypeName(pieceAssembly?.info?.name ?? "Piece")
-
-                    if (cachedTypeNames.has(typeName)) {
-                        const existing = MirabufCachingService.getAll(MiraType.PIECE).find(i => i.name === typeName)
-                        const sceneObject = new MirabufSceneObject(instance, existing?.hash ?? "")
-                        World.sceneRenderer.registerSceneObject(sceneObject)
-                        continue
-                    }
-                    cachedTypeNames.add(typeName)
-
-                    zeroGamePieceInstancePosition(pieceAssembly)
-                    const cacheInfo = await MirabufCachingService.storeAssemblyInCache(pieceAssembly, {
-                        miraType: MiraType.PIECE,
-                        name: typeName,
-                    })
-                    if (!cacheInfo) continue
-
-                    const sceneObject = new MirabufSceneObject(instance, cacheInfo.hash)
+                    const sceneObject = new MirabufSceneObject(instance)
                     World.sceneRenderer.registerSceneObject(sceneObject)
                 }
 

@@ -3,8 +3,7 @@ import type React from "react"
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
-import MirabufCachingService, { getGamePieceTypeName, type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
-import { zeroGamePieceInstancePosition } from "@/mirabuf/MirabufParser"
+import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { mirabuf } from "@/proto/mirabuf"
@@ -158,29 +157,8 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                 globalOpenPanel(InitialConfigPanel, undefined)
             }
 
-            // Only one cache entry is kept per game piece type (e.g. "Cube"), so instances
-            // sharing a type reuse the existing cached entry instead of accumulating duplicates.
-            const cachedTypeNames = new Set(MirabufCachingService.getAll(MiraType.PIECE).map(i => i.name))
             for (const instance of gamePieces ?? []) {
-                const pieceAssembly = instance.parser.assembly
-                const typeName = getGamePieceTypeName(pieceAssembly?.info?.name ?? "Piece")
-
-                if (cachedTypeNames.has(typeName)) {
-                    const existing = MirabufCachingService.getAll(MiraType.PIECE).find(i => i.name === typeName)
-                    const sceneObject = new MirabufSceneObject(instance, existing?.hash ?? "")
-                    World.sceneRenderer.registerSceneObject(sceneObject)
-                    continue
-                }
-                cachedTypeNames.add(typeName)
-
-                zeroGamePieceInstancePosition(pieceAssembly)
-                const cacheInfo = await MirabufCachingService.storeAssemblyInCache(pieceAssembly, {
-                    miraType: MiraType.PIECE,
-                    name: typeName,
-                })
-                if (!cacheInfo) continue
-
-                const sceneObject = new MirabufSceneObject(instance, cacheInfo.hash)
+                const sceneObject = new MirabufSceneObject(instance)
                 World.sceneRenderer.registerSceneObject(sceneObject)
             }
         })

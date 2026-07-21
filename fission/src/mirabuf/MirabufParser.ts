@@ -458,8 +458,8 @@ class MirabufParser {
 
     private deleteRigidNode(node: RigidNode) {
         const index = this._rigidNodes.indexOf(node)
-        if (index != -1 && index != null) {
-            this._rigidNodes.splice(index)
+        if (index != -1) {
+            this._rigidNodes.splice(index, 1)
         }
     }
 
@@ -644,7 +644,12 @@ export function zeroGamePieceInstancePosition(assembly: mirabuf.Assembly) {
     const e = zeroed.elements
     instance.transform = new mirabuf.Transform({
         // biome-ignore-start format: We would prefer to visualize this as a matrix
-        spatialMatrix: [e[0], e[4], e[8], 0, e[1], e[5], e[9], 0, e[2], e[6], e[10], 0, e[3], e[7], e[11], e[15]],
+        spatialMatrix: [
+            e[0], e[4], e[8],  0,
+            e[1], e[5], e[9],  0,
+            e[2], e[6], e[10], 0,
+            e[3], e[7], e[11], e[15],
+        ],
         // biome-ignore-end format: We would prefer to visualize this as a matrix
     })
 }
