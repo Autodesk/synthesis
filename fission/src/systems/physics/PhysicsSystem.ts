@@ -38,6 +38,7 @@ import {
     createDOFSpecs,
     createVehicleController,
     getAxis,
+    getExplicitWheelRadius,
     getPerpendicular,
     isWheel,
     setAxes,
@@ -681,11 +682,14 @@ class PhysicsSystem extends WorldSystem {
                 ? this.getBody(bodyIdB)!
                 : this.getBody(bodyIdA)!
 
-            const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
-            const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
-            const axis = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
-            const radius = inferWheelRadius(urdfImport, bodyWheel.GetShape().GetLocalBounds(), axis)
-            JOLT.destroy(axis)
+            let radius = getExplicitWheelRadius(jDef)
+            if (radius === undefined) {
+                const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
+                const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
+                const axis = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
+                radius = inferWheelRadius(urdfImport, bodyWheel.GetShape().GetLocalBounds(), axis)
+                JOLT.destroy(axis)
+            }
 
             wheels.push({ guid: jointGuid, radius })
         }

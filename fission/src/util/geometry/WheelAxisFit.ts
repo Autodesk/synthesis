@@ -1,9 +1,17 @@
 import * as THREE from "three"
 
-/** A wheel's rotation axis and pivot origin, in the local space of whatever point set they were derived from. */
+/** A wheel's rotation axis, pivot origin, and radius, in the local space of whatever point set they were derived from. */
 export interface WheelAxis {
     center: THREE.Vector3
     axis: THREE.Vector3
+    radius: number
+}
+
+/** Any unit vector perpendicular to `axis` -- used to carry a radius through a transform without
+ *  assuming uniform scale (see transformWheelAxis). */
+function anyPerpendicular(axis: THREE.Vector3): THREE.Vector3 {
+    const helper = Math.abs(axis.x) < 0.9 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0)
+    return helper.cross(axis).normalize()
 }
 
 const LOCAL_AXES = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)]
@@ -39,9 +47,11 @@ export function computeWheelAxisFromAABB(points: THREE.Vector3[]): WheelAxis | u
 
     const bbox = new THREE.Box3().setFromPoints(points)
     const center = bbox.getCenter(new THREE.Vector3())
+    const size = bbox.getSize(new THREE.Vector3())
     const axleIndex = axleIndexFromAABB(points)
+    const radialExtents = [size.x, size.y, size.z].filter((_, i) => i !== axleIndex)
 
-    return { center, axis: LOCAL_AXES[axleIndex].clone() }
+    return { center, axis: LOCAL_AXES[axleIndex].clone(), radius: Math.max(...radialExtents) / 2 }
 }
 
 // Minimum points to trust a circle fit -- below this a single outlier can swing the result arbitrarily.
@@ -165,15 +175,22 @@ export function computeWheelAxisFromCircleFit(points: THREE.Vector3[]): WheelAxi
     center.setComponent(uIndex, centroid.getComponent(uIndex) + fit.cx)
     center.setComponent(vIndex, centroid.getComponent(vIndex) + fit.cy)
 
-    return { center, axis }
+    return { center, axis, radius: fit.radius }
 }
 
-/** Transforms a locally-derived wheel axis into another space (e.g. world space) using a rigid/uniform-scale matrix. */
+/** Transforms a locally-derived wheel axis into another space (e.g. world space). Radius is carried
+ *  through via a rim point rather than a scale factor, so it stays correct even under non-uniform scale. */
 export function transformWheelAxis(local: WheelAxis, matrixWorld: THREE.Matrix4): WheelAxis {
     const center = local.center.clone().applyMatrix4(matrixWorld)
 
     const normalMatrix = new THREE.Matrix3().getNormalMatrix(matrixWorld)
     const axis = local.axis.clone().applyMatrix3(normalMatrix).normalize()
 
-    return { center, axis }
+    const rim = local.center
+        .clone()
+        .addScaledVector(anyPerpendicular(local.axis), local.radius)
+        .applyMatrix4(matrixWorld)
+    const radius = rim.distanceTo(center)
+
+    return { center, axis, radius }
 }

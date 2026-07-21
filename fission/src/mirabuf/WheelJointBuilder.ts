@@ -87,9 +87,13 @@ function unbandageWheelSubtree(assembly: mirabuf.Assembly, wheelSubtree: Readonl
  * expect), then strips the wheel's whole post-split rigid-node subtree out of every RigidGroup so
  * MirabufParser's bandage pass can't re-fuse it back to the parent (see computeWheelSubtreeParts).
  *
- * Radius/width for the Jolt wheel constraint are intentionally NOT set here — PhysicsSystem's existing
- * AABB-based inference (createWheelConstraint / resolveWheelRadii) picks those up automatically once the
- * joint exists. This function only needs to get origin + axis right.
+ * Radius is taken directly from the wheel pick's circle fit and stored on the joint's userData
+ * (PhysicsSystem prefers this over its AABB-based inference -- see getExplicitWheelRadius). AABB
+ * inference reads the bounds of whatever rigid body the wheel ends up in, which for a manually-assigned
+ * wheel can be a whole belt-driven wheel train fused together by conservative import, not just this one
+ * wheel; the circle fit is computed straight from the clicked mesh's own geometry, so it isn't affected by
+ * how many other parts end up sharing that rigid body. Width still comes from AABB inference (createWheelConstraint) --
+ * the axle-direction extent of a shared rigid body still approximates a single wheel's width.
  *
  * Joint.origin is centimetres, Y-up, ASSEMBLY space (`parser.globalTransforms`) NOT a live scene
  * matrix, which bakes in the physics body's current world transform.
@@ -127,8 +131,11 @@ export function applyWheelAssignments(assembly: mirabuf.Assembly, assignments: W
                     value: 0,
                 },
             },
-            // Basis/radius inference keys off isURDFImport(assembly), not a per-joint tag.
-            userData: { data: { wheel: "true", wheelType: "0" } },
+            // Basis inference keys off isURDFImport(assembly), not a per-joint tag. wheelRadius is
+            // centimetres, matching origin's convention (see getExplicitWheelRadius in PhysicsSystem.ts).
+            userData: {
+                data: { wheel: "true", wheelType: "0", wheelRadius: String(assignment.axisFit.radius * 100) },
+            },
         }
 
         joints.jointInstances![token] = {

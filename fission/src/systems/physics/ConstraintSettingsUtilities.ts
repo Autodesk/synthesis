@@ -148,3 +148,17 @@ export function createDOFSpecs(dofs: mirabuf.joint.IDOF[]): DOFSpecs[] {
 export function isWheel(jDef: mirabuf.joint.Joint): boolean {
     return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
 }
+
+/**
+ * Radius stashed on a joint's userData at creation time (centimetres, see WheelJointBuilder.ts), used in
+ * place of AABB-based inference when present. Manually-assigned wheels set this because the wheel's rigid
+ * body can end up containing more than just the wheel (e.g. a whole belt-driven wheel train fused
+ * together by conservative URDF import), which throws off an AABB reading of "the wheel's" size; wheels
+ * WheelDetector found on its own don't set this and keep using AABB inference as before.
+ */
+export function getExplicitWheelRadius(jDef: mirabuf.joint.Joint): number | undefined {
+    const raw = jDef.userData?.data?.wheelRadius
+    if (raw === undefined) return undefined
+    const radius = Number(raw) / 100.0
+    return Number.isFinite(radius) && radius > 0 ? radius : undefined
+}
