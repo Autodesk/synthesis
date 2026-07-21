@@ -5,8 +5,8 @@ import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { ConfigMode, type ConfigurationType } from "../../panels/configuring/assembly-config/ConfigTypes"
-import ConfigurePanel from "../../panels/configuring/assembly-config/ConfigurePanel"
+import { ConfigMode, type ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import type { TopBarIconName } from "./TopBarIcons"
 
 export type ConfigureButton = { name: TopBarIconName; label: string; mode: ConfigMode }

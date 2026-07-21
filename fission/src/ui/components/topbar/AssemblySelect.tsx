@@ -2,7 +2,7 @@ import { MenuItem, type SxProps, type Theme } from "@mui/material"
 import type React from "react"
 import { IoMdArrowDropdown } from "react-icons/io"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { Select } from "../StyledComponents"
+import { Select } from "@/ui/components/StyledComponents"
 import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "./TopBarConfig"
 
 type AssemblySelectProps = {

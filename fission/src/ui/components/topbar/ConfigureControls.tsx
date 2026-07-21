@@ -1,6 +1,6 @@
 import { Box, Stack, Tooltip } from "@mui/material"
 import type React from "react"
-import { IconButton, SynthesisIcons } from "../StyledComponents"
+import { IconButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "./AssemblySelect"
 import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
 import { TopBarIcon } from "./TopBarIcons"

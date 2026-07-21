@@ -14,7 +14,7 @@ import type { ConfigurationType } from "@/panels/configuring/assembly-config/Con
 import CameraSelectionPanel from "@/panels/configuring/CameraSelectionPanel"
 import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
-import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
 import ConfigureControls from "./topbar/ConfigureControls"
