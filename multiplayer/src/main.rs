@@ -4,20 +4,16 @@ mod tui;
 #[macro_use]
 mod logging;
 
-use futures_util::SinkExt;
-use futures_util::StreamExt;
-use std::env;
-use std::process;
-use std::sync::Arc;
-use std::sync::Mutex;
-use std::thread;
+use crate::room::{ClientSender, State};
+use crate::{logging::EventType, messaging::InitialMessage};
+
+use std::sync::{Arc, Mutex};
+use std::{env, process, thread};
+
+use futures_util::{SinkExt, StreamExt};
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
-
-use crate::logging::EventType;
-use crate::messaging::InitialMessage;
-use crate::room::{ClientSender, State};
 
 const PORT: u32 = 9002;
 
@@ -29,7 +25,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind(&addr).await?;
     println!("Server listening on port {PORT}");
 
-    if env::args().any(|a| a == "--tui") {
+    // `--headless` is passed in to not open the dashboard
+    if !env::args().any(|a| a == "--headless") {
         let tui_state_handle = state.clone();
 
         // On an OS thread because crossterm (and thus ratatui) will block on user input
@@ -85,7 +82,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     // Parse initial message, then user in correct room
     let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
         let mut guard = state.lock().unwrap();
-        info!(guard, "{addr} disconnected before handshake");
+        error!(guard, "{addr} disconnected before handshake");
 
         return;
     };
@@ -93,7 +90,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     let Ok(initial_message) = serde_json::from_str::<InitialMessage>(&initial_message_string)
     else {
         let mut guard = state.lock().unwrap();
-        info!(guard, "{addr} sent an invalid initial message");
+        error!(guard, "{addr} sent an invalid initial message");
 
         return;
     };
@@ -132,11 +129,11 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
 
             Message::Binary(_) => {
                 let mut guard = state.lock().unwrap();
-                info!(guard, "Received Binary, skipping");
+                warn!(guard, "Received Binary, skipping");
             }
             Message::Close(_) => {
                 let mut guard = state.lock().unwrap();
-                info!(guard, "Connection with {addr} closed");
+                warn!(guard, "Connection with {addr} closed");
                 guard.remove_client(addr);
 
                 return;

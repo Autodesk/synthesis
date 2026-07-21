@@ -1,26 +1,26 @@
-//! A terminal dashboard for the websocket server.
+//! A TUI dashboard for the multiplayer websocket server.
 //!
-//! Runs on its own OS thread (spawned from `main` when `--tui` is passed) and
+//! The TUI runs on its own OS thread (spawned from `main` when `--tui` is passed) and
 //! reads a cloned [`Snapshot`] of the shared [`State`] each frame, so it never
-//! holds the state lock across a render. Layout: a tab bar paging through rooms
-//! two-at-a-time, each room panel showing its user list above its log stream,
-//! and a status bar of key hints. The focused room panel is highlighted; the
-//! admin selects a user with the arrows and kicks with `k` (confirmed y/n).
+//! holds the state lock across a render.
+//!
+//! Layout: a tab bar paging through rooms two-at-a-time (horizontal split),
+//! each room panel shows its user list above its log stream, the focused one is highlighted.
+//!
+//! The admin can select a user with the arrows and kick them with `k` (after a confirmation).
 
-use std::io;
+use crate::room::{ClientId, RoomSnapshot, Snapshot, State};
+
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
+use std::{io, time::Duration};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
-use ratatui::text::Line;
 use ratatui::widgets::{
     Block, BorderType, Clear, List, ListItem, ListState, Paragraph, Tabs, Wrap,
 };
-use ratatui::{DefaultTerminal, Frame};
-
-use crate::room::{ClientId, RoomSnapshot, Snapshot, State};
+use ratatui::{DefaultTerminal, Frame, text::Line};
 
 /// How many room panels are shown side-by-side on a single tab.
 const ROOMS_PER_TAB: usize = 2;

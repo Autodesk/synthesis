@@ -1,9 +1,9 @@
-use crate::{
-    info,
-    logging::{Event, EventType},
-};
-use std::collections::VecDeque;
-use std::{collections::HashMap, net::SocketAddr};
+use crate::logging::{Event, EventType};
+use crate::{info, warn};
+
+use std::collections::{HashMap, VecDeque};
+use std::net::SocketAddr;
+
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
 
@@ -51,7 +51,7 @@ impl State {
         room_id: RoomId,
     ) {
         let Some(room) = self.rooms.map.get_mut(&room_id) else {
-            info!(
+            warn!(
                 self,
                 "Attempted to add {client_id} into non-existant room {room_id}"
             );
@@ -66,7 +66,7 @@ impl State {
 
     pub fn remove_client(&mut self, client_id: ClientId) {
         let Some((room_id, room)) = self.get_room_of_client(&client_id) else {
-            info!(
+            warn!(
                 self,
                 "Attempted to remove {client_id} from room that does not exist"
             );
@@ -86,7 +86,7 @@ impl State {
 
     fn get_room_of_client(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
         let Some(room_id) = self.users.get(&client_id) else {
-            info!(self, "Attempted to get client that does not exist");
+            warn!(self, "Attempted to get client that does not exist");
             return None;
         };
 
@@ -225,7 +225,7 @@ impl Room {
             .map(|client| client.0)
             .position(|id| id == *client_id)
         else {
-            info!(self, "Attempted to remove client from room they are not in");
+            warn!(self, "Attempted to remove client from room they are not in");
             return RoomStatus::Open;
         };
 
