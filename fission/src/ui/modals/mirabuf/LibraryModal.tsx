@@ -45,7 +45,6 @@ interface AssetCardProps {
     onDelete?: () => void
 }
 
-/** A single robot/field tile: thumbnail (or placeholder), name, spawn button, optional delete. */
 const AssetCard: React.FC<AssetCardProps> = ({ name, thumbnail, miraType, cached, onSpawn, onDelete }) => {
     const [thumbFailed, setThumbFailed] = useState(false)
     const showThumb = thumbnail && !thumbFailed
@@ -135,11 +134,6 @@ const AssetCardGrid: React.FC<{ children: ReactNode }> = ({ children }) => (
     </Box>
 )
 
-/**
- * Autodesk Hub (APS) section: lists the signed-in user's cloud Mirabuf files and
- * spawns them. Owns its own APS state and event subscriptions so the Library body
- * stays focused on the default/cached assets.
- */
 const AutodeskHubAccordion: React.FC<{ onSpawned: () => void }> = ({ onSpawned }) => {
     const [apsType, setApsType] = useState<MiraType>(MiraType.ROBOT)
     const [filesStatus, setFilesStatus] = useState<TaskStatus>({
@@ -243,8 +237,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { unconfirmedImport } = useStateContext()
     const libraryRef = useTourAnchor("spawn-panel")
 
-    // Default library (remote manifest). DefaultAssetLoader loads async ~1s after boot,
-    // so snapshot into state and refresh if it wasn't ready yet.
     const [manifestRobots, setManifestRobots] = useState<DefaultAssetInfo[]>(DefaultAssetLoader.robots)
     const [manifestFields, setManifestFields] = useState<DefaultAssetInfo[]>(DefaultAssetLoader.fields)
     useEffect(() => {
@@ -258,13 +250,11 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         }
     }, [])
 
-    // Cached assets (drives the "downloaded" state on library cards + the Saved section).
     const [cachedInfos, setCachedInfos] = useState<MirabufCacheInfo[]>(() => MirabufCachingService.getAll())
     const refreshCached = useCallback(() => setCachedInfos(MirabufCachingService.getAll()), [])
     const cachedByHash = useMemo(() => new Map(cachedInfos.map(c => [c.hash, c])), [cachedInfos])
 
-    // Merge robots + fields, deduped by hash (the manifest can contain multiple entries
-    // that resolve to the same content, which would otherwise collide as React keys).
+    // merging robots and fields & deduping by hash
     const manifestAssets = useMemo(() => {
         const seen = new Set<string>()
         return [...manifestRobots, ...manifestFields].filter(asset => {
@@ -274,13 +264,20 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         })
     }, [manifestRobots, manifestFields])
 
-    // Year tabs: union of manifest years, descending, with an "Other" tab pinned last.
+    // cached assets not in default library
+    const manifestHashes = useMemo(() => new Set(manifestAssets.map(a => a.hash)), [manifestAssets])
+    const savedExtra = useMemo(
+        () => cachedInfos.filter(c => !manifestHashes.has(c.hash)),
+        [cachedInfos, manifestHashes]
+    )
+
     const years = useMemo<YearKey[]>(() => {
         const set = new Set<YearKey>()
         for (const asset of manifestAssets) set.add(yearOf(asset))
+        if (savedExtra.length > 0) set.add(OTHER_YEAR)
         const numeric = [...set].filter((y): y is number => typeof y === "number").sort((a, b) => b - a)
         return set.has(OTHER_YEAR) ? [...numeric, OTHER_YEAR] : numeric
-    }, [manifestAssets])
+    }, [manifestAssets, savedExtra])
 
     const [activeYear, setActiveYear] = useState<YearKey | undefined>(undefined)
     useEffect(() => {
@@ -289,18 +286,13 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         }
     }, [years, activeYear])
 
-    // Robots + field(s) for the selected year, robots first.
     const assetsForYear = useMemo(
         () => (activeYear === undefined ? [] : manifestAssets.filter(asset => yearOf(asset) === activeYear)),
         [manifestAssets, activeYear]
     )
 
-    // Cached assets not present in the default library (imports / APS downloads).
-    const manifestHashes = useMemo(() => new Set(manifestAssets.map(a => a.hash)), [manifestAssets])
-    const savedExtra = useMemo(
-        () => cachedInfos.filter(c => !manifestHashes.has(c.hash)),
-        [cachedInfos, manifestHashes]
-    )
+    const showSaved = activeYear === OTHER_YEAR
+    const hasAssets = assetsForYear.length > 0 || (showSaved && savedExtra.length > 0)
 
     useEffect(() => {
         configureScreen(modal!, { title: "Library", hideAccept: true, cancelText: "Close", allowClickAway: true }, {})
@@ -356,8 +348,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const hasRemoteInYear = assetsForYear.some(asset => !cachedByHash.has(asset.hash))
 
     return (
-        // Tour anchor for the library steps ("Open the Library" / "Choose a Robot"): the whole
-        // modal body, so the callout points at the Library generically rather than at any one tab.
+        // tour anchor
         <Stack
             direction="column"
             ref={libraryRef}
@@ -384,7 +375,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto", pt: 2 }}>
                 {activeYear === undefined ? (
                     <Label size="sm">Loading Library...</Label>
-                ) : assetsForYear.length > 0 ? (
+                ) : hasAssets ? (
                     <AssetCardGrid>
                         {assetsForYear.map(asset => (
                             <AssetCard
@@ -397,6 +388,18 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                                 onDelete={cachedByHash.has(asset.hash) ? () => deleteCached(asset.hash) : undefined}
                             />
                         ))}
+                        {showSaved &&
+                            savedExtra.map(info => (
+                                <AssetCard
+                                    key={info.hash}
+                                    name={info.name || "Unnamed"}
+                                    thumbnail={info.thumbnail}
+                                    miraType={info.miraType}
+                                    cached
+                                    onSpawn={() => spawnSaved(info)}
+                                    onDelete={() => deleteCached(info.hash)}
+                                />
+                            ))}
                     </AssetCardGrid>
                 ) : (
                     <Label size="sm">No Assets Found</Label>
@@ -409,33 +412,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                 )}
 
                 <Stack direction="column" gap={1} mt={2}>
-                    <Accordion>
-                        <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
-                            <Label size="md">
-                                {`${savedExtra.length} Saved Asset${savedExtra.length === 1 ? "" : "s"} (not in Library)`}
-                            </Label>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            {savedExtra.length > 0 ? (
-                                <AssetCardGrid>
-                                    {savedExtra.map(info => (
-                                        <AssetCard
-                                            key={info.hash}
-                                            name={info.name || "Unnamed"}
-                                            thumbnail={info.thumbnail}
-                                            miraType={info.miraType}
-                                            cached
-                                            onSpawn={() => spawnSaved(info)}
-                                            onDelete={() => deleteCached(info.hash)}
-                                        />
-                                    ))}
-                                </AssetCardGrid>
-                            ) : (
-                                <Label size="sm">No Saved Assets</Label>
-                            )}
-                        </AccordionDetails>
-                    </Accordion>
-
                     <AutodeskHubAccordion onSpawned={() => closeModal(CloseType.Cancel)} />
                 </Stack>
 
@@ -449,8 +425,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
 
 export default LibraryModal
 
-// Command palette entry (module side effect). Registered after definition so the
-// closure references the fully-initialized component.
 CommandRegistry.get().registerCommands([
     {
         id: "spawn-asset",

@@ -80,7 +80,9 @@ const TourOverlay: React.FC = () => {
     // (no handler = clicks go nowhere), leaving only the card's buttons live. Rendered as a sibling
     // beneath the card so it never covers the card itself.
     const scrim = step.informational ? (
-        <Box sx={{ position: "fixed", inset: 0, bgcolor: "rgba(0,0,0,0.5)", zIndex: ScrimZIndex, pointerEvents: "auto" }} />
+        <Box
+            sx={{ position: "fixed", inset: 0, bgcolor: "rgba(0,0,0,0.5)", zIndex: ScrimZIndex, pointerEvents: "auto" }}
+        />
     ) : null
 
     const card = (
