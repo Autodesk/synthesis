@@ -132,8 +132,8 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
     useEffect(() => {
         const checkGamepadState = () => {
-            if (InputSystem.gamepad !== null) {
-                const pressedButtons = InputSystem.gamepad.buttons
+            if (InputSystem.gamepads.length > 0) {
+                const pressedButtons = InputSystem.gamepads[0]!.buttons
                     .map((button, index) => (button.pressed ? index : null))
                     .filter(index => index !== null)
                     .map(index => index!)
