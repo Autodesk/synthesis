@@ -19,8 +19,8 @@ import AssemblySelection, { type AssemblySelectionOption } from "./configure/Ass
 import ConfigModeSelection from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
+import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
@@ -191,13 +191,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         }
     }, [selectedAssembly])
 
-    useEffect(() => {
-        // Listen for input scheme changes from other panels
-        return EventSystem.listen("InputSchemeChanged", ({ panelId }) => {
-            if (panelId === panel?.id) return
-        })
-    }, [])
-
     const onBeforeAccept = useCallback(async () => {
         for (const callback of confirmCallbacks) {
             await callback()
@@ -227,14 +220,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         new Set(accessedAssemblies).forEach(assembly => {
             assembly.savePreferences()
         })
-
-        //
-        // if (originalInputSchemes.current) {
-        //     PreferencesSystem.setUserPreference("InputSchemes", originalInputSchemes.current)
-        //     PreferencesSystem.savePreferences()
-        //     InputSchemeManager.resetDefaultSchemes(panel?.id)
-        //     InputSchemeManager.rebindOldBrainSchemes()
-        // }
 
         setConfirmCallbacks([])
         setCancelCallbacks([])
