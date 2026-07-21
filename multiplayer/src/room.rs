@@ -2,10 +2,9 @@ use crate::logging::{Event, EventType};
 use crate::{info, warn};
 
 use std::collections::{HashMap, VecDeque};
-use std::net::SocketAddr;
-
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
+use uuid::Uuid;
 
 /// Maximum number of log lines retained in each log (both per-room and system logs)
 /// Oldest lines are dropped once the buffer is full.
@@ -28,7 +27,8 @@ impl State {
         }
     }
 
-    pub fn add_room_and_host(&mut self, host_id: ClientId, host_tx: ClientSender) {
+    pub fn add_room_and_host(&mut self, host_tx: ClientSender) -> ClientId {
+        let host_id = Uuid::new_v4();
         let mut room = Room {
             members: vec![(host_id, host_tx)],
             authority: host_id,
@@ -42,26 +42,30 @@ impl State {
         self.users.insert(host_id, room_id);
         self.rooms.map.insert(room_id, room);
         self.rooms.idx += 1;
+
+        host_id
     }
 
     pub fn add_client_to_room(
         &mut self,
-        client_id: ClientId,
         client_tx: ClientSender,
         room_id: RoomId,
-    ) {
+    ) -> Option<ClientId> {
+        let client_id = Uuid::new_v4();
         let Some(room) = self.rooms.map.get_mut(&room_id) else {
             warn!(
                 self,
                 "Attempted to add {client_id} into non-existant room {room_id}"
             );
-            return;
+            return None;
         };
 
         room.members.push((client_id, client_tx));
         self.users.insert(client_id, room_id);
 
         info!(room, "{client_id} joined room {room_id}");
+
+        Some(client_id)
     }
 
     pub fn remove_client(&mut self, client_id: ClientId) {
@@ -155,7 +159,7 @@ impl State {
     }
 }
 
-pub type ClientId = SocketAddr;
+pub type ClientId = Uuid;
 pub type ClientMap = HashMap<ClientId, RoomId>;
 
 pub type ClientSender = mpsc::Sender<Message>;

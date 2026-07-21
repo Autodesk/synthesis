@@ -1,7 +1,8 @@
+use crate::room::RoomId;
 use serde::{Deserialize, Serialize};
 
-use crate::room::RoomId;
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub enum InitialMessage {
     Create,
     Join(RoomId),

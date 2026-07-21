@@ -82,7 +82,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     // Parse initial message, then user in correct room
     let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
         let mut guard = state.lock().unwrap();
-        error!(guard, "{addr} disconnected before handshake");
+        error!(guard, "Client disconnected before handshake");
 
         return;
     };
@@ -95,14 +95,17 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
         return;
     };
 
-    {
+    let client_id = {
         // The lock is relinquished after this match statement
         let mut guard = state.lock().unwrap();
         match initial_message {
-            InitialMessage::Create => guard.add_room_and_host(addr, tx),
-            InitialMessage::Join(room_id) => guard.add_client_to_room(addr, tx, room_id),
+            InitialMessage::Create => guard.add_room_and_host(tx),
+            InitialMessage::Join(room_id) => match guard.add_client_to_room(tx, room_id) {
+                Some(n) => n,
+                None => return,
+            },
         }
-    }
+    };
 
     // Listen for and pass along messages to other client channels in the same room
     while let Some(maybe_message) = read.next().await {
@@ -119,7 +122,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
                 let senders: Vec<ClientSender> = {
                     // The lock is relinquished after senders are retreived
                     let mut guard = state.lock().unwrap();
-                    guard.get_senders_from_user_room(addr)
+                    guard.get_senders_from_user_room(client_id)
                 };
 
                 for tx in senders {
@@ -133,8 +136,8 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
             }
             Message::Close(_) => {
                 let mut guard = state.lock().unwrap();
-                warn!(guard, "Connection with {addr} closed");
-                guard.remove_client(addr);
+                warn!(guard, "Connection with {client_id} closed");
+                guard.remove_client(client_id);
 
                 return;
             }
