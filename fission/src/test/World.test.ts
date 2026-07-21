@@ -1,7 +1,17 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 // Mock all the system dependencies before importing World
-
+vi.mock("@/systems/scene/SceneRenderer", () => ({
+    default: vi.fn(() => ({
+        update: vi.fn(),
+        destroy: vi.fn(),
+        sceneObjects: new Map(),
+        mirabufSceneObjects: {
+            getRobots: vi.fn().mockReturnValue([]),
+            getField: vi.fn(),
+        },
+    })),
+}))
 vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
     default: vi.fn(() => ({
         update: vi.fn(),
