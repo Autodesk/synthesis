@@ -2,7 +2,7 @@ mod messaging;
 mod room;
 mod tui;
 #[macro_use]
-mod util;
+mod logging;
 
 use futures_util::SinkExt;
 use futures_util::StreamExt;
@@ -15,9 +15,9 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
 
+use crate::logging::EventType;
 use crate::messaging::InitialMessage;
-use crate::room::ClientSender;
-use crate::room::State;
+use crate::room::{ClientSender, State};
 
 const PORT: u32 = 9002;
 
@@ -61,7 +61,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
 
     {
         let mut guard = state.lock().unwrap();
-        log!(guard, "connection from {addr}");
+        info!(guard, "connection from {addr}");
     }
 
     // Each client gets an mpsc channel
@@ -85,7 +85,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     // Parse initial message, then user in correct room
     let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
         let mut guard = state.lock().unwrap();
-        log!(guard, "{addr} disconnected before handshake");
+        info!(guard, "{addr} disconnected before handshake");
 
         return;
     };
@@ -93,7 +93,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     let Ok(initial_message) = serde_json::from_str::<InitialMessage>(&initial_message_string)
     else {
         let mut guard = state.lock().unwrap();
-        log!(guard, "{addr} sent an invalid initial message");
+        info!(guard, "{addr} sent an invalid initial message");
 
         return;
     };
@@ -132,11 +132,11 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
 
             Message::Binary(_) => {
                 let mut guard = state.lock().unwrap();
-                log!(guard, "Received Binary, skipping");
+                info!(guard, "Received Binary, skipping");
             }
             Message::Close(_) => {
                 let mut guard = state.lock().unwrap();
-                log!(guard, "Connection with {addr} closed");
+                info!(guard, "Connection with {addr} closed");
                 guard.remove_client(addr);
 
                 return;

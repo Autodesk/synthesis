@@ -325,7 +325,7 @@ fn render_logs(frame: &mut Frame, area: Rect, room: &RoomSnapshot) {
     let start = room.logs.len().saturating_sub(visible);
     let text: Vec<Line> = room.logs[start..]
         .iter()
-        .map(|l| Line::from(l.as_str()))
+        .map(|event| Line::from(event.clone()))
         .collect();
 
     let logs = Paragraph::new(text)
@@ -340,7 +340,7 @@ fn render_system_log(frame: &mut Frame, area: Rect, snapshot: &Snapshot) {
     let start = snapshot.system_log.len().saturating_sub(visible);
     let text: Vec<Line> = snapshot.system_log[start..]
         .iter()
-        .map(|l| Line::from(l.as_str()))
+        .map(|l| Line::from(l.clone()))
         .collect();
 
     let panel = Paragraph::new(text)

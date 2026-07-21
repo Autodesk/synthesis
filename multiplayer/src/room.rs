@@ -1,4 +1,7 @@
-use crate::log;
+use crate::{
+    info,
+    logging::{Event, EventType},
+};
 use std::collections::VecDeque;
 use std::{collections::HashMap, net::SocketAddr};
 use tokio::sync::mpsc;
@@ -13,7 +16,7 @@ pub struct State {
     rooms: RoomMap,
     /// Server-wide events not tied to a specific room
     /// (e.g. connections, handshakes, failed joins)
-    system_log: VecDeque<String>,
+    system_log: VecDeque<Event>,
 }
 
 impl State {
@@ -34,7 +37,7 @@ impl State {
         };
 
         let room_id = self.rooms.idx;
-        log!(room, "Host {host_id} created room {room_id}");
+        info!(room, "Host {host_id} created room {room_id}");
 
         self.users.insert(host_id, room_id);
         self.rooms.map.insert(room_id, room);
@@ -48,7 +51,7 @@ impl State {
         room_id: RoomId,
     ) {
         let Some(room) = self.rooms.map.get_mut(&room_id) else {
-            log!(
+            info!(
                 self,
                 "Attempted to add {client_id} into non-existant room {room_id}"
             );
@@ -58,19 +61,19 @@ impl State {
         room.members.push((client_id, client_tx));
         self.users.insert(client_id, room_id);
 
-        log!(room, "{client_id} joined room {room_id}");
+        info!(room, "{client_id} joined room {room_id}");
     }
 
     pub fn remove_client(&mut self, client_id: ClientId) {
         let Some((room_id, room)) = self.get_room_of_client(&client_id) else {
-            log!(
+            info!(
                 self,
                 "Attempted to remove {client_id} from room that does not exist"
             );
             return;
         };
 
-        log!(room, "{client_id} left");
+        info!(room, "{client_id} left");
         if room.remove_client(&client_id) == RoomStatus::Closed {
             self.rooms
                 .map
@@ -83,7 +86,7 @@ impl State {
 
     fn get_room_of_client(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
         let Some(room_id) = self.users.get(&client_id) else {
-            log!(self, "Attempted to get client that does not exist");
+            info!(self, "Attempted to get client that does not exist");
             return None;
         };
 
@@ -113,13 +116,18 @@ impl State {
         // The close message gets forwarded to the client
         let _ = tx.try_send(Message::Close(None));
 
-        log!(room, "Kicked {client_id}");
+        info!(room, "Kicked {client_id}");
         self.remove_client(client_id);
     }
 
     /// Record a server-wide event
-    pub fn log(&mut self, msg: String) {
-        push_capped(&mut self.system_log, format!("{}  {msg}", timestamp()));
+    pub fn log_generic(&mut self, msg: String, kind: EventType) {
+        let event = Event {
+            kind,
+            message: format!("{}  {msg}", timestamp()),
+        };
+
+        push_capped(&mut self.system_log, event);
     }
 
     /// Takes a snapshot of the application state so the TUI
@@ -183,7 +191,7 @@ pub struct Room {
     /// The admin of the room (capable of kicking members and ending the room)
     host: ClientId,
     /// Recent activity for this room, newest last. Capped at [`MAX_LOG_LINES`].
-    logs: VecDeque<String>,
+    logs: VecDeque<Event>,
 }
 
 impl Room {
@@ -202,8 +210,12 @@ impl Room {
             .map(|(_, tx)| tx.clone())
     }
 
-    fn log(&mut self, msg: String) {
-        push_capped(&mut self.logs, format!("{}  {msg}", timestamp()));
+    fn log_generic(&mut self, msg: String, kind: EventType) {
+        let event = Event {
+            kind,
+            message: format!("{}  {msg}", timestamp()),
+        };
+        push_capped(&mut self.logs, event);
     }
 
     pub fn remove_client(&mut self, client_id: &ClientId) -> RoomStatus {
@@ -213,7 +225,7 @@ impl Room {
             .map(|client| client.0)
             .position(|id| id == *client_id)
         else {
-            log!(self, "Attempted to remove client from room they are not in");
+            info!(self, "Attempted to remove client from room they are not in");
             return RoomStatus::Open;
         };
 
@@ -233,7 +245,7 @@ impl Room {
 /// An immutable, cloned view of server state for rendering.
 pub struct Snapshot {
     pub rooms: Vec<RoomSnapshot>,
-    pub system_log: Box<[String]>,
+    pub system_log: Box<[Event]>,
 }
 
 pub struct RoomSnapshot {
@@ -241,10 +253,10 @@ pub struct RoomSnapshot {
     pub host: ClientId,
     pub authority: ClientId,
     pub members: Vec<ClientId>,
-    pub logs: Vec<String>,
+    pub logs: Vec<Event>,
 }
 
-fn push_capped(buf: &mut VecDeque<String>, line: String) {
+fn push_capped<T>(buf: &mut VecDeque<T>, line: T) {
     buf.push_back(line);
     while buf.len() > MAX_LOG_LINES {
         buf.pop_front();
