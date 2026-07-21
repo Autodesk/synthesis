@@ -206,7 +206,7 @@ class MirabufCachingService {
         }
     }
 
-    public static async cacheRemoteAndReturn( fetchLocation: string, miraType: MiraType) {
+    public static async cacheRemoteAndReturn(fetchLocation: string, miraType: MiraType) {
         const cacheInfo = await this.cacheRemote(fetchLocation, miraType)
         if (cacheInfo?.hash == null) return
         return await this.get(cacheInfo.hash)

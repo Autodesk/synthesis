@@ -1,19 +1,19 @@
-import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, test } from "vitest"
 import MirabufLoader, { MiraType } from "../../mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import World from "@/systems/World.ts"
 import { server } from "@vitest/browser/context"
-import {FIELD_MODELS, ROBOT_MODELS} from "@/test/GetAssets.ts";
+import { FIELD_MODELS, ROBOT_MODELS } from "@/test/GetAssets.ts"
+import { mockAnalytics } from "@/test/mocks/Common.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
+
+mockAnalytics()
 
 // Skip on firefox due to WebGL bug in github actions
 describe.skipIf(server.browser == "firefox")("Real Load Assets", () => {
     beforeAll(async () => {
         await World.initWorld()
-        vi.spyOn(World.analyticsSystem!, "event").mockReturnValue()
-        vi.spyOn(World.analyticsSystem!, "exception").mockReturnValue()
-        vi.spyOn(console, "debug").mockReturnValue()
-        vi.spyOn(console, "warn").mockReturnValue()
-        vi.spyOn(console, "log").mockReturnValue()
+        mockConsole()
     })
     beforeEach(async () => {
         await MirabufLoader.removeAll()

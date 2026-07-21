@@ -1,12 +1,12 @@
-import {afterEach, beforeAll, beforeEach, describe, expect, test, vi} from "vitest"
+import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
 import type IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
-import type {ProgressHandle} from "@/ui/components/ProgressNotificationData"
+import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import type MirabufInstance from "../../mirabuf/MirabufInstance"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import {defaultRobotPreferences} from "@/systems/preferences/PreferenceTypes.ts"
-import PhysicsSystem from "@/systems/physics/PhysicsSystem.ts";
-import {getMiraInstance} from "@/test/GetAssets.ts";
-
+import { defaultRobotPreferences } from "@/systems/preferences/PreferenceTypes.ts"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem.ts"
+import { getMiraInstance } from "@/test/GetAssets.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 const mockSceneRenderer = {
     sceneObjects: new Map(),
@@ -72,23 +72,15 @@ vi.mock("@/systems/simulation/wpilib_brain/WPILibBrain", () => ({
     default: vi.fn(() => ({ loadSimConfig: vi.fn() })),
 }))
 
-
 function mockBodyId() {
     return { GetIndex: () => 0, GetIndexAndSequenceNumber: () => 0 }
 }
-
 
 function setPrivate<T>(obj: T, key: string, value: unknown) {
     ;(obj as Record<string, unknown>)[key] = value
 }
 
-
 describe("MirabufSceneObject", () => {
-    const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
-
     let instance: MirabufSceneObject
     let mirabufInstance: MirabufInstance
     let progressHandle: ProgressHandle | undefined
@@ -101,19 +93,12 @@ describe("MirabufSceneObject", () => {
         progressHandle = undefined
         instance = new MirabufSceneObject(mirabufInstance, progressHandle)
 
-        console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
+        mockConsole()
         vi.spyOn(physicsSystem, "destroyMechanism")
     })
 
     afterEach(() => {
-        vi.clearAllMocks()
-        console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
+        vi.restoreAllMocks()
     })
 
     test("Setup calls AddToScene, SetBodyAssociation, RegisterMechanism, and sets brain", () => {

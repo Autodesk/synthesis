@@ -6,6 +6,7 @@ import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import ScoringZoneSceneObject from "../../mirabuf/ScoringZoneSceneObject"
 import { createBodyMock } from "../mocks/jolt"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -44,17 +45,13 @@ vi.mock("@/systems/World", () => ({
 }))
 
 describe("ScoringZoneSceneObject", () => {
-    const originalConsoleLog = console.log
-
     beforeEach(() => {
-        vi.clearAllMocks()
         ScoreTracker.resetScores()
-        console.log = vi.fn()
+        mockConsole()
     })
 
     afterEach(() => {
-        vi.clearAllMocks()
-        console.log = originalConsoleLog
+        vi.restoreAllMocks()
     })
 
     test("Setup creates mesh", () => {

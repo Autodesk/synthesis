@@ -1,8 +1,8 @@
-import {describe, expect, test} from "vitest"
-import MirabufParser, {type RigidNodeReadOnly} from "../../mirabuf/MirabufParser.ts"
-import type {mirabuf} from "@/proto/mirabuf"
-import type {Matrix4} from "three"
-import {getMiraAssembly} from "@/test/GetAssets.ts";
+import { describe, expect, test } from "vitest"
+import MirabufParser, { type RigidNodeReadOnly } from "../../mirabuf/MirabufParser.ts"
+import type { mirabuf } from "@/proto/mirabuf"
+import type { Matrix4 } from "three"
+import { getMiraAssembly } from "@/test/GetAssets.ts"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer)", async () => {

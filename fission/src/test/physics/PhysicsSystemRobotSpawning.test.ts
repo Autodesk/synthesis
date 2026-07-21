@@ -1,12 +1,15 @@
-import {beforeAll, describe, expect, test, vi} from "vitest"
+import { beforeAll, afterAll, describe, expect, test, vi } from "vitest"
 import MirabufParser from "@/mirabuf/MirabufParser"
-import PhysicsSystem, {LayerReserve} from "@/systems/physics/PhysicsSystem"
-import {getMiraAssembly} from "@/test/GetAssets.ts";
+import PhysicsSystem, { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { getMiraAssembly } from "@/test/GetAssets.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 describe("Mirabuf Physics Loading", () => {
     beforeAll(async () => {
-        vi.spyOn(console, "warn").mockReturnValue()
-        vi.spyOn(console, "log").mockReturnValue()
+        mockConsole()
+    })
+    afterAll(async () => {
+        vi.restoreAllMocks()
     })
 
     test("Body Loading (Dozer)", async () => {

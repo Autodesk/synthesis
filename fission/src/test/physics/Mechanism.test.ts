@@ -1,11 +1,11 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
-import {beforeEach, describe, expect, test, vi} from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 import MirabufParser from "@/mirabuf/MirabufParser"
-import type {RigidNodeId} from "../../mirabuf/MirabufParser"
-import type {mirabuf} from "../../proto/mirabuf"
-import Mechanism, {type MechanismConstraint} from "../../systems/physics/Mechanism"
-import PhysicsSystem, {type LayerReserve} from "../../systems/physics/PhysicsSystem"
-import {getMiraAssembly} from "@/test/GetAssets.ts";
+import type { RigidNodeId } from "../../mirabuf/MirabufParser"
+import type { mirabuf } from "../../proto/mirabuf"
+import Mechanism, { type MechanismConstraint } from "../../systems/physics/Mechanism"
+import PhysicsSystem, { type LayerReserve } from "../../systems/physics/PhysicsSystem"
+import { getMiraAssembly } from "@/test/GetAssets.ts"
 
 // Mock Jolt types
 const createMockBodyID = (index: number = 123): Jolt.BodyID =>

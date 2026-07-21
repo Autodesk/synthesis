@@ -1,14 +1,10 @@
 import { afterEach, assert, beforeEach, describe, expect, type MockedFunction, test, vi } from "vitest"
 import MirabufLoader, { MiraType } from "../../mirabuf/MirabufLoader"
-import {FIELD_MODELS, ROBOT_MODELS} from "@/test/GetAssets.ts";
+import { FIELD_MODELS, ROBOT_MODELS } from "@/test/GetAssets.ts"
+import { mockAnalytics } from "@/test/mocks/Common.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
-vi.mock("@/systems/World", () => ({
-    default: {
-        get analyticsSystem() {
-            return { event: vi.fn(), exception: vi.fn() }
-        },
-    },
-}))
+mockAnalytics()
 
 // // Polyfill btoa for Uint8Array to base64 (browser compatible, no Buffer)
 // function uint8ToBase64(bytes: Uint8Array): string {
@@ -28,10 +24,7 @@ describe("MirabufLoader", () => {
     let unhandledRejectionHandler: ((event: PromiseRejectionEvent) => void) | undefined
 
     beforeEach(() => {
-        vi.spyOn(console, "log").mockImplementation(() => {})
-        vi.spyOn(console, "warn").mockImplementation(() => {})
-        vi.spyOn(console, "error").mockImplementation(() => {})
-        vi.spyOn(console, "debug").mockImplementation(() => {})
+        mockConsole()
     })
     afterEach(() => {
         vi.restoreAllMocks()

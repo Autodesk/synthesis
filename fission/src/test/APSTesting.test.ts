@@ -1,14 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 // Mock dependencies before importing APS
-vi.mock("@/systems/World", () => ({
-    default: {
-        AnalyticsSystem: {
-            Event: vi.fn(),
-            Exception: vi.fn(),
-        },
-    },
-}))
+mockAnalytics()
 
 vi.mock("async-mutex", () => ({
     Mutex: vi.fn(() => ({
@@ -46,6 +39,8 @@ vi.spyOn(Date, "now").mockReturnValue(mockNow)
 
 // Import APS after setting up mocks
 import APS, { type APSAuth, type APSUserInfo } from "@/aps/APS"
+import { mockAnalytics } from "@/test/mocks/Common.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 // Helper function to create proper fetch response mock
 const createMockResponse = (data: unknown, ok: boolean = true) => ({
@@ -54,11 +49,6 @@ const createMockResponse = (data: unknown, ok: boolean = true) => ({
 })
 
 describe("APS Authentication System", () => {
-    const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
-
     const mockAuth: APSAuth = {
         access_token: "test_access_token",
         refresh_token: "test_refresh_token",
@@ -77,25 +67,17 @@ describe("APS Authentication System", () => {
     beforeEach(() => {
         // Clear localStorage and reset mocks
         localStorage.clear()
-        vi.clearAllMocks()
 
         // Reset APS state
         APS.resetNumApsCalls()
         APS.authCode = undefined
 
         // Mock console methods
-        console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
+        mockConsole()
     })
 
     afterEach(() => {
-        vi.clearAllMocks()
-        console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
+        vi.restoreAllMocks()
     })
 
     describe("End-to-End User Journeys", () => {
