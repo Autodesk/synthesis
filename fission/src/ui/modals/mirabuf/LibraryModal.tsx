@@ -25,6 +25,7 @@ import {
 } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { tourTarget } from "@/ui/tour/tourSteps"
 import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
@@ -281,7 +282,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
 
     const [activeYear, setActiveYear] = useState<YearKey | undefined>(undefined)
     useEffect(() => {
-        if (activeYear === undefined && years.length > 0) {
+        if (years.length > 0 && (activeYear === undefined || !years.includes(activeYear))) {
             setActiveYear(years[0])
         }
     }, [years, activeYear])
@@ -422,6 +423,9 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         </Stack>
     )
 }
+
+// tagging onboarding target to allow for auto-advancing despite minification
+tourTarget(LibraryModal, "LibraryModal")
 
 export default LibraryModal
 

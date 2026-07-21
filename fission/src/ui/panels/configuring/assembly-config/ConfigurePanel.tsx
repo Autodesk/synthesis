@@ -33,6 +33,7 @@ import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProt
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
 import { Box, Tab, Tabs } from "@mui/material"
+import { tourTarget } from "@/ui/tour/tourSteps"
 import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
@@ -496,5 +497,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         </Box>
     )
 }
+
+// tagging onboarding target to allow for auto-advancing despite minification
+tourTarget(ConfigurePanel, "ConfigurePanel")
 
 export default ConfigurePanel

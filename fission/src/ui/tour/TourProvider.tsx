@@ -6,13 +6,12 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type { Modal, Panel } from "@/ui/helpers/UIProviderHelpers"
 import { TourContext, type TourContextValue } from "./TourProviderHelpers"
 import type { AdvanceTrigger, TourAnchorId } from "./tourSteps"
-import { TOUR_STEPS } from "./tourSteps"
+import { TOUR_STEPS, tourIdOf } from "./tourSteps"
 
 /** True when a panel matching the trigger is currently open. */
 function isPanelOpen(panels: Panel<unknown, unknown>[], trigger: Extract<AdvanceTrigger, { kind: "panel-open" }>) {
     return panels.some(p => {
-        const name = (p.content as unknown as { name?: string })?.name
-        if (name !== trigger.panelName) return false
+        if (tourIdOf(p.content) !== trigger.target) return false
         if (trigger.configMode === undefined) return true
         const custom = (p.props as unknown as { custom?: { configMode?: number } })?.custom
         return custom?.configMode === trigger.configMode
@@ -24,8 +23,7 @@ function isModalOpen(
     modal: Modal<unknown, unknown> | undefined,
     trigger: Extract<AdvanceTrigger, { kind: "modal-open" }>
 ) {
-    const name = (modal?.content as unknown as { name?: string })?.name
-    return name === trigger.modalName
+    return tourIdOf(modal?.content) === trigger.target
 }
 
 export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) => {

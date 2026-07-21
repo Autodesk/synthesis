@@ -1,12 +1,23 @@
 import type { PopperPlacementType } from "@mui/material"
+import type { FunctionComponent } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
-/**
- * Stable identifiers for the DOM elements a tour step can point at. Components opt
- * in to being an anchor with {@link useTourAnchor}, registering their element under
- * one of these ids in the {@link TourProvider} registry.
- */
+export type TourTargetId = "LibraryModal" | "ConfigurePanel"
+
+interface TourTagged {
+    tourId?: TourTargetId
+}
+
+export function tourTarget<P>(component: FunctionComponent<P>, id: TourTargetId): FunctionComponent<P> {
+    ;(component as FunctionComponent<P> & TourTagged).tourId = id
+    return component
+}
+
+export function tourIdOf(component: FunctionComponent | undefined): TourTargetId | undefined {
+    return (component as (FunctionComponent & TourTagged) | undefined)?.tourId
+}
+
 export type TourAnchorId =
     | "add-assembly"
     | "mode-dropdown"
@@ -17,61 +28,32 @@ export type TourAnchorId =
     | "configure-panel"
     | "intake-show-zone"
 
-/**
- * Describes a real user action the tour watches for so it can advance automatically.
- * Manual `<` / `>` navigation always works regardless of this; `advanceOn` only adds
- * automatic forward motion when the described action happens.
- *
- * - `panel-open`: a panel with the given component name opens (rising edge only, so an
- *   already-open panel does not immediately advance). `configMode` further narrows it to
- *   a ConfigurePanel opened in a specific mode.
- * - `modal-open`: the modal with the given component name opens (rising edge only).
- * - `spawn`: an asset of the given {@link MiraType} is spawned.
- * - `event`: a one-shot `EventSystem` event fires.
- */
 export type AdvanceTrigger =
-    | { kind: "panel-open"; panelName: string; configMode?: ConfigMode }
-    | { kind: "modal-open"; modalName: string }
+    | { kind: "panel-open"; target: TourTargetId; configMode?: ConfigMode }
+    | { kind: "modal-open"; target: TourTargetId }
     | { kind: "spawn"; miraType: MiraType }
     | { kind: "event"; event: "ConfigurationSavedEvent" }
 
-/** Where an anchorless card is pinned on screen. Defaults to `"center"`. */
+// for anchorless cards
 export type ScreenPosition = "center" | "top-left"
 
 export interface TourStep {
     title: string
     body: string
-    /** Anchor to point at. When omitted the card is centered on screen (e.g. the "drive it" step). */
     anchorId?: TourAnchorId
-    /** Where the card sits relative to its anchor. Ignored for centered steps. */
     placement: PopperPlacementType
-    /** For anchorless steps only: where the card is pinned on screen (default `"center"`). */
     screenPosition?: ScreenPosition
-    /** Optional automatic advance trigger (hybrid model). */
     advanceOn?: AdvanceTrigger
-    /**
-     * Informational ("read this") step: dims the whole screen and blocks every click except this
-     * card's own next/prev/skip. Use for steps that only explain UI the user should not act on yet
-     * (e.g. the auto-selected assembly, or the intake panel before it is time to Save). The card
-     * still anchors and points normally; it just floats above a blocking scrim. Actional ("do this")
-     * steps omit this so the user can interact with the app underneath.
-     */
     informational?: boolean
 }
 
-/**
- * The onboarding tour, in order: spawn a field, spawn a robot, configure the robot's intake, then
- * drive. Steps are either *actional* - the user performs the real interaction and (where an
- * {@link AdvanceTrigger} is set) the tour auto-advances - or *informational* ({@link TourStep.informational}),
- * which grey out and lock the app so the user can only read and click through.
- */
 export const TOUR_STEPS: TourStep[] = [
     {
         title: "Add a Field",
         body: "First we need a field. Open the assets library with the Add Assembly button.",
         anchorId: "add-assembly",
         placement: "bottom-start",
-        advanceOn: { kind: "modal-open", modalName: "LibraryModal" },
+        advanceOn: { kind: "modal-open", target: "LibraryModal" },
     },
     {
         title: "Open the Library",
@@ -85,7 +67,7 @@ export const TOUR_STEPS: TourStep[] = [
         body: "Now open the Add Assembly library again to spawn a robot.",
         anchorId: "add-assembly",
         placement: "bottom-start",
-        advanceOn: { kind: "modal-open", modalName: "LibraryModal" },
+        advanceOn: { kind: "modal-open", target: "LibraryModal" },
     },
     {
         title: "Choose a Robot",
@@ -113,7 +95,7 @@ export const TOUR_STEPS: TourStep[] = [
         body: "With your robot selected, choose what to configure. In this case, the intake.",
         anchorId: "configure-intake-button",
         placement: "bottom",
-        advanceOn: { kind: "panel-open", panelName: "ConfigurePanel", configMode: ConfigMode.INTAKE },
+        advanceOn: { kind: "panel-open", target: "ConfigurePanel", configMode: ConfigMode.INTAKE },
     },
     {
         title: "Adjust the Intake",
