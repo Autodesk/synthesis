@@ -449,7 +449,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                 >
-                    Import from File YEAh!
+                    Import from File
                 </Button>
             </Box>
         </Stack>
