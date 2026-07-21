@@ -4,6 +4,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { applyWheelAssignments, type WheelAssignment } from "@/mirabuf/WheelJointBuilder"
 import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import { downloadFullAssemblyJson } from "@/util/DebugAssemblyDump"
 import {
     computeWheelAxisFromAABB,
     computeWheelAxisFromCircleFit,
@@ -371,14 +372,58 @@ class WheelAssignmentMode extends WorldSystem {
             if (parser.errors.length > 0) {
                 console.warn(`[WheelAssignmentMode] Parser reported errors after rebuild:`, parser.errors)
             }
+
+            let hadMismatch = false
             for (const assignment of assignments) {
                 const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
                 const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
                 if (!wheelNode || !parentNode) {
-                    console.error(`[WheelAssignmentMode] No rigid node found for the wheel and/or parent part.`)
-                } else if (wheelNode.id === parentNode.id) {
-                    console.error(`[WheelAssignmentMode] Wheel and parent ended up in the same rigid node.`)
+                    console.error(
+                        `[WheelAssignmentMode] No rigid node found for the wheel and/or parent part.`,
+                        `wheel=${assignment.wheelPartGuid} (node=${wheelNode?.id})`,
+                        `parent=${assignment.parentPartGuid} (node=${parentNode?.id})`
+                    )
+                    continue
                 }
+                if (wheelNode.id !== parentNode.id) continue
+                hadMismatch = true
+
+                // Diagnostics: figure out *why* they merged -- which other pending assignments' parts
+                // (if any) also ended up in this same node, since MirabufParser processes every joint's
+                // ancestral break in insertion order and a later one can move an ancestor tree-node that
+                // an earlier wheel's split was relying on.
+                const mergedNode = wheelNode
+                const otherAssignmentPartsInNode = assignments
+                    .filter(other => other !== assignment)
+                    .flatMap(other => [
+                        mergedNode.parts.has(other.wheelPartGuid) && `wheel:${other.wheelPartGuid}`,
+                        mergedNode.parts.has(other.parentPartGuid) && `parent:${other.parentPartGuid}`,
+                    ])
+                    .filter((x): x is string => Boolean(x))
+
+                console.error(
+                    `[WheelAssignmentMode] Wheel and parent ended up in the same rigid node.`,
+                    `nodeId=${mergedNode.id}`,
+                    `nodeSize=${mergedNode.parts.size}`,
+                    `wheel=${assignment.wheelPartGuid}`,
+                    `parent=${assignment.parentPartGuid}`,
+                    `otherPendingAssignmentPartsInThisNode=${JSON.stringify(otherAssignmentPartsInNode)}`,
+                    `allPartsInNode=`,
+                    [...mergedNode.parts]
+                )
+            }
+
+            if (hadMismatch) {
+                const filename = `wheel-assignment-debug_${assembly.info?.name ?? sceneId}_${Date.now()}.json`
+                downloadFullAssemblyJson(assembly, filename)
+                console.error(
+                    `[WheelAssignmentMode] Downloaded full assembly JSON for analysis: ${filename}`
+                )
+                globalAddToast(
+                    "warning",
+                    "Wheel Assignment",
+                    "Wheel and parent ended up in the same rigid node -- downloaded full assembly JSON for debugging."
+                )
             }
         }
 

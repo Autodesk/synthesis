@@ -1,4 +1,5 @@
 import { mirabuf } from "@/proto/mirabuf"
+import { downloadBlob } from "@/util/Utility"
 
 const TO_OBJECT_OPTIONS = { longs: String, enums: String, bytes: String }
 
@@ -50,4 +51,59 @@ export function dumpAssemblyStructure(assembly: mirabuf.Assembly, label: string)
         joints: inst.joints,
     }))
     logJson(`${label} -- part instances (GUID/name/partDefinitionReference/joints only)`, partInstances)
+}
+
+/**
+ * Replaces each body's raw triangleMesh vertex/normal/uv/index/color float arrays with just their
+ * lengths, in place. For a real multi-part robot these arrays are the overwhelming majority of the
+ * assembly's serialized size (millions of floats) and aren't needed to debug joint/rigid-node structure --
+ * keeping them is what made JSON.stringify throw "RangeError: Invalid string length" on a complex
+ * assembly. Everything else on partDefinitions (mass, appearance, body GUIDs, joint refs) is preserved.
+ */
+function stripMeshGeometry(assemblyObj: Record<string, unknown>): void {
+    const defs = (assemblyObj.data as Record<string, unknown> | undefined)?.parts as
+        | Record<string, unknown>
+        | undefined
+    const partDefinitions = defs?.partDefinitions as Record<string, Record<string, unknown>> | undefined
+    if (!partDefinitions) return
+
+    for (const def of Object.values(partDefinitions)) {
+        const bodies = def.bodies as Array<Record<string, unknown>> | undefined
+        for (const body of bodies ?? []) {
+            const mesh = (body.triangleMesh as Record<string, unknown> | undefined)?.mesh as
+                | Record<string, unknown>
+                | undefined
+            if (!mesh) continue
+
+            for (const key of ["verts", "normals", "uv", "indices", "colors"]) {
+                const arr = mesh[key]
+                if (Array.isArray(arr)) mesh[key] = `<omitted ${arr.length} values>`
+            }
+        }
+    }
+}
+
+/**
+ * Serializes the whole assembly -- joints, rigidGroups, design/joint hierarchy, and every partDefinition's
+ * metadata (mass, appearance, body GUIDs, joint refs) -- to a single downloaded .json file, with raw mesh
+ * geometry stripped down to just array lengths (see stripMeshGeometry). Use this when console dumps aren't
+ * enough to see the whole picture at once, e.g. cross-referencing rigidGroups/jointInstances/hierarchy/
+ * part instances all against each other for one robot.
+ */
+export function downloadFullAssemblyJson(assembly: mirabuf.Assembly, filename: string): void {
+    const full = mirabuf.Assembly.toObject(assembly as mirabuf.Assembly, TO_OBJECT_OPTIONS) as Record<
+        string,
+        unknown
+    >
+    stripMeshGeometry(full)
+
+    const resolvedFilename = filename.endsWith(".json") ? filename : `${filename}.json`
+    try {
+        downloadBlob(resolvedFilename, JSON.stringify(full, null, 2))
+    } catch (error) {
+        console.error(
+            `[DebugAssemblyDump] Failed to stringify assembly even after stripping mesh geometry:`,
+            error
+        )
+    }
 }
