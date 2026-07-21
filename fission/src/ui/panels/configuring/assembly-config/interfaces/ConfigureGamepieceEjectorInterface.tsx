@@ -81,7 +81,10 @@ function save(
     selectedRobot.savePreferences()
 }
 
-const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, registerCleanupFunction }) => {
+const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
+}) => {
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
     const [ejectOrder, setEjectOrder] = useState<"FIFO" | "LIFO">(
