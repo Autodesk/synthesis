@@ -17,6 +17,7 @@ import DebugPanel from "../panels/DebugPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
+import CodeSimControls from "./topbar/CodesimControls"
 import ConfigureControls from "./topbar/ConfigureControls"
 import GameplayControls from "./topbar/GameplayControls"
 import ModeDropdown from "./topbar/ModeDropdown"
@@ -131,6 +132,7 @@ const TopBar: React.FC = () => {
                 <Box sx={{ width: "2px", height: 28, bgcolor: "topBarText.main", opacity: 0.4 }} />
 
                 {appMode === "Configure" && <ConfigureControls />}
+                {appMode === "Codesim" && <CodeSimControls />}
                 {appMode === "Gameplay" && <GameplayControls />}
 
                 <Box flexGrow={1} />
