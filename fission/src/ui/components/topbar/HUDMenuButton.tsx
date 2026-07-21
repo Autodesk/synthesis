@@ -70,5 +70,3 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
 
     return content
 }
-
-export default HUDMenuButton
