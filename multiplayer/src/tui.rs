@@ -71,7 +71,7 @@ struct App {
     /// Informatoin cached from the last `sync` so key handling can act without a snapshot.
     tab_count: usize,
     panels_on_tab: usize,
-    focused_members: Vec<ClientId>,
+    focused_members: Vec<(ClientId, String)>,
 }
 
 impl App {
@@ -152,7 +152,7 @@ impl App {
             KeyCode::Down => self.selected_user += 1, // clamped in `sync`
             //
             KeyCode::Char('k') => {
-                if let Some(uid) = self.focused_members.get(self.selected_user) {
+                if let Some((uid, _)) = self.focused_members.get(self.selected_user) {
                     self.pending_kick = Some(*uid);
                 }
             }
@@ -288,11 +288,14 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
     let items: Vec<ListItem> = room
         .members
         .iter()
-        .map(|uid| {
-            let mut label = uid.to_string();
-            if *uid == room.authority {
-                label.push_str("  [A]");
-            }
+        .map(|(uid, name)| {
+            let auth_marker = match *uid == room.authority {
+                true => "  [A]",
+                false => "",
+            };
+            let uid = &uid.to_string()[0..8];
+
+            let label = format!("{} ({}){}", uid, name, auth_marker);
             ListItem::new(label)
         })
         .collect();

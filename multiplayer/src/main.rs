@@ -93,8 +93,8 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
         // The lock is relinquished after this match statement
         let mut guard = state.lock().unwrap();
         match initial_message.room_id {
-            None => guard.add_room_and_authority(tx),
-            Some(room_id) => match guard.add_client_to_room(tx, room_id) {
+            None => guard.add_room_and_authority(initial_message.name, tx),
+            Some(room_id) => match guard.add_client_to_room(initial_message.name, tx, room_id) {
                 Some(client_id) => (client_id, room_id),
                 None => return,
             },

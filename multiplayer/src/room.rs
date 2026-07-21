@@ -27,10 +27,14 @@ impl State {
         }
     }
 
-    pub fn add_room_and_authority(&mut self, authority_tx: ClientSender) -> (ClientId, RoomId) {
+    pub fn add_room_and_authority(
+        &mut self,
+        authority_name: String,
+        authority_tx: ClientSender,
+    ) -> (ClientId, RoomId) {
         let authority_id = Uuid::new_v4();
         let mut room = Room {
-            members: vec![(authority_id, authority_tx)],
+            members: vec![Client::new(authority_id, authority_name, authority_tx)],
             authority: authority_id,
             logs: VecDeque::new(),
         };
@@ -47,6 +51,7 @@ impl State {
 
     pub fn add_client_to_room(
         &mut self,
+        client_name: String,
         client_tx: ClientSender,
         room_id: RoomId,
     ) -> Option<ClientId> {
@@ -59,7 +64,8 @@ impl State {
             return None;
         };
 
-        room.members.push((client_id, client_tx));
+        let client = Client::new(client_id, client_name, client_tx);
+        room.members.push(client);
         self.users.insert(client_id, room_id);
 
         info!(room, "{client_id} joined room {room_id}");
@@ -143,7 +149,11 @@ impl State {
             .map(|(id, room)| RoomSnapshot {
                 id: *id,
                 authority: room.authority,
-                members: room.members.iter().map(|(uid, _)| *uid).collect(),
+                members: room
+                    .members
+                    .iter()
+                    .map(|client| (client.id, client.name.clone()))
+                    .collect(),
                 logs: room.logs.iter().cloned().collect(),
             })
             .collect();
@@ -187,7 +197,7 @@ pub enum RoomStatus {
 
 pub struct Room {
     /// A list of each connected client and their write channel
-    members: Vec<(ClientId, ClientSender)>,
+    members: Vec<Client>,
     /// The physics system authority of the room
     authority: ClientId,
     /// Recent activity for this room, newest last. Capped at [`MAX_LOG_LINES`].
@@ -198,16 +208,16 @@ impl Room {
     pub fn get_senders(&self, exclude: Option<ClientId>) -> Vec<ClientSender> {
         self.members
             .iter()
-            .filter(|(id, _)| exclude != Some(*id))
-            .map(|(_, tx)| tx.clone())
+            .filter(|client| exclude != Some(client.id))
+            .map(|client| client.tx.clone())
             .collect()
     }
 
     fn get_sender(&self, id: &ClientId) -> Option<ClientSender> {
         self.members
             .iter()
-            .find(|(uid, _)| uid == id)
-            .map(|(_, tx)| tx.clone())
+            .find(|client| client.id == *id)
+            .map(|client| client.tx.clone())
     }
 
     fn log_generic(&mut self, msg: String, kind: EventType) {
@@ -222,7 +232,7 @@ impl Room {
         let Some(idx) = self
             .members
             .iter()
-            .map(|client| client.0)
+            .map(|client| client.id)
             .position(|id| id == *client_id)
         else {
             warn!(self, "Attempted to remove client from room they are not in");
@@ -233,12 +243,24 @@ impl Room {
 
         if *client_id == self.authority {
             match self.members.first() {
-                Some(next) => self.authority = next.0,
+                Some(next) => self.authority = next.id,
                 None => return RoomStatus::Closed,
             }
         }
 
         RoomStatus::Open
+    }
+}
+
+pub struct Client {
+    pub id: ClientId,
+    pub name: String,
+    pub tx: ClientSender,
+}
+
+impl Client {
+    fn new(id: ClientId, name: String, tx: ClientSender) -> Self {
+        Client { id, name, tx }
     }
 }
 
@@ -251,7 +273,7 @@ pub struct Snapshot {
 pub struct RoomSnapshot {
     pub id: RoomId,
     pub authority: ClientId,
-    pub members: Vec<ClientId>,
+    pub members: Vec<(ClientId, String)>,
     pub logs: Vec<Event>,
 }
 
