@@ -1,7 +1,14 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
-
+import { afterEach, afterAll, beforeEach, describe, expect, test, vi } from "vitest"
+import { mockConsole } from "@/test/mocks/Common.ts"
 // Mock dependencies before importing APS
-mockAnalytics()
+
+vi.mock("@/systems/World", () => ({
+    default: {
+        get analyticsSystem() {
+            return { event: vi.fn(), exception: vi.fn() }
+        },
+    },
+}))
 
 vi.mock("async-mutex", () => ({
     Mutex: vi.fn(() => ({
@@ -39,8 +46,7 @@ vi.spyOn(Date, "now").mockReturnValue(mockNow)
 
 // Import APS after setting up mocks
 import APS, { type APSAuth, type APSUserInfo } from "@/aps/APS"
-import { mockAnalytics } from "@/test/mocks/Common.ts"
-import { mockConsole } from "@/test/mocks/Common.ts"
+
 
 // Helper function to create proper fetch response mock
 const createMockResponse = (data: unknown, ok: boolean = true) => ({
@@ -77,6 +83,9 @@ describe("APS Authentication System", () => {
     })
 
     afterEach(() => {
+        vi.clearAllMocks()
+    })
+    afterAll(() => {
         vi.restoreAllMocks()
     })
 

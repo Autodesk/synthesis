@@ -1,10 +1,15 @@
 import { afterEach, assert, beforeEach, describe, expect, type MockedFunction, test, vi } from "vitest"
 import MirabufLoader, { MiraType } from "../../mirabuf/MirabufLoader"
 import { FIELD_MODELS, ROBOT_MODELS } from "@/test/GetAssets.ts"
-import { mockAnalytics } from "@/test/mocks/Common.ts"
 import { mockConsole } from "@/test/mocks/Common.ts"
 
-mockAnalytics()
+vi.mock("@/systems/World", () => ({
+    default: {
+        get analyticsSystem() {
+            return { event: vi.fn(), exception: vi.fn() }
+        },
+    },
+}))
 
 // // Polyfill btoa for Uint8Array to base64 (browser compatible, no Buffer)
 // function uint8ToBase64(bytes: Uint8Array): string {
