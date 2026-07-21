@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import EventSystem, { type SynthesisEvent } from "@/systems/EventSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -25,6 +25,13 @@ import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import {
+    inferURDFAutoWheelBasis,
+    inferWheelDimensionsFromAxle,
+    inferWheelRadius,
+    type WheelBasis,
+} from "./URDFWheelPhysics"
+import { isURDFImport } from "@/urdf/URDFUserData"
+import {
     applyHingeLimits,
     applySliderLimits,
     createAnchorPoint,
@@ -35,6 +42,8 @@ import {
     isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
+
+const DEBUG_COLLIDER_WARNINGS = false
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -103,10 +112,15 @@ const DEFAULT_FRICTION = 0.7
 
 // Transition GH-1152, AARD-1885:
 // Temporary workaround to reduce visible levitation of robots by minimizing suspension.
-// Setting these values to 0 causes physics issues (e.g., ground collisionn problems).
+// Setting these values to 0 causes physics issues (e.g., ground collision problems).
 // Some robots still float slightly, assuming this is due to different export conditions.
 const SUSPENSION_MIN_FACTOR = 0.0001
 const SUSPENSION_MAX_FACTOR = 0.0001
+
+// Wheels whose inferred radii fall within this relative tolerance of each other are treated as the
+// same size and snapped to a common radius. Sits well above mesh-tessellation noise (<1%) and well
+// below the gap between genuinely different wheel sizes, so distinct sizes stay in separate groups.
+const WHEEL_RADIUS_CLUSTER_TOLERANCE = 0.03
 
 const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 
@@ -362,7 +376,9 @@ class PhysicsSystem extends WorldSystem {
         settings.mDensity = density
 
         for (let i = 0; i < points.length; i += 3) {
-            settings.mPoints.push_back(new JOLT.Vec3(points[i], points[i + 1], points[i + 2]))
+            const point = new JOLT.Vec3(points[i], points[i + 1], points[i + 2])
+            settings.mPoints.push_back(point)
+            JOLT.destroy(point)
         }
 
         return settings.Create()
@@ -387,6 +403,13 @@ class PhysicsSystem extends WorldSystem {
     public createJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!
         const joints = Object.entries(jointData.jointInstances!) as [string, mirabuf.joint.JointInstance][]
+        const urdfImport = isURDFImport(parser.assembly)
+
+        // Resolve a radius per wheel up front, grouping same-size wheels so they rest coplanar.
+        // Independently tessellated meshes (URDF) otherwise yield sub-millimeter radius variance that,
+        // with near-zero suspension travel, permanently floats wheels (see resolveWheelRadii).
+        const wheelRadii = this.resolveWheelRadii(parser, mechanism)
+
         joints.forEach(([jointGuid, jointInst]) => {
             if (jointGuid == GROUNDED_JOINT_ID) return
 
@@ -441,6 +464,7 @@ class PhysicsSystem extends WorldSystem {
                     primaryConstraint: c,
                     maxVelocity: maxVel ?? VELOCITY_DEFAULT,
                     info: jointInst.info ?? undefined, // remove possibility for null
+                    jointUserData: jDef.userData?.data ?? undefined,
                     extraConstraints: [],
                     extraBodies: [],
                 })
@@ -463,7 +487,9 @@ class PhysicsSystem extends WorldSystem {
                             maxAcceleration ?? 1.5,
                             bodyOne,
                             bodyTwo,
-                            parser.assembly.info!.version!
+                            parser.assembly.info!.version!,
+                            urdfImport,
+                            wheelRadii.get(jointGuid)
                         )
                         addConstraint(fixedConstraint)
                         addConstraint(vehicleConstraint)
@@ -591,8 +617,18 @@ class PhysicsSystem extends WorldSystem {
         return fixedConstraint
     }
 
-    private createVehicleConstraint(wheelSettings: Jolt.WheelSettingsWV, bodyMain: Jolt.Body, maxAcc: number) {
+    private createVehicleConstraint(
+        wheelSettings: Jolt.WheelSettingsWV,
+        bodyMain: Jolt.Body,
+        maxAcc: number,
+        wheelBasis?: WheelBasis
+    ) {
         const vehicleSettings = new JOLT.VehicleConstraintSettings()
+
+        if (wheelBasis) {
+            vehicleSettings.mForward = wheelBasis.forward
+            vehicleSettings.mUp = wheelBasis.up
+        }
 
         vehicleSettings.mWheels.clear()
         vehicleSettings.mWheels.push_back(wheelSettings)
@@ -607,6 +643,74 @@ class PhysicsSystem extends WorldSystem {
         this._constraints.push(constraint)
 
         return constraint
+    }
+
+    /**
+     * Resolves the radius each wheel should use, grouping wheels of similar size and snapping every
+     * wheel in a group to that group's max radius. Applies to all import paths.
+     *
+     * With tessellated meshes, per-wheel inference produces sub-millimeter variance. With the near-zero
+     * suspension travel used for drivetrains, that variance permanently floats the "shorter" wheels,
+     * leaving the robot rocking on a subset of wheels and breaking skid-steer turning. Snapping each
+     * group to a common radius reproduces the coplanar-by-construction property for any robot, while
+     * clustering preserves robots that intentionally mix wheel sizes.
+     *
+     * @returns Map of joint GUID -> radius for every wheel joint.
+     */
+    private resolveWheelRadii(parser: MirabufParser, mechanism: Mechanism): Map<string, number> {
+        const jointData = parser.assembly.data!.joints!
+        const versionNum = parser.assembly.info!.version!
+        const urdfImport = isURDFImport(parser.assembly)
+        const wheels: { guid: string; radius: number }[] = []
+
+        for (const [jointGuid, jointInst] of Object.entries(jointData.jointInstances!) as [
+            string,
+            mirabuf.joint.JointInstance,
+        ][]) {
+            if (jointGuid === GROUNDED_JOINT_ID) continue
+            const jDef = jointData.jointDefinitions![jointInst.jointReference!] as mirabuf.joint.Joint | undefined
+            if (!jDef || jDef.jointMotionType !== mirabuf.joint.JointMotion.REVOLUTE || !isWheel(jDef)) continue
+
+            const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
+            const rnB = parser.partToNodeMap.get(jointInst.childPart!)
+            if (!rnA || !rnB || rnA.id === rnB.id) continue
+            const bodyIdA = mechanism.getBodyByNodeId(rnA.id)
+            const bodyIdB = mechanism.getBodyByNodeId(rnB.id)
+            if (!bodyIdA || !bodyIdB) continue
+            // Mirrors the wheel-body selection in createJointsFromParser: bodyTwo is the wheel.
+            const bodyWheel = parser.directedGraph.getAdjacencyList(rnA.id).length
+                ? this.getBody(bodyIdB)!
+                : this.getBody(bodyIdA)!
+
+            const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
+            const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
+            const axis = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
+            const radius = inferWheelRadius(urdfImport, bodyWheel.GetShape().GetLocalBounds(), axis)
+            JOLT.destroy(axis)
+
+            wheels.push({ guid: jointGuid, radius })
+        }
+
+        // Cluster by ascending radius (single-linkage): extend a group while the next wheel is within
+        // tolerance of the previous one, then snap the whole group to its max radius.
+        const radii = new Map<string, number>()
+        const sorted = wheels.sort((a, b) => a.radius - b.radius)
+        let groupStart = 0
+        while (groupStart < sorted.length) {
+            let groupEnd = groupStart + 1
+            while (
+                groupEnd < sorted.length &&
+                sorted[groupEnd].radius <= sorted[groupEnd - 1].radius * (1 + WHEEL_RADIUS_CLUSTER_TOLERANCE)
+            ) {
+                groupEnd++
+            }
+
+            const groupMax = sorted[groupEnd - 1].radius
+            for (let k = groupStart; k < groupEnd; k++) radii.set(sorted[k].guid, groupMax)
+            groupStart = groupEnd
+        }
+
+        return radii
     }
 
     private createVehicleListeners(constraint: Jolt.VehicleConstraint, bodyWheel: Jolt.Body) {
@@ -625,30 +729,65 @@ class PhysicsSystem extends WorldSystem {
         maxAcc: number,
         bodyMain: Jolt.Body,
         bodyWheel: Jolt.Body,
-        versionNum: number
+        versionNum: number,
+        urdfImport: boolean,
+        resolvedRadius?: number
     ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         const fixedConstraint = this.createFixedConstraint(bodyMain, bodyWheel, anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
-        const axis = getAxis(rotationalFreedom, versionNum).Mul(0.1)
+        const unitAxis = getAxis(rotationalFreedom, versionNum)
 
+        // Scaled down for use as a small positional offset (native, non-URDF wheels only, below),
+        // inferURDFAutoWheelBasis needs the unscaled unit-length axis for its magnitude check.
+        // Vec3.Mul mutates its receiver in place (see Jolt-return-value note above), so build a
+        // fresh vector here rather than scaling unitAxis itself.
+        const axis = new JOLT.Vec3(unitAxis.GetX() * 0.1, unitAxis.GetY() * 0.1, unitAxis.GetZ() * 0.1)
+
+        const urdfWheelBasis = urdfImport ? inferURDFAutoWheelBasis(unitAxis) : undefined
         const bounds = bodyWheel.GetShape().GetLocalBounds()
-        const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
+        const wheelDimensions = urdfWheelBasis
+            ? inferWheelDimensionsFromAxle(bounds, unitAxis)
+            : {
+                  radius: (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0,
+                  width: 0.1,
+              }
+
+        // Snap to the group-resolved radius so same-size wheels rest coplanar (see resolveWheelRadii).
+        // Width stays per-wheel; only radius affects ground contact. For uniform native drivetrains this
+        // resolves to the wheel's own radius, so their behavior is unchanged.
+        if (resolvedRadius !== undefined) {
+            wheelDimensions.radius = resolvedRadius
+        }
+
+        const wheelPos = urdfWheelBasis
+            ? convertJoltRVec3ToJoltVec3(anchorPoint)
+            : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis))
 
         const wheelSettings = new JOLT.WheelSettingsWV()
-        wheelSettings.mPosition = convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis))
+
+        wheelSettings.mPosition = wheelPos
+
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
-        wheelSettings.mRadius = radius * 1.05
-        wheelSettings.mWidth = 0.1
-        wheelSettings.mSuspensionMinLength = radius * SUSPENSION_MIN_FACTOR
-        wheelSettings.mSuspensionMaxLength = radius * SUSPENSION_MAX_FACTOR
+        wheelSettings.mRadius = wheelDimensions.radius * 1.05
+        wheelSettings.mWidth = wheelDimensions.width
+        wheelSettings.mSuspensionMinLength = wheelDimensions.radius * SUSPENSION_MIN_FACTOR
+        wheelSettings.mSuspensionMaxLength = wheelDimensions.radius * SUSPENSION_MAX_FACTOR
         wheelSettings.mInertia = 1
 
-        JOLT.destroy(axis)
+        if (urdfWheelBasis) {
+            wheelSettings.mWheelForward = urdfWheelBasis.forward
+            wheelSettings.mWheelUp = urdfWheelBasis.up
+            wheelSettings.mSuspensionDirection = urdfWheelBasis.suspensionDirection
+            wheelSettings.mSteeringAxis = urdfWheelBasis.steeringAxis
+        }
 
-        const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc)
+        JOLT.destroy(axis)
+        JOLT.destroy(unitAxis)
+
+        const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc, urdfWheelBasis)
         const listener = this.createVehicleListeners(vehicleConstraint, bodyWheel)
 
         return [fixedConstraint, vehicleConstraint, listener]
@@ -804,7 +943,6 @@ class PhysicsSystem extends WorldSystem {
                 // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
                 if (!partShapeResult) {
-                    console.warn("Skipping collider (no valid shape settings)", debugLabel)
                     return [undefined, undefined]
                 }
 
@@ -819,9 +957,13 @@ class PhysicsSystem extends WorldSystem {
                 compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
                 shapesAdded++
 
-                this.updateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
-                this.updateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
+                const worldMin = transform.Multiply3x3(partMin)
+                const worldMax = transform.Multiply3x3(partMax)
+                this.updateMinMaxBounds(worldMin, minBounds, maxBounds)
+                this.updateMinMaxBounds(worldMax, minBounds, maxBounds)
 
+                JOLT.destroy(worldMin)
+                JOLT.destroy(worldMax)
                 JOLT.destroy(partMin)
                 JOLT.destroy(partMax)
                 JOLT.destroy(transform)
@@ -1003,13 +1145,17 @@ class PhysicsSystem extends WorldSystem {
                 const vert = convertMirabufFloatToArrJoltVec3(verts, i)
                 points.push_back(vert)
                 this.updateMinMaxBounds(vert, min, max)
+                JOLT.destroy(vert)
             }
         })
 
         if (points.size() < 4) {
+            if (DEBUG_COLLIDER_WARNINGS) console.warn("Could not create convex shape for part")
+
             JOLT.destroy(settings)
             JOLT.destroy(min)
             JOLT.destroy(max)
+
             return
         }
 
@@ -1034,7 +1180,8 @@ class PhysicsSystem extends WorldSystem {
         settings.mIndexedTriangles = new JOLT.IndexedTriangleList()
         settings.mMaterials = new JOLT.PhysicsMaterialList()
 
-        settings.mMaterials.push_back(new JOLT.PhysicsMaterial())
+        const material = new JOLT.PhysicsMaterial()
+        settings.mMaterials.push_back(material)
 
         const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
@@ -1054,6 +1201,7 @@ class PhysicsSystem extends WorldSystem {
                 this.updateMinMaxBounds(vertVec, min, max)
 
                 JOLT.destroy(vertVec)
+                JOLT.destroy(vert)
             }
 
             for (let i = 0; i < indexArr.length; i += 3) {
@@ -1065,7 +1213,9 @@ class PhysicsSystem extends WorldSystem {
                 if (b > maxIndex) maxIndex = b
                 if (c > maxIndex) maxIndex = c
 
-                settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(a, b, c, 0))
+                const triangle = new JOLT.IndexedTriangle(a, b, c, 0)
+                settings.mIndexedTriangles.push_back(triangle)
+                JOLT.destroy(triangle)
             }
         })
 
@@ -1073,7 +1223,7 @@ class PhysicsSystem extends WorldSystem {
         const triCountBeforeSanitize = settings.mIndexedTriangles.size()
 
         if (vertCount < 3 || triCountBeforeSanitize === 0 || maxIndex >= vertCount) {
-            if (debugLabel) {
+            if (DEBUG_COLLIDER_WARNINGS && debugLabel) {
                 console.warn("Concave collider invalid (no triangles or bad indices)", {
                     ...debugLabel,
                     vertCount,
@@ -1092,7 +1242,7 @@ class PhysicsSystem extends WorldSystem {
         settings.Sanitize()
         const triCount = settings.mIndexedTriangles.size()
         if (triCount === 0) {
-            if (debugLabel) {
+            if (DEBUG_COLLIDER_WARNINGS && debugLabel) {
                 console.warn("Concave collider sanitized to zero triangles (degenerate)", {
                     ...debugLabel,
                     vertCount,

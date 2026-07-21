@@ -80,11 +80,3 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
         return false
     })
 }
-
-// function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
-//     nodes.forEach(x => {
-//         console.log(`[ ${x.name} ]:`);
-//         x.parts.forEach(y => console.log(`-> '${mira.data!.parts!.partInstances![y]!.info!.name!}'`));
-//         console.log('');
-//     });
-// }

@@ -15,17 +15,15 @@ import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
-    const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
-    const { openModal, openPanel, configureScreen, closePanel } = useUIContext()
+    const { setSelectedScheme } = useStateContext()
+    const { configureScreen, closePanel } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -72,22 +70,23 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }, [targetAssembly])
 
     useEffect(() => {
-        setUnconfirmedImport(true)
-
         configureScreen(
             panel!,
-            { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
+            {
+                title: "Assembly Setup",
+                acceptText: "Finish",
+                cancelText: "Remove",
+                blocking: true,
+                blockingMessage: "Finish Assembly Setup first!",
+            },
             {
                 onBeforeAccept: () => {
                     closeFinish()
                 },
                 onCancel: () => closeDelete(),
-                onClose: () => {
-                    setUnconfirmedImport(false)
-                },
             }
         )
-    }, [closeFinish, closeDelete, configureScreen, panel, setUnconfirmedImport])
+    }, [closeFinish, closeDelete, configureScreen, panel])
 
     return (
         <Stack gap={2}>
@@ -152,13 +151,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 />
             )}
             {brainIndex !== undefined && (
-                <InputSchemeSelection
-                    brainIndex={brainIndex}
-                    onSelect={() => {}}
-                    onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
-                    onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
-                    panelId={panel?.id}
-                />
+                <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
             )}
         </Stack>
     )

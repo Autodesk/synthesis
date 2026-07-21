@@ -159,6 +159,7 @@ describe("MirabufSceneObject", () => {
 
     test("Setup calls AddToScene, SetBodyAssociation, RegisterMechanism, and sets brain", () => {
         instance.setup()
+
         expect(mirabufInstance.addToScene).toHaveBeenCalled()
         expect(instance.brain).toBeDefined()
     })

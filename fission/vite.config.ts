@@ -5,7 +5,7 @@ import * as path from "path"
 import { loadEnv, type ProxyOptions } from "vite"
 import glsl from "vite-plugin-glsl"
 import { defineConfig } from "vitest/config"
-import type { TestCase, TestSuite } from "vitest/node"
+import type { TestRunEndReason } from "vitest/node"
 
 const basePath = "/fission/"
 const serverPort = 3000
@@ -106,15 +106,12 @@ export default defineConfig(async ({ mode }) => {
                       "github-actions",
                       "default",
                       {
-                          onTestCaseResult(test: TestCase) {
-                              if (!test.ok()) {
-                                  console.warn(test.fullName, "failed")
+                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
+                              if (reason === "passed" && unhandled.length === 0) {
+                                  console.error("GH ACTIONS VITEST PASSED")
+                              } else {
+                                  console.error(unhandled)
                               }
-                          },
-                          onTestSuiteResult(testSuite: TestSuite) {
-                              const ok = testSuite.ok()
-
-                              if (!ok) setTimeout(() => process.exit(1), 1000)
                           },
                       },
                   ]

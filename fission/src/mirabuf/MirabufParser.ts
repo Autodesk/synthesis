@@ -363,10 +363,22 @@ class MirabufParser {
                       return new mirabuf.Transform({
                           // biome-ignore-start format: We would prefer to visualize this as a matrix
                           spatialMatrix: [
-                              e[0], e[4], e[8],  e[12] * 100,
-                              e[1], e[5], e[9],  e[13] * 100,
-                              e[2], e[6], e[10], e[14] * 100,
-                              e[3], e[7], e[11], e[15],
+                              e[0],
+                              e[4],
+                              e[8],
+                              e[12] * 100,
+                              e[1],
+                              e[5],
+                              e[9],
+                              e[13] * 100,
+                              e[2],
+                              e[6],
+                              e[10],
+                              e[14] * 100,
+                              e[3],
+                              e[7],
+                              e[11],
+                              e[15],
                           ],
                           // biome-ignore-end format: We would prefer to visualize this as a matrix
                       })
@@ -492,8 +504,6 @@ class MirabufParser {
                 if (!partInstance || this.globalTransforms.has(child.value!)) return
                 const mat = convertMirabufTransformToThreeMatrix(partInstance.transform!)!
 
-                // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
-
                 this._globalTransforms.set(child.value!, mat.premultiply(parent))
                 getTransforms(child, mat)
             })
@@ -514,8 +524,6 @@ class MirabufParser {
             } else {
                 mat = new THREE.Matrix4().identity()
             }
-
-            // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
 
             this._globalTransforms.set(partInstance.info!.GUID!, mat)
             getTransforms(child, mat)
@@ -636,12 +644,7 @@ export function zeroGamePieceInstancePosition(assembly: mirabuf.Assembly) {
     const e = zeroed.elements
     instance.transform = new mirabuf.Transform({
         // biome-ignore-start format: We would prefer to visualize this as a matrix
-        spatialMatrix: [
-            e[0], e[4], e[8],  0,
-            e[1], e[5], e[9],  0,
-            e[2], e[6], e[10], 0,
-            e[3], e[7], e[11], e[15],
-        ],
+        spatialMatrix: [e[0], e[4], e[8], 0, e[1], e[5], e[9], 0, e[2], e[6], e[10], 0, e[3], e[7], e[11], e[15]],
         // biome-ignore-end format: We would prefer to visualize this as a matrix
     })
 }

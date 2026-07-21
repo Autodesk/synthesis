@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
-import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { getGamePieceTypeName, type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
@@ -26,7 +26,6 @@ import {
     AccordionDetails,
     AccordionSummary,
 } from "@/ui/components/StyledComponents"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
@@ -104,88 +103,85 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
     await MirabufCachingService.get(info.hash)
         .then(async assembly => {
-            if (assembly) {
-                const mirabufSceneObjects = await createMirabuf(
-                    info.hash,
-                    assembly,
-                    info.hash,
-                    info.miraType,
-                    progressHandle
-                )
-                if (mirabufSceneObjects) {
-                    const { mainSceneObject, gamePieces } = mirabufSceneObjects
-
-                    if (mainSceneObject) {
-                        World.sceneRenderer.registerSceneObject(mainSceneObject)
-
-                        const targetControls = getTargetControls()
-
-                        if (World.multiplayerSystem != null) {
-                            const encodedAssembly =
-                                mainSceneObject.miraType !== MiraType.FIELD
-                                    ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
-                                    : undefined
-
-                            const message: Message = {
-                                type: "newObject",
-                                timestamp: Date.now(),
-                                data: {
-                                    sceneObjectKey: mainSceneObject.id as RemoteSceneObjectId,
-                                    assembly: encodedAssembly,
-                                    assemblyHash: info.hash,
-                                    miraType: info.miraType,
-                                    initialPreferences: mainSceneObject.getPreferenceData(),
-                                    bodyIds: mainSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
-                                },
-                            }
-                            await World.multiplayerSystem?.broadcast(message)
-                            World.multiplayerSystem?.registerOwnSceneObject(mainSceneObject.id as LocalSceneObjectId)
-                        }
-
-                        if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                            targetControls.focusProvider = mainSceneObject
-                        }
-
-                        progressHandle.done()
-
-                        if (mainSceneObject.miraType == MiraType.ROBOT || mainSceneObject.miraType == MiraType.PIECE) {
-                            globalOpenPanel(InitialConfigPanel, undefined)
-                        }
-
-                        // Only one cache entry is kept per game piece type (e.g. "Cube"), so instances
-                        // sharing a type reuse the existing cached entry instead of accumulating duplicates.
-                        const cachedTypeNames = new Set(MirabufCachingService.getAll(MiraType.PIECE).map(i => i.name))
-                        for (const instance of gamePieces ?? []) {
-                            const pieceAssembly = instance.parser.assembly
-                            const typeName = getGamePieceTypeName(pieceAssembly?.info?.name ?? "Piece")
-
-                            if (cachedTypeNames.has(typeName)) {
-                                const existing = MirabufCachingService.getAll(MiraType.PIECE).find(
-                                    i => i.name === typeName
-                                )
-                                const sceneObject = new MirabufSceneObject(instance, existing?.hash ?? "")
-                                World.sceneRenderer.registerSceneObject(sceneObject)
-                                continue
-                            }
-                            cachedTypeNames.add(typeName)
-
-                            zeroGamePieceInstancePosition(pieceAssembly)
-                            const cacheInfo = await MirabufCachingService.storeAssemblyInCache(pieceAssembly, {
-                                miraType: MiraType.PIECE,
-                                name: typeName,
-                            })
-                            if (!cacheInfo) continue
-
-                            const sceneObject = new MirabufSceneObject(instance, cacheInfo.hash)
-                            World.sceneRenderer.registerSceneObject(sceneObject)
-                        }
-                    } else {
-                        progressHandle.fail("No object!")
-                    }
-                }
-            } else {
+            if (!assembly) {
                 progressHandle.fail()
                 console.error("Failed to spawn assembly")
+                return
+            }
+
+            const mirabufSceneObjects = await createMirabuf(
+                info.hash,
+                assembly,
+                info.hash,
+                info.miraType,
+                progressHandle
+            )
+            if (!mirabufSceneObjects) {
+                progressHandle.fail("No object!")
+                return
+            }
+
+            const { mainSceneObject, gamePieces } = mirabufSceneObjects
+            World.sceneRenderer.registerSceneObject(mainSceneObject)
+
+            const targetControls = getTargetControls()
+
+            if (World.multiplayerSystem != null) {
+                const encodedAssembly =
+                    mainSceneObject.miraType !== MiraType.FIELD
+                        ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
+                        : undefined
+
+                const message: Message = {
+                    type: "newObject",
+                    timestamp: Date.now(),
+                    data: {
+                        sceneObjectKey: mainSceneObject.id as RemoteSceneObjectId,
+                        assembly: encodedAssembly,
+                        assemblyHash: info.hash,
+                        miraType: info.miraType,
+                        initialPreferences: mainSceneObject.getPreferenceData(),
+                        bodyIds: mainSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+                    },
+                }
+                await World.multiplayerSystem?.broadcast(message)
+                World.multiplayerSystem?.registerOwnSceneObject(mainSceneObject.id as LocalSceneObjectId)
+            }
+
+            if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+                targetControls.focusProvider = mainSceneObject
+            }
+
+            progressHandle.done()
+
+            if (mainSceneObject.miraType == MiraType.ROBOT || mainSceneObject.miraType == MiraType.PIECE) {
+                globalOpenPanel(InitialConfigPanel, undefined)
+            }
+
+            // Only one cache entry is kept per game piece type (e.g. "Cube"), so instances
+            // sharing a type reuse the existing cached entry instead of accumulating duplicates.
+            const cachedTypeNames = new Set(MirabufCachingService.getAll(MiraType.PIECE).map(i => i.name))
+            for (const instance of gamePieces ?? []) {
+                const pieceAssembly = instance.parser.assembly
+                const typeName = getGamePieceTypeName(pieceAssembly?.info?.name ?? "Piece")
+
+                if (cachedTypeNames.has(typeName)) {
+                    const existing = MirabufCachingService.getAll(MiraType.PIECE).find(i => i.name === typeName)
+                    const sceneObject = new MirabufSceneObject(instance, existing?.hash ?? "")
+                    World.sceneRenderer.registerSceneObject(sceneObject)
+                    continue
+                }
+                cachedTypeNames.add(typeName)
+
+                zeroGamePieceInstancePosition(pieceAssembly)
+                const cacheInfo = await MirabufCachingService.storeAssemblyInCache(pieceAssembly, {
+                    miraType: MiraType.PIECE,
+                    name: typeName,
+                })
+                if (!cacheInfo) continue
+
+                const sceneObject = new MirabufSceneObject(instance, cacheInfo.hash)
+                World.sceneRenderer.registerSceneObject(sceneObject)
             }
         })
         .catch(e => {
@@ -201,9 +197,8 @@ interface ImportMirabufPanelCustomProps {
     configurationType: ConfigurationType
 }
 
-const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustomProps>> = ({ panel, parent }) => {
-    const { addToast, closePanel, openModal, configureScreen } = useUIContext()
-    const { unconfirmedImport } = useStateContext()
+const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustomProps>> = ({ panel }) => {
+    const { closePanel, openModal, configureScreen } = useUIContext()
 
     const { configurationType } = panel!.props.custom
 
@@ -242,17 +237,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         } else {
             setFiles(getMirabufFiles())
         }
-    }, [])
-
-    // biome-ignore lint: things break if we don't add the closePanel dep
-    useLayoutEffect(() => {
-        if (unconfirmedImport) {
-            addToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
-            closePanel(panel!.id, CloseType.Cancel)
-            return
-        }
-
-        if (parent) closePanel(parent.id, CloseType.Cancel)
     }, [])
 
     // Select a mirabuf assembly from the cache.

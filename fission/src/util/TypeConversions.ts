@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { RgbaColor } from "react-colorful"
 import * as THREE from "three"
 import type { mirabuf } from "../proto/mirabuf"
@@ -18,10 +18,22 @@ export function convertArrayToThreeMatrix4(arr: number[]) {
     // DO NOT ask me why retrieving and setting the same EXACT data is done is two DIFFERENT majors
     // biome-ignore-start format: We would prefer to visualize this as a matrix
     return new THREE.Matrix4(
-        arr[0], arr[4], arr[8], arr[12],
-        arr[1], arr[5], arr[9], arr[13],
-        arr[2], arr[6], arr[10], arr[14],
-        arr[3], arr[7], arr[11], arr[15]
+        arr[0],
+        arr[4],
+        arr[8],
+        arr[12],
+        arr[1],
+        arr[5],
+        arr[9],
+        arr[13],
+        arr[2],
+        arr[6],
+        arr[10],
+        arr[14],
+        arr[3],
+        arr[7],
+        arr[11],
+        arr[15]
     )
     // biome-ignore-end format: We would prefer to visualize this as a matrix
 }
@@ -129,4 +141,12 @@ export function convertMirabufFloatToArrJoltFloat3(v: number[], offsetIndex: num
 
 export function convertReactRgbaColorToThreeColor(color: RgbaColor) {
     return new THREE.Color(Math.floor(color.r / 255), Math.floor(color.g / 255), Math.floor(color.b / 255))
+}
+
+export function convertAxisAlignedToOrientedBoundingBox(aabb: Jolt.AABox): Jolt.OrientedBox {
+    const center = aabb.GetCenter()
+    const halfExtent = aabb.GetExtent()
+    const transform = new JOLT.Mat44().sTranslation(center)
+
+    return new JOLT.OrientedBox(transform, halfExtent)
 }

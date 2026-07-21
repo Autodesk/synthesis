@@ -25,7 +25,7 @@ public class Gyro {
     private SimDouble m_rateZ;
 
     /**
-     * Creates a CANMotor sim device in accordance with the WebSocket API Specification.
+     * Creates a Gyro sim device in accordance with the WebSocket API Specification.
      * 
      * @param name Name of the Gyro. This is generally the class name of the originating gyro (i.e. "ADXRS450").
      * @param deviceId ID of the Gyro.
@@ -34,7 +34,7 @@ public class Gyro {
         m_device = SimDevice.create("Gyro:" + name, deviceId);
 
         m_range = m_device.createDouble("range", Direction.kOutput, 0.0);
-        m_connected = m_device.createBoolean("connected", Direction.kOutput, false);
+        m_connected = m_device.createBoolean("connected", Direction.kOutput, true);
         m_angleX = m_device.createDouble("angle_x", Direction.kInput, 0.0);
         m_angleY = m_device.createDouble("angle_y", Direction.kInput, 0.0);
         m_angleZ = m_device.createDouble("angle_z", Direction.kInput, 0.0);
