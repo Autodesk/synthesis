@@ -128,11 +128,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
         };
 
         match message {
-            Message::Text(ref text) => {
-                if text.trim().is_empty() {
-                    continue;
-                }
-
+            Message::Text(_) | Message::Binary(_) => {
                 let senders: Vec<ClientSender> = {
                     // The lock is relinquished after senders are retreived
                     let mut guard = state.lock().unwrap();
@@ -144,10 +140,6 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
                 }
             }
 
-            Message::Binary(_) => {
-                let mut guard = state.lock().unwrap();
-                warn!(guard, "Received Binary, skipping");
-            }
             Message::Close(_) => {
                 let mut guard = state.lock().unwrap();
                 warn!(guard, "Connection with {client_id} closed");
