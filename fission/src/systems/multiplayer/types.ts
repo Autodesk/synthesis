@@ -5,7 +5,7 @@ import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes.ts
 import type PhysicsSystem from "../physics/PhysicsSystem"
 
 export interface MessageType {
-    info: ClientInfo
+    info: InfoMessageBody
     update: UpdateObjectData[]
     collision: UpdateObjectData[] // just a comprehensive list instead
     newObject: InitObjectData
@@ -19,6 +19,8 @@ export interface MessageType {
     matchModeState: MatchModeStateData
     matchModePenalty: MatchModePenalty
 }
+
+export interface InfoMessageBody {info: ClientInfo, introduceSelf: boolean}
 
 export interface MatchModePenalty {
     objectId: RemoteSceneObjectId

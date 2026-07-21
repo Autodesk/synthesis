@@ -8,7 +8,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 
 interface MultiplayerStartMenuCustomProps {
-    startWorldCallback: (name: string, roomId?: string) => Promise<boolean>
+    startWorldCallback: (name: string, roomId?: number) => Promise<boolean>
 }
 
 const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuCustomProps>> = ({ modal }) => {
@@ -78,7 +78,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                         return
                     }
 
-                    const success = await withTimeout(startWorldCallback(name, room), "Multiplayer join timed out")
+                    const success = await withTimeout(startWorldCallback(name, parseInt(room)), "Multiplayer join timed out")
                     if (success) {
                         closeModal(CloseType.Accept)
                     }

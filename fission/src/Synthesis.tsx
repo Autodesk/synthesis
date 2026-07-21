@@ -56,7 +56,7 @@ function Synthesis() {
                     startWorldCallback: async (name, room) => {
                         PreferencesSystem.setUserPreference("MultiplayerUsername", name)
                         PreferencesSystem.savePreferences()
-                        const success = await MultiplayerSystem.setup("ws://localhost:9002", parseInt(room ?? "0") || "create", name)
+                        const success = await MultiplayerSystem.setup("ws://localhost:9002", room ?? "create", name)
                         if (success) {
                             // if (isHost) {
                             //     globalAddToast("info", "Room Code", room)

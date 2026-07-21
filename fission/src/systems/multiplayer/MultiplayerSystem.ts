@@ -26,18 +26,22 @@ class MultiplayerSystem {
     private _info: ClientInfo = {} as ClientInfo
     private _onDestroyHooks: (() => void)[] = []
 
-    public static async setup(hostAddr: string, roomId: number|"create", displayName: string): Promise<boolean> {
+    public static async setup(hostAddr: string, roomId: number | "create", displayName: string): Promise<boolean> {
         const system = new MultiplayerSystem(hostAddr, roomId, displayName)
         const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
         return initResult
     }
 
-    private constructor(hostAddr: string, roomId: number|"create", displayName:string) {
+    private constructor(hostAddr: string, roomId: number | "create", displayName: string) {
         this.client = new WebSocket(hostAddr)
         this.client.onopen = (ev) => {
             console.log("OPEN", ev, this.client.readyState)
-            this.client.send(JSON.stringify((roomId == "create" ? "Create" : {Join: roomId}) satisfies InitialMessage))
+            const msg = JSON.stringify(({
+                room_id: roomId == "create" ? null : roomId,
+                name: displayName
+            }) satisfies InitialMessage)
+            this.client.send(msg)
         }
         this.client.onclose = (ev) => {
             console.log(ev, this.client)
@@ -54,16 +58,24 @@ class MultiplayerSystem {
                 const {room_id, client_id} = JSON.parse(ev.data) as InitialResponse
                 this.roomId = room_id
                 this.clientId = client_id
-                this._info = { clientId: this.clientId, displayName: displayName, isHost: roomId == "create", creationTime: Date.now() }
+                this._info = {
+                    clientId: this.clientId,
+                    displayName: displayName,
+                    isHost: roomId == "create",
+                    creationTime: Date.now()
+                }
                 globalAddToast("success", "Joined room", room_id)
                 resolve(true)
-                await this.broadcastHello()
+                await this.sendHello(true)
             }
             setTimeout(() => resolve(false), 10000)
         }).then((res) => {
             if (res) {
+                console.log("updating")
                 this.client.onmessage = async (ev) => {
-                    await this.handlePeerMessage(decode(ev.data) as MessageWithTimestamp)
+                    const data = (ev.data as Blob)
+                    console.log("MSG", ev.data)
+                    await this.handlePeerMessage(decode(await data.arrayBuffer()) as MessageWithTimestamp)
                 }
             }
             return res
@@ -90,6 +102,11 @@ class MultiplayerSystem {
     }
 
     async broadcast(message: Message) {
+        return this.send(message)
+    }
+
+    async send(message: Message, peerID?: string) {
+        message.recipientId = peerID
         if (message.type != "update") {
             console.debug(`Sending Message: ${message.type}`)
         }
@@ -98,16 +115,14 @@ class MultiplayerSystem {
         return this.client.send(encode(message))
     }
 
-    async send(target:string, message:Message) {
-        message.recipientId = target
-        return await this.broadcast(message)
-    }
-
-    async broadcastHello() {
-        await this.broadcast({
+    async sendHello(requestIntroductions: boolean, peerID?: string) {
+        await this.send({
             type: "info",
-            data: this._info
-        })
+            data: {
+                info: this._info,
+                introduceSelf: requestIntroductions,
+            }
+        }, peerID)
     }
 
     getOwnSceneObjectIDs() {
@@ -133,6 +148,7 @@ class MultiplayerSystem {
             this._clientToObjectMap.set(this.clientId, [objectId])
         }
     }
+
     unregisterOwnSceneObject(objectId: LocalSceneObjectId) {
         const list = this._clientToObjectMap.get(this.clientId)
         if (!list) return

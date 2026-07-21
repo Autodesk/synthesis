@@ -1,16 +1,16 @@
-import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import {ProgressHandle} from "@/components/ProgressNotificationData.ts"
 import MirabufCachingService from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import type { mirabuf } from "@/proto/mirabuf"
+import MirabufSceneObject, {createMirabuf} from "@/mirabuf/MirabufSceneObject"
+import type {mirabuf} from "@/proto/mirabuf"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import {globalAddToast} from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
 import World from "../World"
 import type {
     AssemblyRequestData,
-    ClientInfo,
     EncodedAssembly,
+    InfoMessageBody,
     InitObjectData,
     LocalSceneObjectId,
     MatchModePenalty,
@@ -59,10 +59,13 @@ async function handleMatchModeState(data: MatchModeStateData) {
     }
 }
 
-function handlePeerInfo(data: ClientInfo) {
-    World.multiplayerSystem?._clientToObjectMap.set(data.clientId, [])
-    World.multiplayerSystem?._clientToInfoMap.set(data.clientId, data)
-    globalAddToast("success", "Multiplayer Peer Connected", data.displayName)
+function handlePeerInfo({info, introduceSelf}:InfoMessageBody) {
+    World.multiplayerSystem?._clientToObjectMap.set(info.clientId, [])
+    World.multiplayerSystem?._clientToInfoMap.set(info.clientId, info)
+    if (introduceSelf) {
+        World.multiplayerSystem?.sendHello(false, info.clientId)
+    }
+    globalAddToast("success", "Multiplayer Peer Connected", info.displayName)
     EventSystem.dispatch("MultiplayerStatePeerChange")
 }
 
@@ -178,10 +181,10 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     if (!assembly) {
         console.log("needAssembly")
         handle.update("Requesting Assembly", 0.05)
-        await World.multiplayerSystem?.send(peerId, {
+        await World.multiplayerSystem?.send({
             type: "needAssembly",
             data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
-        })
+        }, peerId)
         return
     }
 
@@ -238,7 +241,7 @@ async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) 
     const encodedAssembly = new Uint8Array(buffer) as EncodedAssembly
 
     const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
-    await World.multiplayerSystem?.send(peerId, {
+    await World.multiplayerSystem?.send({
         type: "newObject",
         data: {
             sceneObjectKey,
@@ -248,7 +251,7 @@ async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) 
             initialPreferences: sceneObject.getPreferenceData(),
             bodyIds: sceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
         },
-    })
+    }, peerId)
 }
 
 function handleDeleteObject(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
