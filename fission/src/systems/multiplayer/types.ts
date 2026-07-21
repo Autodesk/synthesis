@@ -34,9 +34,9 @@ export type MatchModeStateData =
     | { event: "cancel" }
 
 export type MessageWithTimestamp = {
-    [K in keyof MessageType]: { type: K; data: MessageType[K]; timestamp: number }
+    [K in keyof MessageType]: { recipientId?:string, client_id:string, type: K; data: MessageType[K]; timestamp: number }
 }[keyof MessageType]
-export type Message = Omit<MessageWithTimestamp, "timestamp"> & Partial<Pick<MessageWithTimestamp, "timestamp">>
+export type Message = Omit<MessageWithTimestamp, "timestamp"|"client_id"> & Partial<MessageWithTimestamp>
 
 export type EncodedAssembly = Uint8Array & { __: "encodedassembly" }
 export type RemoteSceneObjectId = number & { __: "remotesceneobject" | "sceneobjectkey" }

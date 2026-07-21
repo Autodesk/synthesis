@@ -66,12 +66,12 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 placeholder="000000"
                 inputProps={{
                     onInput: e => {
-                        setRoom(e.currentTarget.value.replace(/\D/, "").slice(0, 6)) // 6-digit numbers
+                        setRoom(e.currentTarget.value.replace(/\D/, ""))
                     },
                 }}
             />
             <Button
-                disabled={room.length != 6}
+                disabled={room.length == 0}
                 onClick={async () => {
                     if (!isValidName) {
                         globalAddToast("warning", "Invalid Name", "Must be at least 3 characters")
