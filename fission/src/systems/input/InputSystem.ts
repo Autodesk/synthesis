@@ -20,8 +20,8 @@ class InputSystem extends WorldSystem {
     /** Whether the command palette is currently open, which blocks robot input */
     private static _isCommandPaletteOpen: boolean = false
 
-    private static _gpIndex: number | null
-    public static gamepad: Gamepad | null
+    private static _gpIndexes: number[] = []
+    public static gamepads: (Gamepad | null)[] = []
 
     /** Normalized joystick positions (-1 to 1) set by TouchControls component via react-joystick-component */
     private static _leftJoystickPos: { x: number; y: number } = { x: 0, y: 0 }
@@ -93,8 +93,15 @@ class InputSystem extends WorldSystem {
 
     public update(_: number): void {
         // Fetch current gamepad information
-        if (InputSystem._gpIndex == null) InputSystem.gamepad = null
-        else InputSystem.gamepad = navigator.getGamepads()[InputSystem._gpIndex]
+        const rawGamepads = navigator.getGamepads()
+
+        for (const lookupIndex of InputSystem._gpIndexes) {
+            if (lookupIndex == null || rawGamepads[lookupIndex] == null) {
+                InputSystem.gamepads[lookupIndex] = null
+            } else {
+                InputSystem.gamepads[lookupIndex] = rawGamepads[lookupIndex]
+            }
+        }
 
         if (!document.hasFocus()) this.clearKeyData()
 
@@ -156,7 +163,10 @@ class InputSystem extends WorldSystem {
             )
         }
 
-        InputSystem._gpIndex = event.gamepad.index
+        const newIndex = event.gamepad.index
+        if (!InputSystem._gpIndexes.includes(newIndex)) {
+            InputSystem._gpIndexes.push(newIndex)
+        }
     }
 
     /* Called once when a gamepad is first disconnected */
@@ -165,7 +175,13 @@ class InputSystem extends WorldSystem {
             console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
         }
 
-        InputSystem._gpIndex = null
+        const removedIndex = event.gamepad.index
+
+        InputSystem._gpIndexes = InputSystem._gpIndexes.filter(idx => idx !== removedIndex)
+
+        if (InputSystem.gamepads[removedIndex]) {
+            InputSystem.gamepads[removedIndex] = null
+        }
     }
 
     /**
@@ -218,14 +234,15 @@ class InputSystem extends WorldSystem {
 
     /**
      * @param {number} axisNumber The joystick axis index. Must be an integer.
+     * @param {number} playerNumber The player number for the gamepad. Must be an integer.
      * @returns {number} A number between -1 and 1 based on the position of this axis or 0 if no gamepad is connected or the axis is not found.
      */
-    public static getGamepadAxis(axisNumber: number): number {
-        if (InputSystem.gamepad == null) return 0
+    public static getGamepadAxis(axisNumber: number, playerNumber: number = 0): number {
+        const targetGamepad = InputSystem.gamepads[playerNumber]
+        if (targetGamepad == null) return 0
+        if (axisNumber < 0 || axisNumber >= targetGamepad.axes.length) return 0
 
-        if (axisNumber < 0 || axisNumber >= InputSystem.gamepad.axes.length) return 0
-
-        const value = InputSystem.gamepad.axes[axisNumber]
+        const value = targetGamepad.axes[axisNumber]
 
         // Return value with a deadband
         return Math.abs(value) < 0.15 ? 0 : value
@@ -234,14 +251,16 @@ class InputSystem extends WorldSystem {
     /**
      *
      * @param {number} buttonNumber - The gamepad button index. Must be an integer.
+     * @param {number} playerNumber - The player number for the gamepad. Must be an integer.
      * @returns {boolean} True if the button is pressed, false if not, a gamepad isn't connected, or the button can't be found.
      */
-    public static isGamepadButtonPressed(buttonNumber: number): boolean {
-        if (InputSystem.gamepad == null) return false
+    public static isGamepadButtonPressed(buttonNumber: number, playerNumber: number = 0): boolean {
+        const targetGamepad = InputSystem.gamepads[playerNumber];
+        if (targetGamepad == null) return false
 
-        if (buttonNumber < 0 || buttonNumber >= InputSystem.gamepad.buttons.length) return false
+        if (buttonNumber < 0 || buttonNumber >= targetGamepad.buttons.length) return false
 
-        const button = InputSystem.gamepad.buttons[buttonNumber]
+        const button = targetGamepad.buttons[buttonNumber]
         if (button == null) return false
 
         return button.pressed
