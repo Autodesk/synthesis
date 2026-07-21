@@ -1,11 +1,11 @@
 mod messaging;
 mod room;
 mod tui;
+#[macro_use]
+mod util;
 
 use futures_util::SinkExt;
 use futures_util::StreamExt;
-use log::error;
-use log::info;
 use std::env;
 use std::process;
 use std::sync::Arc;
@@ -54,17 +54,15 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     let addr = raw_stream
         .peer_addr()
         .expect("Connected stream missing peer address");
-    info!("Peer Address: {addr}");
 
     let ws_stream = tokio_tungstenite::accept_async(raw_stream)
         .await
         .expect("Error during websocket handshake");
 
-    info!("New WebSoccket connection: {addr}");
-    state
-        .lock()
-        .unwrap()
-        .system_log(format!("connection from {addr}"));
+    {
+        let mut guard = state.lock().unwrap();
+        log!(guard, "connection from {addr}");
+    }
 
     // Each client gets an mpsc channel
     // Other client threads on the server can write to it
@@ -86,21 +84,17 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
 
     // Parse initial message, then user in correct room
     let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
-        error!("Client disconnected before first message");
-        state
-            .lock()
-            .unwrap()
-            .system_log(format!("{addr} disconnected before handshake"));
+        let mut guard = state.lock().unwrap();
+        log!(guard, "{addr} disconnected before handshake");
+
         return;
     };
 
     let Ok(initial_message) = serde_json::from_str::<InitialMessage>(&initial_message_string)
     else {
-        error!("Invalid initial message");
-        state
-            .lock()
-            .unwrap()
-            .system_log(format!("{addr} sent an invalid initial message"));
+        let mut guard = state.lock().unwrap();
+        log!(guard, "{addr} sent an invalid initial message");
+
         return;
     };
 
@@ -128,12 +122,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
                 let senders: Vec<ClientSender> = {
                     // The lock is relinquished after senders are retreived
                     let mut guard = state.lock().unwrap();
-                    let senders = guard.get_senders_from_user_room(addr);
-                    guard.log_user_room(
-                        addr,
-                        format!("relayed {} bytes to {} peer(s)", text.len(), senders.len()),
-                    );
-                    senders
+                    guard.get_senders_from_user_room(addr)
                 };
 
                 for tx in senders {
@@ -142,12 +131,14 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
             }
 
             Message::Binary(_) => {
-                info!("Received Binary, skipping");
+                let mut guard = state.lock().unwrap();
+                log!(guard, "Received Binary, skipping");
             }
             Message::Close(_) => {
-                info!("Connection with {addr} closed");
+                let mut guard = state.lock().unwrap();
+                log!(guard, "Connection with {addr} closed");
+                guard.remove_client(addr);
 
-                state.lock().unwrap().remove_client(addr);
                 return;
             }
             // TODO

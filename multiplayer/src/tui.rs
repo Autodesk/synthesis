@@ -20,7 +20,7 @@ use ratatui::widgets::{
 };
 use ratatui::{DefaultTerminal, Frame};
 
-use crate::room::{RoomSnapshot, Snapshot, State, UserId};
+use crate::room::{ClientId, RoomSnapshot, Snapshot, State};
 
 /// How many room panels are shown side-by-side on a single tab.
 const ROOMS_PER_TAB: usize = 2;
@@ -65,13 +65,13 @@ struct App {
     /// Index of selected user within panel
     selected_user: usize,
     /// Whether there is currently a pending action to kick a user
-    pending_kick: Option<UserId>,
+    pending_kick: Option<ClientId>,
     should_quit: bool,
 
     /// Informatoin cached from the last `sync` so key handling can act without a snapshot.
     tab_count: usize,
     panels_on_tab: usize,
-    focused_members: Vec<UserId>,
+    focused_members: Vec<ClientId>,
 }
 
 impl App {
@@ -357,7 +357,7 @@ fn render_status(frame: &mut Frame, area: Rect) {
     frame.render_widget(status, area);
 }
 
-fn render_kick_popup(frame: &mut Frame, uid: UserId) {
+fn render_kick_popup(frame: &mut Frame, uid: ClientId) {
     let area = centered_rect(50, 20, frame.area());
     frame.render_widget(Clear, area);
 
