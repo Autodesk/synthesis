@@ -266,6 +266,13 @@ class InputSystem extends WorldSystem {
         return button.pressed
     }
 
+    /**
+     * @returns {number[]} The sorted indexes of all currently connected gamepads.
+     */
+    public static getConnectedGamepadIndexes(): number[] {
+        return [...InputSystem._gpIndexes].sort((a, b) => a - b)
+    }
+
     /** Returns a number between -1 and 1 from the touch controls */
     public static getTouchControlsAxis(axisType: TouchControlsAxes): number {
         if (axisType === TouchControlsAxes.LEFT_X) return InputSystem._leftJoystickPos.x

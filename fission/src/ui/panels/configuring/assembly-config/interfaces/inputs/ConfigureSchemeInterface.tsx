@@ -1,9 +1,10 @@
-import { Divider, Stack } from "@mui/material"
+import { Divider, MenuItem, Select, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import AxisInput from "@/systems/input/inputs/AxisInput.ts"
 import type Input from "@/systems/input/inputs/Input"
@@ -20,6 +21,8 @@ interface ConfigSchemeProps {
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme, panelId, onBack }) => {
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
+    const [controllerNumber, setControllerNumber] = useState(1)
+    const [connectedGamepads, setConnectedGamepads] = useState<number[]>(InputSystem.getConnectedGamepadIndexes())
     const scrollRef = useRef<HTMLDivElement>(null)
     const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
@@ -29,6 +32,17 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
     useEffect(() => {
         return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
+
+    useEffect(() => {
+        const refreshGamepads = () => setConnectedGamepads(InputSystem.getConnectedGamepadIndexes())
+        window.addEventListener("gamepadconnected", refreshGamepads)
+        window.addEventListener("gamepaddisconnected", refreshGamepads)
+
+        return () => {
+            window.removeEventListener("gamepadconnected", refreshGamepads)
+            window.removeEventListener("gamepaddisconnected", refreshGamepads)
+        }
+    }, [])
 
     /** Disable scrolling with arrow keys to stop accidentally scrolling when binding keys */
     useEffect(() => {
@@ -86,6 +100,21 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                 }}
                 tooltip="Supported controllers: Xbox one, Xbox 360."
             />
+            {useGamepad &&
+                (connectedGamepads.length > 0 ? (
+                    <Select
+                        value={controllerNumber}
+                        onChange={e => setControllerNumber(Number(e.target.value))}
+                    >
+                        {connectedGamepads.map(gamepadIndex => (
+                            <MenuItem key={`controller-${gamepadIndex}`} value={gamepadIndex + 1}>
+                                {gamepadIndex + 1}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                ) : (
+                    <Label size="sm">No controllers detected</Label>
+                ))}
             <Checkbox
                 label="Use Touch Controls"
                 checked={useTouchControls}
