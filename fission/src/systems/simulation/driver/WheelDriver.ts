@@ -19,6 +19,8 @@ class WheelDriver extends Driver {
     private _prevVel: number = 0.0
     public maxVelocity = 30.0
     public maxAcceleration = 1.5
+    // Debug-only: throttled ground-contact diagnostic, logged only while actually commanded to move.
+    private _debugTickCounter = 0
 
     public _targetVelocity = () => {
         let vel = this.accelerationDirection * (this._reversed ? -1 : 1) * this.maxVelocity
@@ -61,6 +63,39 @@ class WheelDriver extends Driver {
         const vel = this._targetVelocity()
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
+
+        if (this.accelerationDirection !== 0 && this._debugTickCounter++ % 60 === 0) {
+            const hasContact = this._wheel.HasContact()
+            const chassisBody = this._constraint.GetVehicleBody()
+            const chassisPos = chassisBody.GetPosition()
+            const chassisVel = chassisBody.GetLinearVelocity()
+            const chassisAngVel = chassisBody.GetAngularVelocity()
+            const contact = hasContact ? this._wheel.GetContactPosition() : undefined
+            const contactNormal = hasContact ? this._wheel.GetContactNormal() : undefined
+            const com = chassisBody.GetCenterOfMassPosition()
+            const bounds = chassisBody.GetShape().GetLocalBounds()
+            const chassisWorldLowestY = com.GetY() + bounds.mMin.GetY()
+            const invMass = chassisBody.GetMotionProperties().GetInverseMass()
+            const accForce = chassisBody.GetAccumulatedForce()
+            console.log(
+                `[WheelDriver] ${this.info?.name ?? "?"}: vel=${vel.toFixed(3)} hasContact=${hasContact} ` +
+                    `chassisRealMass=${(invMass === 0 ? Infinity : 1 / invMass).toFixed(4)} ` +
+                    `chassisAccForce=(${accForce.GetX().toFixed(4)},${accForce.GetY().toFixed(4)},${accForce.GetZ().toFixed(4)}) ` +
+                    `suspensionLength=${this._wheel.GetSuspensionLength().toFixed(6)} ` +
+                    `longLambda=${this._wheel.GetLongitudinalLambda().toFixed(4)} latLambda=${this._wheel.GetLateralLambda().toFixed(4)} ` +
+                    `suspensionLambda=${this._wheel.GetSuspensionLambda().toFixed(4)} ` +
+                    `combinedLongFriction=${this._wheel.get_mCombinedLongitudinalFriction().toFixed(4)} ` +
+                    `chassisPos=(${chassisPos.GetX().toFixed(3)},${chassisPos.GetY().toFixed(3)},${chassisPos.GetZ().toFixed(3)}) ` +
+                    `chassisWorldLowestY=${chassisWorldLowestY.toFixed(4)} ` +
+                    `chassisVel=(${chassisVel.GetX().toFixed(4)},${chassisVel.GetY().toFixed(4)},${chassisVel.GetZ().toFixed(4)}) ` +
+                    `chassisAngVel=(${chassisAngVel.GetX().toFixed(4)},${chassisAngVel.GetY().toFixed(4)},${chassisAngVel.GetZ().toFixed(4)}) ` +
+                    `contactPos=${contact ? `(${contact.GetX().toFixed(3)},${contact.GetY().toFixed(3)},${contact.GetZ().toFixed(3)})` : "n/a"} ` +
+                    `contactNormal=${contactNormal ? `(${contactNormal.GetX().toFixed(3)},${contactNormal.GetY().toFixed(3)},${contactNormal.GetZ().toFixed(3)})` : "n/a"}`
+            )
+            JOLT.destroy(com)
+            JOLT.destroy(bounds)
+            JOLT.destroy(accForce)
+        }
     }
 
     public getReceiverType(): NoraTypes {

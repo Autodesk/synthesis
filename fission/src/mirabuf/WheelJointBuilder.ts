@@ -1,6 +1,13 @@
 import MirabufParser from "@/mirabuf/MirabufParser"
 import { mirabuf } from "@/proto/mirabuf"
+import { isWheel } from "@/systems/physics/ConstraintSettingsUtilities"
 import type { WheelAxis } from "@/util/geometry/WheelAxisFit"
+
+/**
+ * Prefix for throwaway "separator" joints from addWheelSeparatorJoints. PhysicsSystem.createJointsFromParser
+ * skips joints with this prefix -- they only steer MirabufParser's rigid-node topology, never real constraints.
+ */
+export const WHEEL_SEPARATOR_JOINT_PREFIX = "manual_wheel_separator_"
 
 export interface WheelAssignment {
     /** Part-instance GUID of the occurrence the user picked as the wheel. */
@@ -73,12 +80,72 @@ function unbandageWheelSubtree(assembly: mirabuf.Assembly, wheelSubtree: Readonl
     console.log(
         `[WheelJointBuilder] wheel subtree (${wheelSubtree.size} parts): touched ${touchedGroups} RigidGroup(s), removed ${removedOccurrences} occurrence(s), ${rigidGroups.length} RigidGroup(s) remain.`
     )
-    // Names, not just count -- need this to tell "wheel module hardware" apart from an
-    // ancestral-break overshoot that swept in unrelated sibling subassemblies.
-    const names = [...wheelSubtree]
-        .map(guid => assembly.data?.parts?.partInstances?.[guid]?.info?.name ?? guid)
-        .sort()
+    // Names, not just count -- distinguishes real wheel-module hardware from an ancestral-break
+    // overshoot pulling in unrelated sibling subassemblies.
+    const names = [...wheelSubtree].map(guid => assembly.data?.parts?.partInstances?.[guid]?.info?.name ?? guid).sort()
     console.log(`[WheelJointBuilder] wheel subtree parts: ${JSON.stringify(names)}`)
+}
+
+/**
+ * Adds a throwaway separator joint between every PAIR of picked wheels. Purely structural -- PhysicsSystem
+ * skips these by prefix (WHEEL_SEPARATOR_JOINT_PREFIX). Works around a MirabufParser quirk: when several
+ * wheels are flat siblings under one branch well above where each diverges from its (distant) parent pick,
+ * every wheel-vs-parent joint resolves the same ancestral-break node for that shared branch. MirabufParser
+ * processes joints one at a time and the last write wins, so the wheels collapse into one shared rigid
+ * node -- skid-steer drive then fights itself since "left" and "right" wheels are the same body.
+ *
+ * A joint between SIBLING wheels breaks at their own leaf parts directly (equally deep, no shared branch to
+ * overshoot), so pre-claiming each wheel this way before the coarse round-up keeps each wheel's own
+ * hardware in its own rigid node.
+ *
+ * Full pairwise, not just a chain: a chain only protects each wheel transitively, and one coarse
+ * intermediate break can still let two non-adjacent wheels share a node. Full pairwise needs no knowledge
+ * of the design tree's shape.
+ *
+ * Also chains in pre-existing wheel joints, not just this batch -- otherwise applying wheels one Apply at
+ * a time (batch of 1, no sibling to pair) would skip this protection entirely.
+ */
+function addWheelSeparatorJoints(assembly: mirabuf.Assembly, assignments: WheelAssignment[]): void {
+    const joints = assembly.data!.joints!
+
+    const existingWheelParts = Object.values(joints.jointInstances!)
+        .filter(inst => {
+            const jDef = joints.jointDefinitions?.[inst.jointReference!] as mirabuf.joint.Joint | undefined
+            return jDef && isWheel(jDef)
+        })
+        .map(inst => inst.childPart!)
+    const wheelParts = [...existingWheelParts, ...assignments.map(a => a.wheelPartGuid)]
+    console.log(
+        `[WheelJointBuilder] separator pairs over (${wheelParts.length} wheels, ${existingWheelParts.length} pre-existing): ${JSON.stringify(wheelParts)}`
+    )
+
+    for (let i = 0; i < wheelParts.length; i++) {
+        for (let j = i + 1; j < wheelParts.length; j++) {
+            const token = `${WHEEL_SEPARATOR_JOINT_PREFIX}${crypto.randomUUID()}`
+            const name = `Manual Wheel Separator ${i}-${j}`
+
+            joints.jointDefinitions![token] = {
+                info: { GUID: token, name, version: 1 },
+                origin: { x: 0, y: 0, z: 0 },
+                jointMotionType: mirabuf.joint.JointMotion.REVOLUTE,
+                rotational: {
+                    rotationalFreedom: {
+                        axis: { x: 0, y: 1, z: 0 },
+                        dynamics: { damping: 0, friction: 0 },
+                        value: 0,
+                    },
+                },
+            }
+
+            joints.jointInstances![token] = {
+                info: { GUID: token, name, version: 1 },
+                parentPart: wheelParts[i],
+                childPart: wheelParts[j],
+                jointReference: token,
+                offset: { x: 0, y: 0, z: 0 },
+            }
+        }
+    }
 }
 
 /**
@@ -87,13 +154,11 @@ function unbandageWheelSubtree(assembly: mirabuf.Assembly, wheelSubtree: Readonl
  * expect), then strips the wheel's whole post-split rigid-node subtree out of every RigidGroup so
  * MirabufParser's bandage pass can't re-fuse it back to the parent (see computeWheelSubtreeParts).
  *
- * Radius is taken directly from the wheel pick's circle fit and stored on the joint's userData
- * (PhysicsSystem prefers this over its AABB-based inference -- see getExplicitWheelRadius). AABB
- * inference reads the bounds of whatever rigid body the wheel ends up in, which for a manually-assigned
- * wheel can be a whole belt-driven wheel train fused together by conservative import, not just this one
- * wheel; the circle fit is computed straight from the clicked mesh's own geometry, so it isn't affected by
- * how many other parts end up sharing that rigid body. Width still comes from AABB inference (createWheelConstraint) --
- * the axle-direction extent of a shared rigid body still approximates a single wheel's width.
+ * Radius and width come from the wheel pick's circle fit, stored on the joint's userData (PhysicsSystem
+ * prefers these over AABB-based inference -- see getExplicitWheelRadius/Width). AABB inference reads the
+ * bounds of whatever rigid body the wheel ends up in -- for a manually-assigned wheel that can be a whole
+ * fused belt-driven wheel train, giving wrong radius AND wrong (often oversized) width. Circle fit reads
+ * straight off the clicked mesh's own geometry instead, unaffected by shared rigid-body hardware.
  *
  * Joint.origin is centimetres, Y-up, ASSEMBLY space (`parser.globalTransforms`) NOT a live scene
  * matrix, which bakes in the physics body's current world transform.
@@ -104,6 +169,10 @@ export function applyWheelAssignments(assembly: mirabuf.Assembly, assignments: W
 
     joints.jointDefinitions ??= {}
     joints.jointInstances ??= {}
+
+    // Must run BEFORE the per-assignment loop below (see addWheelSeparatorJoints) so each wheel's rigid
+    // node stays isolated from siblings, and the dry-run subtree computation below sees final topology.
+    addWheelSeparatorJoints(assembly, assignments)
 
     assignments.forEach((assignment, i) => {
         const token = `manual_wheel_${crypto.randomUUID()}`
@@ -131,10 +200,15 @@ export function applyWheelAssignments(assembly: mirabuf.Assembly, assignments: W
                     value: 0,
                 },
             },
-            // Basis inference keys off isURDFImport(assembly), not a per-joint tag. wheelRadius is
-            // centimetres, matching origin's convention (see getExplicitWheelRadius in PhysicsSystem.ts).
+            // Basis inference keys off isURDFImport(assembly), not a per-joint tag. wheelRadius/wheelWidth
+            // are centimetres, matching origin's convention (see getExplicitWheelRadius in PhysicsSystem.ts).
             userData: {
-                data: { wheel: "true", wheelType: "0", wheelRadius: String(assignment.axisFit.radius * 100) },
+                data: {
+                    wheel: "true",
+                    wheelType: "0",
+                    wheelRadius: String(assignment.axisFit.radius * 100),
+                    wheelWidth: String(assignment.axisFit.width * 100),
+                },
             },
         }
 

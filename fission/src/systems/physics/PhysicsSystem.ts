@@ -14,6 +14,7 @@ import {
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import { WHEEL_SEPARATOR_JOINT_PREFIX } from "@/mirabuf/WheelJointBuilder.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -39,6 +40,7 @@ import {
     createVehicleController,
     getAxis,
     getExplicitWheelRadius,
+    getExplicitWheelWidth,
     getPerpendicular,
     isWheel,
     setAxes,
@@ -115,6 +117,11 @@ const DEFAULT_FRICTION = 0.7
 // Some robots still float slightly, assuming this is due to different export conditions.
 const SUSPENSION_MIN_FACTOR = 0.0001
 const SUSPENSION_MAX_FACTOR = 0.0001
+
+// Manually-assigned wheels (see getExplicitWheelRadius) need more suspension travel than
+// SUSPENSION_MAX_FACTOR: circle-fit origin has a few mm of error, and near-zero travel leaves no slack
+// to close that gap, so the wheel never touches ground. Native/WheelDetector wheels keep the thin factor.
+const MANUAL_WHEEL_SUSPENSION_MAX_FACTOR = 0.2
 
 // Wheels whose inferred radii fall within this relative tolerance of each other are treated as the
 // same size and snapped to a common radius. Sits well above mesh-tessellation noise (<1%) and well
@@ -412,6 +419,8 @@ class PhysicsSystem extends WorldSystem {
 
         joints.forEach(([jointGuid, jointInst]) => {
             if (jointGuid == GROUNDED_JOINT_ID) return
+            // Structural-only, see WheelJointBuilder.addWheelSeparatorJoints -- never a real constraint.
+            if (jointGuid.startsWith(WHEEL_SEPARATOR_JOINT_PREFIX)) return
 
             const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
             const rnB = parser.partToNodeMap.get(jointInst.childPart!)
@@ -480,6 +489,12 @@ class PhysicsSystem extends WorldSystem {
                         const [bodyOne, bodyTwo] = parser.directedGraph.getAdjacencyList(rnA.id).length
                             ? [bodyA, bodyB]
                             : [bodyB, bodyA]
+
+                        console.log(
+                            `[PhysicsSystem] Wheel joint '${jointInst.info?.name}': ` +
+                                `chassisRn=${rnA.id}(${rnA.parts.size}pt) wheelRn=${rnB.id}(${rnB.parts.size}pt) ` +
+                                `chassisIsBodyOne=${bodyOne === bodyA} resolvedRadius=${wheelRadii.get(jointGuid)}`
+                        )
 
                         const [fixedConstraint, vehicleConstraint, vehicleListener] = this.createWheelConstraint(
                             jointInst,
@@ -764,6 +779,13 @@ class PhysicsSystem extends WorldSystem {
             wheelDimensions.radius = resolvedRadius
         }
 
+        // Manual wheels carry explicit width too (getExplicitWheelWidth) -- AABB width reads the whole
+        // shared rigid body's axle-direction extent, easily many times the real tire width.
+        const explicitWidth = getExplicitWheelWidth(jointDefinition)
+        if (explicitWidth !== undefined) {
+            wheelDimensions.width = explicitWidth
+        }
+
         const wheelPos = urdfWheelBasis
             ? convertJoltRVec3ToJoltVec3(anchorPoint)
             : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis))
@@ -778,8 +800,10 @@ class PhysicsSystem extends WorldSystem {
         wheelSettings.mMaxHandBrakeTorque = 0.0
         wheelSettings.mRadius = simulatedRadius
         wheelSettings.mWidth = wheelDimensions.width
+        const isManualWheel = getExplicitWheelRadius(jointDefinition) !== undefined
         wheelSettings.mSuspensionMinLength = wheelDimensions.radius * SUSPENSION_MIN_FACTOR
-        wheelSettings.mSuspensionMaxLength = wheelDimensions.radius * SUSPENSION_MAX_FACTOR
+        wheelSettings.mSuspensionMaxLength =
+            wheelDimensions.radius * (isManualWheel ? MANUAL_WHEEL_SUSPENSION_MAX_FACTOR : SUSPENSION_MAX_FACTOR)
         wheelSettings.mInertia = 1
 
         if (urdfWheelBasis) {
@@ -788,6 +812,14 @@ class PhysicsSystem extends WorldSystem {
             wheelSettings.mSuspensionDirection = urdfWheelBasis.suspensionDirection
             wheelSettings.mSteeringAxis = urdfWheelBasis.steeringAxis
         }
+
+        console.log(
+            `[PhysicsSystem] createWheelConstraint: pos=(${wheelPos.GetX().toFixed(3)},${wheelPos.GetY().toFixed(3)},${wheelPos.GetZ().toFixed(3)}) ` +
+                `radius=${wheelDimensions.radius.toFixed(4)} simRadius=${simulatedRadius.toFixed(4)} width=${wheelDimensions.width.toFixed(4)} ` +
+                `isManualWheel=${isManualWheel} suspensionMaxLength=${wheelSettings.mSuspensionMaxLength.toFixed(6)} ` +
+                `hasUrdfBasis=${!!urdfWheelBasis} forward=${urdfWheelBasis ? `(${urdfWheelBasis.forward.GetX()},${urdfWheelBasis.forward.GetY()},${urdfWheelBasis.forward.GetZ()})` : "n/a"} ` +
+                `maxAcc=${maxAcc} bodyMainMotionType=${bodyMain.GetMotionType()} bodyWheelMotionType=${bodyWheel.GetMotionType()}`
+        )
 
         JOLT.destroy(axis)
         JOLT.destroy(unitAxis)
@@ -1088,6 +1120,12 @@ class PhysicsSystem extends WorldSystem {
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
                 body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
+
+                console.log(
+                    `[PhysicsSystem] Body created for rn=${rn.id}: ${rn.parts.size} part(s), ${shapesAdded} shape(s), ` +
+                        `totalMass=${totalMass}, appliedMass=${shape.GetMassProperties().mMass}, ` +
+                        `isDynamic=${rn.isDynamic}, parts=${JSON.stringify([...rn.parts])}`
+                )
 
                 // Set Friction Here
                 let staticFriction = 0.0

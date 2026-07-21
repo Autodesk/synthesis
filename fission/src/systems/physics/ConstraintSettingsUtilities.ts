@@ -162,3 +162,11 @@ export function getExplicitWheelRadius(jDef: mirabuf.joint.Joint): number | unde
     const radius = Number(raw) / 100.0
     return Number.isFinite(radius) && radius > 0 ? radius : undefined
 }
+
+/** Same idea as getExplicitWheelRadius, but for axle-direction width. */
+export function getExplicitWheelWidth(jDef: mirabuf.joint.Joint): number | undefined {
+    const raw = jDef.userData?.data?.wheelWidth
+    if (raw === undefined) return undefined
+    const width = Number(raw) / 100.0
+    return Number.isFinite(width) && width > 0 ? width : undefined
+}

@@ -1,10 +1,12 @@
 import * as THREE from "three"
 
-/** A wheel's rotation axis, pivot origin, and radius, in the local space of whatever point set they were derived from. */
+/** A wheel's rotation axis, pivot origin, radius, and axle-direction width, in the local space of
+ *  whatever point set they were derived from. */
 export interface WheelAxis {
     center: THREE.Vector3
     axis: THREE.Vector3
     radius: number
+    width: number
 }
 
 /** Any unit vector perpendicular to `axis` -- used to carry a radius through a transform without
@@ -49,13 +51,23 @@ export function computeWheelAxisFromAABB(points: THREE.Vector3[]): WheelAxis | u
     const center = bbox.getCenter(new THREE.Vector3())
     const size = bbox.getSize(new THREE.Vector3())
     const axleIndex = axleIndexFromAABB(points)
-    const radialExtents = [size.x, size.y, size.z].filter((_, i) => i !== axleIndex)
+    const extents = [size.x, size.y, size.z]
+    const radialExtents = extents.filter((_, i) => i !== axleIndex)
 
-    return { center, axis: LOCAL_AXES[axleIndex].clone(), radius: Math.max(...radialExtents) / 2 }
+    return {
+        center,
+        axis: LOCAL_AXES[axleIndex].clone(),
+        radius: Math.max(...radialExtents) / 2,
+        width: extents[axleIndex],
+    }
 }
 
 // Minimum points to trust a circle fit -- below this a single outlier can swing the result arbitrarily.
 const MIN_POINTS_FOR_CIRCLE_FIT = 12
+
+// Percentile (not max) of radial distance from fitted center, used as outer-envelope radius -- reaches
+// tread surface without one stray vertex blowing it out.
+const OUTER_RADIUS_PERCENTILE = 0.95
 
 // Fraction of points (by fit residual) dropped before refitting. Localized asymmetric detail (bolt
 // bosses, stub shafts, sensor mounts fused into the wheel part) produces the largest residuals against an
@@ -129,15 +141,20 @@ function fitCircle2D(coords: { x: number; y: number }[]): Circle2D | undefined {
 }
 
 /**
- * Derives a wheel's rotation axis and hub origin from a part's local-space point cloud. The AABB's
- * smallest extent still picks out the axle direction -- that half of the old heuristic holds, since real
- * wheel meshes are thin along the axle and wide in the wheel plane regardless of tread/hub detail. The
- * hub origin, though, is fit as the center of a least-squares circle through the points projected into
+ * Derives a wheel's rotation axis, hub origin, and outer radius from a part's local-space point cloud.
+ * The AABB's smallest extent still picks out the axle direction -- that half of the old heuristic holds,
+ * since real wheel meshes are thin along the axle and wide in the wheel plane regardless of tread/hub
+ * detail. The hub origin is fit as the center of a least-squares circle through the points projected into
  * the plane perpendicular to that axle, instead of the AABB center of the whole part: tread patterns, hub
  * bosses, and off-center bolt circles bias a bounding-box center but average out in a circle fit, since
  * they're distributed around (not to one side of) the true rotation axis. A single trim-and-refit pass
  * discards the worst-residual points before refitting, so one strongly asymmetric feature (e.g. a stub
  * shaft) can't pull the result off axis by itself.
+ *
+ * Radius deliberately skips the fit's own solved radius -- a least-squares average across all points,
+ * fine for the center but wrong for parts mixing geometry at multiple scales (tire fused with hub/pulley):
+ * average skews toward the denser cluster, not the true outer tread edge. Outer-envelope percentile below
+ * fixes that.
  */
 export function computeWheelAxisFromCircleFit(points: THREE.Vector3[]): WheelAxis | undefined {
     if (points.length < MIN_POINTS_FOR_CIRCLE_FIT) return undefined
@@ -145,6 +162,7 @@ export function computeWheelAxisFromCircleFit(points: THREE.Vector3[]): WheelAxi
     const axleIndex = axleIndexFromAABB(points)
     const axis = LOCAL_AXES[axleIndex].clone()
     const [uIndex, vIndex] = [0, 1, 2].filter(i => i !== axleIndex)
+    const width = new THREE.Box3().setFromPoints(points).getSize(new THREE.Vector3()).getComponent(axleIndex)
 
     const centroid = points.reduce((sum, p) => sum.add(p), new THREE.Vector3()).divideScalar(points.length)
     const toCoord = (p: THREE.Vector3) => ({
@@ -175,11 +193,18 @@ export function computeWheelAxisFromCircleFit(points: THREE.Vector3[]): WheelAxi
     center.setComponent(uIndex, centroid.getComponent(uIndex) + fit.cx)
     center.setComponent(vIndex, centroid.getComponent(vIndex) + fit.cy)
 
-    return { center, axis, radius: fit.radius }
+    // Fit's own radius is a least-squares average -- wrong for multi-scale parts (tire+hub+pulley), skews
+    // to the denser cluster. Use outer envelope of the untrimmed cloud instead, at a high percentile (not
+    // max) so one stray vertex can't blow it out.
+    const outerDistances = coords.map(coord => Math.hypot(coord.x - fit.cx, coord.y - fit.cy)).sort((a, b) => a - b)
+    const radius = outerDistances[Math.floor(outerDistances.length * OUTER_RADIUS_PERCENTILE)]
+
+    return { center, axis, radius, width }
 }
 
-/** Transforms a locally-derived wheel axis into another space (e.g. world space). Radius is carried
- *  through via a rim point rather than a scale factor, so it stays correct even under non-uniform scale. */
+/** Transforms a locally-derived wheel axis into another space (e.g. world space). Radius and width are
+ *  carried through via offset points rather than a scale factor, so they stay correct even under
+ *  non-uniform scale. */
 export function transformWheelAxis(local: WheelAxis, matrixWorld: THREE.Matrix4): WheelAxis {
     const center = local.center.clone().applyMatrix4(matrixWorld)
 
@@ -192,5 +217,11 @@ export function transformWheelAxis(local: WheelAxis, matrixWorld: THREE.Matrix4)
         .applyMatrix4(matrixWorld)
     const radius = rim.distanceTo(center)
 
-    return { center, axis, radius }
+    const edge = local.center
+        .clone()
+        .addScaledVector(local.axis, local.width / 2)
+        .applyMatrix4(matrixWorld)
+    const width = edge.distanceTo(center) * 2
+
+    return { center, axis, radius, width }
 }
