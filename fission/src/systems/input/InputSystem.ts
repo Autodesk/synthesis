@@ -233,12 +233,22 @@ class InputSystem extends WorldSystem {
     }
 
     /**
+     * @param {number} playerSlot The logical player slot.
+     * @returns {Gamepad | null} The gamepad in that slot, or null if the slot is unoccupied.
+     */
+    public static getGamepadBySlot(playerSlot: number): Gamepad | null {
+        const rawIndex = InputSystem._gpIndexes[playerSlot]
+        if (rawIndex == null) return null
+        return InputSystem.gamepads[rawIndex] ?? null
+    }
+
+    /**
      * @param {number} axisNumber The joystick axis index. Must be an integer.
-     * @param {number} playerNumber The player number for the gamepad. Must be an integer.
+     * @param {number} playerSlot The logical player slot for the gamepad (0 = first connected). Must be an integer.
      * @returns {number} A number between -1 and 1 based on the position of this axis or 0 if no gamepad is connected or the axis is not found.
      */
-    public static getGamepadAxis(axisNumber: number, playerNumber: number = 0): number {
-        const targetGamepad = InputSystem.gamepads[playerNumber]
+    public static getGamepadAxis(axisNumber: number, playerSlot: number = 0): number {
+        const targetGamepad = InputSystem.getGamepadBySlot(playerSlot)
         if (targetGamepad == null) return 0
         if (axisNumber < 0 || axisNumber >= targetGamepad.axes.length) return 0
 
@@ -251,11 +261,11 @@ class InputSystem extends WorldSystem {
     /**
      *
      * @param {number} buttonNumber - The gamepad button index. Must be an integer.
-     * @param {number} playerNumber - The player number for the gamepad. Must be an integer.
+     * @param {number} playerSlot - The logical player slot for the gamepad (0 = first connected). Must be an integer.
      * @returns {boolean} True if the button is pressed, false if not, a gamepad isn't connected, or the button can't be found.
      */
-    public static isGamepadButtonPressed(buttonNumber: number, playerNumber: number = 0): boolean {
-        const targetGamepad = InputSystem.gamepads[playerNumber];
+    public static isGamepadButtonPressed(buttonNumber: number, playerSlot: number = 0): boolean {
+        const targetGamepad = InputSystem.getGamepadBySlot(playerSlot)
         if (targetGamepad == null) return false
 
         if (buttonNumber < 0 || buttonNumber >= targetGamepad.buttons.length) return false
@@ -267,10 +277,10 @@ class InputSystem extends WorldSystem {
     }
 
     /**
-     * @returns {number[]} The sorted indexes of all currently connected gamepads.
+     * @returns {number} The number of currently connected gamepads, effectively all useable slots
      */
-    public static getConnectedGamepadIndexes(): number[] {
-        return [...InputSystem._gpIndexes].sort((a, b) => a - b)
+    public static getConnectedPlayerCount(): number {
+        return InputSystem._gpIndexes.length
     }
 
     /** Returns a number between -1 and 1 from the touch controls */

@@ -22,7 +22,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const [controllerNumber, setControllerNumber] = useState(1)
-    const [connectedGamepads, setConnectedGamepads] = useState<number[]>(InputSystem.getConnectedGamepadIndexes())
+    const [connectedPlayerCount, setConnectedPlayerCount] = useState(InputSystem.getConnectedPlayerCount())
     const scrollRef = useRef<HTMLDivElement>(null)
     const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
@@ -34,7 +34,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
     }, [saveEvent])
 
     useEffect(() => {
-        const refreshGamepads = () => setConnectedGamepads(InputSystem.getConnectedGamepadIndexes())
+        const refreshGamepads = () => setConnectedPlayerCount(InputSystem.getConnectedPlayerCount())
         window.addEventListener("gamepadconnected", refreshGamepads)
         window.addEventListener("gamepaddisconnected", refreshGamepads)
 
@@ -101,14 +101,14 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                 tooltip="Supported controllers: Xbox one, Xbox 360."
             />
             {useGamepad &&
-                (connectedGamepads.length > 0 ? (
+                (connectedPlayerCount > 0 ? (
                     <Select
                         value={controllerNumber}
                         onChange={e => setControllerNumber(Number(e.target.value))}
                     >
-                        {connectedGamepads.map(gamepadIndex => (
-                            <MenuItem key={`controller-${gamepadIndex}`} value={gamepadIndex + 1}>
-                                {gamepadIndex + 1}
+                        {Array.from({ length: connectedPlayerCount }, (_unused, slot) => (
+                            <MenuItem key={`controller-${slot}`} value={slot + 1}>
+                                {slot + 1}
                             </MenuItem>
                         ))}
                     </Select>
