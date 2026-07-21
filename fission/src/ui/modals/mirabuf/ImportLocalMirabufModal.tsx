@@ -2,7 +2,7 @@ import { Stack, styled } from "@mui/material"
 import { type ChangeEvent, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { createMirabuf, finalizeMirabufSpawn } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { loadURDF } from "@/urdf/URDFLoader"
@@ -15,9 +15,7 @@ import {
     configTypeToMiraType,
     miraTypeToConfigType,
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { getTargetControls } from "@/systems/scene/CameraControls"
 import { hashBuffer } from "@/util/Utility.ts"
 
 const VisuallyHiddenInput = styled("input")({
@@ -115,21 +113,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     return
                 }
 
-                const { mainSceneObject, gamePieces } = result
-                World.sceneRenderer.registerSceneObject(mainSceneObject)
-
-                for (const instance of gamePieces ?? []) {
-                    const sceneObject = new MirabufSceneObject(instance)
-                    World.sceneRenderer.registerSceneObject(sceneObject)
-                }
-
-                if (mainSceneObject.miraType == MiraType.ROBOT || mainSceneObject.miraType == MiraType.PIECE) {
-                    openPanel(InitialConfigPanel, undefined, modal)
-                }
-                const targetControls = getTargetControls()
-                if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                    targetControls.focusProvider = mainSceneObject
-                }
+                finalizeMirabufSpawn(result, openPanel, modal)
                 closeModal(CloseType.Overwrite)
             } catch (e) {
                 console.error("[Import]", e)

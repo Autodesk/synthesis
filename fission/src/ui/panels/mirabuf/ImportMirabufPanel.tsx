@@ -4,7 +4,7 @@ import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { createMirabuf, finalizeMirabufSpawn } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
@@ -33,9 +33,7 @@ import {
     type ConfigurationType,
     miraTypeToConfigType,
 } from "../configuring/assembly-config/ConfigTypes"
-import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import CommandRegistry from "@/ui/components/CommandRegistry"
-import { getTargetControls } from "@/systems/scene/CameraControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
@@ -120,10 +118,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                 return
             }
 
-            const { mainSceneObject, gamePieces } = mirabufSceneObjects
-            World.sceneRenderer.registerSceneObject(mainSceneObject)
-
-            const targetControls = getTargetControls()
+            const mainSceneObject = finalizeMirabufSpawn(mirabufSceneObjects)
 
             if (World.multiplayerSystem != null) {
                 const encodedAssembly =
@@ -147,20 +142,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                 World.multiplayerSystem?.registerOwnSceneObject(mainSceneObject.id as LocalSceneObjectId)
             }
 
-            if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                targetControls.focusProvider = mainSceneObject
-            }
-
             progressHandle.done()
-
-            if (mainSceneObject.miraType == MiraType.ROBOT || mainSceneObject.miraType == MiraType.PIECE) {
-                globalOpenPanel(InitialConfigPanel, undefined)
-            }
-
-            for (const instance of gamePieces ?? []) {
-                const sceneObject = new MirabufSceneObject(instance)
-                World.sceneRenderer.registerSceneObject(sceneObject)
-            }
         })
         .catch(e => {
             console.error(e)

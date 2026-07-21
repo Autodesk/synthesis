@@ -41,12 +41,14 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode, miraTypeToConfigType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import type { OpenPanelFn, UIScreen } from "@/ui/helpers/UIProviderHelpers"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -1481,6 +1483,32 @@ export async function createMirabuf(
         mainSceneObject,
         gamePieces,
     }
+}
+
+export function finalizeMirabufSpawn(
+    result: { mainSceneObject: MirabufSceneObject; gamePieces?: MirabufInstance[] },
+    openPanelFn: OpenPanelFn = globalOpenPanel,
+    // biome-ignore lint/suspicious/noExplicitAny: matches UIScreen's own any-typed generics
+    parent?: UIScreen<any, any>
+): MirabufSceneObject {
+    const { mainSceneObject, gamePieces } = result
+    World.sceneRenderer.registerSceneObject(mainSceneObject)
+
+    for (const instance of gamePieces ?? []) {
+        const gamePieceSceneObject = new MirabufSceneObject(instance)
+        World.sceneRenderer.registerSceneObject(gamePieceSceneObject)
+    }
+
+    const targetControls = getTargetControls()
+    if (targetControls && (mainSceneObject.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+        targetControls.focusProvider = mainSceneObject
+    }
+
+    if (mainSceneObject.miraType === MiraType.ROBOT || mainSceneObject.miraType === MiraType.PIECE) {
+        openPanelFn(InitialConfigPanel, undefined, parent)
+    }
+
+    return mainSceneObject
 }
 
 async function migrateUUID(parser: MirabufParser, hash: string) {
