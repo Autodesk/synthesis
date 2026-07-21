@@ -32,7 +32,6 @@ const systems = [
     "dragModeSystem",
 ] as const satisfies (keyof typeof World)[]
 
-
 describe("World Tests", () => {
     beforeEach(() => {
         vi.clearAllMocks()
@@ -72,7 +71,7 @@ describe("World Tests", () => {
 
     describe("Getters before initialization", () => {
         test("system getters should return undefined before initialization", () => {
-            systems.forEach((system) => {
+            systems.forEach(system => {
                 expect(World[system]).toBeUndefined()
             })
         })
@@ -83,7 +82,7 @@ describe("World Tests", () => {
             World.initWorld()
 
             expect(World.isAlive).toBeTruthy()
-            systems.forEach((system) => {
+            systems.forEach(system => {
                 expect(World[system]).toBeDefined()
             })
         })
@@ -116,13 +115,13 @@ describe("World Tests", () => {
     describe("DestroyWorld", () => {
         test("DestroyWorld should destroy all systems and set isAlive to false", () => {
             World.initWorld()
-            systems.forEach((system) => {
+            systems.forEach(system => {
                 vi.spyOn(World[system]!, "destroy")
             })
             World.destroyWorld()
 
             expect(World.isAlive).toBeFalsy()
-            systems.forEach((system) => {
+            systems.forEach(system => {
                 expect(World[system]!.destroy).toHaveBeenCalled()
             })
         })
@@ -172,13 +171,13 @@ describe("World Tests", () => {
         })
 
         test("UpdateWorld should update all systems", () => {
-            systems.forEach((system) => {
+            systems.forEach(system => {
                 vi.spyOn(World[system]!, "update")
             })
 
             World.updateWorld()
 
-            systems.forEach((system) => {
+            systems.forEach(system => {
                 expect(World[system]?.update).toHaveBeenCalledWith(0.016)
             })
         })

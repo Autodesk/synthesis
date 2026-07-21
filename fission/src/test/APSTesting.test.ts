@@ -47,7 +47,6 @@ vi.spyOn(Date, "now").mockReturnValue(mockNow)
 // Import APS after setting up mocks
 import APS, { type APSAuth, type APSUserInfo } from "@/aps/APS"
 
-
 // Helper function to create proper fetch response mock
 const createMockResponse = (data: unknown, ok: boolean = true) => ({
     ok,
