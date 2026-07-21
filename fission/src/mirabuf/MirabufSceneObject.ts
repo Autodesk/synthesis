@@ -67,6 +67,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array } from "@/util/Utility.ts"
+import { RobotDimensions } from "@/systems/match_mode/RobotDimensionTracker"
 
 const DEBUG_BODIES = false
 
@@ -917,81 +918,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      *
      * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
-    public getDimensionsWithoutRotation(): {
-        width: number
-        height: number
-        depth: number
-    } {
-        const rootNodeId = this.getRootNodeId()
-        if (!rootNodeId) {
-            console.warn("No root node found for robot, using regular dimensions")
-            return this.getDimensions()
-        }
-
-        const rootBody = World.physicsSystem.getBody(rootNodeId)!
-        const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
-
-        const rootPosition = new THREE.Vector3()
-        const rootRotation = new THREE.Quaternion()
-        const rootScale = new THREE.Vector3()
-        rootTransform.decompose(rootPosition, rootRotation, rootScale)
-
-        // Create inverse rotation matrix to "undo" the robot's rotation
-        const inverseRotation = new THREE.Matrix4().makeRotationFromQuaternion(rootRotation.clone().invert())
-
-        const unrotatedBox = new THREE.Box3()
-
-        this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
-            const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
-            if (!bodyId) return
-
-            const body = World.physicsSystem.getBody(bodyId)!
-            const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
-
-            const shape = body.GetShape()
-            const scale = new JOLT.Vec3(1, 1, 1)
-            const biggest = JOLT.AABox.prototype.sBiggest()
-
-            const identity = JOLT.Quat.prototype.sIdentity()
-            const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
-
-            try {
-                const vertices = new Float32Array(
-                    // I don't think anything needs to be freed here
-                    JOLT.HEAP32.buffer,
-                    triangleContext.GetVerticesData(),
-                    triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
-                )
-
-                for (let i = 0; i < vertices.length; i += 3) {
-                    const vertex = new THREE.Vector3(vertices[i], vertices[i + 1], vertices[i + 2])
-
-                    vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
-
-                    unrotatedBox.expandByPoint(vertex)
-                }
-            } finally {
-                JOLT.destroy(triangleContext)
-                JOLT.destroy(scale)
-                JOLT.destroy(biggest)
-                JOLT.destroy(identity)
-            }
-        })
-
-        // Fallback if no vertices were processed
-        if (unrotatedBox.isEmpty()) {
-            console.warn("Could not process physics shapes, using regular dimensions")
-            return this.getDimensions()
-        }
-
-        const unrotatedSize = new THREE.Vector3()
-        unrotatedBox.getSize(unrotatedSize)
-
-        return {
-            width: unrotatedSize.x,
-            height: unrotatedSize.y,
-            depth: unrotatedSize.z,
-        }
+    public getDimensionsWithoutRotation(): RobotDimensions {
+        // Basically, we want an oriented box for each rigid body
+        // TODO
+        // 1. Check if joints have extended
+        // 2. If they have, recompute tightly fitting oriented box
     }
 
     /**

@@ -2,6 +2,12 @@ import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import World from "@/systems/World"
 import MatchMode from "./MatchMode"
 
+export type RobotDimensions = {
+    width: number
+    height: number
+    depth: number
+}
+
 const BUFFER_HEIGHT = 0.1
 const SIDE_BUFFER = 0.1
 
