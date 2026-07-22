@@ -21,10 +21,18 @@ interface EditInputProps {
     input: Input
     useGamepad: boolean
     useTouchControls: boolean
+
+    playerSlot: number
     onInputChanged: () => void
 }
 
-const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTouchControls, onInputChanged }) => {
+const EditInputInterface: React.FC<EditInputProps> = ({
+    input,
+    useGamepad,
+    useTouchControls,
+    playerSlot,
+    onInputChanged,
+}) => {
     const [selectedInput, setSelectedInput] = useState<string>("")
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
     const [chosenTouchControlsAxis, setChosenTouchControlsAxis] = useState<number>(-1)
@@ -132,8 +140,9 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
     useEffect(() => {
         const checkGamepadState = () => {
-            if (InputSystem.gamepads.length > 0) {
-                const pressedButtons = InputSystem.gamepads[0]!.buttons
+            const gamepad = InputSystem.getGamepadBySlot(playerSlot)
+            if (gamepad != null) {
+                const pressedButtons = gamepad.buttons
                     .map((button, index) => (button.pressed ? index : null))
                     .filter(index => index !== null)
                     .map(index => index!)

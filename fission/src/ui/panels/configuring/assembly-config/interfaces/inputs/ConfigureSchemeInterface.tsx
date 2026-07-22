@@ -146,6 +146,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                             input={i}
                             useGamepad={useGamepad}
                             useTouchControls={useTouchControls}
+                            playerSlot={controllerNumber - 1}
                             onInputChanged={() => {
                                 selectedScheme.customized = true
                             }}
