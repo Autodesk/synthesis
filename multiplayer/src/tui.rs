@@ -27,10 +27,15 @@ use uuid::Uuid;
 const ROOMS_PER_TAB: usize = 2;
 
 // [Source](https://colorkit.co/palette/ffadad-ffd6a5-fdffb6-caffbf-9bf6ff-a0c4ff-bdb2ff-ffc6ff/)
-const COLOR_PALETTE: &[u32] = &[
-    0x00FFADAD, 0x00FFD6A5, 0x00FDFFB6, 0x00CAFFBF, 0x009BF6FF, 0x00A0C4FF, 0x00BDB2FF, 0x00FFC6FF,
+const COLOR_PALETTE: &[Color] = &[
+    Color::Red,
+    Color::Indexed(221),
+    Color::Yellow,
+    Color::Green,
+    Color::Blue,
+    Color::Magenta,
 ];
-const COLOR_PALETTE_SIZE: usize = 8;
+const COLOR_PALETTE_SIZE: usize = 6;
 
 pub fn run(state: Arc<Mutex<State>>) -> io::Result<()> {
     let mut terminal = ratatui::init();
@@ -295,7 +300,7 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
     let member_to_item = |member_and_idx: (usize, &(Uuid, String))| -> ListItem<'_> {
         let (i, (uid, name)) = member_and_idx;
         // This totally could happen but like that would probably be a bug so whatever
-        let color = Color::from_u32(COLOR_PALETTE[i % COLOR_PALETTE_SIZE]);
+        let color = COLOR_PALETTE[i % COLOR_PALETTE_SIZE];
         let auth_marker = match *uid == room.authority {
             true => "  [A]",
             false => "",
