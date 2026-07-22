@@ -7,6 +7,7 @@ import { createBodyMock } from "../mocks/jolt"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import World from "@/systems/World.ts"
 import ScoreTracker from "@/systems/match_mode/ScoreTracker.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -50,18 +51,14 @@ vi.mock("@/systems/World", () => ({
 }))
 
 describe("ScoringZoneSceneObject", () => {
-    const originalConsoleLog = console.log
-
     beforeEach(() => {
-        vi.clearAllMocks()
         scoreTracker = new ScoreTracker()
         World.scoreTracker.resetScores()
-        console.log = vi.fn()
+        mockConsole()
     })
 
     afterEach(() => {
-        vi.clearAllMocks()
-        console.log = originalConsoleLog
+        vi.restoreAllMocks()
     })
 
     test("Setup creates mesh", () => {

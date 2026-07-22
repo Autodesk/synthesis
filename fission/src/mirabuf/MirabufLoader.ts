@@ -212,6 +212,12 @@ class MirabufCachingService {
         }
     }
 
+    public static async cacheRemoteAndReturn(fetchLocation: string, miraType: MiraType) {
+        const cacheInfo = await this.cacheRemote(fetchLocation, miraType)
+        if (cacheInfo?.hash == null) return
+        return await this.get(cacheInfo.hash)
+    }
+
     public static async cacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
         if (!data.href) {
             console.error("Data has no href")

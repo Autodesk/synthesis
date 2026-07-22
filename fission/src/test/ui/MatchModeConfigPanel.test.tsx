@@ -6,20 +6,14 @@ import type { CloseType, PanelPosition, UIScreen } from "@/ui/helpers/UIProvider
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { UICallback } from "@/ui/UICallbacks"
 import { UIProvider } from "@/ui/UIProvider"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 describe("MatchModeConfigPanel", () => {
-    // Mock console methods to suppress output during tests
-    const originalConsoleError = console.error
-    const originalConsoleLog = console.log
-    const originalConsoleWarn = console.warn
-
     let container: HTMLElement
 
     beforeEach(async () => {
         // Suppress console output during tests
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.log = vi.fn()
+        mockConsole()
 
         // Clear local storage
         window.localStorage.setItem("match-mode-configs", JSON.stringify([]))
@@ -29,9 +23,7 @@ describe("MatchModeConfigPanel", () => {
 
     afterEach(() => {
         // Restore original console methods
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.log = originalConsoleLog
+        vi.restoreAllMocks()
 
         if (container) container.remove()
     })
