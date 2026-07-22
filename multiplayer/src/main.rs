@@ -8,18 +8,15 @@ use crate::messaging::InitialResponse;
 use crate::room::{ClientSender, State};
 use crate::{logging::EventType, messaging::InitialMessage};
 
-use std::error::Error;
-use std::fs::File;
-use std::io::BufReader;
-use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use std::{env, fs, process, thread};
+use std::{error::Error, fs::File};
+use std::{io::BufReader, net::SocketAddr};
 
 use futures_util::{SinkExt, StreamExt};
 use rcgen::{CertifiedKey, generate_simple_self_signed};
 use tokio::io::{AsyncRead, AsyncWrite};
-use tokio::net::TcpListener;
-use tokio::sync::mpsc;
+use tokio::{net::TcpListener, sync::mpsc};
 use tokio_rustls::TlsAcceptor;
 use tokio_rustls::rustls::ServerConfig;
 use tokio_rustls::rustls::pki_types::{CertificateDer, PrivateKeyDer};
