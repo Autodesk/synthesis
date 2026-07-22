@@ -762,8 +762,6 @@ class PhysicsSystem extends WorldSystem {
             wheelDimensions.radius = resolvedRadius
         }
 
-        // `Add` mutates its receiver, so this offsets `anchorPoint` itself. It is destroyed below
-        // rather than by the conversion, since both branches need it to survive to the same place.
         const wheelPos = urdfWheelBasis
             ? convertJoltRVec3ToJoltVec3(anchorPoint, false)
             : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis), false)
@@ -787,7 +785,6 @@ class PhysicsSystem extends WorldSystem {
             wheelSettings.mSteeringAxis = urdfWheelBasis.steeringAxis
         }
 
-        // `mPosition` copies the vector into the settings, so the source is ours to free.
         JOLT.destroy(wheelPos)
         JOLT.destroy(axis)
         JOLT.destroy(unitAxis)
@@ -796,8 +793,6 @@ class PhysicsSystem extends WorldSystem {
         const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc, urdfWheelBasis)
         const listener = this.createVehicleListeners(vehicleConstraint, bodyWheel)
 
-        // `inferURDFAutoWheelBasis` allocates these, and both the wheel and vehicle settings only ever
-        // copy them in, so they are ours to free once the vehicle constraint has taken its copies.
         if (urdfWheelBasis) {
             JOLT.destroy(urdfWheelBasis.forward)
             JOLT.destroy(urdfWheelBasis.up)

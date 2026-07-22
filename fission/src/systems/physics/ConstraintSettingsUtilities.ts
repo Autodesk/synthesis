@@ -6,27 +6,17 @@ import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } fro
 
 type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
-/**
- * Copies a vector out of the shared slot a bound Jolt method returned it in.
- *
- * A bound method that returns a vector by value (`Normalized()`, `AddRVec3()`, ...) does not
- * allocate but instead it writes into one fixed static per method and hands back that address. The result is
- * only valid until the next call to the same method, and passing it to `JOLT.destroy`
- * means running `free()` on an address `malloc` never issued.
- *
- * Copying out converts this result into a normal heap allocation, so that everything the helpers
- * in this file return must be destroyed by the callers themselves
- */
-function ownVec3(vec: Jolt.Vec3): Jolt.Vec3 {
-    return new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
+/** deep copying a vector */
+function copyVec(vec: Jolt.Vec3 | Jolt.RVec3): Jolt.Vec3 | Jolt.RVec3 {
+    return vec instanceof JOLT.Vec3
+        ? new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
+        : new JOLT.RVec3(vec.GetX(), vec.GetY(), vec.GetZ())
 }
 
-function ownRVec3(vec: Jolt.RVec3): Jolt.RVec3 {
-    return new JOLT.RVec3(vec.GetX(), vec.GetY(), vec.GetZ())
-}
-
-/** Returns a heap-allocated anchor point. The caller owns it. */
-export function createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint) {
+export function createAnchorPoint(
+    jointInstance: mirabuf.joint.JointInstance,
+    jointDefinition: mirabuf.joint.Joint
+): Jolt.RVec3 {
     const jointOrigin = jointDefinition.origin
         ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin)
         : new JOLT.RVec3(0, 0, 0)
@@ -35,7 +25,7 @@ export function createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jo
         ? convertMirabufVector3ToJoltRVec3(jointInstance.offset)
         : new JOLT.RVec3(0, 0, 0)
 
-    const anchorPoint = ownRVec3(jointOrigin.AddRVec3(jointOriginOffset))
+    const anchorPoint: Jolt.RVec3 = copyVec(jointOrigin.AddRVec3(jointOriginOffset)) as Jolt.RVec3
 
     JOLT.destroy(jointOrigin)
     JOLT.destroy(jointOriginOffset)
@@ -67,13 +57,12 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
         toCheck.GetZ() - vec.GetZ() * a
     )
 
-    const perp = ownVec3(original.Normalized())
+    const perp = copyVec(original.Normalized()) as Jolt.Vec3
     JOLT.destroy(original)
 
     return perp
 }
 
-/** Returns a heap-allocated vector perpendicular to `vec`. The caller owns it. */
 export function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
     const v1 = new JOLT.Vec3(0, 1, 0)
     const v2 = new JOLT.Vec3(0, 0, 1)
@@ -99,8 +88,8 @@ export function setAxes(
     settings: Jolt.HingeConstraintSettings | Jolt.SliderConstraintSettings,
     versionNum?: number
 ) {
-    const axis = getAxis(freedom, versionNum)
-    const constraintAxis = ownVec3(axis.Normalized())
+    const axis: Jolt.Vec3 = getAxis(freedom, versionNum)
+    const constraintAxis = copyVec(axis.Normalized()) as Jolt.Vec3
 
     if ("mHingeAxis1" in settings) {
         settings.mHingeAxis1 = settings.mHingeAxis2 = constraintAxis
@@ -111,7 +100,6 @@ export function setAxes(
     const normalAxis = getPerpendicular(constraintAxis)
     settings.mNormalAxis1 = settings.mNormalAxis2 = normalAxis
 
-    // Assigning into a settings struct copies the bytes in, so these are still ours to free.
     JOLT.destroy(normalAxis)
     JOLT.destroy(constraintAxis)
     JOLT.destroy(axis)
