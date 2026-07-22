@@ -65,7 +65,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
         <Draggable
             handle=".panel-drag-handle"
             cancel="input, textarea, select, .MuiSlider-root, .MuiMenuItem-root, .no-drag"
-            positionOffset={getPositionOffset(props.position)}
+            positionOffset={getPositionOffset(props.position ?? "right")}
             nodeRef={nodeRef}
         >
             <Card

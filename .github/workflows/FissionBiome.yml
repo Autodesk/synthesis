@@ -19,10 +19,10 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Cache Dependencies
+      - name: Cache Node Dependencies
         uses: actions/cache@v6
         with:
-          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
           path: "fission/node_modules"
           restore-keys: |
             ${{runner.os}}-npm-fission-

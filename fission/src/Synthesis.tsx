@@ -17,6 +17,7 @@ import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
+import TouchControls from "./ui/components/TouchControls.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
@@ -104,6 +105,7 @@ function Synthesis() {
                     <StateProvider>
                         <UIProvider>
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
+                            <TouchControls />
                             <SceneOverlay />
                             <ContextMenu />
                             <MultiplayerHUD />

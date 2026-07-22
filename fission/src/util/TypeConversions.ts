@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { RgbaColor } from "react-colorful"
 import * as THREE from "three"
 import type { mirabuf } from "../proto/mirabuf"
@@ -129,4 +129,12 @@ export function convertMirabufFloatToArrJoltFloat3(v: number[], offsetIndex: num
 
 export function convertReactRgbaColorToThreeColor(color: RgbaColor) {
     return new THREE.Color(Math.floor(color.r / 255), Math.floor(color.g / 255), Math.floor(color.b / 255))
+}
+
+export function convertAxisAlignedToOrientedBoundingBox(aabb: Jolt.AABox): Jolt.OrientedBox {
+    const center = aabb.GetCenter()
+    const halfExtent = aabb.GetExtent()
+    const transform = new JOLT.Mat44().sTranslation(center)
+
+    return new JOLT.OrientedBox(transform, halfExtent)
 }
