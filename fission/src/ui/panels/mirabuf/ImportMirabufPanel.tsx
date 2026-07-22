@@ -209,7 +209,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const selectCache = useCallback(
         async (info: MirabufCacheInfo) => {
             await spawnCachedMira(info)
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -233,7 +233,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     status.fail()
                 })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -256,7 +256,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     status.fail()
                 })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -372,7 +372,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     })
             })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -531,7 +531,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         openModal(ImportLocalMirabufModal, {
                             configurationType: miraTypeToConfigType(viewType ?? MiraType.ROBOT),
                         })
-                        closePanel(panel!.id, CloseType.Overwrite)
+                        closePanel(panel!.id, CloseType.OVERWRITE)
                     }}
                 >
                     Import from File

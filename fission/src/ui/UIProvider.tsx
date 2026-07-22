@@ -62,12 +62,12 @@ const DEFAULT_PANEL_PROPS = {
 const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
     elem.onClose?.(closeType)
     switch (closeType) {
-        case CloseType.Accept: {
+        case CloseType.ACCEPT: {
             const beforeAcceptResult = elem.onBeforeAccept?.()
             elem.onAccept?.(beforeAcceptResult)
             break
         }
-        case CloseType.Cancel:
+        case CloseType.CANCEL:
             elem.onCancel?.()
             break
         default:
@@ -86,7 +86,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     InputSystem.escapeKeyListeners[1] = () => {
         if (modal != null) {
             if (!modal.props.hideCancel) {
-                closeModal(CloseType.Cancel)
+                closeModal(CloseType.CANCEL)
             }
             return true
         }
@@ -97,7 +97,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         if (panels.length > 0) {
             const panel = panels[panels.length - 1]
             if (!panel.props.hideCancel) {
-                closePanel(panel.id, CloseType.Cancel)
+                closePanel(panel.id, CloseType.CANCEL)
                 return true
             }
         }
@@ -123,7 +123,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     custom: customProps,
                 },
             } as Modal<T, P>
-            modal?.onClose?.(CloseType.Overwrite)
+            modal?.onClose?.(CloseType.OVERWRITE)
 
             newModal.props.configured = false
 

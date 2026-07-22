@@ -113,7 +113,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
                         targetControls.focusProvider = mirabufSceneObject
                     }
-                    closeModal(CloseType.Overwrite)
+                    closeModal(CloseType.OVERWRITE)
                 } else {
                     globalOpenModal(ImportLocalMirabufModal, {
                         configurationType: miraTypeToConfigType(miraType),

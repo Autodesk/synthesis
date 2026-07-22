@@ -53,7 +53,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
         if (selectedScheme && !newSchemes.includes(selectedScheme)) {
             if (panel) {
                 setTimeout(() => {
-                    closePanel(panel.id, CloseType.Overwrite)
+                    closePanel(panel.id, CloseType.OVERWRITE)
                 }, 0)
             }
         }

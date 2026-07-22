@@ -238,7 +238,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                             MatchMode.getInstance().setMatchModeConfig(config)
 
                             await MatchMode.getInstance().start(true, useSpawnPositions)
-                            closePanel(panel!.id, CloseType.Accept)
+                            closePanel(panel!.id, CloseType.ACCEPT)
                         }}
                         secondaryOnClick={
                             !config.isDefault
@@ -326,7 +326,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     const createNewMatchModeConfig = () => {
         openPanel(CreateNewMatchModeConfigPanel, undefined)
-        closePanel(panel!.id, CloseType.Overwrite)
+        closePanel(panel!.id, CloseType.OVERWRITE)
     }
 
     return (

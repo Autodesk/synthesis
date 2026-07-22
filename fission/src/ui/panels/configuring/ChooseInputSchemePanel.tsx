@@ -55,7 +55,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
             {brainIndex !== undefined && (
                 <InputSchemeSelection
                     brainIndex={brainIndex}
-                    onSelect={() => closePanel(panel!.id, CloseType.Accept)}
+                    onSelect={() => closePanel(panel!.id, CloseType.ACCEPT)}
                 />
             )}
         </Stack>

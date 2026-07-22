@@ -31,7 +31,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
         <Stack gap={1}>
             <Button
                 onClick={() => {
-                    closeModal(CloseType.Accept)
+                    closeModal(CloseType.ACCEPT)
                     World.analyticsSystem?.event("Mode Selected", { mode: "Singleplayer" })
                     startSingleplayerCallback()
                 }}
@@ -43,7 +43,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
 
             <Button
                 onClick={() => {
-                    closeModal(CloseType.Accept)
+                    closeModal(CloseType.ACCEPT)
                     World.analyticsSystem?.event("Mode Selected", { mode: "Multiplayer" })
                     startMultiplayerCallback()
                 }}
@@ -55,7 +55,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
 
             <Button
                 onClick={async () => {
-                    closeModal(CloseType.Accept)
+                    closeModal(CloseType.ACCEPT)
                     World.analyticsSystem?.event("Mode Selected", { mode: "Load Default" })
                     startSingleplayerCallback()
                     await Promise.all([

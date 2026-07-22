@@ -1,7 +1,7 @@
 import { Button, Divider, TextField } from "@mui/material"
 import { Stack } from "@mui/system"
 import type React from "react"
-import { useEffect, useLayoutEffect, useState } from "react"
+import { useMemo, useLayoutEffect, useState } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type { ModalImplProps } from "@/components/Modal.tsx"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
@@ -15,7 +15,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     const { configureScreen, closeModal } = useUIContext()
     const [room, setRoom] = useState<string>("")
     const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
-    let isValidName: boolean = name.length >= 3
+    const isValidName = useMemo(() => name.length >= 3, [name])
     const { startWorldCallback } = modal!.props.custom
 
     useLayoutEffect(() => {
@@ -26,9 +26,6 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         )
     }, [configureScreen, modal])
 
-    useEffect(() => {
-        isValidName = name.length >= 3
-    }, [name, isValidName])
     return (
         <Stack direction="column">
             <TextField
@@ -52,7 +49,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                     const success = await withTimeout(startWorldCallback(name), "Multiplayer create timed out")
 
                     if (success) {
-                        closeModal(CloseType.Accept)
+                        closeModal(CloseType.ACCEPT)
                     }
                 }}
                 className="w-full my-1"
@@ -81,7 +78,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
 
                     const success = await withTimeout(startWorldCallback(name, room), "Multiplayer join timed out")
                     if (success) {
-                        closeModal(CloseType.Accept)
+                        closeModal(CloseType.ACCEPT)
                     }
                 }}
                 className={`w-full mt-1 mb-3 ${room.length != 6 && "brightness-50"}`}

@@ -53,7 +53,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     public deltaTransformation?: THREE.Matrix4
 
     public prefs: ZonePreferencesShared & P
-    private preferenceKey: keyof UserPreferences
+    private _preferenceKey: keyof UserPreferences
 
     public toRender: boolean | undefined
     public joltBodyId?: Jolt.BodyID
@@ -73,7 +73,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         this._parentAssembly = parentAssembly
         this.toRender = render
         this.prefs = prefs
-        this.preferenceKey = preferenceKey
+        this._preferenceKey = preferenceKey
     }
 
     public setup() {
@@ -159,7 +159,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         if (!this.mesh) return
 
-        this.toRender = PreferencesSystem.getUserPreference(this.preferenceKey) as boolean | undefined
+        this.toRender = PreferencesSystem.getUserPreference(this._preferenceKey) as boolean | undefined
         if (!this.toRender) {
             this.mesh.material = ZoneSceneObject.transparentMaterial
             return
