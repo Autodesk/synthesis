@@ -106,6 +106,7 @@ class DefaultInputs {
             descriptiveName: "Full Controller",
             customized: false,
             usesGamepad: true,
+            playerSlot: 0,
             supportedDrivetrains: [DriveType.ARCADE, DriveType.TANK],
             usesTouchControls: false,
             inputs: [
@@ -133,6 +134,7 @@ class DefaultInputs {
             descriptiveName: "Left Stick",
             customized: false,
             usesGamepad: true,
+            playerSlot: 0,
             usesTouchControls: false,
             supportedDrivetrains: [DriveType.ARCADE],
             inputs: [
@@ -155,6 +157,7 @@ class DefaultInputs {
             descriptiveName: "Right Stick",
             customized: false,
             usesGamepad: true,
+            playerSlot: 0,
             supportedDrivetrains: [DriveType.ARCADE],
             usesTouchControls: false,
             inputs: [
@@ -240,6 +243,7 @@ class DefaultInputs {
             descriptiveName: "Dual Stick (Swerve)",
             customized: false,
             usesGamepad: true,
+            playerSlot: 0,
             usesTouchControls: false,
             supportedDrivetrains: [DriveType.SWERVE],
             inputs: [

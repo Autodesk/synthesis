@@ -24,7 +24,7 @@ export default abstract class Input {
     }
 
     // Returns the current value of the input. Range depends on input type
-    abstract getValue(useGamepad: boolean, useTouchControls: boolean): number
+    abstract getValue(useGamepad: boolean, gamepadIndex : number,  gamepadIndexuseTouchControls: boolean): number
 
     abstract get keysUsed(): KeyDescriptor[]
 

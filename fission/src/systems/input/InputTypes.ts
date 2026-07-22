@@ -27,6 +27,7 @@ export type InputScheme = {
     descriptiveName: string
     customized: boolean
     usesGamepad: boolean
+    playerSlot?: number
     usesTouchControls: boolean
     supportedDrivetrains: DriveType[]
     inputs: Input[]
