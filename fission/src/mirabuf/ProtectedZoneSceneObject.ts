@@ -2,7 +2,6 @@ import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import * as Three from "three"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import ZoneSceneObject from "@/mirabuf/ZoneSceneObject"
 import World from "@/systems/World"
 import type MirabufSceneObject from "./MirabufSceneObject"
@@ -134,7 +133,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
     private penalizeEnteringZone(robot: MirabufSceneObject) {
         if (robot.alliance !== this.prefs.alliance)
-            ScoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
+            World.scoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
 
         this._robotsInside.set(robot, Date.now())
     }
@@ -151,7 +150,11 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         if (!opposingRobot) return
 
         this._lastRobotCollisionTime = Date.now()
-        ScoreTracker.robotPenalty(opposingRobot, this.prefs?.penaltyPoints ?? 0, `Contact penalty in protected zone`)
+        World.scoreTracker.robotPenalty(
+            opposingRobot,
+            this.prefs?.penaltyPoints ?? 0,
+            `Contact penalty in protected zone`
+        )
     }
 
     public override dispose() {
