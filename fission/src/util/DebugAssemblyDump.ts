@@ -61,9 +61,7 @@ export function dumpAssemblyStructure(assembly: mirabuf.Assembly, label: string)
  * assembly. Everything else on partDefinitions (mass, appearance, body GUIDs, joint refs) is preserved.
  */
 function stripMeshGeometry(assemblyObj: Record<string, unknown>): void {
-    const defs = (assemblyObj.data as Record<string, unknown> | undefined)?.parts as
-        | Record<string, unknown>
-        | undefined
+    const defs = (assemblyObj.data as Record<string, unknown> | undefined)?.parts as Record<string, unknown> | undefined
     const partDefinitions = defs?.partDefinitions as Record<string, Record<string, unknown>> | undefined
     if (!partDefinitions) return
 
@@ -91,19 +89,13 @@ function stripMeshGeometry(assemblyObj: Record<string, unknown>): void {
  * part instances all against each other for one robot.
  */
 export function downloadFullAssemblyJson(assembly: mirabuf.Assembly, filename: string): void {
-    const full = mirabuf.Assembly.toObject(assembly as mirabuf.Assembly, TO_OBJECT_OPTIONS) as Record<
-        string,
-        unknown
-    >
+    const full = mirabuf.Assembly.toObject(assembly as mirabuf.Assembly, TO_OBJECT_OPTIONS) as Record<string, unknown>
     stripMeshGeometry(full)
 
     const resolvedFilename = filename.endsWith(".json") ? filename : `${filename}.json`
     try {
         downloadBlob(resolvedFilename, JSON.stringify(full, null, 2))
     } catch (error) {
-        console.error(
-            `[DebugAssemblyDump] Failed to stringify assembly even after stripping mesh geometry:`,
-            error
-        )
+        console.error(`[DebugAssemblyDump] Failed to stringify assembly even after stripping mesh geometry:`, error)
     }
 }

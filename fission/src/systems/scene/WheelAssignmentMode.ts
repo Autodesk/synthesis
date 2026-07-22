@@ -4,6 +4,7 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { applyWheelAssignments, type WheelAssignment } from "@/mirabuf/WheelJointBuilder"
 import EventSystem from "@/systems/EventSystem.ts"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { downloadFullAssemblyJson } from "@/util/DebugAssemblyDump"
 import {
@@ -103,6 +104,8 @@ class WheelAssignmentMode extends WorldSystem {
     private _candidateBatches: THREE.BatchedMesh[] = []
     private _pickIndex = new Map<THREE.BatchedMesh, Map<number, PickIndexEntry>>()
 
+    private _driveReversed = false
+
     public get enabled(): boolean {
         return this._enabled
     }
@@ -121,6 +124,10 @@ class WheelAssignmentMode extends WorldSystem {
         return this._pending.length
     }
 
+    public get driveReversed(): boolean {
+        return this._driveReversed
+    }
+
     public update(_deltaT: number): void {
         if (!this._enabled || !this._latestMousePos) return
 
@@ -134,6 +141,21 @@ class WheelAssignmentMode extends WorldSystem {
 
     public destroy(): void {
         this.enabled = false
+    }
+
+    public toggleReverseDrive(): void {
+        this._driveReversed = !this._driveReversed
+
+        for (const sceneObject of World.sceneRenderer.mirabufSceneObjects.getAll()) {
+            if (!sceneObject.mechanism.urdfWheelForward) continue
+            if (!(sceneObject.brain instanceof SynthesisBrain)) continue
+
+            for (const driver of sceneObject.brain.getWheelDrivers()) {
+                driver.reversed = this._driveReversed
+            }
+        }
+
+        EventSystem.dispatch("WheelAssignmentDriveReversedChanged", { reversed: this._driveReversed })
     }
 
     private hookInteractionHandlers(): void {

@@ -73,6 +73,10 @@ class SynthesisBrain extends Brain {
         return this._brainIndex
     }
 
+    public getWheelDrivers(): WheelDriver[] {
+        return this._simLayer.drivers.filter(driver => driver instanceof WheelDriver) as WheelDriver[]
+    }
+
     public configureDriveBehavior(driveType: DriveType) {
         const wasSwerve = this.driveType === DriveType.SWERVE
         this.driveType = driveType

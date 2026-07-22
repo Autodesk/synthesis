@@ -496,19 +496,21 @@ class PhysicsSystem extends WorldSystem {
                                 `chassisIsBodyOne=${bodyOne === bodyA} resolvedRadius=${wheelRadii.get(jointGuid)}`
                         )
 
-                        const [fixedConstraint, vehicleConstraint, vehicleListener] = this.createWheelConstraint(
-                            jointInst,
-                            jDef,
-                            maxAcceleration ?? 1.5,
-                            bodyOne,
-                            bodyTwo,
-                            parser.assembly.info!.version!,
-                            urdfImport,
-                            wheelRadii.get(jointGuid)
-                        )
+                        const [fixedConstraint, vehicleConstraint, vehicleListener, wheelForward] =
+                            this.createWheelConstraint(
+                                jointInst,
+                                jDef,
+                                maxAcceleration ?? 1.5,
+                                bodyOne,
+                                bodyTwo,
+                                parser.assembly.info!.version!,
+                                urdfImport,
+                                wheelRadii.get(jointGuid)
+                            )
                         addConstraint(fixedConstraint)
                         addConstraint(vehicleConstraint)
                         listener = vehicleListener
+                        if (wheelForward && !mechanism.urdfWheelForward) mechanism.urdfWheelForward = wheelForward
 
                         break
                     }
@@ -750,7 +752,12 @@ class PhysicsSystem extends WorldSystem {
         versionNum: number,
         urdfImport: boolean,
         resolvedRadius?: number
-    ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
+    ): [
+        Jolt.Constraint,
+        Jolt.VehicleConstraint,
+        Jolt.PhysicsStepListener,
+        { x: number; y: number; z: number } | undefined,
+    ] {
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         const fixedConstraint = this.createFixedConstraint(bodyMain, bodyWheel, anchorPoint)
 
@@ -827,7 +834,15 @@ class PhysicsSystem extends WorldSystem {
         const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc, urdfWheelBasis)
         const listener = this.createVehicleListeners(vehicleConstraint, bodyWheel)
 
-        return [fixedConstraint, vehicleConstraint, listener]
+        const wheelForward = urdfWheelBasis
+            ? {
+                  x: urdfWheelBasis.forward.GetX(),
+                  y: urdfWheelBasis.forward.GetY(),
+                  z: urdfWheelBasis.forward.GetZ(),
+              }
+            : undefined
+
+        return [fixedConstraint, vehicleConstraint, listener, wheelForward]
     }
 
     /**

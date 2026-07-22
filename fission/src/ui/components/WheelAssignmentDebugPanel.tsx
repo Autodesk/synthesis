@@ -11,15 +11,20 @@ import Label from "./Label"
 const WheelAssignmentDebugPanel: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
     const [pendingCount, setPendingCount] = useState<number>(0)
+    const [driveReversed, setDriveReversed] = useState<boolean>(false)
 
     useEffect(() => {
         const unsubToggle = EventSystem.listen("WheelAssignmentModeToggled", ({ enabled }) => setEnabled(enabled))
         const unsubCount = EventSystem.listen("WheelAssignmentPendingCountChanged", ({ count }) =>
             setPendingCount(count)
         )
+        const unsubReversed = EventSystem.listen("WheelAssignmentDriveReversedChanged", ({ reversed }) =>
+            setDriveReversed(reversed)
+        )
         return () => {
             unsubToggle()
             unsubCount()
+            unsubReversed()
         }
     }, [])
 
@@ -52,6 +57,16 @@ const WheelAssignmentDebugPanel: React.FC = () => {
                     onClick={() => void World.wheelAssignmentMode.apply()}
                 >
                     Apply ({pendingCount})
+                </Button>
+            </Stack>
+            <Stack direction="row" gap={1}>
+                <Button
+                    size="small"
+                    variant={driveReversed ? "contained" : "outlined"}
+                    color="warning"
+                    onClick={() => World.wheelAssignmentMode.toggleReverseDrive()}
+                >
+                    Reverse Drive
                 </Button>
             </Stack>
         </Stack>
