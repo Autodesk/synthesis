@@ -42,6 +42,7 @@ const Synthesis = () => {
 
         mainLoop()
     }
+
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
         if (urlParams.has("code")) {
