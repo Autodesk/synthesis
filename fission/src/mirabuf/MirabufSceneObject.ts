@@ -204,11 +204,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get descriptiveName(): string {
-        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
+        return `${this.miraType === MiraType.ROBOT ? `[${this.schemeName}] ` : ""}${this.assemblyName}`
     }
 
     public get assemblyName() {
         return this.mirabufInstance.parser.assembly.info?.name ?? "Unknown"
+    }
+
+    public get schemeName() {
+        return this.multiplayerOwnerName ?? (this.brain as SynthesisBrain)?.inputSchemeName
     }
 
     public get assemblyId() {
@@ -1212,7 +1216,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getSupplierData(): ContextData {
         const data: ContextData = {
-            title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
+            title: this.miraType == MiraType.ROBOT ? `Robot: ${this.schemeName ?? "-"}` : "Field",
             items: [],
         }
 
