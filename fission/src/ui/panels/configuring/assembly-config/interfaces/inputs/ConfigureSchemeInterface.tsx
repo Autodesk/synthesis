@@ -21,7 +21,8 @@ interface ConfigSchemeProps {
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme, panelId, onBack }) => {
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
-    const [controllerNumber, setControllerNumber] = useState(1)
+    // account for zero indexing
+    const [controllerNumber, setControllerNumber] = useState((selectedScheme.playerSlot ?? 0) + 1)
     const [connectedPlayerCount, setConnectedPlayerCount] = useState(InputSystem.getConnectedPlayerCount())
     const scrollRef = useRef<HTMLDivElement>(null)
     const [_, update] = useReducer(x => !x, false)
@@ -104,7 +105,12 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                 (connectedPlayerCount > 0 ? (
                     <Select
                         value={controllerNumber}
-                        onChange={e => setControllerNumber(Number(e.target.value))}
+                        onChange={e => {
+                            const value = Number(e.target.value)
+                            setControllerNumber(value)
+                            selectedScheme.playerSlot = value - 1
+                            selectedScheme.customized = true
+                        }}
                     >
                         {Array.from({ length: connectedPlayerCount }, (_unused, slot) => (
                             <MenuItem key={`controller-${slot}`} value={slot + 1}>
