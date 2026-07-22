@@ -762,6 +762,7 @@ class PhysicsSystem extends WorldSystem {
             wheelDimensions.radius = resolvedRadius
         }
 
+        // `convertJoltRVec3ToJoltVec3` destroys `anchorPoint` here
         const wheelPos = urdfWheelBasis
             ? convertJoltRVec3ToJoltVec3(anchorPoint, false)
             : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis), false)
