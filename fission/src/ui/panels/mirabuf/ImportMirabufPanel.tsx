@@ -37,6 +37,7 @@ import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { getTargetControls } from "@/systems/scene/CameraControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
+import {hashBuffer} from "@/util/Utility.ts";
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -123,6 +124,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: P
                         mirabufSceneObject.miraType !== MiraType.FIELD
                             ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
                             : undefined
+                    console.log("HASH", encodedAssembly != null ? await hashBuffer(encodedAssembly.buffer as ArrayBuffer) : undefined)
 
                     const message: Message = {
                         type: "newObject",

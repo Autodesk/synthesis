@@ -93,3 +93,24 @@ export function downloadBlob(filename: string, data: BlobPart): void {
 export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
     return new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
 }
+
+export async function waitUntil(condition: () => boolean, interval: number = 1000, timeout?: number) {
+    let handle: NodeJS.Timeout | string | number | undefined
+    try {
+        return await new Promise<boolean>(resolve => {
+            if (timeout != null) {
+                setTimeout(() => resolve(false), timeout)
+            }
+
+            handle = setInterval(() => {
+                if (condition()) {
+                    resolve(true)
+                }
+            }, interval)
+
+        })
+    } finally {
+        clearInterval(handle)
+    }
+
+}
