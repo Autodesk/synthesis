@@ -213,7 +213,7 @@ class InputSystem extends WorldSystem {
 
         if (targetScheme == null || targetInput == null) return 0
 
-        return targetInput.getValue(targetScheme.usesGamepad, targetScheme.usesTouchControls)
+        return targetInput.getValue(targetScheme.usesGamepad, targetScheme.usesTouchControls, targetScheme.playerSlot)
     }
 
     /**

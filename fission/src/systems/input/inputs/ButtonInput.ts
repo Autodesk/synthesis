@@ -31,7 +31,7 @@ export default class ButtonInput extends Input {
      * @param useGamepad Looks at the gamepad if true and the keyboard if false.
      * @returns 1 if pressed, 0 if not pressed or not found.
      */
-    getValue(useGamepad: boolean): number {
+    getValue(useGamepad: boolean, _useTouchControls: boolean = false, playerSlot: number = 0): number {
         const matchModeType = MatchMode.getInstance().getMatchModeType()
         if (matchModeType === MatchModeType.MATCH_ENDED || matchModeType === MatchModeType.AUTONOMOUS) {
             return 0
@@ -39,7 +39,7 @@ export default class ButtonInput extends Input {
 
         // Gamepad button input
         if (useGamepad) {
-            return InputSystem.isGamepadButtonPressed(this.gamepadButton) ? 1 : 0
+            return InputSystem.isGamepadButtonPressed(this.gamepadButton, playerSlot) ? 1 : 0
         }
 
         // Keyboard button input
