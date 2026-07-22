@@ -255,10 +255,10 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const refreshCached = useCallback(() => setCachedInfos(MirabufCachingService.getAll()), [])
     const cachedByHash = useMemo(() => new Map(cachedInfos.map(c => [c.hash, c])), [cachedInfos])
 
-    // merging robots and fields & deduping by hash
+    // merging fields and robots (field -> robot order) & deduping by hash
     const manifestAssets = useMemo(() => {
         const seen = new Set<string>()
-        return [...manifestRobots, ...manifestFields].filter(asset => {
+        return [...manifestFields, ...manifestRobots].filter(asset => {
             if (seen.has(asset.hash)) return false
             seen.add(asset.hash)
             return true
@@ -355,7 +355,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             ref={libraryRef}
             sx={{
                 width: { xs: "88vw", lg: "min(90vw, 1120px)" },
-                height: { xs: "76vh", lg: "70vh" },
             }}
         >
             <Tabs
@@ -366,6 +365,8 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                 variant="scrollable"
                 scrollButtons="auto"
                 allowScrollButtonsMobile
+                // pin the year tabs while the single (modal) scroll container scrolls
+                sx={{ position: "sticky", top: 0, zIndex: 2, backgroundColor: "#2e2e2e" }}
                 {...SoundPlayer.getInstance().buttonSoundEffects()}
             >
                 {years.map(year => (
@@ -373,7 +374,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                 ))}
             </Tabs>
 
-            <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto", pt: 2 }}>
+            <Box sx={{ pt: 2 }}>
                 {activeYear === undefined ? (
                     <Label size="sm">Loading Library...</Label>
                 ) : hasAssets ? (
