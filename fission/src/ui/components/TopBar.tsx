@@ -38,7 +38,7 @@ const TopBar: React.FC = () => {
     const [modeMenuOpen, setModeMenuOpen] = useState(false)
 
     useEffect(() => {
-        // biome-ignore-start lint/suspicious/noExplicitAny: allow any
+        // biome-ignore-start lint/suspicious/noExplicitAny: allow any for window and document access
         try {
             const k: string[] = deobf("NmM2ZjYzNjE2YzUzNzQ2ZjcyNjE2NzY1MmU3NDY4NjU2ZDY1").split(String.fromCharCode(46))
             const v = JSON.parse((window as any)[k[0]][k[1]])[deobf("NjM2ZjZmNmM0ZDZmNjQ2NQ==")]

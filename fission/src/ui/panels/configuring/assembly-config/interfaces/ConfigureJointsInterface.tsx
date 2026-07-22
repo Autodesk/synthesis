@@ -48,15 +48,12 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
     hasChild,
 }) => {
     const [selectable, setSelectable] = useState(false)
-    const [hasParent, setHasParent] = useState(false)
     useEffect(() => {
         setSelectable(
             lookingForParent !== undefined && lookingForParent !== behavior && behavior.parentJointIndex === undefined
         )
     }, [lookingForParent, behavior])
-    useEffect(() => {
-        setHasParent(behavior.parentJointIndex !== undefined)
-    })
+    const hasParent = behavior.parentJointIndex !== undefined
 
     return (
         <Stack direction="row" textAlign="center" gap={1} key={elementKey}>
@@ -113,10 +110,9 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
 function sortBehaviors(behaviors: SequentialBehaviorPreferences[]): SequentialBehaviorPreferences[] {
     behaviors.sort((a, b) => a.jointIndex - b.jointIndex)
 
-    const sortedBehaviors: SequentialBehaviorPreferences[] = []
-    behaviors.forEach(b => {
-        if (b.parentJointIndex === undefined) sortedBehaviors.push(b)
-    })
+    const sortedBehaviors: SequentialBehaviorPreferences[] = behaviors.filter(
+        b => b.parentJointIndex === undefined
+    )
 
     for (let i = behaviors.length - 1; i >= 0; i--) {
         const b = behaviors[i]
