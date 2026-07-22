@@ -1,9 +1,8 @@
-// Runs before any test file in this project — see below for what each stub works around.
+// Runs before every test file. See stubs below for what each works around.
 
-// Node (v22+) now defines its own broken global `localStorage` (throws unless
-// `--localstorage-file` is set), and vitest's jsdom environment setup only skips copying a Node
-// global onto `window` when jsdom's own version is an *own* property — jsdom's is a
-// prototype-level getter, so it loses out and Node's throwing version wins. Replace it with a
+// Node (v22+) ships a broken global `localStorage` that throws unless `--localstorage-file` is
+// set. Vitest's jsdom setup only overrides globals that are jsdom's own property, but jsdom's
+// `localStorage` is a prototype-level getter, so Node's throwing version wins. Replace it with a
 // trivial in-memory `Storage` so `MirabufLoader.ts`'s module-load-time cache check works.
 class MemoryStorage implements Storage {
     private _map = new Map<string, string>()
@@ -24,10 +23,10 @@ Object.defineProperty(globalThis, "localStorage", {
 })
 
 // jsdom has no Web Worker support. `WPILibTypes.ts` does `new WPILibWSWorker()` (a vite `?worker`
-// import, which compiles to a class extending global `Worker`) unconditionally at module-load
-// time (`WPILibBrain.ts` top level), reachable from `PhysicsSystem.ts` via `MirabufSceneObject.ts`.
-// Stub just enough of the constructor/`EventTarget` surface for that import chain to evaluate;
-// nothing here needs to actually run a worker.
+// import compiling to a class extending global `Worker`) unconditionally at module-load time
+// (`WPILibBrain.ts` top level), reachable from `PhysicsSystem.ts` via `MirabufSceneObject.ts`.
+// Stub just enough of the constructor/`EventTarget` surface for that import chain to evaluate.
+// No worker actually needs to run.
 class StubWorker extends EventTarget implements Worker {
     onmessage = null
     onmessageerror = null
@@ -41,7 +40,7 @@ globalThis.Worker = StubWorker as unknown as typeof Worker
 // `DefaultAssetLoader.ts`) fire `fetch()` against relative "/api/..." URLs from a `static {}`
 // initializer at module-load time. There's no dev server in this suite, and a relative URL has no
 // base to resolve against outside a real browser document (`TypeError: Failed to parse URL from
-// /api/...`) — so `fetch` itself is stubbed here, matched by substring rather than full URL
+// /api/...`). So `fetch` itself is stubbed here, matched by substring rather than full URL
 // parsing, before those modules ever get imported.
 const manifestsByUrlSubstring: Record<string, unknown> = {
     "/match_configs/manifest.json": { private: {}, public: {} },

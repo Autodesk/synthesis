@@ -1,5 +1,5 @@
 // Parses jolt/JoltJS.idl + jolt/JoltJS-DebugRenderer.idl into a per-method ownership table.
-// Run with: bun run jolt-audit:codegen (see fission/package.json)
+// Run with: bun run jolt-memory:codegen (see fission/package.json)
 import * as fs from "node:fs"
 import * as path from "node:path"
 
@@ -8,7 +8,7 @@ const IDL_FILES = [
     path.join(REPO_ROOT, "jolt", "JoltJS.idl"),
     path.join(REPO_ROOT, "jolt", "JoltJS-DebugRenderer.idl"),
 ]
-const OUTPUT_FILE = path.resolve(import.meta.dirname, "..", "ownership-table.generated.json")
+const OUTPUT_FILE = path.resolve(import.meta.dirname, "..", "lib", "ownership-table.generated.json")
 
 const PRIMITIVE_TYPES = new Set([
     "void",
@@ -55,7 +55,7 @@ type MethodInfo = {
     isConstructor: boolean
     returnType: string
     returnIsArray: boolean
-    returnOwnership: "NONE" | "COPY" | "INTERNAL_REF"
+    returnOwnership: "NONE" | "COPY" | "INTERNAL_REF" | "STATIC_ALIAS"
     args: ArgInfo[]
     extAttrs: ExtAttrs
 }
@@ -66,7 +66,7 @@ type AttributeInfo = {
     isArray: boolean
     isStatic: boolean
     isReadonly: boolean
-    ownership: "NONE" | "COPY" | "INTERNAL_REF"
+    ownership: "NONE" | "INTERNAL_REF"
     extAttrs: ExtAttrs
 }
 
@@ -153,7 +153,7 @@ function parseExtAttrs(raw: string | undefined): ExtAttrs {
         bindTo: null,
     }
     if (!raw) return attrs
-    // raw may contain multiple bracket groups concatenated, e.g. "[Const] [Ref]" — normalize to one list.
+    // raw may contain multiple bracket groups concatenated, e.g. "[Const] [Ref]", so normalize to one list.
     const tokens = raw.match(/\[[^\]]*\]/g) ?? []
     for (const bracket of tokens) {
         const inner = bracket.slice(1, -1)
@@ -176,7 +176,7 @@ function parseExtAttrs(raw: string | undefined): ExtAttrs {
                 const m = part.match(/BindTo\s*=\s*"([^"]+)"/)
                 attrs.bindTo = m ? m[1] : ""
             }
-            // unrecognized tokens (e.g. static/readonly leaking in) are ignored here — handled by caller regex
+            // unrecognized tokens (e.g. static/readonly leaking in) are ignored here since the caller regex handles them
         }
     }
     return attrs
@@ -220,7 +220,11 @@ function parseMember(raw: string, className: string): { method?: MethodInfo; att
         const extAttrs = parseExtAttrs(extAttrsRaw)
         const normalizedType = type.replace(/\s+/g, " ")
         const isPrimitive = PRIMITIVE_TYPES.has(normalizedType)
-        const ownership: AttributeInfo["ownership"] = isPrimitive ? "NONE" : extAttrs.isValue ? "COPY" : "INTERNAL_REF"
+        // Unlike a `[Value]`-returning *method* (see MethodInfo.returnOwnership), a `[Value]`
+        // attribute getter always returns `&self->fieldName`, a pointer into the parent's own
+        // storage, not a scratch buffer or fresh copy. Valid as long as the parent lives:
+        // INTERNAL_REF.
+        const ownership: AttributeInfo["ownership"] = isPrimitive ? "NONE" : "INTERNAL_REF"
         return {
             attribute: {
                 name,
@@ -242,10 +246,17 @@ function parseMember(raw: string, className: string): { method?: MethodInfo; att
         const extAttrs = parseExtAttrs(extAttrsRaw)
         const normalizedReturnType = returnType.replace(/\s+/g, " ")
         const isPrimitiveReturn = normalizedReturnType === "void" || PRIMITIVE_TYPES.has(normalizedReturnType)
+        const isConstructor = name === className
+        // A `[Value]` return is only a real heap COPY from a `new JOLT.X(...)` constructor call.
+        // Every other bound function with a `[Value]` return (getters, math operators,
+        // `*Settings.Create()`, etc.) aliases a `static` scratch buffer in glue.cpp reused on every
+        // call to that function, per docs/JOLT_FUNCTIONS_OWNERSHIP_INVARIANTS.md. Never destroy().
         const returnOwnership: MethodInfo["returnOwnership"] = isPrimitiveReturn
             ? "NONE"
             : extAttrs.isValue
-              ? "COPY"
+              ? isConstructor
+                  ? "COPY"
+                  : "STATIC_ALIAS"
               : "INTERNAL_REF"
         const args = splitTopLevelCommas(argsRaw)
             .map(parseArg)
@@ -254,7 +265,7 @@ function parseMember(raw: string, className: string): { method?: MethodInfo; att
             method: {
                 name,
                 isStatic: Boolean(staticRaw),
-                isConstructor: name === className,
+                isConstructor,
                 returnType: normalizedReturnType,
                 returnIsArray: Boolean(returnArrayRaw),
                 returnOwnership,
@@ -308,11 +319,12 @@ function parseIdl(source: string): { classes: Map<string, ClassInfo>; implements
             continue
         }
 
-        console.warn(`[jolt-audit codegen] unrecognized top-level statement, skipped:\n  ${statement.slice(0, 120)}`)
+        console.warn(`[jolt-memory codegen] unrecognized top-level statement, skipped:\n  ${statement.slice(0, 120)}`)
     }
 
-    // `X implements Y;` can appear before or after both interfaces are declared — apply as parent
-    // link only when the class doesn't already have a `: Parent` link from the interface header.
+    // `X implements Y;` can appear before or after both interfaces are declared, so only apply it
+    // as a parent link when the class doesn't already have a `: Parent` link from the interface
+    // header.
     for (const [child, parent] of implementsEdges) {
         const info = classes.get(child)
         if (info && info.parent === null) info.parent = parent

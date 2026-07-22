@@ -1,0 +1,87 @@
+name: Jolt Memory Audit (ASan)
+
+env:
+  BUN_VERSION: "1.3.14"
+  EMSDK_VERSION: "6.0.2"
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [prod, dev]
+    paths:
+      - "jolt/**"
+      - "fission/src/test/jolt-memory/**"
+      - ".github/workflows/JoltMemoryAudit.yml"
+  pull_request:
+    branches: [prod, dev]
+    paths:
+      - "jolt/**"
+      - "fission/src/test/jolt-memory/**"
+      - ".github/workflows/JoltMemoryAudit.yml"
+
+jobs:
+  runJoltMemoryAuditAsan:
+    name: ASan Corruption Detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Get Jolt submodule commit SHA
+        id: jolt-sha
+        run: echo "sha=$(git rev-parse HEAD:jolt)" >> "$GITHUB_OUTPUT"
+
+      - name: Setup EMSDK
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{ env.EMSDK_VERSION }}
+          actions-cache-folder: "emsdk-cache"
+
+      # emsdk 6.0.2's bundled google-closure-compiler (used unconditionally by jolt's
+      # CMakeLists.txt --closure=1) needs Java 21 (class file version 65) — ubuntu-latest's
+      # default `java` is older and fails with UnsupportedClassVersionError.
+      - name: Setup Java 21 for closure compiler
+        uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Cache Jolt ASan build
+        id: cache-jolt-asan
+        uses: actions/cache@v6
+        with:
+          path: jolt/dist
+          key: ${{ runner.os }}-jolt-asan-${{ steps.jolt-sha.outputs.sha }}
+
+      - name: Build Jolt ASan variant
+        if: steps.cache-jolt-asan.outputs.cache-hit != 'true'
+        working-directory: jolt
+        run: |
+          npm install -g webidl-dts-gen
+          sh build.sh Debug -DENABLE_ASAN=ON -DBUILD_WASM_COMPAT_ONLY=ON
+
+      - name: Bun Setup
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Cache Node Dependencies
+        uses: actions/cache@v6
+        with:
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
+          path: "fission/node_modules"
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
+
+      - name: Install Dependencies
+        working-directory: fission
+        run: bun install --frozen-lockfile
+
+      - name: Run Jolt Memory Audit against the ASan build
+        working-directory: fission
+        run: bun run test:jolt-memory
+        env:
+          JOLT_ASAN_DIST: ${{ github.workspace }}/jolt/dist/jolt-physics.debug.wasm-compat.js

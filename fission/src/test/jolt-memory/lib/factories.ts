@@ -1,23 +1,26 @@
-// Constructor-arg factories and RefTarget handoff recipes for the memory-audit test suite.
-// This is the one piece the plan can't fully automate: a minimally-valid instance recipe per
-// class, seeded from real construction sites (jolt/helloworld/HelloWorld.js, fission/src). Grows
-// over time — classes with no entry here are reported as "no factory — untested" by the suite,
-// not guessed at.
+// Per-class instance recipes for the memory-audit suite, seeded from real construction sites
+// (jolt/helloworld/HelloWorld.js, fission/src). Classes with no entry are reported as
+// "no factory, untested" by the suite.
 import type Jolt from "@synthesis.adsk/jolt-physics"
 
 type JoltModule = typeof Jolt
 
 // --- Standalone factories: no parent/scene required, safe to construct+destroy in isolation. ---
 // Each factory returns a freshly constructed instance the caller owns (matches the `COPY`/`new`
-// convention) — the test harness is responsible for destroying it per the row's ownership rule.
+// convention). The test harness destroys it per the row's ownership rule.
 export const factories: Record<string, (JOLT: JoltModule) => unknown> = {
     Vec3: JOLT => new JOLT.Vec3(1, 2, 3),
     RVec3: JOLT => new JOLT.RVec3(10, 20, 30),
     Vec4: JOLT => new JOLT.Vec4(1, 2, 3, 4),
     Quat: JOLT => new JOLT.Quat(0, 0, 0, 1),
     Float3: JOLT => new JOLT.Float3(1, 2, 3),
-    Mat44: JOLT => JOLT.Mat44.prototype.sIdentity(),
-    RMat44: JOLT => JOLT.RMat44.prototype.sIdentity(),
+    // Not `.sIdentity()`: non-constructor binder functions returning `[Value]` types alias a
+    // `static` scratch buffer in glue.cpp, reused on every call
+    // (docs/JOLT_FUNCTIONS_OWNERSHIP_INVARIANTS.md's static-temp-aliased section). Only
+    // `new JOLT.X(...)` heap-allocates an independently destroyable instance. `sIdentity()` would
+    // hand back a non-owned alias with no per-call identity, breaking the destroy test and leak count.
+    Mat44: JOLT => new JOLT.Mat44(),
+    RMat44: JOLT => new JOLT.RMat44(),
     AABox: JOLT => {
         const min = new JOLT.Vec3(-1, -1, -1)
         const max = new JOLT.Vec3(1, 1, 1)
@@ -62,10 +65,9 @@ export const factories: Record<string, (JOLT: JoltModule) => unknown> = {
     },
 }
 
-// Minimal single-layer physics world, mirroring jolt/helloworld/HelloWorld.js exactly (including
-// its ownership comments — settings/objectFilter/bpInterface/bpFilter all get consumed by
-// JoltInterface's constructor, matching the CONSUMED category in
-// docs/JOLT_FUNCTIONS_OWNERSHIP_INVARIANTS.md).
+// Minimal single-layer physics world, mirroring jolt/helloworld/HelloWorld.js. Settings,
+// objectFilter, bpInterface, and bpFilter are all consumed by JoltInterface's constructor,
+// matching the CONSUMED category in docs/JOLT_FUNCTIONS_OWNERSHIP_INVARIANTS.md.
 export const MINIMAL_LAYER = 0
 
 export type MinimalPhysicsContext = {
@@ -104,18 +106,21 @@ export function createMinimalPhysicsSystem(JOLT: JoltModule): MinimalPhysicsCont
     }
 }
 
-// Builds a standalone, AddRef'd Shape (not owned by any BodyCreationSettings/Body yet) — the
+// Builds a standalone, AddRef'd Shape (not owned by any BodyCreationSettings/Body yet), the
 // canonical "child" for shape-handoff recipes below. Caller owns the returned shape's one
 // reference and must Release() or hand it off exactly once.
 export function createStandaloneBoxShape(JOLT: JoltModule): Jolt.Shape {
     const size = new JOLT.Vec3(1, 1, 1)
     const shapeSettings = new JOLT.BoxShapeSettings(size)
     JOLT.destroy(size)
+    // `ShapeSettings.Create()` returns `[Value] ShapeResult`, a non-constructor `[Value]` return,
+    // so `shapeResult` aliases glue.cpp's static scratch buffer for this bound function, not a
+    // heap allocation. Never `JOLT.destroy()` it. `.Clear()` is a real, safe method call that just
+    // drops the Result's internal `RefConst`, not a free.
     const shapeResult = shapeSettings.Create()
     const shape = shapeResult.Get()
     shapeResult.Clear()
     shape.AddRef()
-    JOLT.destroy(shapeResult)
     JOLT.destroy(shapeSettings)
     return shape
 }
@@ -132,10 +137,10 @@ export function createBoxBody(JOLT: JoltModule, ctx: MinimalPhysicsContext, shap
 }
 
 // --- Handoff recipes: named, real RefTarget handoff call sites from the codegen table's
-// isHandoffCandidate rows / attributeHandoffs. Each recipe builds a parent + a fresh child, hands
-// the child off, and exposes enough of both to drive the 3 handoff-timing test variants (Step 4).
+// isHandoffCandidate rows / attributeHandoffs. Each recipe builds a parent plus a fresh child,
+// hands the child off, and exposes enough of both to drive the 3 handoff-timing test variants.
 // Priority given to the codegen's flagged real sites, matching
-// docs/JOLT_REFCOUNTED_DESTROY_SEMANTICS.md's "not yet re-checked" list — see [[jolt_refcounted_destroy_danger]].
+// docs/JOLT_REFCOUNTED_DESTROY_SEMANTICS.md's "not yet re-checked" list. See [[jolt_refcounted_destroy_danger]].
 export type HandoffRecipe = {
     // Builds the parent object and a fresh child object about to be handed off.
     build: (JOLT: JoltModule) => { parent: unknown; child: unknown; teardown: () => void }
@@ -158,8 +163,8 @@ export const handoffRegistry: Record<string, HandoffRecipe> = {
         },
         handoff: (_JOLT, parent, child) => (parent as Jolt.PhysicsMaterialList).push_back(child as Jolt.PhysicsMaterial),
         getRefCount: (_JOLT, child) => (child as Jolt.PhysicsMaterial).GetRefCount(),
-        // PhysicsMaterialList exposes no removal method in jolt/JoltJS.idl — once added, a
-        // material can only be dropped by clearing/destroying the whole list.
+        // PhysicsMaterialList exposes no removal method in jolt/JoltJS.idl. Once added, a
+        // material can only be dropped by clearing or destroying the whole list.
     },
     "BodyCreationSettings.SetShape": {
         build: JOLT => {
@@ -196,9 +201,8 @@ export const handoffRegistry: Record<string, HandoffRecipe> = {
     },
 }
 
-// Classes/handoff rows known to need a factory but not yet seeded — surfaced by the codegen
-// report as "no factory — untested" rather than guessed. Grow this list into `handoffRegistry`
-// above as each is worked through.
+// Classes/handoff rows needing a factory, not yet seeded, surfaced by the codegen report as
+// "no factory, untested". Move each into `handoffRegistry` above once seeded.
 export const KNOWN_UNSEEDED_HANDOFFS = [
     "VehicleConstraint.SetVehicleCollisionTester",
     "PhysicsSystem.AddConstraint",

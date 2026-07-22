@@ -1,15 +1,12 @@
 // Leak-detection instrumentation for the memory-audit suite.
 //
-// Originally designed around `FinalizationRegistry` (construct → drop the reference → force GC →
-// assert it was collected without an explicit free). That does not work with this binder: every
-// `new JOLT.ClassName(...)` (and every method/getter that returns a wrapped object, via the
-// internal `k(ptr, class)` helper) inserts itself into a per-class pointer cache —
-// `ClassName.IDa[pointer] = wrapperInstance` in the minified build, reachable via the exposed
-// `JOLT.getCache(JOLT.ClassName)` — and only removes itself when `JOLT.destroy()` runs
-// (`delete cache[pointer]`). That cache is reachable for the lifetime of the JOLT module, so a
-// genuinely leaked (never-destroyed) object is *never* eligible for JS garbage collection —
-// confirmed empirically: a dropped, untracked `Vec3` produces zero `FinalizationRegistry`
-// callbacks even after repeated forced GC. Verified live-object counting is instead:
+// `FinalizationRegistry` doesn't work with this binder: every `new JOLT.ClassName(...)` (and
+// every method/getter returning a wrapped object, via the internal `k(ptr, class)` helper)
+// inserts itself into a per-class pointer cache (`ClassName.IDa[pointer] = wrapperInstance` in
+// the minified build, exposed via `JOLT.getCache(JOLT.ClassName)`), removed only when
+// `JOLT.destroy()` runs (`delete cache[pointer]`). That cache is reachable for the module's
+// lifetime, so a leaked object is never eligible for GC: a dropped, untracked `Vec3` produces
+// zero `FinalizationRegistry` callbacks even after forced GC. Use live-object counting instead:
 //
 //   before = Object.keys(JOLT.getCache(JOLT.Vec3)).length
 //   new JOLT.Vec3(...); new JOLT.Vec3(...)
@@ -17,17 +14,16 @@
 //   JOLT.destroy(v1); JOLT.destroy(v2)
 //   Object.keys(JOLT.getCache(JOLT.Vec3)).length === before
 //
-// This is deterministic and synchronous — no GC timing, no `--expose-gc` requirement — and it's
-// the binder's own ground truth for "how many live instances of this class exist right now", so
-// it works uniformly across the full IDL surface (constructors and method/getter returns alike,
-// since both go through the same `k()` cache-insert path).
+// Deterministic and synchronous, no GC timing or `--expose-gc` needed. It's the binder's own
+// ground truth for live instance counts, and works uniformly across constructors and
+// method/getter returns since both go through the same `k()` cache-insert path.
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import { CLASS_CLASSIFICATION } from "./class-classification"
 import ownershipTable from "./ownership-table.generated.json"
 
-// `JOLT.getCache` is a real, exposed runtime function (confirmed: `Module.getCache=g` in the
-// built glue) but isn't declared in the package's .d.ts, so it's accessed via a loose cast rather
-// than requiring every caller to satisfy an extended type just to pass the normal `JOLT` import.
+// `JOLT.getCache` is a real runtime function (`Module.getCache=g` in the built glue) not declared
+// in the package's .d.ts, so it's accessed via a loose cast rather than widening `JOLT`'s type for
+// every caller.
 export type JoltModule = typeof Jolt
 type JoltModuleWithCache = Record<string, unknown> & { getCache: (ctor: unknown) => Record<string, unknown> }
 
@@ -46,11 +42,10 @@ export function snapshotLiveCounts(JOLT: JoltModule, classNames: string[]): Reco
 // Every class name the codegen table found in the IDL, deduped once at module load.
 const ALL_CLASS_NAMES = [...new Set(ownershipTable.rows.map(row => row.className))]
 
-// Same idea as `snapshotLiveCounts`, but sourced from the full codegen table instead of a
-// caller-supplied list — covers every class the IDL exposes, not just what a test author
-// remembered to name. Classes the current build doesn't actually expose on `JOLT` (e.g.
-// debug-only rows like DebugRendererJS, absent from a non-debug build) are silently skipped
-// rather than throwing, since `countLive` requires the class to exist on the module.
+// Same as `snapshotLiveCounts`, but sourced from the full codegen table, covering every class the
+// IDL exposes rather than just what a test author named. Classes absent from the current build
+// (e.g. debug-only rows like DebugRendererJS) are silently skipped since `countLive` requires the
+// class to exist on the module.
 export function snapshotAllLiveCounts(JOLT: JoltModule): Record<string, number> {
     const module = JOLT as unknown as JoltModuleWithCache
     const result: Record<string, number> = {}
@@ -63,9 +58,9 @@ export function snapshotAllLiveCounts(JOLT: JoltModule): Record<string, number> 
 
 export type LeakDiff = { className: string; before: number; after: number; delta: number }
 
-// Positive delta: more live instances after than before — a leak (constructed, never destroyed).
-// Negative delta: fewer live instances than before — destroyed something that predates this scope
-// (a sign the test's teardown is destroying a shared/parent-owned object it shouldn't).
+// Positive delta: more live instances after than before, a leak (constructed, never destroyed).
+// Negative delta: fewer live instances than before, meaning something predating this scope got
+// destroyed (a sign the test's teardown is destroying a shared/parent-owned object it shouldn't).
 export function diffLiveCounts(before: Record<string, number>, after: Record<string, number>): LeakDiff[] {
     return Object.keys(after)
         .map(className => ({
@@ -77,13 +72,12 @@ export function diffLiveCounts(before: Record<string, number>, after: Record<str
         .filter(d => d.delta !== 0)
 }
 
-// Same as `diffLiveCounts`, but splits the result by `CLASS_CLASSIFICATION` bucket before handing
-// back only the bucket that's actually a correctness signal. PERMANENT_SINGLETON and
-// INTERNAL_REF_UNPROVABLE deltas are logged (console.warn) for visibility, never asserted on — by
-// definition, nothing in this test's own scope can prove whether those classes released correctly
-// or not, so treating their nonzero delta as a failure would just be noise. Any nonzero-delta class
-// missing from the table fails loud rather than silently passing: growing the classification table
-// is a required, deliberate step, not an incidental side effect of writing a new scenario.
+// Same as `diffLiveCounts`, but splits by `CLASS_CLASSIFICATION` bucket and returns only the
+// bucket that's a real correctness signal. PERMANENT_SINGLETON and INTERNAL_REF_UNPROVABLE deltas
+// are logged (console.warn) for visibility, never asserted on, since nothing in this test's scope
+// can prove whether those classes released correctly. Any nonzero-delta class missing from the
+// table fails loud rather than passing silently, since growing the classification table must stay
+// a deliberate step.
 export function diffLiveCountsFiltered(before: Record<string, number>, after: Record<string, number>): LeakDiff[] {
     const allDiffs = diffLiveCounts(before, after)
     const mustReturnToBaseline: LeakDiff[] = []
@@ -94,7 +88,7 @@ export function diffLiveCountsFiltered(before: Record<string, number>, after: Re
         if (!classification) {
             throw new Error(
                 `unclassified class ${diff.className} had nonzero delta, classify it before this test can pass ` +
-                    `(before=${diff.before}, after=${diff.after}, delta=${diff.delta}) — see class-classification.ts`
+                    `(before=${diff.before}, after=${diff.after}, delta=${diff.delta}), see class-classification.ts`
             )
         }
 
@@ -116,13 +110,13 @@ export type DestroyViolation = {
     stack: string | undefined
 }
 
-// Wraps `JOLT.destroy` for the duration of a test: any argument that duck-types as a `RefTarget`
-// (has a `GetRefCount` method — no class enumeration, no IDL lookup, so it catches *any* call
-// site shaped like this, not just the ones a hand-written recipe happened to name) whose refcount
-// is still >1 at the moment of destruction is a use-after-free-in-waiting — `JOLT.destroy()` is a
-// raw C++ delete, not a `Release()`, so it frees memory another owner still holds a pointer to
-// (see [[jolt_refcounted_destroy_danger]]). Recorded rather than thrown, so the guard doesn't mask
-// whatever UB actually happens next; the caller decides what a violation means for their test.
+// Wraps `JOLT.destroy` for the duration of a test. Any argument duck-typed as a `RefTarget` (has
+// a `GetRefCount` method, so it catches any call site shaped like this, not just ones a
+// hand-written recipe named) whose refcount is still >1 at destruction is a use-after-free
+// waiting to happen: `JOLT.destroy()` is a raw C++ delete, not `Release()`, so it frees memory
+// another owner still holds a pointer to (see [[jolt_refcounted_destroy_danger]]). Recorded rather
+// than thrown, so the guard doesn't mask whatever UB happens next. The caller decides what a
+// violation means for their test.
 export function patchDestroyGuard(JOLT: JoltModule): { violations: DestroyViolation[]; unpatch: () => void } {
     const module = JOLT as unknown as Record<string, (obj: unknown) => void>
     const original = module.destroy

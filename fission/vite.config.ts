@@ -108,9 +108,9 @@ export default defineConfig(async ({ mode }) => {
                         testTimeout: 10000,
                         globals: true,
                         environment: "jsdom",
-                        // Real Jolt WASM memory audit suite runs under its own "jolt-memory-audit"
+                        // Real Jolt WASM memory audit suite runs under its own "jolt-memory"
                         // project (plain Node, no jsdom/Playwright) — see that project below.
-                        exclude: [...configDefaults.exclude, "src/test/jolt-memory-audit/**"],
+                        exclude: [...configDefaults.exclude, "src/test/jolt-memory/**"],
                         reporters: process.env.GITHUB_ACTIONS
                             ? [
                                   "github-actions",
@@ -154,14 +154,22 @@ export default defineConfig(async ({ mode }) => {
                         alias: process.env.JOLT_ASAN_DIST
                             ? [
                                   ...baseAliases,
-                                  { find: "@synthesis.adsk/jolt-physics", replacement: process.env.JOLT_ASAN_DIST },
+                                  // Exact-match only: a plain prefix alias here would `.replace()` just the
+                                  // package-name portion of "@synthesis.adsk/jolt-physics/wasm-compat" (the
+                                  // subpath actually imported by JoltSyncLoader.ts) and leave "/wasm-compat"
+                                  // appended to the replacement path, producing a nonexistent file.
+                                  {
+                                      find: /^@synthesis\.adsk\/jolt-physics(\/wasm-compat)?$/,
+                                      replacement: process.env.JOLT_ASAN_DIST,
+                                  },
                               ]
                             : baseAliases,
                     },
                     test: {
-                        name: "jolt-memory-audit",
-                        include: ["src/test/jolt-memory-audit/**/*.test.ts"],
-                        setupFiles: ["src/test/jolt-memory-audit/setup.ts"],
+                        name: "jolt-memory",
+                        include: ["src/test/jolt-memory/tests/**/*.test.ts"],
+                        globalSetup: ["src/test/jolt-memory/global-setup.ts"],
+                        setupFiles: ["src/test/jolt-memory/setup.ts"],
                         testTimeout: 10000,
                         globals: true,
                         environment: "jsdom",

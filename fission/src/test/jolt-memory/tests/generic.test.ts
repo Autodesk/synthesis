@@ -1,10 +1,10 @@
-// Generic per-class template (Phase 3): for every class with a seeded factory, a clean
-// construct -> destroy round trip must leave the binder's live-object cache exactly where it
-// started. See instrumentation.ts for why this replaces a FinalizationRegistry-based approach.
+// Generic per-class template: for every class with a seeded factory, a clean construct -> destroy
+// round trip must leave the binder's live-object cache exactly where it started. See
+// instrumentation.ts for why this replaces a FinalizationRegistry-based approach.
 import { describe, expect, test } from "vitest"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { factories } from "./factories"
-import { countLive, expectNoLeaks } from "./instrumentation"
+import { factories } from "../lib/factories"
+import { countLive, expectNoLeaks } from "../lib/instrumentation"
 
 describe("generic construct/destroy round trip", () => {
     for (const className of Object.keys(factories)) {
@@ -17,9 +17,8 @@ describe("generic construct/destroy round trip", () => {
         })
     }
 
-    // Meta-test: proves the leak detector actually catches a real leak, not just a tautology.
-    // Uses its own class (not shared with other tests in this file) so the before/after counts
-    // are exact regardless of test execution order.
+    // Proves the leak detector catches a real leak, not just a tautology. Uses its own class so
+    // before/after counts stay exact regardless of test execution order.
     test("meta: a never-destroyed instance IS reported as a leak", async () => {
         const diffs = await expectNoLeaks(JOLT, ["IndexedTriangle"], () => {
             factories.IndexedTriangle(JOLT) // intentionally never destroyed
