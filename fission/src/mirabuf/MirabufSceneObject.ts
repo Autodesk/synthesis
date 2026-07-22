@@ -1148,6 +1148,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public disablePhysics() {
+        if (!this.hasPhysics()) return
         if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id as LocalSceneObjectId)) {
             World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id as RemoteSceneObjectId })
         }

@@ -7,8 +7,8 @@ import {peerMessageHandlers} from "./MessageHandlers"
 import type {ClientInfo, LocalSceneObjectId, Message, MessageWithTimestamp, RemoteSceneObjectId} from "./types"
 import EventSystem from "@/systems/EventSystem.ts"
 import {decode, encode} from "@msgpack/msgpack";
-import {InitialMessage} from "@/systems/multiplayer/bindings/InitialMessage.ts";
-import {InitialResponse} from "@/systems/multiplayer/bindings/InitialResponse.ts";
+import type {InitialMessage} from "@/systems/multiplayer/bindings/InitialMessage.ts";
+import type {InitialResponse} from "@/systems/multiplayer/bindings/InitialResponse.ts";
 
 export const COLLISION_TIMEOUT = 500
 
@@ -35,8 +35,7 @@ class MultiplayerSystem {
 
     private constructor(hostAddr: string, roomId: number | "create", displayName: string) {
         this.client = new WebSocket(hostAddr)
-        this.client.onopen = (ev) => {
-            console.log("OPEN", ev, this.client.readyState)
+        this.client.onopen = () => {
             const msg = JSON.stringify(({
                 room_id: roomId == "create" ? null : roomId,
                 name: displayName
@@ -46,6 +45,7 @@ class MultiplayerSystem {
         this.client.onclose = (ev) => {
             console.log(ev, this.client)
             globalAddToast("error", "Multiplayer connection closed")
+            this.destroy()
         }
 
         this.client.onerror = (ev) => {
@@ -67,6 +67,7 @@ class MultiplayerSystem {
                 globalAddToast("success", "Joined room", room_id)
                 resolve(true)
                 await this.sendHello(true)
+                EventSystem.dispatch("MultiplayerStateJoinRoom")
             }
             setTimeout(() => resolve(false), 10000)
         }).then((res) => {
@@ -74,8 +75,8 @@ class MultiplayerSystem {
                 console.log("updating")
                 this.client.onmessage = async (ev) => {
                     const data = (ev.data as Blob)
-                    console.log("MSG", ev.data)
-                    await this.handlePeerMessage(decode(await data.arrayBuffer()) as MessageWithTimestamp)
+                    const decoded = decode(await data.arrayBuffer())
+                    await this.handlePeerMessage(decoded as MessageWithTimestamp)
                 }
             }
             return res
@@ -161,8 +162,12 @@ class MultiplayerSystem {
         return [...this._clientToInfoMap.keys()]
     }
 
-    get peerInfo(): ClientInfo[] {
+    get peerInfo(): readonly Readonly<ClientInfo>[] {
         return [...this._clientToInfoMap.values()]
+    }
+
+    get info(): Readonly<ClientInfo> {
+        return this._info
     }
 
     get displayName(): string {
