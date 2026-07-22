@@ -841,11 +841,11 @@ class PhysicsSystem extends WorldSystem {
             hingeSettings.mMaxFrictionTorque = constraint.friction
             hingeSettings.mPoint1 = hingeSettings.mPoint2 = anchorPoint
 
-            hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = constraint.axis.Normalized()
+            hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = constraint.axis.Normalized() // deep copy of static temp
 
-            const normalAxis = getPerpendicular(hingeSettings.mHingeAxis1)
-            hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = normalAxis
-            JOLT.destroy(normalAxis)
+            const perpendicular = getPerpendicular(hingeSettings.mHingeAxis1)
+            hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = perpendicular.Normalized() // deep copy of static temp
+            JOLT.destroy(perpendicular)
 
             return hingeSettings
         }

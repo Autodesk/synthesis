@@ -6,17 +6,7 @@ import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } fro
 
 type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
-/** deep copying a vector */
-function copyVec<T extends Jolt.Vec3 | Jolt.RVec3>(vec: T): T {
-    return (vec instanceof JOLT.Vec3
-        ? new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
-        : new JOLT.RVec3(vec.GetX(), vec.GetY(), vec.GetZ())) as T
-}
-
-export function createAnchorPoint(
-    jointInstance: mirabuf.joint.JointInstance,
-    jointDefinition: mirabuf.joint.Joint
-): Jolt.RVec3 {
+export function createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint) {
     const jointOrigin = jointDefinition.origin
         ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin)
         : new JOLT.RVec3(0, 0, 0)
@@ -25,7 +15,7 @@ export function createAnchorPoint(
         ? convertMirabufVector3ToJoltRVec3(jointInstance.offset)
         : new JOLT.RVec3(0, 0, 0)
 
-    const anchorPoint = copyVec(jointOrigin.AddRVec3(jointOriginOffset))
+    const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
 
     JOLT.destroy(jointOrigin)
     JOLT.destroy(jointOriginOffset)
@@ -51,18 +41,16 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
     if (Math.abs(Math.abs(vec.Dot(toCheck)) - 1.0) < 0.0001) return undefined
 
     const a = vec.Dot(toCheck)
-    const original = new JOLT.Vec3(
+    return new JOLT.Vec3(
         toCheck.GetX() - vec.GetX() * a,
         toCheck.GetY() - vec.GetY() * a,
         toCheck.GetZ() - vec.GetZ() * a
     )
-
-    const perp = copyVec(original.Normalized())
-    JOLT.destroy(original)
-
-    return perp
 }
 
+/**
+ * @returns non-normalized vector perpendicular to vec
+ */
 export function getPerpendicular(vec: Jolt.Vec3): Jolt.Vec3 {
     const v1 = new JOLT.Vec3(0, 1, 0)
     const v2 = new JOLT.Vec3(0, 0, 1)
@@ -89,18 +77,18 @@ export function setAxes(
     versionNum?: number
 ) {
     const axis: Jolt.Vec3 = getAxis(freedom, versionNum)
-    const constraintAxis = copyVec(axis.Normalized())
+    const constraintAxis = axis.Normalized() // static temp
 
     if ("mHingeAxis1" in settings) {
-        settings.mHingeAxis1 = settings.mHingeAxis2 = constraintAxis
+        settings.mHingeAxis1 = settings.mHingeAxis2 = constraintAxis // deep copying into mHingeAxis
     } else {
         settings.mSliderAxis1 = settings.mSliderAxis2 = constraintAxis
     }
 
-    const normalAxis = getPerpendicular(constraintAxis)
-    settings.mNormalAxis1 = settings.mNormalAxis2 = normalAxis
+    const perpendicular = getPerpendicular(constraintAxis)
+    settings.mNormalAxis1 = settings.mNormalAxis2 = perpendicular.Normalized() // perpendicular.Normalized() returns a static temp
 
-    JOLT.destroy(normalAxis)
+    JOLT.destroy(perpendicular)
     JOLT.destroy(constraintAxis)
     JOLT.destroy(axis)
 }
