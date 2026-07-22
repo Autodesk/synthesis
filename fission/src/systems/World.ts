@@ -185,7 +185,6 @@ if (import.meta.hot) {
     // Restore the instance that survived the HMR reload
     if (import.meta.hot.data.world) {
         World["_instance"] = import.meta.hot.data.world
-        console.log("HOTL!", import.meta.hot.data.world)
     }
 
     // Stash the instance before the module is replaced
