@@ -114,7 +114,7 @@ describe("World Tests", () => {
             systems.forEach(system => {
                 vi.spyOn(World[system]!, "destroy")
             })
-            const destroySpies = systems.map((system) => World[system]!.destroy)
+            const destroySpies = systems.map(system => World[system]!.destroy)
             World.destroyWorld()
 
             expect(World.isAlive).toBeFalsy()
