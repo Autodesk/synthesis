@@ -202,24 +202,14 @@ const GeneralTab: React.FC = () => (
                 label="Show Protected Zones"
                 tooltip="If disabled, protected zones will not be visible but will continue to function the same."
             />
-            <GeneralTabCheckbox
-                preference="RenderSceneTags"
-                label="Show Scene Tags"
-                tooltip="Name tags above robot."
-            />
-            <GeneralTabCheckbox
-                preference="RenderScoreboard"
-                label="Show Scoreboard"
-            />
+            <GeneralTabCheckbox preference="RenderSceneTags" label="Show Scene Tags" tooltip="Name tags above robot." />
+            <GeneralTabCheckbox preference="RenderScoreboard" label="Show Scoreboard" />
             <GeneralTabCheckbox
                 preference="ShowCenterOfMassIndicators"
                 label="Show Centers of Mass"
                 tooltip="Show a purple dot to indicate the center of mass of each robot in frame"
             />
-            <GeneralTabCheckbox
-                preference="MuteAllSound"
-                label="Mute All Sound"
-            />
+            <GeneralTabCheckbox preference="MuteAllSound" label="Mute All Sound" />
             <GeneralTabSlider
                 preference="SFXVolume"
                 label="SFX Volume"
