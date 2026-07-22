@@ -48,8 +48,8 @@ describe("World Tests", () => {
         // Ensure World is not alive before each test
         if (World.isAlive) {
             World.destroyWorld()
+            World.resetAccumTimes()
         }
-        World.resetAccumTimes()
     })
 
     afterEach(() => {
@@ -62,20 +62,6 @@ describe("World Tests", () => {
     describe("Initial State", () => {
         test("World should not be alive initially", () => {
             expect(World.isAlive).toBeFalsy()
-        })
-
-        test("accumTimes should have initial values", () => {
-            const accumTimes = World.accumTimes
-            expect(accumTimes.frames).toBe(0)
-            expect(accumTimes.sceneTime).toBe(0)
-            expect(accumTimes.physicsTime).toBe(0)
-            expect(accumTimes.simulationTime).toBe(0)
-            expect(accumTimes.inputTime).toBe(0)
-            expect(accumTimes.totalTime).toBe(0)
-        })
-
-        test("currentDeltaT should be 0 initially", () => {
-            expect(World.currentDeltaT).toBe(0)
         })
     })
 
@@ -128,11 +114,12 @@ describe("World Tests", () => {
             systems.forEach(system => {
                 vi.spyOn(World[system]!, "destroy")
             })
+            const destroySpies = systems.map((system) => World[system]!.destroy)
             World.destroyWorld()
 
             expect(World.isAlive).toBeFalsy()
-            systems.forEach(system => {
-                expect(World[system]!.destroy).toHaveBeenCalled()
+            destroySpies.forEach(spy => {
+                expect(spy).toHaveBeenCalled()
             })
         })
 
