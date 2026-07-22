@@ -57,7 +57,7 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
         toCheck.GetZ() - vec.GetZ() * a
     )
 
-    const perp = copyVec(original.Normalized()) as Jolt.Vec3
+    const perp = copyVec(original.Normalized())
     JOLT.destroy(original)
 
     return perp
@@ -89,7 +89,7 @@ export function setAxes(
     versionNum?: number
 ) {
     const axis: Jolt.Vec3 = getAxis(freedom, versionNum)
-    const constraintAxis = copyVec(axis.Normalized()) as Jolt.Vec3
+    const constraintAxis = copyVec(axis.Normalized())
 
     if ("mHingeAxis1" in settings) {
         settings.mHingeAxis1 = settings.mHingeAxis2 = constraintAxis
