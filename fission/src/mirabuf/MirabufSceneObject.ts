@@ -405,7 +405,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             return
         }
 
-        const referencePos = new THREE.Vector3()
         let pos: SpawnLocation
         if (this.miraType == MiraType.FIELD) {
             pos = defaultFieldSpawnLocation()
@@ -417,9 +416,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             } else {
                 pos = fieldLocations?.default ?? defaultFieldSpawnLocation()
             }
-            field?.getPositionTransform(referencePos)
         }
-        this.setObjectPosition(pos, referencePos)
+        this.setObjectPosition(pos)
     }
 
     // Game piece globalTransforms are relative to the field's unshifted design origin, so
