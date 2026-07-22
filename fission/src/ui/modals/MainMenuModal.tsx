@@ -24,10 +24,9 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
         setIsMainMenuOpen(true)
         configureScreen(modal!, { title: "Welcome", hideAccept: true, hideCancel: true, allowClickAway: false }, {})
 
-        return () => {
-            setIsMainMenuOpen(false)
-        }
-    }, [])
+        return () => setIsMainMenuOpen(false)
+    }, [setIsMainMenuOpen, configureScreen, modal])
+
     return (
         <Stack gap={1}>
             <Button

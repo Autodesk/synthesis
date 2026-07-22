@@ -135,7 +135,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedFile, miraType, isUrdf, openPanel, modal, closeModal, configureScreen])
+    }, [selectedFile, miraType, openPanel, modal, closeModal, configureScreen])
 
     useEffect(() => {
         setSelectedType(configTypeToMiraType(configurationType))

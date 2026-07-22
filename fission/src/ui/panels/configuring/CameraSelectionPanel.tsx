@@ -75,13 +75,13 @@ const TargetSettings: React.FC<{ controls: CustomTargetControls }> = ({ controls
     )
 }
 
+const getFieldViewControls = () => {
+    const c = World.sceneRenderer.currentCameraControls
+    return c instanceof CustomFieldViewControls ? c : undefined
+}
+
 /** Station / robot-focus dropdowns, shown when a field is focused. */
 const FieldViewSettings: React.FC = () => {
-    const getFieldViewControls = () => {
-        const c = World.sceneRenderer.currentCameraControls
-        return c instanceof CustomFieldViewControls ? c : undefined
-    }
-
     const [points, setPoints] = useState<CameraPoint[]>(getCameraPoints)
     const [robots, setRobots] = useState<MirabufSceneObject[]>(() =>
         World.sceneRenderer.mirabufSceneObjects.getRobots()
@@ -94,6 +94,7 @@ const FieldViewSettings: React.FC = () => {
         getFieldViewControls()?.focusedRobot?.id ?? UNFOCUSED_ID
     )
 
+    // TODO: this is very bad react, we should not be updating this every re-render
     const refreshPoints = () => {
         const freshPoints = getCameraPoints()
         setPoints(freshPoints)

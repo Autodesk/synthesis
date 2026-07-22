@@ -17,13 +17,14 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
     let isValidName: boolean = name.length >= 3
     const { startWorldCallback } = modal!.props.custom
+
     useLayoutEffect(() => {
         configureScreen(
             modal!,
             { title: "Start Multiplayer", hideAccept: true, hideCancel: true, allowClickAway: false },
             {}
         )
-    }, [])
+    }, [configureScreen, modal])
 
     useEffect(() => {
         isValidName = name.length >= 3
