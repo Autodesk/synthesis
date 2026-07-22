@@ -27,6 +27,7 @@ class JointGroupSelectionOption extends SelectMenuOption {
 interface BehaviorCardProps {
     elementKey: number
     name: string
+    parentName: string | undefined
     behavior: SequentialBehaviorPreferences
     lookingForParent: SequentialBehaviorPreferences | undefined
     update: () => void
@@ -38,6 +39,7 @@ interface BehaviorCardProps {
 const BehaviorCard: React.FC<BehaviorCardProps> = ({
     elementKey,
     name,
+    parentName,
     behavior,
     update,
     onSetPressed,
@@ -59,9 +61,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
     return (
         <Stack direction="row" textAlign="center" gap={1} key={elementKey}>
             {hasParent && <Spacer width={10} />}
-            <Tooltip
-                title={hasParent ? "Following Joint " + behavior.parentJointIndex : selectable ? "Set as parent" : ""}
-            >
+            <Tooltip title={hasParent ? `Following ${parentName}` : selectable ? "Set as parent" : ""}>
                 <div>
                     <Button
                         size="small"
@@ -160,6 +160,15 @@ const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobo
         return names
     }, [options])
 
+    const getJointDisplayName = useCallback(
+        (behavior: SequentialBehaviorPreferences) =>
+            jointNamesByIndex.get(behavior.jointIndex) ??
+            (behavior.type === "Arm"
+                ? `Joint ${behavior.jointIndex} (Pivot)`
+                : `Joint ${behavior.jointIndex} (Slider)`),
+        [jointNamesByIndex]
+    )
+
     const [seqBehaviors, setSeqBehaviors] = useState<SequentialBehaviorPreferences[]>(
         PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
@@ -217,15 +226,15 @@ const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobo
                     <Stack direction="column" gap={2} className="overflow-y-auto">
                         {seqBehaviors.map(behavior => {
                             const jointIndex = behavior.jointIndex
+                            const parentBehavior =
+                                behavior.parentJointIndex !== undefined
+                                    ? seqBehaviors.find(b => b.jointIndex === behavior.parentJointIndex)
+                                    : undefined
                             return (
                                 <BehaviorCard
                                     elementKey={jointIndex}
-                                    name={
-                                        jointNamesByIndex.get(jointIndex) ??
-                                        (behavior.type === "Arm"
-                                            ? `Joint ${jointIndex} (Pivot)`
-                                            : `Joint ${jointIndex} (Slider)`)
-                                    }
+                                    name={getJointDisplayName(behavior)}
+                                    parentName={parentBehavior ? getJointDisplayName(parentBehavior) : undefined}
                                     behavior={behavior}
                                     key={jointIndex}
                                     update={update}

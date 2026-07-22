@@ -2,8 +2,8 @@ import { MenuItem, type SxProps, type Theme } from "@mui/material"
 import type React from "react"
 import { IoMdArrowDropdown } from "react-icons/io"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { Select } from "../StyledComponents"
-import { DROPDOWN_SELECT_SX } from "./TopBarConfig"
+import { Select } from "@/ui/components/StyledComponents"
+import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "./TopBarConfig"
 
 type AssemblySelectProps = {
     assemblies: MirabufSceneObject[]
@@ -33,6 +33,7 @@ export const AssemblySelect: React.FC<AssemblySelectProps> = ({
         onChange={e => onSelect(e.target.value as string)}
         renderValue={() => (selectedConfigAssembly ? selectedConfigAssembly.descriptiveName : "Select an assembly")}
         IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
+        MenuProps={DROPDOWN_MENU_PROPS}
         sx={{ ...DROPDOWN_SELECT_SX, ...sx }}
     >
         {assemblies.length === 0 && (

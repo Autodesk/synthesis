@@ -3,8 +3,8 @@ import { IoMdArrowDropdown } from "react-icons/io"
 import type React from "react"
 import { APP_MODES, type AppMode } from "@/systems/AppMode"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import { Select } from "../StyledComponents"
-import { DROPDOWN_SELECT_SX } from "./TopBarConfig"
+import { Select } from "@/ui/components/StyledComponents"
+import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "./TopBarConfig"
 import { TopBarIcon, type TopBarIconName } from "./TopBarIcons"
 
 export const MODE_ICONS: Record<AppMode, TopBarIconName> = {
@@ -31,6 +31,7 @@ const ModeDropdown: React.FC<{ onOpenChange?: (open: boolean) => void }> = ({ on
             onClose={() => onOpenChange?.(false)}
             renderValue={value => <ModeLabel mode={value as AppMode} />}
             IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
+            MenuProps={DROPDOWN_MENU_PROPS}
             sx={{ ...DROPDOWN_SELECT_SX, borderRadius: 1, height: 34, minWidth: 135, fontSize: 13 }}
         >
             {APP_MODES.map(mode => (
