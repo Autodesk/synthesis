@@ -58,7 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // `listener` will be used regardless of the security level specified
     let listener = TcpListener::bind(format!("127.0.0.1:{port}")).await?;
 
-    if env::args().any(|a| a == "--insecure") {
+    if !env::args().any(|a| a == "--secure") {
         while let Ok((stream, addr)) = listener.accept().await {
             tokio::spawn(handle_connection(state.clone(), stream, addr));
         }

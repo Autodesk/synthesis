@@ -11,12 +11,9 @@
 
 use crate::room::{ClientId, RoomSnapshot, Snapshot, State};
 
-use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 use std::{io, time::Duration};
 
-use chrono::Utc;
-use color_palettes::Palette;
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
@@ -24,11 +21,16 @@ use ratatui::widgets::{
     Block, BorderType, Clear, List, ListItem, ListState, Paragraph, Tabs, Wrap,
 };
 use ratatui::{DefaultTerminal, Frame, text::Line};
+use uuid::Uuid;
 
 /// How many room panels are shown side-by-side on a single tab.
 const ROOMS_PER_TAB: usize = 2;
 
-const COLOR_PALETTE_SIZE: usize = 12;
+// [Source](https://colorkit.co/palette/ffadad-ffd6a5-fdffb6-caffbf-9bf6ff-a0c4ff-bdb2ff-ffc6ff/)
+const COLOR_PALETTE: &[u32] = &[
+    0x00FFADAD, 0x00FFD6A5, 0x00FDFFB6, 0x00CAFFBF, 0x009BF6FF, 0x00A0C4FF, 0x00BDB2FF, 0x00FFC6FF,
+];
+const COLOR_PALETTE_SIZE: usize = 8;
 
 pub fn run(state: Arc<Mutex<State>>) -> io::Result<()> {
     let mut terminal = ratatui::init();
@@ -77,20 +79,10 @@ struct App {
     tab_count: usize,
     panels_on_tab: usize,
     focused_members: Vec<(ClientId, String)>,
-
-    color_palette: Palette,
 }
 
 impl App {
     fn new(state: Arc<Mutex<State>>) -> Self {
-        let seed = Utc::now().timestamp() as u64;
-        let color_palette = Palette::generator()
-            .random()
-            .with_lightness(0.4..=0.6)
-            .with_saturation(0.7)
-            .with_seed(seed)
-            .generate(COLOR_PALETTE_SIZE.try_into().unwrap());
-
         Self {
             state,
             tab: 0,
@@ -101,7 +93,6 @@ impl App {
             tab_count: 1,
             panels_on_tab: 0,
             focused_members: Vec::new(),
-            color_palette,
         }
     }
 
@@ -254,14 +245,7 @@ fn render_body(frame: &mut Frame, area: Rect, app: &App, snapshot: &Snapshot) {
         match snapshot.rooms.get(base + slot) {
             Some(room) => {
                 let focused = slot == app.focused_panel;
-                render_room_panel(
-                    frame,
-                    col,
-                    room,
-                    focused,
-                    app.selected_user,
-                    &app.color_palette,
-                );
+                render_room_panel(frame, col, room, focused, app.selected_user);
             }
             None => {
                 frame.render_widget(Block::bordered().title(" (empty) "), col);
@@ -276,7 +260,6 @@ fn render_room_panel(
     room: &RoomSnapshot,
     focused: bool,
     cursor: usize,
-    color_palette: &Palette,
 ) {
     let border_style = if focused {
         Style::default().fg(Color::Yellow)
@@ -304,36 +287,30 @@ fn render_room_panel(
         .constraints([Constraint::Percentage(45), Constraint::Percentage(55)])
         .split(inner);
 
-    render_users(frame, rows[0], room, focused, cursor, color_palette);
+    render_users(frame, rows[0], room, focused, cursor);
     render_logs(frame, rows[1], room);
 }
 
-fn render_users(
-    frame: &mut Frame,
-    area: Rect,
-    room: &RoomSnapshot,
-    focused: bool,
-    cursor: usize,
-    palette: &Palette,
-) {
+fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: bool, cursor: usize) {
+    let member_to_item = |member_and_idx: (usize, &(Uuid, String))| -> ListItem<'_> {
+        let (i, (uid, name)) = member_and_idx;
+        // This totally could happen but like that would probably be a bug so whatever
+        let color = Color::from_u32(COLOR_PALETTE[i % COLOR_PALETTE_SIZE]);
+        let auth_marker = match *uid == room.authority {
+            true => "  [A]",
+            false => "",
+        };
+        let uid = &uid.to_string()[0..8];
+
+        let label = format!("{} ({}){}", uid, name, auth_marker);
+        ListItem::new(label).style(Style::new().fg(color))
+    };
+
     let items: Vec<ListItem> = room
         .members
         .iter()
-        .map(|(uid, name)| {
-            let uid_num =
-                usize::try_from(uid.as_u64_pair().0).expect("32-bit system not supported");
-            // This totally could happen but like that would probably be a bug so whatever
-            let color = Color::from_str(&palette[uid_num % COLOR_PALETTE_SIZE].to_hex_str())
-                .expect("Invalid Color");
-            let auth_marker = match *uid == room.authority {
-                true => "  [A]",
-                false => "",
-            };
-            let uid = &uid.to_string()[0..8];
-
-            let label = format!("{} ({}){}", uid, name, auth_marker);
-            ListItem::new(label).style(Style::new().fg(color))
-        })
+        .enumerate()
+        .map(member_to_item)
         .collect();
 
     let list = List::new(items)

@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
-color-palettes = "0.2.0"
 crossterm = "0.28"
 futures-channel = "0.3.33"
 futures-util = "0.3.33"
