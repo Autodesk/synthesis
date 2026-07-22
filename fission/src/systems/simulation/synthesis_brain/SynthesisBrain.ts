@@ -185,7 +185,8 @@ class SynthesisBrain extends Brain {
         }
 
         const unstickForce = new JOLT.Vec3(0, this._assembly.robotPreferences.unstickForce, 0)
-        body.AddForce(unstickForce)
+        body.AddForce(unstickForce) // CLONE
+        JOLT.destroy(unstickForce)
     }
 
     public disable(): void {
@@ -229,10 +230,9 @@ class SynthesisBrain extends Brain {
         // wheels into two equal groups. Try X and Z; pick the more balanced split.
         const constraintPositions: { x: number; z: number }[] = []
         for (let i = 0; i < wheelDrivers.length; i++) {
-            const m = fixedConstraints[i].GetConstraintToBody1Matrix()
+            const m = fixedConstraints[i].GetConstraintToBody1Matrix() // STATIC_ALIAS
             const t = m.GetTranslation()
             constraintPositions.push({ x: t.GetX() - robotCOM.GetX(), z: t.GetZ() - robotCOM.GetZ() })
-            JOLT.destroy(m)
         }
 
         const xImbalance = Math.abs(

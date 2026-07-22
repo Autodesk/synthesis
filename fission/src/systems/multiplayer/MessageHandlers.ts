@@ -137,11 +137,17 @@ function handlePeerUpdate(data: UpdateObjectData[], peerId: string, timestamp: n
                 const clientBody = World.physicsSystem.getBody(bodyId)
                 if (!clientBody) {
                     console.error(`Body ${bodyId} on Scene Object ${sceneObject.assemblyName} not found`)
+                    JOLT.destroy(linearVelocity)
+                    JOLT.destroy(angularVelocity)
+                    JOLT.destroy(position)
+                    JOLT.destroy(rotation)
                     return
                 }
 
                 clientBody.SetLinearVelocity(linearVelocity)
                 clientBody.SetAngularVelocity(angularVelocity)
+                JOLT.destroy(linearVelocity)
+                JOLT.destroy(angularVelocity)
                 World.physicsSystem.setBodyPosition(bodyId, position)
                 World.physicsSystem.setBodyRotation(bodyId, rotation)
             })

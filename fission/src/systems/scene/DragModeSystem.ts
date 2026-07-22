@@ -470,9 +470,10 @@ class DragModeSystem extends WorldSystem {
             // Apply force at the center of mass and calculate the torque manually
             // to simulate applying force at the drag point
             const joltForce = convertThreeVector3ToJoltVec3(forceNeeded)
-            body.AddForce(joltForce)
+            body.AddForce(joltForce) // CLONE
+            JOLT.destroy(joltForce)
 
-            const inertia = body.GetMotionProperties().GetInverseInertiaDiagonal()
+            const inertia = body.GetMotionProperties().GetInverseInertiaDiagonal() // STATIC_ALIAS
             const moi = 1.0 / inertia.Length()
             const yawRotation = new JOLT.Vec3(
                 0,
@@ -488,8 +489,10 @@ class DragModeSystem extends WorldSystem {
                     (InputSystem.isKeyPressed("ArrowUp") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowDown") ? 1 : 0))
             )
 
-            body.AddTorque(yawRotation)
-            body.AddTorque(pitchRotation)
+            body.AddTorque(yawRotation) // CLONE
+            body.AddTorque(pitchRotation) // CLONE
+            JOLT.destroy(yawRotation)
+            JOLT.destroy(pitchRotation)
         } else {
             // When close to target, apply braking forces and gravity compensation
             const currentVel = body.GetLinearVelocity()
@@ -509,9 +512,12 @@ class DragModeSystem extends WorldSystem {
                 const gravityCompensationY = mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE
                 brakingForce.SetY(brakingForce.GetY() + gravityCompensationY)
             }
-            body.AddForce(brakingForce)
+            body.AddForce(brakingForce) // CLONE
+            JOLT.destroy(brakingForce)
         }
-        body.SetAngularVelocity(new JOLT.Vec3())
+        const zeroAngularVelocity = new JOLT.Vec3()
+        body.SetAngularVelocity(zeroAngularVelocity) // CLONE
+        JOLT.destroy(zeroAngularVelocity)
     }
 
     private handleWheelDuringDrag(event: WheelEvent): void {
