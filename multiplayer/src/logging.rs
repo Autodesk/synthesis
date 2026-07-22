@@ -24,6 +24,33 @@ macro_rules! error {
     }
 }
 
+/// Takes a lock on `state`
+#[macro_export]
+macro_rules! info_lock {
+    ($state:ident, $($arg:tt)*) => {{
+        let mut guard = $state.lock().unwrap();
+        info!(guard, $($arg)*);
+    }};
+}
+
+/// Takes a lock on `state`
+#[macro_export]
+macro_rules! warn_lock {
+    ($state:ident, $($arg:tt)*) => {{
+        let mut guard = $state.lock().unwrap();
+        warn!(guard, $($arg)*);
+    }};
+}
+
+/// Takes a lock on `state`
+#[macro_export]
+macro_rules! error_lock {
+    ($state:ident, $($arg:tt)*) => {{
+        let mut guard = $state.lock().unwrap();
+        error!(guard, $($arg)*);
+    }};
+}
+
 #[derive(Debug, Clone)]
 pub enum EventType {
     Info,

@@ -8,23 +8,28 @@ use crate::messaging::InitialResponse;
 use crate::room::{ClientSender, State};
 use crate::{logging::EventType, messaging::InitialMessage};
 
+use std::error::Error;
+use std::fs::File;
+use std::io::BufReader;
+use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
-use std::{env, process, thread};
+use std::{env, fs, process, thread};
 
 use futures_util::{SinkExt, StreamExt};
-use tokio::net::{TcpListener, TcpStream};
+use rcgen::{CertifiedKey, generate_simple_self_signed};
+use tokio::io::{AsyncRead, AsyncWrite};
+use tokio::net::TcpListener;
 use tokio::sync::mpsc;
+use tokio_rustls::TlsAcceptor;
+use tokio_rustls::rustls::ServerConfig;
+use tokio_rustls::rustls::pki_types::{CertificateDer, PrivateKeyDer};
 use tokio_tungstenite::tungstenite::{Message, Utf8Bytes};
 
-const PORT: u32 = 9002;
+const DEFAULT_PORT: u32 = 9001;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let state = Arc::new(Mutex::new(State::new()));
-
-    let addr = format!("127.0.0.1:{PORT}");
-    let listener = TcpListener::bind(&addr).await?;
-    println!("Server listening on port {PORT}");
 
     // `--headless` is passed in to not open the dashboard
     if !env::args().any(|a| a == "--headless") {
@@ -41,26 +46,66 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         });
     }
 
-    while let Ok((stream, _)) = listener.accept().await {
-        tokio::spawn(handle_connection(state.clone(), stream));
+    // Queries and sets the port given by the cli, or the [`DEFAULT_PORT`] if one was not passed
+    let mut port: u32 = DEFAULT_PORT;
+    env::args().enumerate().for_each(|(i, arg)| {
+        if arg == "--port" {
+            let value = env::args().nth(i + 1);
+            let parsed = value.map(|n| n.parse().ok()).flatten();
+            if let Some(p) = parsed {
+                port = p;
+            }
+        }
+    });
+
+    // `listener` will be used regardless of the security level specified
+    let listener = TcpListener::bind(format!("127.0.0.1:{port}")).await?;
+
+    if env::args().any(|a| a == "--insecure") {
+        while let Ok((stream, addr)) = listener.accept().await {
+            tokio::spawn(handle_connection(state.clone(), stream, addr));
+        }
+
+        return Ok(());
+    }
+
+    let config = build_tls_config()?;
+    let acceptor = TlsAcceptor::from(Arc::new(config));
+
+    info_lock!(state, "Server listening on port {port} (secure)");
+
+    while let Ok((stream, addr)) = listener.accept().await {
+        let acceptor = acceptor.clone();
+        let state = state.clone();
+
+        // TLS handshake happens in task to avoid being held up by a slow client
+        tokio::spawn(async move {
+            match acceptor.accept(stream).await {
+                Ok(tls_stream) => handle_connection(state, tls_stream, addr).await,
+                Err(e) => {
+                    error_lock!(state, "Secure connection with client failed {}", e);
+                    return;
+                }
+            }
+        });
     }
 
     Ok(())
 }
 
-async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
-    let addr = raw_stream
-        .peer_addr()
-        .expect("Connected stream missing peer address");
+async fn handle_connection<S>(state: Arc<Mutex<State>>, raw_stream: S, addr: SocketAddr)
+where
+    S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
+{
+    let ws_stream = match tokio_tungstenite::accept_async(raw_stream).await {
+        Ok(ws_stream) => ws_stream,
+        Err(e) => {
+            error_lock!(state, "Websocket handshake with {addr} failed: {e}");
+            return;
+        }
+    };
 
-    let ws_stream = tokio_tungstenite::accept_async(raw_stream)
-        .await
-        .expect("Error during websocket handshake");
-
-    {
-        let mut guard = state.lock().unwrap();
-        info!(guard, "connection from {addr}");
-    }
+    info_lock!(state, "WS connection established with {addr}");
 
     // Each client gets an mpsc channel
     // Other client threads on the server can write to it
@@ -75,17 +120,16 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
 
     // Parse initial message, then user in correct room
     let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
-        let mut guard = state.lock().unwrap();
-        error!(guard, "Client disconnected before handshake");
-
+        warn_lock!(
+            state,
+            "Client disconnected before handshake (probably a test)"
+        );
         return;
     };
 
     let Ok(initial_message) = serde_json::from_str::<InitialMessage>(&initial_message_string)
     else {
-        let mut guard = state.lock().unwrap();
-        error!(guard, "{addr} sent an invalid initial message");
-
+        error_lock!(state, "{addr} sent an invalid initial message");
         return;
     };
 
@@ -107,8 +151,7 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
     };
     let bytes = Utf8Bytes::from(serde_json::to_string(&response).unwrap());
     if write.send(Message::Text(bytes)).await.is_err() {
-        let mut guard = state.lock().unwrap();
-        error!(guard, "Failed to send back initial response");
+        error_lock!(state, "Failed to send back initial response");
 
         return;
     }
@@ -147,9 +190,47 @@ async fn handle_connection(state: Arc<Mutex<State>>, raw_stream: TcpStream) {
 
                 return;
             }
-            // TODO
-            // Handle Ping/Pong
-            _ => {}
+            _ => todo!("Handle Ping/Pong"),
         }
     }
+}
+
+/// Creates a TLS config for the server
+/// Generates a certificate if one does not exist
+fn build_tls_config() -> Result<ServerConfig, Box<dyn Error>> {
+    ensure_certificate()?;
+
+    let mut cert_reader = BufReader::new(File::open("./secrets/cert.pem")?);
+    let cert_chain: Vec<CertificateDer> =
+        rustls_pemfile::certs(&mut cert_reader).collect::<Result<_, _>>()?;
+
+    let mut key_reader = BufReader::new(File::open("./secrets/key.pem")?);
+    let key = rustls_pemfile::pkcs8_private_keys(&mut key_reader)
+        .next()
+        .ok_or("Invalid PKCS#8 private key found in ./secrets/key.pem")??;
+
+    let config = ServerConfig::builder()
+        .with_no_client_auth()
+        .with_single_cert(cert_chain, PrivateKeyDer::Pkcs8(key))?;
+
+    Ok(config)
+}
+
+/// Writes a self-signed certificate and keypair to `./secrets` if one isn't already present.
+fn ensure_certificate() -> Result<(), Box<dyn Error>> {
+    if !fs::exists("./secrets")? {
+        fs::create_dir("./secrets")?;
+    }
+
+    if fs::exists("./secrets/cert.pem")? {
+        return Ok(());
+    }
+
+    let subject_alt_names = vec!["localhost".to_string(), "127.0.0.1".to_string()];
+    let CertifiedKey { cert, signing_key } = generate_simple_self_signed(subject_alt_names)?;
+
+    fs::write("./secrets/cert.pem", cert.pem())?;
+    fs::write("./secrets/key.pem", signing_key.serialize_pem())?;
+
+    Ok(())
 }
