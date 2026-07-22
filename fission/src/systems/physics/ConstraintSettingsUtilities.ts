@@ -7,10 +7,10 @@ import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } fro
 type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
 /** deep copying a vector */
-function copyVec(vec: Jolt.Vec3 | Jolt.RVec3): Jolt.Vec3 | Jolt.RVec3 {
-    return vec instanceof JOLT.Vec3
+function copyVec<T extends Jolt.Vec3 | Jolt.RVec3>(vec: T): T {
+    return (vec instanceof JOLT.Vec3
         ? new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
-        : new JOLT.RVec3(vec.GetX(), vec.GetY(), vec.GetZ())
+        : new JOLT.RVec3(vec.GetX(), vec.GetY(), vec.GetZ())) as T
 }
 
 export function createAnchorPoint(
@@ -25,7 +25,7 @@ export function createAnchorPoint(
         ? convertMirabufVector3ToJoltRVec3(jointInstance.offset)
         : new JOLT.RVec3(0, 0, 0)
 
-    const anchorPoint: Jolt.RVec3 = copyVec(jointOrigin.AddRVec3(jointOriginOffset)) as Jolt.RVec3
+    const anchorPoint = copyVec(jointOrigin.AddRVec3(jointOriginOffset))
 
     JOLT.destroy(jointOrigin)
     JOLT.destroy(jointOriginOffset)
