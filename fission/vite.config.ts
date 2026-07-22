@@ -106,9 +106,11 @@ export default defineConfig(async ({ mode }) => {
                       "github-actions",
                       "default",
                       {
-                          onTestRunEnd(_modules: unknown, _errors: unknown, reason: TestRunEndReason) {
-                              if (reason != "passed") {
-                                  process.exit(1)
+                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
+                              if (reason === "passed" && unhandled.length === 0) {
+                                  console.error("GH ACTIONS VITEST PASSED")
+                              } else {
+                                  console.error(unhandled)
                               }
                           },
                       },
@@ -129,6 +131,14 @@ export default defineConfig(async ({ mode }) => {
                         headless: true,
                     },
                 ],
+            },
+            coverage: {
+                provider: "istanbul",
+                reporter: ["text", "html"] as const,
+                reportsDirectory: "./coverage",
+                include: ["src/**/*.{ts,tsx}"],
+                exclude: ["src/test/**", "src/proto/**"],
+                reportOnFailure: true,
             },
         },
         build: {
