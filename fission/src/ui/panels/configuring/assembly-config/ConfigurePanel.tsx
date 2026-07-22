@@ -288,7 +288,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             const currentSchemes: InputScheme[] = InputSchemeManager.allInputSchemes
             originalInputSchemes.current = structuredClone(currentSchemes)
         })
-    }, [panel?.id])
+    }, [panel?.id, selectedAssembly])
 
     useEffect(() => {
         const onBeforeAccept = () => {

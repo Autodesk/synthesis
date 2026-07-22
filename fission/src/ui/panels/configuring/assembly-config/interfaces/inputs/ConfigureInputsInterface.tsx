@@ -57,7 +57,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                 }, 0)
             }
         }
-    }, [panel])
+    }, [panel, selectedScheme, closePanel])
 
     useEffect(() => {
         const unsubscribeConfig = EventSystem.listen("ConfigurationSavedEvent", saveEvent)
@@ -68,7 +68,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
             unsubscribeConfig()
             unsubscribeInput()
         }
-    }, [saveEvent, handleSchemeChange])
+    }, [saveEvent, handleSchemeChange, setGlobalSelectedScheme])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()

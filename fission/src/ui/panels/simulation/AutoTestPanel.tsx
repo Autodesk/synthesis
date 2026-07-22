@@ -303,7 +303,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})
-    }, [panel])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)
