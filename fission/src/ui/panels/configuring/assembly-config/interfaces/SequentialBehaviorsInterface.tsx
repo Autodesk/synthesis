@@ -14,7 +14,6 @@ interface BehaviorCardProps {
     name: string
     behavior: SequentialBehaviorPreferences
     lookingForParent: SequentialBehaviorPreferences | undefined
-    update: () => void
     onSetPressed: () => void
     onBehaviorSelected: () => void
     hasChild: boolean
@@ -24,7 +23,6 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
     elementKey,
     name,
     behavior,
-    update,
     onSetPressed,
     lookingForParent,
     onBehaviorSelected,
@@ -51,10 +49,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                     <Button
                         size="small"
                         className="text-center mx-[5%] h-full"
-                        onClick={() => {
-                            onBehaviorSelected()
-                            update()
-                        }}
+                        onClick={onBehaviorSelected}
                         disabled={!selectable}
                         color={"secondary"}
                         sx={{
@@ -80,10 +75,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
             >
                 <div>
                     <Button
-                        onClick={() => {
-                            onSetPressed()
-                            update()
-                        }}
+                        onClick={onSetPressed}
                         className={"h-full"}
                         color={hasParent ? "warning" : "primary"}
                         disabled={selectable || hasChild}
@@ -181,7 +173,6 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
                         name={behavior.type === "Arm" ? `Joint ${jointIndex} (Pivot)` : `Joint ${jointIndex} (Slider)`}
                         behavior={behavior}
                         key={jointIndex}
-                        update={update}
                         onSetPressed={() => {
                             if (behavior.parentJointIndex !== undefined) {
                                 behavior.parentJointIndex = undefined
