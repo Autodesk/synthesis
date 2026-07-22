@@ -1,4 +1,5 @@
 import * as THREE from "three"
+import { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { applyWheelAssignments, type WheelAssignment } from "@/mirabuf/WheelJointBuilder"
@@ -9,16 +10,10 @@ import {
     computeWheelAxisFromAABB,
     computeWheelAxisFromCircleFit,
     transformWheelAxis,
-    type WheelAxis,
 } from "@/util/geometry/WheelAxisFit"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
-
-enum PickStage {
-    WHEEL,
-    PARENT,
-}
 
 interface PartPick {
     sceneObject: MirabufSceneObject
@@ -61,12 +56,6 @@ function getPartLocalVertices(object: THREE.Object3D, instanceId: number): THREE
     return points
 }
 
-interface WheelDraft {
-    sceneObject: MirabufSceneObject
-    wheelPartGuid: string
-    axisFit: WheelAxis // world-space
-}
-
 interface PendingAssignment {
     sceneObject: MirabufSceneObject
     assignment: WheelAssignment
@@ -94,15 +83,13 @@ interface PickIndexEntry {
 /**
  * Test-scope interaction mode for the "select a circular edge to place a wheel joint" mechanism.
  *
- * Flow per wheel: click the wheel's rim edge (fits a circle -> origin/axis/radius), then click a
- * second, different part on the same assembly as the mandatory parent/chassis. Repeats indefinitely,
- * accumulating pending assignments. apply() mutates the affected assembly/assemblies and fully rebuilds
- * their MirabufSceneObjects -- no partial/live patching of physics bodies, no persistence.
+ * Flow per wheel: click the wheel's rim edge (fits a circle -> origin/axis/radius); the assembly's
+ * grounded/root part is used as the parent/chassis automatically. Repeats indefinitely, accumulating
+ * pending assignments. apply() mutates the affected assembly/assemblies and fully rebuilds their
+ * MirabufSceneObjects -- no partial/live patching of physics bodies, no persistence.
  */
 class WheelAssignmentMode extends WorldSystem {
     private _enabled = false
-    private _stage: PickStage = PickStage.WHEEL
-    private _draft: WheelDraft | undefined
     private _pending: PendingAssignment[] = []
 
     private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
@@ -124,24 +111,14 @@ class WheelAssignmentMode extends WorldSystem {
         if (this._enabled === enabled) return
         this._enabled = enabled
 
-        if (enabled) {
-            this._stage = PickStage.WHEEL
-            this._draft = undefined
-            this.hookInteractionHandlers()
-        } else {
-            this.unhookInteractionHandlers()
-            this._draft = undefined
-        }
+        if (enabled) this.hookInteractionHandlers()
+        else this.unhookInteractionHandlers()
 
         EventSystem.dispatch("WheelAssignmentModeToggled", { enabled })
     }
 
     public get pendingCount(): number {
         return this._pending.length
-    }
-
-    public get awaitingParentPick(): boolean {
-        return this._enabled && this._stage === PickStage.PARENT
     }
 
     public update(_deltaT: number): void {
@@ -263,8 +240,7 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        if (this._stage === PickStage.WHEEL) this.handleWheelPick(interaction.position)
-        else this.handleParentPick(interaction.position)
+        this.handleWheelPick(interaction.position)
     }
 
     private handleWheelPick(mousePos: [number, number]): void {
@@ -293,44 +269,22 @@ class WheelAssignmentMode extends WorldSystem {
         const assemblySpaceTransform = pick.sceneObject.mirabufInstance.parser.globalTransforms.get(pick.guid)!
         const worldAxisFit = transformWheelAxis(localAxisFit, assemblySpaceTransform)
 
-        this._draft = { sceneObject: pick.sceneObject, wheelPartGuid: pick.guid, axisFit: worldAxisFit }
-        this._stage = PickStage.PARENT
-        globalAddToast("info", "Wheel Assignment", "Wheel axis captured. Now click the wheel's parent/chassis part.")
-    }
-
-    private handleParentPick(mousePos: [number, number]): void {
-        if (!this._draft) {
-            this._stage = PickStage.WHEEL
-            return
-        }
-
-        const pick = this.pickPart(mousePos)
-        if (!pick) {
-            globalAddToast("warning", "Wheel Assignment", "Click directly on a part's mesh.")
-            return
-        }
-
-        if (pick.sceneObject !== this._draft.sceneObject) {
-            globalAddToast("warning", "Wheel Assignment", "Parent must be part of the same assembly as the wheel.")
-            return
-        }
-
-        if (pick.guid === this._draft.wheelPartGuid) {
-            globalAddToast("warning", "Wheel Assignment", "Parent must be a different part than the wheel.")
+        // The grounded/root part is already the chassis reference MirabufParser's rigid-node split uses
+        // for the whole assembly, so it doubles as the parent for a manually-picked wheel -- no second
+        // click needed. Only correct for a single static chassis with no other moving sub-mechanisms.
+        const groundedInstance =
+            pick.sceneObject.mirabufInstance.parser.assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
+        const parentPartGuid = groundedInstance.parts!.nodes!.at(0)!.value!
+        if (parentPartGuid === pick.guid) {
+            globalAddToast("warning", "Wheel Assignment", "This part is the assembly's grounded/root part.")
             return
         }
 
         this._pending.push({
-            sceneObject: this._draft.sceneObject,
-            assignment: {
-                wheelPartGuid: this._draft.wheelPartGuid,
-                parentPartGuid: pick.guid,
-                axisFit: this._draft.axisFit,
-            },
+            sceneObject: pick.sceneObject,
+            assignment: { wheelPartGuid: pick.guid, parentPartGuid, axisFit: worldAxisFit },
         })
 
-        this._draft = undefined
-        this._stage = PickStage.WHEEL
         EventSystem.dispatch("WheelAssignmentPendingCountChanged", { count: this._pending.length })
         globalAddToast(
             "success",
@@ -416,9 +370,7 @@ class WheelAssignmentMode extends WorldSystem {
             if (hadMismatch) {
                 const filename = `wheel-assignment-debug_${assembly.info?.name ?? sceneId}_${Date.now()}.json`
                 downloadFullAssemblyJson(assembly, filename)
-                console.error(
-                    `[WheelAssignmentMode] Downloaded full assembly JSON for analysis: ${filename}`
-                )
+                console.error(`[WheelAssignmentMode] Downloaded full assembly JSON for analysis: ${filename}`)
                 globalAddToast(
                     "warning",
                     "Wheel Assignment",

@@ -6,7 +6,7 @@ import Label from "./Label"
 
 /**
  * Throwaway dev-only panel for testing the manual wheel-joint-placement mechanism: toggles the
- * pick-wheel-then-pick-parent interaction loop and applies the accumulated pending assignments.
+ * pick-a-wheel interaction loop and applies the accumulated pending assignments.
  */
 const WheelAssignmentDebugPanel: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
