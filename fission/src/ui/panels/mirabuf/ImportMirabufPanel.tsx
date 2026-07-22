@@ -54,7 +54,6 @@ CommandRegistry.get().registerCommands([
 ])
 
 interface ItemCardProps {
-    key: string
     name: string
     primaryButtonNode: ReactNode
     primaryOnClick: () => void
