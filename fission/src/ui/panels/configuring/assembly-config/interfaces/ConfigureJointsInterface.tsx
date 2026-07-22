@@ -110,9 +110,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
 function sortBehaviors(behaviors: SequentialBehaviorPreferences[]): SequentialBehaviorPreferences[] {
     behaviors.sort((a, b) => a.jointIndex - b.jointIndex)
 
-    const sortedBehaviors: SequentialBehaviorPreferences[] = behaviors.filter(
-        b => b.parentJointIndex === undefined
-    )
+    const sortedBehaviors: SequentialBehaviorPreferences[] = behaviors.filter(b => b.parentJointIndex === undefined)
 
     for (let i = behaviors.length - 1; i >= 0; i--) {
         const b = behaviors[i]
