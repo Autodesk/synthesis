@@ -60,7 +60,7 @@ const MainMenuModal: React.FC<ModalImplProps<void, MainMenuCustomProps>> = ({ mo
                     World.analyticsSystem?.event("Mode Selected", { mode: "Load Default" })
                     startSingleplayerCallback()
                     await Promise.all([
-                        MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023 v8.mira", MiraType.FIELD),
+                        MirabufCachingService.cacheRemote("/api/mira/fields/FRC Field 2023 v10.mira", MiraType.FIELD),
                         MirabufCachingService.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT),
                     ]).then(async ([cachedField, cachedRobot]) => {
                         if (cachedField && cachedRobot) {
