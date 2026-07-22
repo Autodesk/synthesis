@@ -146,6 +146,14 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     return existingDuplicate.id
                 }
             }
+
+            // if any (generic) open panel declares itself as blocking, prevent opening a new one
+            const blockingPanel = panels.find(p => p.props.blocking)
+            if (blockingPanel) {
+                const msg = blockingPanel.props.blockingMessage ?? "Close the current panel before opening another."
+                addToast("warning", msg)
+                return null
+            }
             const id = uuidv4()
             const panel = {
                 id,
@@ -180,27 +188,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
                 )
                 if (existing) {
-                    // If the existing panel is ConfigurePanel and a spawn/initial panel is being opened while editing,
-                    // warn the user and keep Configure open. Otherwise, replace existing with the new panel.
-                    const existingName = (existing.content as unknown as { name?: string })?.name ?? ""
-                    const isExistingConfigure = existingName === "ConfigurePanel"
-                    const isNewSpawnOrInit =
-                        contentName === "ImportMirabufPanel" || contentName === "InitialConfigPanel"
-                    if (isExistingConfigure && isNewSpawnOrInit) {
-                        // Only block if actively configuring an assembly (has selection or a mode set)
-                        const custom = (existing.props as unknown as { custom?: any })?.custom ?? {}
-                        const isActivelyConfiguring =
-                            Boolean(custom?.selectedAssembly) || custom?.configMode !== undefined
-                        if (isActivelyConfiguring) {
-                            // Show a warning toast about unsaved configuration
-                            enqueueSnackbar("You have unsaved configuration open. Close it before spawning.", {
-                                variant: "warning",
-                                action: snackbarAction,
-                            })
-                            setPanels(p => [...p.filter(x => x !== existing), existing])
-                            return existing.id
-                        }
-                    }
                     // Replace existing with the new one
                     setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])
                     return id

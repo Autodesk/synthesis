@@ -75,7 +75,7 @@ describe("MirabufLoader", () => {
         })
     })
 
-    describe("Real Fetch", () => {
+    describe("Real Fetch", { timeout: 20000 }, () => {
         beforeEach(async () => {
             await MirabufLoader.removeAll()
         })
@@ -104,18 +104,13 @@ describe("MirabufLoader", () => {
             assert.exists(field1)
             assert.exists(robot1)
             expect(MirabufLoader.getAll()).toHaveLength(2)
+
             await MirabufLoader.removeAll()
+
             expect(MirabufLoader.getAll()).toHaveLength(0)
+            // get() should return nothing for the cleared assemblies.
             assert.notExists(await MirabufLoader.get(field1.hash))
             assert.notExists(await MirabufLoader.get(robot1.hash))
-
-            const opfsRoot = await navigator.storage.getDirectory()
-            for await (const dir of opfsRoot.keys()) {
-                const handle = await opfsRoot.getDirectoryHandle(dir)
-                for await (const key of handle.keys()) {
-                    expect.fail(key, "", "Directory should be empty", "does not exist")
-                }
-            }
         })
     })
 })

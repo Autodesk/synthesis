@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
 import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"

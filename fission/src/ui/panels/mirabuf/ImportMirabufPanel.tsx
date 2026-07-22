@@ -1,31 +1,25 @@
 import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
-import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
-import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import MirabufCachingService, { type MirabufCacheInfo, MiraType, spawnCachedMira } from "@/mirabuf/MirabufLoader"
 import EventSystem from "@/systems/EventSystem.ts"
-import { mirabuf } from "@/proto/mirabuf"
-import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
-import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Button,
     DeleteButton,
     PositiveButton,
     PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
 } from "@/ui/components/StyledComponents"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
@@ -34,9 +28,7 @@ import {
     type ConfigurationType,
     miraTypeToConfigType,
 } from "../configuring/assembly-config/ConfigTypes"
-import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import CommandRegistry from "@/ui/components/CommandRegistry"
-import { getTargetControls } from "@/systems/scene/CameraControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 
 // Register commands: Open import panel scoped to robots/fields (module-scope side effect)
@@ -62,26 +54,19 @@ CommandRegistry.get().registerCommands([
 ])
 
 interface ItemCardProps {
-    key: string
     name: string
     primaryButtonNode: ReactNode
     primaryOnClick: () => void
     secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ key, name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
+const ItemCard: React.FC<ItemCardProps> = ({ name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
     return (
         <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"} direction="row">
             <Label size="md" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
             </Label>
-            <Stack
-                key={`button-box-${key}`}
-                direction="row-reverse"
-                gap={"0.25rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
-            >
+            <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
                 <PositiveIconButton children={primaryButtonNode} onClick={primaryOnClick} />
                 {secondaryOnClick && <DeleteButton onClick={secondaryOnClick} />}
             </Stack>
@@ -89,84 +74,12 @@ const ItemCard: React.FC<ItemCardProps> = ({ key, name, primaryButtonNode, prima
     )
 }
 
-export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: ProgressHandle) {
-    // If spawning a field, then remove all other fields
-    if (info.miraType === MiraType.FIELD) {
-        World.sceneRenderer.removeAllFields()
-    }
-
-    if (!progressHandle) {
-        progressHandle = new ProgressHandle(info.name)
-    }
-
-    World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    await MirabufCachingService.get(info.hash)
-        .then(async assembly => {
-            if (assembly) {
-                await createMirabuf(info.hash, assembly, progressHandle).then(async mirabufSceneObject => {
-                    if (mirabufSceneObject) {
-                        World.sceneRenderer.registerSceneObject(mirabufSceneObject)
-
-                        const targetControls = getTargetControls()
-
-                        if (World.multiplayerSystem != null) {
-                            const encodedAssembly =
-                                mirabufSceneObject.miraType !== MiraType.FIELD
-                                    ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
-                                    : undefined
-
-                            const message: Message = {
-                                type: "newObject",
-                                timestamp: Date.now(),
-                                data: {
-                                    sceneObjectKey: mirabufSceneObject.id as RemoteSceneObjectId,
-                                    assembly: encodedAssembly,
-                                    assemblyHash: info.hash,
-                                    miraType: info.miraType,
-                                    initialPreferences: mirabufSceneObject.getPreferenceData(),
-                                    bodyIds: mirabufSceneObject
-                                        .getAllBodyIds()
-                                        .map(id => id.GetIndexAndSequenceNumber()),
-                                },
-                            }
-                            await World.multiplayerSystem?.broadcast(message)
-                            World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id as LocalSceneObjectId)
-                        }
-
-                        if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                            targetControls.focusProvider = mirabufSceneObject
-                        }
-
-                        progressHandle.done()
-
-                        if (mirabufSceneObject.miraType == MiraType.ROBOT) {
-                            globalOpenPanel(InitialConfigPanel, undefined)
-                        }
-                    } else {
-                        progressHandle.fail("No object!")
-                    }
-                })
-            } else {
-                progressHandle.fail()
-                console.error("Failed to spawn robot")
-            }
-        })
-        .catch(e => {
-            console.error(e)
-            progressHandle.fail()
-        })
-        .finally(() => {
-            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
-        })
-}
-
 interface ImportMirabufPanelCustomProps {
     configurationType: ConfigurationType
 }
 
-const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustomProps>> = ({ panel, parent }) => {
-    const { addToast, closePanel, openModal, configureScreen } = useUIContext()
-    const { unconfirmedImport } = useStateContext()
+const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustomProps>> = ({ panel }) => {
+    const { closePanel, openModal, configureScreen } = useUIContext()
 
     const { configurationType } = panel!.props.custom
 
@@ -204,17 +117,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         } else {
             setFiles(getMirabufFiles())
         }
-    }, [])
-
-    // biome-ignore lint: things break if we don't add the closePanel dep
-    useLayoutEffect(() => {
-        if (unconfirmedImport) {
-            addToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
-            closePanel(panel!.id, CloseType.Cancel)
-            return
-        }
-
-        if (parent) closePanel(parent.id, CloseType.Cancel)
     }, [])
 
     // Select a mirabuf assembly from the cache.

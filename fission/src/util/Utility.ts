@@ -1,4 +1,6 @@
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import Pako from "pako"
+import JOLT from "./loading/JoltSyncLoader"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
@@ -29,15 +31,19 @@ export function findListDifference<T>(previousList: T[], currentList: T[]): { ad
     return { added, removed }
 }
 
-export async function hashBuffer(buffer: ArrayBuffer): Promise<string> {
+export async function hashBuffer(buffer: ArrayBuffer, fallbackHash?: string): Promise<string> {
     if (crypto?.subtle?.digest == null) {
-        console.warn("Crypto not available, using timestamp as key")
-        return Date.now().toString(16)
+        console.warn("Crypto not available, using fallback hash or timestamp as key")
+        return fallbackHash ?? Date.now().toString(16)
     }
     const hashBuffer = await crypto.subtle.digest("SHA-1", buffer)
     return Array.from(new Uint8Array(hashBuffer))
-        .map(x => x.toString(16))
+        .map(x => x.toString(16).padStart(2, "0"))
         .join("")
+}
+
+export function forPair<T, U>(listOne: T[], listTwo: U[], predicate: (one: T, two: U) => void): void {
+    listOne.forEach(a => listTwo.forEach(b => predicate(a, b)))
 }
 
 export function unzipMira(buff: Uint8Array): Uint8Array {
@@ -56,6 +62,7 @@ export function hexStringToUint8Array(hexString: string) {
     }
     return arrayBuffer
 }
+
 // biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`
 export function tryParse(data: string): any {
     try {
@@ -81,4 +88,8 @@ export function downloadBlob(filename: string, data: BlobPart): void {
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
     }, 0)
+}
+
+export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
+    return new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
 }

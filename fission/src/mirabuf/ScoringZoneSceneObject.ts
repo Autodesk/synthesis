@@ -1,8 +1,7 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
-import EventSystem from "@/systems/EventSystem.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import * as Three from "three"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 import { findListDifference } from "@/util/Utility"
@@ -11,155 +10,102 @@ import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
-    private _gpContacted: Jolt.BodyID[] = []
-    private _prevGP: Jolt.BodyID[] = []
+    public static readonly redMaterial = new Three.MeshPhongMaterial({
+        color: 0xed1c24,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })
+    public static readonly blueMaterial = new Three.MeshPhongMaterial({
+        color: 0x0066b3,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })
+
+    private _prevGPs: Jolt.BodyID[] = []
 
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
-        return { red: ZoneSceneObject.lightRedMaterial, blue: ZoneSceneObject.lightBlueMaterial }
+        return { red: ScoringZoneSceneObject.redMaterial, blue: ScoringZoneSceneObject.blueMaterial }
     }
 
-    public get gpContacted() {
-        return this._gpContacted
-    }
-
-    public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
-        const prefs = parentAssembly.fieldPreferences?.scoringZones[index]
-        if (prefs && "persistentPoints" in prefs) {
+    public constructor(parentAssembly: MirabufSceneObject, index: number) {
+        const prefs = parentAssembly.fieldPreferences?.scoringZones[index]!
+        if ("persistentPoints" in prefs) {
             prefs.shouldPointsAccumulate = !prefs.persistentPoints
             delete prefs.persistentPoints
-
-            // NOTE
-            // I'm pretty sure it's passed by reference, but just in case
-            parentAssembly.fieldPreferences.scoringZones[index] = prefs
         }
 
-        super(parentAssembly, parentAssembly.fieldPreferences?.scoringZones[index]!, "RenderScoringZones", render)
-
-        this.toRender = PreferencesSystem.getUserPreference("RenderScoringZones")
+        super(parentAssembly, prefs, "RenderScoringZones")
     }
 
-    public setupCollisionSubscribers() {
-        // Detect new gamepiece listener
-        this.unsubscribers.push(
-            EventSystem.listen("OnContactAddedEvent", ({ body1, body2 }) => {
-                if (body1.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
-                    this.zoneCollision(body2)
-                } else if (body2.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
-                    this.zoneCollision(body1)
-                }
-            })
-        )
+    public override checkObjectsInZone(): void {
+        if (!this.bounding) return
 
-        // If persistent, detect gamepiece removed listener
-        this.unsubscribers.push(
-            EventSystem.listen("OnContactRemovedEvent", ({ message }) => {
-                if (!this.prefs?.shouldPointsAccumulate) {
-                    const body1 = message.GetBody1ID()
-                    const body2 = message.GetBody2ID()
+        const field = World.sceneRenderer.mirabufSceneObjects.getField()
+        if (!field) return
 
-                    if (body1.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollisionRemoved(body2)
-                    } else if (body2.GetIndexAndSequenceNumber() == this.joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollisionRemoved(body1)
-                    }
-                }
-            })
-        )
+        const gamepieces = [...field.mirabufInstance.parser.rigidNodes.values()].filter(rn => rn.isGamePiece)
+        const gps = gamepieces
+            .map(rn => field.mechanism.nodeToBody.get(rn.id))
+            .filter((id): id is Jolt.BodyID => id !== undefined)
+
+        if (gamepieces.length > 0 && gps.length === 0)
+            console.warn(
+                `ScoringZone: ${gamepieces.length} game piece nodes exist but none have body IDs in nodeToBody`
+            )
+
+        const gamePiecesContacting = gps.filter(gpID => {
+            const gp = World.physicsSystem.getBody(gpID)
+            if (!gp) return false
+
+            const gpBounding = gp.GetWorldSpaceBounds()
+            const overlaps = this.bounding?.OverlapsAABox(gpBounding)
+            JOLT.destroy(gpBounding)
+
+            return overlaps
+        })
+
+        const { added, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
+
+        added.forEach(gpID => this.zoneCollision(gpID))
+        if (!this.prefs.shouldPointsAccumulate) removed.forEach(gpID => this.zoneCollisionRemovedNoAccumulation(gpID))
+
+        this._prevGPs = gamePiecesContacting
     }
 
     public override update(): void {
-        if (this.parentBodyId && this.deltaTransformation && this.joltBodyId && this.prefs) {
-            super.update()
-
-            // If persistent points, update points based on how many gamepieces in zone
-            if (!this.prefs.shouldPointsAccumulate) {
-                if (this._gpContacted.length != this._prevGP.length) {
-                    const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
-                    const points = this.prefs.points
-
-                    ScoreTracker.addPoints(this.prefs.alliance, (gpAdded.length - gpRemoved.length) * points)
-
-                    // Per robot score calculations
-                    gpAdded.forEach(gpID => {
-                        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-                        const robotAlliancePoints =
-                            associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -points : points
-                        associate.robotLastInContactWith &&
-                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
-                    })
-                    gpRemoved.forEach(gpID => {
-                        const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-                        const robotAlliancePoints =
-                            associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -points : points
-                        associate.robotLastInContactWith &&
-                            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
-                    })
-
-                    this._prevGP = Object.assign([], this._gpContacted)
-                }
-            }
-        } else {
-            console.debug("Failed to update scoring zone")
-        }
+        super.update()
     }
 
     public reset() {
-        this._prevGP = []
+        this._prevGPs.length = 0
     }
 
-    public dispose(): void {
-        if (this.joltBodyId) {
-            World.physicsSystem.destroyBodyIds(this.joltBodyId)
-            if (this.mesh) {
-                this.mesh.geometry.dispose()
-                ;(this.mesh.material as THREE.Material).dispose()
-                World.sceneRenderer.scene.remove(this.mesh)
-            }
-        }
-
-        this.unsubscribers.forEach(unsubscribe => unsubscribe())
-    }
-
+    /**
+     * Updates points for alliance and robot when game piece enters this scoring zone
+     */
     private zoneCollision(gpID: Jolt.BodyID) {
+        this.zoneCollisionGeneric(gpID, 1)
+    }
+
+    /**
+     * Updates points for alliance and robot when game piece is removed from this scoring zone and points should not accumulate
+     * i.e. Removes points from the alliance and robot
+     */
+    private zoneCollisionRemovedNoAccumulation(gpID: Jolt.BodyID) {
+        this.zoneCollisionGeneric(gpID, -1)
+    }
+
+    private zoneCollisionGeneric(gpID: Jolt.BodyID, scoringFactor: number): void {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-        if (associate?.isGamePiece && this.prefs) {
-            // If persistent, Update() will handle points
-            if (!this.prefs.shouldPointsAccumulate) {
-                this._gpContacted.push(gpID)
-            } else {
-                ScoreTracker.addPoints(this.prefs.alliance, this.prefs.points)
-                const robotAlliancePoints =
-                    associate.robotLastInContactWith?.alliance !== this.prefs?.alliance
-                        ? -this.prefs.points
-                        : this.prefs.points
-                associate.robotLastInContactWith &&
-                    ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
-            }
-        }
-    }
+        const robotAlliancePoints =
+            associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -this.prefs.points : this.prefs.points
 
-    // Private gamepiece removal called anytime collision removed from zone. Score update in Update()
-    private zoneCollisionRemoved(gpID: Jolt.BodyID) {
-        if (!this.prefs?.shouldPointsAccumulate) {
-            const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
-            if (associate?.isGamePiece) {
-                const temp = this._gpContacted.filter(x => {
-                    return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
-                })
-                if (this._gpContacted != temp) this._gpContacted = Object.assign([], temp)
-            }
-        }
-    }
+        if (associate.robotLastInContactWith)
+            World.scoreTracker.addPerRobotScore(associate.robotLastInContactWith, scoringFactor * robotAlliancePoints)
 
-    // Public gamepiece removal called anytime `EjectableSceneObject` created in case gamepiece was in persistent zone
-    // Score update in Update()
-    public static removeGamepiece(zone: ScoringZoneSceneObject, gpID: Jolt.BodyID) {
-        if (zone.prefs && !zone.prefs.shouldPointsAccumulate) {
-            const temp = zone._gpContacted.filter(x => {
-                return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
-            })
-            if (zone._gpContacted != temp) zone._gpContacted = Object.assign([], temp)
-        }
+        World.scoreTracker.addPoints(this.prefs.alliance, scoringFactor * this.prefs.points)
     }
 }
 
