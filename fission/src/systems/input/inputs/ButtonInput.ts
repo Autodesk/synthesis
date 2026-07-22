@@ -47,7 +47,10 @@ export default class ButtonInput extends Input {
     }
 
     keysUsed(playerSlot: number = 0): KeyDescriptor[] {
-        return [this.describeKey(this.keyCode, this.keyModifiers), this.describeGamepadBtn(this.gamepadButton, playerSlot)]
+        return [
+            this.describeKey(this.keyCode, this.keyModifiers),
+            this.describeGamepadBtn(this.gamepadButton, playerSlot),
+        ]
     }
 
     static onGamepad(inputName: InputName, gamepadButton: number) {

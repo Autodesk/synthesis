@@ -122,7 +122,8 @@ class InputSchemeManager {
                 status: InputSchemeUseType.IN_USE,
             }
             scheme?.inputs?.forEach(input => {
-                input.keysUsed(scheme.playerSlot ?? 0)
+                input
+                    .keysUsed(scheme.playerSlot ?? 0)
                     .filter(key => key != null)
                     .forEach(key => {
                         const entry = usedKeyMap.get(key)
