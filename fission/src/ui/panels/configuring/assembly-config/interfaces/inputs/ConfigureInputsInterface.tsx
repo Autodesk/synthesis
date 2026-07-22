@@ -134,7 +134,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
             onAddClicked={() => {
                 openModal(NewInputSchemeModal, undefined)
             }}
-            defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
+            defaultSelectedOption={undefined}
         />
     )
 }
