@@ -16,7 +16,7 @@ let image_url;
 switch (github.event.action) {
     case "opened":
     case "reopened":
-        image_url = "https://github.com/synthesis-adsk/github-icons/blob/main/icons/pull-request-green.png?raw=true"
+        image_url = `https://github.com/synthesis-adsk/github-icons/blob/main/icons/${github.event.pull_request.draft ? "pull-request-draft-gray" : "pull-request-green"}.png?raw=true`
         break
     case "merged":
         image_url = "https://github.com/synthesis-adsk/github-icons/blob/main/icons/pull-request-merged-purple.png?raw=true"
@@ -42,7 +42,7 @@ const payload = {
             },
             "subtitle": {
                 "type": "plain_text",
-                "text": `${capitalize(github.event.action)} by ${github.actor}`
+                "text": `${github.event.pull_request.draft ? 'Draft ' : ''}${capitalize(github.event.action)} by ${github.actor}`
             },
             "icon": {
                 "type": "image",
@@ -63,7 +63,7 @@ const payload = {
                             "text": "Visit",
                             "emoji": true
                         },
-                        "url": github.event.pull_request.url
+                        "url": github.event.pull_request.html_url
                     }
                 }
             ]
