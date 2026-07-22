@@ -299,7 +299,7 @@ describe("Default Input Scheme Checks", () => {
         DefaultInputs.defaultInputCopies.forEach(scheme => {
             const usedKeys = new Map<KeyDescriptor, number>()
             scheme.inputs.forEach(input => {
-                input.keysUsed
+                input.keysUsed(scheme.playerSlot ?? 0)
                     .filter(key => key != null)
                     .forEach(key => usedKeys.set(key, (usedKeys.get(key) ?? 0) + 1))
                 usedKeys.forEach((count, key) => {

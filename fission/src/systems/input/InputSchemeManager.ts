@@ -122,7 +122,7 @@ class InputSchemeManager {
                 status: InputSchemeUseType.IN_USE,
             }
             scheme?.inputs?.forEach(input => {
-                input.keysUsed
+                input.keysUsed(scheme.playerSlot ?? 0)
                     .filter(key => key != null)
                     .forEach(key => {
                         const entry = usedKeyMap.get(key)
@@ -137,7 +137,7 @@ class InputSchemeManager {
 
         allSchemes.forEach(scheme => {
             const conflictingSchemes = scheme.inputs.flatMap(input =>
-                input.keysUsed.flatMap(key => usedKeyMap.get(key) ?? [])
+                input.keysUsed(scheme.playerSlot ?? 0).flatMap(key => usedKeyMap.get(key) ?? [])
             )
             if (conflictingSchemes.length > 0) {
                 result[scheme.schemeName] ??= {

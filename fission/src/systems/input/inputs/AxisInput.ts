@@ -181,13 +181,13 @@ export default class AxisInput extends Input {
         )
     }
 
-    get keysUsed(): KeyDescriptor[] {
+    keysUsed(playerSlot: number = 0): KeyDescriptor[] {
         return [
             this.describeKey(this.posKeyCode, this.posKeyModifiers),
             this.describeKey(this.negKeyCode, this.negKeyModifiers),
-            this.describeGamepadBtn(this.posGamepadButton),
-            this.describeGamepadBtn(this.negGamepadButton),
-            this.describeGamepadAxis(this.gamepadAxisNumber),
+            this.describeGamepadBtn(this.posGamepadButton, playerSlot),
+            this.describeGamepadBtn(this.negGamepadButton, playerSlot),
+            this.describeGamepadAxis(this.gamepadAxisNumber, playerSlot),
             this.describeTouchAxis(this.touchControlAxis),
         ]
     }

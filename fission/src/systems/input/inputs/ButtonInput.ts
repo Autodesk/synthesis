@@ -46,8 +46,8 @@ export default class ButtonInput extends Input {
         return InputSystem.isKeyPressed(this.keyCode, this.keyModifiers) ? 1 : 0
     }
 
-    get keysUsed(): KeyDescriptor[] {
-        return [this.describeKey(this.keyCode, this.keyModifiers), this.describeGamepadBtn(this.gamepadButton)]
+    keysUsed(playerSlot: number = 0): KeyDescriptor[] {
+        return [this.describeKey(this.keyCode, this.keyModifiers), this.describeGamepadBtn(this.gamepadButton, playerSlot)]
     }
 
     static onGamepad(inputName: InputName, gamepadButton: number) {
