@@ -8,6 +8,7 @@ use crate::messaging::InitialResponse;
 use crate::room::{ClientSender, State};
 use crate::{logging::EventType, messaging::InitialMessage};
 
+use std::net::TcpStream;
 use std::sync::{Arc, Mutex};
 use std::{env, fs, process, thread};
 use std::{error::Error, fs::File};
@@ -15,7 +16,10 @@ use std::{io::BufReader, net::SocketAddr};
 
 use futures_util::{SinkExt, StreamExt};
 use rcgen::{CertifiedKey, generate_simple_self_signed};
-use tokio::io::{AsyncRead, AsyncWrite};
+use std::io::Cursor;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, ReadBuf};
 use tokio::{net::TcpListener, sync::mpsc};
 use tokio_rustls::TlsAcceptor;
 use tokio_rustls::rustls::ServerConfig;
@@ -90,11 +94,97 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn handle_connection<S>(state: Arc<Mutex<State>>, raw_stream: S, addr: SocketAddr)
+/// Replays a buffer of already-read ("peeked") bytes before continuing to read
+/// from the underlying stream. Writes pass straight through. Used to "un-read"
+/// bytes we inspected so `accept_async` still sees the full request.
+struct Prefixed<S> {
+    prefix: Cursor<Vec<u8>>,
+    inner: S,
+}
+
+impl<S> Prefixed<S> {
+    fn new(prefix: Vec<u8>, inner: S) -> Self {
+        Self {
+            prefix: Cursor::new(prefix),
+            inner,
+        }
+    }
+}
+
+impl<S: AsyncRead + Unpin> AsyncRead for Prefixed<S> {
+    fn poll_read(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        buf: &mut ReadBuf<'_>,
+    ) -> Poll<std::io::Result<()>> {
+        let pos = self.prefix.position() as usize;
+        let data = self.prefix.get_ref();
+        if pos < data.len() {
+            let n = (data.len() - pos).min(buf.remaining());
+            buf.put_slice(&data[pos..pos + n]);
+            self.prefix.set_position((pos + n) as u64);
+            return Poll::Ready(Ok(()));
+        }
+        Pin::new(&mut self.inner).poll_read(cx, buf)
+    }
+}
+
+impl<S: AsyncWrite + Unpin> AsyncWrite for Prefixed<S> {
+    fn poll_write(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        buf: &[u8],
+    ) -> Poll<std::io::Result<usize>> {
+        Pin::new(&mut self.inner).poll_write(cx, buf)
+    }
+
+    fn poll_flush(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<std::io::Result<()>> {
+        Pin::new(&mut self.inner).poll_flush(cx)
+    }
+
+    fn poll_shutdown(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<std::io::Result<()>> {
+        Pin::new(&mut self.inner).poll_shutdown(cx)
+    }
+}
+
+async fn handle_connection<S>(state: Arc<Mutex<State>>, mut raw_stream: S, addr: SocketAddr)
 where
     S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
 {
-    let ws_stream = match tokio_tungstenite::accept_async(raw_stream).await {
+    // "Peek" at the request: read the first chunk, then replay it in front of
+    // the stream. `peek()` is an inherent method on `TcpStream` (not a trait),
+    // so it can't be called generically or on a `TlsStream` — this replays the
+    // bytes instead, letting us both inspect the request and recover the stream.
+    let mut buf = vec![0u8; 1024];
+    let n = match raw_stream.read(&mut buf).await {
+        Ok(0) => return, // client hung up
+        Ok(n) => n,
+        Err(e) => {
+            error_lock!(state, "Failed to read from {addr}: {e}");
+            return;
+        }
+    };
+    buf.truncate(n);
+
+    let is_ws = String::from_utf8_lossy(&buf)
+        .to_ascii_lowercase()
+        .contains("upgrade: websocket");
+
+    let mut stream = Prefixed::new(buf, raw_stream);
+
+    // Respond to plain HTTP requests properly, rather than failing the handshake.
+    if !is_ws {
+        let body = "Synthesis";
+        let resp = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+            body.len(),
+        );
+        let _ = stream.write_all(resp.as_bytes()).await;
+        let _ = stream.flush().await;
+        return;
+    }
+
+    let ws_stream = match tokio_tungstenite::accept_async(stream).await {
         Ok(ws_stream) => ws_stream,
         Err(e) => {
             error_lock!(state, "Websocket handshake with {addr} failed: {e}");
