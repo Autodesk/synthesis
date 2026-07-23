@@ -15,6 +15,7 @@ The assets in the following files are referred to as the "Marks" and are exclude
 * /fission/res/branding/
 * /fission/src/assets/autodesk\_logo.png
 * /fission/src/assets/autodesk\_symbol.png
+* /fission/public/synthesis-logo.svg
 
 
 
