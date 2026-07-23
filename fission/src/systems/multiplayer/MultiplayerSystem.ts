@@ -17,8 +17,8 @@ import type { InitialMessage } from "@/systems/multiplayer/bindings/InitialMessa
 import type { InitialResponse } from "@/systems/multiplayer/bindings/InitialResponse.ts"
 
 export const COLLISION_TIMEOUT = 500
-const CLIENT_PREFIX = 0b00000001
-const SERVER_PREFIX = 0b00000011
+export const CLIENT_PREFIX = 0b00000001
+export const SERVER_PREFIX = 0b00000011
 
 class MultiplayerSystem {
     public readonly client: WebSocket

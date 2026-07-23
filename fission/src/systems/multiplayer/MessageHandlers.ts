@@ -7,20 +7,23 @@ import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
 import World from "../World"
-import type {
-    AssemblyRequestData,
-    EncodedAssembly,
-    InfoMessageBody,
-    InitObjectData,
-    LocalSceneObjectId,
-    MatchModePenalty,
-    MatchModeStateData,
-    MessageType,
-    ObjectPreferences,
-    RemoteSceneObjectId,
-    UpdateObjectData,
-} from "./MultiplayerTypes.ts"
+
 import EventSystem from "@/systems/EventSystem.ts"
+import type {
+    ConfigureObjectBody,
+    InfoBody,
+    MatchModePenaltyBody,
+    MatchModeStateBody,
+    MessageType,
+    NeedAssemblyBody,
+    NewObjectBody,
+    UpdateObjectData,
+} from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
+import type {
+    EncodedAssembly,
+    LocalSceneObjectId,
+    RemoteSceneObjectId,
+} from "@/systems/multiplayer/MultiplayerTypes.ts"
 
 export const peerMessageHandlers = {
     info: handleInfoMessage,
@@ -47,7 +50,7 @@ export const peerMessageHandlers = {
 const pendingOperations: (() => void)[] = []
 const progressHandles: Map<number, ProgressHandle> = new Map()
 
-async function handleMatchModeStateMessage(data: MatchModeStateData) {
+async function handleMatchModeStateMessage(data: MatchModeStateBody) {
     console.log(data)
     if (data.event == "start") {
         MatchMode.getInstance().setMatchModeConfig(data.config)
@@ -59,7 +62,7 @@ async function handleMatchModeStateMessage(data: MatchModeStateData) {
     }
 }
 
-function handleInfoMessage({ info, introduceSelf }: InfoMessageBody) {
+function handleInfoMessage({ info, introduceSelf }: InfoBody) {
     World.multiplayerSystem?._clientToObjectMap.set(info.clientId, [])
     World.multiplayerSystem?._clientToInfoMap.set(info.clientId, info)
     if (introduceSelf) {
@@ -155,7 +158,7 @@ function handleCollisionMessage() {
     return // TODO Expand on this logic
 }
 
-async function handleNewObjectMessage(data: InitObjectData, peerId: string) {
+async function handleNewObjectMessage(data: NewObjectBody, peerId: string) {
     const handle =
         progressHandles.get(data.sceneObjectKey) ??
         new ProgressHandle(
@@ -234,7 +237,7 @@ async function handleNewObjectMessage(data: InitObjectData, peerId: string) {
     pendingOperations.splice(0, len)
 }
 
-async function handleNeedAssemblyMessage(data: AssemblyRequestData, peerId: string) {
+async function handleNeedAssemblyMessage(data: NeedAssemblyBody, peerId: string) {
     const sceneObjectKey = data.sceneObjectKey
 
     const assembly = await MirabufCachingService.getEncoded(data.assemblyHash)
@@ -284,7 +287,7 @@ function handleDeleteObjectMessage(sceneObjectKey: RemoteSceneObjectId, peerId: 
     World.sceneRenderer.removeSceneObject(localKey)
 }
 
-function handleConfigureObjectMessage(data: ObjectPreferences, peerId: string) {
+function handleConfigureObjectMessage(data: ConfigureObjectBody, peerId: string) {
     const sceneObject = World.sceneRenderer.sceneObjects.get(
         World.multiplayerSystem!.convertSceneObjectId(peerId, data.sceneObjectKey)
     )
@@ -330,7 +333,7 @@ function handleEnableObjectPhysicsMessage(sceneObjectKey: RemoteSceneObjectId, p
     }
 }
 
-function handleMatchModePenaltyMessage(data: MatchModePenalty, peerId: string) {
+function handleMatchModePenaltyMessage(data: MatchModePenaltyBody, peerId: string) {
     const obj = World.sceneRenderer.sceneObjects.get(
         World.multiplayerSystem!.convertSceneObjectId(peerId, data.objectId)
     )

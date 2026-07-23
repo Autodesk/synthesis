@@ -6,7 +6,6 @@ import type {
     LocalSceneObjectId,
     RemoteSceneObjectId,
     RobotConfiguration,
-    UpdateObjectData,
 } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -67,6 +66,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array } from "@/util/Utility.ts"
+import type { UpdateObjectData } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
 
 const DEBUG_BODIES = false
 
