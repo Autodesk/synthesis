@@ -65,25 +65,16 @@ class MultiplayerSystem {
 
         this._initializationPromise = new Promise<boolean>(resolve => {
             this.client.onmessage = async ev => {
-                const msg = decode(ev.data) as ServerMessage
-                if (msg.type != "sendinfo") {
+                const { from, type } = await this.onMessage(ev.data)
+                if (from != "server" || type != "sendinfo") {
                     this.destroy()
-                    console.error("Recieved invalid initial message")
+                    console.error("Received invalid initial message")
                     resolve(false)
                     return
                 }
-                this.roomId = msg.room_id
-                this.clientId = msg.client_id
-                this._info = {
-                    clientId: this.clientId,
-                    displayName: displayName,
-                    isHost: roomId == "create",
-                    creationTime: Date.now(),
-                }
-                globalAddToast("success", "Joined room", this.roomId)
+                this._info.displayName = displayName
+
                 resolve(true)
-                await this.sendHello(true)
-                EventSystem.dispatch("MultiplayerStateJoinRoom")
             }
             setTimeout(() => resolve(false), 10000)
         }).then(res => {
@@ -115,23 +106,39 @@ class MultiplayerSystem {
 
         if (isServer) {
             console.log("SERVER MESSAGE", decoded)
-            await this.handleServerMessage(decoded as ServerMessage)
+            return {
+                from: "server",
+                type: await this.handleServerMessage(decoded as ServerMessage),
+            }
         } else {
-            await this.handlePeerMessage(decoded as MessageWithTimestamp)
+            return {
+                from: "client",
+                type: await this.handlePeerMessage(decoded as MessageWithTimestamp),
+            }
         }
     }
 
     async handleServerMessage(message: ServerMessage) {
         switch (message.type) {
             case "sendinfo":
-                console.warn("Recieved sendinfo after initialization")
-                return
+                this.roomId = message.room_id
+                this.clientId = message.client_id
+                this._info = {
+                    clientId: this.clientId,
+                    displayName: "",
+                    creationTime: Date.now(),
+                }
+                globalAddToast("success", "Joined room", this.roomId)
+                await this.sendHello(true)
+                EventSystem.dispatch("MultiplayerStateJoinRoom")
+                break
             case "kick":
                 this.removePeer(message.client_id)
-                return
+                break
             default:
                 console.warn("Unhandled message from server", message)
         }
+        return message.type
     }
 
     async handlePeerMessage(message: MessageWithTimestamp) {
@@ -148,6 +155,7 @@ class MultiplayerSystem {
             time: number
         ) => Promise<void> | void
         await handler(message.data, message.client_id, message.timestamp)
+        return message.type
     }
 
     async broadcast(message: Message) {

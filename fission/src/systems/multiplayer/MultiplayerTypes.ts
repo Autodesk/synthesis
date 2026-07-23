@@ -19,7 +19,6 @@ export type LocalSceneObjectId = number & { __: "localsceneobject" | "sceneobjec
 export type ClientInfo = {
     displayName: string
     clientId: string
-    isHost: boolean
     creationTime: number
 }
 
