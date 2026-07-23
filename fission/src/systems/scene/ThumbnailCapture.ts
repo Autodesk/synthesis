@@ -3,8 +3,8 @@ import * as THREE from "three"
 export const THUMBNAIL_SIZE = 512
 const THUMBNAIL_MIME_TYPE = "image/webp"
 const THUMBNAIL_QUALITY = 0.85
-//
-// const CAPTURE_SUPERSAMPLE = 2
+
+const CAPTURE_SUPERSAMPLE = 2
 
 // thumbnail angle constants
 export const THUMBNAIL_FOV_Y_DEGREES = 45
@@ -109,7 +109,10 @@ export async function captureSceneThumbnail(props: ThumbnailCaptureProps): Promi
     camera.lookAt(framing.lookAt)
     camera.updateMatrixWorld()
 
-    encodePixels()
+    const renderSize = THUMBNAIL_SIZE * CAPTURE_SUPERSAMPLE
+    const pixels = new Uint8Array(renderSize * renderSize * 4)
+
+    encodePixels(pixels, renderSize)
 
     return undefined
 }
@@ -122,7 +125,8 @@ function createSquareCanvas(size: number): OffscreenCanvas | HTMLCanvasElement {
     return canvas
 }
 
-async function encodePixels(pixels: Uint8Array, renderSize: number, size: number): Promise<Blob | undefined> {
+/** encoding rendered offscreen scene */
+async function encodePixels(pixels: Uint8Array, renderSize: number): Promise<Blob | undefined> {
     const flipped = new Uint8ClampedArray(pixels.length)
 
     const rowBytes = renderSize * 4
@@ -135,14 +139,12 @@ async function encodePixels(pixels: Uint8Array, renderSize: number, size: number
     if (!fullContext) return undefined
     fullContext.putImageData(new ImageData(flipped, renderSize, renderSize), 0, 0)
 
-    const scaled = createSquareCanvas(size)
+    const scaled = createSquareCanvas(THUMBNAIL_SIZE)
     const scaledContext = scaled.getContext("2d") as OffscreenCanvasRenderingContext2D | null
     if (!scaledContext) return undefined
-
     scaledContext.imageSmoothingEnabled = true
     scaledContext.imageSmoothingQuality = "high"
-
-    scaledContext.drawImage(full, 0, 0, size, size)
+    scaledContext.drawImage(full, 0, 0, THUMBNAIL_SIZE, THUMBNAIL_SIZE)
 
     // converting canvas to blob
     if (scaled instanceof HTMLCanvasElement) {
