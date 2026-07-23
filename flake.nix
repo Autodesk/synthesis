@@ -8,15 +8,18 @@
   outputs =
     { self, nixpkgs }:
     let
+      inherit (nixpkgs) lib;
+
       supportedSystems = [
         "x86_64-linux"
         "aarch64-linux"
         "x86_64-darwin"
         "aarch64-darwin"
       ];
+
       forEachSupportedSystem =
         f:
-        nixpkgs.lib.genAttrs supportedSystems (
+        lib.genAttrs supportedSystems (
           system:
           f {
             inherit system;
@@ -63,6 +66,6 @@
       formatter = forEachSupportedSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
 
       # Build all devShells, instead of just verifying they are derivations
-      checks = forEachSupportedSystem ({ system, ... }: self.devShells.${system});
+      checks = forEachSupportedSystem ({ system, ... }: lib.attrsets.unionOfDisjoint self.devShells.${system} {});
     };
 }

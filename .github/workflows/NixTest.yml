@@ -1,0 +1,31 @@
+name: Test Nix
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  nix-flake-check:
+    name: Nix Flake Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Nix Flake Check
+        run: nix flake check
+
+  fission-playwright:
+    name: Fission Playwright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Run Playwright Tests
+        working-directory: "fission"
+        run: |
+          nix develop .#fission --command bash -c \
+            "git lfs pull && unzip public/assetpack.zip -d public && bun install && bun run test run ./src/test/APSTesting.test.ts"
