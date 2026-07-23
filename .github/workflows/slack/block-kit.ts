@@ -58,58 +58,34 @@ export interface Message {
     text?: string
 }
 
-/**
- * Creates a plaintext text object
- *
- * @return PlainText
- */
 export const plainText = (text: string, emoji?: boolean): PlainText =>
     emoji === undefined ? { type: "plain_text", text } : { type: "plain_text", text, emoji }
 
 /**
- * Creates a reduced markdown text object
- *
- * @return Mrkdwn
+ * Mrkdwn uses a reduced Markdown spec, hence the name.
  */
 export const mrkdwn = (text: string): Mrkdwn => ({ type: "mrkdwn", text })
 
-/**
- * Creates an image element
- *
- * @return ImageElement
- */
 export const image = (image_url: string, alt_text: string): ImageElement =>
     ({ type: "image", image_url, alt_text })
 
-/**
- * Creates a button accessory linking to a URL
- *
- * @return Button
- */
 export const button = (text: string, url: string): Button =>
     ({ type: "button", text: plainText(text, true), url })
 
 /**
- * Creates a section block with optional accessory
- *
- * @return SectionBlock
+ * Displays text, possibly alongside elements.
+ * https://docs.slack.dev/reference/block-kit/blocks/section-block
  */
 export const section = (text: TextObject, accessory?: Button): SectionBlock =>
     accessory ? { type: "section", text, accessory } : { type: "section", text }
 
 /**
- * Creates a context block from inline elements
- *
- * @return ContextBlock
+ * Provides contextual info, which can include both images and text.
+ * https://docs.slack.dev/reference/block-kit/blocks/context-block
  */
 export const context = (elements: (Mrkdwn | ImageElement)[]): ContextBlock =>
     ({ type: "context", elements })
 
-/**
- * Creates a callout block wrapping child blocks
- *
- * @return CalloutBlock
- */
 export const callout = (background_color: string, child_blocks: Block[]): CalloutBlock =>
     ({ type: "callout", background_color, child_blocks })
 
@@ -124,9 +100,8 @@ export interface ContainerOptions {
 }
 
 /**
- * Creates a container block; undefined options are dropped by JSON.stringify
- *
- * @return ContainerBlock
+ * A general-purpose wrapper for grouping child blocks together, with a configurable size.
+ * https://docs.slack.dev/reference/block-kit/blocks/container-block
  */
 export const container = (o: ContainerOptions): ContainerBlock => ({
     type: "container",
@@ -144,21 +119,11 @@ export class MessageBuilder {
 
     constructor(private summary?: string) { }
 
-    /**
-     * Appends blocks to the message
-     *
-     * @return this, for chaining
-     */
     add(...blocks: Block[]): this {
         this.blocks.push(...blocks)
         return this
     }
 
-    /**
-     * Builds the final message payload
-     *
-     * @return Message
-     */
     build(): Message {
         return { blocks: this.blocks, text: this.summary }
     }

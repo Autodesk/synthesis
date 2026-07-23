@@ -1,10 +1,10 @@
 import {
-    Block,
+    type Block,
     button,
     container,
     context,
+    type ImageElement,
     image,
-    ImageElement,
     mrkdwn,
     section,
     titleCase,
@@ -190,41 +190,16 @@ const prIconUrl = (e: PrEvent): string => {
  */
 const reviewIconUrl = (state: string): string => REVIEW_ICONS[state] ?? REVIEW_ICONS.commented
 
-/**
- * Builds the review container title line
- *
- * @return string
- */
 const reviewTitle = (e: ReviewEvent): string =>
     `${e.review.state === "dismissed" ? `Dismissed review from ${e.review.author}` : titleCase(e.review.state)} - #${e.pr.number} ${e.pr.title} (${e.pr.author})`
 
-/**
- * Builds the message text fallback for a PR event
- *
- * @return string
- */
 export const prSummary = (e: PrEvent): string => `${e.actor.login}: PR #${e.pr.number} ${e.action}`
 
-/**
- * Builds the message text fallback for a review event
- *
- * @return string
- */
 export const reviewSummary = (e: ReviewEvent): string => `${e.actor.login}: ${reviewTitle(e)}`
 
-/**
- * Builds the comment container title line
- *
- * @return string
- */
 const commentTitle = (e: CommentEvent): string =>
     `Comment - #${e.target.number} ${e.target.title} (${e.target.author})`
 
-/**
- * Builds the message text fallback for a comment event
- *
- * @return string
- */
 export const commentSummary = (e: CommentEvent): string => `${e.actor.login}: ${commentTitle(e)}`
 
 interface ParsedBody {
@@ -256,23 +231,18 @@ const parseImages = (body: string): ParsedBody => {
 const SUGGESTION = /```suggestion\r?\n(.*?)```/gs
 
 /**
- * Relabels GitHub ```suggestion blocks as a plain labelled code block
+ * Relabels GitHub ```suggestion blocks as a plain labeled code block
  *
  * @return string
  */
 const formatSuggestions = (text: string): string =>
     text.replace(SUGGESTION, (_m, code) => "*Suggested change:*\n```\n" + code + "```")
 
-/**
- * Renders the Jira section, scanning title then body for a SYNTH ticket
- *
- * @return Block
- */
 const jiraSection = (pr: PullRequest): Block => {
     const regexp = /SYNTH-\d+/g
     const matches = pr.title.match(regexp) ?? pr.body?.match(regexp) ?? []
     return section(
-        mrkdwn(matches.length >= 1 ? "Jira: `" + matches[0] + "`" : "No Jira ticket attached"),
+        mrkdwn(matches.length >= 1 ? `Jira: \`${matches[0]}\`` : "No Jira ticket attached"),
         button("Visit", pr.htmlUrl),
     )
 }
