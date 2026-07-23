@@ -6,6 +6,11 @@ export const TOP_BAR_ICON_BUTTON_SX = {
     "&:focus, &:focus-visible": { outline: "none" },
 } as const
 
+// making react-icon glyph consistent with buttons
+export const TOP_BAR_GLYPH_SX = { fontSize: 26, display: "flex" } as const
+
+export const TOP_BAR_DIVIDER_SX = { width: "2px", height: 28, bgcolor: "topBarText.main", opacity: 0.4 } as const
+
 import type { MenuProps } from "@mui/material"
 
 export const DROPDOWN_SELECT_SX = {
@@ -18,7 +23,6 @@ export const DROPDOWN_SELECT_SX = {
     "& .MuiSelect-icon": { color: "topBarText.main", right: 8, pointerEvents: "none" },
 } as const
 
-/** topbar dropdown props */
 export const DROPDOWN_MENU_PROPS = {
     marginThreshold: 8,
     slotProps: {

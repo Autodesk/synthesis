@@ -1,14 +1,14 @@
-import { Box, Stack, Tooltip } from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import type React from "react"
-import { IconButton } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "./AssemblySelect"
 import ConfigureSplitDropdown from "./ConfigureSplitDropdown"
-import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
+import { TOP_BAR_DIVIDER_SX } from "./TopBarConfig"
+import { TopBarButton } from "./TopBarButton"
 import { TopBarIcon } from "./TopBarIcons"
 import { useConfigureAssembly } from "./UseConfigureAssembly"
 
 const ConfigureControls: React.FC = () => {
-    const { assemblies, selectedConfigAssembly, configureButtons, openConfig, selectedValue, selectAssemblyById } =
+    const { assemblies, selectedConfigAssembly, configureButtons, openConfig, selectAssemblyById } =
         useConfigureAssembly()
 
     // TODO: add a "..." after a long robot name to ensure it isn't rendered underneath the dropdown arrow
@@ -17,32 +17,22 @@ const ConfigureControls: React.FC = () => {
             <AssemblySelect
                 assemblies={assemblies}
                 selectedConfigAssembly={selectedConfigAssembly}
-                selectedValue={selectedValue}
                 onSelect={selectAssemblyById}
                 sx={{ borderRadius: 1, height: 34, minWidth: 195, fontSize: 12 }}
             />
 
             {configureButtons.map(({ name, label, mode }) => (
-                <Tooltip key={label} title={!selectedConfigAssembly ? "Spawn an assembly first" : label}>
-                    <span>
-                        <IconButton
-                            size="medium"
-                            disableRipple
-                            disabled={!selectedConfigAssembly}
-                            sx={{
-                                ...TOP_BAR_ICON_BUTTON_SX,
-                                ...(!selectedConfigAssembly && { opacity: 0.4 }),
-                            }}
-                            onClick={() => openConfig(mode)}
-                        >
-                            <TopBarIcon name={name} size={30} />
-                        </IconButton>
-                    </span>
-                </Tooltip>
+                <TopBarButton
+                    key={label}
+                    label={label}
+                    icon={<TopBarIcon name={name} size={30} />}
+                    disabledTooltip={selectedConfigAssembly ? undefined : "Spawn an assembly first"}
+                    onClick={() => openConfig(mode)}
+                />
             ))}
 
             {/* Divider line */}
-            <Box sx={{ width: "2px", height: 28, bgcolor: "topBarText.main", opacity: 0.4 }} />
+            <Box sx={TOP_BAR_DIVIDER_SX} />
 
             <ConfigureSplitDropdown />
         </Stack>

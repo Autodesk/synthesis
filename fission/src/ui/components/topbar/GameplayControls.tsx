@@ -1,11 +1,10 @@
-import { Stack, Tooltip } from "@mui/material"
+import { Stack } from "@mui/material"
 import type React from "react"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import MultiplayerStartModal from "@/ui/modals/MultiplayerStartModal"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld"
-import { IconButton } from "@/ui/components/StyledComponents"
-import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
+import { TopBarButton } from "./TopBarButton"
 import { TopBarIcon } from "./TopBarIcons"
 
 const GameplayControls: React.FC = () => {
@@ -17,16 +16,12 @@ const GameplayControls: React.FC = () => {
 
     return (
         <Stack direction="row" alignItems="center" gap={1.5}>
-            <Tooltip title="Start Match">
-                <IconButton size="medium" disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={openMatchMode}>
-                    <TopBarIcon name="gp-2" size={30} />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title="Open Multiplayer">
-                <IconButton size="medium" disableRipple sx={TOP_BAR_ICON_BUTTON_SX} onClick={openMultiplayer}>
-                    <TopBarIcon name="gp-1" size={30} />
-                </IconButton>
-            </Tooltip>
+            <TopBarButton label="Start Match" icon={<TopBarIcon name="gp-2" size={30} />} onClick={openMatchMode} />
+            <TopBarButton
+                label="Open Multiplayer"
+                icon={<TopBarIcon name="gp-1" size={30} />}
+                onClick={openMultiplayer}
+            />
         </Stack>
     )
 }

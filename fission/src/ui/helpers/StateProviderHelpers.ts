@@ -14,7 +14,8 @@ export interface AppState {
     // Top bar mode selector
     appMode: AppMode
     setAppMode: (_mode: AppMode) => void
-    // Assembly selected in the top bar's Configure controls
+    // goto: `useSpawnedAssemblies` syncs the selectedConfigAssembly across configure and codesim menus
+    assemblies: MirabufSceneObject[]
     selectedConfigAssembly?: MirabufSceneObject
     setSelectedConfigAssembly: (_assembly: MirabufSceneObject | undefined) => void
 }
@@ -24,6 +25,7 @@ export const StateContext = createContext<AppState>({
     setSelectedScheme: () => {},
     appMode: "Configure",
     setAppMode: () => {},
+    assemblies: [],
     selectedConfigAssembly: undefined,
     setSelectedConfigAssembly: () => {},
 })

@@ -43,7 +43,7 @@ const MobileHUD: React.FC = () => {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
     const isTouchDevice = useIsTouchDevice()
 
-    const { assemblies, selectedConfigAssembly, configureButtons, openConfig, selectedValue, selectAssemblyById } =
+    const { assemblies, selectedConfigAssembly, configureButtons, openConfig, selectAssemblyById } =
         useConfigureAssembly()
 
     useEffect(() => EventSystem.listen("APSUserInfoUpdate", () => setUserInfo(APS.userInfo)), [])
@@ -125,7 +125,6 @@ const MobileHUD: React.FC = () => {
                 <AssemblySelect
                     assemblies={assemblies}
                     selectedConfigAssembly={selectedConfigAssembly}
-                    selectedValue={selectedValue}
                     onSelect={selectAssemblyById}
                     sx={{ borderRadius: 3, height: 44, fontSize: 15, flexGrow: 1, minWidth: 0 }}
                 />

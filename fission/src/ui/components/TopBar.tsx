@@ -16,12 +16,13 @@ import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
-import { IconButton, SynthesisIcons } from "./StyledComponents"
+import { SynthesisIcons } from "./StyledComponents"
+import CodesimControls from "./topbar/CodesimControls"
 import ConfigureControls from "./topbar/ConfigureControls"
-import ConfigureSplitDropdown from "./topbar/ConfigureSplitDropdown"
 import GameplayControls from "./topbar/GameplayControls"
 import ModeDropdown from "./topbar/ModeDropdown"
-import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
+import { TopBarButton } from "./topbar/TopBarButton"
+import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX, TOP_BAR_HEIGHT } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
 import UserIcon from "./UserIcon"
 
@@ -102,100 +103,72 @@ const TopBar: React.FC = () => {
                         />
                     </Box>
                 </Tooltip>
-                <Tooltip title="Add Assembly">
-                    <IconButton
-                        size="medium"
-                        disableRipple
-                        sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() =>
-                            openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
-                        }
-                    >
-                        <TopBarIcon name="add" size={30} />
-                    </IconButton>
-                </Tooltip>
+
+                <TopBarButton
+                    label="Add Assembly"
+                    icon={<TopBarIcon name="add" size={30} />}
+                    onClick={() => openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })}
+                />
+
                 {/* Divider line */}
-                <Box sx={{ width: "2px", height: 28, bgcolor: "topBarText.main", opacity: 0.4 }} />
+                <Box sx={TOP_BAR_DIVIDER_SX} />
+
                 {appMode === "Configure" && <ConfigureControls />}
-                {appMode === "Codesim" && <ConfigureSplitDropdown />} {/* TODO: CHANGE THIS TO `CodesimControls`!!! */}
+                {appMode === "Codesim" && <CodesimControls />}
                 {appMode === "Gameplay" && <GameplayControls />}
                 <Box flexGrow={1} />
                 {import.meta.env.DEV && (
                     <>
-                        <Tooltip title="Developer Tool">
-                            <IconButton
-                                size="medium"
-                                disableRipple
-                                sx={TOP_BAR_ICON_BUTTON_SX}
-                                onClick={() => openPanel(DeveloperToolPanel, undefined)}
-                            >
-                                {/* Box sets the em-square so the icon scales to 26 px;
-                                    color inherits from TOP_BAR_ICON_BUTTON_SX → topBarText.main */}
-                                <Box sx={{ fontSize: 26, display: "flex" }}>
+                        <TopBarButton
+                            label="Developer Tool"
+                            icon={
+                                <Box sx={TOP_BAR_GLYPH_SX}>
                                     <SynthesisIcons.CODE_SQUARE />
                                 </Box>
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Debug Tools">
-                            <IconButton
-                                size="medium"
-                                disableRipple
-                                sx={TOP_BAR_ICON_BUTTON_SX}
-                                onClick={() => openPanel(DebugPanel, undefined)}
-                            >
-                                <Box sx={{ fontSize: 26, display: "flex" }}>
+                            }
+                            onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                        />
+                        <TopBarButton
+                            label="Debug Tools"
+                            icon={
+                                <Box sx={TOP_BAR_GLYPH_SX}>
                                     <SynthesisIcons.BUG />
                                 </Box>
-                            </IconButton>
-                        </Tooltip>
+                            }
+                            onClick={() => openPanel(DebugPanel, undefined)}
+                        />
                     </>
                 )}
                 {isTouchDevice && (
-                    <Tooltip title="Toggle Joysticks">
-                        <IconButton
-                            size="medium"
-                            disableRipple
-                            sx={TOP_BAR_ICON_BUTTON_SX}
-                            onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
-                        >
-                            <Box sx={{ fontSize: 26, display: "flex" }}>
+                    <TopBarButton
+                        label="Toggle Joysticks"
+                        icon={
+                            <Box sx={TOP_BAR_GLYPH_SX}>
                                 <SynthesisIcons.GAMEPAD />
                             </Box>
-                        </IconButton>
-                    </Tooltip>
+                        }
+                        onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
+                    />
                 )}
-                <Tooltip title="Configure Camera">
-                    <IconButton
-                        size="medium"
-                        disableRipple
-                        sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() => openPanel(CameraSelectionPanel, undefined)}
-                    >
-                        <Box sx={{ fontSize: 26, display: "flex" }}>
+                <TopBarButton
+                    label="Configure Camera"
+                    icon={
+                        <Box sx={TOP_BAR_GLYPH_SX}>
                             <SynthesisIcons.CAMERA />
                         </Box>
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Settings">
-                    <IconButton
-                        size="medium"
-                        disableRipple
-                        sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
-                    >
-                        <TopBarIcon name="settings" size={30} />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={userInfo ? "Account" : "Login"}>
-                    <IconButton
-                        size="medium"
-                        disableRipple
-                        sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
-                    >
-                        {userInfo ? <UserIcon className="h-6 rounded-full" /> : <TopBarIcon name="login" size={30} />}
-                    </IconButton>
-                </Tooltip>
+                    }
+                    onClick={() => openPanel(CameraSelectionPanel, undefined)}
+                />
+                <TopBarButton
+                    label="Settings"
+                    icon={<TopBarIcon name="settings" size={30} />}
+                    onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
+                />
+                <TopBarButton
+                    label={userInfo ? "Account" : "Login"}
+                    icon={userInfo ? <UserIcon className="h-6 rounded-full" /> : <TopBarIcon name="login" size={30} />}
+                    onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
+                />
             </Stack>
         </Box>
     )

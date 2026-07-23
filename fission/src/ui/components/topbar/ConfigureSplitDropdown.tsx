@@ -9,7 +9,6 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { TopBarIcon } from "./TopBarIcons"
 import { useConfigureAssembly } from "./UseConfigureAssembly"
 
-/** Config modes that live only in the dropdown, without a matching top bar icon button. */
 type MenuOnlyConfig = { label: string; mode: ConfigMode; icon: React.ReactNode }
 
 const MENU_ONLY_CONFIGS: MenuOnlyConfig[] = [
@@ -18,17 +17,13 @@ const MENU_ONLY_CONFIGS: MenuOnlyConfig[] = [
     { label: "Brain", mode: ConfigMode.BRAIN, icon: <SynthesisIcons.BRAIN /> },
 ]
 
-/** Sizes react-icons to match the em-square the svg TopBarIcons occupy so every row lines up. */
 const MenuIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Box sx={{ width: 18, height: 18, fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
         {children}
     </Box>
 )
 
-/**
- * Gear button that opens the configure panel, paired with a caret listing every
- * config mode available for the selected assembly.
- */
+/** split dropdown gear icon in configure and codesim menu to see all configuration options */
 const ConfigureSplitDropdown: React.FC = () => {
     const { openPanel } = useUIContext()
     const { selectedConfigAssembly, configureButtons, isField, openConfig } = useConfigureAssembly()
