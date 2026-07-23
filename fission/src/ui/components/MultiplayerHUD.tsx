@@ -3,7 +3,7 @@ import { Stack } from "@mui/system"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Label from "@/components/Label.tsx"
-import type { ClientInfo } from "@/systems/multiplayer/types.ts"
+import type { ClientInfo } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import World from "@/systems/World.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 

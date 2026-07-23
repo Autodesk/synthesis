@@ -12,6 +12,7 @@ import Checkbox from "@/components/Checkbox.tsx"
 import { LabelWithTooltip } from "@/components/StyledComponents.tsx"
 import { waitUntil } from "@/util/Utility.ts"
 import SessionStorage from "@/util/SessionStorage.ts"
+import { DEFAULT_MULTIPLAYER_PORT } from "@/systems/preferences/PreferenceTypes.ts"
 
 export interface MultiplayerInitProps {
     displayName: string
@@ -22,18 +23,16 @@ interface MultiplayerStartMenuCustomProps {
     startWorldCallback: (initData: MultiplayerInitProps) => Promise<boolean>
 }
 
-const DEFAULT_PORT = 9001
 const DEFAULT_HOST = "127.0.0.1"
 
 const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuCustomProps>> = ({ modal }) => {
     const { configureScreen, closeModal } = useUIContext()
     const [room, setRoom] = useState<string>("")
-    const [host, setHost] = useState<string>("")
-    const [port, setPort] = useState<string>("")
-    const [secure, setSecure] = useState(true)
+    const [host, setHost] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerHost"))
+    const [port, setPort] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerPort").toString())
+    const [secure, setSecure] = useState(PreferencesSystem.getUserPreference("MultiplayerSecure"))
     const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
-    const [testSuccess, setTestSuccess] = useState<boolean>(false)
-    const [testInProgress, setTestInProgress] = useState<boolean>(false)
+    const [testState, setTestState] = useState<"pass" | "fail" | "progress" | null>(null)
     const [showCheckCertButton, setShowCheckCertButton] = useState<boolean>(false)
 
     useEffect(() => {
@@ -43,7 +42,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     }, [])
 
     const validateServer = useCallback((): string | undefined => {
-        const parsedPort = port.trim().length == 0 ? DEFAULT_PORT : parseInt(port)
+        const parsedPort = parseInt(port)
         if (isNaN(parsedPort) || parsedPort <= 0 || parsedPort > 65535) {
             globalAddToast("warning", "Invalid Port", "Must be an integer between 0 and 65535")
             return
@@ -53,6 +52,11 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
             globalAddToast("warning", "Cannot Parse URL", url)
             return
         }
+        PreferencesSystem.setUserPreference("MultiplayerPort", parsedPort)
+        PreferencesSystem.setUserPreference("MultiplayerSecure", secure)
+        PreferencesSystem.setUserPreference("MultiplayerHost", host)
+        PreferencesSystem.savePreferences()
+
         return url
     }, [host, port, secure])
 
@@ -82,7 +86,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
 
     const promptCert = useCallback(async (url: string): Promise<boolean> => {
         const shouldAttemptCert = confirm(
-            "Would you like to try manually accepting the certificate?\n\nThis will open a new tab, you will need to manually accept the certificate for your server, as it is self-signed. \n\nAfter proceeding, close the tab and press 'Test Connection' again"
+            "This issue may be caused by an unrecognized certificate. Would you like to try manually accepting the certificate?\n\nThis will open a new tab, you will need to manually accept the certificate for your server, as it is self-signed. \n\nIf the page completely fails to load, it is not a certificate error, but rather an inaccessible server.\n\nAfter proceeding, close the tab and press 'Test Connection' again"
         )
         if (!shouldAttemptCert) return false
         const httpURL = url.replace("wss://", "https://") + "/cert"
@@ -107,7 +111,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
 
         const success = await withTimeout(
             new Promise<boolean>(resolve => {
-                setTestInProgress(true)
+                setTestState("progress")
                 const ws = new WebSocket(url)
                 ws.onopen = ev => {
                     console.log("WS Open", ev)
@@ -163,8 +167,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         if (success) {
             globalAddToast("success", "WebSocket connected!")
         }
-        setTestInProgress(false)
-        setTestSuccess(success)
+        setTestState(success ? "pass" : "fail")
     }, [validateServer, promptCert, secure])
 
     const { startWorldCallback } = modal!.props.custom
@@ -194,7 +197,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 <LabelWithTooltip labelText="Port" tooltipText="The port the server is running on. Default 9001" />
                 <TextField
                     value={port}
-                    placeholder={DEFAULT_PORT.toString()}
+                    placeholder={DEFAULT_MULTIPLAYER_PORT.toString()}
                     inputProps={{
                         onInput: e => {
                             setPort(e.currentTarget.value.replace(/\D/, ""))
@@ -209,17 +212,17 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 onClick={checked => setSecure(checked)}
             />
             <Button
-                disabled={testInProgress}
+                disabled={testState === "progress"}
                 variant={"outlined"}
-                color={testSuccess ? "success" : "secondary"}
+                color={testState === "pass" ? "success" : "secondary"}
                 onClick={connectionTest}
                 className="w-full my-1"
             >
-                {testSuccess ? "Connection OK!" : testInProgress ? "Testing..." : "Test Connection"}
+                {testState == "pass" ? "Connection OK!" : testState == "progress" ? "Testing..." : "Test Connection"}
             </Button>
             {secure && (
                 <Button
-                    disabled={!showCheckCertButton || testSuccess}
+                    disabled={!showCheckCertButton || testState !== "fail"}
                     variant={"outlined"}
                     color={"info"}
                     onClick={async () => {

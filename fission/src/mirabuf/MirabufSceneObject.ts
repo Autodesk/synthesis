@@ -7,7 +7,7 @@ import type {
     RemoteSceneObjectId,
     RobotConfiguration,
     UpdateObjectData,
-} from "@/systems/multiplayer/types"
+} from "@/systems/multiplayer/MultiplayerTypes.ts"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"

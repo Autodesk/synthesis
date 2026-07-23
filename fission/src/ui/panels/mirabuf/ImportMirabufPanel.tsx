@@ -7,7 +7,12 @@ import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabu
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
+import type {
+    EncodedAssembly,
+    LocalSceneObjectId,
+    Message,
+    RemoteSceneObjectId,
+} from "@/systems/multiplayer/MultiplayerTypes.ts"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"

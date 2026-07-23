@@ -4,13 +4,21 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
-import type { ClientInfo, LocalSceneObjectId, Message, MessageWithTimestamp, RemoteSceneObjectId } from "./types"
+import type {
+    ClientInfo,
+    LocalSceneObjectId,
+    Message,
+    MessageWithTimestamp,
+    RemoteSceneObjectId,
+} from "./MultiplayerTypes.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import { decode, encode } from "@msgpack/msgpack"
 import type { InitialMessage } from "@/systems/multiplayer/bindings/InitialMessage.ts"
 import type { InitialResponse } from "@/systems/multiplayer/bindings/InitialResponse.ts"
 
 export const COLLISION_TIMEOUT = 500
+const CLIENT_PREFIX = 0b00000001
+const SERVER_PREFIX = 0b00000011
 
 class MultiplayerSystem {
     public readonly client: WebSocket
@@ -74,13 +82,12 @@ class MultiplayerSystem {
             if (res) {
                 console.log("updating")
                 this.client.onmessage = async ev => {
-                    const data = ev.data as Blob
-                    const decoded = decode(await data.arrayBuffer())
-                    await this.handlePeerMessage(decoded as MessageWithTimestamp)
+                    await this.onMessage(ev.data as Blob)
                 }
             }
             return res
         })
+
         this._onDestroyHooks.push(
             EventSystem.listen("ConfigurationSavedEvent", () => {
                 World.getOwnObjects().forEach(obj => {
@@ -90,10 +97,26 @@ class MultiplayerSystem {
         )
     }
 
+    async onMessage(msg: Blob) {
+        console.log(msg)
+        const headerByte = (await msg.slice(0, 1).bytes())[0]
+        const data = await msg.slice(1).arrayBuffer()
+        const isServer = headerByte == SERVER_PREFIX
+        if (isServer) {
+            console.log("SERVER MESSAGE", data)
+        }
+        const decoded = decode(data)
+        await this.handlePeerMessage(decoded as MessageWithTimestamp)
+    }
+
     async handlePeerMessage(message: MessageWithTimestamp) {
         if (message.type != "update") {
             console.debug(`Receiving Message ${message.type}`)
         }
+        if (message.recipientId != null && message.recipientId != this.clientId) {
+            console.info("Ignoring message for", message.recipientId)
+        }
+
         const handler = peerMessageHandlers[message.type].bind(this) as (
             data: unknown,
             peerid: string,
