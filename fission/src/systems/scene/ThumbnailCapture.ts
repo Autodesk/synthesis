@@ -69,7 +69,21 @@ function computeThumbnailFraming(bounds: THREE.Box3 | readonly THREE.Vector3[]):
 }
 
 function computeTargetBounds(targets: readonly THREE.Object3D[]): THREE.Box3 {
-    return new THREE.Box3()
+    const bounds = new THREE.Box3()
+    const targetBox = new THREE.Box3()
+    for (const target of targets) {
+        if (target instanceof THREE.BatchedMesh) {
+            target.computeBoundingBox()
+            target.computeBoundingSphere()
+            if (!target.boundingBox) continue
+            target.updateWorldMatrix(true, false)
+            targetBox.copy(target.boundingBox).applyMatrix4(target.matrixWorld)
+        } else {
+            targetBox.setFromObject(target)
+        }
+        bounds.union(targetBox)
+    }
+    return bounds
 }
 
 /* rendering thumbnail */
