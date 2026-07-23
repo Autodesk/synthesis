@@ -64,7 +64,6 @@ import MirabufCachingService, { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array } from "@/util/Utility.ts"
 
@@ -212,7 +211,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get schemeName() {
-        return this.multiplayerOwnerName ?? (this.brain as SynthesisBrain)?.inputSchemeName
+        return (
+            this.multiplayerOwnerName ?? (this.brain instanceof SynthesisBrain ? this.brain.inputSchemeName : "Magic")
+        )
     }
 
     public get assemblyId() {
@@ -1216,7 +1217,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getSupplierData(): ContextData {
         const data: ContextData = {
-            title: this.miraType == MiraType.ROBOT ? `Robot: ${this.schemeName ?? "-"}` : "Field",
+            title: this.miraType == MiraType.ROBOT ? `Robot: ${this.schemeName}` : "Field",
             items: [],
         }
 
