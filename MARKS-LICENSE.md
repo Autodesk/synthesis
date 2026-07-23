@@ -19,11 +19,11 @@ The assets in the following files are referred to as the "Marks" and are exclude
 
 
 
-Subject to the terms below, Autodesk Inc. grants you a revocable, worldwide, royalty-free, non-exclusive, non-transferable and non-sublicensable licence to reproduce and display copies of the Marks solely in connection with Autodesk Synthesis.
+Subject to the terms below, Autodesk Inc. grants you a revocable, worldwide, royalty-free, non-exclusive, non-transferable and non-sublicensable license to reproduce and display copies of the Marks solely in connection with Autodesk Synthesis.
 
 
 
-This licence does not permit you to:
+This license does not permit you to:
 
 
 
