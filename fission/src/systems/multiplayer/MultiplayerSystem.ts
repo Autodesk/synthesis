@@ -82,6 +82,7 @@ class MultiplayerSystem {
             if (res) {
                 console.log("updating")
                 this.client.onmessage = async ev => {
+                    console.log("Message", ev.data)
                     await this.onMessage(ev.data as Blob)
                 }
             }

@@ -256,17 +256,6 @@ where
             if write.send(msg.clone()).await.is_err() {
                 break;
             }
-
-            if let Message::Close(_) = msg {
-                // NOTE
-                // I believe that the `rx` automatically closes whene all transmitters are dropped.
-                // Which they are when a close message is sent because we remove the client
-                // from the `ClientMap`
-
-                // Not sure if this is needed
-                let _ = write.close();
-                break;
-            }
         }
     });
 
@@ -284,13 +273,10 @@ where
                     guard.get_senders_from_user_room(client_id)
                 };
 
-                let Ok(old_message) = message.into_text() else {
-                    continue;
-                };
-                let bytes = old_message.as_bytes();
+                let bytes = message.into_data();
 
-                let mut buf = bytes::BytesMut::with_capacity(bytes.len());
-                buf[1..].copy_from_slice(bytes);
+                let mut buf = bytes::BytesMut::zeroed(bytes.len() + 1);
+                buf[1..].copy_from_slice(&bytes);
                 buf[0] = MessagePrefix::Client as u8;
 
                 let message = Message::Binary(buf.into());

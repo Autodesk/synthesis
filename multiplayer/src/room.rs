@@ -126,7 +126,7 @@ impl State {
         };
 
         // The close message gets forwarded to the client getting kicked
-        send(tx.clone(), Message::Close(None));
+        let _ = tx.blocking_send(Message::Close(None));
 
         // Send message toa ll other clients telling them `client_id` has been kicked
         let message = ServerMessage::Kick {
@@ -134,17 +134,20 @@ impl State {
         };
 
         // Encode message into `message_buffer`
-        let mut message_buffer = BytesMut::new();
-        let mut serializer = rmp_serde::Serializer::new(&mut message_buffer[1..]);
+        let mut message_buffer_no_prefix = Vec::new();
+        let mut serializer = rmp_serde::Serializer::new(&mut message_buffer_no_prefix);
         message
             .serialize(&mut serializer)
             .expect("Cound not serialize kick message");
+
+        let mut message_buffer: Vec<u8> = vec![0u8; message_buffer_no_prefix.len() + 1];
+        message_buffer[1..].copy_from_slice(&message_buffer_no_prefix);
         message_buffer[0] = MessagePrefix::Server as u8;
 
         // Send message to each client
         let message = Message::Binary(message_buffer.into());
         for tx in room.get_senders(Some(&client_id)) {
-            send(tx.clone(), message.clone());
+            let _ = tx.blocking_send(message.clone());
         }
 
         info!(room, "Kicked {client_id}");
@@ -187,12 +190,6 @@ impl State {
             system_log: self.system_log.iter().cloned().collect(),
         }
     }
-}
-
-/// Sends a message to the client's receiver
-/// These messages will then be sent down their sink
-fn send(tx: mpsc::Sender<Message>, message: Message) {
-    tokio::spawn(async move { tx.send(message).await });
 }
 
 pub type ClientId = Uuid;
