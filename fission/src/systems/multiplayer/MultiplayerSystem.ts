@@ -13,8 +13,8 @@ import type {
 } from "./MultiplayerTypes.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import { decode, encode } from "@msgpack/msgpack"
-import type { InitialMessage } from "@/systems/multiplayer/bindings/InitialMessage.ts"
-import type { InitialResponse } from "@/systems/multiplayer/bindings/InitialResponse.ts"
+import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
+import type { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
 
 export const COLLISION_TIMEOUT = 500
 export const CLIENT_PREFIX = 0b00000001
@@ -44,16 +44,18 @@ class MultiplayerSystem {
     private constructor(hostAddr: string, roomId: number | "create", displayName: string) {
         this.client = new WebSocket(hostAddr)
         this.client.onopen = () => {
-            const msg = JSON.stringify({
+            const msg = encode({
+                type: "initializeconnection",
                 room_id: roomId == "create" ? null : roomId,
                 name: displayName,
-            } satisfies InitialMessage)
+            } satisfies ClientToServerMessage)
             this.client.send(msg)
         }
         this.client.onclose = ev => {
             console.log(ev, this.client)
             globalAddToast("error", "Multiplayer connection closed")
             this.destroy()
+            EventSystem.dispatch("MultiplayerStateJoinRoom")
         }
 
         this.client.onerror = ev => {
@@ -63,16 +65,22 @@ class MultiplayerSystem {
 
         this._initializationPromise = new Promise<boolean>(resolve => {
             this.client.onmessage = async ev => {
-                const { room_id, client_id } = JSON.parse(ev.data) as InitialResponse
-                this.roomId = room_id
-                this.clientId = client_id
+                const msg = decode(ev.data) as ServerMessage
+                if (msg.type != "sendinfo") {
+                    this.destroy()
+                    console.error("Recieved invalid initial message")
+                    resolve(false)
+                    return
+                }
+                this.roomId = msg.room_id
+                this.clientId = msg.client_id
                 this._info = {
                     clientId: this.clientId,
                     displayName: displayName,
                     isHost: roomId == "create",
                     creationTime: Date.now(),
                 }
-                globalAddToast("success", "Joined room", room_id)
+                globalAddToast("success", "Joined room", this.roomId)
                 resolve(true)
                 await this.sendHello(true)
                 EventSystem.dispatch("MultiplayerStateJoinRoom")
@@ -102,20 +110,36 @@ class MultiplayerSystem {
         console.log(msg)
         const headerByte = (await msg.slice(0, 1).bytes())[0]
         const data = await msg.slice(1).arrayBuffer()
-        const isServer = headerByte == SERVER_PREFIX
-        if (isServer) {
-            console.log("SERVER MESSAGE", data)
-        }
         const decoded = decode(data)
-        await this.handlePeerMessage(decoded as MessageWithTimestamp)
+        const isServer = headerByte == SERVER_PREFIX
+
+        if (isServer) {
+            console.log("SERVER MESSAGE", decoded)
+            await this.handleServerMessage(decoded as ServerMessage)
+        } else {
+            await this.handlePeerMessage(decoded as MessageWithTimestamp)
+        }
+    }
+
+    async handleServerMessage(message: ServerMessage) {
+        switch (message.type) {
+            case "sendinfo":
+                console.warn("Recieved sendinfo after initialization")
+                return
+            case "kick":
+                this.removePeer(message.client_id)
+                return
+            default:
+                console.warn("Unhandled message from server", message)
+        }
     }
 
     async handlePeerMessage(message: MessageWithTimestamp) {
-        if (message.type != "update") {
-            console.debug(`Receiving Message ${message.type}`)
-        }
         if (message.recipientId != null && message.recipientId != this.clientId) {
             console.info("Ignoring message for", message.recipientId)
+        }
+        if (message.type != "update") {
+            console.debug(`Receiving Message ${message.type}`)
         }
 
         const handler = peerMessageHandlers[message.type].bind(this) as (
@@ -183,6 +207,25 @@ class MultiplayerSystem {
         const index = list.indexOf(objectId)
         if (index == -1) return
         list.splice(index, 1)
+    }
+
+    removePeer(clientId: string) {
+        const name = this._clientToInfoMap.get(clientId)?.displayName
+        this._clientToObjectMap.get(clientId)?.forEach(obj => {
+            World.sceneRenderer.removeSceneObject(obj)
+        })
+
+        this._clientToSceneObjectIdMap.delete(clientId)
+        this._clientToInfoMap.delete(clientId)
+        this._clientToObjectMap.delete(clientId)
+        this._clientToBodyMap.delete(clientId)
+
+        EventSystem.dispatch("MultiplayerStatePeerChange")
+        globalAddToast(
+            "warning",
+            "Multiplayer Peer Disconnected",
+            name != null ? `${name} (${clientId.slice(0, 8)})` : clientId
+        )
     }
 
     get peerIDs(): string[] {

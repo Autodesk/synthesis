@@ -266,7 +266,7 @@ async function handleNeedAssemblyMessage(data: NeedAssemblyBody, peerId: string)
     )
 }
 
-function handleDeleteObjectMessage(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
+export function handleDeleteObjectMessage(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
     if (!World.multiplayerSystem) return
     const clientToObjectMap = World.multiplayerSystem._clientToObjectMap
     const localKey = World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)

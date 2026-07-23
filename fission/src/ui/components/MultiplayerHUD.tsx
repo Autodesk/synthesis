@@ -14,9 +14,8 @@ const MultiplayerHUD: React.FC = () => {
         const unsubscribers: (() => void)[] = []
         unsubscribers.push(
             EventSystem.listen("MultiplayerStateJoinRoom", () => {
-                if (!World.multiplayerSystem) return
-                setRoomCode(World.multiplayerSystem.roomId)
-                setPeers([World.multiplayerSystem.info])
+                setRoomCode(World.multiplayerSystem?.roomId ?? null)
+                setPeers(World.multiplayerSystem == null ? [] : [World.multiplayerSystem.info])
             })
         )
         unsubscribers.push(
