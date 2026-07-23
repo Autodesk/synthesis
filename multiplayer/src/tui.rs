@@ -7,9 +7,10 @@
 //! Layout: a tab bar paging through rooms two-at-a-time (horizontal split),
 //! each room panel shows its user list above its log stream, the focused one is highlighted.
 //!
-//! The admin can select a user with the arrows and kick them with `k` (after a confirmation).
+//! The admin can select a user with the arrows and kick them with `k` (after a confirmation),
+//! and lock or unlock the focused room with `l` to control whether new clients may join.
 
-use crate::room::{ClientId, RoomSnapshot, Snapshot, State};
+use crate::room::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
 
 use std::sync::{Arc, Mutex};
 use std::{io, time::Duration};
@@ -20,7 +21,10 @@ use ratatui::style::{Color, Modifier, Style};
 use ratatui::widgets::{
     Block, BorderType, Clear, List, ListItem, ListState, Paragraph, Tabs, Wrap,
 };
-use ratatui::{DefaultTerminal, Frame, text::Line};
+use ratatui::{
+    DefaultTerminal, Frame,
+    text::{Line, Span},
+};
 use uuid::Uuid;
 
 /// How many room panels are shown side-by-side on a single tab.
@@ -84,6 +88,8 @@ struct App {
     tab_count: usize,
     panels_on_tab: usize,
     focused_members: Vec<(ClientId, String)>,
+    /// Id of the currently focused room, if any, so the lock toggle can act without a snapshot.
+    focused_room: Option<RoomId>,
 }
 
 impl App {
@@ -98,6 +104,7 @@ impl App {
             tab_count: 1,
             panels_on_tab: 0,
             focused_members: Vec::new(),
+            focused_room: None,
         }
     }
 
@@ -116,6 +123,7 @@ impl App {
             self.focused_panel = 0;
             self.selected_user = 0;
             self.focused_members.clear();
+            self.focused_room = None;
             return;
         }
 
@@ -123,7 +131,9 @@ impl App {
             self.focused_panel = self.panels_on_tab - 1;
         }
 
-        self.focused_members = snapshot.rooms[base + self.focused_panel].members.clone();
+        let focused = &snapshot.rooms[base + self.focused_panel];
+        self.focused_room = Some(focused.id);
+        self.focused_members = focused.members.clone();
 
         if self.focused_members.is_empty() {
             self.selected_user = 0;
@@ -166,6 +176,11 @@ impl App {
             KeyCode::Char('k') => {
                 if let Some((uid, _)) = self.focused_members.get(self.selected_user) {
                     self.pending_kick = Some(*uid);
+                }
+            }
+            KeyCode::Char('l') => {
+                if let Some(room_id) = self.focused_room {
+                    self.state.lock().unwrap().toggle_room_lock(room_id);
                 }
             }
             _ => {}
@@ -272,6 +287,20 @@ fn render_room_panel(
         Style::default().fg(Color::DarkGray)
     };
 
+    let mut title = vec![Span::raw(format!(
+        " Room {}  ·  {} user(s) ",
+        room.id,
+        room.members.len()
+    ))];
+    if room.locked {
+        title.push(Span::styled(
+            " 🔒 LOCKED ",
+            Style::default()
+                .fg(Color::Red)
+                .add_modifier(Modifier::BOLD),
+        ));
+    }
+
     let outer = Block::bordered()
         .border_type(if focused {
             BorderType::Thick
@@ -279,11 +308,7 @@ fn render_room_panel(
             BorderType::Plain
         })
         .border_style(border_style)
-        .title(format!(
-            " Room {}  ·  {} user(s) ",
-            room.id,
-            room.members.len()
-        ));
+        .title(Line::from(title));
     let inner = outer.inner(area);
     frame.render_widget(outer, area);
 
@@ -370,7 +395,7 @@ fn render_system_log(frame: &mut Frame, area: Rect, snapshot: &Snapshot) {
 
 fn render_status(frame: &mut Frame, area: Rect) {
     let hints =
-        " q quit  │  Tab/⇧Tab page rooms  │  ←/→ focus panel  │  ↑/↓ select user  │  k kick ";
+        " q quit  │  Tab/⇧Tab page rooms  │  ←/→ focus panel  │  ↑/↓ select user  │  k kick  │  l lock/unlock ";
     let status = Paragraph::new(hints).style(Style::default().fg(Color::Black).bg(Color::Gray));
     frame.render_widget(status, area);
 }

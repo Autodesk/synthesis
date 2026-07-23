@@ -1,28 +1,33 @@
 mod messaging;
+mod prefixed;
 mod room;
 mod tui;
 #[macro_use]
 mod logging;
 
-use crate::messaging::{InitialResponse, MessagePrefix};
-use crate::room::{ClientSender, State};
-use crate::{logging::EventType, messaging::InitialMessage};
+use crate::logging::EventType;
+use crate::messaging::{
+    ClientToServerMessage, MessagePrefix, ServerMessage, deserialize_messagepack,
+    serialize_messagepack,
+};
+use crate::prefixed::{Prefixed, SynthesisStream};
+use crate::room::{ClientId, ClientSender, State};
 
-use std::io::Cursor;
-use std::pin::Pin;
+use std::ops::Deref;
 use std::sync::{Arc, Mutex};
-use std::task::{Context, Poll};
 use std::{env, fs, process, thread};
 use std::{error::Error, fs::File};
 use std::{io::BufReader, net::SocketAddr};
 
+use futures_util::stream::{SplitSink, SplitStream};
 use futures_util::{SinkExt, StreamExt};
 use rcgen::{CertifiedKey, generate_simple_self_signed};
-use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, ReadBuf};
+use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::{net::TcpListener, sync::mpsc};
 use tokio_rustls::TlsAcceptor;
 use tokio_rustls::rustls::ServerConfig;
 use tokio_rustls::rustls::pki_types::{CertificateDer, PrivateKeyDer};
+use tokio_tungstenite::WebSocketStream;
 use tokio_tungstenite::tungstenite::{Message, Utf8Bytes};
 
 const DEFAULT_PORT: u32 = 2610;
@@ -93,104 +98,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-/// Replays a buffer of already-read ("peeked") bytes before continuing to read
-/// from the underlying stream. Writes pass straight through. Used to "un-read"
-/// bytes we inspected so `accept_async` still sees the full request.
-struct Prefixed<S> {
-    prefix: Cursor<Vec<u8>>,
-    inner: S,
-}
-
-impl<S> Prefixed<S> {
-    fn new(prefix: Vec<u8>, inner: S) -> Self {
-        Self {
-            prefix: Cursor::new(prefix),
-            inner,
-        }
-    }
-}
-
-impl<S: AsyncRead + Unpin> AsyncRead for Prefixed<S> {
-    fn poll_read(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        buf: &mut ReadBuf<'_>,
-    ) -> Poll<std::io::Result<()>> {
-        let pos = self.prefix.position() as usize;
-        let data = self.prefix.get_ref();
-        if pos < data.len() {
-            let n = (data.len() - pos).min(buf.remaining());
-            buf.put_slice(&data[pos..pos + n]);
-            self.prefix.set_position((pos + n) as u64);
-            return Poll::Ready(Ok(()));
-        }
-        Pin::new(&mut self.inner).poll_read(cx, buf)
-    }
-}
-
-impl<S: AsyncWrite + Unpin> AsyncWrite for Prefixed<S> {
-    fn poll_write(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        buf: &[u8],
-    ) -> Poll<std::io::Result<usize>> {
-        Pin::new(&mut self.inner).poll_write(cx, buf)
-    }
-
-    fn poll_flush(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<std::io::Result<()>> {
-        Pin::new(&mut self.inner).poll_flush(cx)
-    }
-
-    fn poll_shutdown(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<std::io::Result<()>> {
-        Pin::new(&mut self.inner).poll_shutdown(cx)
-    }
-}
-
-async fn handle_connection<S>(state: Arc<Mutex<State>>, mut raw_stream: S, addr: SocketAddr)
+async fn handle_connection<S>(state: Arc<Mutex<State>>, raw_stream: S, addr: SocketAddr)
 where
     S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
 {
-    // "Peek" at the request: read the first chunk, then replay it in front of
-    // the stream. `peek()` is an inherent method on `TcpStream` (not a trait),
-    // so it can't be called generically or on a `TlsStream` — this replays the
-    // bytes instead, letting us both inspect the request and recover the stream.
-    let mut buf = vec![0u8; 1024];
-    let n = match raw_stream.read(&mut buf).await {
-        Ok(0) => return, // client hung up
-        Ok(n) => n,
-        Err(e) => {
-            error_lock!(state, "Failed to read from {addr}: {e}");
-            return;
-        }
-    };
-    buf.truncate(n);
-
-    let message = String::from_utf8_lossy(&buf).to_ascii_lowercase();
-
-    let is_ws = message.contains("upgrade: websocket");
-
-    let mut stream = Prefixed::new(buf, raw_stream);
-
-    // Respond to plain HTTP requests properly, rather than failing the handshake.
-    if !is_ws {
-        let resp = if message[0..10] == *"get /cert " {
-            let body = "<script>window.close()</script>You may now close this page.";
-            format!(
-                "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
-                body.len()
-            )
-        } else {
-            let body = "Synthesis";
-            format!(
-                "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
-                body.len(),
-            )
-        };
-
-        let _ = stream.write_all(resp.as_bytes()).await;
-        let _ = stream.flush().await;
+    let ConnectionStatus::Ws(stream) =
+        into_prefixed_or_respond(state.clone(), raw_stream, addr).await
+    else {
         return;
-    }
+    };
 
     let ws_stream = match tokio_tungstenite::accept_async(stream).await {
         Ok(ws_stream) => ws_stream,
@@ -213,44 +129,13 @@ where
     // 2..n. Any number of messages that will be forwarded to every other client in their room
     let (mut write, mut read) = ws_stream.split();
 
-    // Parse initial message, then user in correct room
-    let Some(Ok(Message::Text(initial_message_string))) = read.next().await else {
-        warn_lock!(
-            state,
-            "Client disconnected before handshake (probably a test)"
-        );
-        return;
-    };
-
-    let Ok(initial_message) = serde_json::from_str::<InitialMessage>(&initial_message_string)
+    let Some(client_id) =
+        wait_for_initializtion(state.clone(), &mut read, &mut write, tx, addr).await
     else {
-        error_lock!(state, "{addr} sent an invalid initial message");
         return;
     };
 
-    let (client_id, room_id) = {
-        // The lock is relinquished after this match statement
-        let mut guard = state.lock().unwrap();
-        match initial_message.room_id {
-            None => guard.add_room_and_authority(initial_message.name, tx),
-            Some(room_id) => match guard.add_client_to_room(initial_message.name, tx, room_id) {
-                Some(client_id) => (client_id, room_id),
-                None => return,
-            },
-        }
-    };
-
-    let response = InitialResponse {
-        room_id,
-        client_id: client_id.to_string(),
-    };
-    let bytes = Utf8Bytes::from(serde_json::to_string(&response).unwrap());
-    if write.send(Message::Text(bytes)).await.is_err() {
-        error_lock!(state, "Failed to send back initial response");
-
-        return;
-    }
-
+    // This task listens for messages to the channel and sends them down the sink to the client
     tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
             if write.send(msg.clone()).await.is_err() {
@@ -266,20 +151,14 @@ where
         };
 
         match message {
-            Message::Text(_) | Message::Binary(_) => {
+            Message::Binary(bytes) => {
                 let senders: Vec<ClientSender> = {
                     // The lock is relinquished after senders are retreived
                     let mut guard = state.lock().unwrap();
                     guard.get_senders_from_user_room(client_id)
                 };
 
-                let bytes = message.into_data();
-
-                let mut buf = bytes::BytesMut::zeroed(bytes.len() + 1);
-                buf[1..].copy_from_slice(&bytes);
-                buf[0] = MessagePrefix::Client as u8;
-
-                let message = Message::Binary(buf.into());
+                let message = prefix_message(bytes, MessagePrefix::Client);
                 for tx in senders {
                     tx.send(message.clone()).await.ok();
                 }
@@ -295,6 +174,180 @@ where
             _ => todo!("Handle Ping/Pong"),
         }
     }
+}
+
+/// Waits for and handles messages from the client that are intended for the server.
+///
+/// If the message is `ClientToServerMessage::RequestRooms`,
+/// the function handles the request and keeps listening
+///
+/// If the message is `ClientToServerMessage::InitializeConnection`,
+/// the function handles the request by generating a client id, and putting
+/// the client in the correct room. This may involve creating a new room depending on the request
+/// The function then returns the generated `ClientId`
+///
+/// If any message is unable to be parse, the function returns `None`.
+async fn wait_for_initializtion<S>(
+    state: Arc<Mutex<State>>,
+    read: &mut SplitStream<WebSocketStream<Prefixed<S>>>,
+    write: &mut SplitSink<WebSocketStream<Prefixed<S>>, Message>,
+    tx: ClientSender,
+    addr: SocketAddr,
+) -> Option<ClientId>
+where
+    S: SynthesisStream,
+{
+    loop {
+        match parse_first_message(state.clone(), read, addr).await {
+            Some(ClientToServerMessage::RequestRooms) => {
+                handle_room_list_request(state.clone(), write).await
+            }
+            // When they ask to initialize a connection, then we add them to a room
+            // Or create a room for them
+            Some(ClientToServerMessage::InitializeConnection { room_id, name }) => {
+                let (client_id, room_id) = {
+                    // The lock is relinquished at the end of this expression
+                    let mut guard = state.lock().unwrap();
+                    match room_id {
+                        None => guard.add_room_and_authority(name, tx),
+                        Some(room_id) => match guard.add_client_to_room(name, tx, room_id) {
+                            Some(client_id) => (client_id, room_id),
+                            None => return None,
+                        },
+                    }
+                };
+
+                let response = ServerMessage::SendInfo {
+                    room_id,
+                    client_id: client_id.to_string(),
+                };
+                let bytes = Utf8Bytes::from(serde_json::to_string(&response).unwrap());
+                if write.send(Message::Text(bytes)).await.is_err() {
+                    error_lock!(state, "Failed to send back initial response");
+
+                    return None;
+                }
+
+                break Some(client_id);
+            }
+            None => return None,
+        }
+    }
+}
+
+async fn handle_room_list_request<S>(
+    state: Arc<Mutex<State>>,
+    write: &mut SplitSink<WebSocketStream<Prefixed<S>>, Message>,
+) where
+    S: SynthesisStream,
+{
+    let message = {
+        let guard = state.lock().unwrap();
+        ServerMessage::RoomList(guard.list_rooms())
+    };
+
+    let message = serialize_messagepack(message);
+    let message = Message::Binary(message.into());
+
+    write.send(message).await.ok();
+}
+
+async fn parse_first_message<S>(
+    state: Arc<Mutex<State>>,
+    read: &mut SplitStream<WebSocketStream<Prefixed<S>>>,
+    addr: SocketAddr,
+) -> Option<ClientToServerMessage>
+where
+    S: SynthesisStream,
+{
+    // Parse initial message, then user in correct room
+    let Some(Ok(Message::Binary(message_data))) = read.next().await else {
+        warn_lock!(
+            state,
+            "Client disconnected before handshake (probably a test)"
+        );
+        return None;
+    };
+
+    let Some(message) =
+        deserialize_messagepack::<bytes::Bytes, ClientToServerMessage>(&message_data)
+    else {
+        error_lock!(state, "{addr} sent an invalid initial message");
+        return None;
+    };
+
+    Some(message)
+}
+
+enum ConnectionStatus<S> {
+    HungUp,
+    Error,
+    Http,
+    Ws(Prefixed<S>),
+}
+
+async fn into_prefixed_or_respond<S>(
+    state: Arc<Mutex<State>>,
+    mut raw_stream: S,
+    addr: SocketAddr,
+) -> ConnectionStatus<S>
+where
+    S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
+{
+    // "Peek" at the request: read the first chunk, then replay it in front of
+    // the stream. `peek()` is an inherent method on `TcpStream` (not a trait),
+    // so it can't be called generically or on a `TlsStream` — this replays the
+    // bytes instead, letting us both inspect the request and recover the stream.
+    let mut buf = vec![0u8; 1024];
+    let n = match raw_stream.read(&mut buf).await {
+        Ok(0) => return ConnectionStatus::HungUp,
+        Ok(n) => n,
+        Err(e) => {
+            error_lock!(state, "Failed to read from {addr}: {e}");
+            return ConnectionStatus::Error;
+        }
+    };
+    buf.truncate(n);
+
+    let message = String::from_utf8_lossy(&buf).to_ascii_lowercase();
+    let mut stream = Prefixed::new(buf, raw_stream);
+
+    // Respond to plain HTTP requests properly, rather than failing the handshake.
+    let is_ws = message.contains("upgrade: websocket");
+    if !is_ws {
+        let resp = if message[0..10] == *"get /cert " {
+            let body = "<script>window.close()</script>You may now close this page.";
+            format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                body.len()
+            )
+        } else {
+            let body = "Synthesis";
+            format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                body.len(),
+            )
+        };
+
+        let _ = stream.write_all(resp.as_bytes()).await;
+        let _ = stream.flush().await;
+        return ConnectionStatus::Http;
+    }
+
+    ConnectionStatus::Ws(stream)
+}
+
+/// Creates a new `Message::Binary` containing `bytes`,
+/// prefixed with the byte value of `MessagePrefix`
+pub fn prefix_message<M>(bytes: M, prefix: MessagePrefix) -> Message
+where
+    M: Deref<Target = [u8]>,
+{
+    let mut buf = vec![0u8; bytes.len() + 1];
+    buf[1..].copy_from_slice(&bytes);
+    buf[0] = prefix as u8;
+
+    Message::Binary(buf.into())
 }
 
 /// Creates a TLS config for the server

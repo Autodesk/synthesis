@@ -1,8 +1,7 @@
 use crate::logging::{Event, EventType};
-use crate::messaging::{MessagePrefix, ServerMessage};
-use crate::{info, warn};
+use crate::messaging::{MessagePrefix, ServerMessage, serialize_messagepack};
+use crate::{info, prefix_message, warn};
 
-use serde::Serialize;
 use std::collections::{HashMap, VecDeque};
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
@@ -38,6 +37,7 @@ impl State {
         let mut room = Room {
             members: vec![Client::new(authority_id, authority_name, authority_tx)],
             authority: authority_id,
+            locked: false,
             logs: VecDeque::new(),
         };
 
@@ -65,6 +65,10 @@ impl State {
             );
             return None;
         };
+
+        if room.locked {
+            return None;
+        }
 
         let client = Client::new(client_id, client_name, client_tx);
         room.members.push(client);
@@ -115,6 +119,22 @@ impl State {
         }
     }
 
+    /// Flips whether new clients can join `room_id`.
+    /// Returns the new locked state, or `None` if the room does not exist.
+    pub fn toggle_room_lock(&mut self, room_id: RoomId) -> Option<bool> {
+        let room = self.rooms.map.get_mut(&room_id)?;
+        room.locked = !room.locked;
+        let locked = room.locked;
+
+        if locked {
+            info!(room, "Room {room_id} locked");
+        } else {
+            info!(room, "Room {room_id} unlocked");
+        }
+
+        Some(locked)
+    }
+
     pub fn kick(&mut self, client_id: ClientId) {
         let Some(room) = self.get_room_of_client(&client_id).map(|a| a.1) else {
             return;
@@ -132,25 +152,25 @@ impl State {
             client_id: client_id.to_string(),
         };
 
-        // Encode message into `message_buffer`
-        let mut message_buffer_no_prefix = Vec::new();
-        let mut serializer = rmp_serde::Serializer::new(&mut message_buffer_no_prefix);
-        message
-            .serialize(&mut serializer)
-            .expect("Cound not serialize kick message");
+        let message_buffer_no_prefix = serialize_messagepack(message);
+        let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
 
-        let mut message_buffer: Vec<u8> = vec![0u8; message_buffer_no_prefix.len() + 1];
-        message_buffer[1..].copy_from_slice(&message_buffer_no_prefix);
-        message_buffer[0] = MessagePrefix::Server as u8;
-
-        // Send message to each client
-        let message = Message::Binary(message_buffer.into());
         for tx in room.get_senders(Some(&client_id)) {
             let _ = tx.blocking_send(message.clone());
         }
 
         info!(room, "Kicked {client_id}");
         self.remove_client(client_id);
+    }
+
+    /// Returns a list of all rooms formatted as:
+    /// `{room.autority}'s Room`
+    pub fn list_rooms(&self) -> Vec<String> {
+        self.rooms
+            .map
+            .values()
+            .map(|room| format!("{}'s room", room.authority))
+            .collect()
     }
 
     /// Record a server-wide event
@@ -173,6 +193,7 @@ impl State {
             .map(|(id, room)| RoomSnapshot {
                 id: *id,
                 authority: room.authority,
+                locked: room.locked,
                 members: room
                     .members
                     .iter()
@@ -224,6 +245,8 @@ pub struct Room {
     members: Vec<Client>,
     /// The physics system authority of the room
     authority: ClientId,
+    /// Whether new players can enter a room
+    locked: bool,
     /// Recent activity for this room, newest last. Capped at [`MAX_LOG_LINES`].
     logs: VecDeque<Event>,
 }
@@ -297,6 +320,7 @@ pub struct Snapshot {
 pub struct RoomSnapshot {
     pub id: RoomId,
     pub authority: ClientId,
+    pub locked: bool,
     pub members: Vec<(ClientId, String)>,
     pub logs: Vec<Event>,
 }
