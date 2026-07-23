@@ -58,15 +58,15 @@ const send = async () => {
         )
     }
 
+    const repo_owner = github.repository_owner
+    const repo_name = github.event.repository.name
+    const pr_number = github.event.pull_request.number
+
     if (github.event_name === "pull_request_review_comment") {
         const event = reviewCommentEventFromContext(github)
 
         const reply_to_id = github.event.comment.in_reply_to_id
         if (reply_to_id) {
-            const repo_owner = github.repository_owner
-            const repo_name = github.event.repository.name
-            const pr_number = github.event.pull_request.number
-
             const url = `https://api.github.com/repos/${repo_owner}/${repo_name}/pulls/${pr_number}/comments?per_page=100`
             const res = await ghGet(url)
 
@@ -94,12 +94,9 @@ const send = async () => {
         )
     }
 
-    let comments;
+    let comments = null
 
     if (github.event.action !== "dismissed") {
-        const repo_owner = github.repository_owner
-        const repo_name = github.event.repository.name
-        const pr_number = github.event.pull_request.number
         const review_id = github.event.review.id
 
         const url = `https://api.github.com/repos/${repo_owner}/${repo_name}/pulls/${pr_number}/reviews/${review_id}/comments?per_page=100`
@@ -118,6 +115,21 @@ const send = async () => {
         process.exit(0)
 
     const event = reviewEventFromContext(github)
+
+    // dismiss message isn't in the payload; pull it from the timeline
+    if (github.event.action === "dismissed") {
+        const url = `https://api.github.com/repos/${repo_owner}/${repo_name}/issues/${pr_number}/timeline?per_page=100`
+        const res = await ghGet(url)
+
+        if (res.ok) {
+            const events: any[] = await res.json()
+            const dismissal = events
+                .filter(e => e.event === "review_dismissed" && e.dismissed_review?.review_id === github.event.review.id)
+                .at(-1)
+            if (dismissal?.dismissed_review?.dismissal_message) event.review.body = dismissal.dismissed_review.dismissal_message
+        }
+    }
+
     return post(
         new MessageBuilder(reviewSummary(event))
             .add(...reviewNotification(event, reviewCommentsFromApi(comments ?? [])))
