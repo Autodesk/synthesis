@@ -34,13 +34,15 @@
               nodejs
               bun
               git-lfs
-              # playwright-driver.browsers
+              playwright-test
+              playwright-driver.browsers
             ];
 
-            # env = {
-            #   PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
-            #   PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
-            # };
+            env = {
+              PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
+              PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+              PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+            };
           };
           exporter = pkgs.mkShell {
             packages = with pkgs; [
