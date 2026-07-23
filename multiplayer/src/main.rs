@@ -4,21 +4,20 @@ mod tui;
 #[macro_use]
 mod logging;
 
-use crate::messaging::InitialResponse;
+use crate::messaging::{InitialResponse, MessagePrefix};
 use crate::room::{ClientSender, State};
 use crate::{logging::EventType, messaging::InitialMessage};
 
-use std::net::TcpStream;
+use std::io::Cursor;
+use std::pin::Pin;
 use std::sync::{Arc, Mutex};
+use std::task::{Context, Poll};
 use std::{env, fs, process, thread};
 use std::{error::Error, fs::File};
 use std::{io::BufReader, net::SocketAddr};
 
 use futures_util::{SinkExt, StreamExt};
 use rcgen::{CertifiedKey, generate_simple_self_signed};
-use std::io::Cursor;
-use std::pin::Pin;
-use std::task::{Context, Poll};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, ReadBuf};
 use tokio::{net::TcpListener, sync::mpsc};
 use tokio_rustls::TlsAcceptor;
@@ -26,7 +25,7 @@ use tokio_rustls::rustls::ServerConfig;
 use tokio_rustls::rustls::pki_types::{CertificateDer, PrivateKeyDer};
 use tokio_tungstenite::tungstenite::{Message, Utf8Bytes};
 
-const DEFAULT_PORT: u32 = 9001;
+const DEFAULT_PORT: u32 = 2610;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -254,7 +253,18 @@ where
 
     tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
-            if write.send(msg).await.is_err() {
+            if write.send(msg.clone()).await.is_err() {
+                break;
+            }
+
+            if let Message::Close(_) = msg {
+                // NOTE
+                // I believe that the `rx` automatically closes whene all transmitters are dropped.
+                // Which they are when a close message is sent because we remove the client
+                // from the `ClientMap`
+
+                // Not sure if this is needed
+                let _ = write.close();
                 break;
             }
         }
@@ -274,6 +284,16 @@ where
                     guard.get_senders_from_user_room(client_id)
                 };
 
+                let Ok(old_message) = message.into_text() else {
+                    continue;
+                };
+                let bytes = old_message.as_bytes();
+
+                let mut buf = bytes::BytesMut::with_capacity(bytes.len());
+                buf[1..].copy_from_slice(bytes);
+                buf[0] = MessagePrefix::Client as u8;
+
+                let message = Message::Binary(buf.into());
                 for tx in senders {
                     tx.send(message.clone()).await.ok();
                 }

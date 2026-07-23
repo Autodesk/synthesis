@@ -1,6 +1,9 @@
 use crate::logging::{Event, EventType};
+use crate::messaging::{MessagePrefix, ServerMessage};
 use crate::{info, warn};
 
+use bytes::BytesMut;
+use serde::Serialize;
 use std::collections::{HashMap, VecDeque};
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
@@ -108,7 +111,7 @@ impl State {
 
     pub fn get_senders_from_user_room(&mut self, client_id: ClientId) -> Vec<ClientSender> {
         match self.get_room_of_client(&client_id).map(|a| a.1) {
-            Some(room) => room.get_senders(Some(client_id)),
+            Some(room) => room.get_senders(Some(&client_id)),
             None => Vec::new(),
         }
     }
@@ -122,8 +125,27 @@ impl State {
             return;
         };
 
-        // The close message gets forwarded to the client
-        let _ = tx.try_send(Message::Close(None));
+        // The close message gets forwarded to the client getting kicked
+        send(tx.clone(), Message::Close(None));
+
+        // Send message toa ll other clients telling them `client_id` has been kicked
+        let message = ServerMessage::Kick {
+            client_id: client_id.to_string(),
+        };
+
+        // Encode message into `message_buffer`
+        let mut message_buffer = BytesMut::new();
+        let mut serializer = rmp_serde::Serializer::new(&mut message_buffer[1..]);
+        message
+            .serialize(&mut serializer)
+            .expect("Cound not serialize kick message");
+        message_buffer[0] = MessagePrefix::Server as u8;
+
+        // Send message to each client
+        let message = Message::Binary(message_buffer.into());
+        for tx in room.get_senders(Some(&client_id)) {
+            send(tx.clone(), message.clone());
+        }
 
         info!(room, "Kicked {client_id}");
         self.remove_client(client_id);
@@ -167,6 +189,12 @@ impl State {
     }
 }
 
+/// Sends a message to the client's receiver
+/// These messages will then be sent down their sink
+fn send(tx: mpsc::Sender<Message>, message: Message) {
+    tokio::spawn(async move { tx.send(message).await });
+}
+
 pub type ClientId = Uuid;
 pub type ClientMap = HashMap<ClientId, RoomId>;
 
@@ -205,10 +233,10 @@ pub struct Room {
 }
 
 impl Room {
-    pub fn get_senders(&self, exclude: Option<ClientId>) -> Vec<ClientSender> {
+    pub fn get_senders(&self, exclude: Option<&ClientId>) -> Vec<ClientSender> {
         self.members
             .iter()
-            .filter(|client| exclude != Some(client.id))
+            .filter(|client| exclude != Some(&client.id))
             .map(|client| client.tx.clone())
             .collect()
     }
