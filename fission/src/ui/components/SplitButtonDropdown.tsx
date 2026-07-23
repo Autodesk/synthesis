@@ -1,13 +1,46 @@
 import { Box, Menu, type MenuProps, Stack, type SxProps, type Theme, Tooltip } from "@mui/material"
 import type React from "react"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { IconButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { DROPDOWN_MENU_PROPS, TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
+
+const HALF_SX = {
+    ...TOP_BAR_ICON_BUTTON_SX,
+    height: "100%",
+    borderRadius: 0,
+    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" },
+} as const
+
+interface HalfProps {
+    onClick: React.MouseEventHandler<HTMLButtonElement>
+    children: React.ReactNode
+    tooltip?: string
+    disabled?: boolean
+    ariaLabel?: string
+    sx?: SxProps<Theme>
+}
+
+const Half: React.FC<HalfProps> = ({ onClick, children, tooltip, disabled, ariaLabel, sx }) => {
+    const button = (
+        <IconButton
+            size="medium"
+            disableRipple
+            disabled={disabled}
+            aria-label={ariaLabel}
+            onClick={onClick}
+            sx={{ ...HALF_SX, ...sx }}
+        >
+            {children}
+        </IconButton>
+    )
+    const wrapped = <span style={{ display: "flex", height: "100%" }}>{button}</span>
+    return tooltip ? <Tooltip title={tooltip}>{wrapped}</Tooltip> : wrapped
+}
 
 interface SplitButtonDropdownProps {
     icon: React.ReactNode
     onIconClick: () => void
-    renderMenu: (closeMenu: () => void) => React.ReactNode
+    children: React.ReactNode
     iconTooltip?: string
     caretTooltip?: string
     iconDisabled?: boolean
@@ -16,18 +49,10 @@ interface SplitButtonDropdownProps {
     menuProps?: Partial<MenuProps>
 }
 
-// partial styling that is consistent for all SplitButtonDropdowns
-const HALF_SX = {
-    ...TOP_BAR_ICON_BUTTON_SX,
-    height: "100%",
-    borderRadius: 0,
-    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" },
-} as const
-
 const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
     icon,
     onIconClick,
-    renderMenu,
+    children,
     iconTooltip,
     caretTooltip,
     iconDisabled,
@@ -36,50 +61,44 @@ const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
     menuProps,
 }) => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-    const closeMenu = () => setAnchorEl(null)
+    const closeMenu = useCallback(() => setAnchorEl(null), [])
 
-    const iconButton = (
-        <IconButton size="medium" disableRipple disabled={iconDisabled} onClick={onIconClick} sx={HALF_SX}>
-            {icon}
-        </IconButton>
+    const closeOnItemSelect = useCallback(
+        (e: React.MouseEvent) => {
+            if ((e.target as HTMLElement).closest("[role='menuitem']")) closeMenu()
+        },
+        [closeMenu]
     )
-
-    const caretButton = (
-        <IconButton
-            size="medium"
-            disableRipple
-            disabled={caretDisabled}
-            aria-label="Open dropdown"
-            onClick={e => setAnchorEl(e.currentTarget)}
-            sx={{ ...HALF_SX, px: 0.25 }}
-        >
-            <Box sx={{ fontSize: 18, display: "flex" }}>
-                <SynthesisIcons.DROPDOWN_CARET />
-            </Box>
-        </IconButton>
-    )
-
-    const half = (button: React.ReactNode, tooltip?: string) => {
-        const wrapped = <span style={{ display: "flex", height: "100%" }}>{button}</span>
-        return tooltip ? <Tooltip title={tooltip}>{wrapped}</Tooltip> : wrapped
-    }
 
     return (
         <>
             <Stack direction="row" alignItems="stretch" sx={{ height: 34, borderRadius: 1, overflow: "hidden", ...sx }}>
-                {half(iconButton, iconTooltip)}
-                {half(caretButton, caretTooltip)}
+                <Half tooltip={iconTooltip} disabled={iconDisabled} onClick={onIconClick}>
+                    {icon}
+                </Half>
+                <Half
+                    tooltip={caretTooltip}
+                    disabled={caretDisabled}
+                    ariaLabel="Open dropdown"
+                    onClick={e => setAnchorEl(e.currentTarget)}
+                    sx={{ px: 0.25 }}
+                >
+                    <Box sx={{ fontSize: 18, display: "flex" }}>
+                        <SynthesisIcons.DROPDOWN_CARET />
+                    </Box>
+                </Half>
             </Stack>
             <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={closeMenu}
+                onClick={closeOnItemSelect}
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 transformOrigin={{ vertical: "top", horizontal: "left" }}
                 {...DROPDOWN_MENU_PROPS}
                 {...menuProps}
             >
-                {renderMenu(closeMenu)}
+                {children}
             </Menu>
         </>
     )
