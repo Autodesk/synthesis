@@ -28,7 +28,7 @@ use tokio_rustls::TlsAcceptor;
 use tokio_rustls::rustls::ServerConfig;
 use tokio_rustls::rustls::pki_types::{CertificateDer, PrivateKeyDer};
 use tokio_tungstenite::WebSocketStream;
-use tokio_tungstenite::tungstenite::{Message, Utf8Bytes};
+use tokio_tungstenite::tungstenite::Message;
 
 const DEFAULT_PORT: u32 = 2610;
 
@@ -222,7 +222,8 @@ where
                     client_id: client_id.to_string(),
                 };
                 let bytes = serialize_messagepack(&response);
-                if write.send(Message::Binary(bytes.into())).await.is_err() {
+                let message = prefix_message(bytes, MessagePrefix::Server);
+                if write.send(message).await.is_err() {
                     error_lock!(state, "Failed to send back initial response");
 
                     return None;
@@ -246,8 +247,8 @@ async fn handle_room_list_request<S>(
         ServerMessage::RoomList(guard.list_rooms())
     };
 
-    let message = serialize_messagepack(message);
-    let message = Message::Binary(message.into());
+    let bytes = serialize_messagepack(message);
+    let message = prefix_message(bytes, MessagePrefix::Server);
 
     write.send(message).await.ok();
 }
