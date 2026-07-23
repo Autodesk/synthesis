@@ -86,7 +86,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         const promptCert= async ():Promise<boolean>  => {
             const shouldAttemptCert = confirm("Would you like to try manually accepting the certificate?\n\nThis will open a new tab, after clicking proceed, the page will say it failed to load. At this point, close the popup to resume.")
             if (!shouldAttemptCert) return false
-            const httpURL = url.replace("wss://", "https://")
+            const httpURL = url.replace("wss://", "https://")+"/cert"
             const windowHandle = window.open(httpURL, "_blank", "popup")
             if (windowHandle) {
                 await waitUntil(() => windowHandle?.closed, 300)
