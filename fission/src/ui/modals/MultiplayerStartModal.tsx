@@ -63,9 +63,9 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
             return
         }
 
-        const parsedRoom = requireRoom ? undefined : parseInt(room)
-        if (parsedRoom != null && (isNaN(parsedRoom) || parsedRoom <= 0)) {
-            globalAddToast("warning", "Invalid Room", "Must be positive integer")
+        const parsedRoom = requireRoom ? parseInt(room) : undefined
+        if (parsedRoom != null && (isNaN(parsedRoom) || parsedRoom < 0)) {
+            globalAddToast("warning", "Invalid Room", "Must be non-negative integer")
             return
         }
         const url = validateServer()
