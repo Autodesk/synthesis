@@ -44,3 +44,10 @@ export class ProgressHandle {
         EventSystem.dispatch("ProgressEvent", this)
     }
 }
+
+export const URDFImportProgressBar = {
+    LOAD_MESHES: 0.2,
+    BUILD_PARTS: 0.7,
+    BUILD_HIERARCHY: 0.8,
+    MIRABUF_INSTANCE: 0.85,
+} as const satisfies Record<string, number>

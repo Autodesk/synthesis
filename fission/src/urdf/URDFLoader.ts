@@ -2,7 +2,7 @@ import JSZip from "jszip"
 import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
-import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import { type ProgressHandle, URDFImportProgressBar } from "@/components/ProgressNotificationData.ts"
 import { yieldToMain } from "@/util/Utility.ts"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "gltf", "bin"])
@@ -97,7 +97,7 @@ async function buildMeshMap(zip: JSZip, urdfPath: string): Promise<Map<string, U
 export async function loadURDF(
     buffer: ArrayBuffer,
     filename: string,
-    progressHandle?: ProgressHandle
+    progressHandle: ProgressHandle
 ): Promise<mirabuf.Assembly> {
     const ext = filename.split(".").pop()?.toLowerCase()
 
@@ -113,7 +113,7 @@ export async function loadURDF(
         if (!urdfEntry) throw new Error("No .urdf file found in the zip archive")
 
         const [urdfText, meshFiles] = await Promise.all([urdfEntry.async("text"), buildMeshMap(zip, urdfEntry.name)])
-        progressHandle?.update("Loaded meshes", 0.3)
+        progressHandle?.update("Loaded meshes", URDFImportProgressBar.LOAD_MESHES)
         await yieldToMain()
 
         validateURDFMeshFormats(urdfText)
@@ -122,7 +122,6 @@ export async function loadURDF(
         await yieldToMain()
 
         detectAndTagWheels(assembly)
-
         applyConservativeURDFImport(assembly)
 
         return assembly

@@ -4,7 +4,7 @@ import { parseGLTF } from "./GLTFParser"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
 import { URDF_IMPORT_TAG } from "./URDFUserData"
-import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import { type ProgressHandle, URDFImportProgressBar } from "@/components/ProgressNotificationData.ts"
 import { yieldToMain } from "@/util/Utility.ts"
 
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
@@ -684,19 +684,34 @@ function buildLinkBody(
     }
 }
 
-function buildParts(
+async function buildParts(
     links: URDFLink[],
     rootLink: URDFLink,
     joints: URDFJoint[],
-    meshFiles: Map<string, Uint8Array>
-): { partDefinitions: Record<string, mirabuf.IPartDefinition>; partInstances: Record<string, mirabuf.IPartInstance> } {
+    meshFiles: Map<string, Uint8Array>,
+    progressHandle: ProgressHandle
+): Promise<{
+    partDefinitions: Record<string, mirabuf.IPartDefinition>
+    partInstances: Record<string, mirabuf.IPartInstance>
+}> {
     const partDefinitions: Record<string, mirabuf.IPartDefinition> = {}
     const partInstances: Record<string, mirabuf.IPartInstance> = {}
     const parentJoint = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
     const globalTransforms = buildGlobalLinkTransforms(joints, rootLink.name)
     const meshCache = new Map<string, ParsedMesh | null>()
 
+    const linksPerProgressBarStep = Math.ceil(links.length / 10)
+    const progressBarIncrement = (URDFImportProgressBar.BUILD_PARTS - URDFImportProgressBar.LOAD_MESHES) / 10
+    let progress = URDFImportProgressBar.LOAD_MESHES
+    let i = 0
+
     for (const link of links) {
+        i++
+        if (i % linksPerProgressBarStep === 0) {
+            progress += progressBarIncrement
+            progressHandle.update(`Building Parts (${i}/${links.length})`, progress)
+            await yieldToMain()
+        }
         const globalTransform = globalTransforms.get(link.name)
         const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles, meshCache)
 
@@ -849,23 +864,20 @@ function buildJoints(
 export async function convertURDF(
     urdfText: string,
     meshFiles: Map<string, Uint8Array>,
-    progressHandle?: ProgressHandle
+    progressHandle: ProgressHandle
 ): Promise<mirabuf.Assembly> {
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
-
     const parseError = doc.querySelector("parsererror")
     if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
 
     const robotName = doc.querySelector("robot")?.getAttribute("name") ?? "robot"
     const links = extractLinks(doc)
     const joints = extractJoints(doc)
-
     await yieldToMain()
 
     if (links.length === 0) throw new Error("URDF contains no <link> elements")
 
     fillMissingMaterials(links)
-
     const childSet = new Set(joints.map(j => j.child))
     const rootLink = links.find(l => !childSet.has(l.name))
     if (!rootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
@@ -889,8 +901,8 @@ export async function convertURDF(
 
     // buildParts uses original joints for transform computation — phantom links still need
     // their correct spatial matrices derived from their original parent joints.
-    const { partDefinitions, partInstances } = buildParts(links, rootLink, joints, meshFiles)
-    progressHandle?.update("Built parts", 0.5)
+    const { partDefinitions, partInstances } = await buildParts(links, rootLink, joints, meshFiles, progressHandle)
+    progressHandle?.update("Built Parts", URDFImportProgressBar.BUILD_PARTS)
     await yieldToMain()
 
     const appearances = buildAppearances(links, doc)
@@ -906,7 +918,7 @@ export async function convertURDF(
     // MirabufParser builds _partToNodeMap by walking this tree, and rigidGroups may still
     // reference links connected by filtered fixed/loop-closure joints.
     const hierarchy = buildDesignHierarchy(joints, rootLink.name)
-    progressHandle?.update("Built design hierarchy", 0.7)
+    progressHandle?.update("Built design hierarchy", URDFImportProgressBar.BUILD_HIERARCHY)
     await yieldToMain()
 
     return mirabuf.Assembly.create({
