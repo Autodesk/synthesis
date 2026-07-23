@@ -34,6 +34,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
     const [testSuccess, setTestSuccess] = useState<boolean>(false)
     const [testInProgress, setTestInProgress] = useState<boolean>(false)
+    const [showCheckCertButton, setShowCheckCertButton] = useState<boolean>(false)
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
@@ -79,30 +80,30 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         [name, room, validateServer]
     )
 
+    const promptCert = useCallback(async (url: string): Promise<boolean> => {
+        const shouldAttemptCert = confirm(
+            "Would you like to try manually accepting the certificate?\n\nThis will open a new tab, you will need to manually accept the certificate for your server, as it is self-signed. \n\nAfter proceeding, close the tab and press 'Test Connection' again"
+        )
+        if (!shouldAttemptCert) return false
+        const httpURL = url.replace("wss://", "https://") + "/cert"
+        const windowHandle = window.open(httpURL, "_blank", "popup")
+        if (windowHandle) {
+            await waitUntil(() => windowHandle?.closed, 300)
+            SessionStorage.saveOnce("autoOpenTo", "multiplayer")
+            SessionStorage.saveOnce("autoToast", {
+                type: "info",
+                lines: ["Multiplayer Certificate Update", "Try connecting again!"],
+            })
+            window.location.reload()
+        } else {
+            globalAddToast("warning", "Could not open a new tab. Please visit the page manually", httpURL)
+        }
+        return false
+    }, [])
+
     const connectionTest = useCallback(async () => {
         const url = validateServer()
         if (url == null) return
-
-        const promptCert = async (): Promise<boolean> => {
-            const shouldAttemptCert = confirm(
-                "Would you like to try manually accepting the certificate?\n\nThis will open a new tab, after clicking proceed, the page will say it failed to load. At this point, close the popup to resume."
-            )
-            if (!shouldAttemptCert) return false
-            const httpURL = url.replace("wss://", "https://") + "/cert"
-            const windowHandle = window.open(httpURL, "_blank", "popup")
-            if (windowHandle) {
-                await waitUntil(() => windowHandle?.closed, 300)
-                SessionStorage.saveOnce("autoOpenTo", "multiplayer")
-                SessionStorage.saveOnce("autoToast", {
-                    type: "info",
-                    lines: ["Multiplayer Certificate Update", "Try connecting again!"],
-                })
-                window.location.reload()
-            } else {
-                globalAddToast("warning", "Could not open a new tab. Please visit the page manually", httpURL)
-            }
-            return false
-        }
 
         const success = await withTimeout(
             new Promise<boolean>(resolve => {
@@ -115,14 +116,12 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 }
                 ws.onerror = async ev => {
                     console.error("WS Error", ev)
+
+                    // NOTE: Chrome is evil and for "security" this will always fail on Chrome. It works as intended on firefox
                     const reachable = await fetch(url.replace(/wss?:\/\//, "http://"), { mode: "no-cors" })
                         .then(() => true)
-                        .catch((err: Error) => {
-                            console.log(err)
-                            return /ERR_INVALID_HTTP_RESPONSE/.test(err.message)
-                        })
+                        .catch(() => false)
 
-                    console.log("Accessible", reachable)
                     if (reachable) {
                         if (secure) {
                             globalAddToast(
@@ -130,7 +129,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                                 "WebSocket connection failed!",
                                 "Server reachable, try manually accepting the certificate"
                             )
-                            await promptCert()
+                            await promptCert(url)
                         } else {
                             globalAddToast(
                                 "warning",
@@ -139,7 +138,13 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                             )
                         }
                     } else {
-                        globalAddToast("error", "Connection failed!")
+                        if (secure) {
+                            globalAddToast("error", "Connection failed!", "Try pressing 'Load Certificate'")
+                            setShowCheckCertButton(true)
+                        } else {
+                            globalAddToast("error", "Connection failed!")
+                            setShowCheckCertButton(false)
+                        }
                     }
 
                     resolve(false)
@@ -160,7 +165,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         }
         setTestInProgress(false)
         setTestSuccess(success)
-    }, [validateServer])
+    }, [validateServer, promptCert, secure])
 
     const { startWorldCallback } = modal!.props.custom
     useLayoutEffect(() => {
@@ -212,6 +217,21 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
             >
                 {testSuccess ? "Connection OK!" : testInProgress ? "Testing..." : "Test Connection"}
             </Button>
+            {secure && (
+                <Button
+                    disabled={!showCheckCertButton || testSuccess}
+                    variant={"outlined"}
+                    color={"info"}
+                    onClick={async () => {
+                        const url = validateServer()
+                        if (!url) return
+                        await promptCert(url)
+                    }}
+                    className="w-full my-1"
+                >
+                    Load Certificate
+                </Button>
+            )}
             <Divider />
             <Stack gap={0.5}>
                 <Label size={"sm"}>Display Name</Label>
