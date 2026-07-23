@@ -27,7 +27,9 @@ import { BsCodeSquare } from "react-icons/bs"
 import {
     FaAngleRight,
     FaArrowLeft,
+    FaArrowsUpDownLeftRight,
     FaBasketball,
+    FaBrain,
     FaBug,
     FaCamera,
     FaCar,
@@ -42,6 +44,7 @@ import {
     FaPlus,
     FaQuestion,
     FaScrewdriverWrench,
+    FaTags,
     FaWrench,
     FaXmark,
 } from "react-icons/fa6"
@@ -98,6 +101,9 @@ export class SynthesisIcons {
     public static readonly UNLINK = FaUnlink
     public static readonly DICE = GiPerspectiveDiceSixFacesOne
     public static readonly DROPDOWN_CARET = IoMdArrowDropdown
+    public static readonly BRAIN = FaBrain
+    public static readonly MOVE = FaArrowsUpDownLeftRight
+    public static readonly METADATA = FaTags
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })

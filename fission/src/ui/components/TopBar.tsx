@@ -18,6 +18,7 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
 import ConfigureControls from "./topbar/ConfigureControls"
+import ConfigureSplitDropdown from "./topbar/ConfigureSplitDropdown"
 import GameplayControls from "./topbar/GameplayControls"
 import ModeDropdown from "./topbar/ModeDropdown"
 import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
@@ -113,15 +114,12 @@ const TopBar: React.FC = () => {
                         <TopBarIcon name="add" size={30} />
                     </IconButton>
                 </Tooltip>
-
                 {/* Divider line */}
                 <Box sx={{ width: "2px", height: 28, bgcolor: "topBarText.main", opacity: 0.4 }} />
-
                 {appMode === "Configure" && <ConfigureControls />}
+                {appMode === "Codesim" && <ConfigureSplitDropdown />} {/* TODO: CHANGE THIS TO `CodesimControls`!!! */}
                 {appMode === "Gameplay" && <GameplayControls />}
-
                 <Box flexGrow={1} />
-
                 {import.meta.env.DEV && (
                     <>
                         <Tooltip title="Developer Tool">
@@ -152,7 +150,6 @@ const TopBar: React.FC = () => {
                         </Tooltip>
                     </>
                 )}
-
                 {isTouchDevice && (
                     <Tooltip title="Toggle Joysticks">
                         <IconButton
@@ -167,7 +164,6 @@ const TopBar: React.FC = () => {
                         </IconButton>
                     </Tooltip>
                 )}
-
                 <Tooltip title="Configure Camera">
                     <IconButton
                         size="medium"
@@ -180,7 +176,6 @@ const TopBar: React.FC = () => {
                         </Box>
                     </IconButton>
                 </Tooltip>
-
                 <Tooltip title="Settings">
                     <IconButton
                         size="medium"
