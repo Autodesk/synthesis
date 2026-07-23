@@ -167,7 +167,10 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     if (data.assembly) {
         handle.update("Loading Assembly", 0.2)
         const returnedInfo = await MirabufCachingService.cacheLocalAndReturn(
-            data.assembly.buffer as ArrayBuffer,
+            data.assembly.buffer.slice(
+                data.assembly.byteOffset,
+                data.assembly.byteOffset + data.assembly.byteLength
+            ) as ArrayBuffer,
             data.miraType
         )
         if (!returnedInfo) {
