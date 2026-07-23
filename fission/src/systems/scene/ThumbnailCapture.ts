@@ -12,6 +12,68 @@ export const THUMBNAIL_THETA = -Math.PI / 4
 export const THUMBNAIL_PHI = -Math.PI / 6
 export const THUMBNAIL_FILL = { x: 0.9, y: 0.7 } as const
 
+/* Computing thumbnail bounds */
+
+/** unit vector from origin (relative) toward camera */
+export function canonicalCameraOffset(): THREE.Vector3 {
+    return new THREE.Vector3(0, 0, 1).applyEuler(new THREE.Euler(THUMBNAIL_PHI, THUMBNAIL_THETA, 0, "YXZ"))
+}
+
+function boxCorners(box: THREE.Box3): THREE.Vector3[] {
+    const corners: THREE.Vector3[] = []
+    for (let i = 0; i < 8; i++) {
+        corners.push(
+            new THREE.Vector3(
+                i & 1 ? box.max.x : box.min.x,
+                i & 2 ? box.max.y : box.min.y,
+                i & 4 ? box.max.z : box.min.z
+            )
+        )
+    }
+    return corners
+}
+
+export interface ThumbnailFraming {
+    position: THREE.Vector3
+    lookAt: THREE.Vector3
+}
+
+function computeThumbnailFraming(bounds: THREE.Box3 | readonly THREE.Vector3[]): ThumbnailFraming | undefined {
+    const points = bounds instanceof THREE.Box3 ? boxCorners(bounds) : bounds
+    if (points.length === 0) return undefined
+
+    const pointBounds = new THREE.Box3().setFromPoints([...points])
+    const toCamera: THREE.Vector3 = canonicalCameraOffset()
+
+    const center = pointBounds.getCenter(new THREE.Vector3())
+    const basis = new THREE.Matrix4().lookAt(toCamera, new THREE.Vector3(), THREE.Object3D.DEFAULT_UP)
+    const right = new THREE.Vector3().setFromMatrixColumn(basis, 0)
+    const up = new THREE.Vector3().setFromMatrixColumn(basis, 1)
+
+    const halfFovY = THREE.MathUtils.degToRad(THUMBNAIL_FOV_Y_DEGREES) / 2
+    // square frame
+    const tanX = Math.tan(halfFovY) * THUMBNAIL_FILL.x
+    const tanY = Math.tan(halfFovY) * THUMBNAIL_FILL.y
+
+    /* camera distance D from the center must satisfy `D >= p.toCamera + l / tan` for every point */
+    let distance = 0
+    const relative = new THREE.Vector3()
+    for (const point of points) {
+        relative.copy(point).sub(center)
+        const lateral = Math.max(Math.abs(relative.dot(right)) / tanX, Math.abs(relative.dot(up)) / tanY)
+        distance = Math.max(distance, relative.dot(toCamera) + lateral)
+    }
+    if (distance <= 0) return undefined
+
+    return { position: toCamera.multiplyScalar(distance).add(center), lookAt: center }
+}
+
+function computeTargetBounds(targets: readonly THREE.Object3D[]): THREE.Box3 {
+    return new THREE.Box3()
+}
+
+/* rendering thumbnail */
+
 export interface ThumbnailCaptureProps {
     renderer: THREE.WebGLRenderer
     scene: THREE.Scene
@@ -22,7 +84,16 @@ export interface ThumbnailCaptureProps {
 
 /** renders the targets to an off-screen render target */
 export async function captureSceneThumbnail(props: ThumbnailCaptureProps): Promise<Blob | undefined> {
-    const { renderer, scene, skybox, targets, framingPoints, size = THUMBNAIL_SIZE } = props
+    const { renderer, scene, skybox, targets, framingPoints } = props
+
+    const framing = computeThumbnailFraming(framingPoints?.length ? framingPoints : computeTargetBounds(targets))
+    if (!framing) return undefined
+
+    const cameraDistance = framing.position.distanceTo(framing.lookAt)
+    const camera = new THREE.PerspectiveCamera(THUMBNAIL_FOV_Y_DEGREES, 1, Math.min(0.1, cameraDistance / 10), 2000)
+    camera.position.copy(framing.position)
+    camera.lookAt(framing.lookAt)
+    camera.updateMatrixWorld()
 
     return undefined
 }
