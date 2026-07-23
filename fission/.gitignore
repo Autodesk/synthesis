@@ -30,6 +30,7 @@ dist-ssr
 yarn.lock
 
 test-results
+coverage
 src/test/**/__screenshots__
 
 tsconfig.tsbuildinfo
