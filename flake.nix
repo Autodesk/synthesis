@@ -3,6 +3,11 @@
 {
   description = "Synthesis' Web-Based Robotics Simulator";
 
+  
+  nixConfig = {
+    commit-lock-file-summary = "chore: update flake.lock";
+  };
+
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
   outputs =
