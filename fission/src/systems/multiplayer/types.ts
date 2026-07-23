@@ -20,7 +20,10 @@ export interface MessageType {
     matchModePenalty: MatchModePenalty
 }
 
-export interface InfoMessageBody {info: ClientInfo, introduceSelf: boolean}
+export interface InfoMessageBody {
+    info: ClientInfo
+    introduceSelf: boolean
+}
 
 export interface MatchModePenalty {
     objectId: RemoteSceneObjectId
@@ -36,9 +39,15 @@ export type MatchModeStateData =
     | { event: "cancel" }
 
 export type MessageWithTimestamp = {
-    [K in keyof MessageType]: { recipientId?:string, client_id:string, type: K; data: MessageType[K]; timestamp: number }
+    [K in keyof MessageType]: {
+        recipientId?: string
+        client_id: string
+        type: K
+        data: MessageType[K]
+        timestamp: number
+    }
 }[keyof MessageType]
-export type Message = Omit<MessageWithTimestamp, "timestamp"|"client_id"> & Partial<MessageWithTimestamp>
+export type Message = Omit<MessageWithTimestamp, "timestamp" | "client_id"> & Partial<MessageWithTimestamp>
 
 export type EncodedAssembly = Uint8Array & { __: "encodedassembly" }
 export type RemoteSceneObjectId = number & { __: "remotesceneobject" | "sceneobjectkey" }

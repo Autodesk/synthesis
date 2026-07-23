@@ -107,10 +107,8 @@ export async function waitUntil(condition: () => boolean, interval: number = 100
                     resolve(true)
                 }
             }, interval)
-
         })
     } finally {
         clearInterval(handle)
     }
-
 }

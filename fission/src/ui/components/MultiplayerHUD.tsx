@@ -8,7 +8,7 @@ import World from "@/systems/World.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 
 const MultiplayerHUD: React.FC = () => {
-    const [roomCode, setRoomCode] = useState<number|null>()
+    const [roomCode, setRoomCode] = useState<number | null>()
     const [peers, setPeers] = useState<ClientInfo[]>([])
     useEffect(() => {
         const unsubscribers: (() => void)[] = []
@@ -50,7 +50,7 @@ const MultiplayerHUD: React.FC = () => {
                     Room {roomCode}
                 </Label>
                 {peers.map(peer => (
-                    <Tooltip placement="right" key={peer.clientId} title={peer.clientId.slice(0,8)}>
+                    <Tooltip placement="right" key={peer.clientId} title={peer.clientId.slice(0, 8)}>
                         <Typography variant={"body1"} key={peer.clientId}>
                             {peer.displayName}
                             {peer.clientId == World.multiplayerSystem?.clientId && " (you)"}

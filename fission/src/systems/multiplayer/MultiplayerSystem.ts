@@ -1,14 +1,14 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
-import {globalAddToast} from "@/components/GlobalUIControls.ts"
-import {MiraType} from "@/mirabuf/MirabufLoader"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "../World"
-import {peerMessageHandlers} from "./MessageHandlers"
-import type {ClientInfo, LocalSceneObjectId, Message, MessageWithTimestamp, RemoteSceneObjectId} from "./types"
+import { peerMessageHandlers } from "./MessageHandlers"
+import type { ClientInfo, LocalSceneObjectId, Message, MessageWithTimestamp, RemoteSceneObjectId } from "./types"
 import EventSystem from "@/systems/EventSystem.ts"
-import {decode, encode} from "@msgpack/msgpack";
-import type {InitialMessage} from "@/systems/multiplayer/bindings/InitialMessage.ts";
-import type {InitialResponse} from "@/systems/multiplayer/bindings/InitialResponse.ts";
+import { decode, encode } from "@msgpack/msgpack"
+import type { InitialMessage } from "@/systems/multiplayer/bindings/InitialMessage.ts"
+import type { InitialResponse } from "@/systems/multiplayer/bindings/InitialResponse.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -36,33 +36,33 @@ class MultiplayerSystem {
     private constructor(hostAddr: string, roomId: number | "create", displayName: string) {
         this.client = new WebSocket(hostAddr)
         this.client.onopen = () => {
-            const msg = JSON.stringify(({
+            const msg = JSON.stringify({
                 room_id: roomId == "create" ? null : roomId,
-                name: displayName
-            }) satisfies InitialMessage)
+                name: displayName,
+            } satisfies InitialMessage)
             this.client.send(msg)
         }
-        this.client.onclose = (ev) => {
+        this.client.onclose = ev => {
             console.log(ev, this.client)
             globalAddToast("error", "Multiplayer connection closed")
             this.destroy()
         }
 
-        this.client.onerror = (ev) => {
+        this.client.onerror = ev => {
             console.error(ev)
             globalAddToast("warning", "Multiplayer error")
         }
 
         this._initializationPromise = new Promise<boolean>(resolve => {
-            this.client.onmessage = async (ev) => {
-                const {room_id, client_id} = JSON.parse(ev.data) as InitialResponse
+            this.client.onmessage = async ev => {
+                const { room_id, client_id } = JSON.parse(ev.data) as InitialResponse
                 this.roomId = room_id
                 this.clientId = client_id
                 this._info = {
                     clientId: this.clientId,
                     displayName: displayName,
                     isHost: roomId == "create",
-                    creationTime: Date.now()
+                    creationTime: Date.now(),
                 }
                 globalAddToast("success", "Joined room", room_id)
                 resolve(true)
@@ -70,11 +70,11 @@ class MultiplayerSystem {
                 EventSystem.dispatch("MultiplayerStateJoinRoom")
             }
             setTimeout(() => resolve(false), 10000)
-        }).then((res) => {
+        }).then(res => {
             if (res) {
                 console.log("updating")
-                this.client.onmessage = async (ev) => {
-                    const data = (ev.data as Blob)
+                this.client.onmessage = async ev => {
+                    const data = ev.data as Blob
                     const decoded = decode(await data.arrayBuffer())
                     await this.handlePeerMessage(decoded as MessageWithTimestamp)
                 }
@@ -117,13 +117,16 @@ class MultiplayerSystem {
     }
 
     async sendHello(requestIntroductions: boolean, peerID?: string) {
-        await this.send({
-            type: "info",
-            data: {
-                info: this._info,
-                introduceSelf: requestIntroductions,
-            }
-        }, peerID)
+        await this.send(
+            {
+                type: "info",
+                data: {
+                    info: this._info,
+                    introduceSelf: requestIntroductions,
+                },
+            },
+            peerID
+        )
     }
 
     getOwnSceneObjectIDs() {
