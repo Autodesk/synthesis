@@ -221,8 +221,8 @@ where
                     room_id,
                     client_id: client_id.to_string(),
                 };
-                let bytes = Utf8Bytes::from(serde_json::to_string(&response).unwrap());
-                if write.send(Message::Text(bytes)).await.is_err() {
+                let bytes = serialize_messagepack(&response);
+                if write.send(Message::Binary(bytes.into())).await.is_err() {
                     error_lock!(state, "Failed to send back initial response");
 
                     return None;
