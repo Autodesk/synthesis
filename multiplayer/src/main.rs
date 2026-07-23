@@ -166,19 +166,28 @@ where
     };
     buf.truncate(n);
 
-    let is_ws = String::from_utf8_lossy(&buf)
-        .to_ascii_lowercase()
-        .contains("upgrade: websocket");
+    let message = String::from_utf8_lossy(&buf).to_ascii_lowercase();
+
+    let is_ws = message.contains("upgrade: websocket");
 
     let mut stream = Prefixed::new(buf, raw_stream);
 
     // Respond to plain HTTP requests properly, rather than failing the handshake.
     if !is_ws {
-        let body = "Synthesis";
-        let resp = format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
-            body.len(),
-        );
+        let resp = if message[0..10] == *"get /cert " {
+            let body = "<script>window.close()</script>You may now close this page.";
+            format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                body.len()
+            )
+        } else {
+            let body = "Synthesis";
+            format!(
+                "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                body.len(),
+            )
+        };
+
         let _ = stream.write_all(resp.as_bytes()).await;
         let _ = stream.flush().await;
         return;
