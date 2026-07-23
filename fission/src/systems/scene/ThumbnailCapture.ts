@@ -1,8 +1,8 @@
 import * as THREE from "three"
 
 export const THUMBNAIL_SIZE = 512
-// const THUMBNAIL_MIME_TYPE = "image/webp"
-// const THUMBNAIL_QUALITY = 0.85
+const THUMBNAIL_MIME_TYPE = "image/webp"
+const THUMBNAIL_QUALITY = 0.85
 //
 // const CAPTURE_SUPERSAMPLE = 2
 
@@ -109,5 +109,46 @@ export async function captureSceneThumbnail(props: ThumbnailCaptureProps): Promi
     camera.lookAt(framing.lookAt)
     camera.updateMatrixWorld()
 
+    encodePixels()
+
     return undefined
+}
+
+function createSquareCanvas(size: number): OffscreenCanvas | HTMLCanvasElement {
+    if (typeof OffscreenCanvas !== "undefined") return new OffscreenCanvas(size, size)
+    const canvas = document.createElement("canvas")
+    canvas.width = size
+    canvas.height = size
+    return canvas
+}
+
+async function encodePixels(pixels: Uint8Array, renderSize: number, size: number): Promise<Blob | undefined> {
+    const flipped = new Uint8ClampedArray(pixels.length)
+
+    const rowBytes = renderSize * 4
+    for (let y = 0; y < renderSize; y++) {
+        flipped.set(pixels.subarray(y * rowBytes, (y + 1) * rowBytes), (renderSize - 1 - y) * rowBytes)
+    }
+
+    const full = createSquareCanvas(renderSize)
+    const fullContext = full.getContext("2d") as OffscreenCanvasRenderingContext2D | null
+    if (!fullContext) return undefined
+    fullContext.putImageData(new ImageData(flipped, renderSize, renderSize), 0, 0)
+
+    const scaled = createSquareCanvas(size)
+    const scaledContext = scaled.getContext("2d") as OffscreenCanvasRenderingContext2D | null
+    if (!scaledContext) return undefined
+
+    scaledContext.imageSmoothingEnabled = true
+    scaledContext.imageSmoothingQuality = "high"
+
+    scaledContext.drawImage(full, 0, 0, size, size)
+
+    // converting canvas to blob
+    if (scaled instanceof HTMLCanvasElement) {
+        return new Promise(resolve =>
+            scaled.toBlob(blob => resolve(blob ?? undefined), THUMBNAIL_MIME_TYPE, THUMBNAIL_QUALITY)
+        )
+    }
+    return scaled.convertToBlob({ type: THUMBNAIL_MIME_TYPE, quality: THUMBNAIL_QUALITY })
 }
