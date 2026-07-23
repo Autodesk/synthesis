@@ -6,8 +6,8 @@ import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 import { findListDifference } from "@/util/Utility"
-import MirabufSceneObject from "./MirabufSceneObject"
-import { RigidNodeAssociate } from "./MirabufSceneObject"
+import type MirabufSceneObject from "./MirabufSceneObject"
+import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {

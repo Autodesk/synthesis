@@ -1,4 +1,4 @@
-import Jolt from "@synthesis.adsk/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import Pako from "pako"
 import JOLT from "./loading/JoltSyncLoader"
 
