@@ -676,11 +676,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         if (this.miraType !== MiraType.ROBOT) return
 
-        for (const camPref of this.cameraPreferences) {
+        this._cameras = this.cameraPreferences.map(camPref => {
             const camera = new RobotCameraSceneObject(this, camPref)
-            this._cameras.push(camera)
             World.sceneRenderer.registerSceneObject(camera)
-        }
+            return camera
+        })
 
         EventSystem.dispatch("RobotCamerasChangeEvent")
     }

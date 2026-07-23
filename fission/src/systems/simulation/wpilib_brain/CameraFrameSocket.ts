@@ -21,16 +21,18 @@ function ensureSocket(): void {
     lastAttempt = now
 
     try {
-        const ws = new WebSocket(`ws://localhost:${PORT}`)
-        ws.addEventListener("close", () => {
-            if (socket === ws) socket = undefined
-        })
-        ws.addEventListener("error", () => {
-            if (socket === ws) socket = undefined
-        })
-        socket = ws
+        socket = new WebSocket(`ws://localhost:${PORT}`)
     } catch {
         socket = undefined
+    }
+
+    if (socket !== undefined) {
+        socket.addEventListener("close", () => {
+            socket = undefined
+        })
+        socket.addEventListener("error", () => {
+            socket = undefined
+        })
     }
 }
 

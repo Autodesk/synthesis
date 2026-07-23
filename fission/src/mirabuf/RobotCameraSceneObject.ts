@@ -145,6 +145,7 @@ class RobotCameraSceneObject extends SceneObject {
             .copy(this._deltaTransformation)
             .premultiply(convertJoltMat44ToThreeMatrix4(parentBody.GetWorldTransform()))
             .multiply(FORWARD_FLIP)
+
         this._camera.position.setFromMatrixPosition(worldTransform)
         this._camera.quaternion.setFromRotationMatrix(worldTransform)
         this._camera.updateMatrixWorld()
@@ -179,12 +180,10 @@ class RobotCameraSceneObject extends SceneObject {
 
     // GL pixels are bottom-up; flip rows into the top-down ImageData
     private flipInto(target: ImageData, source: Uint8Array): void {
-        const w = this._width
-        const h = this._height
-        const rowBytes = w * 4
+        const rowBytes = this._width * 4
         const dst = target.data
-        for (let y = 0; y < h; y++) {
-            const srcStart = (h - 1 - y) * rowBytes
+        for (let y = 0; y < this._height; y++) {
+            const srcStart = (this._height - 1 - y) * rowBytes
             dst.set(source.subarray(srcStart, srcStart + rowBytes), y * rowBytes)
         }
     }
