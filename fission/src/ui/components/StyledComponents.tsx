@@ -40,6 +40,7 @@ import {
     FaGear,
     FaInfinity,
     FaMagnifyingGlass,
+    FaMicrochip,
     FaMinus,
     FaPlus,
     FaQuestion,
@@ -104,6 +105,7 @@ export class SynthesisIcons {
     public static readonly BRAIN = FaBrain
     public static readonly MOVE = FaArrowsUpDownLeftRight
     public static readonly METADATA = FaTags
+    public static readonly MICROCHIP = FaMicrochip
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })
