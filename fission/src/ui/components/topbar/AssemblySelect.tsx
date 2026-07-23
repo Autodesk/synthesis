@@ -7,19 +7,19 @@ import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "./TopBarConfig"
 
 type AssemblySelectProps = {
     assemblies: MirabufSceneObject[]
-    selectedConfigAssembly?: MirabufSceneObject
+    selectedAssembly?: MirabufSceneObject
     onSelect: (id: string) => void
     /** Per-instance sizing layered on top of {DROPDOWN_SELECT_SX}. */
     sx?: SxProps<Theme>
 }
 
 /** Borderless dropdown listing the spawned assemblies */
-export const AssemblySelect: React.FC<AssemblySelectProps> = ({ assemblies, selectedConfigAssembly, onSelect, sx }) => (
+export const AssemblySelect: React.FC<AssemblySelectProps> = ({ assemblies, selectedAssembly, onSelect, sx }) => (
     <Select
         displayEmpty
-        value={selectedConfigAssembly?.id.toString() ?? ""}
+        value={selectedAssembly?.id.toString() ?? ""}
         onChange={e => onSelect(e.target.value as string)}
-        renderValue={() => (selectedConfigAssembly ? selectedConfigAssembly.descriptiveName : "Select an assembly")}
+        renderValue={() => (selectedAssembly ? selectedAssembly.descriptiveName : "Select an assembly")}
         IconComponent={props => <IoMdArrowDropdown {...props} fontSize="2em" />}
         MenuProps={DROPDOWN_MENU_PROPS}
         sx={{ ...DROPDOWN_SELECT_SX, ...sx }}

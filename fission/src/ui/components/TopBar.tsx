@@ -17,6 +17,7 @@ import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { SynthesisIcons } from "./StyledComponents"
+import { AssemblySelect } from "./topbar/AssemblySelect"
 import CodesimControls from "./topbar/CodesimControls"
 import ConfigureControls from "./topbar/ConfigureControls"
 import GameplayControls from "./topbar/GameplayControls"
@@ -24,12 +25,14 @@ import ModeDropdown from "./topbar/ModeDropdown"
 import { TopBarButton } from "./topbar/TopBarButton"
 import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX, TOP_BAR_HEIGHT } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
+import { useAssemblySelection } from "./topbar/UseConfigureAssembly"
 import UserIcon from "./UserIcon"
 
 const TopBar: React.FC = () => {
     const { openModal, openPanel, addToast } = useUIContext()
     const { appMode } = useStateContext()
     const isTouchDevice = useIsTouchDevice()
+    const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
 
     setAddToast(addToast)
     setOpenPanel(openPanel)
@@ -110,11 +113,19 @@ const TopBar: React.FC = () => {
                     onClick={() => openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })}
                 />
 
-                {/* Divider line */}
                 <Box sx={TOP_BAR_DIVIDER_SX} />
 
-                {appMode === "Configure" && <ConfigureControls />}
-                {appMode === "Codesim" && <CodesimControls />}
+                {(appMode === "Configure" || appMode === "Codesim") && (
+                    <AssemblySelect
+                        assemblies={assemblies}
+                        selectedAssembly={selectedAssembly}
+                        onSelect={selectAssemblyById}
+                        sx={{ borderRadius: 1, height: 34, minWidth: 195, fontSize: 12 }}
+                    />
+                )}
+
+                {appMode === "Configure" && <ConfigureControls selectedAssembly={selectedAssembly} />}
+                {appMode === "Codesim" && <CodesimControls selectedAssembly={selectedAssembly} />}
                 {appMode === "Gameplay" && <GameplayControls />}
                 <Box flexGrow={1} />
                 {import.meta.env.DEV && (

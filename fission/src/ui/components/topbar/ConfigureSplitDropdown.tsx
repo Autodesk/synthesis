@@ -2,8 +2,8 @@ import { Box, MenuItem, Stack } from "@mui/material"
 import type React from "react"
 import SplitButtonDropdown from "@/ui/components/SplitButtonDropdown"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import { ConfigMode, type ConfigurationType } from "@/panels/configuring/assembly-config/ConfigTypes"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { ConfigMode } from "@/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/panels/configuring/assembly-config/ConfigurePanel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { TopBarIcon } from "./TopBarIcons"
@@ -24,9 +24,9 @@ const MenuIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 )
 
 /** split dropdown gear icon in configure and codesim menu to see all configuration options */
-const ConfigureSplitDropdown: React.FC = () => {
+const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
     const { openPanel } = useUIContext()
-    const { selectedConfigAssembly, configureButtons, isField, openConfig } = useConfigureAssembly()
+    const { configureButtons, isField, configurationType, openConfig } = useConfigureAssembly(selectedAssembly)
 
     // fields have no brain to configure
     const menuOnlyConfigs = isField ? MENU_ONLY_CONFIGS.filter(c => c.mode !== ConfigMode.BRAIN) : MENU_ONLY_CONFIGS
@@ -41,7 +41,7 @@ const ConfigureSplitDropdown: React.FC = () => {
         <MenuItem
             key={key}
             dense
-            disabled={!selectedConfigAssembly}
+            disabled={!selectedAssembly}
             onClick={() => {
                 openConfig(mode)
                 closeMenu()
@@ -63,14 +63,7 @@ const ConfigureSplitDropdown: React.FC = () => {
             }
             iconTooltip="Configure Assets"
             caretTooltip="Configure options"
-            onIconClick={() =>
-                openPanel(ConfigurePanel, {
-                    selectedAssembly: selectedConfigAssembly,
-                    configurationType: (selectedConfigAssembly?.miraType === MiraType.FIELD
-                        ? "FIELDS"
-                        : "ROBOTS") as ConfigurationType,
-                })
-            }
+            onIconClick={() => openPanel(ConfigurePanel, { selectedAssembly, configurationType })}
             renderMenu={closeMenu => [
                 ...configureButtons.map(({ name, label, mode }) =>
                     configMenuItem(label, <TopBarIcon name={name} size={18} />, label, mode, closeMenu)

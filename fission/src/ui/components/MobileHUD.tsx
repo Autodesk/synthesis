@@ -18,7 +18,7 @@ import { AssemblySelect } from "./topbar/AssemblySelect"
 import { HUDMenuButton } from "./topbar/HUDMenuButton"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
-import { useConfigureAssembly } from "./topbar/UseConfigureAssembly"
+import { useAssemblySelection, useConfigureAssembly } from "./topbar/UseConfigureAssembly"
 import UserIcon from "./UserIcon"
 
 const DRAWER_SX = {
@@ -43,8 +43,8 @@ const MobileHUD: React.FC = () => {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
     const isTouchDevice = useIsTouchDevice()
 
-    const { assemblies, selectedConfigAssembly, configureButtons, openConfig, selectAssemblyById } =
-        useConfigureAssembly()
+    const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
+    const { configureButtons, openConfig } = useConfigureAssembly(selectedAssembly)
 
     useEffect(() => EventSystem.listen("APSUserInfoUpdate", () => setUserInfo(APS.userInfo)), [])
 
@@ -124,7 +124,7 @@ const MobileHUD: React.FC = () => {
                 <TopBarIcon name="mode-configure" size={24} />
                 <AssemblySelect
                     assemblies={assemblies}
-                    selectedConfigAssembly={selectedConfigAssembly}
+                    selectedAssembly={selectedAssembly}
                     onSelect={selectAssemblyById}
                     sx={{ borderRadius: 3, height: 44, fontSize: 15, flexGrow: 1, minWidth: 0 }}
                 />
@@ -145,11 +145,11 @@ const MobileHUD: React.FC = () => {
                         key={label}
                         label={label}
                         iconName={name}
-                        disabled={!selectedConfigAssembly}
+                        disabled={!selectedAssembly}
                         disabledTooltip="Spawn an assembly first"
                         onClick={() => {
                             openConfig(mode)
-                            if (selectedConfigAssembly) closeDrawer()
+                            if (selectedAssembly) closeDrawer()
                         }}
                     />
                 ))}
