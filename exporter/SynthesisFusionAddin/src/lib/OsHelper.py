@@ -31,10 +31,13 @@ def getDesktop() -> str:
     Returns:
         *str* -- Absolute Path to Desktop.
     """
+    userprofile = os.environ.get("USERPROFILE")
+    if userprofile is None:
+        return os.path.join(os.path.expanduser("~"), "Desktop")
     if getOS() == "Windows":
-        return os.path.join(os.path.join(os.environ["USERPROFILE"]), "Desktop\\")
+        return os.path.join(userprofile, "Desktop\\")
     else:
-        return os.path.join(os.path.join(os.environ["USERPROFILE"]), "Desktop/")
+        return os.path.join(userprofile, "Desktop/")
 
 
 def getOS() -> str:
