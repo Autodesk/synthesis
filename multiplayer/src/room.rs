@@ -2,7 +2,6 @@ use crate::logging::{Event, EventType};
 use crate::messaging::{MessagePrefix, ServerMessage};
 use crate::{info, warn};
 
-use bytes::BytesMut;
 use serde::Serialize;
 use std::collections::{HashMap, VecDeque};
 use tokio::sync::mpsc;

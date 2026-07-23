@@ -18,7 +18,7 @@ pub struct InitialResponse {
 #[derive(Serialize, Deserialize, Debug, PartialEq, ts_rs::TS)]
 #[serde(tag = "type", rename_all = "lowercase")]
 #[ts(export)]
-pub enum ServerMessageData {
+pub enum ServerMessage {
     Kick { client_id: String },
 }
 
