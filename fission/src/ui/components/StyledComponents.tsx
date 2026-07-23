@@ -49,6 +49,7 @@ import { FaHandPaper, FaUnlink } from "react-icons/fa"
 import { GiPerspectiveDiceSixFacesOne, GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
 import { HiDownload, HiUser } from "react-icons/hi"
+import { IoMdArrowDropdown } from "react-icons/io"
 import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
 import { MdExpandMore, MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
 import type { IconBaseProps, IconType } from "react-icons"
@@ -96,6 +97,7 @@ export class SynthesisIcons {
     public static readonly INFINITY = FaInfinity
     public static readonly UNLINK = FaUnlink
     public static readonly DICE = GiPerspectiveDiceSixFacesOne
+    public static readonly DROPDOWN_CARET = IoMdArrowDropdown
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })
