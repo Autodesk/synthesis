@@ -81,21 +81,18 @@ export default defineConfig(async ({ mode }) => {
               changeOrigin: true,
               secure: true,
           }
-    return {
-        plugins: plugins,
-        publicDir: "./public",
-        resolve: {
-            alias: [
-                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
-                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
-                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
-                { find: "@", replacement: path.resolve(__dirname, "src") },
-            ],
-        },
-        define: {
-            GIT_COMMIT: JSON.stringify(await getCommitHash()),
-        },
+
+    const baseAliases = [
+        { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+        { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+        { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+        { find: "@", replacement: path.resolve(__dirname, "src") },
+    ]
+
+    const fissionProject = {
+        extends: true,
         test: {
+            name: "fission",
             setupFiles: ["src/test/TestSetup.browser.ts"],
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
@@ -140,6 +137,53 @@ export default defineConfig(async ({ mode }) => {
                 exclude: ["src/test/**", "src/proto/**"],
                 reportOnFailure: true,
             },
+        },
+    }
+
+    // `bun run test:asan`
+    const fissionAsanProject = {
+        extends: true,
+        resolve: {
+            alias: [
+                ...baseAliases,
+                {
+                    find: /^@synthesis\.adsk\/jolt-physics(\/wasm-compat)?$/,
+                    replacement: process.env.JOLT_ASAN_DIST,
+                },
+            ],
+        },
+        test: {
+            name: "fission-asan",
+            setupFiles: ["src/test/TestSetup.browser.ts"],
+            globalSetup: ["src/test/TestSetup.server.ts"],
+            testTimeout: 10000,
+            globals: true,
+            environment: "jsdom",
+            browser: {
+                enabled: true,
+                provider: "playwright",
+                instances: [
+                    {
+                        name: "chromium",
+                        browser: "chromium",
+                        headless: true,
+                    },
+                ],
+            },
+        },
+    }
+
+    return {
+        plugins: plugins,
+        publicDir: "./public",
+        resolve: {
+            alias: baseAliases,
+        },
+        define: {
+            GIT_COMMIT: JSON.stringify(await getCommitHash()),
+        },
+        test: {
+            projects: [fissionProject, ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject] : [])],
         },
         build: {
             target: "esnext",
