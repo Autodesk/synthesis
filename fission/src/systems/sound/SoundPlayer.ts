@@ -52,7 +52,6 @@ export class SoundPlayer {
         try {
             const buffer = await this.getBuffer(filePath)
             if (this._audioContext.state === "suspended") {
-                console.log("Resuming audio context")
                 await this._audioContext.resume()
             }
 
@@ -68,6 +67,8 @@ export class SoundPlayer {
             source.addEventListener(
                 "ended",
                 () => {
+                    source.disconnect()
+                    gain.disconnect()
                     if (this._active.get(filePath)?.source === source) {
                         this._active.delete(filePath)
                     }
