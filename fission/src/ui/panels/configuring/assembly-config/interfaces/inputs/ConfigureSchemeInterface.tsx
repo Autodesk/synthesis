@@ -1,5 +1,6 @@
 import { Divider, Stack } from "@mui/material"
 import type React from "react"
+import * as UUID from "uuid"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -104,6 +105,8 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
                         selectedScheme.usesTouchControls = false
                     }
                     selectedScheme.usesGamepad = val
+
+                    if (!selectedScheme.customized) selectedScheme.schemeId = UUID.v4()
                     selectedScheme.customized = true
                 }}
                 tooltip="Supported controllers: Xbox one, Xbox 360."
@@ -134,6 +137,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
                             useGamepad={useGamepad}
                             useTouchControls={useTouchControls}
                             onInputChanged={() => {
+                                if (!selectedScheme.customized) selectedScheme.schemeId = UUID.v4()
                                 selectedScheme.customized = true
                             }}
                         />
@@ -146,6 +150,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
                             .filter(val => !isNaN(val))
                         const newJointIndex = Math.max(0, ...existingJointIndexes) + 1
                         selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
+                        if (!selectedScheme.customized) selectedScheme.schemeId = UUID.v4()
                         selectedScheme.customized = true
                         update()
                     }}
