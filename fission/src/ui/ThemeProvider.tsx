@@ -92,7 +92,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
 
     useEffect(() => {
-        setThemeOptions({
+        setThemeOptions((themeOptions) => ({
             ...themeOptions,
             primary: {
                 main: primaryColor,
@@ -106,7 +106,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
             redAlliance: {
                 main: redAllianceColor,
             },
-        })
+        }))
     }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
 
     const themeContextValue = useMemo(
