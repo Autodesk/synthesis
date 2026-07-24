@@ -24,8 +24,20 @@ jobs:
 
       - uses: cachix/install-nix-action@v31
 
+      - name: Cache Node Dependencies
+        uses: actions/cache@v6
+        with:
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
+          path: "fission/node_modules"
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
+
+      - name: Install Dependencies
+        working-directory: "fission"
+        run: nix develop .#fission --command bun -c "install --frozen-lockfile"
+      
       - name: Run Playwright Tests
         working-directory: "fission"
         run: |
-          nix develop .#fission --command bash -c \
-            "git lfs pull && unzip public/assetpack.zip -d public && bun install && bun run test run ./src/test/APSTesting.test.ts"
+          nix develop .#fission --command bun -c "run test run ./src/test/APSTesting.test.ts"
