@@ -2,7 +2,6 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import * as Three from "three"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 import { findListDifference } from "@/util/Utility"
@@ -11,13 +10,13 @@ import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
-    public static readonly redMaterial = new Three.MeshPhongMaterial({
+    public static readonly RED_MATERIAL = new Three.MeshPhongMaterial({
         color: 0xed1c24,
         shininess: 0.0,
         opacity: 0.7,
         transparent: true,
     })
-    public static readonly blueMaterial = new Three.MeshPhongMaterial({
+    public static readonly BLUE_MATERIAL = new Three.MeshPhongMaterial({
         color: 0x0066b3,
         shininess: 0.0,
         opacity: 0.7,
@@ -27,7 +26,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     private _prevGPs: Jolt.BodyID[] = []
 
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
-        return { red: ScoringZoneSceneObject.redMaterial, blue: ScoringZoneSceneObject.blueMaterial }
+        return { red: ScoringZoneSceneObject.RED_MATERIAL, blue: ScoringZoneSceneObject.BLUE_MATERIAL }
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number) {
@@ -104,9 +103,9 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             associate.robotLastInContactWith?.alliance !== this.prefs?.alliance ? -this.prefs.points : this.prefs.points
 
         if (associate.robotLastInContactWith)
-            ScoreTracker.addPerRobotScore(associate.robotLastInContactWith, scoringFactor * robotAlliancePoints)
+            World.scoreTracker.addPerRobotScore(associate.robotLastInContactWith, scoringFactor * robotAlliancePoints)
 
-        ScoreTracker.addPoints(this.prefs.alliance, scoringFactor * this.prefs.points)
+        World.scoreTracker.addPoints(this.prefs.alliance, scoringFactor * this.prefs.points)
     }
 }
 
