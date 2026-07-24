@@ -70,6 +70,6 @@
       formatter = forEachSupportedSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
 
       # Build all devShells, instead of just verifying they are derivations
-      checks = forEachSupportedSystem ({ system, ... }: lib.attrsets.unionOfDisjoint self.devShells.${system} {});
+      checks = forEachSupportedSystem ({ system, ... }: self.devShells.${system});
     };
 }
