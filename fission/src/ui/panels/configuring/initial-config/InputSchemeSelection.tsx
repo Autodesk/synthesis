@@ -1,5 +1,5 @@
 import { Box, Divider, FormControl, InputLabel, MenuItem, Stack, Tooltip } from "@mui/material"
-import { type ReactElement, useCallback, useEffect, useState } from "react"
+import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
@@ -76,6 +76,7 @@ interface InputSchemeSelectionProps {
 
 export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: InputSchemeSelectionProps) {
     const { setSelectedScheme } = useStateContext()
+    const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
     )
@@ -99,6 +100,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
 
     const onSchemeSelected = useCallback(() => {
         onSelect?.()
+        update()
     }, [onSelect])
 
     return (
