@@ -15,11 +15,18 @@ pub enum ClientToServerMessage {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]
+#[ts(export)]
+pub struct RoomInfo {
+    pub id: RoomId,
+    pub authority: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]
 #[serde(tag = "type", rename_all = "lowercase")]
 #[ts(export)]
 pub enum ServerMessage {
     Kick { client_id: String },
-    RoomList { rooms: Vec<String> },
+    RoomList { rooms: Vec<RoomInfo> },
     SendInfo { room_id: RoomId, client_id: String },
 }
 

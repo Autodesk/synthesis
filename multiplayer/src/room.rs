@@ -1,5 +1,5 @@
 use crate::logging::{Event, EventType};
-use crate::messaging::{MessagePrefix, ServerMessage, serialize_messagepack};
+use crate::messaging::{MessagePrefix, RoomInfo, ServerMessage, serialize_messagepack};
 use crate::{info, prefix_message, warn};
 
 use rand::RngExt;
@@ -172,8 +172,29 @@ impl State {
         self.remove_client(client_id);
     }
 
-    pub fn list_rooms(&self) -> Vec<String> {
-        self.rooms.map.keys().cloned().collect()
+    pub fn list_rooms(&self) -> Vec<RoomInfo> {
+        self.rooms
+            .map
+            .iter()
+            .filter_map(|(id, room)| {
+                let Some(authority) = room.authority else {
+                    return None;
+                };
+                let Some(idx) = room
+                    .members
+                    .iter()
+                    .position(|member| member.id == authority)
+                else {
+                    return None;
+                };
+                let authority = room.members[idx].name.clone();
+
+                Some(RoomInfo {
+                    id: id.to_string(),
+                    authority,
+                })
+            })
+            .collect()
     }
 
     /// Record a server-wide event
