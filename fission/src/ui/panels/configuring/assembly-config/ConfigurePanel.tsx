@@ -21,7 +21,6 @@ import AssemblySelection, { type AssemblySelectionOption } from "./configure/Ass
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
-import ConfigureCameraInterface from "./interfaces/ConfigureCameraInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
@@ -41,6 +40,7 @@ import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControl
 import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
 import MetadataConfigInterface from "@/panels/configuring/assembly-config/interfaces/MetadataConfigInterface.tsx"
 import { FaArrowsRotate } from "react-icons/fa6"
+import ConfigureCameraInterface from "./interfaces/cameras/ConfigureCameraInterface"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([

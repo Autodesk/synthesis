@@ -1,0 +1,100 @@
+import { Box, Divider, Stack } from "@mui/material"
+import { useCallback, useEffect, useState } from "react"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
+import { CameraPreferences, defaultCameraPreferences } from "@/systems/preferences/PreferenceTypes"
+import World from "@/systems/World"
+import { Button, DeleteButton, EditButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import CameraConfigInterface from "./CameraConfigInterface"
+import Label from "@/ui/components/Label"
+import { SelectMenuHeader } from "@/ui/components/SelectMenu"
+import EventSystem from "@/systems/EventSystem"
+
+interface ConfigCameraProps {
+    selectedRobot: MirabufSceneObject
+}
+
+const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }) => {
+    const [version, setVersion] = useState(0)
+    const [selectedCamera, setSelectedCamera] = useState<CameraPreferences | null>(null)
+
+    const cameras = selectedRobot.cameraPreferences
+
+    const forceRender = useCallback(() => setVersion(v => v + 1), [])
+
+    useEffect(() => {
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        return () => {
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+        }
+    }, [])
+
+    return (
+        <>
+            {selectedCamera !== null ? (
+                <>
+                    <SelectMenuHeader
+                        label={`Camera ${selectedCamera.name}`}
+                        showBackButton={true}
+                        onBackButton={() => {
+                            EventSystem.dispatch("ConfigurationSavedEvent")
+                            setSelectedCamera(null)
+                        }}
+                    />
+                    <Divider />
+                    <CameraConfigInterface camera={selectedCamera} selectedRobot={selectedRobot} />
+                </>
+            ) : (
+                <Stack gap={2}>
+                    {cameras.length > 0 ? (
+                        cameras.map(cameraPrefs => (
+                            <Box
+                                sx={{ bgcolor: "background.paper", p: 2, borderRadius: 5, width: "100%" }}
+                                key={`${cameraPrefs.id}`}
+                            >
+                                <Stack direction="row" gap={2}>
+                                    <Label size="md">{cameraPrefs.name}</Label>
+                                    <Stack direction="column" gap={1} justifyContent="space-evenly" ml="auto">
+                                        <EditButton
+                                            onClick={() => {
+                                                setSelectedCamera(cameraPrefs)
+                                            }}
+                                        />
+                                        <DeleteButton
+                                            onClick={() => {
+                                                selectedRobot.cameraPreferences =
+                                                    selectedRobot.cameraPreferences.filter(
+                                                        cpref => cpref.id !== cameraPrefs.id
+                                                    )
+                                                setSelectedCamera(null)
+                                                selectedRobot.updateCameras()
+                                                forceRender()
+                                            }}
+                                        />
+                                    </Stack>
+                                </Stack>
+                            </Box>
+                        ))
+                    ) : (
+                        <Label size="md">No cameras configured. Add one to get started.</Label>
+                    )}
+                    <Button
+                        color="success"
+                        variant="contained"
+                        onClick={() => {
+                            const nextId = cameras.reduce((max, c) => Math.max(max, c.id + 1), 0)
+                            cameras.push(defaultCameraPreferences(nextId))
+                            selectedRobot.updateCameras()
+                            forceRender()
+                        }}
+                        className="w-full"
+                    >
+                        <SynthesisIcons.ADD_LARGE />
+                    </Button>
+                </Stack>
+            )}
+        </>
+    )
+}
+
+export default ConfigureCameraInterface
