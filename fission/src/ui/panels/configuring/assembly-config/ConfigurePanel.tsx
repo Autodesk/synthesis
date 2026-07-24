@@ -160,7 +160,7 @@ const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
 }
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
-    const { configureScreen, closePanel, addToast, openModal } = useUIContext()
+    const { configureScreen, closePanel, addToast } = useUIContext()
     const {
         configMode: initialConfigMode,
         selectedAssembly: initialSelectedAssembly,
@@ -224,7 +224,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         setConfirmCallbacks([])
         setCancelCallbacks([])
         setAccessedAssemblies([])
-    }, [cancelCallbacks, accessedAssemblies])
+        addToast("info", "Configuration reverted")
+    }, [cancelCallbacks, accessedAssemblies, addToast])
 
     const hasMadeChanges = useMemo(
         () => confirmCallbacks.length > 0 || cancelCallbacks.length > 0,
