@@ -73,7 +73,7 @@
         "useComponentExportOnlyModules": "off",
         "useImportType": "warn",
         "useNamingConvention": {
-          "level": "warn",
+          "level": "error",
           "options": {
             "strictCase": false,
             "requireAscii": true,
