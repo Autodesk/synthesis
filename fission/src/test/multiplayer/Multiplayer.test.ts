@@ -3,10 +3,9 @@ import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vi
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "@/systems/World.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
-vi.spyOn(World, "initWorld").mockImplementation(async () => {
-    console.log("tried to init world")
-})
+vi.spyOn(World, "initWorld").mockImplementation(async () => {})
 describe("Multiplayer Tests", () => {
     let multiplayer: MultiplayerSystem | undefined
     let roomId: string = "1000000"
@@ -15,10 +14,7 @@ describe("Multiplayer Tests", () => {
         vi.spyOn(World, "setMultiplayerSystem").mockImplementation(system => {
             multiplayer = system
         })
-        vi.spyOn(console, "log").mockImplementation(() => {})
-        vi.spyOn(console, "warn").mockImplementation(() => {})
-        vi.spyOn(console, "info").mockImplementation(() => {})
-        vi.spyOn(console, "debug").mockImplementation(() => {})
+        mockConsole()
     })
     beforeEach(() => {
         vi.clearAllMocks()

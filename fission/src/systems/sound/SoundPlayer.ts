@@ -12,17 +12,23 @@ type SoundEffect = {
     onMouseUp?: () => void
 }
 export class SoundPlayer {
-    /** Decoded audio elements, kept only to warm the browser cache. */
-    private _templates: Map<string, HTMLAudioElement> = new Map()
-    /** The most recent element actively playing each sound, used to gate follow-up sounds. */
-    private _active: Map<string, HTMLAudioElement> = new Map()
+    private readonly _audioContext = new AudioContext()
+    /** Decoded audio data for each sound file, cached so it's only fetched/decoded once. */
+    private readonly _buffers: Map<string, Promise<AudioBuffer>> = new Map()
+    /** The most recent playback of each sound, used to gate follow-up sounds and live-update volume. */
+    private readonly _active: Map<string, { source: AudioBufferSourceNode; gain: GainNode }> = new Map()
     private static _instance: SoundPlayer | undefined
     public static getInstance() {
         SoundPlayer._instance ??= new SoundPlayer()
         return SoundPlayer._instance
     }
     constructor() {
-        preloadSounds.forEach(sound => this.getTemplate(sound))
+        preloadSounds.forEach(sound => this.getBuffer(sound))
+
+        // Ambient session type mixes with other apps audio instead of pausing it (currently only on Safari)
+        if (navigator.audioSession) {
+            navigator.audioSession.type = "ambient"
+        }
     }
 
     private get _currentVolume(): number {
@@ -31,36 +37,52 @@ export class SoundPlayer {
             : clamp(PreferencesSystem.getUserPreference("SFXVolume") / 100, 0, 1)
     }
 
-    private getTemplate(filePath: string): HTMLAudioElement {
-        let template = this._templates.get(filePath)
-        if (template == null) {
-            template = new Audio(filePath)
-            this._templates.set(filePath, template)
+    private getBuffer(filePath: string): Promise<AudioBuffer> {
+        let buffer = this._buffers.get(filePath)
+        if (buffer == null) {
+            buffer = fetch(filePath)
+                .then(response => response.arrayBuffer())
+                .then(data => this._audioContext.decodeAudioData(data))
+            this._buffers.set(filePath, buffer)
         }
-        return template
+        return buffer
     }
 
-    public play(filePath: string): Promise<void> {
-        const audio = this.getTemplate(filePath).cloneNode(true) as HTMLAudioElement
-        audio.volume = this._currentVolume
-        this._active.set(filePath, audio)
-        audio.addEventListener(
-            "ended",
-            () => {
-                if (this._active.get(filePath) === audio) {
-                    this._active.delete(filePath)
-                }
-            },
-            { once: true }
-        )
-        return audio.play().catch(error => {
+    public async play(filePath: string): Promise<void> {
+        try {
+            const buffer = await this.getBuffer(filePath)
+            if (this._audioContext.state === "suspended") {
+                await this._audioContext.resume()
+            }
+
+            const gain = this._audioContext.createGain()
+            gain.gain.value = this._currentVolume
+            gain.connect(this._audioContext.destination)
+
+            const source = this._audioContext.createBufferSource()
+            source.buffer = buffer
+            source.connect(gain)
+
+            this._active.set(filePath, { source, gain })
+            source.addEventListener(
+                "ended",
+                () => {
+                    source.disconnect()
+                    gain.disconnect()
+                    if (this._active.get(filePath)?.source === source) {
+                        this._active.delete(filePath)
+                    }
+                },
+                { once: true }
+            )
+            source.start()
+        } catch (error) {
             console.error("Error playing the audio file:", error)
-        })
+        }
     }
 
     private isPlaying(filePath: string): boolean {
-        const audio = this._active.get(filePath)
-        return audio != null && !audio.ended && !audio.paused
+        return this._active.has(filePath)
     }
 
     public buttonSoundEffects(): SoundEffect {
@@ -90,8 +112,8 @@ export class SoundPlayer {
     }
 
     public changeVolume(): void {
-        this._active.forEach(audio => {
-            audio.volume = this._currentVolume
+        this._active.forEach(({ gain }) => {
+            gain.gain.value = this._currentVolume
         })
     }
 }

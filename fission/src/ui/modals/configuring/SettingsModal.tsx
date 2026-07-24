@@ -223,6 +223,34 @@ const GeneralTab: React.FC = () => (
 
 type GraphicsPreset = "low" | "medium" | "high" | "custom"
 
+const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
+    return (
+        a.fancyShadows === b.fancyShadows &&
+        a.maxFar === b.maxFar &&
+        a.cascades === b.cascades &&
+        a.shadowMapSize === b.shadowMapSize &&
+        a.antiAliasing === b.antiAliasing
+    )
+}
+
+const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
+    const lowPrefs = lowGraphicsPreferences()
+    if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
+        return "low"
+    }
+
+    const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
+        { key: "medium", prefs: mediumGraphicsPreferences() },
+        { key: "high", prefs: highGraphicsPreferences() },
+    ]
+
+    for (const p of presets) {
+        if (prefsEqual(prefs, p.prefs)) return p.key
+    }
+
+    return "custom"
+}
+
 const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [reload, setReload] = useState<boolean>(false)
     const [selectedGraphicsPreset, setSelectedGraphicsPreset] = useState<GraphicsPreset>("custom")
@@ -234,34 +262,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [cascades, setCascades] = useState<number>(PreferencesSystem.getGraphicsPreferences().cascades)
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
-
-    const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
-        return (
-            a.fancyShadows === b.fancyShadows &&
-            a.maxFar === b.maxFar &&
-            a.cascades === b.cascades &&
-            a.shadowMapSize === b.shadowMapSize &&
-            a.antiAliasing === b.antiAliasing
-        )
-    }
-
-    const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
-        const lowPrefs = lowGraphicsPreferences()
-        if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
-            return "low"
-        }
-
-        const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
-            { key: "medium", prefs: mediumGraphicsPreferences() },
-            { key: "high", prefs: highGraphicsPreferences() },
-        ]
-
-        for (const p of presets) {
-            if (prefsEqual(prefs, p.prefs)) return p.key
-        }
-
-        return "custom"
-    }
 
     const applyGraphicsPreferencesLocally = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
         setLightIntensity(prefs.lightIntensity)

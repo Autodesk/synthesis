@@ -112,7 +112,7 @@ const DEFAULT_FRICTION = 0.7
 
 // Transition GH-1152, AARD-1885:
 // Temporary workaround to reduce visible levitation of robots by minimizing suspension.
-// Setting these values to 0 causes physics issues (e.g., ground collisionn problems).
+// Setting these values to 0 causes physics issues (e.g., ground collision problems).
 // Some robots still float slightly, assuming this is due to different export conditions.
 const SUSPENSION_MIN_FACTOR = 0.0001
 const SUSPENSION_MAX_FACTOR = 0.0001
