@@ -52,9 +52,9 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                                 sx={{ bgcolor: "background.paper", p: 2, borderRadius: 5, width: "100%" }}
                                 key={`${cameraPrefs.id}`}
                             >
-                                <Stack direction="row" gap={2}>
+                                <Stack direction="row" gap={2} justifyContent="space-between">
                                     <Label size="md">{cameraPrefs.name}</Label>
-                                    <Stack direction="column" gap={1} justifyContent="space-evenly" ml="auto">
+                                    <Stack direction="row" gap={1} justifyContent="space-evenly" ml="auto">
                                         <EditButton
                                             onClick={() => {
                                                 setSelectedCamera(cameraPrefs)
