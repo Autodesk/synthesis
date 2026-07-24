@@ -34,16 +34,10 @@ pub fn serialize_messagepack<'a, M>(message: M) -> Vec<u8>
 where
     M: Serialize,
 {
-    let mut message_buffer_no_prefix = Vec::new();
-    let mut serializer = rmp_serde::Serializer::new(&mut message_buffer_no_prefix);
-    message
-        .serialize(&mut serializer)
-        .expect("Cound not serialize kick message");
-
-    message_buffer_no_prefix
+    rmp_serde::to_vec_named(&message).expect("Could not serialize message")
 }
 
-pub fn deserialize_messagepack<'de, B, S>(data: &'de B) -> Option<S>
+pub fn deserialize_messagepack<'de, S, B>(data: &'de B) -> Option<S>
 where
     B: Deref<Target = [u8]> + 'de,
     S: Deserialize<'de>,

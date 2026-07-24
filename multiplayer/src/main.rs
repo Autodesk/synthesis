@@ -202,6 +202,7 @@ where
             Some(ClientToServerMessage::RequestRooms) => {
                 handle_room_list_request(state.clone(), write).await
             }
+
             // When they ask to initialize a connection, then we add them to a room
             // Or create a room for them
             Some(ClientToServerMessage::InitializeConnection { room_id, name }) => {
@@ -222,6 +223,7 @@ where
                     client_id: client_id.to_string(),
                 };
                 let bytes = serialize_messagepack(&response);
+
                 let message = prefix_message(bytes, MessagePrefix::Server);
                 if write.send(message).await.is_err() {
                     error_lock!(state, "Failed to send back initial response");
@@ -271,7 +273,7 @@ where
     };
 
     let Some(message) =
-        deserialize_messagepack::<bytes::Bytes, ClientToServerMessage>(&message_data)
+        deserialize_messagepack::<ClientToServerMessage, bytes::Bytes>(&message_data)
     else {
         error_lock!(state, "{addr} sent an invalid initial message");
         return None;
