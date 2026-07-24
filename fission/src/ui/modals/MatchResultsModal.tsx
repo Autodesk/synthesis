@@ -114,7 +114,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             </Stack>
             <Button
                 onClick={() => {
-                    closeModal(CloseType.Accept)
+                    closeModal(CloseType.ACCEPT)
                 }}
                 className="w-full"
                 sx={{ my: "1rem" }}
