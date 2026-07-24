@@ -50,7 +50,6 @@ import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
-    convertJoltQuatToThreeQuaternion,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToThreeVector3,
     convertThreeVector3ToJoltVec3,
@@ -67,7 +66,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
+import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -75,8 +74,6 @@ interface RnDebugMeshes {
     colliderMesh: THREE.Mesh
     comMesh: THREE.Mesh
 }
-
-type BoundingBoxDimensions = { width: number; height: number; depth: number }
 
 /**
  * The goal with the spotlight assembly is to provide a contextual target assembly
@@ -93,6 +90,13 @@ export function setSpotlightAssembly(assembly: MirabufSceneObject) {
 // TODO: If nothing is in the spotlight, select last entry before defaulting to undefined
 export function getSpotlightAssembly(): MirabufSceneObject | undefined {
     return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
+}
+
+type MinMax = { min: number; max: number }
+type AxisVertices = {
+    x: MinMax
+    y: MinMax
+    z: MinMax
 }
 
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
@@ -128,8 +132,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _collisionUnsubscriber?: () => void
 
-    private _cachedOrientedBoundingBoxDimensions?: BoundingBoxDimensions
-    private _cachedRootToCenterOffset?: Jolt.Vec3
+    private _furthestVertices?: AxisVertices = undefined
+    private _unrotatedRootNodeToCenterPositionTranslation?: Jolt.Vec3 = undefined
 
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
         return this._scoringZones
@@ -317,8 +321,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._basePositionTransform = this.getXZPositionTransform()
 
         if (this.miraType === MiraType.ROBOT) {
-            this._cachedOrientedBoundingBoxDimensions = this.computeFurthestVertices()
-            this._cachedRootToCenterOffset = this.computeRootToCenterOffset()
+            this.computeFurthestVertices()
+            this.computeUnrotatedRootNodeToCenterPositionTranslation()
         }
 
         this.moveToSpawnLocation()
@@ -348,14 +352,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
         const box = this.computeBoundingBox()
         return box.getCenter(vec)
-    }
-
-    /** Offset from the root body's origin to the object's bounding-box center, in the root body's local space. */
-    private computeRootToCenterOffset(): Jolt.Vec3 {
-        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        const rootPosition = convertJoltVec3ToThreeVector3(rootBody.GetPosition(), false) // STATIC_ALIAS
-        const offset = this.getPositionTransform().sub(rootPosition)
-        return convertThreeVector3ToJoltVec3(offset)
     }
 
     public moveToSpawnLocation() {
@@ -446,9 +442,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public dispose(): void {
         this.mirabufInstance.dispose(World.sceneRenderer.scene)
 
-        if (this._cachedRootToCenterOffset) {
-            JOLT.destroy(this._cachedRootToCenterOffset)
-            this._cachedRootToCenterOffset = undefined
+        if (this._unrotatedRootNodeToCenterPositionTranslation) {
+            JOLT.destroy(this._unrotatedRootNodeToCenterPositionTranslation)
+            this._unrotatedRootNodeToCenterPositionTranslation = undefined
         }
 
         if (this._brain && this._brain instanceof SynthesisBrain) {
@@ -591,6 +587,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const partTransform = this.mirabufInstance.parser.globalTransforms.get(part)!.clone().premultiply(transform)
             const meshes = this.mirabufInstance.meshes.get(part) ?? []
             meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
+
+            // JOLT.destroy(partTransform)
         })
     }
 
@@ -749,7 +747,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      *
      * @returns An object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
-    public getDimensions(): BoundingBoxDimensions {
+    public getDimensions(): { width: number; height: number; depth: number } {
         const boundingBox = this.computeBoundingBox()
         const size = new THREE.Vector3()
         boundingBox.getSize(size)
@@ -764,21 +762,21 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     /**
      * @returns The transformation matrix which corresponds to the reverse of the current spacial rotation of the root node of this scene object, relative to the origin
      */
-    private getInverseRotationOfBody(): THREE.Matrix4 {
+    private getInverseRotationOfBody(): Jolt.Mat44 {
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        const inverseRotation = rootBody.GetWorldTransform().GetRotation().Inversed().GetQuaternion() // STATIC_ALIAS
-        return new THREE.Matrix4().makeRotationFromQuaternion(convertJoltQuatToThreeQuaternion(inverseRotation))
+        return rootBody.GetWorldTransform().GetRotation().Inversed()
     }
 
     /**
-     * Computes the six furthest vertices along the x, y, and z axes respectively, returning the
-     * resulting width, height, and depth.
+     * Computes the six furthest vertices along the x, y, and z axes respectively. Stores its result in `this._furthestVertices`
      *
-     * The dimensions calculated by this function should remain valid as the robot moves through the world
+     * `this._furthestVertices` is guaranteed to be defined after calling this function
+     *
+     * The vertices calculated by this function should remain valid as the robot moves through the world
      * However, if the robot modifies its dimensionality in some way(e.g. by extending an arm), this function should be called again to have accurate results.
      */
-    private computeFurthestVertices(): BoundingBoxDimensions {
-        const furthestVertices = {
+    private computeFurthestVertices(): void {
+        this._furthestVertices = {
             x: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
             y: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
             z: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
@@ -795,7 +793,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             if (!bodyId) return
 
             const body = World.physicsSystem.getBody(bodyId)!
-            const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()) // STATIC_ALIAS
+            const bodyTransform = body.GetWorldTransform()
+
+            const vertexTransform = bodyTransform.MulMat44(inverseRotation)
 
             const shape = body.GetShape()
             const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
@@ -805,48 +805,71 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
             )
 
-            const vertex = new THREE.Vector3()
+            const vertex = new JOLT.Vec3()
             for (let i = 0; i < vertices.length; i += 3) {
-                vertex.set(vertices[i], vertices[i + 1], vertices[i + 2])
+                vertex.Set(vertices[i], vertices[i + 1], vertices[i + 2])
                 // Transform the vertex into the position it would occupy if the robot were axis aligned
-                vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
+                const transformedVertex = vertexTransform.MulVec3(vertex)
+
+                const transX = transformedVertex.GetX()
+                const transY = transformedVertex.GetY()
+                const transZ = transformedVertex.GetZ()
 
                 // Compute maximum vertex along each axis
-                const oldX = furthestVertices.x
-                const oldY = furthestVertices.y
-                const oldZ = furthestVertices.z
+                const oldX = this._furthestVertices!.x
+                const oldY = this._furthestVertices!.y
+                const oldZ = this._furthestVertices!.z
 
-                oldX.min = Math.min(oldX.min, vertex.x)
-                oldY.min = Math.min(oldY.min, vertex.y)
-                oldZ.min = Math.min(oldZ.min, vertex.z)
+                oldX.min = Math.min(oldX.min, transX)
+                oldY.min = Math.min(oldY.min, transY)
+                oldZ.min = Math.min(oldZ.min, transZ)
 
-                oldX.max = Math.max(oldX.max, vertex.x)
-                oldY.max = Math.max(oldY.max, vertex.y)
-                oldZ.max = Math.max(oldZ.max, vertex.z)
+                oldX.max = Math.max(oldX.max, transX)
+                oldY.max = Math.max(oldY.max, transY)
+                oldZ.max = Math.max(oldZ.max, transZ)
+
+                JOLT.destroy(transformedVertex)
             }
 
+            JOLT.destroy(vertexTransform)
             JOLT.destroy(triangleContext)
+
+            JOLT.destroy(vertex)
         })
+
+        JOLT.destroy(inverseRotation)
 
         JOLT.destroy(scale)
 
-        const mins = [furthestVertices.x.min, furthestVertices.y.min, furthestVertices.z.min]
-        const maxes = [furthestVertices.x.max, furthestVertices.y.max, furthestVertices.z.max]
+        const mins = [this._furthestVertices.x.min, this._furthestVertices.y.min, this._furthestVertices.z.min]
+        const maxes = [this._furthestVertices.x.max, this._furthestVertices.y.max, this._furthestVertices.z.max]
         if (mins.some(m => m === Number.POSITIVE_INFINITY) || maxes.some(m => m === Number.NEGATIVE_INFINITY)) {
             console.warn("Failed to compute furthest vertices")
         }
+    }
 
-        return {
-            width: furthestVertices.x.max - furthestVertices.x.min,
-            height: furthestVertices.y.max - furthestVertices.y.min,
-            depth: furthestVertices.z.max - furthestVertices.z.min,
-        }
+    /**
+     * Calculates the vector between the center of the axis-aligned bounding box around the mirabuf object and the position of the root body.
+     *
+     * The resultant vector is placed in `this._unrotatedRootNodeToCenterPositionTranslation`
+     *
+     * Call this whenever we need to update that translation for reasons besides the robot rotating (e.g. on setup or whenever the dimensions of the robot change)
+     *
+     * WARNING This requires the robot to be axis-aligned initially. This may not always be true.
+     */
+    private computeUnrotatedRootNodeToCenterPositionTranslation() {
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+
+        const rootNodeTransform = convertJoltRVec3ToJoltVec3(rootBody.GetPosition())
+        const alignedPosition = convertThreeVector3ToJoltVec3(this.getPositionTransform())
+
+        this._unrotatedRootNodeToCenterPositionTranslation = copyVec3(alignedPosition.SubVec3(rootNodeTransform))
     }
 
     /**
      * Gets the tightest fitting oriented bounding box around the robot, centered at the robot's origin.
      *
-     * In order for this function to be up-to-date, both `this.computeFurthestVertices` and `this.computeRootToCenterOffset` must have been called since the last time the dimensions of the robot changed.
+     * In order for this function to be up-to-date, both the function `this.computeFurthestVertices` and `this.computeUnrotatedRootNodeToCenterPositionTranslation` must have been called since the last time the dimensions of the robot changed.
      *
      * This should basically only be on setup, and whenever a non-wheel robot joint moves.
      *
@@ -854,26 +877,27 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      */
     public getOrientedBoundingBox(): Jolt.OrientedBox {
         // Get dimensions of scene object along each axis
-        const { width, height, depth } = this._cachedOrientedBoundingBoxDimensions ?? this.computeFurthestVertices()
-        const halfExtent = new JOLT.Vec3(width / 2, height / 2, depth / 2)
+        const axesVertices = [this._furthestVertices!.x, this._furthestVertices!.y, this._furthestVertices!.z]
+        const axisHalfExtents = axesVertices.map(({ min, max }) => Math.abs(max - min) / 2) as [number, number, number]
+
+        const halfExtent = new JOLT.Vec3(...axisHalfExtents)
 
         // Get root body transformation
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        const rotation = rootBody.GetRotation() // STATIC_ALIAS
+        // NOTE Do not destroy
+        const rotation = rootBody.GetRotation()
 
         // We rotate our vector by the rotation of the root body, otherwise any rotation will mess with the translation
-        const rootPosition = convertJoltRVec3ToJoltVec3(rootBody.GetPosition(), false) // STATIC_ALIAS
-        const rotatedOffset = rotation.MulVec3(this._cachedRootToCenterOffset!)
+        const offset = rotation.MulVec3(this._unrotatedRootNodeToCenterPositionTranslation!)
 
         // Finally, we just offset the root node to get the true center
-        const center = rootPosition.Add(rotatedOffset)
-        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, center) // STATIC_ALIAS
+        const position = convertJoltRVec3ToJoltVec3(rootBody.GetPosition().Add(offset))
+        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position) // STATIC_ALIAS
 
         const orientedBoundingBox = new JOLT.OrientedBox(transform, halfExtent)
 
-        JOLT.destroy(rootPosition)
-        JOLT.destroy(rotatedOffset)
-        JOLT.destroy(center)
+        JOLT.destroy(offset)
+        JOLT.destroy(position)
         JOLT.destroy(halfExtent)
 
         return orientedBoundingBox
@@ -884,7 +908,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      *
      * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
-    public getDimensionsWithoutRotation(): BoundingBoxDimensions {
+    public getDimensionsWithoutRotation(): {
+        width: number
+        height: number
+        depth: number
+    } {
         const rootNodeId = this.getRootNodeId()
         if (!rootNodeId) {
             console.warn("No root node found for robot, using regular dimensions")
