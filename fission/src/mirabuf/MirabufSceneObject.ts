@@ -75,6 +75,8 @@ interface RnDebugMeshes {
     comMesh: THREE.Mesh
 }
 
+type BoundingBoxDimensions = { width: number; height: number; depth: number }
+
 /**
  * The goal with the spotlight assembly is to provide a contextual target assembly
  * the user would like to modify. Generally this will be which even assembly was
@@ -125,8 +127,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _collisionUnsubscriber?: () => void
 
-    private _cachedOrientedBoundingBoxDimensions?: { width: number; height: number; depth: number }
-    private _cachedRootToCenterOffset?: THREE.Vector3
+    private _cachedOrientedBoundingBoxDimensions?: BoundingBoxDimensions
+    private _cachedRootToCenterOffset?: Jolt.Vec3
 
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
         return this._scoringZones
@@ -315,11 +317,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         if (this.miraType === MiraType.ROBOT) {
             this._cachedOrientedBoundingBoxDimensions = this.computeFurthestVertices()
-
-            const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-            const rootPosition = rootBody.GetPosition() // STATIC_ALIAS
-            const rootPositionThree = new THREE.Vector3(rootPosition.GetX(), rootPosition.GetY(), rootPosition.GetZ())
-            this._cachedRootToCenterOffset = this.getPositionTransform().sub(rootPositionThree)
+            this._cachedRootToCenterOffset = this.computeRootToCenterOffset()
         }
 
         this.moveToSpawnLocation()
@@ -349,6 +347,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
         const box = this.computeBoundingBox()
         return box.getCenter(vec)
+    }
+
+    /** Offset from the root body's origin to the object's bounding-box center, in the root body's local space. */
+    private computeRootToCenterOffset(): Jolt.Vec3 {
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+        const rootPosition = convertJoltVec3ToThreeVector3(rootBody.GetPosition(), false) // STATIC_ALIAS
+        const offset = this.getPositionTransform().sub(rootPosition)
+        return convertThreeVector3ToJoltVec3(offset)
     }
 
     public moveToSpawnLocation() {
@@ -438,6 +444,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public dispose(): void {
         this.mirabufInstance.dispose(World.sceneRenderer.scene)
+
+        if (this._cachedRootToCenterOffset) {
+            JOLT.destroy(this._cachedRootToCenterOffset)
+            this._cachedRootToCenterOffset = undefined
+        }
 
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
@@ -557,9 +568,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                         const mass = 1 / inverseMass
                         const comPosition = body.GetCenterOfMassPosition() // STATIC_ALIAS
 
-                        weightedCom.x += comPosition.GetX() * mass
-                        weightedCom.y += comPosition.GetY() * mass
-                        weightedCom.z += comPosition.GetZ() * mass
+                        weightedCom.addScaledVector(convertJoltVec3ToThreeVector3(comPosition, false), mass)
                         totalMass += mass
                     }
                 }
@@ -739,7 +748,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      *
      * @returns An object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
-    public getDimensions(): { width: number; height: number; depth: number } {
+    public getDimensions(): BoundingBoxDimensions {
         const boundingBox = this.computeBoundingBox()
         const size = new THREE.Vector3()
         boundingBox.getSize(size)
@@ -758,11 +767,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * The dimensions calculated by this function should remain valid as the robot moves through the world
      * However, if the robot modifies its dimensionality in some way(e.g. by extending an arm), this function should be called again to have accurate results.
      */
-    private computeFurthestVertices(): {
-        width: number
-        height: number
-        depth: number
-    } {
+    private computeFurthestVertices(): BoundingBoxDimensions {
         const rootNodeId = this.getRootNodeId()
         if (!rootNodeId) {
             console.warn("No root node found for robot, using regular dimensions")
@@ -841,18 +846,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const halfExtent = new JOLT.Vec3(width / 2, height / 2, depth / 2)
         const rotation = rootBody.GetRotation() // STATIC_ALIAS
 
-        const rotationThree = new THREE.Quaternion(rotation.GetX(), rotation.GetY(), rotation.GetZ(), rotation.GetW())
-        const rootPosition = rootBody.GetPosition() // STATIC_ALIAS
-        const centerThree = new THREE.Vector3(rootPosition.GetX(), rootPosition.GetY(), rootPosition.GetZ())
-        if (this._cachedRootToCenterOffset) {
-            centerThree.add(this._cachedRootToCenterOffset.clone().applyQuaternion(rotationThree))
-        }
-
-        const center = convertThreeVector3ToJoltVec3(centerThree)
+        const rootPosition = convertJoltRVec3ToJoltVec3(rootBody.GetPosition(), false) // STATIC_ALIAS
+        const rotatedOffset = rotation.MulVec3(this._cachedRootToCenterOffset!)
+        const center = rootPosition.Add(rotatedOffset)
         const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, center) // STATIC_ALIAS
 
         const orientedBoundingBox = new JOLT.OrientedBox(transform, halfExtent)
 
+        JOLT.destroy(rootPosition)
+        JOLT.destroy(rotatedOffset)
         JOLT.destroy(center)
         JOLT.destroy(halfExtent)
 
@@ -864,11 +866,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      *
      * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
-    public getDimensionsWithoutRotation(): {
-        width: number
-        height: number
-        depth: number
-    } {
+    public getDimensionsWithoutRotation(): BoundingBoxDimensions {
         const rootNodeId = this.getRootNodeId()
         if (!rootNodeId) {
             console.warn("No root node found for robot, using regular dimensions")
