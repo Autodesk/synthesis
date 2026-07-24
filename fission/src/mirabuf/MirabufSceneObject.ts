@@ -752,7 +752,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public getOrientedBoundingBox(): Jolt.OrientedBox {
-        const { width, height, depth } = this._cachedOrientedBoundingBoxDimensions ?? this.getDimensionsWithoutRotation()
+        const { width, height, depth } =
+            this._cachedOrientedBoundingBoxDimensions ?? this.getDimensionsWithoutRotation()
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
 
         const halfExtent = new JOLT.Vec3(width / 2, height / 2, depth / 2)
