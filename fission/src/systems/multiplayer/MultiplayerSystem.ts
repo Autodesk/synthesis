@@ -31,7 +31,7 @@ const console = multiplayerLogger
 
 class MultiplayerSystem {
     public readonly client: WebSocket
-    public roomId: number = -1
+    public roomId: string = ""
     public clientId: string = ""
     private _initializationPromise: Promise<boolean>
 
@@ -43,14 +43,14 @@ class MultiplayerSystem {
     private _info: ClientInfo = {} as ClientInfo
     private _onDestroyHooks: (() => void)[] = []
 
-    public static async setup(hostAddr: string, roomId: number | "create", displayName: string): Promise<boolean> {
+    public static async setup(hostAddr: string, roomId: string | "create", displayName: string): Promise<boolean> {
         const system = new MultiplayerSystem(hostAddr, roomId, displayName)
         const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
         return initResult
     }
 
-    private constructor(hostAddr: string, roomId: number | "create", displayName: string) {
+    private constructor(hostAddr: string, roomId: string | "create", displayName: string) {
         this.client = new WebSocket(hostAddr)
         this.client.onopen = () => {
             const msg = encode({
@@ -107,19 +107,22 @@ class MultiplayerSystem {
     async onMessage(msg: Blob) {
         const headerByte = (await msg.slice(0, 1).bytes())[0]
         const data = await msg.slice(1).arrayBuffer()
-        const decoded = decode(data)
+        const decoded = decode(data) as ServerMessage | MessageWithTimestamp
         const isServer = headerByte == SERVER_PREFIX
-
+        if (msg.type != "update") {
+            console.group(`Incoming ${isServer ? "server" : "peer"} message: ${decoded.type}`)
+        }
         if (isServer) {
-            return {
-                from: "server",
-                type: await this.handleServerMessage(decoded as ServerMessage),
-            }
+            await this.handleServerMessage(decoded as ServerMessage)
         } else {
-            return {
-                from: "client",
-                type: await this.handlePeerMessage(decoded as MessageWithTimestamp),
-            }
+            await this.handlePeerMessage(decoded as MessageWithTimestamp)
+        }
+        if (msg.type != "update") {
+            console.groupEnd()
+        }
+        return {
+            from: isServer ? "server" : "client",
+            type: decoded.type,
         }
     }
 
@@ -132,7 +135,6 @@ class MultiplayerSystem {
                 this._info.creationTime = Date.now()
                 globalAddToast("success", "Joined room", this.roomId)
                 await this.sendHello(true)
-                multiplayerLogger.log("Dispatchy")
                 setTimeout(() => EventSystem.dispatch("MultiplayerStateJoinRoom"))
                 break
             case "kick":
@@ -147,9 +149,10 @@ class MultiplayerSystem {
     async handlePeerMessage(message: MessageWithTimestamp) {
         if (message.recipientId != null && message.recipientId != this.clientId) {
             console.info("Ignoring message for", message.recipientId)
+            return
         }
         if (message.type != "update") {
-            console.debug(`Receiving Message ${message.type}`, message)
+            console.info(`Receiving Message ${message.type}`, message)
         }
 
         const handler = peerMessageHandlers[message.type].bind(this) as (

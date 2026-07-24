@@ -17,7 +17,7 @@ import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerS
 
 export interface MultiplayerInitProps {
     displayName: string
-    roomId?: number
+    roomId?: string
     url: string
 }
 interface MultiplayerStartMenuCustomProps {
@@ -62,15 +62,14 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     }, [host, port, secure])
 
     const validate = useCallback(
-        (requireRoom: boolean): MultiplayerInitProps | undefined => {
+        (useRoom: boolean): MultiplayerInitProps | undefined => {
             if (name.length <= 3) {
                 globalAddToast("warning", "Invalid Name", "Must be at least 3 characters")
                 return
             }
 
-            const parsedRoom = requireRoom ? parseInt(room) : undefined
-            if (parsedRoom != null && (isNaN(parsedRoom) || parsedRoom < 0)) {
-                globalAddToast("warning", "Invalid Room", "Must be non-negative integer")
+            if (useRoom && room.length !== 6) {
+                globalAddToast("warning", "Invalid Room", "Must be 6 characters")
                 return
             }
             const url = validateServer()
@@ -78,7 +77,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
 
             return {
                 displayName: name,
-                roomId: parsedRoom,
+                roomId: useRoom ? room : undefined,
                 url: url,
             }
         },
@@ -109,9 +108,9 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     const connectionTest = useCallback(async () => {
         const url = validateServer()
         if (url == null) return
-
         const success = await withTimeout(
             new Promise<boolean>(resolve => {
+                console.group("Connection Test")
                 setTestState("progress")
                 const ws = new WebSocket(url)
                 ws.onopen = () => {
@@ -156,6 +155,8 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 }
                 ws.onclose = () => {
                     console.log("Test socket closed")
+                    resolve(false)
+                    console.groupEnd()
                 }
                 ws.onmessage = () => {
                     console.log("Test socket message")
@@ -163,7 +164,9 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
             }),
             "Connection timed out",
             10000
-        )
+        ).finally(() => {
+            console.groupEnd()
+        })
 
         if (success) {
             globalAddToast("success", "WebSocket connected!")
@@ -271,17 +274,22 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 <Label size={"sm"}>Room Code</Label>
                 <TextField
                     value={room}
-                    placeholder="000000"
+                    placeholder="ABC123"
                     inputProps={{
                         onInput: e => {
-                            setRoom(e.currentTarget.value.replace(/\D/, ""))
+                            setRoom(
+                                e.currentTarget.value
+                                    .toUpperCase()
+                                    .replace(/[^A-Z\d]/g, "")
+                                    .slice(0, 6)
+                            )
                         },
                     }}
                 />
             </Stack>
 
             <Button
-                disabled={room.length == 0}
+                disabled={room.length !== 6}
                 onClick={async () => {
                     const initData = validate(true)
                     if (initData == null) return

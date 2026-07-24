@@ -25,6 +25,8 @@ import type {
     RemoteSceneObjectId,
 } from "@/systems/multiplayer/MultiplayerTypes.ts"
 
+import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
+
 export const peerMessageHandlers = {
     info: handleInfoMessage,
     update: handleUpdateMessage,
@@ -224,7 +226,9 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string) {
 
     // Sets bodyMap
     const clientBodyIds = object.getAllBodyIds()
-    console.assert(data.bodyIds.length === clientBodyIds.length)
+    if (data.bodyIds.length !== clientBodyIds.length) {
+        console.error("Body ID mismatch!", data.bodyIds, clientBodyIds)
+    }
     data.bodyIds.forEach((id, i) => bodyMap.set(id, clientBodyIds[i]))
 
     handle.done("Loaded")

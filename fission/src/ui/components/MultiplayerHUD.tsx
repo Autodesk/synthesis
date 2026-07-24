@@ -8,7 +8,7 @@ import World from "@/systems/World.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 
 const MultiplayerHUD: React.FC = () => {
-    const [roomCode, setRoomCode] = useState<number | null>()
+    const [roomCode, setRoomCode] = useState<string | null>()
     const [peers, setPeers] = useState<ClientInfo[]>([])
     useEffect(() => {
         const unsubscribers: (() => void)[] = []
