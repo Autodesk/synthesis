@@ -12,6 +12,8 @@ use uuid::Uuid;
 /// Oldest lines are dropped once the buffer is full.
 const MAX_LOG_LINES: usize = 500;
 
+const VALID_ROOM_ID_CHARACTERS: [char; 36] = valid_room_id_characters();
+
 pub struct State {
     users: ClientMap,
     rooms: RoomMap,
@@ -212,18 +214,33 @@ impl State {
     }
 }
 
+const fn valid_room_id_characters() -> [char; 36] {
+    let mut chars = ['\0'; 36];
+    let mut ch: u8 = 48;
+    let mut idx = 0;
+
+    while ch <= 57 {
+        chars[idx] = ch as char;
+        ch += 1;
+        idx += 1;
+    }
+
+    ch = 65;
+    while ch <= 90 {
+        chars[idx] = ch as char;
+        ch += 1;
+        idx += 1;
+    }
+
+    chars
+}
+
 fn generate_6_digit_code() -> String {
     let mut rng = rand::rng();
-
-    let chars: Vec<char> = (48..=57)
-        .map(|d| char::from(d))
-        .chain((65..=90).map(|d| char::from(d)))
-        .collect();
-
     let mut code = String::with_capacity(6);
 
     for _ in 0..6 {
-        code.push(chars[rng.random_range(0..chars.len())]);
+        code.push(VALID_ROOM_ID_CHARACTERS[rng.random_range(0..VALID_ROOM_ID_CHARACTERS.len())]);
     }
 
     code
