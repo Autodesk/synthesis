@@ -18,7 +18,7 @@ import {
 import type MirabufSceneObject from "./MirabufSceneObject"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
-    private static readonly transparentMaterial = new THREE.MeshPhongMaterial({
+    private static readonly TRANSPARENT_MATERIAL = new THREE.MeshPhongMaterial({
         color: 0x0000,
         shininess: 0.0,
         opacity: 0.0,
@@ -116,7 +116,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private createVisualMesh(props: VisualProperties) {
         const unitVector = new JOLT.Vec3(1, 1, 1)
 
-        this.mesh = World.sceneRenderer.createBox(unitVector, ZoneSceneObject.transparentMaterial)
+        this.mesh = World.sceneRenderer.createBox(unitVector, ZoneSceneObject.TRANSPARENT_MATERIAL)
         World.sceneRenderer.addObject(this.mesh)
 
         this.setMeshProperties(props)
@@ -132,7 +132,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         }
 
         this.toRender = PreferencesSystem.getUserPreference(this._preferenceKey) as boolean | undefined
-        this.mesh.material = this.toRender ? this.material() : ZoneSceneObject.transparentMaterial
+        this.mesh.material = this.toRender ? this.material() : ZoneSceneObject.TRANSPARENT_MATERIAL
     }
 
     /**
