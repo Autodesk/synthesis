@@ -172,15 +172,8 @@ impl State {
         self.remove_client(client_id);
     }
 
-    /// Returns a list of all rooms formatted as:
-    /// `{room.autority}'s Room`
     pub fn list_rooms(&self) -> Vec<String> {
-        self.rooms
-            .map
-            .values()
-            .filter_map(|room| room.authority)
-            .map(|auth| format!("{auth}'s room"))
-            .collect()
+        self.rooms.map.keys().cloned().collect()
     }
 
     /// Record a server-wide event
