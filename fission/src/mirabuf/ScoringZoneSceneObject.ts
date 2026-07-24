@@ -1,4 +1,3 @@
-import JOLT from "@/util/loading/JoltSyncLoader"
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import * as Three from "three"
@@ -59,9 +58,8 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             const gp = World.physicsSystem.getBody(gpID)
             if (!gp) return false
 
-            const gpBounding = gp.GetWorldSpaceBounds()
+            const gpBounding = gp.GetWorldSpaceBounds() // STATIC_ALIAS
             const overlaps = this.bounding?.OverlapsAABox(gpBounding)
-            JOLT.destroy(gpBounding)
 
             return overlaps
         })
