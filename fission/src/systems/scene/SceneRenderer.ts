@@ -409,7 +409,6 @@ class SceneRenderer extends WorldSystem {
                 scene: this._scene,
                 skybox: this._skybox,
                 target,
-                framingPoints: undefined,
             })
         } catch (e) {
             console.warn("Thumbnail capture failed", e)

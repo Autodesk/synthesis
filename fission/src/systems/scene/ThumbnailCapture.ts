@@ -54,7 +54,7 @@ export interface ThumbnailFraming {
     lookAt: THREE.Vector3
 }
 
-function computeThumbnailFraming(bounds: THREE.Box3 | readonly THREE.Vector3[]): ThumbnailFraming | undefined {
+export function computeThumbnailFraming(bounds: THREE.Box3 | readonly THREE.Vector3[]): ThumbnailFraming | undefined {
     const points = bounds instanceof THREE.Box3 ? boxCorners(bounds) : bounds
     if (points.length === 0) return undefined
 
