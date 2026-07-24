@@ -15,10 +15,19 @@ import EventSystem from "@/systems/EventSystem.ts"
 import { decode, encode } from "@msgpack/msgpack"
 import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
 import type { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
+import { consolePrefixer } from "console-prefixer"
 
 export const COLLISION_TIMEOUT = 500
 export const CLIENT_PREFIX = 0b00000001
 export const SERVER_PREFIX = 0b00000011
+
+export const multiplayerLogger = consolePrefixer({
+    defaultPrefix: {
+        text: "[Multiplayer]",
+        style: "background: orange; color: white;font-weight:bold; padding:2px; border-radius:2px;",
+    },
+})
+const console = multiplayerLogger
 
 class MultiplayerSystem {
     public readonly client: WebSocket
@@ -64,6 +73,7 @@ class MultiplayerSystem {
         }
 
         this._initializationPromise = new Promise<boolean>(resolve => {
+            this._info.displayName = displayName
             this.client.onmessage = async ev => {
                 const { from, type } = await this.onMessage(ev.data)
                 if (from != "server" || type != "sendinfo") {
@@ -72,16 +82,13 @@ class MultiplayerSystem {
                     resolve(false)
                     return
                 }
-                this._info.displayName = displayName
 
                 resolve(true)
             }
             setTimeout(() => resolve(false), 10000)
         }).then(res => {
             if (res) {
-                console.log("updating")
                 this.client.onmessage = async ev => {
-                    console.log("Message", ev.data)
                     await this.onMessage(ev.data as Blob)
                 }
             }
@@ -98,14 +105,12 @@ class MultiplayerSystem {
     }
 
     async onMessage(msg: Blob) {
-        console.log(msg)
         const headerByte = (await msg.slice(0, 1).bytes())[0]
         const data = await msg.slice(1).arrayBuffer()
         const decoded = decode(data)
         const isServer = headerByte == SERVER_PREFIX
 
         if (isServer) {
-            console.log("SERVER MESSAGE", decoded)
             return {
                 from: "server",
                 type: await this.handleServerMessage(decoded as ServerMessage),
@@ -123,20 +128,18 @@ class MultiplayerSystem {
             case "sendinfo":
                 this.roomId = message.room_id
                 this.clientId = message.client_id
-                this._info = {
-                    clientId: this.clientId,
-                    displayName: "",
-                    creationTime: Date.now(),
-                }
+                this._info.clientId = this.clientId
+                this._info.creationTime = Date.now()
                 globalAddToast("success", "Joined room", this.roomId)
                 await this.sendHello(true)
-                EventSystem.dispatch("MultiplayerStateJoinRoom")
+                multiplayerLogger.log("Dispatchy")
+                setTimeout(() => EventSystem.dispatch("MultiplayerStateJoinRoom"))
                 break
             case "kick":
                 this.removePeer(message.client_id)
                 break
             default:
-                console.warn("Unhandled message from server", message)
+                console.warn(`Unhandled message from server (type ${message.type})`, message)
         }
         return message.type
     }
@@ -146,7 +149,7 @@ class MultiplayerSystem {
             console.info("Ignoring message for", message.recipientId)
         }
         if (message.type != "update") {
-            console.debug(`Receiving Message ${message.type}`)
+            console.debug(`Receiving Message ${message.type}`, message)
         }
 
         const handler = peerMessageHandlers[message.type].bind(this) as (
@@ -164,12 +167,13 @@ class MultiplayerSystem {
 
     async send(message: Message, peerID?: string) {
         message.recipientId = peerID
-        if (message.type != "update") {
-            console.debug(`Sending Message: ${message.type}`)
-        }
         message.timestamp ??= Date.now()
         message.client_id = this.clientId
-        return this.client.send(encode(message))
+        if (message.type != "update") {
+            console.debug(`Sending Message: ${message.type}`, message)
+        }
+        const encoded = encode(message)
+        return this.client.send(encoded)
     }
 
     async sendHello(requestIntroductions: boolean, peerID?: string) {

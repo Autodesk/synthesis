@@ -3,7 +3,7 @@ import { Stack } from "@mui/system"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Label from "@/components/Label.tsx"
-import type { ClientInfo } from "@/systems/multiplayer/MultiplayerTypes.ts"
+import { type ClientInfo, shortClientId } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import World from "@/systems/World.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 
@@ -49,9 +49,9 @@ const MultiplayerHUD: React.FC = () => {
                     Room {roomCode}
                 </Label>
                 {peers.map(peer => (
-                    <Tooltip placement="right" key={peer.clientId} title={peer.clientId.slice(0, 8)}>
+                    <Tooltip placement="right" key={peer.clientId} title={shortClientId(peer)}>
                         <Typography variant={"body1"} key={peer.clientId}>
-                            {peer.displayName}
+                            {peer.displayName || shortClientId(peer)}
                             {peer.clientId == World.multiplayerSystem?.clientId && " (you)"}
                         </Typography>
                     </Tooltip>

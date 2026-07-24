@@ -22,6 +22,10 @@ export type ClientInfo = {
     creationTime: number
 }
 
+export function shortClientId(info: ClientInfo) {
+    return info.clientId.slice(0, 8)
+}
+
 export type RobotConfiguration = {
     intakePreferences: string // IntakePreferences
     ejectorPreferences: string // EjectorPreferences

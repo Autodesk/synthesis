@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import MainHUD from "@/components/MainHUD"
 import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
 import Scene from "@/components/Scene.tsx"
-import MultiplayerStartModal, { MultiplayerInitProps } from "@/modals/MultiplayerStartModal.tsx"
+import MultiplayerStartModal, { type MultiplayerInitProps } from "@/modals/MultiplayerStartModal.tsx"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import World from "@/systems/World.ts"
 import { UIRenderer } from "@/ui/UIRenderer.tsx"
@@ -65,6 +65,16 @@ function Synthesis() {
         if (urlParams.has("code")) {
             window.opener.convertAuthToken(urlParams.get("code"))
             window.close()
+            return
+        }
+        if (urlParams.has("autojoin")) {
+            const room = urlParams.get("autojoin")!
+            const parsedRoom = parseInt(room)
+            startWorldCallback({
+                displayName: PreferencesSystem.getUserPreference("MultiplayerUsername") ?? "TestUser",
+                roomId: isNaN(parsedRoom) ? undefined : parsedRoom,
+                url: `ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`,
+            })
             return
         }
 

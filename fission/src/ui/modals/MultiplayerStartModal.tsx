@@ -13,6 +13,7 @@ import { LabelWithTooltip } from "@/components/StyledComponents.tsx"
 import { waitUntil } from "@/util/Utility.ts"
 import SessionStorage from "@/util/SessionStorage.ts"
 import { DEFAULT_MULTIPLAYER_PORT } from "@/systems/preferences/PreferenceTypes.ts"
+import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
 
 export interface MultiplayerInitProps {
     displayName: string
@@ -113,13 +114,13 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
             new Promise<boolean>(resolve => {
                 setTestState("progress")
                 const ws = new WebSocket(url)
-                ws.onopen = ev => {
-                    console.log("WS Open", ev)
+                ws.onopen = () => {
+                    console.log("Test socket open")
                     resolve(true)
                     ws.close(4000, "test connection succeeded")
                 }
                 ws.onerror = async ev => {
-                    console.error("WS Error", ev)
+                    console.error("Test socket error", ev)
 
                     // NOTE: Chrome is evil and for "security" this will always fail on Chrome. It works as intended on firefox
                     const reachable = await fetch(url.replace(/wss?:\/\//, "http://"), { mode: "no-cors" })
@@ -153,11 +154,11 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
 
                     resolve(false)
                 }
-                ws.onclose = ev => {
-                    console.warn("WS Close", ev)
+                ws.onclose = () => {
+                    console.log("Test socket closed")
                 }
-                ws.onmessage = ev => {
-                    console.error("WS Message", ev)
+                ws.onmessage = () => {
+                    console.log("Test socket message")
                 }
             }),
             "Connection timed out",

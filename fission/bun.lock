@@ -18,6 +18,7 @@
         "@vitest/browser": "^3.2.4",
         "@xyflow/react": "^12.8.3",
         "async-mutex": "^0.5.0",
+        "console-prefixer": "^1.0.3",
         "framer-motion": "^12.23.12",
         "fuse.js": "^7.1.0",
         "jszip": "^3.10.1",
@@ -674,6 +675,8 @@
     "combined-stream": ["combined-stream@1.0.8", "", { "dependencies": { "delayed-stream": "~1.0.0" } }, "sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg=="],
 
     "commander": ["commander@11.1.0", "", {}, "sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ=="],
+
+    "console-prefixer": ["console-prefixer@1.0.3", "", {}, "sha512-VGSGysA7OM7shrLG4/qM96briD9Zs44e/GvU2DrB2noWbz13XrOIGbXqYrt5O4rJTrTRY4rO/3XjxJS4qoSl6g=="],
 
     "content-disposition": ["content-disposition@0.5.4", "", { "dependencies": { "safe-buffer": "5.2.1" } }, "sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ=="],
 
