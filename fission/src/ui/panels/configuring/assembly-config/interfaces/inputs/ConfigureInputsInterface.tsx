@@ -132,7 +132,6 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
             ) : (
                 <ConfigureSchemeInterface
                     selectedScheme={selectedScheme}
-                    setSelectedScheme={setSelectedScheme}
                     panelId={panel?.id}
                     onBack={() => setSelectedScheme(undefined)}
                 />

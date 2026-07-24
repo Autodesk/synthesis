@@ -1,6 +1,6 @@
 import { Divider, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -13,18 +13,15 @@ import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
-    setSelectedScheme: (scheme: InputScheme) => void
     panelId?: string
     onBack?: () => void
 }
 
-const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
-    selectedScheme,
-    setSelectedScheme,
-    panelId,
-    onBack,
-}) => {
+const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme, panelId, onBack }) => {
+    const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
+    const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
+    const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes(panelId)
     }, [panelId])
@@ -77,27 +74,29 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
             {/** Toggle the input scheme between controller and keyboard mode */}
             <Checkbox
                 label="Use Controller"
-                checked={selectedScheme.usesGamepad}
+                checked={useGamepad}
                 onClick={val => {
-                    setSelectedScheme({
-                        ...selectedScheme,
-                        customized: true,
-                        usesGamepad: val,
-                        usesTouchControls: val ? false : selectedScheme.usesTouchControls,
-                    })
+                    setUseGamepad(val)
+                    if (val) {
+                        setUseTouchControls(false)
+                        selectedScheme.usesTouchControls = false
+                    }
+                    selectedScheme.usesGamepad = val
+                    selectedScheme.customized = true
                 }}
                 tooltip="Supported controllers: Xbox one, Xbox 360."
             />
             <Checkbox
                 label="Use Touch Controls"
-                checked={selectedScheme.usesTouchControls}
+                checked={useTouchControls}
                 onClick={val => {
-                    setSelectedScheme({
-                        ...selectedScheme,
-                        customized: true,
-                        usesTouchControls: val,
-                        usesGamepad: val ? false : selectedScheme.usesGamepad,
-                    })
+                    setUseTouchControls(val)
+                    if (val) {
+                        setUseGamepad(false)
+                        selectedScheme.usesGamepad = false
+                    }
+                    selectedScheme.usesTouchControls = val
+                    selectedScheme.customized = true
                 }}
                 tooltip="Enable on-screen touch controls (only for mobile devices)."
             />
@@ -110,9 +109,11 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
                         <EditInputInterface
                             key={i.inputName}
                             input={i}
-                            useGamepad={selectedScheme.usesGamepad}
-                            useTouchControls={selectedScheme.usesTouchControls}
-                            onInputChanged={() => setSelectedScheme({ ...selectedScheme, customized: true })}
+                            useGamepad={useGamepad}
+                            useTouchControls={useTouchControls}
+                            onInputChanged={() => {
+                                selectedScheme.customized = true
+                            }}
                         />
                     )
                 })}
@@ -122,12 +123,9 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
                             .map(input => parseInt(input.inputName.replace("joint ", "")))
                             .filter(val => !isNaN(val))
                         const newJointIndex = Math.max(0, ...existingJointIndexes) + 1
-
-                        setSelectedScheme({
-                            ...selectedScheme,
-                            customized: true,
-                            inputs: [...selectedScheme.inputs, AxisInput.unbound(`joint ${newJointIndex}`)],
-                        })
+                        selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
+                        selectedScheme.customized = true
+                        update()
                     }}
                 >
                     Add Joint Control

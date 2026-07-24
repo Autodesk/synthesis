@@ -170,7 +170,6 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
         case ConfigMode.CONTROLS: {
             const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
             const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
-            const setScheme = (scheme: InputScheme) => InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
             return (
                 <>
@@ -183,13 +182,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                     >
                         Set Scheme
                     </Button>
-                    {scheme && (
-                        <ConfigureSchemeInterface
-                            selectedScheme={scheme}
-                            setSelectedScheme={setScheme}
-                            panelId={panel?.id}
-                        />
-                    )}
+                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} panelId={panel?.id} />}
                 </>
             )
         }
