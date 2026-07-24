@@ -96,11 +96,11 @@ class SceneRenderer extends WorldSystem {
         this.updateCanvasSize()
     }
 
-    private get viewportWidth() {
+    private get _viewportWidth() {
         return window.innerWidth
     }
 
-    private get viewportHeight() {
+    private get _viewportHeight() {
         return Math.max(1, window.innerHeight - this._topOffset)
     }
 
@@ -251,8 +251,8 @@ class SceneRenderer extends WorldSystem {
     }
 
     public updateCanvasSize() {
-        const width = this.viewportWidth
-        const height = this.viewportHeight
+        const width = this._viewportWidth
+        const height = this._viewportHeight
         this._renderer.setSize(width, height, true)
         this._composer.setSize(width, height)
         this._renderer.domElement.style.top = `${this._topOffset}px`
@@ -513,8 +513,8 @@ class SceneRenderer extends WorldSystem {
      * @returns World space point within the frustum given the parameters.
      */
     public pixelToWorldSpace(mouseX: number, mouseY: number, z: number = 0.5): THREE.Vector3 {
-        const width = this.viewportWidth
-        const height = this.viewportHeight
+        const width = this._viewportWidth
+        const height = this._viewportHeight
         const screenSpace = new THREE.Vector3(
             (mouseX / width) * 2 - 1,
             ((height - (mouseY - this._topOffset)) / height) * 2 - 1,
@@ -534,8 +534,8 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateMatrixWorld()
         const screenSpace = worldPosition.project(this._mainCamera)
         return [
-            (this.viewportWidth * (screenSpace.x + 1.0)) / 2.0,
-            this._topOffset + (this.viewportHeight * (1.0 - screenSpace.y)) / 2.0,
+            (this._viewportWidth * (screenSpace.x + 1.0)) / 2.0,
+            this._topOffset + (this._viewportHeight * (1.0 - screenSpace.y)) / 2.0,
         ]
     }
 

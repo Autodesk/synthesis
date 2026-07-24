@@ -176,7 +176,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                         onClick={() => {
                             setSpotlightAssembly(assembly)
                             openPanel(ChooseInputSchemePanel, undefined, panel)
-                            closePanel(panel.id, CloseType.Overwrite)
+                            closePanel(panel.id, CloseType.OVERWRITE)
                         }}
                     >
                         Set Scheme
@@ -213,8 +213,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
                     scaleDisabled={true}
                     size={3.0}
                     parent={assembly}
-                    onAccept={() => closePanel(panel.id, CloseType.Accept)}
-                    onCancel={() => closePanel(panel.id, CloseType.Cancel)}
+                    onAccept={() => closePanel(panel.id, CloseType.ACCEPT)}
+                    onCancel={() => closePanel(panel.id, CloseType.CANCEL)}
                 />
             )
         case ConfigMode.SIM:
@@ -285,7 +285,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             const currentSchemes: InputScheme[] = InputSchemeManager.allInputSchemes
             originalInputSchemes.current = structuredClone(currentSchemes)
         })
-    }, [])
+    }, [panel?.id, selectedAssembly])
 
     useEffect(() => {
         const onBeforeAccept = () => {
@@ -339,7 +339,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedAssembly, pendingDeletes])
+    }, [selectedAssembly, pendingDeletes, panel])
 
     const modes = useMemo(() => {
         switch (configurationType) {
@@ -474,7 +474,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                                 className={"w-full"}
                                 color={"warning"}
                                 onClick={() => {
-                                    closePanel(panel!.id, CloseType.Accept)
+                                    closePanel(panel!.id, CloseType.ACCEPT)
                                     selectedAssembly.resetPreferences()
                                     globalAddToast(
                                         "info",

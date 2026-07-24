@@ -59,15 +59,15 @@ const TargetSettings: React.FC<{ controls: CustomTargetControls }> = ({ controls
                 if (v !== null) setMode(v as CameraMode)
             }}
         >
-            <TooltipToggleButton title="Follow the target position, but allow free rotation" value={CameraMode.Follow}>
+            <TooltipToggleButton title="Follow the target position, but allow free rotation" value={CameraMode.FOLLOW}>
                 Follow
             </TooltipToggleButton>
-            <TooltipToggleButton title="Follow the target with camera position and rotation" value={CameraMode.Locked}>
+            <TooltipToggleButton title="Follow the target with camera position and rotation" value={CameraMode.LOCKED}>
                 Locked
             </TooltipToggleButton>
             <TooltipToggleButton
                 title="Lock camera position and orient the camera to face the target"
-                value={CameraMode.Face}
+                value={CameraMode.FACE}
             >
                 Face
             </TooltipToggleButton>
@@ -75,13 +75,13 @@ const TargetSettings: React.FC<{ controls: CustomTargetControls }> = ({ controls
     )
 }
 
+const getFieldViewControls = () => {
+    const c = World.sceneRenderer.currentCameraControls
+    return c instanceof CustomFieldViewControls ? c : undefined
+}
+
 /** Station / robot-focus dropdowns, shown when a field is focused. */
 const FieldViewSettings: React.FC = () => {
-    const getFieldViewControls = () => {
-        const c = World.sceneRenderer.currentCameraControls
-        return c instanceof CustomFieldViewControls ? c : undefined
-    }
-
     const [points, setPoints] = useState<CameraPoint[]>(getCameraPoints)
     const [robots, setRobots] = useState<MirabufSceneObject[]>(() =>
         World.sceneRenderer.mirabufSceneObjects.getRobots()
@@ -94,6 +94,7 @@ const FieldViewSettings: React.FC = () => {
         getFieldViewControls()?.focusedRobot?.id ?? UNFOCUSED_ID
     )
 
+    // TODO: this is very bad react, we should not be updating this every re-render
     const refreshPoints = () => {
         const freshPoints = getCameraPoints()
         setPoints(freshPoints)
