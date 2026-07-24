@@ -38,9 +38,11 @@ export type MessageWithTimestamp = {
 }[keyof MessageType]
 export type Message = Omit<MessageWithTimestamp, "timestamp"> & Partial<Pick<MessageWithTimestamp, "timestamp">>
 
+// biome-ignore-start lint/style/useNamingConvention: used for type safety
 export type EncodedAssembly = Uint8Array & { __: "encodedassembly" }
 export type RemoteSceneObjectId = number & { __: "remotesceneobject" | "sceneobjectkey" }
 export type LocalSceneObjectId = number & { __: "localsceneobject" | "sceneobjectkey" }
+// biome-ignore-end lint/style/useNamingConvention: used for type safety
 
 export type ClientInfo = {
     displayName: string

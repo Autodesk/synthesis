@@ -132,7 +132,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
                         targetControls.focusProvider = mirabufSceneObject
                     }
-                    closeModal(CloseType.Overwrite)
+                    closeModal(CloseType.OVERWRITE)
                 } else {
                     globalOpenModal(ImportLocalMirabufModal, {
                         configurationType: miraTypeToConfigType(miraType),
@@ -155,7 +155,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedFile, miraType, isUrdf, openPanel, modal, closeModal, configureScreen])
+    }, [selectedFile, miraType, openPanel, modal, closeModal, configureScreen])
 
     useEffect(() => {
         setSelectedType(configTypeToMiraType(configurationType))

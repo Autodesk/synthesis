@@ -324,7 +324,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                     setTimeout(async () => {
                         const { default: MatchModeConfigPanelComponent } = await import("./MatchModeConfigPanel")
                         openPanel(MatchModeConfigPanelComponent, undefined)
-                        closePanel(panel!.id, CloseType.Overwrite)
+                        closePanel(panel!.id, CloseType.OVERWRITE)
                     }, 0)
 
                     const matchEvent = createMatchEventFromConfig(validatedConfig, { isDefault: undefined })

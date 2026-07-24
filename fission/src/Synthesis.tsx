@@ -25,7 +25,7 @@ import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
 
-function Synthesis() {
+const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
     const mainLoopHandle = useRef(0)
@@ -42,6 +42,7 @@ function Synthesis() {
 
         mainLoop()
     }
+
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
         if (urlParams.has("code")) {
