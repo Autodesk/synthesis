@@ -143,24 +143,24 @@ export interface ConfigurePanelCustomProps {
     configurationType?: ConfigurationType
 }
 const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
-    [ConfigMode.JOINT_SUBSYSTEMS]: ConfigureSubsystemsInterface, // DONE
-    [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface, // DONE
-    [ConfigMode.INTAKE]: ConfigureGamepiecePickupInterface, // DONE
-    [ConfigMode.CONTROLS]: ControlsConfigInterface, // TEST
-    [ConfigMode.JOINT_SEQUENCE]: SequentialBehaviorsInterface, // DONE
-    [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface, // DONE
-    [ConfigMode.PROTECTED_ZONES]: ConfigureProtectedZonesInterface, // DONE
-    [ConfigMode.CAMERA_POINTS]: ConfigureCameraPointsInterface, // DONE
-    [ConfigMode.MOVE]: MoveInterface, // DONE
-    [ConfigMode.SIM]: SimulationInterface, // DONE
-    [ConfigMode.BRAIN]: BrainSelectionInterface, // DONE
-    [ConfigMode.DRIVETRAIN]: DrivetrainSelectionInterface, // DONE
-    [ConfigMode.ALLIANCE]: AllianceSelectionInterface, // DONE
-    [ConfigMode.METADATA]: MetadataConfigInterface, // DONE
+    [ConfigMode.JOINT_SUBSYSTEMS]: ConfigureSubsystemsInterface,
+    [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface,
+    [ConfigMode.INTAKE]: ConfigureGamepiecePickupInterface,
+    [ConfigMode.CONTROLS]: ControlsConfigInterface,
+    [ConfigMode.JOINT_SEQUENCE]: SequentialBehaviorsInterface,
+    [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
+    [ConfigMode.PROTECTED_ZONES]: ConfigureProtectedZonesInterface,
+    [ConfigMode.CAMERA_POINTS]: ConfigureCameraPointsInterface,
+    [ConfigMode.MOVE]: MoveInterface,
+    [ConfigMode.SIM]: SimulationInterface,
+    [ConfigMode.BRAIN]: BrainSelectionInterface,
+    [ConfigMode.DRIVETRAIN]: DrivetrainSelectionInterface,
+    [ConfigMode.ALLIANCE]: AllianceSelectionInterface,
+    [ConfigMode.METADATA]: MetadataConfigInterface,
 }
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
-    const { configureScreen, closePanel } = useUIContext()
+    const { configureScreen, closePanel, addToast, openModal } = useUIContext()
     const {
         configMode: initialConfigMode,
         selectedAssembly: initialSelectedAssembly,
@@ -231,13 +231,23 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         [confirmCallbacks, cancelCallbacks]
     )
 
+    const onClose = useCallback(
+        async (closeType: CloseType) => {
+            if (closeType == CloseType.Overwrite && hasMadeChanges) {
+                await onBeforeAccept()
+                addToast("info", "Configuration saved")
+            }
+        },
+        [addToast, hasMadeChanges, onBeforeAccept]
+    )
+
     useEffect(() => {
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
-            { onBeforeAccept, onCancel }
+            { title: "Configure Assets", acceptText: "Save", cancelText: hasMadeChanges ? "Revert" : "Cancel" },
+            { onBeforeAccept, onCancel, onClose }
         )
-    }, [onBeforeAccept, onCancel, configureScreen, panel])
+    }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges])
 
     const modes = useMemo(() => {
         if (configurationType == "FIELDS") {
