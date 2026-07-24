@@ -4,7 +4,6 @@ import MatchResume from "@/assets/sound-files/MatchResume.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import EventSystem from "@/systems/EventSystem.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import World from "@/systems/World.ts"
 import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
@@ -141,7 +140,7 @@ class MatchMode {
             World.getOwnRobots().forEach(obj => obj.moveToSpawnLocation())
         }
         this.autonomousModeStart()
-        ScoreTracker.resetScores()
+        World.scoreTracker.resetScores()
         RobotDimensionTracker.matchStart()
 
         const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
@@ -164,7 +163,7 @@ class MatchMode {
         this._initialTime = 0
         this._timeLeft = 0
         EventSystem.dispatch("TimeChangedEvent", { time: this._timeLeft })
-        ScoreTracker.resetScores()
+        World.scoreTracker.resetScores()
     }
 
     isMatchEnabled(): boolean {
