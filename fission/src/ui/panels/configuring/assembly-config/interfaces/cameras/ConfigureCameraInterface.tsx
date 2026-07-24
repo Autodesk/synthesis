@@ -84,6 +84,7 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                         onClick={() => {
                             const nextId = cameras.reduce((max, c) => Math.max(max, c.id + 1), 0)
                             cameras.push(defaultCameraPreferences(nextId))
+                            setSelectedCamera(cameras.at(-1)!) // should be safe since we just added one
                             selectedRobot.updateCameras()
                             forceRender()
                         }}

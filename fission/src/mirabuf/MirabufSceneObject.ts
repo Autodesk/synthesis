@@ -1294,6 +1294,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 name: "Camera Preview",
                 screen: CameraPreviewPanel,
                 type: "panel",
+                customProps: {
+                    selectedAssembly: this
+                }
             })
         }
 

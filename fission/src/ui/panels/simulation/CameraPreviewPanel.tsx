@@ -1,24 +1,29 @@
 import type React from "react"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import RobotCameraSceneObject from "@/mirabuf/RobotCameraSceneObject"
 import EventSystem from "@/systems/EventSystem"
-import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { Button } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-
-function resolveCameras(): RobotCameraSceneObject[] {
-    return World.sceneRenderer.mirabufSceneObjects.getRobots().flatMap(r => [...r.cameras])
-}
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 const BOX_W = 480
 const BOX_H = 360
 const PANEL_WIDTH = BOX_W + 40
 const PANEL_HEIGHT = `min(${BOX_H + 200}px, 85vh)`
 
-const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+interface CameraPreviewPanelProps {
+    selectedAssembly: MirabufSceneObject
+}
+
+const CameraPreviewPanel: React.FC<PanelImplProps<void, CameraPreviewPanelProps>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
+
+    const { selectedAssembly } = panel!.props.custom
+
+    const resolveCameras = useCallback(() => [...selectedAssembly.cameras], [selectedAssembly])
+
     const previewRef = useRef<HTMLDivElement | null>(null)
     const [cameras, setCameras] = useState<RobotCameraSceneObject[]>(resolveCameras)
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -43,7 +48,7 @@ const CameraPreviewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         return () => RobotCameraSceneObject.removePreviewConsumer()
     }, [])
 
-    useEffect(() => EventSystem.listen("RobotCamerasChangeEvent", () => setCameras(resolveCameras())), [])
+    useEffect(() => EventSystem.listen("RobotCamerasChangeEvent", () => setCameras(resolveCameras())), [resolveCameras])
 
     const index = Math.min(selectedIndex, Math.max(0, cameras.length - 1))
     const selected = cameras[index]
