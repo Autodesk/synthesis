@@ -14,7 +14,7 @@ pub enum ClientToServerMessage {
     },
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, ts_rs::TS)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]
 #[serde(tag = "type", rename_all = "lowercase")]
 #[ts(export)]
 pub enum ServerMessage {
@@ -26,11 +26,11 @@ pub enum ServerMessage {
 /// The second least significant bit deserves love too
 #[repr(u8)]
 pub enum MessagePrefix {
-    Client = 0b00000001,
-    Server = 0b00000011,
+    Client = 0b0000_0001,
+    Server = 0b0000_0011,
 }
 
-pub fn serialize_messagepack<'a, M>(message: M) -> Vec<u8>
+pub fn serialize_messagepack<M>(message: M) -> Vec<u8>
 where
     M: Serialize,
 {
@@ -42,5 +42,5 @@ where
     B: Deref<Target = [u8]> + 'de,
     S: Deserialize<'de>,
 {
-    rmp_serde::from_slice(&data).ok()
+    rmp_serde::from_slice(data).ok()
 }

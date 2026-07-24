@@ -24,7 +24,7 @@ pub struct State {
 
 impl State {
     pub fn new() -> Self {
-        State {
+        Self {
             users: HashMap::new(),
             rooms: RoomMap::new(),
             system_log: VecDeque::new(),
@@ -112,29 +112,26 @@ impl State {
     }
 
     fn get_room_of_client(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
-        let Some(room_id) = self.users.get(&client_id) else {
+        let Some(room_id) = self.users.get(client_id) else {
             warn!(self, "Attempted to get client that does not exist");
             return None;
         };
 
-        let Some(room) = self.rooms.map.get_mut(room_id) else {
-            return None;
-        };
+        let room = self.rooms.map.get_mut(room_id)?;
 
         Some((room_id.clone(), room))
     }
 
     pub fn get_senders_from_user_room(&mut self, client_id: ClientId) -> Vec<ClientSender> {
-        match self.get_room_of_client(&client_id).map(|a| a.1) {
-            Some(room) => room.get_senders(Some(&client_id)),
-            None => Vec::new(),
-        }
+        self.get_room_of_client(&client_id)
+            .map(|a| a.1)
+            .map_or_else(Vec::new, |room| room.get_senders(Some(&client_id)))
     }
 
     /// Flips whether new clients can join `room_id`.
     /// Returns the new locked state, or `None` if the room does not exist.
-    pub fn toggle_room_lock(&mut self, room_id: RoomId) -> Option<bool> {
-        let room = self.rooms.map.get_mut(&room_id)?;
+    pub fn toggle_room_lock(&mut self, room_id: &RoomId) -> Option<bool> {
+        let room = self.rooms.map.get_mut(room_id)?;
         room.locked = !room.locked;
         let locked = room.locked;
 
@@ -182,12 +179,12 @@ impl State {
             .map
             .values()
             .filter_map(|room| room.authority)
-            .map(|auth| format!("{}'s room", auth))
+            .map(|auth| format!("{auth}'s room"))
             .collect()
     }
 
     /// Record a server-wide event
-    pub fn log_generic(&mut self, msg: String, kind: EventType) {
+    pub fn log_generic(&mut self, msg: &str, kind: EventType) {
         let event = Event {
             kind,
             message: format!("{}  {msg}", timestamp()),
@@ -275,7 +272,7 @@ impl RoomMap {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 pub enum RoomStatus {
     Closed,
     Open,
@@ -308,7 +305,7 @@ impl Room {
             .map(|client| client.tx.clone())
     }
 
-    fn log_generic(&mut self, msg: String, kind: EventType) {
+    fn log_generic(&mut self, msg: &str, kind: EventType) {
         let event = Event {
             kind,
             message: format!("{}  {msg}", timestamp()),
@@ -347,8 +344,8 @@ pub struct Client {
 }
 
 impl Client {
-    fn new(id: ClientId, name: String, tx: ClientSender) -> Self {
-        Client { id, name, tx }
+    const fn new(id: ClientId, name: String, tx: ClientSender) -> Self {
+        Self { id, name, tx }
     }
 }
 

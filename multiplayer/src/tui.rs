@@ -12,6 +12,7 @@
 
 use crate::room::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
 
+use std::fmt::Write;
 use std::sync::{Arc, Mutex};
 use std::{io, time::Duration};
 
@@ -58,12 +59,11 @@ fn run_app(terminal: &mut DefaultTerminal, state: Arc<Mutex<State>>) -> io::Resu
         terminal.draw(|frame| ui(frame, &app, &snapshot))?;
 
         // Poll so the view refreshes with live activity even without input.
-        if event::poll(Duration::from_millis(250))? {
-            if let Event::Key(key) = event::read()? {
-                if key.kind == KeyEventKind::Press {
-                    app.on_key(key.code, key.modifiers);
-                }
-            }
+        if event::poll(Duration::from_millis(250))?
+            && let Event::Key(key) = event::read()?
+            && key.kind == KeyEventKind::Press
+        {
+            app.on_key(key.code, key.modifiers);
         }
 
         if app.should_quit {
@@ -93,7 +93,7 @@ struct App {
 }
 
 impl App {
-    fn new(state: Arc<Mutex<State>>) -> Self {
+    const fn new(state: Arc<Mutex<State>>) -> Self {
         Self {
             state,
             tab: 0,
@@ -133,7 +133,7 @@ impl App {
 
         let focused = &snapshot.rooms[base + self.focused_panel];
         self.focused_room = Some(focused.id.clone());
-        self.focused_members = focused.members.clone();
+        self.focused_members.clone_from(&focused.members);
 
         if self.focused_members.is_empty() {
             self.selected_user = 0;
@@ -146,13 +146,13 @@ impl App {
         // While a kick is pending, only y/n/esc are meaningful.
         if self.pending_kick.is_some() {
             match code {
-                KeyCode::Char('y') | KeyCode::Char('Y') => {
+                KeyCode::Char('y' | 'Y') => {
                     if let Some(user_id) = self.pending_kick.take() {
                         self.state.lock().unwrap().kick(user_id);
                         self.selected_user = self.selected_user.saturating_sub(1);
                     }
                 }
-                KeyCode::Char('n') | KeyCode::Char('N') | KeyCode::Esc => {
+                KeyCode::Char('n' | 'N') | KeyCode::Esc => {
                     self.pending_kick = None;
                 }
                 _ => {}
@@ -180,7 +180,7 @@ impl App {
             }
             KeyCode::Char('l') => {
                 if let Some(room_id) = &self.focused_room {
-                    self.state.lock().unwrap().toggle_room_lock(room_id.clone());
+                    self.state.lock().unwrap().toggle_room_lock(room_id);
                 }
             }
             _ => {}
@@ -227,7 +227,7 @@ fn render_tabs(frame: &mut Frame, area: Rect, app: &App, snapshot: &Snapshot) {
             let base = t * ROOMS_PER_TAB;
             let mut label = format!("Room {}", snapshot.rooms[base].id);
             if let Some(r) = snapshot.rooms.get(base + 1) {
-                label.push_str(&format!(" / {}", r.id));
+                write!(&mut label, " / {}", r.id).expect("Failed to write to string");
             }
             Line::from(label)
         })
@@ -324,13 +324,14 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
         let (i, (uid, name)) = member_and_idx;
         // This totally could happen but like that would probably be a bug so whatever
         let color = COLOR_PALETTE[i % COLOR_PALETTE_SIZE];
-        let auth_marker = match Some(uid) == room.authority.as_ref() {
-            true => "  [A]",
-            false => "",
+        let auth_marker = if Some(*uid) == room.authority {
+            "  [A]"
+        } else {
+            ""
         };
         let uid = &uid.to_string()[0..8];
 
-        let label = format!("{} ({}){}", uid, name, auth_marker);
+        let label = format!("{uid} ({name}){auth_marker}");
         ListItem::new(label).style(Style::new().fg(color))
     };
 

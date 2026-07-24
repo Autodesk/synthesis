@@ -13,7 +13,7 @@ pub struct Prefixed<S> {
 }
 
 impl<S> Prefixed<S> {
-    pub fn new(prefix: Vec<u8>, inner: S) -> Self {
+    pub const fn new(prefix: Vec<u8>, inner: S) -> Self {
         Self {
             prefix: Cursor::new(prefix),
             inner,
@@ -27,7 +27,7 @@ impl<S: AsyncRead + Unpin> AsyncRead for Prefixed<S> {
         cx: &mut Context<'_>,
         buf: &mut ReadBuf<'_>,
     ) -> Poll<std::io::Result<()>> {
-        let pos = self.prefix.position() as usize;
+        let pos = usize::try_from(self.prefix.position()).expect("32-bit machines not supported");
         let data = self.prefix.get_ref();
         if pos < data.len() {
             let n = (data.len() - pos).min(buf.remaining());

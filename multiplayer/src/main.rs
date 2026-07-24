@@ -56,7 +56,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env::args().enumerate().for_each(|(i, arg)| {
         if arg == "--port" {
             let value = env::args().nth(i + 1);
-            let parsed = value.map(|n| n.parse().ok()).flatten();
+            let parsed = value.and_then(|n| n.parse().ok());
             if let Some(p) = parsed {
                 port = p;
             }
@@ -98,10 +98,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         tokio::spawn(async move {
             match acceptor.accept(stream).await {
                 Ok(tls_stream) => handle_connection(state, tls_stream, addr).await,
-                Err(e) => {
-                    error_lock!(state, "Secure connection with client failed {}", e);
-                    return;
-                }
+                Err(e) => error_lock!(state, "Secure connection with client failed {}", e),
             }
         });
     }
@@ -179,6 +176,7 @@ where
                 let mut guard = state.lock().unwrap();
                 warn!(guard, "Connection with {client_id} closed");
                 guard.remove_client(client_id);
+                drop(guard);
 
                 return;
             }
@@ -211,7 +209,7 @@ where
     loop {
         match parse_first_message(state.clone(), read, addr).await {
             Some(ClientToServerMessage::RequestRooms) => {
-                handle_room_list_request(state.clone(), write).await
+                handle_room_list_request(state.clone(), write).await;
             }
 
             // When they ask to initialize a connection, then we add them to a room

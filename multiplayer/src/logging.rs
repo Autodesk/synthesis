@@ -5,22 +5,22 @@ use ratatui::{
 
 #[macro_export]
 macro_rules! info {
-    ($room_or_state:ident, $($arg:tt)*) => {
-        $room_or_state.log_generic(format!($($arg)*), EventType::Info)
+    ($room_or_state:expr, $($arg:tt)*) => {
+        $room_or_state.log_generic(&format!($($arg)*), EventType::Info)
     }
 }
 
 #[macro_export]
 macro_rules! warn {
-    ($room_or_state:ident, $($arg:tt)*) => {
-        $room_or_state.log_generic(format!($($arg)*), EventType::Warning)
+    ($room_or_state:expr, $($arg:tt)*) => {
+        $room_or_state.log_generic(&format!($($arg)*), EventType::Warning)
     }
 }
 
 #[macro_export]
 macro_rules! error {
-    ($room_or_state:ident, $($arg:tt)*) => {
-        $room_or_state.log_generic(format!($($arg)*), EventType::Error)
+    ($room_or_state:expr, $($arg:tt)*) => {
+        $room_or_state.log_generic(&format!($($arg)*), EventType::Error)
     }
 }
 
@@ -28,8 +28,7 @@ macro_rules! error {
 #[macro_export]
 macro_rules! info_lock {
     ($state:ident, $($arg:tt)*) => {{
-        let mut guard = $state.lock().unwrap();
-        info!(guard, $($arg)*);
+        info!($state.lock().unwrap(), $($arg)*);
     }};
 }
 
@@ -37,8 +36,7 @@ macro_rules! info_lock {
 #[macro_export]
 macro_rules! warn_lock {
     ($state:ident, $($arg:tt)*) => {{
-        let mut guard = $state.lock().unwrap();
-        warn!(guard, $($arg)*);
+        warn!($state.lock().unwrap(), $($arg)*);
     }};
 }
 
@@ -46,8 +44,7 @@ macro_rules! warn_lock {
 #[macro_export]
 macro_rules! error_lock {
     ($state:ident, $($arg:tt)*) => {{
-        let mut guard = $state.lock().unwrap();
-        error!(guard, $($arg)*);
+        error!($state.lock().unwrap(), $($arg)*);
     }};
 }
 
@@ -67,9 +64,9 @@ pub struct Event {
 impl From<EventType> for Style {
     fn from(value: EventType) -> Self {
         match value {
-            EventType::Info => Style::new().white(),
-            EventType::Warning => Style::new().yellow(),
-            EventType::Error => Style::new().red(),
+            EventType::Info => Self::new().white(),
+            EventType::Warning => Self::new().yellow(),
+            EventType::Error => Self::new().red(),
         }
     }
 }
