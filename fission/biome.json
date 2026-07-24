@@ -70,7 +70,7 @@
         "noNamespace": "error",
         "useArrayLiterals": "error",
         "useAsConstAssertion": "error",
-        "useComponentExportOnlyModules": "off",
+        "useComponentExportOnlyModules": "warn",
         "useImportType": "warn",
         "useNamingConvention": {
           "level": "error",
