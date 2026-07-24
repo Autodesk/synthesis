@@ -9,22 +9,15 @@ export enum ProgressHandleStatus {
 }
 
 export class ProgressHandle {
-    private _handleId: number
-    private _title: string
+    public readonly handleId: number
+    public readonly title: string
     public message: string = ""
     public progress: number = 0.0
     public status: ProgressHandleStatus = ProgressHandleStatus.IN_PROGRESS
 
-    public get handleId() {
-        return this._handleId
-    }
-    public get title() {
-        return this._title
-    }
-
     public constructor(title: string) {
-        this._handleId = nextHandleId++
-        this._title = title
+        this.handleId = nextHandleId++
+        this.title = title
 
         this.push()
     }
@@ -51,3 +44,10 @@ export class ProgressHandle {
         EventSystem.dispatch("ProgressEvent", this)
     }
 }
+
+export const URDFImportProgressBar = {
+    LOAD_MESHES: 0.2,
+    BUILD_PARTS: 0.7,
+    BUILD_HIERARCHY: 0.8,
+    MIRABUF_INSTANCE: 0.85,
+} as const satisfies Record<string, number>
