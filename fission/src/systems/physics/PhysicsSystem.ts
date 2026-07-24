@@ -352,6 +352,9 @@ class PhysicsSystem extends WorldSystem {
         return body
     }
 
+    /**
+     * Only used in testing
+     */
     public addBodyToSystem(bodyId: Jolt.BodyID, shouldActivate: boolean) {
         this._joltBodyInterface.AddBody(
             bodyId,
@@ -1122,12 +1125,6 @@ class PhysicsSystem extends WorldSystem {
         })
 
         if (newBodies.size() > 0) {
-            // This resets the structure of the tree before adding new bodies
-            // Otherwise the old structure will persist and if enough new bodies are spawned, the broadphase tree will still run out of internal nodes
-            // This doesn't feel like this should be the case, but based on my own testing, it is.
-            // This is also a really expensive call, so we should probably figure out a way to run it on a different thread, when we switch to multithreaded Jolt
-            this._joltPhysSystem.OptimizeBroadPhase()
-
             const data = newBodies.data()
             const size = newBodies.size()
             const addState = this._joltBodyInterface.AddBodiesPrepare(data, size)
