@@ -6,7 +6,6 @@ import { applyWheelAssignments, type WheelAssignment } from "@/mirabuf/WheelJoin
 import EventSystem from "@/systems/EventSystem.ts"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import { downloadFullAssemblyJson } from "@/util/DebugAssemblyDump"
 import {
     computeWheelAxisFromAABB,
     computeWheelAxisFromCircleFit,
@@ -28,12 +27,7 @@ interface BatchedMeshRangeApi {
     getGeometryRangeAt?: (geometryId: number, target?: object) => { vertexStart: number; vertexCount: number }
 }
 
-/**
- * Returns every local-space vertex belonging to just this one part's slice of a (possibly shared)
- * BatchedMesh buffer, using the public getGeometryIdAt/getGeometryRangeAt range API so we don't pull in
- * vertices from unrelated parts merged into the same batch. Falls back to the whole geometry for a
- * plain (non-batched) mesh.
- */
+/** Local-space vertices for just this part's slice of a shared BatchedMesh buffer; whole geometry otherwise. */
 function getPartLocalVertices(object: THREE.Object3D, instanceId: number): THREE.Vector3[] | undefined {
     const mesh = object as THREE.Mesh
     const position = mesh.geometry?.getAttribute("position")
@@ -67,12 +61,12 @@ interface HoverHighlight {
     instanceId: number
 }
 
-/** Tint applied to the part currently under the cursor so the user can see what a click will select. */
+/** Tint for the part under the cursor. */
 const HOVER_HIGHLIGHT_COLOR = new THREE.Color(2.2, 1.6, 0.2)
-/** BatchedMesh instance colors default to this (see BatchedMesh._initColorsTexture); used to un-tint on hover-out. */
+/** Default BatchedMesh instance color; used to un-tint. */
 const DEFAULT_INSTANCE_COLOR = new THREE.Color(1, 1, 1)
 
-/** Reused across every pickPart() call instead of allocating a new Raycaster/Vector2 per mouse move. */
+/** Reused across picks to avoid reallocating. */
 const _raycaster = new THREE.Raycaster()
 const _ndc = new THREE.Vector2()
 
@@ -81,14 +75,7 @@ interface PickIndexEntry {
     guid: string
 }
 
-/**
- * Test-scope interaction mode for the "select a circular edge to place a wheel joint" mechanism.
- *
- * Flow per wheel: click the wheel's rim edge (fits a circle -> origin/axis/radius); the assembly's
- * grounded/root part is used as the parent/chassis automatically. Repeats indefinitely, accumulating
- * pending assignments. apply() mutates the affected assembly/assemblies and fully rebuilds their
- * MirabufSceneObjects -- no partial/live patching of physics bodies, no persistence.
- */
+/** Interaction mode: click a wheel's rim to fit a joint axis, using the assembly's grounded part as parent. */
 class WheelAssignmentMode extends WorldSystem {
     private _enabled = false
     private _pending: PendingAssignment[] = []
@@ -99,8 +86,7 @@ class WheelAssignmentMode extends WorldSystem {
     private _latestMousePos: [number, number] | undefined
     private _lastProcessedMousePos: [number, number] | undefined
 
-    // Rebuilt on enable and after apply(); avoids re-flattening batches and re-scanning every part's mesh
-    // entries on every single mouse-move raycast (was O(total mesh entries) per pick).
+    // Rebuilt on enable and after apply() to avoid rescanning every mesh entry per raycast.
     private _candidateBatches: THREE.BatchedMesh[] = []
     private _pickIndex = new Map<THREE.BatchedMesh, Map<number, PickIndexEntry>>()
 
@@ -187,12 +173,7 @@ class WheelAssignmentMode extends WorldSystem {
         this._pickIndex = new Map()
     }
 
-    /**
-     * Flattens all scene objects' batches and mesh-entry GUID maps into flat lookup structures once,
-     * instead of re-deriving them on every raycast. Must be re-run whenever the set of registered scene
-     * objects or their batches changes while this mode is active (currently: on enable, and after apply()
-     * rebuilds the affected assemblies).
-     */
+    /** Flattens scene objects' batches and mesh-entry GUIDs into lookup structures for pickPart(). */
     private rebuildPickIndex(): void {
         this._candidateBatches = []
         this._pickIndex = new Map()
@@ -234,7 +215,7 @@ class WheelAssignmentMode extends WorldSystem {
         return { sceneObject: resolved.sceneObject, guid: resolved.guid, object, instanceId }
     }
 
-    /** Tints whatever part is currently under the cursor so the user can preview what a click will pick. */
+    /** Tints the part under the cursor. */
     private updateHover(mousePos: [number, number]): void {
         const pick = this.pickPart(mousePos)
         if (!pick) {
@@ -284,16 +265,11 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        // Use the part's assembly-space transform (the frame PhysicsSystem/WheelJointBuilder expect joint
-        // origins in), not the live scene's rendered matrix -- that includes the mechanism's current
-        // physics-body world transform (spawn placement + gravity settling of the single fused pre-split
-        // body), which would bake an incidental vertical offset into the permanently-stored joint origin.
+        // Assembly-space transform, not the live scene matrix (which bakes in the physics body's world transform).
         const assemblySpaceTransform = pick.sceneObject.mirabufInstance.parser.globalTransforms.get(pick.guid)!
         const worldAxisFit = transformWheelAxis(localAxisFit, assemblySpaceTransform)
 
-        // The grounded/root part is already the chassis reference MirabufParser's rigid-node split uses
-        // for the whole assembly, so it doubles as the parent for a manually-picked wheel -- no second
-        // click needed. Only correct for a single static chassis with no other moving sub-mechanisms.
+        // Grounded/root part doubles as the parent -- no second click needed.
         const groundedInstance =
             pick.sceneObject.mirabufInstance.parser.assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
         const parentPartGuid = groundedInstance.parts!.nodes!.at(0)!.value!
@@ -319,8 +295,7 @@ class WheelAssignmentMode extends WorldSystem {
     public async apply(): Promise<void> {
         if (this._pending.length === 0) return
 
-        // The hovered mesh's owning scene object may be one of the ones rebuilt below, which destroys its
-        // batches -- clear while the mesh is still valid so _hover can't end up pointing at a dead one.
+        // Clear before rebuild destroys the hovered mesh's batches.
         this.clearHover()
 
         const bySceneObject = new Map<MirabufSceneObject, WheelAssignment[]>()
@@ -345,59 +320,18 @@ class WheelAssignmentMode extends WorldSystem {
             World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
 
             const parser = rebuilt.mirabufInstance.parser
-            if (parser.errors.length > 0) {
-                console.warn(`[WheelAssignmentMode] Parser reported errors after rebuild:`, parser.errors)
-            }
 
             let hadMismatch = false
             for (const assignment of assignments) {
                 const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
                 const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
-                if (!wheelNode || !parentNode) {
-                    console.error(
-                        `[WheelAssignmentMode] No rigid node found for the wheel and/or parent part.`,
-                        `wheel=${assignment.wheelPartGuid} (node=${wheelNode?.id})`,
-                        `parent=${assignment.parentPartGuid} (node=${parentNode?.id})`
-                    )
-                    continue
-                }
+                if (!wheelNode || !parentNode) continue
                 if (wheelNode.id !== parentNode.id) continue
                 hadMismatch = true
-
-                // Diagnostics: figure out *why* they merged -- which other pending assignments' parts
-                // (if any) also ended up in this same node, since MirabufParser processes every joint's
-                // ancestral break in insertion order and a later one can move an ancestor tree-node that
-                // an earlier wheel's split was relying on.
-                const mergedNode = wheelNode
-                const otherAssignmentPartsInNode = assignments
-                    .filter(other => other !== assignment)
-                    .flatMap(other => [
-                        mergedNode.parts.has(other.wheelPartGuid) && `wheel:${other.wheelPartGuid}`,
-                        mergedNode.parts.has(other.parentPartGuid) && `parent:${other.parentPartGuid}`,
-                    ])
-                    .filter((x): x is string => Boolean(x))
-
-                console.error(
-                    `[WheelAssignmentMode] Wheel and parent ended up in the same rigid node.`,
-                    `nodeId=${mergedNode.id}`,
-                    `nodeSize=${mergedNode.parts.size}`,
-                    `wheel=${assignment.wheelPartGuid}`,
-                    `parent=${assignment.parentPartGuid}`,
-                    `otherPendingAssignmentPartsInThisNode=${JSON.stringify(otherAssignmentPartsInNode)}`,
-                    `allPartsInNode=`,
-                    [...mergedNode.parts]
-                )
             }
 
             if (hadMismatch) {
-                const filename = `wheel-assignment-debug_${assembly.info?.name ?? sceneId}_${Date.now()}.json`
-                downloadFullAssemblyJson(assembly, filename)
-                console.error(`[WheelAssignmentMode] Downloaded full assembly JSON for analysis: ${filename}`)
-                globalAddToast(
-                    "warning",
-                    "Wheel Assignment",
-                    "Wheel and parent ended up in the same rigid node -- downloaded full assembly JSON for debugging."
-                )
+                globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
             }
         }
 
@@ -405,8 +339,7 @@ class WheelAssignmentMode extends WorldSystem {
         EventSystem.dispatch("WheelAssignmentPendingCountChanged", { count: 0 })
         globalAddToast("success", "Wheel Assignment", "Applied wheel joints and rebuilt the affected assembly.")
 
-        // Rebuilt assemblies got new batches/instance ids -- the cached pick index would point at stale,
-        // now-destroyed meshes otherwise, and this mode may still be enabled for further picks.
+        // Rebuilt assemblies got new batches/instance ids; refresh the stale pick index.
         if (this._enabled) this.rebuildPickIndex()
     }
 }

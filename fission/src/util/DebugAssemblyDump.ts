@@ -3,26 +3,16 @@ import { downloadBlob } from "@/util/Utility"
 
 const TO_OBJECT_OPTIONS = { longs: String, enums: String, bytes: String }
 
-/**
- * Logs `label` + a plain-object value and its JSON.stringify'd form as two SEPARATE console.log calls.
- * Splitting each section of the assembly into its own small call (rather than one giant combined dump)
- * matters: some log-capture/export tools truncate an individual console argument once it crosses some
- * threshold regardless of the assembly's actual size -- observed truncating a small test robot's dump at
- * the exact same byte count as a much larger robot's. `partDefinitions` (mass/appearance/body GUIDs/mesh
- * metadata per part) was the main contributor to that size and isn't needed to diff joint/wheel/hierarchy
- * structure, so it's dropped entirely rather than merely shrunk.
- */
+/** Logs label + value as two separate console.log calls (value and its JSON form) to avoid truncation. */
 function logJson(label: string, value: unknown): void {
     console.log(`${label}:`, value)
     console.log(`${label} (JSON):`, JSON.stringify(value))
 }
 
-/**
- * Logs an assembly's joints container, design/joint hierarchy, and a lightweight part-instance summary
- * -- everything relevant to diffing wheel/joint structure between two robots -- while omitting
- * `partDefinitions` (mesh geometry, appearance, body GUIDs) entirely.
- */
-export function dumpAssemblyStructure(assembly: mirabuf.Assembly, label: string): void {
+/** Logs an assembly's joints, design/joint hierarchy, and a lightweight part-instance summary. */
+// @ts-expect-error unused, kept for ad-hoc debugging
+// biome-ignore lint/correctness/noUnusedVariables: kept for ad-hoc debugging
+function dumpAssemblyStructure(assembly: mirabuf.Assembly, label: string): void {
     if (assembly.data?.joints) {
         const joints = mirabuf.joint.Joints.toObject(assembly.data.joints as mirabuf.joint.Joints, TO_OBJECT_OPTIONS)
         logJson(`${label} -- assembly.data.joints`, joints)
@@ -53,13 +43,7 @@ export function dumpAssemblyStructure(assembly: mirabuf.Assembly, label: string)
     logJson(`${label} -- part instances (GUID/name/partDefinitionReference/joints only)`, partInstances)
 }
 
-/**
- * Replaces each body's raw triangleMesh vertex/normal/uv/index/color float arrays with just their
- * lengths, in place. For a real multi-part robot these arrays are the overwhelming majority of the
- * assembly's serialized size (millions of floats) and aren't needed to debug joint/rigid-node structure --
- * keeping them is what made JSON.stringify throw "RangeError: Invalid string length" on a complex
- * assembly. Everything else on partDefinitions (mass, appearance, body GUIDs, joint refs) is preserved.
- */
+/** Replaces each body's raw mesh vertex/normal/uv/index/color arrays with just their lengths, in place. */
 function stripMeshGeometry(assemblyObj: Record<string, unknown>): void {
     const defs = (assemblyObj.data as Record<string, unknown> | undefined)?.parts as Record<string, unknown> | undefined
     const partDefinitions = defs?.partDefinitions as Record<string, Record<string, unknown>> | undefined
@@ -81,14 +65,10 @@ function stripMeshGeometry(assemblyObj: Record<string, unknown>): void {
     }
 }
 
-/**
- * Serializes the whole assembly -- joints, rigidGroups, design/joint hierarchy, and every partDefinition's
- * metadata (mass, appearance, body GUIDs, joint refs) -- to a single downloaded .json file, with raw mesh
- * geometry stripped down to just array lengths (see stripMeshGeometry). Use this when console dumps aren't
- * enough to see the whole picture at once, e.g. cross-referencing rigidGroups/jointInstances/hierarchy/
- * part instances all against each other for one robot.
- */
-export function downloadFullAssemblyJson(assembly: mirabuf.Assembly, filename: string): void {
+/** Serializes the whole assembly to a downloaded .json file, with mesh geometry stripped to array lengths. */
+// @ts-expect-error unused, kept for ad-hoc debugging
+// biome-ignore lint/correctness/noUnusedVariables: kept for ad-hoc debugging
+function downloadFullAssemblyJson(assembly: mirabuf.Assembly, filename: string): void {
     const full = mirabuf.Assembly.toObject(assembly as mirabuf.Assembly, TO_OBJECT_OPTIONS) as Record<string, unknown>
     stripMeshGeometry(full)
 

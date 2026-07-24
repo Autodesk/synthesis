@@ -9,7 +9,7 @@ class SkidSteerDriveBehavior extends DriveBehavior {
     private readonly _rightWheels: WheelDriver[]
     private readonly _brainIndex: number
     public isArcade: boolean
-    // Debug-only: logs driveSpeeds() only on direction change, avoids flooding console at 60fps.
+    // Debug-only: logs driveSpeeds() only on direction change.
     private _lastLoggedLeft: number | undefined
     private _lastLoggedRight: number | undefined
 

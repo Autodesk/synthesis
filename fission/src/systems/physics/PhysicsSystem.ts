@@ -118,9 +118,7 @@ const DEFAULT_FRICTION = 0.7
 const SUSPENSION_MIN_FACTOR = 0.0001
 const SUSPENSION_MAX_FACTOR = 0.0001
 
-// Manually-assigned wheels (see getExplicitWheelRadius) need more suspension travel than
-// SUSPENSION_MAX_FACTOR: circle-fit origin has a few mm of error, and near-zero travel leaves no slack
-// to close that gap, so the wheel never touches ground. Native/WheelDetector wheels keep the thin factor.
+// Manually-assigned wheels need more suspension travel to tolerate circle-fit origin error.
 const MANUAL_WHEEL_SUSPENSION_MAX_FACTOR = 0.2
 
 // Wheels whose inferred radii fall within this relative tolerance of each other are treated as the
@@ -419,7 +417,7 @@ class PhysicsSystem extends WorldSystem {
 
         joints.forEach(([jointGuid, jointInst]) => {
             if (jointGuid == GROUNDED_JOINT_ID) return
-            // Structural-only, see WheelJointBuilder.addWheelSeparatorJoints -- never a real constraint.
+            // Structural-only separator joint, not a real constraint.
             if (jointGuid.startsWith(WHEEL_SEPARATOR_JOINT_PREFIX)) return
 
             const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
@@ -489,12 +487,6 @@ class PhysicsSystem extends WorldSystem {
                         const [bodyOne, bodyTwo] = parser.directedGraph.getAdjacencyList(rnA.id).length
                             ? [bodyA, bodyB]
                             : [bodyB, bodyA]
-
-                        console.log(
-                            `[PhysicsSystem] Wheel joint '${jointInst.info?.name}': ` +
-                                `chassisRn=${rnA.id}(${rnA.parts.size}pt) wheelRn=${rnB.id}(${rnB.parts.size}pt) ` +
-                                `chassisIsBodyOne=${bodyOne === bodyA} resolvedRadius=${wheelRadii.get(jointGuid)}`
-                        )
 
                         const [fixedConstraint, vehicleConstraint, vehicleListener, wheelForward] =
                             this.createWheelConstraint(
@@ -786,8 +778,7 @@ class PhysicsSystem extends WorldSystem {
             wheelDimensions.radius = resolvedRadius
         }
 
-        // Manual wheels carry explicit width too (getExplicitWheelWidth) -- AABB width reads the whole
-        // shared rigid body's axle-direction extent, easily many times the real tire width.
+        // Manual wheels carry explicit width too; AABB width would read the whole shared rigid body.
         const explicitWidth = getExplicitWheelWidth(jointDefinition)
         if (explicitWidth !== undefined) {
             wheelDimensions.width = explicitWidth
@@ -819,14 +810,6 @@ class PhysicsSystem extends WorldSystem {
             wheelSettings.mSuspensionDirection = urdfWheelBasis.suspensionDirection
             wheelSettings.mSteeringAxis = urdfWheelBasis.steeringAxis
         }
-
-        console.log(
-            `[PhysicsSystem] createWheelConstraint: pos=(${wheelPos.GetX().toFixed(3)},${wheelPos.GetY().toFixed(3)},${wheelPos.GetZ().toFixed(3)}) ` +
-                `radius=${wheelDimensions.radius.toFixed(4)} simRadius=${simulatedRadius.toFixed(4)} width=${wheelDimensions.width.toFixed(4)} ` +
-                `isManualWheel=${isManualWheel} suspensionMaxLength=${wheelSettings.mSuspensionMaxLength.toFixed(6)} ` +
-                `hasUrdfBasis=${!!urdfWheelBasis} forward=${urdfWheelBasis ? `(${urdfWheelBasis.forward.GetX()},${urdfWheelBasis.forward.GetY()},${urdfWheelBasis.forward.GetZ()})` : "n/a"} ` +
-                `maxAcc=${maxAcc} bodyMainMotionType=${bodyMain.GetMotionType()} bodyWheelMotionType=${bodyWheel.GetMotionType()}`
-        )
 
         JOLT.destroy(axis)
         JOLT.destroy(unitAxis)
@@ -1135,12 +1118,6 @@ class PhysicsSystem extends WorldSystem {
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
                 body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
-
-                console.log(
-                    `[PhysicsSystem] Body created for rn=${rn.id}: ${rn.parts.size} part(s), ${shapesAdded} shape(s), ` +
-                        `totalMass=${totalMass}, appliedMass=${shape.GetMassProperties().mMass}, ` +
-                        `isDynamic=${rn.isDynamic}, parts=${JSON.stringify([...rn.parts])}`
-                )
 
                 // Set Friction Here
                 let staticFriction = 0.0

@@ -4,10 +4,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
 import Label from "./Label"
 
-/**
- * Throwaway dev-only panel for testing the manual wheel-joint-placement mechanism: toggles the
- * pick-a-wheel interaction loop and applies the accumulated pending assignments.
- */
+/** Throwaway dev-only panel for testing manual wheel-joint placement. */
 const WheelAssignmentDebugPanel: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
     const [pendingCount, setPendingCount] = useState<number>(0)

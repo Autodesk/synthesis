@@ -1,7 +1,6 @@
 import * as THREE from "three"
 
-/** A wheel's rotation axis, pivot origin, radius, and axle-direction width, in the local space of
- *  whatever point set they were derived from. */
+/** A wheel's rotation axis, pivot origin, radius, and axle-direction width. */
 export interface WheelAxis {
     center: THREE.Vector3
     axis: THREE.Vector3
@@ -9,8 +8,7 @@ export interface WheelAxis {
     width: number
 }
 
-/** Any unit vector perpendicular to `axis` -- used to carry a radius through a transform without
- *  assuming uniform scale (see transformWheelAxis). */
+/** Any unit vector perpendicular to axis. */
 function anyPerpendicular(axis: THREE.Vector3): THREE.Vector3 {
     const helper = Math.abs(axis.x) < 0.9 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0)
     return helper.cross(axis).normalize()
@@ -18,8 +16,7 @@ function anyPerpendicular(axis: THREE.Vector3): THREE.Vector3 {
 
 const LOCAL_AXES = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)]
 
-/** Index (0/1/2 -> x/y/z) of a part's local-space AABB's smallest extent -- the axle direction, since a
- *  wheel is thin along its axle and wide in the wheel plane. */
+/** Index of the AABB's smallest extent -- the axle direction. */
 function axleIndexFromAABB(points: THREE.Vector3[]): number {
     const bbox = new THREE.Box3().setFromPoints(points)
     const size = bbox.getSize(new THREE.Vector3())
@@ -32,18 +29,7 @@ function axleIndexFromAABB(points: THREE.Vector3[]): number {
     return axleIndex
 }
 
-/**
- * Derives a wheel's rotation axis and origin from a part's local-space AABB: a wheel is thin along its
- * axle and wide in the wheel plane, so the AABB's smallest extent picks out the axle direction and the
- * AABB center approximates the hub. Mirrors the assumption URDFWheelPhysics.inferWheelDimensionsFromAxle
- * already makes in the other direction (axis known, infer radius from AABB) -- here the axis is unknown,
- * so we start from geometry instead.
- *
- * Kept as the naive baseline: the AABB center only coincides with the true rotation axis when the part
- * is symmetric about that axis in the plane perpendicular to it, which real wheel/tire meshes generally
- * aren't (tread patterns, hub bosses, off-center bolt circles). See computeWheelAxisFromCircleFit for the
- * replacement that doesn't share this bias.
- */
+/** Derives a wheel's rotation axis and origin from its AABB. Naive baseline; see computeWheelAxisFromCircleFit. */
 export function computeWheelAxisFromAABB(points: THREE.Vector3[]): WheelAxis | undefined {
     if (points.length === 0) return undefined
 
@@ -62,17 +48,13 @@ export function computeWheelAxisFromAABB(points: THREE.Vector3[]): WheelAxis | u
     }
 }
 
-// Minimum points to trust a circle fit -- below this a single outlier can swing the result arbitrarily.
+// Minimum points to trust a circle fit.
 const MIN_POINTS_FOR_CIRCLE_FIT = 12
 
-// Percentile (not max) of radial distance from fitted center, used as outer-envelope radius -- reaches
-// tread surface without one stray vertex blowing it out.
+// Percentile (not max) of radial distance used as outer-envelope radius.
 const OUTER_RADIUS_PERCENTILE = 0.95
 
-// Fraction of points (by fit residual) dropped before refitting. Localized asymmetric detail (bolt
-// bosses, stub shafts, sensor mounts fused into the wheel part) produces the largest residuals against an
-// initial fit; discarding them and refitting keeps a single such feature from pulling the hub off-axis by
-// itself, while leaving enough of a normal tread pattern's noise in place to still average out.
+// Fraction of points (by fit residual) dropped before refitting.
 const TRIM_FRACTION = 0.15
 
 interface Circle2D {
@@ -81,11 +63,7 @@ interface Circle2D {
     radius: number
 }
 
-/**
- * Algebraic (Kasa) least-squares circle fit: minimizes sum((x^2+y^2) - 2a*x - 2b*y - c)^2, which is
- * linear in (a, b, c) unlike the true geometric distance residual. One 3x3 linear solve, no iteration --
- * accurate enough once points are already roughly clustered around a near-circular cross-section.
- */
+/** Algebraic (Kasa) least-squares circle fit via one 3x3 linear solve. */
 function fitCircle2D(coords: { x: number; y: number }[]): Circle2D | undefined {
     if (coords.length < 3) return undefined
 
@@ -122,9 +100,9 @@ function fitCircle2D(coords: { x: number; y: number }[]): Circle2D | undefined {
         m22: number
     ) => m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m12 * m20) + m02 * (m10 * m21 - m11 * m20)
 
-    // Solve [[sxx,sxy,sx],[sxy,syy,sy],[sx,sy,n]] * [2a,2b,c]^T = [sxz,syz,sz]^T via Cramer's rule.
+    // Cramer's rule.
     const D = det3(sxx, sxy, sx, sxy, syy, sy, sx, sy, n)
-    if (Math.abs(D) < 1e-9) return undefined // degenerate (collinear/coincident points)
+    if (Math.abs(D) < 1e-9) return undefined // degenerate
 
     const Da = det3(sxz, sxy, sx, syz, syy, sy, sz, sy, n)
     const Db = det3(sxx, sxz, sx, sxy, syz, sy, sx, sz, n)
@@ -140,22 +118,7 @@ function fitCircle2D(coords: { x: number; y: number }[]): Circle2D | undefined {
     return { cx: a, cy: b, radius: Math.sqrt(radiusSq) }
 }
 
-/**
- * Derives a wheel's rotation axis, hub origin, and outer radius from a part's local-space point cloud.
- * The AABB's smallest extent still picks out the axle direction -- that half of the old heuristic holds,
- * since real wheel meshes are thin along the axle and wide in the wheel plane regardless of tread/hub
- * detail. The hub origin is fit as the center of a least-squares circle through the points projected into
- * the plane perpendicular to that axle, instead of the AABB center of the whole part: tread patterns, hub
- * bosses, and off-center bolt circles bias a bounding-box center but average out in a circle fit, since
- * they're distributed around (not to one side of) the true rotation axis. A single trim-and-refit pass
- * discards the worst-residual points before refitting, so one strongly asymmetric feature (e.g. a stub
- * shaft) can't pull the result off axis by itself.
- *
- * Radius deliberately skips the fit's own solved radius -- a least-squares average across all points,
- * fine for the center but wrong for parts mixing geometry at multiple scales (tire fused with hub/pulley):
- * average skews toward the denser cluster, not the true outer tread edge. Outer-envelope percentile below
- * fixes that.
- */
+/** Derives a wheel's rotation axis, hub origin, and outer radius from a local-space point cloud via a trimmed circle fit. */
 export function computeWheelAxisFromCircleFit(points: THREE.Vector3[]): WheelAxis | undefined {
     if (points.length < MIN_POINTS_FOR_CIRCLE_FIT) return undefined
 
@@ -193,18 +156,14 @@ export function computeWheelAxisFromCircleFit(points: THREE.Vector3[]): WheelAxi
     center.setComponent(uIndex, centroid.getComponent(uIndex) + fit.cx)
     center.setComponent(vIndex, centroid.getComponent(vIndex) + fit.cy)
 
-    // Fit's own radius is a least-squares average -- wrong for multi-scale parts (tire+hub+pulley), skews
-    // to the denser cluster. Use outer envelope of the untrimmed cloud instead, at a high percentile (not
-    // max) so one stray vertex can't blow it out.
+    // Outer envelope of the untrimmed cloud, not the fit's own averaged radius.
     const outerDistances = coords.map(coord => Math.hypot(coord.x - fit.cx, coord.y - fit.cy)).sort((a, b) => a - b)
     const radius = outerDistances[Math.floor(outerDistances.length * OUTER_RADIUS_PERCENTILE)]
 
     return { center, axis, radius, width }
 }
 
-/** Transforms a locally-derived wheel axis into another space (e.g. world space). Radius and width are
- *  carried through via offset points rather than a scale factor, so they stay correct even under
- *  non-uniform scale. */
+/** Transforms a wheel axis into another space; radius/width carried through via offset points for non-uniform scale. */
 export function transformWheelAxis(local: WheelAxis, matrixWorld: THREE.Matrix4): WheelAxis {
     const center = local.center.clone().applyMatrix4(matrixWorld)
 

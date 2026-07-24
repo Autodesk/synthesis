@@ -228,23 +228,6 @@ class SynthesisBrain extends Brain {
             ? chassisBody.GetCenterOfMassPosition()
             : World.physicsSystem.getBody(this._mechanism.constraints[0].childBody)!.GetCenterOfMassPosition()
 
-        if (chassisBody) {
-            const pos = chassisBody.GetPosition()
-            const rot = chassisBody.GetRotation()
-            const bounds = chassisBody.GetShape().GetLocalBounds()
-            const com = chassisBody.GetCenterOfMassPosition()
-            console.log(
-                `[SynthesisBrain] Chassis body: pos=(${pos.GetX().toFixed(3)},${pos.GetY().toFixed(3)},${pos.GetZ().toFixed(3)}) ` +
-                    `rot=(${rot.GetX().toFixed(3)},${rot.GetY().toFixed(3)},${rot.GetZ().toFixed(3)},${rot.GetW().toFixed(3)}) ` +
-                    `motionType=${chassisBody.GetMotionType()} ` +
-                    `com=(${com.GetX().toFixed(3)},${com.GetY().toFixed(3)},${com.GetZ().toFixed(3)}) ` +
-                    `localBoundsY=[${bounds.mMin.GetY().toFixed(3)},${bounds.mMax.GetY().toFixed(3)}] (COM-relative) ` +
-                    `worldLowestY=${(com.GetY() + bounds.mMin.GetY()).toFixed(3)}`
-            )
-            JOLT.destroy(bounds)
-            JOLT.destroy(com)
-        }
-
         // Collect constraint positions to determine the correct lateral axis.
         // For skid-steer robots the lateral axis (left vs right) is the one that splits
         // wheels into two equal groups. Try X and Z; pick the more balanced split.
@@ -268,12 +251,6 @@ class SynthesisBrain extends Brain {
         const useLateralZ = zImbalance < xImbalance
         const rightVector = useLateralZ ? new JOLT.RVec3(0, 0, -1) : new JOLT.RVec3(1, 0, 0)
 
-        console.log(
-            `[SynthesisBrain] wheelDrivers=${wheelDrivers.length} fixedConstraints=${fixedConstraints.length} ` +
-                `constraintPositions=${JSON.stringify(constraintPositions)} useLateralZ=${useLateralZ} ` +
-                `xImbalance=${xImbalance} zImbalance=${zImbalance}`
-        )
-
         for (let i = 0; i < wheelDrivers.length; i++) {
             // Jolt value returns (GetConstraintToBody1Matrix, GetTranslation, SubRVec3,
             // GetCenterOfMassPosition) point to reused static temporaries, not heap
@@ -292,8 +269,6 @@ class SynthesisBrain extends Brain {
             JOLT.destroy(wheelPos)
         }
         JOLT.destroy(rightVector)
-
-        console.log(`[SynthesisBrain] Skid-steer groups: left=${leftWheels.length} right=${rightWheels.length}`)
 
         return new SkidSteerDriveBehavior(
             leftWheels,
