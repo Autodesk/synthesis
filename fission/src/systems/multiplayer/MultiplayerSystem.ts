@@ -15,10 +15,9 @@ import EventSystem from "@/systems/EventSystem.ts"
 import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
 import type { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
 import { consolePrefixer } from "console-prefixer"
-import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts";
+import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 
 export const COLLISION_TIMEOUT = 500
-
 
 export const multiplayerLogger = consolePrefixer({
     defaultPrefix: {
@@ -52,7 +51,7 @@ class MultiplayerSystem {
     private constructor(hostAddr: string, roomId: string | "create", displayName: string) {
         this.client = new MultiplayerWebsocket(hostAddr)
         this.client.onOpen = () => {
-            const msg:ClientToServerMessage = {
+            const msg: ClientToServerMessage = {
                 type: "initializeconnection",
                 room_id: roomId == "create" ? null : roomId,
                 name: displayName,
@@ -84,13 +83,13 @@ class MultiplayerSystem {
             setTimeout(() => resolve(false), 10000)
         }).then(res => {
             if (res) {
-                this.client.onServerMessage = async (msg) => {
+                this.client.onServerMessage = async msg => {
                     console.group(`Incoming server message: ${msg.type}`)
                     await this.handleServerMessage(msg)
                     console.groupEnd()
                 }
 
-                this.client.onPeerMessage = async (msg) => {
+                this.client.onPeerMessage = async msg => {
                     if (msg.type != "update") {
                         console.group(`Incoming peer message: ${msg.type}`)
                     }

@@ -1,5 +1,5 @@
 import {Button, Divider, TextField} from "@mui/material"
-import {Stack} from "@mui/system"
+import {Box, Stack} from "@mui/system"
 import type React from "react"
 import {useCallback, useEffect, useLayoutEffect, useState} from "react"
 import {globalAddToast} from "@/components/GlobalUIControls.ts"
@@ -13,7 +13,8 @@ import {waitUntil} from "@/util/Utility.ts"
 import SessionStorage from "@/util/SessionStorage.ts"
 import {DEFAULT_MULTIPLAYER_PORT} from "@/systems/preferences/PreferenceTypes.ts"
 import {multiplayerLogger as console} from "@/systems/multiplayer/MultiplayerSystem.ts"
-import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts";
+import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
+import {RoomInfo} from "@/systems/multiplayer/bindings/RoomInfo.ts";
 
 export interface MultiplayerInitProps {
     displayName: string
@@ -28,11 +29,12 @@ const DEFAULT_HOST = "127.0.0.1"
 
 const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuCustomProps>> = ({ modal }) => {
     const { configureScreen, closeModal } = useUIContext()
-    const [room, setRoom] = useState<string>("")
+    const [_room, setRoom] = useState<string>("")
     const [host, setHost] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerHost"))
     const [port, setPort] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerPort").toString())
     const [secure, setSecure] = useState(PreferencesSystem.getUserPreference("MultiplayerSecure"))
     const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
+    const [roomList, setRoomList] = useState<RoomInfo[]>([])
     const [testState, setTestState] = useState<"pass" | "fail" | "progress" | null>(null)
     const [showCheckCertButton, setShowCheckCertButton] = useState<boolean>(false)
 
@@ -42,15 +44,15 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         setName(n => params.get("name") ?? n)
     }, [])
 
-    const validateServer = useCallback((): string | undefined => {
+    const validateServer = useCallback((silent:boolean): string | undefined => {
         const parsedPort = parseInt(port)
         if (isNaN(parsedPort) || parsedPort <= 0 || parsedPort > 65535) {
-            globalAddToast("warning", "Invalid Port", "Must be an integer between 0 and 65535")
+            !silent && globalAddToast("warning", "Invalid Port", "Must be an integer between 0 and 65535")
             return
         }
         const url = `${secure ? "wss" : "ws"}://${host || DEFAULT_HOST}:${parsedPort}`
         if (URL.canParse != null && !URL.canParse(url)) {
-            globalAddToast("warning", "Cannot Parse URL", url)
+            !silent && globalAddToast("warning", "Cannot Parse URL", url)
             return
         }
         PreferencesSystem.setUserPreference("MultiplayerPort", parsedPort)
@@ -62,26 +64,26 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     }, [host, port, secure])
 
     const validate = useCallback(
-        (useRoom: boolean): MultiplayerInitProps | undefined => {
+        (room?: string): MultiplayerInitProps | undefined => {
             if (name.length <= 3) {
                 globalAddToast("warning", "Invalid Name", "Must be at least 3 characters")
                 return
             }
 
-            if (useRoom && room.length !== 6) {
+            if (room != null && room.length !== 6) {
                 globalAddToast("warning", "Invalid Room", "Must be 6 characters")
                 return
             }
-            const url = validateServer()
+            const url = validateServer(false)
             if (url == null) return
 
             return {
                 displayName: name,
-                roomId: useRoom ? room : undefined,
+                roomId: room,
                 url: url,
             }
         },
-        [name, room, validateServer]
+        [name, validateServer]
     )
 
     const promptCert = useCallback(async (url: string): Promise<boolean> => {
@@ -105,8 +107,12 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         return false
     }, [])
 
-    const connectionTest = useCallback(async () => {
-        const url = validateServer()
+    useEffect(() => {
+        setTimeout(() => connectionTest(true))
+    }, [])
+
+    const connectionTest = useCallback(async (silent:boolean) => {
+        const url = validateServer(silent)
         if (url == null) return
         const success = await withTimeout(
             new Promise<boolean>(resolve => {
@@ -116,16 +122,16 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 ws.onOpen = () => {
                     resolve(true)
                     ws.send({
-                        type: "requestrooms"
+                        type: "requestrooms",
                     })
                 }
-                ws.onError = async() => {
+                ws.onError = async () => {
                     // NOTE: Chrome is evil and for "security" this will always fail on Chrome. It works as intended on firefox
                     const reachable = await fetch(url.replace(/wss?:\/\//, "http://"), { mode: "no-cors" })
                         .then(() => true)
                         .catch(() => false)
 
-                    if (reachable) {
+                    if (reachable && !silent) {
                         if (secure) {
                             globalAddToast(
                                 "warning",
@@ -142,10 +148,10 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                         }
                     } else {
                         if (secure) {
-                            globalAddToast("error", "Connection failed!", "Try pressing 'Load Certificate'")
+                            !silent && globalAddToast("error", "Connection failed!", "Try pressing 'Load Certificate'")
                             setShowCheckCertButton(true)
                         } else {
-                            globalAddToast("error", "Connection failed!")
+                            !silent && globalAddToast("error", "Connection failed!")
                             setShowCheckCertButton(false)
                         }
                     }
@@ -156,15 +162,15 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                     resolve(false)
                     console.groupEnd()
                 }
-                ws.onServerMessage = (msg) => {
-                    console.log("Test socket message", msg)
+                ws.onServerMessage = msg => {
+                    console.log("Test server message", msg)
                     if (msg.type == "roomlist") {
-                        console.log([...msg])
+                        setRoomList(msg.rooms)
                         resolve(true)
                     }
                 }
-                ws.onServerMessage = (msg) => {
-                    console.log("Test socket message", msg)
+                ws.onPeerMessage = msg => {
+                    console.log("Test peer message", msg)
                 }
             }),
             "Connection timed out",
@@ -187,8 +193,20 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
             {}
         )
     }, [])
+
+    const joinRoom = useCallback(async (roomId:string) => {
+        setRoom(roomId)
+        const initData = validate(roomId)
+        if (initData == null) return
+
+        const success = await withTimeout(startWorldCallback(initData), "Multiplayer join timed out")
+        if (success) {
+            closeModal(CloseType.Accept)
+        }
+    }, [validate])
+
     return (
-        <Stack direction="column" gap={2}  className="overflow-y-auto rounded-md p-2 min-w-[300px]">
+        <Stack direction="column" gap={2} className="overflow-y-auto rounded-md p-2 min-w-[300px]">
             <Stack gap={0.5}>
                 <Label size={"sm"}>Host</Label>
                 <TextField
@@ -224,27 +242,27 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 disabled={testState === "progress"}
                 variant={"outlined"}
                 color={testState === "pass" ? "success" : "secondary"}
-                onClick={connectionTest}
+                onClick={() => connectionTest(false)}
                 className="w-full my-1"
             >
                 {testState == "pass" ? "Connection OK!" : testState == "progress" ? "Testing..." : "Test Connection"}
             </Button>
             {secure && (
                 <Stack direction={"row"} gap={1}>
-                <Button
-                    disabled={!showCheckCertButton || testState !== "fail"}
-                    variant={"outlined"}
-                    color={"info"}
-                    onClick={async () => {
-                        const url = validateServer()
-                        if (!url) return
-                        await promptCert(url)
-                    }}
-                    className="w-full my-1"
-                >
-                    Load Certificate
-                </Button>
-                <CustomTooltip text={"Self-signed certificates on secure servers must be manually trusted"} />
+                    <Button
+                        disabled={!showCheckCertButton || testState !== "fail"}
+                        variant={"outlined"}
+                        color={"info"}
+                        onClick={async () => {
+                            const url = validateServer(false)
+                            if (!url) return
+                            await promptCert(url)
+                        }}
+                        className="w-full my-1"
+                    >
+                        Load Certificate
+                    </Button>
+                    <CustomTooltip text={"Self-signed certificates on secure servers must be manually trusted"} />
                 </Stack>
             )}
             <Divider />
@@ -262,9 +280,10 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 />
             </Stack>
             <Button
+                disabled={name.length < 3}
                 value={"Create Game"}
                 onClick={async () => {
-                    const initData = validate(false)
+                    const initData = validate()
                     if (initData == null) return
 
                     const success = await withTimeout(startWorldCallback(initData), "Multiplayer create timed out")
@@ -278,39 +297,50 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 Create Game
             </Button>
             <Divider />
-            <Stack>
-                <Label size={"sm"}>Room Code</Label>
-                <TextField
-                    value={room}
-                    placeholder="ABC123"
-                    inputProps={{
-                        onInput: e => {
-                            setRoom(
-                                e.currentTarget.value
-                                    .toUpperCase()
-                                    .replace(/[^A-Z\d]/g, "")
-                                    .slice(0, 6)
-                            )
-                        },
-                    }}
-                />
-            </Stack>
+            {roomList.map((room) => (
+                <Box
+                    sx={{ bgcolor: "background.paper", p: 2, borderRadius: 5, width: "100%" }}
+                    key={room.id}
+                >
+                    <Stack direction={"row"} justifyContent="space-between" gap={2}>
+                    <Stack direction="column" gap={1}>
+                        <Label size={"md"}>
+                            {room.authority != null? `${room.authority}'s Room` : "Server Room"}
+                        </Label>
+                        <Label size={"sm"}>{room.id}</Label>
+                    </Stack>
+                        <Button disabled={name.length < 3} variant={'outlined'} color={'secondary'} onClick={() => joinRoom(room.id)}>
+                            Join
+                        </Button>
+                    </Stack>
+                </Box>
+            ))}
+            <Divider />
+            {/*<Stack>*/}
+            {/*    <Label size={"sm"}>Room Code</Label>*/}
+            {/*    <TextField*/}
+            {/*        value={room}*/}
+            {/*        placeholder="ABC123"*/}
+            {/*        inputProps={{*/}
+            {/*            onInput: e => {*/}
+            {/*                setRoom(*/}
+            {/*                    e.currentTarget.value*/}
+            {/*                        .toUpperCase()*/}
+            {/*                        .replace(/[^A-Z\d]/g, "")*/}
+            {/*                        .slice(0, 6)*/}
+            {/*                )*/}
+            {/*            },*/}
+            {/*        }}*/}
+            {/*    />*/}
+            {/*</Stack>*/}
 
-            <Button
-                disabled={room.length !== 6}
-                onClick={async () => {
-                    const initData = validate(true)
-                    if (initData == null) return
-
-                    const success = await withTimeout(startWorldCallback(initData), "Multiplayer join timed out")
-                    if (success) {
-                        closeModal(CloseType.Accept)
-                    }
-                }}
-                className={`w-full mt-1 mb-3`}
-            >
-                Join Game
-            </Button>
+            {/*<Button*/}
+            {/*    disabled={room.length !== 6}*/}
+            {/*    onClick={() => joinRoom(room)}*/}
+            {/*    className={`w-full mt-1 mb-3`}*/}
+            {/*>*/}
+            {/*    Join Game*/}
+            {/*</Button>*/}
         </Stack>
     )
 }
