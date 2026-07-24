@@ -19,7 +19,7 @@ pub enum ClientToServerMessage {
 #[ts(export)]
 pub enum ServerMessage {
     Kick { client_id: String },
-    RoomList(Vec<String>),
+    RoomList { rooms: Vec<String> },
     SendInfo { room_id: RoomId, client_id: String },
 }
 

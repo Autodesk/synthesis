@@ -255,7 +255,9 @@ async fn handle_room_list_request<S>(
 {
     let message = {
         let guard = state.lock().unwrap();
-        ServerMessage::RoomList(guard.list_rooms())
+        ServerMessage::RoomList {
+            rooms: guard.list_rooms(),
+        }
     };
 
     let bytes = serialize_messagepack(message);
