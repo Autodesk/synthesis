@@ -41,6 +41,7 @@ impl State {
             members: vec![Client::new(authority_id, authority_name, authority_tx)],
             authority: Some(authority_id),
             locked: false,
+            permanent: false,
             logs: VecDeque::new(),
         };
 
@@ -111,6 +112,7 @@ impl State {
             members: Vec::new(),
             authority: None,
             locked: false,
+            permanent: true,
             logs: VecDeque::new(),
         };
         self.rooms.map.insert(room_id, room);
@@ -181,6 +183,7 @@ impl State {
                 Some(RoomInfo {
                     id: id.to_string(),
                     authority,
+                    locked: room.locked,
                 })
             })
             .collect()
@@ -223,6 +226,10 @@ impl State {
             system_log: self.system_log.iter().cloned().collect(),
         }
     }
+}
+
+pub fn is_valid_room_id(s: &str) -> bool {
+    s.trim().len() == 6 && s.chars().all(|c| VALID_ROOM_ID_CHARACTERS.contains(&c))
 }
 
 const fn valid_room_id_characters() -> [char; 36] {
@@ -288,6 +295,8 @@ pub struct Room {
     authority: Option<ClientId>,
     /// Whether new players can enter a room
     locked: bool,
+    /// Whether the room closes when it has no players
+    permanent: bool,
     /// Recent activity for this room, newest last. Capped at [`MAX_LOG_LINES`].
     logs: VecDeque<Event>,
 }
@@ -346,6 +355,7 @@ impl Room {
         if Some(*client_id) == self.authority {
             match self.members.first() {
                 Some(next) => self.authority = Some(next.id),
+                None if self.permanent => self.authority = None,
                 None => return RoomStatus::Closed,
             }
         }

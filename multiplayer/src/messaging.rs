@@ -18,6 +18,7 @@ pub enum ClientToServerMessage {
 #[ts(export)]
 pub struct RoomInfo {
     pub id: RoomId,
+    pub locked: bool,
     pub authority: Option<String>,
 }
 

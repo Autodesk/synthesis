@@ -11,7 +11,7 @@ use crate::messaging::{
     serialize_messagepack,
 };
 use crate::prefixed::{Prefixed, SynthesisStream};
-use crate::room::{ClientId, ClientSender, State};
+use crate::room::{ClientId, ClientSender, State, is_valid_room_id};
 
 use std::ops::Deref;
 use std::sync::{Arc, Mutex};
@@ -69,6 +69,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let Some(room_id) = env::args().nth(i + 1) else {
                 return;
             };
+            if !is_valid_room_id(&room_id) {
+                error_lock!(
+                    state,
+                    "Invalid permanent room id: {room_id}, must be 6 characters and each character must match `[0-9A-Z]`"
+                );
+                return;
+            }
             let mut guard = state.lock().unwrap();
             guard.new_permanent_room(room_id);
         }
