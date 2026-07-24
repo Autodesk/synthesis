@@ -207,7 +207,7 @@ class MirabufCachingService {
                 name: name,
             }
         } catch (e) {
-            console.warn("Caching failed", e)
+            console.warn("Caching failed", e)       
             return undefined
         }
     }

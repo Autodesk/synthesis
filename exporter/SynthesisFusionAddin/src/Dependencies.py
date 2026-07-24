@@ -40,11 +40,11 @@ def getInternalFusionPythonInstillationFolder() -> str | os.PathLike[str]:
     return folder
 
 
-def executeCommand(*args: str) -> subprocess.CompletedProcess[str]:
+def executeCommand(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
     logger.debug(f"Running Command -> {' '.join(args)}")
     try:
         result: subprocess.CompletedProcess[str] = subprocess.run(
-            args, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True
+            args, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=check
         )
         logger.debug(f"Command Output:\n{result.stdout}")
         return result
@@ -53,6 +53,40 @@ def executeCommand(*args: str) -> subprocess.CompletedProcess[str]:
         logger.error(f"Exit code: {error.returncode}")
         logger.error(f"Output:\n{error.stderr}")
         raise error
+
+
+def pipInstalled(pythonExecutablePath: str) -> bool:
+    """Check whether pip is importable by the given Fusion python interpreter."""
+    # Use check=False so the expected "pip missing" case does not log an error.
+    return executeCommand(pythonExecutablePath, "-m", "pip", "--version", check=False).returncode == 0
+
+
+def ensurePipInstalled(pythonFolder: str | os.PathLike[str], pythonExecutablePath: str) -> None:
+    """Bootstrap pip into Fusion's bundled python if it is missing.
+
+    Fusion's runtime does not reliably ship pip: it is absent by default on macOS, and every
+    Fusion update lands in a fresh 'webdeploy' folder whose python may also lack it on Windows.
+    Prefer the stdlib 'ensurepip' (no network required); fall back to downloading 'get-pip.py'.
+    """
+    if pipInstalled(pythonExecutablePath):
+        return
+
+    logger.info("pip not found in Fusion python, bootstrapping...")
+
+    # ensurepip ships with the CPython standard library and needs no internet access.
+    try:
+        executeCommand(pythonExecutablePath, "-m", "ensurepip", "--upgrade")
+        if pipInstalled(pythonExecutablePath):
+            return
+    except subprocess.CalledProcessError:
+        logger.warning("ensurepip unavailable, falling back to get-pip.py")
+
+    # Fallback: download and run get-pip.py (curl ships with both modern Windows and macOS).
+    pipInstallScriptPath = os.path.join(pythonFolder, "get-pip.py")
+    if not os.path.exists(pipInstallScriptPath):
+        executeCommand("curl", "https://bootstrap.pypa.io/get-pip.py", "-o", pipInstallScriptPath)
+
+    executeCommand(pythonExecutablePath, pipInstallScriptPath)
 
 
 def getInstalledPipPackages(pythonExecutablePath: str) -> dict[str, str]:
@@ -92,17 +126,11 @@ def resolveDependencies() -> bool | None:
     progressBar.reset()
     progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP) * 2 + 2, 0)
 
-    # Install pip manually on macos as it is not included by default? Really?
-    if SYSTEM == "Darwin" and not os.path.exists(os.path.join(pythonFolder, "pip")):
-        pipInstallScriptPath = os.path.join(pythonFolder, "get-pip.py")
-        if not os.path.exists(pipInstallScriptPath):
-            executeCommand("curl", "https://bootstrap.pypa.io/get-pip.py", "-o", pipInstallScriptPath)
-            progressBar.message = "Downloading PIP Installer..."
-
-        progressBar.progressValue += 1
-        progressBar.message = "Installing PIP..."
-        executeCommand(pythonExecutablePath, pipInstallScriptPath)
-        progressBar.progressValue += 1
+    # Fusion's bundled python does not reliably ship pip (missing by default on macOS, and on
+    # fresh Windows webdeploy installs after a Fusion update), so bootstrap it if it is absent.
+    progressBar.message = "Installing PIP..."
+    ensurePipInstalled(pythonFolder, pythonExecutablePath)
+    progressBar.progressValue += 2
 
     installedPackages = getInstalledPipPackages(pythonExecutablePath)
     if packagesOutOfDate(installedPackages):
