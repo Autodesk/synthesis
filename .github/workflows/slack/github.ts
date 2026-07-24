@@ -228,7 +228,7 @@ const parseImages = (body: string): ParsedBody => {
     return { text, images }
 }
 
-const COMMENT = /<!--[\s\S]*?-->/g
+const COMMENT = /<!--[\s\S]*?-->[ \t]*\r?\n?/g
 const BODY_LIMIT = 1000
 
 /**
