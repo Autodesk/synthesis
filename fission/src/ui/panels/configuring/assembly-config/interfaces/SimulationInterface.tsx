@@ -44,7 +44,7 @@ export default function SimulationInterface({
                 className="self-center"
                 onClick={() => {
                     openPanel(AutoTestPanel, undefined, panel)
-                    if (panel) closePanel(panel.id, CloseType.Overwrite)
+                    if (panel) closePanel(panel.id, CloseType.OVERWRITE)
                 }}
             >
                 Auto Testing
