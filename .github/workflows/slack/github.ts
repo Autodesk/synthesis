@@ -228,6 +228,17 @@ const parseImages = (body: string): ParsedBody => {
     return { text, images }
 }
 
+const COMMENT = /<!--[\s\S]*?-->/g
+const BODY_LIMIT = 1000
+
+/**
+ * Truncates text to a character limit, appending an ellipsis
+ *
+ * @return string
+ */
+const truncate = (text: string, limit: number): string =>
+    text.length > limit ? `${text.slice(0, limit).trimEnd()}…` : text
+
 const SUGGESTION = /```suggestion\r?\n(.*?)```/gs
 
 /**
@@ -248,14 +259,17 @@ const jiraSection = (pr: PullRequest): Block => {
 }
 
 /**
- * Renders the PR body as a text section plus any inline images
+ * Renders the PR body as a text section plus any inline images, dropping
+ * template comments and capping length
  *
  * @return Block[]
  */
 const prBodyBlocks = (body: string | null): Block[] => {
     if (!body) return []
-    const { text, images } = parseImages(body)
-    return [...(text ? [section(mrkdwn(text))] : []), ...images]
+    // strip comments first so images inside them don't get extracted
+    const { text, images } = parseImages(body.replace(COMMENT, ""))
+    const capped = truncate(text, BODY_LIMIT)
+    return [...(capped ? [section(mrkdwn(capped))] : []), ...images]
 }
 
 /**
