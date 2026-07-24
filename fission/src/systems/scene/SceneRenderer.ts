@@ -402,16 +402,14 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public async captureAssemblyThumbnail(
-        target: MirabufSceneObject
-    ): Promise<Blob | undefined> {
+    public async captureAssemblyThumbnail(target: MirabufSceneObject): Promise<Blob | undefined> {
         try {
             return await captureSceneThumbnail({
                 renderer: this._renderer,
                 scene: this._scene,
                 skybox: this._skybox,
-                targets: target.mirabufInstance.batches,
-                framingPoints: undefined
+                target,
+                framingPoints: undefined,
             })
         } catch (e) {
             console.warn("Thumbnail capture failed", e)

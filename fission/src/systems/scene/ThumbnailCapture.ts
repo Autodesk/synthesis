@@ -1,4 +1,5 @@
 import * as THREE from "three"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 export const THUMBNAIL_SIZE = 512
 const THUMBNAIL_MIME_TYPE = "image/webp"
@@ -11,6 +12,21 @@ export const THUMBNAIL_FOV_Y_DEGREES = 45
 export const THUMBNAIL_THETA = -Math.PI / 4
 export const THUMBNAIL_PHI = -Math.PI / 6
 export const THUMBNAIL_FILL = { x: 0.9, y: 0.7 } as const
+
+export function collectInstanceBoundsPoints(
+    instances: Iterable<readonly [THREE.BatchedMesh, number]>
+): THREE.Vector3[] {
+    const points: THREE.Vector3[] = []
+    const box = new THREE.Box3()
+    const matrix = new THREE.Matrix4()
+    for (const [batch, instanceId] of instances) {
+        if (!batch.getBoundingBoxAt(batch.getGeometryIdAt(instanceId), box)) continue
+        batch.updateWorldMatrix(true, false)
+        box.applyMatrix4(batch.getMatrixAt(instanceId, matrix).premultiply(batch.matrixWorld))
+        points.push(...boxCorners(box))
+    }
+    return points
+}
 
 /* Computing thumbnail bounds */
 
@@ -92,13 +108,14 @@ export interface ThumbnailCaptureProps {
     renderer: THREE.WebGLRenderer
     scene: THREE.Scene
     skybox: THREE.Object3D // skybox stays visible
-    targets: readonly THREE.Object3D[]
-    framingPoints?: readonly THREE.Vector3[] // world-space points to frame
+    target: MirabufSceneObject
 }
 
 /** renders the targets to an off-screen render target */
 export async function captureSceneThumbnail(props: ThumbnailCaptureProps): Promise<Blob | undefined> {
-    const { renderer, scene, skybox, targets, framingPoints } = props
+    const { renderer, scene, skybox, target } = props
+    const framingPoints = collectInstanceBoundsPoints([...target.mirabufInstance.meshes.values()].flat())
+    const targets = target.mirabufInstance.batches
 
     const framing = computeThumbnailFraming(framingPoints?.length ? framingPoints : computeTargetBounds(targets))
     if (!framing) return undefined
@@ -112,9 +129,35 @@ export async function captureSceneThumbnail(props: ThumbnailCaptureProps): Promi
     const renderSize = THUMBNAIL_SIZE * CAPTURE_SUPERSAMPLE
     const pixels = new Uint8Array(renderSize * renderSize * 4)
 
-    encodePixels(pixels, renderSize)
+    const keepVisible = new Set<THREE.Object3D>([skybox, ...targets])
+    const prevVisibility = new Map<THREE.Object3D, boolean>()
+    const prevRenderTarget = renderer.getRenderTarget()
+    const prevSkyboxPosition = skybox.position.clone()
+    const renderTarget = new THREE.WebGLRenderTarget(renderSize, renderSize, { depthBuffer: true })
+    renderTarget.texture.colorSpace = renderer.outputColorSpace
 
-    return undefined
+    // no awaits so the render loop doesn't paint a frame where everything is hidden to the user
+    try {
+        for (const child of scene.children) {
+            prevVisibility.set(child, child.visible)
+            if (!keepVisible.has(child) && !(child instanceof THREE.Light)) child.visible = false
+        }
+        skybox.position.copy(camera.position)
+
+        renderer.setRenderTarget(renderTarget)
+        renderer.render(scene, camera)
+        renderer.readRenderTargetPixels(renderTarget, 0, 0, renderSize, renderSize, pixels)
+    } finally {
+        renderer.setRenderTarget(prevRenderTarget)
+        prevVisibility.forEach((visible, child) => {
+            child.visible = visible
+        })
+
+        skybox.position.copy(prevSkyboxPosition)
+        renderTarget.dispose()
+    }
+
+    return encodePixels(pixels, renderSize)
 }
 
 function createSquareCanvas(size: number): OffscreenCanvas | HTMLCanvasElement {
