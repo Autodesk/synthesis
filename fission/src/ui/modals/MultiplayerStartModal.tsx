@@ -1,19 +1,19 @@
-import { Button, Divider, TextField } from "@mui/material"
-import { Stack } from "@mui/system"
+import {Button, Divider, TextField} from "@mui/material"
+import {Stack} from "@mui/system"
 import type React from "react"
-import { useCallback } from "react"
-import { useEffect, useLayoutEffect, useState } from "react"
-import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import type { ModalImplProps } from "@/components/Modal.tsx"
+import {useCallback, useEffect, useLayoutEffect, useState} from "react"
+import {globalAddToast} from "@/components/GlobalUIControls.ts"
+import type {ModalImplProps} from "@/components/Modal.tsx"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
-import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
+import {CloseType, useUIContext} from "../helpers/UIProviderHelpers"
 import Label from "@/components/Label.tsx"
 import Checkbox from "@/components/Checkbox.tsx"
-import { LabelWithTooltip } from "@/components/StyledComponents.tsx"
-import { waitUntil } from "@/util/Utility.ts"
+import {CustomTooltip} from "@/components/StyledComponents.tsx"
+import {waitUntil} from "@/util/Utility.ts"
 import SessionStorage from "@/util/SessionStorage.ts"
-import { DEFAULT_MULTIPLAYER_PORT } from "@/systems/preferences/PreferenceTypes.ts"
-import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
+import {DEFAULT_MULTIPLAYER_PORT} from "@/systems/preferences/PreferenceTypes.ts"
+import {multiplayerLogger as console} from "@/systems/multiplayer/MultiplayerSystem.ts"
+import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts";
 
 export interface MultiplayerInitProps {
     displayName: string
@@ -112,15 +112,14 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
             new Promise<boolean>(resolve => {
                 console.group("Connection Test")
                 setTestState("progress")
-                const ws = new WebSocket(url)
-                ws.onopen = () => {
-                    console.log("Test socket open")
+                const ws = new MultiplayerWebsocket(url)
+                ws.onOpen = () => {
                     resolve(true)
-                    ws.close(4000, "test connection succeeded")
+                    ws.send({
+                        type: "requestrooms"
+                    })
                 }
-                ws.onerror = async ev => {
-                    console.error("Test socket error", ev)
-
+                ws.onError = async() => {
                     // NOTE: Chrome is evil and for "security" this will always fail on Chrome. It works as intended on firefox
                     const reachable = await fetch(url.replace(/wss?:\/\//, "http://"), { mode: "no-cors" })
                         .then(() => true)
@@ -153,13 +152,19 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
 
                     resolve(false)
                 }
-                ws.onclose = () => {
-                    console.log("Test socket closed")
+                ws.onClose = () => {
                     resolve(false)
                     console.groupEnd()
                 }
-                ws.onmessage = () => {
-                    console.log("Test socket message")
+                ws.onServerMessage = (msg) => {
+                    console.log("Test socket message", msg)
+                    if (msg.type == "roomlist") {
+                        console.log([...msg])
+                        resolve(true)
+                    }
+                }
+                ws.onServerMessage = (msg) => {
+                    console.log("Test socket message", msg)
                 }
             }),
             "Connection timed out",
@@ -183,7 +188,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         )
     }, [])
     return (
-        <Stack direction="column" gap={2}>
+        <Stack direction="column" gap={2}  className="overflow-y-auto rounded-md p-2 min-w-[300px]">
             <Stack gap={0.5}>
                 <Label size={"sm"}>Host</Label>
                 <TextField
@@ -198,7 +203,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 />
             </Stack>
             <Stack gap={0.5}>
-                <LabelWithTooltip labelText="Port" tooltipText="The port the server is running on. Default 9001" />
+                <Label size="sm">Port</Label>
                 <TextField
                     value={port}
                     placeholder={DEFAULT_MULTIPLAYER_PORT.toString()}
@@ -225,6 +230,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 {testState == "pass" ? "Connection OK!" : testState == "progress" ? "Testing..." : "Test Connection"}
             </Button>
             {secure && (
+                <Stack direction={"row"} gap={1}>
                 <Button
                     disabled={!showCheckCertButton || testState !== "fail"}
                     variant={"outlined"}
@@ -238,6 +244,8 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                 >
                     Load Certificate
                 </Button>
+                <CustomTooltip text={"Self-signed certificates on secure servers must be manually trusted"} />
+                </Stack>
             )}
             <Divider />
             <Stack gap={0.5}>

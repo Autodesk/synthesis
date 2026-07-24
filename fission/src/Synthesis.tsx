@@ -69,10 +69,9 @@ function Synthesis() {
         }
         if (urlParams.has("autojoin")) {
             const room = urlParams.get("autojoin")!
-            const parsedRoom = parseInt(room)
             startWorldCallback({
                 displayName: PreferencesSystem.getUserPreference("MultiplayerUsername") ?? "TestUser",
-                roomId: isNaN(parsedRoom) ? undefined : parsedRoom,
+                roomId: room || undefined,
                 url: `ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`,
             })
             return

@@ -12,14 +12,13 @@ import type {
     RemoteSceneObjectId,
 } from "./MultiplayerTypes.ts"
 import EventSystem from "@/systems/EventSystem.ts"
-import { decode, encode } from "@msgpack/msgpack"
 import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
 import type { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
 import { consolePrefixer } from "console-prefixer"
+import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts";
 
 export const COLLISION_TIMEOUT = 500
-export const CLIENT_PREFIX = 0b00000001
-export const SERVER_PREFIX = 0b00000011
+
 
 export const multiplayerLogger = consolePrefixer({
     defaultPrefix: {
@@ -30,7 +29,7 @@ export const multiplayerLogger = consolePrefixer({
 const console = multiplayerLogger
 
 class MultiplayerSystem {
-    public readonly client: WebSocket
+    public readonly client: MultiplayerWebsocket
     public roomId: string = ""
     public clientId: string = ""
     private _initializationPromise: Promise<boolean>
@@ -51,45 +50,54 @@ class MultiplayerSystem {
     }
 
     private constructor(hostAddr: string, roomId: string | "create", displayName: string) {
-        this.client = new WebSocket(hostAddr)
-        this.client.onopen = () => {
-            const msg = encode({
+        this.client = new MultiplayerWebsocket(hostAddr)
+        this.client.onOpen = () => {
+            const msg:ClientToServerMessage = {
                 type: "initializeconnection",
                 room_id: roomId == "create" ? null : roomId,
                 name: displayName,
-            } satisfies ClientToServerMessage)
+            }
             this.client.send(msg)
         }
-        this.client.onclose = ev => {
-            console.log(ev, this.client)
+        this.client.onClose = () => {
             globalAddToast("error", "Multiplayer connection closed")
             this.destroy()
             EventSystem.dispatch("MultiplayerStateJoinRoom")
         }
 
-        this.client.onerror = ev => {
-            console.error(ev)
+        this.client.onError = () => {
             globalAddToast("warning", "Multiplayer error")
         }
 
         this._initializationPromise = new Promise<boolean>(resolve => {
             this._info.displayName = displayName
-            this.client.onmessage = async ev => {
-                const { from, type } = await this.onMessage(ev.data)
-                if (from != "server" || type != "sendinfo") {
+            this.client.onServerMessage = async msg => {
+                if (msg.type != "sendinfo") {
                     this.destroy()
                     console.error("Received invalid initial message")
                     resolve(false)
                     return
                 }
-
+                await this.handleServerMessage(msg)
                 resolve(true)
             }
             setTimeout(() => resolve(false), 10000)
         }).then(res => {
             if (res) {
-                this.client.onmessage = async ev => {
-                    await this.onMessage(ev.data as Blob)
+                this.client.onServerMessage = async (msg) => {
+                    console.group(`Incoming server message: ${msg.type}`)
+                    await this.handleServerMessage(msg)
+                    console.groupEnd()
+                }
+
+                this.client.onPeerMessage = async (msg) => {
+                    if (msg.type != "update") {
+                        console.group(`Incoming peer message: ${msg.type}`)
+                    }
+                    await this.handlePeerMessage(msg)
+                    if (msg.type != "update") {
+                        console.groupEnd()
+                    }
                 }
             }
             return res
@@ -102,28 +110,6 @@ class MultiplayerSystem {
                 })
             })
         )
-    }
-
-    async onMessage(msg: Blob) {
-        const headerByte = (await msg.slice(0, 1).bytes())[0]
-        const data = await msg.slice(1).arrayBuffer()
-        const decoded = decode(data) as ServerMessage | MessageWithTimestamp
-        const isServer = headerByte == SERVER_PREFIX
-        if (msg.type != "update") {
-            console.group(`Incoming ${isServer ? "server" : "peer"} message: ${decoded.type}`)
-        }
-        if (isServer) {
-            await this.handleServerMessage(decoded as ServerMessage)
-        } else {
-            await this.handlePeerMessage(decoded as MessageWithTimestamp)
-        }
-        if (msg.type != "update") {
-            console.groupEnd()
-        }
-        return {
-            from: isServer ? "server" : "client",
-            type: decoded.type,
-        }
     }
 
     async handleServerMessage(message: ServerMessage) {
@@ -175,8 +161,7 @@ class MultiplayerSystem {
         if (message.type != "update") {
             console.debug(`Sending Message: ${message.type}`, message)
         }
-        const encoded = encode(message)
-        return this.client.send(encoded)
+        return this.client.send(message as MessageWithTimestamp)
     }
 
     async sendHello(requestIntroductions: boolean, peerID?: string) {
