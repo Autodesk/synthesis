@@ -116,7 +116,7 @@ impl State {
         self.rooms.map.insert(room_id, room);
     }
 
-    fn get_room_of_client(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
+    pub fn get_room_of_client(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
         let Some(room_id) = self.users.get(client_id) else {
             warn!(self, "Attempted to get client that does not exist");
             return None;
@@ -161,17 +161,7 @@ impl State {
         // The close message gets forwarded to the client getting kicked
         let _ = tx.blocking_send(Message::Close(None));
 
-        // Send message toa ll other clients telling them `client_id` has been kicked
-        let message = ServerMessage::Kick {
-            client_id: client_id.to_string(),
-        };
-
-        let message_buffer_no_prefix = serialize_messagepack(message);
-        let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
-
-        for tx in room.get_senders(Some(&client_id)) {
-            let _ = tx.blocking_send(message.clone());
-        }
+        room.tell_room_client_left_blocking(&client_id);
 
         info!(room, "Kicked {client_id}");
         self.remove_client(client_id);
@@ -324,6 +314,20 @@ impl Room {
             message: format!("{}  {msg}", timestamp()),
         };
         push_capped(&mut self.logs, event);
+    }
+
+    pub fn tell_room_client_left_blocking(&mut self, client_id: &ClientId) {
+        // Send message toa ll other clients telling them `client_id` has been kicked
+        let message = ServerMessage::Kick {
+            client_id: client_id.to_string(),
+        };
+
+        let message_buffer_no_prefix = serialize_messagepack(message);
+        let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
+
+        for tx in self.get_senders(Some(&client_id)) {
+            let _ = tx.blocking_send(message.clone());
+        }
     }
 
     pub fn remove_client(&mut self, client_id: &ClientId) -> RoomStatus {

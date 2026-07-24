@@ -173,10 +173,31 @@ where
             }
 
             Message::Close(_) => {
-                let mut guard = state.lock().unwrap();
-                warn!(guard, "Connection with {client_id} closed");
-                guard.remove_client(client_id);
-                drop(guard);
+                // Send message toa ll other clients telling them `client_id` has been kicked
+                let message = ServerMessage::Kick {
+                    client_id: client_id.to_string(),
+                };
+
+                let message_buffer_no_prefix = serialize_messagepack(message);
+                let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
+
+                let senders = {
+                    let mut guard = state.lock().unwrap();
+                    warn!(guard, "Connection with {client_id} closed");
+
+                    let Some(room) = guard.get_room_of_client(&client_id).map(|a| a.1) else {
+                        return;
+                    };
+
+                    let senders = room.get_senders(Some(&client_id)).clone();
+                    guard.remove_client(client_id);
+
+                    senders
+                };
+
+                for tx in senders {
+                    let _ = tx.clone().send(message.clone()).await;
+                }
 
                 return;
             }
