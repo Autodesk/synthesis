@@ -18,7 +18,7 @@ pub enum ClientToServerMessage {
 #[ts(export)]
 pub struct RoomInfo {
     pub id: RoomId,
-    pub authority: String,
+    pub authority: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]

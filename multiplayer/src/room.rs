@@ -177,17 +177,11 @@ impl State {
             .map
             .iter()
             .filter_map(|(id, room)| {
-                let Some(authority) = room.authority else {
-                    return None;
-                };
-                let Some(idx) = room
+                let authority = room
                     .members
                     .iter()
-                    .position(|member| member.id == authority)
-                else {
-                    return None;
-                };
-                let authority = room.members[idx].name.clone();
+                    .position(|member| Some(member.id) == room.authority)
+                    .map(|idx| room.members[idx].name.clone());
 
                 Some(RoomInfo {
                     id: id.to_string(),
