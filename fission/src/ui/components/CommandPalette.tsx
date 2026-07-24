@@ -68,6 +68,7 @@ const CommandPalette: React.FC = () => {
     }, [addToast])
 
     // Subscribe to registry updates to refresh palette command list
+    // TODO: refactor such that registryTick isn't needed, as it's a hack
     const [registryTick, setRegistryTick] = useState(0)
     useEffect(() => {
         const registry = CommandRegistry.get()
@@ -81,6 +82,7 @@ const CommandPalette: React.FC = () => {
         }
     }, [isOpen])
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: removing registryTick here would break this component
     const commands = useMemo<CommandDefinition[]>(() => {
         return CommandRegistry.get().getCommands()
     }, [registryTick])
