@@ -76,6 +76,11 @@ impl State {
         room.members.push(client);
         self.users.insert(client_id, room_id.clone());
 
+        if room.authority.is_none() {
+            info!(room, "{client_id} became authority of {room_id}");
+            room.authority = Some(client_id)
+        }
+
         info!(room, "{client_id} joined room {room_id}");
 
         Some(client_id)
