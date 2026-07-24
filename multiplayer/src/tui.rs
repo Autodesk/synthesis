@@ -324,7 +324,7 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
         let (i, (uid, name)) = member_and_idx;
         // This totally could happen but like that would probably be a bug so whatever
         let color = COLOR_PALETTE[i % COLOR_PALETTE_SIZE];
-        let auth_marker = match *uid == room.authority {
+        let auth_marker = match Some(uid) == room.authority.as_ref() {
             true => "  [A]",
             false => "",
         };

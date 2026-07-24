@@ -63,6 +63,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
+    // Queries and sets the port given by the cli, or the [`DEFAULT_PORT`] if one was not passed
+    env::args().enumerate().for_each(|(i, arg)| {
+        if arg == "--permanentRoom" {
+            let Some(room_id) = env::args().nth(i + 1) else {
+                return;
+            };
+            let mut guard = state.lock().unwrap();
+            guard.new_permanent_room(room_id);
+        }
+    });
+
     // `listener` will be used regardless of the security level specified
     let listener = TcpListener::bind(format!("127.0.0.1:{port}")).await?;
 

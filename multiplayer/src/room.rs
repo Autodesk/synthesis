@@ -39,7 +39,7 @@ impl State {
         let authority_id = Uuid::new_v4();
         let mut room = Room {
             members: vec![Client::new(authority_id, authority_name, authority_tx)],
-            authority: authority_id,
+            authority: Some(authority_id),
             locked: false,
             logs: VecDeque::new(),
         };
@@ -99,6 +99,16 @@ impl State {
         }
 
         self.users.remove(&client_id);
+    }
+
+    pub fn new_permanent_room(&mut self, room_id: RoomId) {
+        let room = Room {
+            members: Vec::new(),
+            authority: None,
+            locked: false,
+            logs: VecDeque::new(),
+        };
+        self.rooms.map.insert(room_id, room);
     }
 
     fn get_room_of_client(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
@@ -171,7 +181,8 @@ impl State {
         self.rooms
             .map
             .values()
-            .map(|room| format!("{}'s room", room.authority))
+            .filter_map(|room| room.authority)
+            .map(|auth| format!("{}'s room", auth))
             .collect()
     }
 
@@ -274,7 +285,7 @@ pub struct Room {
     /// A list of each connected client and their write channel
     members: Vec<Client>,
     /// The physics system authority of the room
-    authority: ClientId,
+    authority: Option<ClientId>,
     /// Whether new players can enter a room
     locked: bool,
     /// Recent activity for this room, newest last. Capped at [`MAX_LOG_LINES`].
@@ -318,9 +329,9 @@ impl Room {
 
         self.members.remove(idx);
 
-        if *client_id == self.authority {
+        if Some(*client_id) == self.authority {
             match self.members.first() {
-                Some(next) => self.authority = next.id,
+                Some(next) => self.authority = Some(next.id),
                 None => return RoomStatus::Closed,
             }
         }
@@ -349,7 +360,7 @@ pub struct Snapshot {
 
 pub struct RoomSnapshot {
     pub id: RoomId,
-    pub authority: ClientId,
+    pub authority: Option<ClientId>,
     pub locked: bool,
     pub members: Vec<(ClientId, String)>,
     pub logs: Vec<Event>,
