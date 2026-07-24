@@ -2,6 +2,7 @@ use crate::logging::{Event, EventType};
 use crate::messaging::{MessagePrefix, ServerMessage, serialize_messagepack};
 use crate::{info, prefix_message, warn};
 
+use rand::RngExt;
 use std::collections::{HashMap, VecDeque};
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
@@ -41,12 +42,11 @@ impl State {
             logs: VecDeque::new(),
         };
 
-        let room_id = self.rooms.idx;
+        let room_id = generate_6_digit_code();
         info!(room, "Authority {authority_id} created room {room_id}");
 
-        self.users.insert(authority_id, room_id);
-        self.rooms.map.insert(room_id, room);
-        self.rooms.idx += 1;
+        self.users.insert(authority_id, room_id.clone());
+        self.rooms.map.insert(room_id.clone(), room);
 
         (authority_id, room_id)
     }
@@ -55,10 +55,10 @@ impl State {
         &mut self,
         client_name: String,
         client_tx: ClientSender,
-        room_id: RoomId,
+        room_id: &RoomId,
     ) -> Option<ClientId> {
         let client_id = Uuid::new_v4();
-        let Some(room) = self.rooms.map.get_mut(&room_id) else {
+        let Some(room) = self.rooms.map.get_mut(room_id) else {
             warn!(
                 self,
                 "Attempted to add {client_id} into non-existant room {room_id}"
@@ -72,7 +72,7 @@ impl State {
 
         let client = Client::new(client_id, client_name, client_tx);
         room.members.push(client);
-        self.users.insert(client_id, room_id);
+        self.users.insert(client_id, room_id.clone());
 
         info!(room, "{client_id} joined room {room_id}");
 
@@ -105,11 +105,11 @@ impl State {
             return None;
         };
 
-        let Some(room) = self.rooms.map.get_mut(&room_id) else {
+        let Some(room) = self.rooms.map.get_mut(room_id) else {
             return None;
         };
 
-        Some((*room_id, room))
+        Some((room_id.clone(), room))
     }
 
     pub fn get_senders_from_user_room(&mut self, client_id: ClientId) -> Vec<ClientSender> {
@@ -191,7 +191,7 @@ impl State {
             .map
             .iter()
             .map(|(id, room)| RoomSnapshot {
-                id: *id,
+                id: id.clone(),
                 authority: room.authority,
                 locked: room.locked,
                 members: room
@@ -203,7 +203,7 @@ impl State {
             })
             .collect();
 
-        rooms.sort_by_key(|r| r.id);
+        rooms.sort_by_key(|r| r.id.clone());
 
         Snapshot {
             rooms,
@@ -212,24 +212,37 @@ impl State {
     }
 }
 
+fn generate_6_digit_code() -> String {
+    let mut rng = rand::rng();
+
+    let chars: Vec<char> = (48..=57)
+        .map(|d| char::from(d))
+        .chain((65..=90).map(|d| char::from(d)))
+        .collect();
+
+    let mut code = String::with_capacity(6);
+
+    for _ in 0..6 {
+        code.push(chars[rng.random_range(0..chars.len())]);
+    }
+
+    code
+}
+
 pub type ClientId = Uuid;
 pub type ClientMap = HashMap<ClientId, RoomId>;
 
 pub type ClientSender = mpsc::Sender<Message>;
 
-pub type RoomId = u32;
+pub type RoomId = String;
 pub struct RoomMap {
     map: HashMap<RoomId, Room>,
-    // Index of next room created
-    // Increment when creating new rooms
-    idx: RoomId,
 }
 
 impl RoomMap {
     pub fn new() -> Self {
         Self {
             map: HashMap::new(),
-            idx: 0,
         }
     }
 }

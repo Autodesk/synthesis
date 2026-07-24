@@ -211,7 +211,7 @@ where
                     let mut guard = state.lock().unwrap();
                     match room_id {
                         None => guard.add_room_and_authority(name, tx),
-                        Some(room_id) => match guard.add_client_to_room(name, tx, room_id) {
+                        Some(room_id) => match guard.add_client_to_room(name, tx, &room_id) {
                             Some(client_id) => (client_id, room_id),
                             None => return None,
                         },

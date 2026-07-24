@@ -132,7 +132,7 @@ impl App {
         }
 
         let focused = &snapshot.rooms[base + self.focused_panel];
-        self.focused_room = Some(focused.id);
+        self.focused_room = Some(focused.id.clone());
         self.focused_members = focused.members.clone();
 
         if self.focused_members.is_empty() {
@@ -179,8 +179,8 @@ impl App {
                 }
             }
             KeyCode::Char('l') => {
-                if let Some(room_id) = self.focused_room {
-                    self.state.lock().unwrap().toggle_room_lock(room_id);
+                if let Some(room_id) = &self.focused_room {
+                    self.state.lock().unwrap().toggle_room_lock(room_id.clone());
                 }
             }
             _ => {}
@@ -295,9 +295,7 @@ fn render_room_panel(
     if room.locked {
         title.push(Span::styled(
             " 🔒 LOCKED ",
-            Style::default()
-                .fg(Color::Red)
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
         ));
     }
 
@@ -394,8 +392,7 @@ fn render_system_log(frame: &mut Frame, area: Rect, snapshot: &Snapshot) {
 }
 
 fn render_status(frame: &mut Frame, area: Rect) {
-    let hints =
-        " q quit  │  Tab/⇧Tab page rooms  │  ←/→ focus panel  │  ↑/↓ select user  │  k kick  │  l lock/unlock ";
+    let hints = " q quit  │  Tab/⇧Tab page rooms  │  ←/→ focus panel  │  ↑/↓ select user  │  k kick  │  l lock/unlock ";
     let status = Paragraph::new(hints).style(Style::default().fg(Color::Black).bg(Color::Gray));
     frame.render_widget(status, area);
 }
