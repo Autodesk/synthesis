@@ -7,23 +7,19 @@
     commit-lock-file-summary = "chore: update flake.lock";
   };
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs= {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/triplet";
+  };
 
   outputs =
-    { self, nixpkgs }:
+    { self, nixpkgs, systems }:
     let
       inherit (nixpkgs) lib;
 
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-
-      forEachSupportedSystem =
+      forEachSystem =
         f:
-        lib.genAttrs supportedSystems (
+        lib.genAttrs (import systems) (
           system:
           f {
             inherit system;
@@ -32,7 +28,7 @@
         );
     in
     {
-      devShells = forEachSupportedSystem (
+      devShells = forEachSystem (
         { pkgs, system }:
         {
           default = self.devShells.${system}.fission;
@@ -67,9 +63,9 @@
         }
       );
 
-      formatter = forEachSupportedSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
+      formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
 
       # Build all devShells, instead of just verifying they are derivations
-      checks = forEachSupportedSystem ({ system, ... }: self.devShells.${system});
+      checks = forEachSystem ({ system, ... }: self.devShells.${system});
     };
 }
