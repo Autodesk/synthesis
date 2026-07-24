@@ -843,15 +843,29 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    /**
+     * Gets the tightest fitting oriented bounding box around the robot, centered at the robot's origin.
+     *
+     * In order for this function to be up-to-date, both `this.computeFurthestVertices` and `this.computeRootToCenterOffset` must have been called since the last time the dimensions of the robot changed.
+     *
+     * This should basically only be on setup, and whenever a non-wheel robot joint moves.
+     *
+     * @returns The aforementioned bounding box
+     */
     public getOrientedBoundingBox(): Jolt.OrientedBox {
+        // Get dimensions of scene object along each axis
         const { width, height, depth } = this._cachedOrientedBoundingBoxDimensions ?? this.computeFurthestVertices()
-        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-
         const halfExtent = new JOLT.Vec3(width / 2, height / 2, depth / 2)
+
+        // Get root body transformation
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
         const rotation = rootBody.GetRotation() // STATIC_ALIAS
 
+        // We rotate our vector by the rotation of the root body, otherwise any rotation will mess with the translation
         const rootPosition = convertJoltRVec3ToJoltVec3(rootBody.GetPosition(), false) // STATIC_ALIAS
         const rotatedOffset = rotation.MulVec3(this._cachedRootToCenterOffset!)
+
+        // Finally, we just offset the root node to get the true center
         const center = rootPosition.Add(rotatedOffset)
         const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, center) // STATIC_ALIAS
 
