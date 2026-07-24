@@ -50,6 +50,7 @@ import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
+    convertJoltQuatToThreeQuaternion,
     convertJoltRVec3ToJoltVec3,
     convertJoltVec3ToThreeVector3,
     convertThreeVector3ToJoltVec3,
@@ -761,6 +762,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     /**
+     * @returns The transformation matrix which corresponds to the reverse of the current spacial rotation of the root node of this scene object, relative to the origin
+     */
+    private getInverseRotationOfBody(): THREE.Matrix4 {
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+        const inverseRotation = rootBody.GetWorldTransform().GetRotation().Inversed().GetQuaternion() // STATIC_ALIAS
+        return new THREE.Matrix4().makeRotationFromQuaternion(convertJoltQuatToThreeQuaternion(inverseRotation))
+    }
+
+    /**
      * Computes the six furthest vertices along the x, y, and z axes respectively, returning the
      * resulting width, height, and depth.
      *
@@ -768,23 +778,17 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * However, if the robot modifies its dimensionality in some way(e.g. by extending an arm), this function should be called again to have accurate results.
      */
     private computeFurthestVertices(): BoundingBoxDimensions {
-        const rootNodeId = this.getRootNodeId()
-        if (!rootNodeId) {
-            console.warn("No root node found for robot, using regular dimensions")
-            return this.getDimensions()
-        }
-
-        const rootBody = World.physicsSystem.getBody(rootNodeId)!
-        const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform()) // STATIC_ALIAS
-        const rootRotation = new THREE.Quaternion()
-        rootTransform.decompose(new THREE.Vector3(), rootRotation, new THREE.Vector3())
-        const inverseRotation = new THREE.Matrix4().makeRotationFromQuaternion(rootRotation.invert())
-
         const furthestVertices = {
             x: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
             y: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
             z: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
         }
+
+        const inverseRotation = this.getInverseRotationOfBody()
+
+        const biggest = JOLT.AABox.prototype.sBiggest() // STATIC_ALIAS
+        const scale = new JOLT.Vec3(1, 1, 1)
+        const identity = JOLT.Quat.prototype.sIdentity() // STATIC_ALIAS
 
         this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
             const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
@@ -794,42 +798,42 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()) // STATIC_ALIAS
 
             const shape = body.GetShape()
-            const scale = new JOLT.Vec3(1, 1, 1)
-            const biggest = JOLT.AABox.prototype.sBiggest() // STATIC_ALIAS
-            const identity = JOLT.Quat.prototype.sIdentity() // STATIC_ALIAS
             const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
+            const vertices = new Float32Array(
+                JOLT.HEAP32.buffer,
+                triangleContext.GetVerticesData(),
+                triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
+            )
 
-            try {
-                const vertices = new Float32Array(
-                    JOLT.HEAP32.buffer,
-                    triangleContext.GetVerticesData(),
-                    triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
-                )
+            const vertex = new THREE.Vector3()
+            for (let i = 0; i < vertices.length; i += 3) {
+                vertex.set(vertices[i], vertices[i + 1], vertices[i + 2])
+                // Transform the vertex into the position it would occupy if the robot were axis aligned
+                vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
 
-                const vertex = new THREE.Vector3()
-                for (let i = 0; i < vertices.length; i += 3) {
-                    vertex.set(vertices[i], vertices[i + 1], vertices[i + 2])
-                    // Transform the vertex into the position it would occupy if the robot were axis aligned
-                    vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
+                // Compute maximum vertex along each axis
+                const oldX = furthestVertices.x
+                const oldY = furthestVertices.y
+                const oldZ = furthestVertices.z
 
-                    furthestVertices.x.min = Math.min(furthestVertices.x.min, vertex.x)
-                    furthestVertices.x.max = Math.max(furthestVertices.x.max, vertex.x)
-                    furthestVertices.y.min = Math.min(furthestVertices.y.min, vertex.y)
-                    furthestVertices.y.max = Math.max(furthestVertices.y.max, vertex.y)
-                    furthestVertices.z.min = Math.min(furthestVertices.z.min, vertex.z)
-                    furthestVertices.z.max = Math.max(furthestVertices.z.max, vertex.z)
-                }
-            } finally {
-                JOLT.destroy(triangleContext)
-                JOLT.destroy(scale)
+                oldX.min = Math.min(oldX.min, vertex.x)
+                oldY.min = Math.min(oldY.min, vertex.y)
+                oldZ.min = Math.min(oldZ.min, vertex.z)
+
+                oldX.max = Math.max(oldX.max, vertex.x)
+                oldY.max = Math.max(oldY.max, vertex.y)
+                oldZ.max = Math.max(oldZ.max, vertex.z)
             }
+
+            JOLT.destroy(triangleContext)
         })
+
+        JOLT.destroy(scale)
 
         const mins = [furthestVertices.x.min, furthestVertices.y.min, furthestVertices.z.min]
         const maxes = [furthestVertices.x.max, furthestVertices.y.max, furthestVertices.z.max]
         if (mins.some(m => m === Number.POSITIVE_INFINITY) || maxes.some(m => m === Number.NEGATIVE_INFINITY)) {
-            console.warn("Failed to compute furthest vertices, using regular dimensions")
-            return this.getDimensions()
+            console.warn("Failed to compute furthest vertices")
         }
 
         return {
