@@ -43,7 +43,7 @@ import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { type ProgressHandle, URDFImportProgressBar } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
@@ -69,7 +69,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { copyVec3, hexStringToUint8Array } from "@/util/Utility.ts"
+import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -236,7 +236,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.multiplayerOwningClientId = multiplayerOwnerId
         this.loadPreferences()
 
-        progressHandle?.update("Creating mechanism...", 0.9)
+        progressHandle?.update("Creating scene object...", 0.9)
 
         this.mechanism = World.physicsSystem.createMechanismFromParser(this.mirabufInstance.parser)
         if (this.mechanism.layerReserve) this._physicsLayerReserve = this.mechanism.layerReserve
@@ -1429,7 +1429,12 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), progressHandle, multiplayerOwnerId)
+    const mirabufInstance = new MirabufInstance(parser)
+
+    progressHandle?.update("Created Mirabuf Instance", URDFImportProgressBar.MIRABUF_INSTANCE)
+    await yieldToMain()
+
+    return new MirabufSceneObject(mirabufInstance, progressHandle, multiplayerOwnerId)
 }
 
 async function migrateUUID(parser: MirabufParser, hash: string) {
