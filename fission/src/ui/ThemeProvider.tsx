@@ -92,7 +92,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
 
     useEffect(() => {
-        setThemeOptions((themeOptions) => ({
+        setThemeOptions(themeOptions => ({
             ...themeOptions,
             primary: {
                 main: primaryColor,
