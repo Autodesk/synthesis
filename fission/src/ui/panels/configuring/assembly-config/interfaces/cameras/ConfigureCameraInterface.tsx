@@ -2,7 +2,7 @@ import { Box, Divider, Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
-import { CameraPreferences, defaultCameraPreferences } from "@/systems/preferences/PreferenceTypes"
+import { type CameraPreferences, defaultCameraPreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
 import { Button, DeleteButton, EditButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import CameraConfigInterface from "./CameraConfigInterface"
@@ -15,7 +15,7 @@ interface ConfigCameraProps {
 }
 
 const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }) => {
-    const [version, setVersion] = useState(0)
+    const [_version, setVersion] = useState(0)
     const [selectedCamera, setSelectedCamera] = useState<CameraPreferences | null>(null)
 
     const cameras = selectedRobot.cameraPreferences
