@@ -98,21 +98,6 @@ export default defineConfig(async ({ mode }) => {
             testTimeout: 10000,
             globals: true,
             environment: "jsdom",
-            reporters: process.env.GITHUB_ACTIONS
-                ? [
-                      "github-actions",
-                      "default",
-                      {
-                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
-                              if (reason === "passed" && unhandled.length === 0) {
-                                  console.error("GH ACTIONS VITEST PASSED")
-                              } else {
-                                  console.error(unhandled)
-                              }
-                          },
-                      },
-                  ]
-                : ["default"],
             browser: {
                 enabled: true,
                 provider: "playwright",
@@ -183,6 +168,21 @@ export default defineConfig(async ({ mode }) => {
             GIT_COMMIT: JSON.stringify(await getCommitHash()),
         },
         test: {
+            reporters: process.env.GITHUB_ACTIONS
+                ? [
+                      "github-actions",
+                      "default",
+                      {
+                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
+                              if (reason === "passed" && unhandled.length === 0) {
+                                  console.error("GH ACTIONS VITEST PASSED")
+                              } else {
+                                  console.error(unhandled)
+                              }
+                          },
+                      },
+                  ]
+                : ["default"],
             projects: [fissionProject, ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject] : [])],
         },
         build: {
