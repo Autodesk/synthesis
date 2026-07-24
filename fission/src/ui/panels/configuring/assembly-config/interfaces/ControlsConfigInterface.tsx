@@ -33,13 +33,13 @@ const ControlsConfigInterface: ConfigurationSubpanelComponent = ({
                                 onAccept: () => {
                                     setSpotlightAssembly(selectedAssembly)
                                     openPanel(ChooseInputSchemePanel, undefined, panel)
-                                    closePanel(panel.id, CloseType.Overwrite)
+                                    closePanel(panel.id, CloseType.OVERWRITE)
                                 },
                             })
                         } else {
                             setSpotlightAssembly(selectedAssembly)
                             openPanel(ChooseInputSchemePanel, undefined, panel)
-                            closePanel(panel.id, CloseType.Accept)
+                            closePanel(panel.id, CloseType.ACCEPT)
                         }
                     }}
                 >

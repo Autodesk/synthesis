@@ -34,8 +34,8 @@ const MoveInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, panel
             scaleDisabled={true}
             size={3.0}
             parent={selectedAssembly}
-            onAccept={() => closePanel(panel.id, CloseType.Accept)}
-            onCancel={() => closePanel(panel.id, CloseType.Cancel)}
+            onAccept={() => closePanel(panel.id, CloseType.ACCEPT)}
+            onCancel={() => closePanel(panel.id, CloseType.CANCEL)}
         />
     )
 }

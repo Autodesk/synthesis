@@ -234,7 +234,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
 
     const onClose = useCallback(
         async (closeType: CloseType) => {
-            if (closeType == CloseType.Overwrite && hasMadeChanges) {
+            if (closeType == CloseType.OVERWRITE && hasMadeChanges) {
                 await onBeforeAccept()
                 addToast("info", "Configuration saved")
             }
@@ -331,7 +331,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                                 className={"w-full"}
                                 color={"warning"}
                                 onClick={() => {
-                                    closePanel(panel!.id, CloseType.Accept)
+                                    closePanel(panel!.id, CloseType.ACCEPT)
                                     selectedAssembly.resetPreferences()
                                     globalAddToast(
                                         "info",
