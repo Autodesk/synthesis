@@ -10,13 +10,13 @@ import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
-    public static readonly redMaterial = new Three.MeshPhongMaterial({
+    public static readonly RED_MATERIAL = new Three.MeshPhongMaterial({
         color: 0xed1c24,
         shininess: 0.0,
         opacity: 0.7,
         transparent: true,
     })
-    public static readonly blueMaterial = new Three.MeshPhongMaterial({
+    public static readonly BLUE_MATERIAL = new Three.MeshPhongMaterial({
         color: 0x0066b3,
         shininess: 0.0,
         opacity: 0.7,
@@ -26,7 +26,7 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     private _prevGPs: Jolt.BodyID[] = []
 
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
-        return { red: ScoringZoneSceneObject.redMaterial, blue: ScoringZoneSceneObject.blueMaterial }
+        return { red: ScoringZoneSceneObject.RED_MATERIAL, blue: ScoringZoneSceneObject.BLUE_MATERIAL }
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number) {

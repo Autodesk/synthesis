@@ -129,7 +129,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     >
                         {!props.hideCancel && (
                             <Button
-                                onClick={() => closePanel(panel.id, CloseType.Cancel)}
+                                onClick={() => closePanel(panel.id, CloseType.CANCEL)}
                                 variant="outlined"
                                 color="secondary"
                             >
@@ -138,7 +138,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                         )}
                         {!props.hideAccept && (
                             <Button
-                                onClick={() => closePanel(panel.id, CloseType.Accept)}
+                                onClick={() => closePanel(panel.id, CloseType.ACCEPT)}
                                 variant="contained"
                                 color="primary"
                                 disabled={props.disableAccept}

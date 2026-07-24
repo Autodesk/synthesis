@@ -129,7 +129,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public intakeActive = false
     public ejectorActive = false
 
-    private multiplayerOwningClientId?: string
+    private _multiplayerOwningClientId?: string
 
     private _lastEjectableToastTime = 0
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
@@ -176,8 +176,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get multiplayerOwnerName(): string | undefined {
-        if (this.multiplayerOwningClientId == null) return undefined
-        return World.multiplayerSystem?._clientToInfoMap?.get(this.multiplayerOwningClientId)?.displayName
+        if (this._multiplayerOwningClientId == null) return undefined
+        return World.multiplayerSystem?._clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
     }
 
     get simConfigData() {
@@ -193,7 +193,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     get isOwnObject() {
-        return this.multiplayerOwningClientId == undefined
+        return this._multiplayerOwningClientId == undefined
     }
 
     public get activeEjectables(): Jolt.BodyID[] {
@@ -233,7 +233,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
         super()
         this.mirabufInstance = mirabufInstance
-        this.multiplayerOwningClientId = multiplayerOwnerId
+        this._multiplayerOwningClientId = multiplayerOwnerId
         this.loadPreferences()
 
         progressHandle?.update("Creating scene object...", 0.9)
@@ -1235,9 +1235,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomTargetControls) {
         const modes = [
-            { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
-            { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
-            { mode: CameraMode.Face, name: "Camera: Face Robot" },
+            { mode: CameraMode.FOLLOW, name: "Camera: Follow Robot" },
+            { mode: CameraMode.LOCKED, name: "Camera: Lock to Robot" },
+            { mode: CameraMode.FACE, name: "Camera: Face Robot" },
         ]
 
         modes
@@ -1295,8 +1295,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 screen: CameraPreviewPanel,
                 type: "panel",
                 customProps: {
-                    selectedAssembly: this
-                }
+                    selectedAssembly: this,
+                },
             })
         }
 

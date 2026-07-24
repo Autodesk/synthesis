@@ -181,7 +181,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
 }
 
 const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { openPanel, closePanel, openModal, configureScreen } = useUIContext()
+    const { openPanel, closePanel, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
     const [useSpawnPositions, setUseSpawnPositions] = useState(false)
@@ -238,7 +238,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                             MatchMode.getInstance().setMatchModeConfig(config)
 
                             await MatchMode.getInstance().start(true, useSpawnPositions)
-                            closePanel(panel!.id, CloseType.Accept)
+                            closePanel(panel!.id, CloseType.ACCEPT)
                         }}
                         secondaryOnClick={
                             !config.isDefault
@@ -255,7 +255,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                     />
                 )
             }),
-        [matchModeConfigs, openModal, closePanel, useSpawnPositions]
+        [matchModeConfigs, closePanel, useSpawnPositions, panel]
     )
 
     const fileUploadRef = useRef<HTMLInputElement>(null)
@@ -326,7 +326,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     const createNewMatchModeConfig = () => {
         openPanel(CreateNewMatchModeConfigPanel, undefined)
-        closePanel(panel!.id, CloseType.Overwrite)
+        closePanel(panel!.id, CloseType.OVERWRITE)
     }
 
     return (

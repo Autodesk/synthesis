@@ -18,7 +18,7 @@ import {
 import type MirabufSceneObject from "./MirabufSceneObject"
 
 export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
-    private static readonly transparentMaterial = new THREE.MeshPhongMaterial({
+    private static readonly TRANSPARENT_MATERIAL = new THREE.MeshPhongMaterial({
         color: 0x0000,
         shininess: 0.0,
         opacity: 0.0,
@@ -34,7 +34,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private _cachedFieldTransformation?: Jolt.RMat44
 
     public prefs: ZonePreferencesShared & P
-    private preferenceKey: keyof UserPreferences
+    private _preferenceKey: keyof UserPreferences
 
     public toRender: boolean | undefined
     public mesh?: THREE.Mesh
@@ -57,7 +57,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         this._parentAssembly = parentAssembly
         this.prefs = prefs
-        this.preferenceKey = preferenceKey
+        this._preferenceKey = preferenceKey
         this.toRender = PreferencesSystem.getUserPreference(preferenceKey) as boolean | undefined
     }
 
@@ -116,7 +116,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private createVisualMesh(props: VisualProperties) {
         const unitVector = new JOLT.Vec3(1, 1, 1)
 
-        this.mesh = World.sceneRenderer.createBox(unitVector, ZoneSceneObject.transparentMaterial)
+        this.mesh = World.sceneRenderer.createBox(unitVector, ZoneSceneObject.TRANSPARENT_MATERIAL)
         World.sceneRenderer.addObject(this.mesh)
 
         this.setMeshProperties(props)
@@ -131,8 +131,8 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
             return
         }
 
-        this.toRender = PreferencesSystem.getUserPreference(this.preferenceKey) as boolean | undefined
-        this.mesh.material = this.toRender ? this.material() : ZoneSceneObject.transparentMaterial
+        this.toRender = PreferencesSystem.getUserPreference(this._preferenceKey) as boolean | undefined
+        this.mesh.material = this.toRender ? this.material() : ZoneSceneObject.TRANSPARENT_MATERIAL
     }
 
     /**
