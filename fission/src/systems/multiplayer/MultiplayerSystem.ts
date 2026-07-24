@@ -59,7 +59,7 @@ class MultiplayerSystem {
             this.client.send(msg)
         }
         this.client.onClose = () => {
-            globalAddToast("error", "Multiplayer connection closed")
+            globalAddToast("error", "Multiplayer disconnected")
             this.destroy()
             EventSystem.dispatch("MultiplayerStateJoinRoom")
         }
