@@ -4,6 +4,7 @@ import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useSt
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import { getCachedThumbnail } from "@/mirabuf/MirabufThumbnail"
 import EventSystem from "@/systems/EventSystem.ts"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 import CommandRegistry from "@/ui/components/CommandRegistry"
@@ -40,15 +41,51 @@ const yearOf = (asset: { year?: number }): YearKey => asset.year ?? OTHER_YEAR
 interface AssetCardProps {
     name: string
     thumbnail?: string
+    embeddedThumbnailHash?: string // for when the mira data doesn't contain a thumbnail
     miraType: MiraType
     cached: boolean
     onSpawn: () => void
     onDelete?: () => void
 }
 
-const AssetCard: React.FC<AssetCardProps> = ({ name, thumbnail, miraType, cached, onSpawn, onDelete }) => {
-    const [thumbFailed, setThumbFailed] = useState(false)
-    const showThumb = thumbnail && !thumbFailed
+function useEmbeddedThumbnail(hash: string | undefined): string | undefined {
+    const [url, setUrl] = useState<string | undefined>(undefined)
+
+    useEffect(() => {
+        setUrl(undefined)
+        if (!hash) return
+
+        let objectUrl: string | undefined
+        let stale = false
+        getCachedThumbnail(hash)
+            .then(blob => {
+                if (stale || !blob) return
+                objectUrl = URL.createObjectURL(blob)
+                setUrl(objectUrl)
+            })
+            .catch(console.error)
+        return () => {
+            stale = true
+            if (objectUrl) URL.revokeObjectURL(objectUrl)
+        }
+    }, [hash])
+
+    return url
+}
+
+const AssetCard: React.FC<AssetCardProps> = ({
+    name,
+    thumbnail,
+    embeddedThumbnailHash,
+    miraType,
+    cached,
+    onSpawn,
+    onDelete,
+}) => {
+    const [failedSrc, setFailedSrc] = useState<string | undefined>(undefined)
+    const embedded = useEmbeddedThumbnail(thumbnail ? undefined : embeddedThumbnailHash)
+    const thumbnailSrc = thumbnail ?? embedded
+    const showThumb = thumbnailSrc && thumbnailSrc !== failedSrc
     const PlaceholderIcon = miraType === MiraType.FIELD ? SynthesisIcons.CHESS_BOARD : SynthesisIcons.CAR
 
     return (
@@ -76,9 +113,9 @@ const AssetCard: React.FC<AssetCardProps> = ({ name, thumbnail, miraType, cached
             >
                 {showThumb ? (
                     <img
-                        src={thumbnail}
+                        src={thumbnailSrc}
                         alt={name}
-                        onError={() => setThumbFailed(true)}
+                        onError={() => setFailedSrc(thumbnailSrc)}
                         className="w-full h-full object-cover"
                     />
                 ) : (
@@ -384,6 +421,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                                 key={asset.hash}
                                 name={asset.name}
                                 thumbnail={asset.thumbnail}
+                                embeddedThumbnailHash={cachedByHash.has(asset.hash) ? asset.hash : undefined}
                                 miraType={asset.miraType}
                                 cached={cachedByHash.has(asset.hash)}
                                 onSpawn={() => spawnLibraryAsset(asset)}
@@ -396,6 +434,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                                     key={info.hash}
                                     name={info.name || "Unnamed"}
                                     thumbnail={info.thumbnail}
+                                    embeddedThumbnailHash={info.hash}
                                     miraType={info.miraType}
                                     cached
                                     onSpawn={() => spawnSaved(info)}

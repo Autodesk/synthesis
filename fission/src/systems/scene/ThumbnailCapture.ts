@@ -2,8 +2,14 @@ import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 export const THUMBNAIL_SIZE = 512
-const THUMBNAIL_MIME_TYPE = "image/webp"
+export const THUMBNAIL_EXTENSION = ".webp"
 const THUMBNAIL_QUALITY = 0.85
+
+export const THUMBNAIL_IS_TRANSPARENT = false
+
+export function thumbnailMimeType(extension: string): string {
+    return `image/${extension.replace(".", "")}`
+}
 
 const CAPTURE_SUPERSAMPLE = 2
 
@@ -189,11 +195,9 @@ async function encodePixels(pixels: Uint8Array, renderSize: number): Promise<Blo
     scaledContext.imageSmoothingQuality = "high"
     scaledContext.drawImage(full, 0, 0, THUMBNAIL_SIZE, THUMBNAIL_SIZE)
 
-    // converting canvas to blob
+    const mimeType = thumbnailMimeType(THUMBNAIL_EXTENSION)
     if (scaled instanceof HTMLCanvasElement) {
-        return new Promise(resolve =>
-            scaled.toBlob(blob => resolve(blob ?? undefined), THUMBNAIL_MIME_TYPE, THUMBNAIL_QUALITY)
-        )
+        return new Promise(resolve => scaled.toBlob(blob => resolve(blob ?? undefined), mimeType, THUMBNAIL_QUALITY))
     }
-    return scaled.convertToBlob({ type: THUMBNAIL_MIME_TYPE, quality: THUMBNAIL_QUALITY })
+    return scaled.convertToBlob({ type: mimeType, quality: THUMBNAIL_QUALITY })
 }

@@ -3,7 +3,7 @@ import { type ChangeEvent, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { embedAssemblyThumbnail } from "@/mirabuf/MirabufThumbnail"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { loadURDF } from "@/urdf/URDFLoader"
@@ -40,14 +40,6 @@ interface ImportLocalMirabufProps {
 
 function isURDFFile(filename: string): boolean {
     return filename.split(".").pop()?.toLowerCase() === "zip"
-}
-
-async function generateThumbnail(target: MirabufSceneObject) {
-    const blob = await World.sceneRenderer.captureAssemblyThumbnail(target)
-    const a = document.createElement("a")
-    a.href = URL.createObjectURL(blob as Blob)
-    a.download = "thumb.webp"
-    a.click()
 }
 
 const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufProps>> = ({ modal }) => {
@@ -116,7 +108,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
 
                 if (mirabufSceneObject) {
                     World.sceneRenderer.registerSceneObject(mirabufSceneObject)
-                    generateThumbnail(mirabufSceneObject)
+                    embedAssemblyThumbnail(mirabufSceneObject).catch(console.error)
 
                     if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                         openPanel(InitialConfigPanel, undefined, modal)
