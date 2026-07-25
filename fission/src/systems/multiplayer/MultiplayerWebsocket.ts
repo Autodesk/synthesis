@@ -16,12 +16,14 @@ const console = consolePrefixer({
 
 class MultiplayerWebsocket {
     private readonly ws: WebSocket
-
+    public get url() {
+        return this.ws.url
+    }
     public onServerMessage?: (msg: ServerMessage) => void
     public onPeerMessage?: (msg: MessageWithTimestamp) => void
-    public onOpen?: typeof WebSocket.prototype.onopen
-    public onClose?: typeof WebSocket.prototype.onclose
-    public onError?: typeof WebSocket.prototype.onopen
+    public onOpen?: ((this: MultiplayerWebsocket, ev: Event) => any) | null;
+    public onClose?: ((this: MultiplayerWebsocket, ev: CloseEvent) => any) | null;
+    public onError?: ((this: MultiplayerWebsocket, ev: Event) => any) | null;
 
     constructor(url: string) {
         this.ws = new WebSocket(url)
@@ -29,20 +31,20 @@ class MultiplayerWebsocket {
         this.ws.onopen = e => {
             console.info("Opened")
             if (this.onOpen) {
-                this.onOpen.bind(this.ws)(e)
+                this.onOpen.bind(this)(e)
             }
         }
         this.ws.onclose = e => {
             console.info("Closed")
             if (this.onClose) {
-                this.onClose.bind(this.ws)(e)
+                this.onClose.bind(this)(e)
             }
         }
 
         this.ws.onerror = e => {
             console.error(e)
             if (this.onError) {
-                this.onError.bind(this.ws)(e)
+                this.onError.bind(this)(e)
             }
         }
         this.ws.onmessage = async e => {
@@ -59,7 +61,23 @@ class MultiplayerWebsocket {
         }
     }
 
+    public static init(roomId: string|null, displayName: string, ws:MultiplayerWebsocket): MultiplayerWebsocket {
+        console.groupCollapsed("Multiplayer initialization")
+        const initialMessage:ClientToServerMessage = {
+            type:"initializeconnection",
+            room_id: roomId,
+            name: displayName
+        }
+        if (ws.ws.readyState == WebSocket.OPEN) {
+            ws.send(initialMessage)
+        } else {
+            ws.onOpen = () => { ws.send(initialMessage) }
+        }
+        return ws
+    }
+
     public send(msg: MessageWithTimestamp | ClientToServerMessage): void {
+        console.log("Sending", msg)
         return this.ws.send(encode(msg))
     }
 

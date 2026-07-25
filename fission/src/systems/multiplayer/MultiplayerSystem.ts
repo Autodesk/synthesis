@@ -12,7 +12,6 @@ import type {
     RemoteSceneObjectId,
 } from "./MultiplayerTypes.ts"
 import EventSystem from "@/systems/EventSystem.ts"
-import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
 import type { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
 import { consolePrefixer } from "console-prefixer"
 import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
@@ -43,25 +42,18 @@ class MultiplayerSystem {
     private _info: ClientInfo = {} as ClientInfo
     private _onDestroyHooks: (() => void)[] = []
 
-    public static async setup(hostAddr: string, roomId: string | "create", displayName: string): Promise<boolean> {
+    public static async setup(ws:MultiplayerWebsocket, displayName: string): Promise<boolean> {
         console.groupCollapsed("Multiplayer initialization")
-        const system = new MultiplayerSystem(hostAddr, roomId, displayName)
+        const system = new MultiplayerSystem(ws, displayName)
         const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
         console.groupEnd()
         return initResult
     }
 
-    private constructor(hostAddr: string, roomId: string | "create", displayName: string) {
-        this.client = new MultiplayerWebsocket(hostAddr)
-        this.client.onOpen = () => {
-            const msg: ClientToServerMessage = {
-                type: "initializeconnection",
-                room_id: roomId == "create" ? null : roomId,
-                name: displayName,
-            }
-            this.client.send(msg)
-        }
+    private constructor(ws: MultiplayerWebsocket, displayName: string) {
+        this.client = ws
+
         this.client.onClose = () => {
             globalAddToast("error", "Multiplayer disconnected")
             this.destroy()

@@ -95,6 +95,7 @@ export class SynthesisIcons {
     public static readonly INFINITY = FaInfinity
     public static readonly UNLINK = FaUnlink
     public static readonly DICE = GiPerspectiveDiceSixFacesOne
+    public static readonly REFRESH = BiRefresh
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })

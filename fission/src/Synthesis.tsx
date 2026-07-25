@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import MainHUD from "@/components/MainHUD"
 import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
 import Scene from "@/components/Scene.tsx"
-import MultiplayerStartModal, { type MultiplayerInitProps } from "@/modals/MultiplayerStartModal.tsx"
+import MultiplayerStartModal, { type MultiplayerInitProps } from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import World from "@/systems/World.ts"
 import { UIRenderer } from "@/ui/UIRenderer.tsx"
@@ -24,6 +24,7 @@ import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
 import SessionStorage, { applyAutoToast } from "@/util/SessionStorage.ts"
+import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts";
 
 const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
@@ -47,7 +48,7 @@ const Synthesis = () => {
         async (info: MultiplayerInitProps) => {
             PreferencesSystem.setUserPreference("MultiplayerUsername", info.displayName)
             PreferencesSystem.savePreferences()
-            const success = await MultiplayerSystem.setup(info.url, info.roomId ?? "create", info.displayName)
+            const success = await MultiplayerSystem.setup(info.ws, info.displayName)
             if (success) {
                 // if (isHost) {
                 //     globalAddToast("info", "Room Code", room)
@@ -69,10 +70,12 @@ const Synthesis = () => {
         }
         if (urlParams.has("autojoin")) {
             const room = urlParams.get("autojoin")!
+            const name = PreferencesSystem.getUserPreference("MultiplayerUsername") ?? "TestUser"
+            const ws = new MultiplayerWebsocket(`ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`)
+            MultiplayerWebsocket.init(room || null, name, ws)
             startWorldCallback({
-                displayName: PreferencesSystem.getUserPreference("MultiplayerUsername") ?? "TestUser",
-                roomId: room || undefined,
-                url: `ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`,
+                displayName: name,
+                ws: ws
             })
             return
         }
