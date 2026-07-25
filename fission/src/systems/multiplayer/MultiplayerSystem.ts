@@ -119,7 +119,7 @@ class MultiplayerSystem {
                 this._info.clientId = this.clientId
                 this._info.creationTime = Date.now()
                 globalAddToast("success", "Joined room", this.roomId)
-                await this.sendHello(true)
+                await this.introduceSelf(true)
                 setTimeout(() => EventSystem.dispatch("MultiplayerStateJoinRoom"))
                 break
             case "kick":
@@ -163,7 +163,7 @@ class MultiplayerSystem {
         return this.client.send(message as MessageWithTimestamp)
     }
 
-    async sendHello(requestIntroductions: boolean, peerID?: string) {
+    async introduceSelf(requestIntroductions: boolean, peerID?: string) {
         await this.send(
             {
                 type: "info",
@@ -174,6 +174,20 @@ class MultiplayerSystem {
             },
             peerID
         )
+        for (const obj of this.getOwnObjects()) {
+            await this.send({
+                type: "newObject",
+                data: {
+                    sceneObjectKey: obj.id as RemoteSceneObjectId,
+                    assemblyHash: await hashBuffer(
+                        mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
+                    ),
+                    miraType: obj.miraType,
+                    initialPreferences: obj.getPreferenceData(),
+                    bodyIds: obj.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+                },
+            }, peerID)
+        }
     }
 
     getOwnSceneObjectIDs() {

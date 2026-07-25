@@ -25,7 +25,7 @@ import type {
     RemoteSceneObjectId,
 } from "@/systems/multiplayer/MultiplayerTypes.ts"
 
-import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
+import MultiplayerSystem, { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
 
 export const peerMessageHandlers = {
     info: handleInfoMessage,
@@ -64,11 +64,12 @@ async function handleMatchModeStateMessage(data: MatchModeStateBody) {
     }
 }
 
-function handleInfoMessage({ info, introduceSelf }: InfoBody) {
-    World.multiplayerSystem?._clientToObjectMap.set(info.clientId, [])
-    World.multiplayerSystem?._clientToInfoMap.set(info.clientId, info)
+
+async function handleInfoMessage(this:MultiplayerSystem, { info, introduceSelf }: InfoBody) {
+    this._clientToObjectMap.set(info.clientId, [])
+    this._clientToInfoMap.set(info.clientId, info)
     if (introduceSelf) {
-        World.multiplayerSystem?.sendHello(false, info.clientId)
+        await this.introduceSelf(false, info.clientId)
     }
     globalAddToast("success", "Multiplayer Peer Connected", info.displayName)
     EventSystem.dispatch("MultiplayerStatePeerChange")
