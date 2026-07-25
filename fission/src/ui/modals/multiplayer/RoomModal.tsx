@@ -90,6 +90,11 @@ const RoomModal: React.FC<RoomModalProps> = ({initialRoomList, url, startWorldCa
         const success = await withTimeout(startWorldCallback(initData), "Multiplayer connect timed out")
         if (success) {
             closeModal(CloseType.ACCEPT)
+        } else {
+            globalAddToast("warning", "Could not join room")
+            wsRef.current?.close()
+            wsRef.current = null
+            await updateRoomList()
         }
     }, [validate])
 

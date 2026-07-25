@@ -76,6 +76,9 @@ class MultiplayerSystem {
                 await this.handleServerMessage(msg)
                 resolve(true)
             }
+            this.client.onClose = () => {
+                resolve(false)
+            }
             setTimeout(() => resolve(false), 10000)
         }).then(res => {
             if (res) {
