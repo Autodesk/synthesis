@@ -25,7 +25,7 @@ import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
 import SessionStorage, { applyAutoToast } from "@/util/SessionStorage.ts"
 
-function Synthesis() {
+const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
     const mainLoopHandle = useRef(0)

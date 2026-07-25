@@ -186,13 +186,14 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     }, [validateServer, promptCert, secure])
 
     const { startWorldCallback } = modal!.props.custom
+
     useLayoutEffect(() => {
         configureScreen(
             modal!,
             { title: "Start Multiplayer", hideAccept: true, hideCancel: true, allowClickAway: false },
             {}
         )
-    }, [])
+    }, [configureScreen, modal])
 
     const joinRoom = useCallback(async (roomId:string) => {
         setRoom(roomId)
@@ -201,7 +202,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
 
         const success = await withTimeout(startWorldCallback(initData), "Multiplayer join timed out")
         if (success) {
-            closeModal(CloseType.Accept)
+            closeModal(CloseType.ACCEPT)
         }
     }, [validate])
 
@@ -289,7 +290,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
                     const success = await withTimeout(startWorldCallback(initData), "Multiplayer create timed out")
 
                     if (success) {
-                        closeModal(CloseType.Accept)
+                        closeModal(CloseType.ACCEPT)
                     }
                 }}
                 className="w-full my-1"

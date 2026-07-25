@@ -2,7 +2,6 @@ import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import MirabufCachingService from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
@@ -347,5 +346,5 @@ function handleMatchModePenaltyMessage(data: MatchModePenaltyBody, peerId: strin
         pendingOperations.push(() => handleMatchModePenaltyMessage(data, peerId))
         return
     }
-    ScoreTracker.robotPenalty(obj, data.points, data.description, false)
+    World.scoreTracker.robotPenalty(obj, data.points, data.description, false)
 }
