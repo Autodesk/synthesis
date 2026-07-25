@@ -16,6 +16,8 @@ import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/Clien
 import type { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
 import { consolePrefixer } from "console-prefixer"
 import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
+import {hashBuffer} from "@/util/Utility.ts";
+import {mirabuf} from "@/proto/mirabuf";
 
 export const COLLISION_TIMEOUT = 500
 
@@ -42,9 +44,11 @@ class MultiplayerSystem {
     private _onDestroyHooks: (() => void)[] = []
 
     public static async setup(hostAddr: string, roomId: string | "create", displayName: string): Promise<boolean> {
+        console.groupCollapsed("Multiplayer initialization")
         const system = new MultiplayerSystem(hostAddr, roomId, displayName)
         const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
+        console.groupEnd()
         return initResult
     }
 
@@ -84,14 +88,14 @@ class MultiplayerSystem {
         }).then(res => {
             if (res) {
                 this.client.onServerMessage = async msg => {
-                    console.group(`Incoming server message: ${msg.type}`)
+                    console.groupCollapsed(`Incoming server message: ${msg.type}`)
                     await this.handleServerMessage(msg)
                     console.groupEnd()
                 }
 
                 this.client.onPeerMessage = async msg => {
                     if (msg.type != "update") {
-                        console.group(`Incoming peer message: ${msg.type}`)
+                        console.groupCollapsed(`Incoming peer message: ${msg.type}`)
                     }
                     await this.handlePeerMessage(msg)
                     if (msg.type != "update") {
@@ -158,7 +162,9 @@ class MultiplayerSystem {
         message.timestamp ??= Date.now()
         message.client_id = this.clientId
         if (message.type != "update") {
-            console.debug(`Sending Message: ${message.type}`, message)
+            console.groupCollapsed(`Sending Message: ${message.type}`)
+            console.debug(message)
+            console.groupEnd()
         }
         return this.client.send(message as MessageWithTimestamp)
     }

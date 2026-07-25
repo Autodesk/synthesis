@@ -60,7 +60,6 @@ class MultiplayerWebsocket {
     }
 
     public send(msg: MessageWithTimestamp | ClientToServerMessage): void {
-        console.info("Sending", msg)
         return this.ws.send(encode(msg))
     }
 

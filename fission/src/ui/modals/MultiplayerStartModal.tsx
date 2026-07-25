@@ -116,7 +116,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         if (url == null) return
         const success = await withTimeout(
             new Promise<boolean>(resolve => {
-                console.group("Connection Test")
+                console.groupCollapsed("Connection Test")
                 setTestState("progress")
                 const ws = new MultiplayerWebsocket(url)
                 ws.onOpen = () => {
