@@ -117,7 +117,7 @@ function getAllianceMaterial(alliance: Alliance, materials?: AllianceMaterials):
     return alliance === "blue" ? DEFAULT_BLUE_MATERIAL : DEFAULT_RED_MATERIAL
 }
 
-export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props: ZoneConfigBaseProps<TZone>) {
+const ZoneConfigBase = <TZone extends BaseZonePreferences>(props: ZoneConfigBaseProps<TZone>) => {
     const {
         selectedField,
         selectedZone,
@@ -259,3 +259,5 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
         </Stack>
     )
 }
+
+export default ZoneConfigBase

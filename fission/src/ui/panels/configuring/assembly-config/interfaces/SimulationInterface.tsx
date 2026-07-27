@@ -14,10 +14,10 @@ type SimulationInterfaceProps = {
     selectedAssembly: MirabufSceneObject
 }
 
-export default function SimulationInterface({
+const SimulationInterface = ({
     selectedAssembly,
     panel,
-}: SimulationInterfaceProps & PanelImplProps<void, ConfigurePanelCustomProps>) {
+}: SimulationInterfaceProps & PanelImplProps<void, ConfigurePanelCustomProps>) => {
     const { openPanel, closePanel } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
 
@@ -52,3 +52,5 @@ export default function SimulationInterface({
         </>
     )
 }
+
+export default SimulationInterface

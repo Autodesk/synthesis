@@ -74,7 +74,7 @@ interface InputSchemeSelectionProps {
     panelId?: string
 }
 
-export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: InputSchemeSelectionProps) {
+const InputSchemeSelection = ({ brainIndex, onSelect, panelId }: InputSchemeSelectionProps) => {
     const { setSelectedScheme } = useStateContext()
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
@@ -191,3 +191,5 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
         </>
     )
 }
+
+export default InputSchemeSelection

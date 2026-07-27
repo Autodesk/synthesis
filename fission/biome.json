@@ -65,7 +65,14 @@
         "useYield": "error",
         "useUniqueElementIds": "off"
       },
-      "nursery": {},
+      "nursery": {
+        "useReactFunctionComponentDefinition": {
+          "level": "error",
+          "options": {
+            "namedComponents": "arrowFunction"
+          }
+        }
+      },
       "style": {
         "noNamespace": "error",
         "useArrayLiterals": "error",

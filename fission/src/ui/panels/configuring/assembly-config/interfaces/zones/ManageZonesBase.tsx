@@ -39,7 +39,7 @@ function saveZonesGeneric<TZone extends BaseZonePreferences>(
     field.savePreferences()
 }
 
-export default function ManageZonesBase<TZone extends BaseZonePreferences>(props: ManageZonesBaseProps<TZone>) {
+const ManageZonesBase = <TZone extends BaseZonePreferences>(props: ManageZonesBaseProps<TZone>) => {
     const {
         selectedField,
         initialZones,
@@ -123,3 +123,5 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
         </Stack>
     )
 }
+
+export default ManageZonesBase
