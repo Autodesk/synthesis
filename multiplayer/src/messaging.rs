@@ -6,16 +6,19 @@ use crate::util::{deserialize_messagepack, prefix_message, serialize_messagepack
 
 use tokio::io::{AsyncRead, AsyncWrite};
 use tokio::sync::mpsc;
+use tokio::time::timeout;
 use tokio_tungstenite::{WebSocketStream, tungstenite::Message};
 
 use futures_util::stream::{SplitSink, SplitStream};
 use futures_util::{SinkExt, StreamExt};
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 
 type WsStream<S> = WebSocketStream<Prefixed<S>>;
 
 const MAX_ROOM_COUNT: u8 = 32;
+const TIMEOUT: Duration = Duration::from_mins(1);
 
 pub async fn handle_connection<S>(state: Arc<Mutex<State>>, raw_stream: S, addr: SocketAddr)
 where
@@ -43,9 +46,9 @@ where
     let (tx, mut rx) = mpsc::channel::<Message>(64);
 
     // Order of messages sent from a new client to the server:
-    // 1. Initialization. An instance of the `InitializationMessage` structure.
-    //    Indicating whether the client wishes to create or join a room
-    // 2..n. Any number of messages that will be forwarded to every other client in their room
+    // 1-n. Any number of `RequestRooms` messages.
+    // n..n+1. An `InitializationMessage`, indicating whether the client wishes to create or join a room
+    // n+1..m. Any number of messages that will be forwarded to every other client in their room
     let (mut write, mut read) = ws_stream.split();
 
     let Some(client_id) =
@@ -64,9 +67,9 @@ where
     });
 
     // Listen for and pass along messages to other client channels in the same room
-    while let Some(maybe_message) = read.next().await {
+    while let Some(maybe_message) = timeout(TIMEOUT, read.next()).await.ok().flatten() {
         let Ok(message) = maybe_message else {
-            continue;
+            return;
         };
 
         forward_message(message, state.clone(), client_id).await;
