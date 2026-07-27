@@ -28,7 +28,7 @@ pub struct RoomInfo {
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]
 #[serde(tag = "type", rename_all = "lowercase")]
 #[ts(export)]
-pub enum ServerMessage {
+pub enum ServerToClientMessage {
     Kick { client_id: String },
     RoomList { rooms: Vec<RoomInfo> },
     SendInfo { room_id: RoomId, client_id: String },

@@ -1,5 +1,5 @@
 use crate::EventType;
-use crate::model::{ClientToServerMessage, MessagePrefix, ServerMessage};
+use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
 use crate::room::{ClientId, ClientSender, State};
 use crate::util::{deserialize_messagepack, prefix_message, serialize_messagepack};
@@ -115,7 +115,7 @@ where
                     }
                 };
 
-                let response = ServerMessage::SendInfo {
+                let response = ServerToClientMessage::SendInfo {
                     room_id,
                     client_id: client_id.to_string(),
                 };
@@ -172,7 +172,7 @@ async fn handle_room_list_request<S>(
     S: SynthesisStream,
 {
     let message = {
-        ServerMessage::RoomList {
+        ServerToClientMessage::RoomList {
             rooms: state.lock().unwrap().list_rooms(),
         }
     };
@@ -220,7 +220,7 @@ async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Mut
         return;
     };
 
-    let message = serialize_messagepack(ServerMessage::Pong { timestamp });
+    let message = serialize_messagepack(ServerToClientMessage::Pong { timestamp });
     let message = prefix_message(message, MessagePrefix::Server);
 
     // Scope hack to avoid holding the guard while sending a message
@@ -244,7 +244,7 @@ async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Mut
 
 async fn handle_client_close(client_id: ClientId, state: &Arc<Mutex<State>>) {
     // Send message toa ll other clients telling them `client_id` has been kicked
-    let message = ServerMessage::Kick {
+    let message = ServerToClientMessage::Kick {
         client_id: client_id.to_string(),
     };
 
