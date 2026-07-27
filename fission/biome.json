@@ -86,6 +86,7 @@
         "useImportType": "warn",
         "useConst": "error",
         "useConsistentArrowReturn": "error",
+        "useConsistentArrayType": "error",
         "useNamingConvention": {
           "level": "error",
           "options": {

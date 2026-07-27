@@ -146,10 +146,10 @@ class PhysicsSystem extends WorldSystem {
     private _joltInterface: Jolt.JoltInterface
     private _joltPhysSystem: Jolt.PhysicsSystem
     private _joltBodyInterface: Jolt.BodyInterface
-    private _bodies: Array<Jolt.BodyID>
-    private _constraints: Array<Jolt.Constraint>
+    private _bodies: Jolt.BodyID[]
+    private _constraints: Jolt.Constraint[]
     // Sphere game-piece bodies that get the resting-stiction pass each step (see update()).
-    private _sphereGamePieceBodies: Array<Jolt.BodyID> = []
+    private _sphereGamePieceBodies: Jolt.BodyID[] = []
 
     private _physicsEventQueue: SynthesisEvent<
         "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"

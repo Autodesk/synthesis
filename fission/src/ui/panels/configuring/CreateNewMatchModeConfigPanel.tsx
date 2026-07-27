@@ -336,15 +336,15 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
     }, [isFormValid, createConfigFromForm, configureScreen, panel, openPanel, closePanel])
 
     // Field groups for organized rendering
-    const fieldGroups: Array<{
+    const fieldGroups: {
         title: string
-        fields: Array<{
+        fields: {
             name: string
             label: string
             helperText?: string
             conditionalOn?: string
-        }>
-    }> = [
+        }[]
+    }[] = [
         {
             title: "Basic Configuration",
             fields: [{ name: "name", label: "Configuration Name" }],
