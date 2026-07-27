@@ -156,7 +156,7 @@ where
         return None;
     };
 
-    let Some(message) = deserialize_messagepack::<ClientToServerMessage>(&message_data) else {
+    let Some(message) = deserialize_messagepack::<ClientToServerMessage>(&message_data[1..]) else {
         error_lock!(state, "{addr} sent an invalid initial message");
         return None;
     };
@@ -225,7 +225,7 @@ async fn forward_message(message: Message, state: Arc<Mutex<State>>, client_id: 
                 guard.get_senders_from_user_room(client_id)
             };
 
-            let message = prefix_message(bytes, MessagePrefix::Client);
+            let message = prefix_message(&bytes[1..], MessagePrefix::Client);
             for tx in senders {
                 tx.send(message.clone()).await.ok();
             }
