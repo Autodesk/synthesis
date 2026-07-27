@@ -3,7 +3,7 @@
  * customizable control over when it is initialized.
  */
 
-import * as j from "@synthesis.adsk/jolt-physics/wasm-compat"
+import * as J from "@synthesis.adsk/jolt-physics/wasm-compat"
 
-const JOLT = await j.default()
+const JOLT = await J.default()
 export default JOLT

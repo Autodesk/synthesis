@@ -1,5 +1,5 @@
 import path from "node:path"
-import * as fs from "fs/promises"
+import * as Fs from "fs/promises"
 import type { ManifestFileType } from "./manifest"
 import { hashBuffer, hexStringToUint8Array, unzipMira } from "@/util/Utility"
 import { mirabuf } from "@/proto/mirabuf"
@@ -14,12 +14,12 @@ const DIRS = Object.keys(MAP) as (keyof typeof MAP)[]
 async function main() {
     for (const dirname of DIRS) {
         const list = MAP[dirname]
-        for await (const file of await fs.opendir(path.join(BASE_PATH, dirname))) {
+        for await (const file of await Fs.opendir(path.join(BASE_PATH, dirname))) {
             if (file.isDirectory() || !file.name.endsWith(".mira")) {
                 continue
             }
             const originalPath = path.join(file.parentPath, file.name)
-            const data = await fs.readFile(originalPath)
+            const data = await Fs.readFile(originalPath)
             const originalHash = await hashBuffer(data.buffer as ArrayBuffer)
 
             const assembly = mirabuf.Assembly.decode(unzipMira(new Uint8Array(data.buffer)))
@@ -52,15 +52,15 @@ async function main() {
             // Update only if changes are made (avoid updating modification times otherwise)
             if (originalHash !== updatedHash) {
                 const newPath = path.join(file.parentPath, name)
-                await fs.writeFile(newPath, updated)
+                await Fs.writeFile(newPath, updated)
                 if (newPath !== originalPath) {
-                    await fs.rm(originalPath)
+                    await Fs.rm(originalPath)
                 }
             }
             list.push({ filename: name, hash: updatedHash })
         }
     }
-    await fs.writeFile(path.join(BASE_PATH, "manifest.json"), JSON.stringify(MAP))
+    await Fs.writeFile(path.join(BASE_PATH, "manifest.json"), JSON.stringify(MAP))
 }
 
 main().catch(console.error)

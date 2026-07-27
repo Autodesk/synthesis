@@ -1,7 +1,7 @@
 import fs from "node:fs/promises"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import react from "@vitejs/plugin-react-swc"
-import * as path from "path"
+import * as Path from "path"
 import { loadEnv, type ProxyOptions } from "vite"
 import glsl from "vite-plugin-glsl"
 import { defineConfig } from "vitest/config"
@@ -86,10 +86,10 @@ export default defineConfig(async ({ mode }) => {
         publicDir: "./public",
         resolve: {
             alias: [
-                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
-                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
-                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
-                { find: "@", replacement: path.resolve(__dirname, "src") },
+                { find: "@/components", replacement: Path.resolve(__dirname, "src", "ui", "components") },
+                { find: "@/modals", replacement: Path.resolve(__dirname, "src", "ui", "modals") },
+                { find: "@/panels", replacement: Path.resolve(__dirname, "src", "ui", "panels") },
+                { find: "@", replacement: Path.resolve(__dirname, "src") },
             ],
         },
         define: {

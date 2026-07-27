@@ -164,7 +164,7 @@
                 "selector": {
                   "kind": "importNamespace"
                 },
-                "formats": ["camelCase", "PascalCase", "CONSTANT_CASE"]
+                "formats": ["PascalCase", "CONSTANT_CASE"]
               },
               {
                 "selector": {
