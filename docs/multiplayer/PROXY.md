@@ -7,7 +7,7 @@ This guide will take you through setting up a temporary proxy address with `clou
 
 To get started, you must install `cloudflared` for your operating system. Instructions can be found on [Cloudflare's website](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/downloads/)
 
-After installation, simply run your multiplayer server in secure mode and then the following command:
+After installation, simply run your multiplayer server in `--secure` mode and then the following command:
 
 `cloudflared tunnel --url https://localhost:2610 --no-tls-verify`
 
