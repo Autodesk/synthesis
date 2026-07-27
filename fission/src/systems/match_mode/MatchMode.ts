@@ -48,7 +48,7 @@ class MatchMode {
     private _intervalId: number | null = null
 
     // Match Mode Config
-    private _matchModeConfig: MatchModeConfig = DefaultMatchModeConfigs.FALLBACK_VALUES
+    private _matchModeConfig: MatchModeConfig = DefaultMatchModeConfigs.fallbackValues()
 
     private constructor() {}
 

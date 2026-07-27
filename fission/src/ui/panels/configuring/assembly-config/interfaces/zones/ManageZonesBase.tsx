@@ -78,8 +78,9 @@ const ManageZonesBase = <TZone extends BaseZonePreferences>(props: ManageZonesBa
                     const item: ZoneListItem = getListItem(zonePrefs)
                     return (
                         <Box
+                            // biome-ignore lint/suspicious/noArrayIndexKey: cannot reorder therefor index is stable
+                            key={`${item.name}-${item.alliance}-${i}`}
                             sx={{ bgcolor: "background.paper", p: 2, borderRadius: 5, width: "100%" }}
-                            key={`${item.name}-${item.alliance}`}
                         >
                             <Stack direction="row" gap={2}>
                                 <Box

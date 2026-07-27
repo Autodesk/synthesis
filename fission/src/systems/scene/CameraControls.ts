@@ -165,10 +165,12 @@ class ZoomEase {
     }
 }
 
-const DEFAULT_COORDS: SphericalCoords = {
-    theta: CO_DEFAULT_THETA,
-    phi: CO_DEFAULT_PHI,
-    r: CO_DEFAULT_ZOOM,
+function defaultCoords(): SphericalCoords {
+    return {
+        theta: CO_DEFAULT_THETA,
+        phi: CO_DEFAULT_PHI,
+        r: CO_DEFAULT_ZOOM,
+    }
 }
 
 /** World-space forward (view) direction of a camera. */
@@ -401,7 +403,7 @@ export class CustomTargetControls extends CameraControls {
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
         super("Target", mainCamera, interactionHandler)
 
-        this._coords = DEFAULT_COORDS
+        this._coords = defaultCoords()
 
         // Identity
         this._focus = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)

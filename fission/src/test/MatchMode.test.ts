@@ -3,7 +3,7 @@ import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfig
 
 describe("Match Mode Config Checks", () => {
     test("Default Configs are Serializable", () => {
-        const config = DefaultMatchModeConfigs.FALLBACK_VALUES
+        const config = DefaultMatchModeConfigs.fallbackValues()
         expect(JSON.parse(JSON.stringify(config))).toEqual(config)
     })
 })

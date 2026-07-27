@@ -14,7 +14,7 @@ const DOCKER_SERVER_PORT = 80
 const USE_LOCAL_APS = false
 const USE_SSL = false
 
-const PLUGINS = [
+const plugins = [
     react(),
     glsl({
         include: [
@@ -36,7 +36,7 @@ const PLUGINS = [
 ]
 
 if (USE_SSL) {
-    PLUGINS.push(basicSsl())
+    plugins.push(basicSsl())
 }
 
 const LOCAL_ASSETS_EXIST = await fs
@@ -82,7 +82,7 @@ export default defineConfig(async ({ mode }) => {
               secure: true,
           }
     return {
-        plugins: PLUGINS,
+        plugins: plugins,
         publicDir: "./public",
         resolve: {
             alias: [

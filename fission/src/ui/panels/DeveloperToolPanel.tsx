@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
-import FieldMiraEditor, { DEVTOOL_HANDLER, type SynthesisDevtoolKey } from "../../mirabuf/FieldMiraEditor"
+import FieldMiraEditor, { DEVTOOL_HANDLERS, type SynthesisDevtoolKey } from "../../mirabuf/FieldMiraEditor"
 import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { Button } from "../components/StyledComponents"
@@ -13,7 +13,7 @@ import SelectMenu from "@/components/SelectMenu.tsx"
 import { AssemblySelectionOption } from "@/panels/configuring/assembly-config/configure/AssemblySelection.tsx"
 import { tryParse } from "@/util/Utility.ts"
 
-const DEVTOOL_KEYS = Object.keys(DEVTOOL_HANDLER) as SynthesisDevtoolKey[]
+const DEVTOOL_KEYS = Object.keys(DEVTOOL_HANDLERS) as SynthesisDevtoolKey[]
 
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
@@ -60,7 +60,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     useEffect(() => {
         if (!editor || !activeObj || !selectedKey) return
         activeObj.savePreferencesToMirabuf()
-        const val = DEVTOOL_HANDLER[selectedKey]?.get(activeObj)
+        const val = DEVTOOL_HANDLERS[selectedKey]?.get(activeObj)
         setJsonValue(JSON.stringify(val, null, 2))
         setError("")
     }, [selectedKey, editor, activeObj])
@@ -78,7 +78,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
         setKeys(editor.getSynthesisKeys())
 
-        DEVTOOL_HANDLER[selectedKey]?.set(activeObj, parsed)
+        DEVTOOL_HANDLERS[selectedKey]?.set(activeObj, parsed)
     }
 
     const handleExport = () => {

@@ -133,7 +133,7 @@ export function validateAndNormalizeMatchModeConfig(config: unknown): MatchModeC
 
     // If validation passes, use the default values in any missing fields
     const normalizedConfig = {
-        ...DefaultMatchModeConfigs.FALLBACK_VALUES,
+        ...DefaultMatchModeConfigs.fallbackValues(),
         ...configObj,
     }
     normalizedConfig.isDefault = false

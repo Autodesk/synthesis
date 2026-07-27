@@ -12,13 +12,13 @@ interface ViewCubeProps {
     scaleWithWindow?: boolean
 }
 
+const VIEW_CUBE_CLICK_THRESHOLD_PIXEL = 10 // Pixel threshold for distinguishing clicks from drags
+
 const ViewCube: React.FC<ViewCubeProps> = ({
     size = 100,
     position = { top: 20, right: 20 },
     scaleWithWindow = true,
 }) => {
-    const clickThresholdPixel = 10 // Pixel threshold for distinguishing clicks from drags
-
     const containerRef = useRef<HTMLDivElement>(null)
     const sceneRef = useRef<THREE.Scene>()
     const rendererRef = useRef<THREE.WebGLRenderer>()
@@ -68,7 +68,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                     const totalDistance = Math.sqrt(
                         totalDragMovement.x * totalDragMovement.x + totalDragMovement.y * totalDragMovement.y
                     )
-                    if (totalDistance < clickThresholdPixel) {
+                    if (totalDistance < VIEW_CUBE_CLICK_THRESHOLD_PIXEL) {
                         handleElementClick(dragStartElement)
                     }
                 }

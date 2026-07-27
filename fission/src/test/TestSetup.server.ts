@@ -5,7 +5,7 @@ import { ExpressPeerServer } from "peer"
 
 let server: http.Server | undefined
 const ASSET_PORT = 3001
-const SERVER_DIRECTORY = path.join(process.cwd(), "public/Downloadables")
+const ASSETS_DIRECTORY = path.join(process.cwd(), "public/Downloadables")
 export async function setup() {
     if (server) {
         return
@@ -17,7 +17,7 @@ export async function setup() {
         allow_discovery: true,
         path: "/",
     })
-    expressApp.use("/Downloadables/", express.static(SERVER_DIRECTORY))
+    expressApp.use("/Downloadables/", express.static(ASSETS_DIRECTORY))
     expressApp.use("/", peerjsServer)
 
     await new Promise<void>((resolve, reject) => {
