@@ -1049,6 +1049,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public savePreferences(): void {
+        if (!this.isOwnObject) {
+            console.warn("Tried to save preferences for foreign object")
+            return
+        }
         if (this.miraType == MiraType.FIELD && this._fieldPreferences) {
             PreferencesSystem.setFieldPreferences(this.assemblyId, this._fieldPreferences)
         } else if (this._robotPreferences) {
@@ -1104,11 +1108,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public getPreferenceData(): FieldConfiguration | RobotConfiguration {
         return this.miraType == MiraType.FIELD
             ? {
-                  fieldPreferences: JSON.stringify(this._fieldPreferences),
+                  fieldPreferences: this.fieldPreferences!,
               }
             : {
-                  intakePreferences: JSON.stringify(this.intakePreferences),
-                  ejectorPreferences: JSON.stringify(this.ejectorPreferences),
+                  robotPreferences: this.robotPreferences,
                   alliance: this.alliance,
                   station: this.station,
               }
@@ -1117,11 +1120,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public setPreferenceData(preferences: FieldConfiguration | RobotConfiguration) {
         if (this.miraType === MiraType.FIELD) {
             const config = preferences as FieldConfiguration
-            this._fieldPreferences = JSON.parse(config.fieldPreferences)
+            this._fieldPreferences = config.fieldPreferences
         } else {
             const config = preferences as RobotConfiguration
-            this.intakePreferences = JSON.parse(config.intakePreferences)
-            this.ejectorPreferences = JSON.parse(config.ejectorPreferences)
+            this._robotPreferences = config.robotPreferences
             this.alliance = config.alliance
             this.station = config.station
         }

@@ -20,7 +20,7 @@ After running the command, you should see a URL printed to your terminal. Copy j
 ![img.png](img/tunnel-screenshot.png)
 
 > [!NOTE]
-> Regardless of your local server port, clients should use port `443` to access the server.
+> Regardless of your local server port, clients should use port `443` to access the proxied server.
 
 
 

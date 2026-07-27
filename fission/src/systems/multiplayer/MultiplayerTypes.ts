@@ -1,4 +1,4 @@
-import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes.ts"
+import type {Alliance, FieldPreferences, RobotPreferences, Station} from "@/systems/preferences/PreferenceTypes.ts"
 import type { MessageType } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
 
 export type MessageWithTimestamp = {
@@ -27,11 +27,10 @@ export function shortClientId(info: ClientInfo) {
 }
 
 export type RobotConfiguration = {
-    intakePreferences: string // IntakePreferences
-    ejectorPreferences: string // EjectorPreferences
+    robotPreferences: RobotPreferences // EjectorPreferences
     alliance?: Alliance
     station?: Station
 }
 export type FieldConfiguration = {
-    fieldPreferences: string // FieldPreferences
+    fieldPreferences: FieldPreferences // FieldPreferences
 }
