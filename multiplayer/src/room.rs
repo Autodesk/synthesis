@@ -1,6 +1,6 @@
 use crate::logging::{Event, EventType};
-use crate::messaging::{MessagePrefix, RoomInfo, ServerMessage, serialize_messagepack};
-use crate::{info, prefix_message, warn};
+use crate::model::{MessagePrefix, RoomInfo, ServerMessage};
+use crate::util::{prefix_message, serialize_messagepack};
 
 use rand::RngExt;
 use std::collections::{HashMap, VecDeque};
@@ -11,7 +11,6 @@ use uuid::Uuid;
 /// Maximum number of log lines retained in each log (both per-room and system logs)
 /// Oldest lines are dropped once the buffer is full.
 const MAX_LOG_LINES: usize = 500;
-
 const VALID_ROOM_ID_CHARACTERS: [char; 36] = valid_room_id_characters();
 
 pub struct State {
@@ -79,7 +78,7 @@ impl State {
 
         if room.authority.is_none() {
             info!(room, "{client_id} became authority of {room_id}");
-            room.authority = Some(client_id)
+            room.authority = Some(client_id);
         }
 
         info!(room, "{client_id} joined room {room_id}");
@@ -173,20 +172,24 @@ impl State {
         self.rooms
             .map
             .iter()
-            .filter_map(|(id, room)| {
+            .map(|(id, room)| {
                 let authority = room
                     .members
                     .iter()
                     .position(|member| Some(member.id) == room.authority)
                     .map(|idx| room.members[idx].name.clone());
 
-                Some(RoomInfo {
-                    id: id.to_string(),
+                RoomInfo {
+                    id: id.clone(),
                     authority,
                     locked: room.locked,
-                })
+                }
             })
             .collect()
+    }
+
+    pub fn room_count(&self) -> u8 {
+        u8::try_from(self.rooms.map.len()).expect("Too many rooms") as u8
     }
 
     /// Record a server-wide event
@@ -325,7 +328,7 @@ impl Room {
         push_capped(&mut self.logs, event);
     }
 
-    pub fn tell_room_client_left_blocking(&mut self, client_id: &ClientId) {
+    pub fn tell_room_client_left_blocking(&self, client_id: &ClientId) {
         // Send message toa ll other clients telling them `client_id` has been kicked
         let message = ServerMessage::Kick {
             client_id: client_id.to_string(),
@@ -334,7 +337,7 @@ impl Room {
         let message_buffer_no_prefix = serialize_messagepack(message);
         let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
 
-        for tx in self.get_senders(Some(&client_id)) {
+        for tx in self.get_senders(Some(client_id)) {
             let _ = tx.blocking_send(message.clone());
         }
     }
