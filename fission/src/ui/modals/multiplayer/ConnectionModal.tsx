@@ -92,7 +92,7 @@ const ConnectionModal: React.FC<ConnectionModalProps> = ({setRoomList, setURL, o
                 const ws = new MultiplayerWebsocket(url.toString())
                 ws.onOpen = () => {
                     resolve(true)
-                    ws.send({
+                    ws.sendServer({
                         type: "requestrooms",
                     })
                 }

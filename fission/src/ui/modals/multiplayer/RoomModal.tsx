@@ -46,10 +46,10 @@ const RoomModal: React.FC<RoomModalProps> = ({initialRoomList, url, startWorldCa
             if (wsRef.current == null) {
                 wsRef.current = new MultiplayerWebsocket(url)
                 wsRef.current.onOpen = ()=> {
-                    wsRef.current!.send({type:"requestrooms"})
+                    wsRef.current!.sendServer({type:"requestrooms"})
                 }
             } else {
-                wsRef.current.send({type:"requestrooms"})
+                wsRef.current.sendServer({type:"requestrooms"})
             }
 
             wsRef.current.onServerMessage = (msg) => {

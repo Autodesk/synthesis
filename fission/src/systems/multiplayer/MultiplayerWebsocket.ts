@@ -1,11 +1,12 @@
 import { consolePrefixer } from "console-prefixer"
 import { MessageWithTimestamp } from "@/systems/multiplayer/MultiplayerTypes.ts"
-import { decode, encode } from "@msgpack/msgpack"
+import {Encoder, Decoder} from "@msgpack/msgpack"
 import { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
 import { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
 
-// const CLIENT_PREFIX = 0b00000001
+const CLIENT_PREFIX = 0b00000001
 const SERVER_PREFIX = 0b00000011
+
 
 const console = consolePrefixer({
     defaultPrefix: {
@@ -16,6 +17,10 @@ const console = consolePrefixer({
 
 class MultiplayerWebsocket {
     private readonly ws: WebSocket
+
+    private readonly encoder: Encoder<never> = new Encoder()
+    private readonly decoder: Decoder<never> = new Decoder()
+    private prefixBuf = new Uint8Array(1)
 
     public onServerMessage?: (msg: ServerMessage) => void
     public onPeerMessage?: (msg: MessageWithTimestamp) => void
@@ -48,8 +53,8 @@ class MultiplayerWebsocket {
         this.ws.onmessage = async e => {
             const msg = e.data as Blob
             const headerByte = (await msg.slice(0, 1).bytes())[0]
-            const data = await msg.slice(1).arrayBuffer()
-            const decoded = decode(data) as ServerMessage | MessageWithTimestamp
+            const data = msg.slice(1).stream()
+            const decoded = await this.decoder.decodeAsync(data) as ServerMessage | MessageWithTimestamp
             const isServer = headerByte == SERVER_PREFIX
             if (isServer) {
                 this.onServerMessage?.(decoded as ServerMessage)
@@ -67,16 +72,25 @@ class MultiplayerWebsocket {
             name: displayName
         }
         if (ws.ws.readyState == WebSocket.OPEN) {
-            ws.send(initialMessage)
+            ws.sendServer(initialMessage)
         } else {
-            ws.onOpen = () => { ws.send(initialMessage) }
+            ws.onOpen = () => { ws.sendServer(initialMessage) }
         }
         return ws
     }
 
-    public send(msg: MessageWithTimestamp | ClientToServerMessage): void {
+    private send(prefix:number, msg: MessageWithTimestamp | ClientToServerMessage): void {
         console.log("Sending", msg)
-        return this.ws.send(encode(msg))
+        const encoded = this.encoder.encodeSharedRef(msg)
+        this.prefixBuf[0] = prefix
+        return this.ws.send(new Blob([this.prefixBuf, encoded]))
+    }
+    public sendPeer(msg: MessageWithTimestamp): void {
+        return this.send(CLIENT_PREFIX, msg)
+    }
+
+    public sendServer(msg: ClientToServerMessage): void {
+        return this.send(SERVER_PREFIX, msg)
     }
 
     public close(code?: number, reason?: string) {

@@ -161,7 +161,7 @@ class MultiplayerSystem {
             console.debug(message)
             console.groupEnd()
         }
-        return this.client.send(message as MessageWithTimestamp)
+        return this.client.sendPeer(message as MessageWithTimestamp)
     }
 
     async introduceSelf(requestIntroductions: boolean, peerID?: string) {
