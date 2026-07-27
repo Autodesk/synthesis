@@ -166,7 +166,7 @@ class SwerveDriveBehavior extends DriveBehavior {
             const speed = velocities[i].length()
             const currentAngle = this._hinges[i].constraint.GetCurrentAngle()
 
-            let angle = Math.atan2(robotRight.dot(velocities[i]), robotForward.dot(velocities[i]))
+            const angle = Math.atan2(robotRight.dot(velocities[i]), robotForward.dot(velocities[i]))
             let delta = angle - currentAngle
             while (delta > Math.PI) delta -= 2 * Math.PI
             while (delta < -Math.PI) delta += 2 * Math.PI

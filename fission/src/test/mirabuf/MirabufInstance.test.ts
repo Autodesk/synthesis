@@ -5,7 +5,7 @@ import type MirabufParser from "../../mirabuf/MirabufParser"
 import { ParseErrorSeverity } from "../../mirabuf/MirabufParser"
 import { mockConsole } from "@/test/mocks/Common.ts"
 
-let mockSceneRenderer = {
+const mockSceneRenderer = {
     createToonMaterial: vi.fn(() => new THREE.MeshStandardMaterial({ color: 0x123456 })),
     setupMaterial: vi.fn(),
 }

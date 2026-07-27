@@ -17,7 +17,7 @@ describe("Contact Event Integration Tests", () => {
     let contactRemovedEvents: { message: Jolt.SubShapeIDPair }[] = []
     let contactValidateEvents: OnContactValidateData[] = []
 
-    let unsubscribers: (() => void)[] = []
+    const unsubscribers: (() => void)[] = []
 
     beforeAll(() => {
         unsubscribers.push(EventSystem.listen("OnContactAddedEvent", v => contactAddedEvents.push(v)))

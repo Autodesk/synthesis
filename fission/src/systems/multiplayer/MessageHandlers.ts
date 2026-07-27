@@ -43,8 +43,8 @@ export const PEER_MESSAGE_HANDLERS = {
     [K in keyof MessageType]: (data: MessageType[K], peerId: string, timestamp: number) => Promise<void> | void
 }
 
-let pendingOperations: (() => void)[] = []
-let progressHandles: Map<number, ProgressHandle> = new Map()
+const pendingOperations: (() => void)[] = []
+const progressHandles: Map<number, ProgressHandle> = new Map()
 
 async function handleMatchModeState(data: MatchModeStateData) {
     console.log(data)

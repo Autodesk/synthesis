@@ -99,7 +99,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     assembly.info!.name = selectedFile.name.split(".")[0]
                     assembly.info!.GUID = uuid
 
-                    let hash: string = inputHash
+                    const hash: string = inputHash
                     //// TODO: Caching currently requires too much memory due to the size of URDF meshes. Can be re-enabled after simplifying
 
                     // const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
