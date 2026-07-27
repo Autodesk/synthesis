@@ -1366,6 +1366,33 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 }
 
+export function getUnusedAlliance():{alliance:Alliance, station:Station} {
+    const used = {
+        red: [false, false, false],
+        blue: [false, false, false]
+    }
+    World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(body => {
+        if (body.alliance != null && body.station != null) {
+            used[body.alliance][body.station-1] = true
+        }
+    })
+    const usedRed = used.red.reduce((sum, v) => sum + (v ? 1 : 0), 0)
+    const usedBlue = used.blue.reduce((sum, v) => sum + (v ? 1 : 0), 0)
+
+    const alliance: Alliance = usedRed > usedBlue ? "blue" : "red"
+    let station: Station = 1
+
+    const unusedStation = (alliance == "blue" ? used.blue : used.red).findIndex((v) => !v)
+    if (unusedStation !== -1) {
+        station = unusedStation + 1 as Station // Stations are 1-indexed, array is 0-indexed
+    }
+
+    return {
+        alliance,
+        station,
+    }
+}
+
 export async function createMirabuf(
     hash: string,
     assembly: mirabuf.Assembly,

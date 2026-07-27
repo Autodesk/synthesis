@@ -16,9 +16,7 @@ const console = consolePrefixer({
 
 class MultiplayerWebsocket {
     private readonly ws: WebSocket
-    public get url() {
-        return this.ws.url
-    }
+
     public onServerMessage?: (msg: ServerMessage) => void
     public onPeerMessage?: (msg: MessageWithTimestamp) => void
     public onOpen?: ((this: MultiplayerWebsocket, ev: Event) => any) | null;
