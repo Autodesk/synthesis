@@ -5,6 +5,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
 import type {
+    ClientAndLatencyInfo,
     ClientInfo,
     LocalSceneObjectId,
     Message,
@@ -14,9 +15,9 @@ import type {
 import EventSystem from "@/systems/EventSystem.ts"
 import type { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
 import { consolePrefixer } from "console-prefixer"
-import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
-import {hashBuffer} from "@/util/Utility.ts";
-import {mirabuf} from "@/proto/mirabuf";
+import type MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
+import { hashBuffer } from "@/util/Utility.ts"
+import { mirabuf } from "@/proto/mirabuf"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -34,19 +35,19 @@ class MultiplayerSystem {
     public clientId: string = ""
     private _initializationPromise: Promise<boolean>
 
-    public readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
-    public readonly _clientToObjectMap: Map<string, LocalSceneObjectId[]> = new Map()
-    public readonly _clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map() // Each Map is: peerBodyId -> clientBodyId
-    public readonly _clientToSceneObjectIdMap: Map<string, Map<RemoteSceneObjectId, LocalSceneObjectId>> = new Map() // Each Map is: peerObjectId -> clientObjectId
+    public readonly clientToInfoMap: Map<string, ClientAndLatencyInfo> = new Map()
+    public readonly clientToObjectMap: Map<string, LocalSceneObjectId[]> = new Map()
+    public readonly clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map() // Each Map is: peerBodyId -> clientBodyId
+    public readonly clientToSceneObjectIdMap: Map<string, Map<RemoteSceneObjectId, LocalSceneObjectId>> = new Map() // Each Map is: peerObjectId -> clientObjectId
 
     private _info: ClientInfo = {} as ClientInfo
     private _onDestroyHooks: (() => void)[] = []
 
-    private lastRTT:number = -1
-    private lastPingTs: number = 0
-    private hasPendingPing: boolean = false
+    private _lastRTT: number = -1
+    private _lastPingTs: number = 0
+    private _hasPendingPing: boolean = false
 
-    public static async setup(ws:MultiplayerWebsocket, displayName: string): Promise<boolean> {
+    public static async setup(ws: MultiplayerWebsocket, displayName: string): Promise<boolean> {
         console.groupCollapsed("Multiplayer initialization")
         const system = new MultiplayerSystem(ws, displayName)
         const initResult = await system._initializationPromise
@@ -55,11 +56,8 @@ class MultiplayerSystem {
         return initResult
     }
 
-
-
     private constructor(ws: MultiplayerWebsocket, displayName: string) {
         this.client = ws
-
 
         this.client.onError = () => {
             globalAddToast("warning", "Multiplayer error")
@@ -124,21 +122,18 @@ class MultiplayerSystem {
     }
 
     private ping() {
-        if (!this.hasPendingPing) {
-            this.lastPingTs = Date.now()
+        if (!this._hasPendingPing) {
+            this._lastPingTs = Date.now()
         }
 
-        this.hasPendingPing = true
+        this._hasPendingPing = true
 
         if (!this.client.ready) {
             setTimeout(() => this.ping(), 200)
             return
         }
 
-
-
-        this.client.sendServer({type:"ping", timestamp: Date.now()})
-
+        this.client.sendServer({ type: "ping", timestamp: Date.now() })
     }
 
     async handleServerMessage(message: ServerMessage) {
@@ -156,9 +151,14 @@ class MultiplayerSystem {
                 this.removePeer(message.client_id)
                 break
             case "pong":
-                this.lastRTT = Date.now() - message.timestamp
-                this.hasPendingPing = false
-                console.log("Received RTT message", this.lastRTT, message.timestamp)
+                this._lastRTT = Date.now() - message.timestamp
+                this._hasPendingPing = false
+                this.send({
+                    type: "latencyInfo",
+                    data: {
+                        latencyMS: this.latencyMS,
+                    },
+                })
                 break
             default:
                 console.warn(`Unhandled message from server (type ${message.type})`, message)
@@ -180,7 +180,7 @@ class MultiplayerSystem {
             peerid: string,
             time: number
         ) => Promise<void> | void
-        await handler(message.data, message.client_id, message.timestamp)
+        await handler(message.data, message.clientId, message.timestamp)
         return message.type
     }
 
@@ -191,7 +191,7 @@ class MultiplayerSystem {
     send(message: Message, peerID?: string) {
         message.recipientId = peerID
         message.timestamp ??= Date.now()
-        message.client_id = this.clientId
+        message.clientId = this.clientId
         if (message.type != "update") {
             console.groupCollapsed(`Sending Message: ${message.type}`)
             console.debug(message)
@@ -212,23 +212,26 @@ class MultiplayerSystem {
             peerID
         )
         for (const obj of this.getOwnObjects()) {
-            this.send({
-                type: "newObject",
-                data: {
-                    sceneObjectKey: obj.id as RemoteSceneObjectId,
-                    assemblyHash: await hashBuffer(
-                        mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
-                    ),
-                    miraType: obj.miraType,
-                    initialPreferences: obj.getPreferenceData(),
-                    bodyIds: obj.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+            this.send(
+                {
+                    type: "newObject",
+                    data: {
+                        sceneObjectKey: obj.id as RemoteSceneObjectId,
+                        assemblyHash: await hashBuffer(
+                            mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
+                        ),
+                        miraType: obj.miraType,
+                        initialPreferences: obj.getPreferenceData(),
+                        bodyIds: obj.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+                    },
                 },
-            }, peerID)
+                peerID
+            )
         }
     }
 
     getOwnSceneObjectIDs() {
-        return this._clientToObjectMap.get(this.clientId) ?? []
+        return this.clientToObjectMap.get(this.clientId) ?? []
     }
 
     getOwnRobots(): MirabufSceneObject[] {
@@ -236,23 +239,23 @@ class MultiplayerSystem {
     }
 
     getOwnObjects(): MirabufSceneObject[] {
-        return (this._clientToObjectMap.get(this.clientId) ?? [])
+        return (this.clientToObjectMap.get(this.clientId) ?? [])
             .map(id => World.sceneRenderer.sceneObjects.get(id))
             .filter(obj => obj instanceof MirabufSceneObject)
     }
 
     registerOwnSceneObject(objectId: LocalSceneObjectId) {
-        const list = this._clientToObjectMap.get(this.clientId)
+        const list = this.clientToObjectMap.get(this.clientId)
         this.setSceneObjectIdMapping(this.clientId, objectId as RemoteSceneObjectId, objectId)
         if (list != null) {
             list.push(objectId)
         } else {
-            this._clientToObjectMap.set(this.clientId, [objectId])
+            this.clientToObjectMap.set(this.clientId, [objectId])
         }
     }
 
     unregisterOwnSceneObject(objectId: LocalSceneObjectId) {
-        const list = this._clientToObjectMap.get(this.clientId)
+        const list = this.clientToObjectMap.get(this.clientId)
         if (!list) return
         const index = list.indexOf(objectId)
         if (index == -1) return
@@ -260,15 +263,15 @@ class MultiplayerSystem {
     }
 
     removePeer(clientId: string) {
-        const name = this._clientToInfoMap.get(clientId)?.displayName
-        this._clientToObjectMap.get(clientId)?.forEach(obj => {
+        const name = this.clientToInfoMap.get(clientId)?.displayName
+        this.clientToObjectMap.get(clientId)?.forEach(obj => {
             World.sceneRenderer.removeSceneObject(obj)
         })
 
-        this._clientToSceneObjectIdMap.delete(clientId)
-        this._clientToInfoMap.delete(clientId)
-        this._clientToObjectMap.delete(clientId)
-        this._clientToBodyMap.delete(clientId)
+        this.clientToSceneObjectIdMap.delete(clientId)
+        this.clientToInfoMap.delete(clientId)
+        this.clientToObjectMap.delete(clientId)
+        this.clientToBodyMap.delete(clientId)
 
         EventSystem.dispatch("MultiplayerStatePeerChange")
         globalAddToast(
@@ -279,15 +282,15 @@ class MultiplayerSystem {
     }
 
     get peerIDs(): string[] {
-        return [...this._clientToInfoMap.keys()]
+        return [...this.clientToInfoMap.keys()]
     }
 
-    get peerInfo(): readonly Readonly<ClientInfo>[] {
-        return [...this._clientToInfoMap.values()]
+    get peerInfo(): readonly Readonly<ClientAndLatencyInfo>[] {
+        return [...this.clientToInfoMap.values()]
     }
 
-    get info(): Readonly<ClientInfo> {
-        return this._info
+    get info(): Readonly<ClientAndLatencyInfo> {
+        return { ...this._info, latency: this.latencyMS, lastUpdateTime: this._lastPingTs }
     }
 
     get displayName(): string {
@@ -295,15 +298,18 @@ class MultiplayerSystem {
     }
 
     get latencyMS(): number {
-        if (!this.client.ready || (this.hasPendingPing && this.lastPingTs!= 0 && Date.now()-this.lastPingTs > 2000)) {
+        if (
+            !this.client.ready ||
+            (this._hasPendingPing && this._lastPingTs != 0 && Date.now() - this._lastPingTs > 2000)
+        ) {
             return -1
         }
-        return this.lastRTT/2
+        return this._lastRTT / 2
     }
 
     public destroy() {
         this.client.close()
-        this._clientToSceneObjectIdMap.clear()
+        this.clientToSceneObjectIdMap.clear()
         this._onDestroyHooks.forEach(hook => {
             hook()
         })
@@ -311,14 +317,14 @@ class MultiplayerSystem {
     }
 
     public convertSceneObjectId(peerId: string, objectId: RemoteSceneObjectId): LocalSceneObjectId {
-        return this._clientToSceneObjectIdMap.get(peerId)?.get(objectId) ?? (-1 as LocalSceneObjectId)
+        return this.clientToSceneObjectIdMap.get(peerId)?.get(objectId) ?? (-1 as LocalSceneObjectId)
     }
 
     public setSceneObjectIdMapping(peerId: string, remoteId: RemoteSceneObjectId, localId: LocalSceneObjectId) {
-        let peerMap = World.multiplayerSystem?._clientToSceneObjectIdMap.get(peerId)
+        let peerMap = World.multiplayerSystem?.clientToSceneObjectIdMap.get(peerId)
         if (peerMap == null) {
             peerMap = new Map()
-            World.multiplayerSystem?._clientToSceneObjectIdMap.set(peerId, peerMap)
+            World.multiplayerSystem?.clientToSceneObjectIdMap.set(peerId, peerMap)
         }
         peerMap.set(remoteId, localId)
     }

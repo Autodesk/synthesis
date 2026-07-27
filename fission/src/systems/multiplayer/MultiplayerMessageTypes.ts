@@ -19,8 +19,7 @@ export interface MessageType {
     configureObject: ConfigureObjectBody // sceneObjectKey
     disableObjectPhysics: RemoteSceneObjectId // sceneObjectKey
     enableObjectPhysics: RemoteSceneObjectId // sceneObjectKey
-    ping: PingData
-    pong: PingData
+    latencyInfo: LatencyInfoBody
     matchModeState: MatchModeStateBody
     matchModePenalty: MatchModePenaltyBody
 }
@@ -77,4 +76,4 @@ export type UpdateObjectData = {
     }[]
 }
 
-export type PingData = { timestamp: number }
+export type LatencyInfoBody = { latencyMS: number }
