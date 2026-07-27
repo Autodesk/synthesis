@@ -169,7 +169,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                                             setSelectedOption(val)
                                             onOptionSelected(val)
                                         }}
-                                        key={option.name + i}
+                                        key={option.id}
                                         onDelete={onDelete ? () => onDelete(option) : undefined}
                                         includeDelete={deleteCondition === undefined || deleteCondition(option)}
                                     />

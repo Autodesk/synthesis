@@ -61,6 +61,8 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, points, onChange, on
                         {points.map((p, i) => (
                             <Stack
                                 direction="row"
+                                // TODO:
+                                // biome-ignore lint/suspicious/noArrayIndexKey: currently not a better way to do this.
                                 key={`${p.name}-${i}`}
                                 justifyContent="space-between"
                                 alignItems="center"

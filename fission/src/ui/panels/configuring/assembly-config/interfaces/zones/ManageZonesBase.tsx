@@ -77,11 +77,11 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
         <Stack gap={2}>
             {zones?.length > 0 ? (
                 zones.map((zonePrefs: TZone, i: number) => {
-                    const item = getListItem(zonePrefs)
+                    const item: ZoneListItem = getListItem(zonePrefs)
                     return (
                         <Box
                             sx={{ bgcolor: "background.paper", p: 2, borderRadius: 5, width: "100%" }}
-                            key={`${item.name}-${item.alliance}-${i}`}
+                            key={`${item.name}-${item.alliance}`}
                         >
                             <Stack direction="row" gap={2}>
                                 <Box

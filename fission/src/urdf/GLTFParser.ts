@@ -173,10 +173,22 @@ function quatScaleToMat4(
 
     // biome-ignore-start format: We would prefer to visualize this as a matrix
     return [
-        (1 - (yy + zz)) * sx, (xy + wz) * sx, (xz - wy) * sx, 0,
-        (xy - wz) * sy, (1 - (xx + zz)) * sy, (yz + wx) * sy, 0,
-        (xz + wy) * sz, (yz - wx) * sz, (1 - (xx + yy)) * sz, 0,
-        t[0], t[1], t[2], 1,
+        (1 - (yy + zz)) * sx,
+        (xy + wz) * sx,
+        (xz - wy) * sx,
+        0,
+        (xy - wz) * sy,
+        (1 - (xx + zz)) * sy,
+        (yz + wx) * sy,
+        0,
+        (xz + wy) * sz,
+        (yz - wx) * sz,
+        (1 - (xx + yy)) * sz,
+        0,
+        t[0],
+        t[1],
+        t[2],
+        1,
     ]
     // biome-ignore-end format: We would prefer to visualize this as a matrix
 }

@@ -14,8 +14,11 @@ type Entry = {
     value: number
 }
 
-function getMatchWinner(): { message: string; color: string } {
-    const { redAllianceColor, blueAllianceColor, secondaryColor } = useThemeContext()
+function getMatchWinner(
+    redAllianceColor: string,
+    blueAllianceColor: string,
+    secondaryColor: string
+): { message: string; color: string } {
     if (World.scoreTracker.redScore > World.scoreTracker.blueScore) {
         return { message: "Red Team Wins!", color: redAllianceColor }
     } else if (World.scoreTracker.blueScore > World.scoreTracker.redScore) {
@@ -48,9 +51,9 @@ const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }
 
 const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { configureScreen, closeModal } = useUIContext()
+    const { redAllianceColor, blueAllianceColor, primaryColor, secondaryColor } = useThemeContext()
 
-    const { message, color } = getMatchWinner()
-    const { redAllianceColor, blueAllianceColor, primaryColor } = useThemeContext()
+    const { message, color } = getMatchWinner(redAllianceColor, blueAllianceColor, secondaryColor)
     const entries: Entry[] = [
         { name: "Red Score", value: World.scoreTracker.redScore },
         { name: "Blue Score", value: World.scoreTracker.blueScore },

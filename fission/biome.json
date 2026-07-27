@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.5/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -26,7 +26,7 @@
       "react": "all"
     },
     "rules": {
-      "recommended": false,
+      "preset": "none",
       "complexity": {
         "noAdjacentSpacesInRegex": "error",
         "noBannedTypes": "error",
@@ -241,7 +241,11 @@
         "noUnsafeNegation": "error",
         "noWith": "error",
         "useGetterReturn": "error",
-        "noTsIgnore": "error"
+        "noTsIgnore": "error",
+        "noLeakedRender": "off"
+      },
+      "performance": {
+        "noJsxPropsBind": "off"
       }
     },
     "includes": ["src/**/*.{ts,tsx,js,json}", "./*.{ts,js,json,html}"]
@@ -265,6 +269,11 @@
   "html": {
     "formatter": {
       "selfCloseVoidElements": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "overrides": [

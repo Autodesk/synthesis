@@ -164,7 +164,7 @@ const FieldViewSettings: React.FC = () => {
                 >
                     <MenuItem value={CENTER_POINT_INDEX}>Center (Free Orbit)</MenuItem>
                     {points.map((p, i) => (
-                        <MenuItem key={i} value={i}>
+                        <MenuItem key={p.name} value={i}>
                             {p.name}
                         </MenuItem>
                     ))}
