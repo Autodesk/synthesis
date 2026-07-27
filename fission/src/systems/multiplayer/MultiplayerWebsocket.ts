@@ -28,6 +28,11 @@ class MultiplayerWebsocket {
     public onClose?: ((this: MultiplayerWebsocket, ev: CloseEvent) => any) | null;
     public onError?: ((this: MultiplayerWebsocket, ev: Event) => any) | null;
 
+
+    public get ready() {
+        return this.ws.readyState === WebSocket.OPEN
+    }
+
     constructor(url: string) {
         this.ws = new WebSocket(url)
         console.log("Connecting to", url)
@@ -65,7 +70,6 @@ class MultiplayerWebsocket {
     }
 
     public static init(roomId: string|null, displayName: string, ws:MultiplayerWebsocket): MultiplayerWebsocket {
-        console.groupCollapsed("Multiplayer initialization")
         const initialMessage:ClientToServerMessage = {
             type:"initializeconnection",
             room_id: roomId,

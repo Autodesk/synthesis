@@ -43,6 +43,8 @@ class MultiplayerSystem {
     private _onDestroyHooks: (() => void)[] = []
 
     private lastRTT:number = -1
+    private lastPingTs: number = 0
+    private hasPendingPing: boolean = false
 
     public static async setup(ws:MultiplayerWebsocket, displayName: string): Promise<boolean> {
         console.groupCollapsed("Multiplayer initialization")
@@ -53,14 +55,11 @@ class MultiplayerSystem {
         return initResult
     }
 
+
+
     private constructor(ws: MultiplayerWebsocket, displayName: string) {
         this.client = ws
 
-        this.client.onClose = () => {
-            globalAddToast("error", "Multiplayer disconnected")
-            this.destroy()
-            EventSystem.dispatch("MultiplayerStateJoinRoom")
-        }
 
         this.client.onError = () => {
             globalAddToast("warning", "Multiplayer error")
@@ -99,6 +98,11 @@ class MultiplayerSystem {
                         console.groupEnd()
                     }
                 }
+                this.client.onClose = () => {
+                    globalAddToast("error", "Multiplayer disconnected")
+                    this.destroy()
+                    EventSystem.dispatch("MultiplayerStateJoinRoom")
+                }
             }
             return res
         })
@@ -111,11 +115,30 @@ class MultiplayerSystem {
             })
         )
 
+        this.ping()
+        const pingCallback = setInterval(() => this.ping(), 5_000)
 
-        const pingCallback = setInterval(() => {this.client.sendServer({type:"ping", timestamp: Date.now()})}, 10_000)
         this._onDestroyHooks.push(() => {
             clearInterval(pingCallback)
         })
+    }
+
+    private ping() {
+        if (!this.hasPendingPing) {
+            this.lastPingTs = Date.now()
+        }
+
+        this.hasPendingPing = true
+
+        if (!this.client.ready) {
+            setTimeout(() => this.ping(), 200)
+            return
+        }
+
+
+
+        this.client.sendServer({type:"ping", timestamp: Date.now()})
+
     }
 
     async handleServerMessage(message: ServerMessage) {
@@ -134,6 +157,7 @@ class MultiplayerSystem {
                 break
             case "pong":
                 this.lastRTT = Date.now() - message.timestamp
+                this.hasPendingPing = false
                 console.log("Received RTT message", this.lastRTT, message.timestamp)
                 break
             default:
@@ -268,6 +292,13 @@ class MultiplayerSystem {
 
     get displayName(): string {
         return this._info.displayName
+    }
+
+    get latencyMS(): number {
+        if (!this.client.ready || (this.hasPendingPing && this.lastPingTs!= 0 && Date.now()-this.lastPingTs > 2000)) {
+            return -1
+        }
+        return this.lastRTT/2
     }
 
     public destroy() {
