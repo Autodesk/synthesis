@@ -10,9 +10,17 @@ pub fn trim_uuid(uuid: &Uuid) -> String {
     uuid.to_string()[0..8].to_string()
 }
 
+pub fn serialize_and_prefix<M>(message: M, prefix: MessagePrefix) -> Message
+where
+    M: Serialize,
+{
+    let bytes = serialize_messagepack(message);
+    prefix_message(bytes, prefix)
+}
+
 /// Creates a new `Message::Binary` containing `bytes`,
 /// prefixed with the byte value of `MessagePrefix`
-pub fn prefix_message<M>(bytes: M, prefix: MessagePrefix) -> Message
+fn prefix_message<M>(bytes: M, prefix: MessagePrefix) -> Message
 where
     M: Deref<Target = [u8]>,
 {
@@ -23,7 +31,7 @@ where
     Message::Binary(buf.into())
 }
 
-pub fn serialize_messagepack<M>(message: M) -> Vec<u8>
+fn serialize_messagepack<M>(message: M) -> Vec<u8>
 where
     M: Serialize,
 {

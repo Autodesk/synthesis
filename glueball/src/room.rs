@@ -1,6 +1,6 @@
 use crate::logging::{Event, EventType};
 use crate::model::{MessagePrefix, RoomInfo, ServerToClientMessage};
-use crate::util::{prefix_message, serialize_messagepack};
+use crate::util::serialize_and_prefix;
 
 use rand::RngExt;
 use std::collections::{HashMap, VecDeque};
@@ -362,9 +362,7 @@ impl Room {
         let message = ServerToClientMessage::Kick {
             client_id: client_id.to_string(),
         };
-
-        let message_buffer_no_prefix = serialize_messagepack(message);
-        let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
+        let message = serialize_and_prefix(message, MessagePrefix::Server);
 
         for tx in self.get_senders(Some(client_id)) {
             let _ = tx.blocking_send(message.clone());

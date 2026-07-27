@@ -2,7 +2,7 @@ use crate::EventType;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
 use crate::room::{ClientId, ClientSender, State};
-use crate::util::{deserialize_messagepack, prefix_message, serialize_messagepack, trim_uuid};
+use crate::util::{deserialize_messagepack, serialize_and_prefix, trim_uuid};
 
 use bytes::Bytes;
 use tokio::io::{AsyncRead, AsyncWrite};
@@ -18,7 +18,7 @@ use std::time::Duration;
 
 type WsStream<S> = WebSocketStream<Prefixed<S>>;
 
-const TIMEOUT: Duration = Duration::from_mins(1);
+const TIMEOUT: Duration = Duration::from_secs(30);
 
 pub async fn handle_connection<S>(state: Arc<Mutex<State>>, raw_stream: S, addr: SocketAddr)
 where
@@ -52,7 +52,7 @@ where
     let (mut write, mut read) = ws_stream.split();
 
     let Some(client_id) =
-        wait_for_initializtion(state.clone(), &mut read, &mut write, tx.clone(), addr).await
+        wait_for_initialization(state.clone(), &mut read, &mut write, tx.clone(), addr).await
     else {
         return;
     };
@@ -98,7 +98,7 @@ where
 /// The function then returns the generated `ClientId`
 ///
 /// If any message is unable to be parse, the function returns `None`.
-async fn wait_for_initializtion<S>(
+async fn wait_for_initialization<S>(
     state: Arc<Mutex<State>>,
     read: &mut SplitStream<WsStream<S>>,
     write: &mut SplitSink<WsStream<S>, Message>,
@@ -130,9 +130,7 @@ where
                     room_id,
                     client_id: client_id.to_string(),
                 };
-                let bytes = serialize_messagepack(&response);
-
-                let message = prefix_message(bytes, MessagePrefix::Server);
+                let message = serialize_and_prefix(response, MessagePrefix::Server);
 
                 if write.send(message).await.is_err() {
                     error_lock!(state, "Failed to send back initial response");
@@ -187,9 +185,7 @@ async fn handle_room_list_request<S>(
             rooms: state.lock().unwrap().list_rooms(),
         }
     };
-
-    let bytes = serialize_messagepack(message);
-    let message = prefix_message(bytes, MessagePrefix::Server);
+    let message = serialize_and_prefix(message, MessagePrefix::Server);
 
     write.send(message).await.ok();
 }
@@ -240,8 +236,8 @@ async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Mut
         return;
     };
 
-    let message = serialize_messagepack(ServerToClientMessage::Pong { timestamp });
-    let message = prefix_message(message, MessagePrefix::Server);
+    let message = ServerToClientMessage::Pong { timestamp };
+    let message = serialize_and_prefix(message, MessagePrefix::Client);
 
     // Scope hack to avoid holding the guard while sending a message
     // Because Mutex locks are not Send
@@ -267,9 +263,7 @@ async fn handle_client_close(client_id: ClientId, state: &Arc<Mutex<State>>) {
     let message = ServerToClientMessage::Kick {
         client_id: client_id.to_string(),
     };
-
-    let message_buffer_no_prefix = serialize_messagepack(message);
-    let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
+    let message = serialize_and_prefix(message, MessagePrefix::Server);
 
     let senders = {
         let mut guard = state.lock().unwrap();
