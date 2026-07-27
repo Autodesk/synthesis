@@ -72,7 +72,11 @@ class SynthesisBrain extends Brain {
         return this._brainIndex
     }
 
-    public configureDriveBehavior(driveType: DriveType) {
+    /**
+     * Applies the requested drive type and returns the drive type actually in effect afterwards.
+     * These can differ when the requested type is swerve but swerve detection fails.
+     */
+    public configureDriveBehavior(driveType: DriveType): DriveType {
         const wasSwerve = this.driveType === DriveType.SWERVE
         this.driveType = driveType
 
@@ -80,16 +84,17 @@ class SynthesisBrain extends Brain {
         // azimuth (steering) hinges are correctly excluded from / restored to arm control.
         if (driveType === DriveType.SWERVE || wasSwerve) {
             this.configure()
-            return
+            return this.driveType
         }
 
         // Tank <-> Arcade is a lightweight toggle on the existing skid-steer behavior.
         const existing = this._behaviors.find((behavior: Behavior) => behavior instanceof SkidSteerDriveBehavior)
         if (existing == null) {
             console.error("Can't find drive behavior!")
-            return
+            return this.driveType
         }
         existing.isArcade = driveType == DriveType.ARCADE
+        return this.driveType
     }
 
     public resetSwerveOrientation(): void {

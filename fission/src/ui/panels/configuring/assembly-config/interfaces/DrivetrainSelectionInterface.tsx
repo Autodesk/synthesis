@@ -1,4 +1,5 @@
 import { FormControl, InputLabel, MenuItem } from "@mui/material"
+import { useState } from "react"
 import { Select } from "@/ui/components/StyledComponents"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -11,6 +12,10 @@ interface DrivetrainSelectionProps {
 }
 
 const DrivetrainSelectionInterface: React.FC<DrivetrainSelectionProps> = ({ selectedAssembly }) => {
+    const [driveType, setDriveType] = useState<DriveType>(
+        (selectedAssembly.brain as SynthesisBrain | undefined)?.driveType ?? DriveType.ARCADE
+    )
+
     return (
         <>
             <FormControl fullWidth>
@@ -18,11 +23,11 @@ const DrivetrainSelectionInterface: React.FC<DrivetrainSelectionProps> = ({ sele
                 <Select // TODO: disable/hide when wpilib brain selected
                     labelId="drivetrain-type-label"
                     label="Drivetrain Type"
-                    defaultValue={(selectedAssembly.brain as SynthesisBrain | undefined)?.driveType ?? DriveType.ARCADE}
+                    value={driveType}
                     onChange={e => {
                         if (selectedAssembly.brain?.brainType == "synthesis") {
                             const brain = selectedAssembly.brain as SynthesisBrain
-                            brain.configureDriveBehavior(e.target.value as DriveType)
+                            setDriveType(brain.configureDriveBehavior(e.target.value as DriveType))
 
                             InputSchemeManager.applyCompatibleScheme(brain.brainIndex)
                             EventSystem.dispatch("InputSchemeChanged", { panelId: undefined })
