@@ -63,7 +63,12 @@
         "useValidForDirection": "error",
         "useValidTypeof": "error",
         "useYield": "error",
-        "useUniqueElementIds": "off"
+        "useUniqueElementIds": "off",
+        "noNestedComponentDefinitions": "error",
+        "noReactPropAssignments": "error",
+        "noRenderReturnValue": "error",
+        "useJsxKeyInIterable": "error",
+        "noChildrenProp": "error"
       },
       "nursery": {
         "useReactFunctionComponentDefinition": {
