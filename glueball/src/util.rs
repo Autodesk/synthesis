@@ -2,8 +2,13 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 use tokio_tungstenite::tungstenite::Message;
+use uuid::Uuid;
 
 use crate::model::MessagePrefix;
+
+pub fn trim_uuid(uuid: &Uuid) -> String {
+    uuid.to_string()[0..8].to_string()
+}
 
 /// Creates a new `Message::Binary` containing `bytes`,
 /// prefixed with the byte value of `MessagePrefix`

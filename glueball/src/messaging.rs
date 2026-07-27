@@ -2,7 +2,7 @@ use crate::EventType;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
 use crate::room::{ClientId, ClientSender, State};
-use crate::util::{deserialize_messagepack, prefix_message, serialize_messagepack};
+use crate::util::{deserialize_messagepack, prefix_message, serialize_messagepack, trim_uuid};
 
 use bytes::Bytes;
 use tokio::io::{AsyncRead, AsyncWrite};
@@ -52,7 +52,7 @@ where
     let (mut write, mut read) = ws_stream.split();
 
     let Some(client_id) =
-        wait_for_initializtion(state.clone(), &mut read, &mut write, tx, addr).await
+        wait_for_initializtion(state.clone(), &mut read, &mut write, tx.clone(), addr).await
     else {
         return;
     };
@@ -67,13 +67,24 @@ where
     });
 
     // Listen for and pass along messages to other client channels in the same room
-    while let Some(maybe_message) = timeout(TIMEOUT, read.next()).await.ok().flatten() {
-        let Ok(message) = maybe_message else {
-            return;
-        };
+    loop {
+        let result = timeout(TIMEOUT, read.next()).await;
 
-        handle_client_message(message, state.clone(), client_id).await;
+        // If it's a timeout error, we print such
+        if result.is_err() {
+            warn_lock!(state, "{} timed out", trim_uuid(&client_id));
+        }
+
+        // If it's anything but a correct response, we disconnect
+        let Ok(Some(Ok(message))) = result else { break };
+
+        if !handle_client_message(message, state.clone(), client_id).await {
+            // We don't break here, to avoid double closing the connection
+            return;
+        }
     }
+
+    handle_client_close(client_id, &state).await;
 }
 
 /// Waits for and handles messages from the client that are intended for the server.
@@ -183,12 +194,16 @@ async fn handle_room_list_request<S>(
     write.send(message).await.ok();
 }
 
-async fn handle_client_message(message: Message, state: Arc<Mutex<State>>, client_id: ClientId) {
+async fn handle_client_message(
+    message: Message,
+    state: Arc<Mutex<State>>,
+    client_id: ClientId,
+) -> bool {
     match message {
         Message::Binary(ref bytes) => {
             if bytes[0] == MessagePrefix::Server as u8 {
                 handle_client_ping(bytes, &client_id, &state).await;
-                return;
+                return true;
             }
 
             assert_eq!(bytes[0], MessagePrefix::Client as u8);
@@ -202,9 +217,14 @@ async fn handle_client_message(message: Message, state: Arc<Mutex<State>>, clien
             for tx in senders {
                 tx.send(message.clone()).await.ok();
             }
+
+            true
         }
 
-        Message::Close(_) => handle_client_close(client_id, &state).await,
+        Message::Close(_) => {
+            handle_client_close(client_id, &state).await;
+            false
+        }
         _ => todo!("Handle ws protocol ping/pong and text messagaes"),
     }
 }

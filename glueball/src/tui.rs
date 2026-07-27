@@ -11,6 +11,7 @@
 //! and lock or unlock the focused room with `l` to control whether new clients may join.
 
 use crate::room::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
+use crate::util::trim_uuid;
 
 use std::fmt::Write;
 use std::sync::{Arc, Mutex};
@@ -340,7 +341,7 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
         // This totally could happen but like that would probably be a bug so whatever
         let color = COLOR_PALETTE[i % COLOR_PALETTE_SIZE];
         let host_marker = if Some(*uid) == room.host { "  [H]" } else { "" };
-        let uid = &uid.to_string()[0..8];
+        let uid = trim_uuid(uid);
 
         let label = format!("{uid} ({name}){host_marker}");
         ListItem::new(label).style(Style::new().fg(color))
