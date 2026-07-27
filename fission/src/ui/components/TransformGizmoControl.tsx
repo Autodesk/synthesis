@@ -47,11 +47,12 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
         }
     }, [gizmoRef, defaultMesh, size, parent, postGizmoCreation])
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             if (gizmoRef) gizmoRef.current = undefined
-        }
-    }, [gizmoRef])
+        },
+        [gizmoRef]
+    )
 
     const disableOptions = 2 <= (translateDisabled ? 1 : 0) + (rotateDisabled ? 1 : 0) + (scaleDisabled ? 1 : 0)
 

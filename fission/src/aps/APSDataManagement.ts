@@ -134,9 +134,7 @@ export async function getHubs(): Promise<Hub[] | undefined> {
             .then(x => x.json())
             .then(x => {
                 if ((x.data as RawData[] | undefined)?.length ?? 0 > 0) {
-                    return (x.data as RawData[]).map<Hub>(y => {
-                        return { id: y.id, name: y.attributes.name }
-                    })
+                    return (x.data as RawData[]).map<Hub>(y => ({ id: y.id, name: y.attributes.name }))
                 } else {
                     return undefined
                 }
@@ -172,13 +170,11 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
             .then(x => x.json())
             .then(x => {
                 if ((x.data as RawData[]).length > 0) {
-                    return (x.data as RawData[]).map<Project>(y => {
-                        return {
-                            id: y.id,
-                            name: y.attributes.name,
-                            folder: new Folder(y.relationships.rootFolder.data),
-                        }
-                    })
+                    return (x.data as RawData[]).map<Project>(y => ({
+                        id: y.id,
+                        name: y.attributes.name,
+                        folder: new Folder(y.relationships.rootFolder.data),
+                    }))
                 } else {
                     return undefined
                 }

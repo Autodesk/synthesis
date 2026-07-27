@@ -22,24 +22,22 @@ import { Button, IconButton, SynthesisIcons } from "./StyledComponents"
 import UserIcon from "./UserIcon"
 import CameraSelectionPanel from "../panels/configuring/CameraSelectionPanel"
 
-const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => {
-    return (
-        <Button
-            {...props}
-            startIcon={props.size === "large" ? startIcon : null}
-            className="relative flex flex-row"
-            variant="contained"
-            sx={{
-                "&:focus": {
-                    outline: "none",
-                },
-            }}
-        >
-            {props.size !== "large" && <span className="absolute left-3">{startIcon}</span>}
-            <span className={props.size === "large" ? "py-1" : "py-0.5 ml-6"}>{children}</span>
-        </Button>
-    )
-}
+const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ...props }) => (
+    <Button
+        {...props}
+        startIcon={props.size === "large" ? startIcon : null}
+        className="relative flex flex-row"
+        variant="contained"
+        sx={{
+            "&:focus": {
+                outline: "none",
+            },
+        }}
+    >
+        {props.size !== "large" && <span className="absolute left-3">{startIcon}</span>}
+        <span className={props.size === "large" ? "py-1" : "py-0.5 ml-6"}>{children}</span>
+    </Button>
+)
 
 const VARIANTS = {
     open: { opacity: 1, y: "-50%", x: 0 },
@@ -84,11 +82,13 @@ const MainHUD: React.FC = () => {
         })
     }, [])
 
-    useEffect(() => {
-        return EventSystem.listen("MatchStateChangedEvent", () => {
-            setMatchModeRunning(MatchMode.getInstance().isMatchEnabled())
-        })
-    }, [])
+    useEffect(
+        () =>
+            EventSystem.listen("MatchStateChangedEvent", () => {
+                setMatchModeRunning(MatchMode.getInstance().isMatchEnabled())
+            }),
+        []
+    )
 
     return (
         <>

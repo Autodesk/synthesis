@@ -83,20 +83,20 @@ const CommandPalette: React.FC = () => {
     }, [isOpen])
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: removing registryTick here would break this component
-    const commands = useMemo<CommandDefinition[]>(() => {
-        return CommandRegistry.get().getCommands()
-    }, [registryTick])
+    const commands = useMemo<CommandDefinition[]>(() => CommandRegistry.get().getCommands(), [registryTick])
 
-    const fuse = useMemo(() => {
-        return new Fuse(commands, {
-            keys: ["label", "description", "keywords"],
-            threshold: 0.3,
-            ignoreLocation: true,
-            includeMatches: true,
-            shouldSort: true,
-            includeScore: true,
-        })
-    }, [commands])
+    const fuse = useMemo(
+        () =>
+            new Fuse(commands, {
+                keys: ["label", "description", "keywords"],
+                threshold: 0.3,
+                ignoreLocation: true,
+                includeMatches: true,
+                shouldSort: true,
+                includeScore: true,
+            }),
+        [commands]
+    )
 
     InputSystem.escapeKeyListeners[0] = () => {
         if (isOpen) {
@@ -112,9 +112,7 @@ const CommandPalette: React.FC = () => {
         return fuse.search(q).map(r => r.item)
     }, [commands, fuse, query])
 
-    const visible = useMemo(() => {
-        return [...filtered].reverse()
-    }, [filtered])
+    const visible = useMemo(() => [...filtered].reverse(), [filtered])
 
     const execute = useCallback(
         (index: number) => {

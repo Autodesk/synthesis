@@ -15,14 +15,16 @@ interface ContextMenuStateData {
 const ContextMenu: React.FC = () => {
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
-    useEffect(() => {
-        return EventSystem.listen("ContextSupplierEvent", e => {
-            setState({
-                data: e.data,
-                location: [e.mousePosition[0], e.mousePosition[1]],
-            })
-        })
-    }, [])
+    useEffect(
+        () =>
+            EventSystem.listen("ContextSupplierEvent", e => {
+                setState({
+                    data: e.data,
+                    location: [e.mousePosition[0], e.mousePosition[1]],
+                })
+            }),
+        []
+    )
 
     return !state ? (
         <></>

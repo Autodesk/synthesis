@@ -116,9 +116,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         }
     }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
 
     useEffect(() => {
         if (!gizmoRef.current) {

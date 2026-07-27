@@ -84,14 +84,15 @@ const PokerPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         }
     }, [mark, markRadius, punch, punchForce, markers])
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             for (const marker of markers) {
                 marker.geometry.dispose()
                 World.sceneRenderer.scene.remove(marker)
             }
-        }
-    }, [markers])
+        },
+        [markers]
+    )
 
     useEffect(() => {
         configureScreen(panel!, { title: "The Poker", hideAccept: true, cancelText: "Close" }, {})

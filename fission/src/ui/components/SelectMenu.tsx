@@ -160,21 +160,19 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                     {/** List of options */}
                     <Stack gap={2}>
                         {options.length > 0 ? (
-                            options.map((option, i) => {
-                                return (
-                                    <OptionCard
-                                        value={option}
-                                        index={i}
-                                        onSelected={val => {
-                                            setSelectedOption(val)
-                                            onOptionSelected(val)
-                                        }}
-                                        key={option.id}
-                                        onDelete={onDelete ? () => onDelete(option) : undefined}
-                                        includeDelete={deleteCondition === undefined || deleteCondition(option)}
-                                    />
-                                )
-                            })
+                            options.map((option, i) => (
+                                <OptionCard
+                                    value={option}
+                                    index={i}
+                                    onSelected={val => {
+                                        setSelectedOption(val)
+                                        onOptionSelected(val)
+                                    }}
+                                    key={option.id}
+                                    onDelete={onDelete ? () => onDelete(option) : undefined}
+                                    includeDelete={deleteCondition === undefined || deleteCondition(option)}
+                                />
+                            ))
                         ) : (
                             <>
                                 {/** No options available text */}

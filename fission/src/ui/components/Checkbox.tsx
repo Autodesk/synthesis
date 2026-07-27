@@ -37,25 +37,23 @@ type CheckboxProps = {
     disabled?: boolean
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabel, onClick, tooltip, disabled }) => {
-    return (
-        <Stack direction="row" justifyContent="space-between" alignItems="center" textAlign="center">
-            {hideLabel ? null : tooltip ? (
-                <LabelWithTooltip labelText={label} tooltipText={tooltip} />
-            ) : (
-                <Label size="sm" className={`mr-12 ${className} whitespace-nowrap`}>
-                    {label}
-                </Label>
-            )}
-            <Switch
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
-                {...SoundPlayer.getInstance().checkboxSoundEffects()}
-                checked={checked}
-                disabled={disabled}
-                role="checkbox"
-            />
-        </Stack>
-    )
-}
+const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabel, onClick, tooltip, disabled }) => (
+    <Stack direction="row" justifyContent="space-between" alignItems="center" textAlign="center">
+        {hideLabel ? null : tooltip ? (
+            <LabelWithTooltip labelText={label} tooltipText={tooltip} />
+        ) : (
+            <Label size="sm" className={`mr-12 ${className} whitespace-nowrap`}>
+                {label}
+            </Label>
+        )}
+        <Switch
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
+            {...SoundPlayer.getInstance().checkboxSoundEffects()}
+            checked={checked}
+            disabled={disabled}
+            role="checkbox"
+        />
+    </Stack>
+)
 
 export default Checkbox

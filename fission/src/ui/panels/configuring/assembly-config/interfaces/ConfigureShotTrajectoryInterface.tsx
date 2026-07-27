@@ -102,9 +102,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
         }
     }, [selectedRobot, selectedNode, ejectorVelocity, ejectOrder])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
 
     const placeholderMesh = useMemo(() => {
         return new THREE.Mesh(

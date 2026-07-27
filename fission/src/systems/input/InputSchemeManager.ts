@@ -209,9 +209,7 @@ class InputSchemeManager {
 
     /** Save all schemes that have been customized to local storage via preferences */
     public static saveSchemes(panelId?: string) {
-        const customizedSchemes = this.allInputSchemes.filter(s => {
-            return s.customized
-        })
+        const customizedSchemes = this.allInputSchemes.filter(s => s.customized)
 
         PreferencesSystem.setUserPreference("InputSchemes", customizedSchemes)
         PreferencesSystem.savePreferences()

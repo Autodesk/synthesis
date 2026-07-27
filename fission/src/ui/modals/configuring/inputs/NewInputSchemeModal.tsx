@@ -29,9 +29,10 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
         return assembly?.miraType === MiraType.ROBOT ? assembly : undefined
     }, [])
 
-    const brainIndex = useMemo(() => {
-        return targetAssembly ? SynthesisBrain.getBrainIndex(targetAssembly) : undefined
-    }, [targetAssembly])
+    const brainIndex = useMemo(
+        () => (targetAssembly ? SynthesisBrain.getBrainIndex(targetAssembly) : undefined),
+        [targetAssembly]
+    )
 
     useEffect(() => {
         const onBeforeAccept = () => {

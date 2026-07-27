@@ -116,23 +116,27 @@ const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
 }
 
 const ProgressNotifications: React.FC = () => {
-    const [progressElements, updateProgressElements] = useReducer(() => {
-        return handleMap.size > 0
-            ? [...handleMap.entries()].map(([_, handle]) => (
-                  <ProgressNotification handle={handle} key={handle.handleId} />
-              ))
-            : undefined
-    }, undefined)
+    const [progressElements, updateProgressElements] = useReducer(
+        () =>
+            handleMap.size > 0
+                ? [...handleMap.entries()].map(([_, handle]) => (
+                      <ProgressNotification handle={handle} key={handle.handleId} />
+                  ))
+                : undefined,
+        undefined
+    )
 
-    useEffect(() => {
-        return EventSystem.listen("ProgressEvent", handle => {
-            if (handle.status > 0) {
-                setTimeout(() => handleMap.delete(handle.handleId) && updateProgressElements(), 2000)
-            }
-            handleMap.set(handle.handleId, handle)
-            updateProgressElements()
-        })
-    }, [])
+    useEffect(
+        () =>
+            EventSystem.listen("ProgressEvent", handle => {
+                if (handle.status > 0) {
+                    setTimeout(() => handleMap.delete(handle.handleId) && updateProgressElements(), 2000)
+                }
+                handleMap.set(handle.handleId, handle)
+                updateProgressElements()
+            }),
+        []
+    )
 
     return (
         <Box

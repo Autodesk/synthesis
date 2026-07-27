@@ -46,9 +46,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
         }
     }, [targetAssembly, setSelectedScheme])
 
-    const brainIndex = useMemo(() => {
-        return SynthesisBrain.getBrainIndex(targetAssembly)
-    }, [targetAssembly])
+    const brainIndex = useMemo(() => SynthesisBrain.getBrainIndex(targetAssembly), [targetAssembly])
 
     return (
         <Stack gap={2}>

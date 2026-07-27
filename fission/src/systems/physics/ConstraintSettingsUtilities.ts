@@ -138,9 +138,7 @@ export function createDOFSpecs(dofs: mirabuf.joint.IDOF[]): DOFSpecs[] {
 
     const constraintSpecs: DOFSpecs[] = axes
         .filter(([_, dof]) => !dof.limits || (dof.limits.upper ?? 0) - (dof.limits.lower ?? 0) > 0.001)
-        .map(([axis, dof]) => {
-            return { ...dof, axis, friction: 0 } satisfies DOFSpecs
-        })
+        .map(([axis, dof]) => ({ ...dof, axis, friction: 0 }) satisfies DOFSpecs)
 
     return constraintSpecs
 }

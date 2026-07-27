@@ -160,9 +160,7 @@ const ZoneConfigBase = <TZone extends BaseZonePreferences>(props: ZoneConfigBase
         saveAllZones,
     ])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
 
     useEffect(() => {
         World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)

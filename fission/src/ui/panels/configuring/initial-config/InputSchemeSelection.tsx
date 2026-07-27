@@ -142,52 +142,46 @@ const InputSchemeSelection = ({ brainIndex, onSelect, panelId }: InputSchemeSele
             {/** Creates list items with buttons */}
             {availableSchemes
                 ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
-                .map(scheme => {
-                    return (
+                .map(scheme => (
+                    <SchemeSelector
+                        key={`available-${scheme.scheme.schemeName}`}
+                        scheme={scheme.scheme}
+                        panelId={panelId}
+                        brainIndex={brainIndex}
+                        message="Available"
+                        onSelect={onSchemeSelected}
+                    />
+                ))}
+            {availableSchemes
+                ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
+                .map((scheme, i) => (
+                    <div key={`conflict-${scheme.scheme.schemeName}`}>
+                        {i == 0 && <Divider />}
                         <SchemeSelector
-                            key={`available-${scheme.scheme.schemeName}`}
                             scheme={scheme.scheme}
                             panelId={panelId}
                             brainIndex={brainIndex}
-                            message="Available"
+                            style={{ filter: "brightness(60%)" }}
+                            message={"Conflicts with " + scheme.conflictingSchemeNames}
                             onSelect={onSchemeSelected}
                         />
-                    )
-                })}
-            {availableSchemes
-                ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
-                .map((scheme, i) => {
-                    return (
-                        <div key={`conflict-${scheme.scheme.schemeName}`}>
-                            {i == 0 && <Divider />}
-                            <SchemeSelector
-                                scheme={scheme.scheme}
-                                panelId={panelId}
-                                brainIndex={brainIndex}
-                                style={{ filter: "brightness(60%)" }}
-                                message={"Conflicts with " + scheme.conflictingSchemeNames}
-                                onSelect={onSchemeSelected}
-                            />
-                        </div>
-                    )
-                })}
+                    </div>
+                ))}
             {availableSchemes
                 ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
-                .map((scheme, i) => {
-                    return (
-                        <div key={`in-use-${scheme.scheme.schemeName}`}>
-                            {i == 0 && <Divider />}
-                            <SchemeSelector
-                                scheme={scheme.scheme}
-                                panelId={panelId}
-                                brainIndex={brainIndex}
-                                message="In Use"
-                                disabled={true}
-                                onSelect={onSchemeSelected}
-                            />
-                        </div>
-                    )
-                })}
+                .map((scheme, i) => (
+                    <div key={`in-use-${scheme.scheme.schemeName}`}>
+                        {i == 0 && <Divider />}
+                        <SchemeSelector
+                            scheme={scheme.scheme}
+                            panelId={panelId}
+                            brainIndex={brainIndex}
+                            message="In Use"
+                            disabled={true}
+                            onSelect={onSchemeSelected}
+                        />
+                    </div>
+                ))}
         </>
     )
 }

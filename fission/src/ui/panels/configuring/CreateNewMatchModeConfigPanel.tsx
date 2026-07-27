@@ -192,9 +192,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
         }
     }, [])
 
-    const isFormValid = useCallback(() => {
-        return Object.values(formState).every(field => !field.error)
-    }, [formState])
+    const isFormValid = useCallback(() => Object.values(formState).every(field => !field.error), [formState])
 
     const renderField = useCallback(
         (fieldName: string, label: string, helperText?: string, conditionalOn?: string) => {
@@ -252,8 +250,8 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
         [formState, handleFieldChange, preventNonIntegerKeys, updateField]
     )
 
-    const createConfigFromForm = useCallback((): MatchModeConfig => {
-        return {
+    const createConfigFromForm = useCallback(
+        (): MatchModeConfig => ({
             id: crypto.randomUUID(),
             name: (formState.name.value as string).trim(),
             isDefault: false,
@@ -271,8 +269,9 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
             sideExtensionPenalty: formState.enableSideExtensionPenalty.value
                 ? parseFloat(formState.sideExtensionPenalty.value as string)
                 : 0,
-        }
-    }, [formState])
+        }),
+        [formState]
+    )
 
     const downloadConfig = useCallback(() => {
         const config = createConfigFromForm()

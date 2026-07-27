@@ -64,9 +64,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         if (targetAssembly) World.sceneRenderer.removeSceneObject(targetAssembly.id)
     }, [targetAssembly])
 
-    const brainIndex = useMemo(() => {
-        return SynthesisBrain.getBrainIndex(targetAssembly)
-    }, [targetAssembly])
+    const brainIndex = useMemo(() => SynthesisBrain.getBrainIndex(targetAssembly), [targetAssembly])
 
     useEffect(() => {
         configureScreen(

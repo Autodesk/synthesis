@@ -26,9 +26,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
         InputSchemeManager.saveSchemes(panelId)
     }, [panelId])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
 
     /** Disable scrolling with arrow keys to stop accidentally scrolling when binding keys */
     useEffect(() => {
@@ -104,19 +102,17 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
 
             {/* Inputs list (let parent panel handle scrolling to avoid double scrollbars) */}
             <Stack ref={scrollRef} gap={2}>
-                {selectedScheme.inputs.map((i: Input) => {
-                    return (
-                        <EditInputInterface
-                            key={i.inputName}
-                            input={i}
-                            useGamepad={useGamepad}
-                            useTouchControls={useTouchControls}
-                            onInputChanged={() => {
-                                selectedScheme.customized = true
-                            }}
-                        />
-                    )
-                })}
+                {selectedScheme.inputs.map((i: Input) => (
+                    <EditInputInterface
+                        key={i.inputName}
+                        input={i}
+                        useGamepad={useGamepad}
+                        useTouchControls={useTouchControls}
+                        onInputChanged={() => {
+                            selectedScheme.customized = true
+                        }}
+                    />
+                ))}
                 <Button
                     onClick={() => {
                         const existingJointIndexes = selectedScheme.inputs

@@ -61,9 +61,7 @@ const ManageZonesBase = <TZone extends BaseZonePreferences>(props: ManageZonesBa
         saveZonesGeneric(zones, selectedField, persistZones)
     }, [zones, selectedField, persistZones])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
 
     useEffect(() => {
         saveZonesGeneric(zones, selectedField, persistZones)

@@ -21,9 +21,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
     const tooltip = data.tooltip as string | undefined
 
     const validateConnection = useCallback(
-        (edge: Edge | Connection) => {
-            return SimConfig.validateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
-        },
+        (edge: Edge | Connection) => SimConfig.validateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!),
         [simConfig]
     )
 
@@ -38,27 +36,25 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         justifyContent: "space-between",
                     }}
                 >
-                    {[...robotInput].sort(handleInfoDisplayCompare).map(x => {
-                        return (
-                            <div key={x.id} className="relative">
-                                <div className="px-3 text-lg">{x.displayName}</div>
-                                <Handle
-                                    style={{
-                                        position: "absolute",
-                                        left: 0,
-                                        width: "1rem",
-                                        height: "1rem",
-                                        backgroundColor: NORA_TYPES_COLORS[x.noraType],
-                                    }}
-                                    type="target"
-                                    position={Position.Left}
-                                    id={x.id}
-                                    isConnectable={isConnectable}
-                                    isValidConnection={validateConnection}
-                                />
-                            </div>
-                        )
-                    })}
+                    {[...robotInput].sort(handleInfoDisplayCompare).map(x => (
+                        <div key={x.id} className="relative">
+                            <div className="px-3 text-lg">{x.displayName}</div>
+                            <Handle
+                                style={{
+                                    position: "absolute",
+                                    left: 0,
+                                    width: "1rem",
+                                    height: "1rem",
+                                    backgroundColor: NORA_TYPES_COLORS[x.noraType],
+                                }}
+                                type="target"
+                                position={Position.Left}
+                                id={x.id}
+                                isConnectable={isConnectable}
+                                isValidConnection={validateConnection}
+                            />
+                        </div>
+                    ))}
                 </Box>
             ),
         [isConnectable, robotInput, validateConnection]
@@ -75,27 +71,25 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         justifyContent: "space-between",
                     }}
                 >
-                    {[...robotOutput].sort(handleInfoDisplayCompare).map(x => {
-                        return (
-                            <div key={x.id} className="relative">
-                                <div className="px-3 text-lg text-right">{x.displayName}</div>
-                                <Handle
-                                    style={{
-                                        position: "absolute",
-                                        right: 0,
-                                        width: "1rem",
-                                        height: "1rem",
-                                        backgroundColor: NORA_TYPES_COLORS[x.noraType],
-                                    }}
-                                    type="source"
-                                    position={Position.Right}
-                                    id={x.id}
-                                    isConnectable={isConnectable}
-                                    isValidConnection={validateConnection}
-                                />
-                            </div>
-                        )
-                    })}
+                    {[...robotOutput].sort(handleInfoDisplayCompare).map(x => (
+                        <div key={x.id} className="relative">
+                            <div className="px-3 text-lg text-right">{x.displayName}</div>
+                            <Handle
+                                style={{
+                                    position: "absolute",
+                                    right: 0,
+                                    width: "1rem",
+                                    height: "1rem",
+                                    backgroundColor: NORA_TYPES_COLORS[x.noraType],
+                                }}
+                                type="source"
+                                position={Position.Right}
+                                id={x.id}
+                                isConnectable={isConnectable}
+                                isValidConnection={validateConnection}
+                            />
+                        </div>
+                    ))}
                 </Box>
             ),
         [isConnectable, robotOutput, validateConnection]

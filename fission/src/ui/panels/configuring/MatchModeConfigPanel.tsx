@@ -147,38 +147,36 @@ interface ItemCardProps {
     secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
-    return (
+const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => (
+    <Stack
+        direction="row"
+        key={id}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+        gap={"1rem"}
+        sx={{ px: 1, py: 0.5 }}
+    >
+        <Label size="sm" className="text-wrap break-all">
+            {name.replace(/.mira$/, "")}
+        </Label>
         <Stack
-            direction="row"
-            key={id}
-            justifyContent={"space-between"}
+            key={`button-box-${id}`}
+            direction="row-reverse"
+            gap={"0.5rem"}
+            justifyContent={"center"}
             alignItems={"center"}
-            gap={"1rem"}
-            sx={{ px: 1, py: 0.5 }}
         >
-            <Label size="sm" className="text-wrap break-all">
-                {name.replace(/.mira$/, "")}
-            </Label>
-            <Stack
-                key={`button-box-${id}`}
-                direction="row-reverse"
-                gap={"0.5rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
-            >
-                {secondaryOnClick && (
-                    <NegativeButton onClick={secondaryOnClick}>
-                        <SynthesisIcons.DELETE_LARGE />
-                    </NegativeButton>
-                )}
-                <PositiveButton onClick={primaryOnClick}>
-                    <SynthesisIcons.PLAY_LARGE />
-                </PositiveButton>
-            </Stack>
+            {secondaryOnClick && (
+                <NegativeButton onClick={secondaryOnClick}>
+                    <SynthesisIcons.DELETE_LARGE />
+                </NegativeButton>
+            )}
+            <PositiveButton onClick={primaryOnClick}>
+                <SynthesisIcons.PLAY_LARGE />
+            </PositiveButton>
         </Stack>
-    )
-}
+    </Stack>
+)
 
 const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { openPanel, closePanel, configureScreen } = useUIContext()

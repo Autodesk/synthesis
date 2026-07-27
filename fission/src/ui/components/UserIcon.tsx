@@ -11,11 +11,13 @@ interface UserIconProps {
 const UserIcon: React.FC<UserIconProps> = ({ className }) => {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
 
-    useEffect(() => {
-        return EventSystem.listen("APSUserInfoUpdate", () => {
-            setUserInfo(APS.userInfo)
-        })
-    }, [])
+    useEffect(
+        () =>
+            EventSystem.listen("APSUserInfoUpdate", () => {
+                setUserInfo(APS.userInfo)
+            }),
+        []
+    )
 
     if (!userInfo) {
         return <SynthesisIcons.QUESTION />

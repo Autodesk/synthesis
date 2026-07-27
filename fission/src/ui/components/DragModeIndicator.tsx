@@ -8,9 +8,7 @@ import { SynthesisIcons } from "./StyledComponents"
 const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
 
-    useEffect(() => {
-        return EventSystem.listen("DragModeToggled", ({ enabled }) => setEnabled(enabled))
-    }, [])
+    useEffect(() => EventSystem.listen("DragModeToggled", ({ enabled }) => setEnabled(enabled)), [])
 
     const handleClick = () => {
         EventSystem.dispatch("DragModeToggled", { enabled: false })

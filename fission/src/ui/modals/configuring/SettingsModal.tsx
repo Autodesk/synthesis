@@ -90,28 +90,26 @@ const ColorEditor: React.FC<{
     label: string
     color: string
     setColor: (_c: string) => void
-}> = ({ label, color, setColor }) => {
-    return (
-        <Stack direction="row" gap={2}>
-            <TextField
-                label={label}
-                variant="outlined"
-                defaultValue={color}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setColor(event.target.value)
-                }}
-            />
-            <Box
-                sx={{
-                    height: 55,
-                    aspectRatio: 1,
-                    borderRadius: 1,
-                    bgcolor: `${color}`,
-                }}
-            />
-        </Stack>
-    )
-}
+}> = ({ label, color, setColor }) => (
+    <Stack direction="row" gap={2}>
+        <TextField
+            label={label}
+            variant="outlined"
+            defaultValue={color}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setColor(event.target.value)
+            }}
+        />
+        <Box
+            sx={{
+                height: 55,
+                aspectRatio: 1,
+                borderRadius: 1,
+                bgcolor: `${color}`,
+            }}
+        />
+    </Stack>
+)
 
 const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
     <Stack direction="column" gap={2}>

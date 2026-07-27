@@ -130,142 +130,112 @@ interface SpacerProps {
     width?: number
 }
 
-export const Spacer: React.FC<SpacerProps> = ({ height = 0, width = 0 }) => {
-    return <Box minHeight={`${height}px`} minWidth={`${width}px`} />
-}
+export const Spacer: React.FC<SpacerProps> = ({ height = 0, width = 0 }) => (
+    <Box minHeight={`${height}px`} minWidth={`${width}px`} />
+)
 
-export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiButton>
-    )
-}
+export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => (
+    <MuiButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+        {children}
+    </MuiButton>
+)
 
-export const IconButton: React.FC<IconButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiIconButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiIconButton>
-    )
-}
+export const IconButton: React.FC<IconButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => (
+    <MuiIconButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+        {children}
+    </MuiIconButton>
+)
 
-export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiToggleButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiToggleButton>
-    )
-}
+export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => (
+    <MuiToggleButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+        {children}
+    </MuiToggleButton>
+)
 
 export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, ...props }) => {
     // The sound is played by the individual ToggleButton that was clicked
     return <MuiToggleButtonGroup {...props}>{children}</MuiToggleButtonGroup>
 }
 
-export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
-    return (
-        <MuiSelect {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
-            {children}
-        </MuiSelect>
-    )
-}
+export const Select: React.FC<SelectProps> = ({ children, ...props }) => (
+    <MuiSelect {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
+        {children}
+    </MuiSelect>
+)
 
-export const Accordion: React.FC<AccordionProps> = ({ children, ...props }) => {
-    return <MuiAccordion {...props}>{children}</MuiAccordion>
-}
+export const Accordion: React.FC<AccordionProps> = ({ children, ...props }) => (
+    <MuiAccordion {...props}>{children}</MuiAccordion>
+)
 
-export const AccordionSummary: React.FC<AccordionSummaryProps> = ({ children, ...props }) => {
-    return (
-        <MuiAccordionSummary {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
-            {children}
-        </MuiAccordionSummary>
-    )
-}
+export const AccordionSummary: React.FC<AccordionSummaryProps> = ({ children, ...props }) => (
+    <MuiAccordionSummary {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
+        {children}
+    </MuiAccordionSummary>
+)
 
-export const AccordionDetails: React.FC<AccordionDetailsProps> = ({ children, ...props }) => {
-    return <MuiAccordionDetails {...props}>{children}</MuiAccordionDetails>
-}
+export const AccordionDetails: React.FC<AccordionDetailsProps> = ({ children, ...props }) => (
+    <MuiAccordionDetails {...props}>{children}</MuiAccordionDetails>
+)
 
-export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => {
-    return (
-        <Button onClick={onClick} {...props} color="success">
-            {children}
-        </Button>
-    )
-}
+export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => (
+    <Button onClick={onClick} {...props} color="success">
+        {children}
+    </Button>
+)
 
-export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => {
-    return (
-        <IconButton onClick={onClick} {...props} color="success">
-            {children}
-        </IconButton>
-    )
-}
+export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => (
+    <IconButton onClick={onClick} {...props} color="success">
+        {children}
+    </IconButton>
+)
 
-export const DownloadButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
-    return (
-        <PositiveIconButton onClick={onClick} {...props}>
-            <SynthesisIcons.DELETE_LARGE />
-        </PositiveIconButton>
-    )
-}
+export const DownloadButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => (
+    <PositiveIconButton onClick={onClick} {...props}>
+        <SynthesisIcons.DELETE_LARGE />
+    </PositiveIconButton>
+)
 
-export const AddButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
-    return (
-        <PositiveIconButton onClick={onClick} {...props}>
-            <SynthesisIcons.ADD_LARGE />
-        </PositiveIconButton>
-    )
-}
+export const AddButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => (
+    <PositiveIconButton onClick={onClick} {...props}>
+        <SynthesisIcons.ADD_LARGE />
+    </PositiveIconButton>
+)
 
-export const SelectButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
-    return (
-        <PositiveIconButton onClick={onClick} {...props}>
-            <SynthesisIcons.SELECT_LARGE />
-        </PositiveIconButton>
-    )
-}
+export const SelectButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => (
+    <PositiveIconButton onClick={onClick} {...props}>
+        <SynthesisIcons.SELECT_LARGE />
+    </PositiveIconButton>
+)
 
-export const EditButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
-    return (
-        <PositiveIconButton onClick={onClick} {...props}>
-            <SynthesisIcons.EDIT_LARGE />
-        </PositiveIconButton>
-    )
-}
+export const EditButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => (
+    <PositiveIconButton onClick={onClick} {...props}>
+        <SynthesisIcons.EDIT_LARGE />
+    </PositiveIconButton>
+)
 
-export const NegativeButton: React.FC<ButtonProps> = ({ children, onClick, id, ...props }) => {
-    return (
-        <Button onClick={onClick} {...props} id={id} color="error">
-            {children}
-        </Button>
-    )
-}
+export const NegativeButton: React.FC<ButtonProps> = ({ children, onClick, id, ...props }) => (
+    <Button onClick={onClick} {...props} id={id} color="error">
+        {children}
+    </Button>
+)
 
-export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => {
-    return (
-        <IconButton onClick={onClick} {...props} color="error">
-            {children}
-        </IconButton>
-    )
-}
+export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => (
+    <IconButton onClick={onClick} {...props} color="error">
+        {children}
+    </IconButton>
+)
 
-export const DeleteButton: React.FC<IconButtonProps> = ({ onClick, id, ...props }) => {
-    return (
-        <NegativeIconButton onClick={onClick} id={id} {...props}>
-            <SynthesisIcons.DELETE_LARGE />
-        </NegativeIconButton>
-    )
-}
+export const DeleteButton: React.FC<IconButtonProps> = ({ onClick, id, ...props }) => (
+    <NegativeIconButton onClick={onClick} id={id} {...props}>
+        <SynthesisIcons.DELETE_LARGE />
+    </NegativeIconButton>
+)
 
-export const RefreshButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
-    return (
-        <IconButton onClick={onClick} {...props}>
-            <SynthesisIcons.REFRESH_LARGE />
-        </IconButton>
-    )
-}
+export const RefreshButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => (
+    <IconButton onClick={onClick} {...props}>
+        <SynthesisIcons.REFRESH_LARGE />
+    </IconButton>
+)
 
 export const CustomTooltip: React.FC<{ text: string }> = ({ text }) => {
     return (
@@ -309,13 +279,11 @@ interface TooltipToggleButtonProps extends ToggleButtonProps {
 }
 
 export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipToggleButtonProps>(
-    ({ title, ...props }, ref) => {
-        return (
-            <Tooltip title={title}>
-                <MuiToggleButton ref={ref} {...props} />
-            </Tooltip>
-        )
-    }
+    ({ title, ...props }, ref) => (
+        <Tooltip title={title}>
+            <MuiToggleButton ref={ref} {...props} />
+        </Tooltip>
+    )
 )
 
 interface LabelWithTooltipProps {
@@ -323,14 +291,12 @@ interface LabelWithTooltipProps {
     tooltipText: string
 }
 
-export const LabelWithTooltip: React.FC<LabelWithTooltipProps> = ({ labelText, tooltipText }) => {
-    return (
-        <Stack direction="row" alignItems={"center"} textAlign={"center"}>
-            <Label size="sm">{labelText}</Label>
-            <CustomTooltip text={tooltipText} />
-        </Stack>
-    )
-}
+export const LabelWithTooltip: React.FC<LabelWithTooltipProps> = ({ labelText, tooltipText }) => (
+    <Stack direction="row" alignItems={"center"} textAlign={"center"}>
+        <Label size="sm">{labelText}</Label>
+        <CustomTooltip text={tooltipText} />
+    </Stack>
+)
 
 // Export the raw MUI components for cases where sound effects are not wanted
 export { MuiButton, MuiIconButton, MuiToggleButton, MuiToggleButtonGroup, MuiSelect }

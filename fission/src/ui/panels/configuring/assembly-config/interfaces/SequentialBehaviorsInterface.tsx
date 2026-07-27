@@ -113,9 +113,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
  */
 function sortBehaviors(behaviors: SequentialBehaviorPreferences[]): SequentialBehaviorPreferences[] {
     // Sort the behaviors in order of joint index
-    behaviors.sort((a, b) => {
-        return a.jointIndex - b.jointIndex
-    })
+    behaviors.sort((a, b) => a.jointIndex - b.jointIndex)
 
     const sortedBehaviors: SequentialBehaviorPreferences[] = []
 
@@ -167,9 +165,7 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
         selectedRobot.savePreferences()
     }, [behaviors, selectedRobot])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
 
     return (
         <Stack direction="column" gap={2} className="overflow-y-auto bg-background-secondary">

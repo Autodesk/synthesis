@@ -100,105 +100,95 @@ class DefaultInputs {
         }
     }
 
-    public static jax: InputSupplier = () => {
-        return {
-            schemeName: "Jax",
-            descriptiveName: "Full Controller",
-            customized: false,
-            usesGamepad: true,
-            supportedDrivetrains: [DriveType.ARCADE, DriveType.TANK],
-            usesTouchControls: false,
-            inputs: [
-                AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
-                AxisInput.onGamepadJoystick("arcadeTurn", 2, false),
-                AxisInput.onGamepadJoystick("tankLeft", 1, true),
-                AxisInput.onGamepadJoystick("tankRight", 3, true),
+    public static jax: InputSupplier = () => ({
+        schemeName: "Jax",
+        descriptiveName: "Full Controller",
+        customized: false,
+        usesGamepad: true,
+        supportedDrivetrains: [DriveType.ARCADE, DriveType.TANK],
+        usesTouchControls: false,
+        inputs: [
+            AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
+            AxisInput.onGamepadJoystick("arcadeTurn", 2, false),
+            AxisInput.onGamepadJoystick("tankLeft", 1, true),
+            AxisInput.onGamepadJoystick("tankRight", 3, true),
 
-                ButtonInput.onGamepad("intake", 4),
-                ButtonInput.onGamepad("eject", 5),
-                ButtonInput.onGamepad("unstick", 6),
+            ButtonInput.onGamepad("intake", 4),
+            ButtonInput.onGamepad("eject", 5),
+            ButtonInput.onGamepad("unstick", 6),
 
-                AxisInput.onGamepadButtons("joint 1", 3, 0),
-                AxisInput.onGamepadButtons("joint 2", 1, 2),
-                AxisInput.onGamepadButtons("joint 3", 15, 14),
-                AxisInput.onGamepadButtons("joint 4", 12, 13),
-            ],
-        }
-    }
+            AxisInput.onGamepadButtons("joint 1", 3, 0),
+            AxisInput.onGamepadButtons("joint 2", 1, 2),
+            AxisInput.onGamepadButtons("joint 3", 15, 14),
+            AxisInput.onGamepadButtons("joint 4", 12, 13),
+        ],
+    })
 
     /** We like this guy */
-    public static hunter: InputSupplier = () => {
-        return {
-            schemeName: "Hunter",
-            descriptiveName: "Left Stick",
-            customized: false,
-            usesGamepad: true,
-            usesTouchControls: false,
-            supportedDrivetrains: [DriveType.ARCADE],
-            inputs: [
-                AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
-                AxisInput.onGamepadJoystick("arcadeTurn", 0, false),
+    public static hunter: InputSupplier = () => ({
+        schemeName: "Hunter",
+        descriptiveName: "Left Stick",
+        customized: false,
+        usesGamepad: true,
+        usesTouchControls: false,
+        supportedDrivetrains: [DriveType.ARCADE],
+        inputs: [
+            AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
+            AxisInput.onGamepadJoystick("arcadeTurn", 0, false),
 
-                ButtonInput.onGamepad("intake", 4),
-                ButtonInput.onGamepad("eject", 5),
-                ButtonInput.onGamepad("unstick", 6),
+            ButtonInput.onGamepad("intake", 4),
+            ButtonInput.onGamepad("eject", 5),
+            ButtonInput.onGamepad("unstick", 6),
 
-                AxisInput.onGamepadButtons("joint 1", 12, 13),
-                AxisInput.onGamepadButtons("joint 2", 15, 14),
-            ],
-        }
-    }
+            AxisInput.onGamepadButtons("joint 1", 12, 13),
+            AxisInput.onGamepadButtons("joint 2", 15, 14),
+        ],
+    })
 
-    public static carmela: InputSupplier = () => {
-        return {
-            schemeName: "Carmela",
-            descriptiveName: "Right Stick",
-            customized: false,
-            usesGamepad: true,
-            supportedDrivetrains: [DriveType.ARCADE],
-            usesTouchControls: false,
-            inputs: [
-                AxisInput.onGamepadJoystick("arcadeDrive", 3, true),
-                AxisInput.onGamepadJoystick("arcadeTurn", 2, false),
+    public static carmela: InputSupplier = () => ({
+        schemeName: "Carmela",
+        descriptiveName: "Right Stick",
+        customized: false,
+        usesGamepad: true,
+        supportedDrivetrains: [DriveType.ARCADE],
+        usesTouchControls: false,
+        inputs: [
+            AxisInput.onGamepadJoystick("arcadeDrive", 3, true),
+            AxisInput.onGamepadJoystick("arcadeTurn", 2, false),
 
-                ButtonInput.onGamepad("intake", 4),
-                ButtonInput.onGamepad("eject", 5),
-                ButtonInput.onGamepad("unstick", 6),
+            ButtonInput.onGamepad("intake", 4),
+            ButtonInput.onGamepad("eject", 5),
+            ButtonInput.onGamepad("unstick", 6),
 
-                AxisInput.onGamepadButtons("joint 1", 3, 0),
-                AxisInput.onGamepadButtons("joint 2", 1, 2),
-            ],
-        }
-    }
+            AxisInput.onGamepadButtons("joint 1", 3, 0),
+            AxisInput.onGamepadButtons("joint 2", 1, 2),
+        ],
+    })
 
-    public static brandon: InputSupplier = () => {
-        return {
-            schemeName: "Brandon",
-            descriptiveName: "Touch Controls",
-            customized: false,
-            usesGamepad: false,
-            usesTouchControls: true,
-            supportedDrivetrains: [DriveType.ARCADE],
-            inputs: [
-                AxisInput.onTouchControl("arcadeDrive", TouchControlsAxes.LEFT_Y),
-                AxisInput.onTouchControl("arcadeTurn", TouchControlsAxes.RIGHT_X),
-            ],
-        }
-    }
-    public static julian: InputSupplier = () => {
-        return {
-            schemeName: "Julian",
-            descriptiveName: "Touch Controls",
-            customized: false,
-            usesGamepad: false,
-            usesTouchControls: true,
-            supportedDrivetrains: [DriveType.TANK],
-            inputs: [
-                AxisInput.onTouchControl("tankLeft", TouchControlsAxes.LEFT_Y),
-                AxisInput.onTouchControl("tankRight", TouchControlsAxes.RIGHT_Y),
-            ],
-        }
-    }
+    public static brandon: InputSupplier = () => ({
+        schemeName: "Brandon",
+        descriptiveName: "Touch Controls",
+        customized: false,
+        usesGamepad: false,
+        usesTouchControls: true,
+        supportedDrivetrains: [DriveType.ARCADE],
+        inputs: [
+            AxisInput.onTouchControl("arcadeDrive", TouchControlsAxes.LEFT_Y),
+            AxisInput.onTouchControl("arcadeTurn", TouchControlsAxes.RIGHT_X),
+        ],
+    })
+    public static julian: InputSupplier = () => ({
+        schemeName: "Julian",
+        descriptiveName: "Touch Controls",
+        customized: false,
+        usesGamepad: false,
+        usesTouchControls: true,
+        supportedDrivetrains: [DriveType.TANK],
+        inputs: [
+            AxisInput.onTouchControl("tankLeft", TouchControlsAxes.LEFT_Y),
+            AxisInput.onTouchControl("tankRight", TouchControlsAxes.RIGHT_Y),
+        ],
+    })
 
     public static felix: InputSupplier = () => {
         const negativeModifierKeys: ModifierState = {
@@ -234,29 +224,27 @@ class DefaultInputs {
         }
     }
 
-    public static gizmo: InputSupplier = () => {
-        return {
-            schemeName: "Gizmo",
-            descriptiveName: "Dual Stick (Swerve)",
-            customized: false,
-            usesGamepad: true,
-            usesTouchControls: false,
-            supportedDrivetrains: [DriveType.SWERVE],
-            inputs: [
-                AxisInput.onGamepadJoystick("swerveForward", 1, false),
-                AxisInput.onGamepadJoystick("swerveStrafe", 0, false),
-                AxisInput.onGamepadJoystick("swerveTurn", 2, true),
-                ButtonInput.onGamepad("swerveResetFieldForward", 8),
+    public static gizmo: InputSupplier = () => ({
+        schemeName: "Gizmo",
+        descriptiveName: "Dual Stick (Swerve)",
+        customized: false,
+        usesGamepad: true,
+        usesTouchControls: false,
+        supportedDrivetrains: [DriveType.SWERVE],
+        inputs: [
+            AxisInput.onGamepadJoystick("swerveForward", 1, false),
+            AxisInput.onGamepadJoystick("swerveStrafe", 0, false),
+            AxisInput.onGamepadJoystick("swerveTurn", 2, true),
+            ButtonInput.onGamepad("swerveResetFieldForward", 8),
 
-                ButtonInput.onGamepad("intake", 4),
-                ButtonInput.onGamepad("eject", 5),
-                ButtonInput.onGamepad("unstick", 6),
+            ButtonInput.onGamepad("intake", 4),
+            ButtonInput.onGamepad("eject", 5),
+            ButtonInput.onGamepad("unstick", 6),
 
-                AxisInput.onGamepadButtons("joint 1", 3, 0),
-                AxisInput.onGamepadButtons("joint 2", 1, 2),
-            ],
-        }
-    }
+            AxisInput.onGamepadButtons("joint 1", 3, 0),
+            AxisInput.onGamepadButtons("joint 2", 1, 2),
+        ],
+    })
 
     /** @returns {InputScheme[]} New copies of the default input schemes without reference to any others. */
     public static get defaultInputCopies(): InputScheme[] {

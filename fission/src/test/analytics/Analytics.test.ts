@@ -35,13 +35,12 @@ describe("Analytics", () => {
 
     afterEach(() => {})
 
-    const mockRequestParametersHandle = () => {
-        return new Promise<URLSearchParams>(resolve => {
+    const mockRequestParametersHandle = () =>
+        new Promise<URLSearchParams>(resolve => {
             gtagRequestMock.mockImplementationOnce(req => {
                 resolve(new URL(req.request.url).searchParams)
             })
         })
-    }
 
     describe("With gtag Script", () => {
         beforeAll(async () => {

@@ -60,19 +60,17 @@ interface ItemCardProps {
     secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
-    return (
-        <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"} direction="row">
-            <Label size="md" className="text-wrap break-all">
-                {name.replace(/.mira$/, "")}
-            </Label>
-            <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
-                <PositiveIconButton onClick={primaryOnClick}>{primaryButtonNode}</PositiveIconButton>
-                {secondaryOnClick && <DeleteButton onClick={secondaryOnClick} />}
-            </Stack>
+const ItemCard: React.FC<ItemCardProps> = ({ name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => (
+    <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"} direction="row">
+        <Label size="md" className="text-wrap break-all">
+            {name.replace(/.mira$/, "")}
+        </Label>
+        <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
+            <PositiveIconButton onClick={primaryOnClick}>{primaryButtonNode}</PositiveIconButton>
+            {secondaryOnClick && <DeleteButton onClick={secondaryOnClick} />}
         </Stack>
-    )
-}
+    </Stack>
+)
 
 interface ImportMirabufPanelCustomProps {
     configurationType: ConfigurationType
@@ -175,8 +173,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         [closePanel, panel]
     )
     const createCachedAssetElements = useCallback(
-        (items: MirabufCacheInfo[]) => {
-            return items
+        (items: MirabufCacheInfo[]) =>
+            items
                 .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
                 .map(info => (
                     <ItemCard
@@ -197,8 +195,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                             }
                         }}
                     />
-                ))
-        },
+                )),
         [selectCache]
     )
     // Generate Item cards for cached robots.

@@ -41,21 +41,19 @@ class DefaultMatchModeConfigs {
         return this._configs
     }
 
-    static fallbackValues = (): MatchModeConfig => {
-        return {
-            id: "default",
-            name: "Default",
-            isDefault: true,
-            autonomousTime: 15,
-            teleopTime: 135,
-            endgameTime: 20,
-            ignoreRotation: true,
-            maxHeight: -1,
-            heightLimitPenalty: 2,
-            sideMaxExtension: -1,
-            sideExtensionPenalty: 2,
-        }
-    }
+    static fallbackValues = (): MatchModeConfig => ({
+        id: "default",
+        name: "Default",
+        isDefault: true,
+        autonomousTime: 15,
+        teleopTime: 135,
+        endgameTime: 20,
+        ignoreRotation: true,
+        maxHeight: -1,
+        heightLimitPenalty: 2,
+        sideMaxExtension: -1,
+        sideExtensionPenalty: 2,
+    })
 }
 
 export default DefaultMatchModeConfigs
