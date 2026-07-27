@@ -40,19 +40,15 @@ impl State {
         match room_id {
             None if self.room_count() == MAX_ROOM_COUNT => None,
             None => Some(self.add_room_and_authority(name, tx)),
-            Some(room_id) => match self.add_client_to_room(name, tx, &room_id) {
-                Some(client_id) => Some((client_id, room_id)),
-                None => None,
-            },
+            Some(room_id) => self
+                .add_client_to_room(name, tx, &room_id)
+                .map(|client_id| (client_id, room_id)),
         }
     }
 
     pub fn get_client_tx(&mut self, client_id: &ClientId) -> Option<ClientSender> {
-        let Some(room) = self.get_room_of_client(client_id).map(|a| a.1) else {
-            return None;
-        };
-
-        Some(room.get_sender(client_id)?.clone())
+        let room = self.get_room_of_client(client_id).map(|a| a.1)?;
+        room.get_sender(client_id)
     }
 
     pub fn add_room_and_authority(
@@ -222,7 +218,7 @@ impl State {
     }
 
     pub fn room_count(&self) -> u8 {
-        u8::try_from(self.rooms.map.len()).expect("Too many rooms") as u8
+        u8::try_from(self.rooms.map.len()).expect("Too many rooms")
     }
 
     /// Record a server-wide event

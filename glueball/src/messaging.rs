@@ -4,6 +4,7 @@ use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed
 use crate::room::{ClientId, ClientSender, State};
 use crate::util::{deserialize_messagepack, prefix_message, serialize_messagepack};
 
+use bytes::Bytes;
 use tokio::io::{AsyncRead, AsyncWrite};
 use tokio::sync::mpsc;
 use tokio::time::timeout;
@@ -71,7 +72,7 @@ where
             return;
         };
 
-        forward_message(message, state.clone(), client_id).await;
+        handle_client_message(message, state.clone(), client_id).await;
     }
 }
 
@@ -171,9 +172,8 @@ async fn handle_room_list_request<S>(
     S: SynthesisStream,
 {
     let message = {
-        let guard = state.lock().unwrap();
         ServerMessage::RoomList {
-            rooms: guard.list_rooms(),
+            rooms: state.lock().unwrap().list_rooms(),
         }
     };
 
@@ -183,90 +183,93 @@ async fn handle_room_list_request<S>(
     write.send(message).await.ok();
 }
 
-async fn forward_message(message: Message, state: Arc<Mutex<State>>, client_id: ClientId) {
+async fn handle_client_message(message: Message, state: Arc<Mutex<State>>, client_id: ClientId) {
     match message {
         Message::Binary(ref bytes) => {
             if bytes[0] == MessagePrefix::Server as u8 {
-                let Ok(ClientToServerMessage::Ping { timestamp }) =
-                    deserialize_messagepack::<ClientToServerMessage>(&bytes[1..])
-                else {
-                    error_lock!(
-                        state,
-                        "Got invalid client to server message while client was in room"
-                    );
-                    return;
-                };
-
-                let message = ServerMessage::Pong { timestamp };
-                let message = serialize_messagepack(message);
-                let message = prefix_message(message, MessagePrefix::Server);
-
-                // Scope hack to avoid holding the guard while sending a message
-                // Because Mutex locks are not Send
-                let tx = {
-                    let mut guard = state.lock().unwrap();
-                    let Some(tx) = guard.get_client_tx(&client_id) else {
-                        error!(
-                            guard,
-                            "Received client-server message from client not in room"
-                        );
-                        return;
-                    };
-
-                    tx
-                };
-
-                let _ = tx.send(message).await;
-
+                handle_client_ping(bytes, &client_id, &state).await;
                 return;
             }
-
-            let senders: Vec<ClientSender> = {
-                // The lock is relinquished after senders are retreived
-                let mut guard = state.lock().unwrap();
-                guard.get_senders_from_user_room(client_id)
-            };
 
             assert_eq!(bytes[0], MessagePrefix::Client as u8);
             // If we're here, that means the message has a client-client prefix
             // which we want anyway, so there's no need to prefix the message
             // we can just forward it!
+
+            let senders: Vec<ClientSender> =
+                { state.lock().unwrap().get_senders_from_user_room(client_id) };
+
             for tx in senders {
                 tx.send(message.clone()).await.ok();
             }
         }
 
-        Message::Close(_) => {
-            // Send message toa ll other clients telling them `client_id` has been kicked
-            let message = ServerMessage::Kick {
-                client_id: client_id.to_string(),
-            };
+        Message::Close(_) => handle_client_close(client_id, &state).await,
+        _ => todo!("Handle ws protocol ping/pong and text messagaes"),
+    }
+}
 
-            let message_buffer_no_prefix = serialize_messagepack(message);
-            let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
+async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Mutex<State>>) {
+    let Ok(ClientToServerMessage::Ping { timestamp }) =
+        deserialize_messagepack::<ClientToServerMessage>(&bytes[1..])
+    else {
+        error_lock!(
+            state,
+            "Got invalid client to server message while client was in room"
+        );
+        return;
+    };
 
-            let senders = {
-                let mut guard = state.lock().unwrap();
-                warn!(guard, "Connection with {client_id} closed");
+    let message = serialize_messagepack(ServerMessage::Pong { timestamp });
+    let message = prefix_message(message, MessagePrefix::Server);
 
-                let Some(room) = guard.get_room_of_client(&client_id).map(|a| a.1) else {
-                    error!(
-                        guard,
-                        "Client attempted to leave when they were not in a room "
-                    );
-                    return;
-                };
+    // Scope hack to avoid holding the guard while sending a message
+    // Because Mutex locks are not Send
+    let tx = {
+        let mut guard = state.lock().unwrap();
+        let Some(tx) = guard.get_client_tx(client_id) else {
+            error!(
+                guard,
+                "Received client-server message from client not in room"
+            );
+            return;
+        };
+        drop(guard);
 
-                let senders = room.get_senders(Some(&client_id));
-                guard.remove_client(client_id);
+        tx
+    };
 
-                senders
-            };
+    let _ = tx.send(message).await;
+}
 
-            for tx in senders {
-                let _ = tx.clone().send(message.clone()).await;
-            }
-        }
-        _ => todo!("Handle Ping/Pong and text responses"),
+async fn handle_client_close(client_id: ClientId, state: &Arc<Mutex<State>>) {
+    // Send message toa ll other clients telling them `client_id` has been kicked
+    let message = ServerMessage::Kick {
+        client_id: client_id.to_string(),
+    };
+
+    let message_buffer_no_prefix = serialize_messagepack(message);
+    let message = prefix_message(message_buffer_no_prefix, MessagePrefix::Server);
+
+    let senders = {
+        let mut guard = state.lock().unwrap();
+        warn!(guard, "Connection with {client_id} closed");
+
+        let Some(room) = guard.get_room_of_client(&client_id).map(|a| a.1) else {
+            error!(
+                guard,
+                "Client attempted to leave when they were not in a room "
+            );
+            return;
+        };
+
+        let senders = room.get_senders(Some(&client_id));
+        guard.remove_client(client_id);
+
+        senders
+    };
+
+    for tx in senders {
+        let _ = tx.clone().send(message.clone()).await;
     }
 }
