@@ -7,7 +7,7 @@ import AnalyticsSystem from "@/systems/analytics/AnalyticsSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 
 type RequestType = Parameters<Parameters<typeof http.get>[1]>[0]
-const tagID = "G-6XNCRD7QNC"
+const TAG_ID = "G-6XNCRD7QNC"
 
 describe("Analytics", () => {
     const gtagRequestMock: Mock<(req: RequestType) => void> = vi.fn(() => {})
@@ -47,7 +47,7 @@ describe("Analytics", () => {
         beforeAll(async () => {
             vi.useFakeTimers()
             const script = document.createElement("script")
-            script.src = "https://www.googletagmanager.com/gtag/js?id=" + tagID
+            script.src = "https://www.googletagmanager.com/gtag/js?id=" + TAG_ID
             document.head.appendChild(script)
             await vi.waitUntil(() => window.dataLayer != null, { timeout: 3000 })
             install() // gtag is a function defined here to push to the datalayer object
@@ -70,7 +70,7 @@ describe("Analytics", () => {
             const system = new AnalyticsSystem()
             expect(gtagSpy).toHaveBeenCalled()
             await initialParams.then(params => {
-                expect(params.get("tid")).toBe(tagID)
+                expect(params.get("tid")).toBe(TAG_ID)
             })
             gtagSpy.mockClear()
 
@@ -79,7 +79,7 @@ describe("Analytics", () => {
 
             expect(gtagSpy).toHaveBeenCalled()
             await eventParams.then(params => {
-                expect(params.get("tid")).toBe(tagID)
+                expect(params.get("tid")).toBe(TAG_ID)
                 expect(params.get("en")).toBe("APS Calls per Minute")
             })
         }, 20000)

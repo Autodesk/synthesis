@@ -13,7 +13,7 @@ import type { SimulationLayer } from "@/systems/simulation/SimulationSystem"
 import type Stimulus from "@/systems/simulation/stimulus/Stimulus"
 import type { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import type { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
-import { getSimMap, receiverTypeMap, supplierTypeMap } from "@/systems/simulation/wpilib_brain/WPILibState"
+import { getSimMap, RECEIVER_TYPE_MAP, SUPPLIER_TYPE_MAP } from "@/systems/simulation/wpilib_brain/WPILibState"
 import World from "@/systems/World"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
 import { random } from "@/util/Random"
@@ -60,8 +60,9 @@ export function genIdToSavedId(genId: string): string | undefined {
     return genToSavedMap.get(genId)
 }
 
-export const handleInfoDisplayCompare: (a: HandleInfo, b: HandleInfo) => number = (a, b) =>
-    a.displayName.localeCompare(b.displayName)
+export function handleInfoDisplayCompare(a: HandleInfo, b: HandleInfo) {
+    return a.displayName.localeCompare(b.displayName)
+}
 
 export const NODE_ID_ROBOT_IO = "robot-io-node"
 export const NODE_ID_SIM_OUT = "sim-output-node"
@@ -280,7 +281,7 @@ export class SimConfig {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                noraType: supplierTypeMap[SimType.CAN_MOTOR]!,
+                noraType: SUPPLIER_TYPE_MAP[SimType.CAN_MOTOR]!,
                 originType: SimType.CAN_MOTOR,
                 originId: id,
 
@@ -297,14 +298,14 @@ export class SimConfig {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                noraType: receiverTypeMap[SimType.CAN_ENCODER]!,
+                noraType: RECEIVER_TYPE_MAP[SimType.CAN_ENCODER]!,
                 originType: SimType.CAN_ENCODER,
                 originId: id,
 
                 displayName: displayNameCAN(id),
                 enabled: true,
 
-                many: hasNoraAverageFunc(receiverTypeMap[SimType.CAN_ENCODER]!),
+                many: hasNoraAverageFunc(RECEIVER_TYPE_MAP[SimType.CAN_ENCODER]!),
                 isSource: false,
             }
             this.addHandle(config, handle)
@@ -314,7 +315,7 @@ export class SimConfig {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                noraType: supplierTypeMap[SimType.PWM]!,
+                noraType: SUPPLIER_TYPE_MAP[SimType.PWM]!,
                 originType: SimType.PWM,
                 originId: id,
 
@@ -331,14 +332,14 @@ export class SimConfig {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                noraType: receiverTypeMap[SimType.ACCELEROMETER]!,
+                noraType: RECEIVER_TYPE_MAP[SimType.ACCELEROMETER]!,
                 originType: SimType.ACCELEROMETER,
                 originId: id,
 
                 displayName: displayNameAccel(id),
                 enabled: data.get("<init") === true,
 
-                many: hasNoraAverageFunc(receiverTypeMap[SimType.ACCELEROMETER]!),
+                many: hasNoraAverageFunc(RECEIVER_TYPE_MAP[SimType.ACCELEROMETER]!),
                 isSource: false,
             }
             this.addHandle(config, handle)

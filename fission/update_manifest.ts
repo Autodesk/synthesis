@@ -6,15 +6,15 @@ import { mirabuf } from "@/proto/mirabuf"
 import { v4 as uuidV4 } from "uuid"
 import FieldMiraEditor from "@/mirabuf/FieldMiraEditor.ts"
 
-const basepath = "public/Downloadables/Mira"
-const map: ManifestFileType = { fields: [], private: [], robots: [] }
+const BASE_PATH = "public/Downloadables/Mira"
+const MAP: ManifestFileType = { fields: [], private: [], robots: [] }
 
-const dirs = Object.keys(map) as (keyof typeof map)[]
+const DIRS = Object.keys(MAP) as (keyof typeof MAP)[]
 
 async function main() {
-    for (const dirname of dirs) {
-        const list = map[dirname]
-        for await (const file of await fs.opendir(path.join(basepath, dirname))) {
+    for (const dirname of DIRS) {
+        const list = MAP[dirname]
+        for await (const file of await fs.opendir(path.join(BASE_PATH, dirname))) {
             if (file.isDirectory() || !file.name.endsWith(".mira")) {
                 continue
             }
@@ -60,7 +60,7 @@ async function main() {
             list.push({ filename: name, hash: updatedHash })
         }
     }
-    await fs.writeFile(path.join(basepath, "manifest.json"), JSON.stringify(map))
+    await fs.writeFile(path.join(BASE_PATH, "manifest.json"), JSON.stringify(MAP))
 }
 
 main().catch(console.error)

@@ -58,7 +58,7 @@ const VALIDATION_RULES = {
     }),
 }
 
-const fallbackConfig = DefaultMatchModeConfigs.fallbackValues()
+const FALLBACK_CONFIG = DefaultMatchModeConfigs.fallbackValues()
 
 // Field configurations
 const FIELD_CONFIGS: Record<string, FieldConfig> = {
@@ -68,22 +68,22 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "text",
     },
     autonomousTime: {
-        defaultValue: fallbackConfig.autonomousTime,
+        defaultValue: FALLBACK_CONFIG.autonomousTime,
         rules: [VALIDATION_RULES.nonNegativeInteger("Autonomous time must be a non-negative whole number")],
         type: "number",
     },
     teleopTime: {
-        defaultValue: fallbackConfig.teleopTime,
+        defaultValue: FALLBACK_CONFIG.teleopTime,
         rules: [VALIDATION_RULES.nonNegativeInteger("Teleop time must be a non-negative whole number")],
         type: "number",
     },
     endgameTime: {
-        defaultValue: fallbackConfig.endgameTime,
+        defaultValue: FALLBACK_CONFIG.endgameTime,
         rules: [VALIDATION_RULES.nonNegativeInteger("Endgame time must be a non-negative whole number")],
         type: "number",
     },
     ignoreRotation: {
-        defaultValue: fallbackConfig.ignoreRotation,
+        defaultValue: FALLBACK_CONFIG.ignoreRotation,
         rules: [],
         type: "checkbox",
     },
@@ -93,12 +93,12 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     maxHeight: {
-        defaultValue: fallbackConfig.maxHeight === -1 ? 1.2 : fallbackConfig.maxHeight,
+        defaultValue: FALLBACK_CONFIG.maxHeight === -1 ? 1.2 : FALLBACK_CONFIG.maxHeight,
         rules: [VALIDATION_RULES.nonNegativeNumber("Max height must be a non-negative number")],
         type: "decimal",
     },
     heightLimitPenalty: {
-        defaultValue: fallbackConfig.heightLimitPenalty === 0 ? 2 : fallbackConfig.heightLimitPenalty,
+        defaultValue: FALLBACK_CONFIG.heightLimitPenalty === 0 ? 2 : FALLBACK_CONFIG.heightLimitPenalty,
         rules: [VALIDATION_RULES.nonNegativeInteger("Height penalty must be a non-negative whole number")],
         type: "number",
     },
@@ -108,19 +108,19 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
         type: "checkbox",
     },
     sideMaxExtension: {
-        defaultValue: fallbackConfig.sideMaxExtension === -1 ? 0.5 : fallbackConfig.sideMaxExtension,
+        defaultValue: FALLBACK_CONFIG.sideMaxExtension === -1 ? 0.5 : FALLBACK_CONFIG.sideMaxExtension,
         rules: [VALIDATION_RULES.nonNegativeNumber("Side max extension must be a non-negative number")],
         type: "decimal",
     },
     sideExtensionPenalty: {
-        defaultValue: fallbackConfig.sideExtensionPenalty === 0 ? 2 : fallbackConfig.sideExtensionPenalty,
+        defaultValue: FALLBACK_CONFIG.sideExtensionPenalty === 0 ? 2 : FALLBACK_CONFIG.sideExtensionPenalty,
         rules: [VALIDATION_RULES.nonNegativeInteger("Side extension penalty must be a non-negative whole number")],
         type: "number",
     },
 }
 
 // Initial form state factory
-const createInitialFormState = (): FormState => {
+function createInitialFormState(): FormState {
     const formState: FormState = {}
 
     Object.entries(FIELD_CONFIGS).forEach(([fieldName, config]) => {

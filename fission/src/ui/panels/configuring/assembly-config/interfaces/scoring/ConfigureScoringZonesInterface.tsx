@@ -8,7 +8,7 @@ import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
 import ScoringZoneConfigInterface from "./ScoringZoneConfigInterface"
 import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
 
-const saveScoringZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+function saveScoringZones(zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) {
     if (!zones || !field) return
 
     const fieldPrefs = field.fieldPreferences

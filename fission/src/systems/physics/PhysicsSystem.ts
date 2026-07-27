@@ -1859,17 +1859,17 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
 
     // WARNING
     // DO NOT FREE
-    const BP_LAYER_FIELD = new JOLT.BroadPhaseLayer(LAYER_FIELD)
-    const BP_LAYER_GENERAL_DYNAMIC = new JOLT.BroadPhaseLayer(LAYER_GENERAL_DYNAMIC)
+    const bpLayerField = new JOLT.BroadPhaseLayer(LAYER_FIELD)
+    const bpLayerGeneralDynamic = new JOLT.BroadPhaseLayer(LAYER_GENERAL_DYNAMIC)
 
     const bpRobotLayers = ROBOT_LAYERS.map(layer => new JOLT.BroadPhaseLayer(layer))
 
-    const COUNT_BROAD_PHASE_LAYERS = 2 + ROBOT_LAYERS.length
+    const countBroadPhaseLayers = 2 + ROBOT_LAYERS.length
 
-    const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(COUNT_OBJECT_LAYERS, COUNT_BROAD_PHASE_LAYERS)
+    const bpInterface = new JOLT.BroadPhaseLayerInterfaceTable(COUNT_OBJECT_LAYERS, countBroadPhaseLayers)
 
-    bpInterface.MapObjectToBroadPhaseLayer(LAYER_FIELD, BP_LAYER_FIELD)
-    bpInterface.MapObjectToBroadPhaseLayer(LAYER_GENERAL_DYNAMIC, BP_LAYER_GENERAL_DYNAMIC)
+    bpInterface.MapObjectToBroadPhaseLayer(LAYER_FIELD, bpLayerField)
+    bpInterface.MapObjectToBroadPhaseLayer(LAYER_GENERAL_DYNAMIC, bpLayerGeneralDynamic)
     bpRobotLayers.forEach((bpRobot, i) => {
         bpInterface.MapObjectToBroadPhaseLayer(ROBOT_LAYERS[i], bpRobot)
     })
@@ -1878,7 +1878,7 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
     settings.mBroadPhaseLayerInterface = bpInterface
     settings.mObjectVsBroadPhaseLayerFilter = new JOLT.ObjectVsBroadPhaseLayerFilterTable(
         settings.mBroadPhaseLayerInterface,
-        COUNT_BROAD_PHASE_LAYERS,
+        countBroadPhaseLayers,
         settings.mObjectLayerPairFilter,
         COUNT_OBJECT_LAYERS
     )

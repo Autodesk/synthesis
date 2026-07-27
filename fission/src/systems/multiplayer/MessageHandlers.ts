@@ -21,7 +21,7 @@ import type {
 } from "./types"
 import EventSystem from "@/systems/EventSystem.ts"
 
-export const peerMessageHandlers = {
+export const PEER_MESSAGE_HANDLERS = {
     info: handlePeerInfo,
     update: handlePeerUpdate,
     collision: handleCollision,
@@ -43,8 +43,8 @@ export const peerMessageHandlers = {
     [K in keyof MessageType]: (data: MessageType[K], peerId: string, timestamp: number) => Promise<void> | void
 }
 
-const pendingOperations: (() => void)[] = []
-const progressHandles: Map<number, ProgressHandle> = new Map()
+let pendingOperations: (() => void)[] = []
+let progressHandles: Map<number, ProgressHandle> = new Map()
 
 async function handleMatchModeState(data: MatchModeStateData) {
     console.log(data)

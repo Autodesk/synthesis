@@ -30,4 +30,6 @@ export const ThemeContext = createContext({
     setRedAllianceColor: (_color: string) => {},
 })
 
-export const useThemeContext = () => useContext(ThemeContext)
+export function useThemeContext() {
+    return useContext(ThemeContext)
+}

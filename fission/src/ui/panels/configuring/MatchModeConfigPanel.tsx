@@ -72,7 +72,7 @@ export interface MatchModeConfig {
     readonly sideExtensionPenalty: number
 }
 
-const props: Readonly<{
+const PROPS: Readonly<{
     id: keyof MatchModeConfig
     expectedType: string
     required: boolean
@@ -89,7 +89,7 @@ const props: Readonly<{
     { id: "sideExtensionPenalty", expectedType: "number", required: false },
 ]
 
-export const validateAndNormalizeMatchModeConfig = (config: unknown): MatchModeConfig | null => {
+export function validateAndNormalizeMatchModeConfig(config: unknown): MatchModeConfig | null {
     // Type guard to check if config is an object
     if (typeof config !== "object" || config === null) {
         console.error("Match mode config validation failed: config must be an object")
@@ -105,7 +105,7 @@ export const validateAndNormalizeMatchModeConfig = (config: unknown): MatchModeC
     }
 
     function checkValidity(configObj: Record<string, unknown>): configObj is Partial<MatchModeConfig> {
-        for (const prop of props) {
+        for (const prop of PROPS) {
             if (configObj[prop.id] == undefined) {
                 if (prop.required) {
                     typeError(prop.id)

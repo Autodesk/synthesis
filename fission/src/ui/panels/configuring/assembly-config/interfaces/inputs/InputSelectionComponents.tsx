@@ -8,14 +8,14 @@ import ButtonInput from "@/systems/input/inputs/ButtonInput.ts"
 import type Input from "@/systems/input/inputs/Input.ts"
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 
-const toTitleCase = (camelCase: string) => {
+function toTitleCase(camelCase: string) {
     const result = camelCase.replace(/([A-Z])/g, " $1")
     const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
     return finalResult
 }
 
 // Special characters only
-const codeToCharacterMap: Partial<Record<KeyCode, string>> = {
+const CODE_TO_CHARACTER_MAP: Partial<Record<KeyCode, string>> = {
     Slash: "/",
     Comma: ",",
     Period: ".",
@@ -29,7 +29,7 @@ const codeToCharacterMap: Partial<Record<KeyCode, string>> = {
     Quote: '"',
 }
 
-const gamepadButtons: string[] = [
+const GAMEPAD_BUTTONS: string[] = [
     "A",
     "B",
     "X",
@@ -48,23 +48,23 @@ const gamepadButtons: string[] = [
     "Dpad Right",
 ]
 
-const gamepadAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
-const touchControlsAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
+const GAMEPAD_AXES: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
+const TOUCH_CONTROLS_AXES: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
 
 // Converts a key code to displayable character (ex: KeyA -> "A")
-const keyCodeToCharacter = (code: KeyCode) => {
+function keyCodeToCharacter(code: KeyCode) {
     if (code.startsWith("Key")) return code.charAt(3)
 
     if (code.startsWith("Digit")) return code.charAt(5)
 
-    if (code in codeToCharacterMap) return codeToCharacterMap[code]
+    if (code in CODE_TO_CHARACTER_MAP) return CODE_TO_CHARACTER_MAP[code]
 
-    if (code.startsWith("Gamepad")) return gamepadButtons[parseInt(code.substring(8))]
+    if (code.startsWith("Gamepad")) return GAMEPAD_BUTTONS[parseInt(code.substring(8))]
 
     return code
 }
 
-const transformKeyName = (keyCode: KeyCode, keyModifiers: ModifierState) => {
+function transformKeyName(keyCode: KeyCode, keyModifiers: ModifierState) {
     let prefix = ""
     if (keyModifiers) {
         if (keyModifiers.meta) prefix += "Meta + "
@@ -170,7 +170,7 @@ export const JoystickButtonSelection: React.FC<InputSelectionProps> = ({ input, 
                         ? "..."
                         : input.gamepadButton === -1
                           ? "N/A"
-                          : gamepadButtons[input.gamepadButton]}
+                          : GAMEPAD_BUTTONS[input.gamepadButton]}
                 </Button>
             </Stack>
             <Divider />
@@ -191,13 +191,13 @@ export const JoystickAxisSelection: React.FC<
             <Label size="md">{toTitleCase(input.inputName)}</Label>
             <Select
                 key={input.inputName}
-                value={gamepadAxes[input.gamepadAxisNumber + 1]}
+                value={GAMEPAD_AXES[input.gamepadAxisNumber + 1]}
                 onChange={e => {
                     setSelectedInput(input.inputName)
-                    setChosenGamepadAxis(gamepadAxes.indexOf(e.target.value))
+                    setChosenGamepadAxis(GAMEPAD_AXES.indexOf(e.target.value))
                 }}
             >
-                {gamepadAxes.map(axis => (
+                {GAMEPAD_AXES.map(axis => (
                     <MenuItem key={`axis-${axis}`} value={axis}>
                         {axis}
                     </MenuItem>
@@ -232,7 +232,7 @@ export const GamepadButtonAxisSelection: React.FC<InputSelectionProps> = ({
                         ? "..."
                         : input.posGamepadButton === -1
                           ? "N/A"
-                          : gamepadButtons[input.posGamepadButton]}
+                          : GAMEPAD_BUTTONS[input.posGamepadButton]}
                 </Button>
                 {/* // Negative gamepad button */}
                 <SynthesisIcons.MINUS />
@@ -246,7 +246,7 @@ export const GamepadButtonAxisSelection: React.FC<InputSelectionProps> = ({
                         ? "..."
                         : input.negGamepadButton === -1
                           ? "N/A"
-                          : gamepadButtons[input.negGamepadButton]}
+                          : GAMEPAD_BUTTONS[input.negGamepadButton]}
                 </Button>
             </Stack>
         </Stack>
@@ -265,13 +265,13 @@ export const TouchControlsAxisSelection: React.FC<
             <Label size="md">{toTitleCase(input.inputName)}</Label>
             <Select
                 key={input.inputName}
-                value={touchControlsAxes[input.touchControlAxis]}
+                value={TOUCH_CONTROLS_AXES[input.touchControlAxis]}
                 onChange={e => {
                     setSelectedInput(input.inputName)
-                    setChosenTouchControlsAxis(touchControlsAxes.indexOf(e.target.value))
+                    setChosenTouchControlsAxis(TOUCH_CONTROLS_AXES.indexOf(e.target.value))
                 }}
             >
-                {touchControlsAxes.map(axis => (
+                {TOUCH_CONTROLS_AXES.map(axis => (
                     <MenuItem key={`touch-axis-${axis}`} value={axis}>
                         {axis}
                     </MenuItem>

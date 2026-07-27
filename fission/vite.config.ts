@@ -7,14 +7,14 @@ import glsl from "vite-plugin-glsl"
 import { defineConfig } from "vitest/config"
 import type { TestRunEndReason } from "vitest/node"
 
-const basePath = "/fission/"
-const serverPort = 3000
-const dockerServerPort = 80
+const BASE_PATH = "/fission/"
+const SERVER_PORT = 3000
+const DOCKER_SERVER_PORT = 80
 
-const useLocalAPS = false
-const useSsl = false
+const USE_LOCAL_APS = false
+const USE_SSL = false
 
-const plugins = [
+const PLUGINS = [
     react(),
     glsl({
         include: [
@@ -35,11 +35,11 @@ const plugins = [
     }),
 ]
 
-if (useSsl) {
-    plugins.push(basicSsl())
+if (USE_SSL) {
+    PLUGINS.push(basicSsl())
 }
 
-const localAssetsExist = await fs
+const LOCAL_ASSETS_EXIST = await fs
     .access("./public/Downloadables/mira", fs.constants.R_OK)
     .then(() => true)
     .catch(() => false)
@@ -48,9 +48,9 @@ const localAssetsExist = await fs
 export default defineConfig(async ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
     process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9002"
-    const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
+    const useLocalAssets = LOCAL_ASSETS_EXIST && (mode === "test" || process.env.NODE_ENV == "development")
 
-    if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")) {
+    if (!LOCAL_ASSETS_EXIST && (mode === "test" || process.env.NODE_ENV == "development")) {
         console.warn("Can't find local assets, do you need to run `npm run assetpack`?")
     }
     console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
@@ -58,7 +58,7 @@ export default defineConfig(async ({ mode }) => {
     const proxies: Record<string, ProxyOptions> = {}
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
-              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+              target: `http://localhost:${mode === "test" ? 3001 : SERVER_PORT}`,
               changeOrigin: true,
               secure: false,
               rewrite: path => path.replace(/^\/api/, "/Downloadables"),
@@ -70,9 +70,9 @@ export default defineConfig(async ({ mode }) => {
           }
     proxies["/api/mira"] = assetProxy
     proxies["/api/match_configs"] = assetProxy
-    proxies["/api/aps"] = useLocalAPS
+    proxies["/api/aps"] = USE_LOCAL_APS
         ? {
-              target: `http://localhost:${dockerServerPort}/`,
+              target: `http://localhost:${DOCKER_SERVER_PORT}/`,
               changeOrigin: true,
               secure: false,
           }
@@ -82,7 +82,7 @@ export default defineConfig(async ({ mode }) => {
               secure: true,
           }
     return {
-        plugins: plugins,
+        plugins: PLUGINS,
         publicDir: "./public",
         resolve: {
             alias: [
@@ -148,13 +148,13 @@ export default defineConfig(async ({ mode }) => {
             // this ensures that the browser opens upon server start
             // open: true,
             // this sets a default port to 3000
-            port: serverPort,
+            port: SERVER_PORT,
             cors: false,
             proxy: proxies,
             build: {
                 target: "esnext",
             },
-            base: basePath,
+            base: BASE_PATH,
         },
     }
 })

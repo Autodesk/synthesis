@@ -35,7 +35,7 @@ import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScorin
 import EventSystem from "@/systems/EventSystem.ts"
 import { Tab, Tabs } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
+import CommandRegistry, { type CommandDefinition } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
 import MetadataConfigInterface from "@/panels/configuring/assembly-config/interfaces/MetadataConfigInterface.tsx"
@@ -70,7 +70,7 @@ CommandRegistry.get().registerCommands([
 ])
 
 // Register dynamic provider: per-assembly configure/remove commands (module-scope)
-const provider: CommandProvider = () => {
+function provider(): CommandDefinition[] {
     if (!World.isAlive || !World.sceneRenderer) return []
     const list: CommandDefinition[] = []
 

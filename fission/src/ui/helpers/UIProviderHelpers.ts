@@ -139,4 +139,6 @@ export const UIContext = createContext<UIContextProps>({
     configureScreen: (_screen, _props) => {},
 })
 
-export const useUIContext = () => useContext(UIContext)
+export function useUIContext() {
+    return useContext(UIContext)
+}

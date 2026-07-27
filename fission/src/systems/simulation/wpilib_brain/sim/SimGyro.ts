@@ -7,7 +7,7 @@ import { SimInput } from "../SimInput"
 import { SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
 import type { SimReceiver } from "../SimDataFlow"
-import { receiverTypeMap } from "../WPILibState"
+import { RECEIVER_TYPE_MAP } from "../WPILibState"
 import type { NoraNumber6 } from "../../Nora"
 
 export default class SimGyro {
@@ -40,7 +40,7 @@ export default class SimGyro {
 
     public static genReceiver(device: string): SimReceiver {
         return {
-            getReceiverType: () => receiverTypeMap[SimType.GYRO]!,
+            getReceiverType: () => RECEIVER_TYPE_MAP[SimType.GYRO]!,
             setReceiverValue: ([ax, ay, az, rx, ry, rz]: NoraNumber6) => {
                 SimGyro.setAngleX(device, ax)
                 SimGyro.setAngleY(device, ay)

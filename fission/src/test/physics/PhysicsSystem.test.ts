@@ -726,9 +726,9 @@ function makeMockParser(physicalData: { volume: number; area: number }, isGamePi
 describe("Sphere Game Piece Body Registration", () => {
     let system: PhysicsSystem
 
-    const SPHERE_DATA = { volume: 1767.15, area: 706.86 } // 2026 game piece approximate values
-    const CUBE_DATA_2023 = { volume: 8703.98, area: 2146.74 } // 2023 cube game piece approximate values
-    const CUBE_DATA = { volume: 1000, area: 600 } // Cube with side length 10
+    const sphereData = { volume: 1767.15, area: 706.86 } // 2026 game piece approximate values
+    const cubeData2023 = { volume: 8703.98, area: 2146.74 } // 2023 cube game piece approximate values
+    const cubeData = { volume: 1000, area: 600 } // Cube with side length 10
 
     beforeEach(() => {
         system = new PhysicsSystem()
@@ -739,28 +739,28 @@ describe("Sphere Game Piece Body Registration", () => {
     })
 
     test("Spherical game piece is added to sphereGamePieceBodies", () => {
-        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
+        system.createBodiesFromParser(makeMockParser(sphereData, true))
         expect(system.sphereGamePieceBodies.length).toBe(1)
     })
 
     test("Cube game piece is not added to sphereGamePieceBodies", () => {
-        system.createBodiesFromParser(makeMockParser(CUBE_DATA, true))
+        system.createBodiesFromParser(makeMockParser(cubeData, true))
         expect(system.sphereGamePieceBodies.length).toBe(0)
     })
 
     test("2023 cube game piece is not added to sphereGamePieceBodies", () => {
-        system.createBodiesFromParser(makeMockParser(CUBE_DATA_2023, true))
+        system.createBodiesFromParser(makeMockParser(cubeData2023, true))
         expect(system.sphereGamePieceBodies.length).toBe(0)
     })
 
     test("Spherical non-game-piece body is not added to sphereGamePieceBodies", () => {
-        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, false))
+        system.createBodiesFromParser(makeMockParser(sphereData, false))
         expect(system.sphereGamePieceBodies.length).toBe(0)
     })
 
     test("Multiple parsers accumulate sphere bodies independently", () => {
-        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
-        system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
+        system.createBodiesFromParser(makeMockParser(sphereData, true))
+        system.createBodiesFromParser(makeMockParser(sphereData, true))
         expect(system.sphereGamePieceBodies.length).toBe(2)
     })
 })

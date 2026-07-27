@@ -35,8 +35,9 @@ export type JointConfigGroup = {
     sequential?: SequentialBehaviorPreferences
 }
 
-const isConfigurable = (d: Driver): d is ConfigurableDriver =>
-    d instanceof WheelDriver || d instanceof HingeDriver || d instanceof SliderDriver
+function isConfigurable(d: Driver): d is ConfigurableDriver {
+    return d instanceof WheelDriver || d instanceof HingeDriver || d instanceof SliderDriver
+}
 
 /** Per-driver-kind slider bounds and force-slider metadata. All members of a control share a kind. */
 function controlBoundsFor(driver: ConfigurableDriver): Pick<JointConfigControl, "velocityRange" | "force"> {
@@ -95,7 +96,10 @@ type GroupProvider = (
 ) => { group?: JointConfigGroup; claimed: Driver[] }
 
 /** Drivetrain: all wheels ("Drive") plus, for swerve, the azimuth hinges ("Module Rotation"). */
-const drivetrainGroupProvider: GroupProvider = (drivers, isSwerve) => {
+function drivetrainGroupProvider(
+    drivers: ConfigurableDriver[],
+    isSwerve: boolean
+): { group?: JointConfigGroup; claimed: Driver[] } {
     const wheels = drivers.filter((d): d is WheelDriver => d instanceof WheelDriver)
     const azimuth = isSwerve ? drivers.filter((d): d is HingeDriver => d instanceof HingeDriver && d.continuous) : []
 

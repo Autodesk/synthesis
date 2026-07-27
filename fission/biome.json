@@ -102,15 +102,19 @@
                   "kind": "classMember",
                   "modifiers": ["private"]
                 },
-                "match": "_([^_]*)",
-                "formats": ["camelCase"]
+                "match": "_([^_]*)"
               },
               {
                 "selector": {
                   "kind": "classMember",
                   "modifiers": ["protected"]
                 },
-                "match": "_([^_]*)",
+                "match": "_([^_]*)"
+              },
+              {
+                "selector": {
+                  "kind": "classMember"
+                },
                 "formats": ["camelCase"]
               },
               {
@@ -175,9 +179,16 @@
               },
               {
                 "selector": {
+                  "kind": "const",
+                  "scope": "global"
+                },
+                "formats": ["camelCase", "PascalCase", "CONSTANT_CASE"]
+              },
+              {
+                "selector": {
                   "kind": "const"
                 },
-                "formats": ["PascalCase", "camelCase", "CONSTANT_CASE"]
+                "formats": ["PascalCase", "camelCase"]
               },
               {
                 "selector": {

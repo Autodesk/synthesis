@@ -226,7 +226,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
 
 type GraphicsPreset = "low" | "medium" | "high" | "custom"
 
-const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
+function prefsEqual(a: GraphicsPreferences, b: GraphicsPreferences) {
     return (
         a.fancyShadows === b.fancyShadows &&
         a.maxFar === b.maxFar &&
@@ -236,7 +236,7 @@ const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
     )
 }
 
-const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
+function getGraphicsPreset(prefs: GraphicsPreferences): GraphicsPreset {
     const lowPrefs = lowGraphicsPreferences()
     if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
         return "low"

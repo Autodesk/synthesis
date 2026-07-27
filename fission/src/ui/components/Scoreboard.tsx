@@ -9,7 +9,7 @@ import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import Label from "./Label"
 import World from "@/systems/World.ts"
 
-const showTime = () => {
+function showTime() {
     return MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX
 }
 

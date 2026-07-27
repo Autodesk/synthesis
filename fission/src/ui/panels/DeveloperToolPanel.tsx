@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
-import FieldMiraEditor, { devtoolHandlers, type SynthesisDevtoolKey } from "../../mirabuf/FieldMiraEditor"
+import FieldMiraEditor, { DEVTOOL_HANDLER, type SynthesisDevtoolKey } from "../../mirabuf/FieldMiraEditor"
 import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { Button } from "../components/StyledComponents"
@@ -13,7 +13,8 @@ import SelectMenu from "@/components/SelectMenu.tsx"
 import { AssemblySelectionOption } from "@/panels/configuring/assembly-config/configure/AssemblySelection.tsx"
 import { tryParse } from "@/util/Utility.ts"
 
-const devtoolKeys = Object.keys(devtoolHandlers) as SynthesisDevtoolKey[]
+const DEVTOOL_KEYS = Object.keys(DEVTOOL_HANDLER) as SynthesisDevtoolKey[]
+
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [selectedKey, setSelectedKey] = useState<SynthesisDevtoolKey | undefined>(undefined)
@@ -59,7 +60,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     useEffect(() => {
         if (!editor || !activeObj || !selectedKey) return
         activeObj.savePreferencesToMirabuf()
-        const val = devtoolHandlers[selectedKey]?.get(activeObj)
+        const val = DEVTOOL_HANDLER[selectedKey]?.get(activeObj)
         setJsonValue(JSON.stringify(val, null, 2))
         setError("")
     }, [selectedKey, editor, activeObj])
@@ -77,7 +78,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
         setKeys(editor.getSynthesisKeys())
 
-        devtoolHandlers[selectedKey]?.set(activeObj, parsed)
+        DEVTOOL_HANDLER[selectedKey]?.set(activeObj, parsed)
     }
 
     const handleExport = () => {
@@ -151,21 +152,19 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                             <Divider />
                             <div className="text-xs mb-1 text-gray-300">Available</div>
                             <ul className="list-none p-0 m-0 flex-1">
-                                {devtoolKeys.filter(k => !keys.includes(k)).length === 0 && (
+                                {DEVTOOL_KEYS.filter(k => !keys.includes(k)).length === 0 && (
                                     <div className="text-gray-400 italic text-xs">All keys added</div>
                                 )}
-                                {devtoolKeys
-                                    .filter(k => !keys.includes(k))
-                                    .map(key => (
-                                        <li key={key} className="mb-1">
-                                            <Button
-                                                onClick={() => setSelectedKey(key as SynthesisDevtoolKey)}
-                                                className="w-full"
-                                            >
-                                                {key}
-                                            </Button>
-                                        </li>
-                                    ))}
+                                {DEVTOOL_KEYS.filter(k => !keys.includes(k)).map(key => (
+                                    <li key={key} className="mb-1">
+                                        <Button
+                                            onClick={() => setSelectedKey(key as SynthesisDevtoolKey)}
+                                            className="w-full"
+                                        >
+                                            {key}
+                                        </Button>
+                                    </li>
+                                ))}
                             </ul>
                         </Stack>
                         {/* Editor */}

@@ -32,13 +32,13 @@ interface MockNonRobotObject {
     dispose: () => void
 }
 
-const mockMatchModeInstance = {
+const MOCK_MATCH_MODE_INSTANCE = {
     isMatchEnabled: vi.fn(() => true),
 }
 
 vi.mock("@/systems/match_mode/MatchMode", () => ({
     default: {
-        getInstance: vi.fn(() => mockMatchModeInstance),
+        getInstance: vi.fn(() => MOCK_MATCH_MODE_INSTANCE),
     },
     MatchModeType: {
         SANDBOX: 0,

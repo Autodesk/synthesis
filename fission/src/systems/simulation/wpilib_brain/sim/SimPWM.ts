@@ -1,5 +1,5 @@
 import type { SimSupplier } from "../SimDataFlow"
-import { supplierTypeMap } from "../WPILibState"
+import { SUPPLIER_TYPE_MAP } from "../WPILibState"
 import { PWM_POSITION, PWM_SPEED, SimType } from "../WPILibTypes"
 import SimDriverStation from "./SimDriverStation"
 import SimGeneric from "./SimGeneric"
@@ -17,7 +17,7 @@ export default class SimPWM {
 
     public static genSupplier(device: string): SimSupplier {
         return {
-            getSupplierType: () => supplierTypeMap[SimType.PWM]!,
+            getSupplierType: () => SUPPLIER_TYPE_MAP[SimType.PWM]!,
             getSupplierValue: () => SimPWM.getSpeed(device) ?? 0,
         }
     }

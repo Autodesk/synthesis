@@ -41,24 +41,26 @@ Object.defineProperty(document, "dispatchEvent", {
 })
 
 // Mock Date.now for consistent testing
-const mockNow = 1700000000000 // Fixed timestamp
-vi.spyOn(Date, "now").mockReturnValue(mockNow)
+const MOCK_NOW = 1700000000000 // Fixed timestamp
+vi.spyOn(Date, "now").mockReturnValue(MOCK_NOW)
 
 // Import APS after setting up mocks
 import APS, { type APSAuth, type APSUserInfo } from "@/aps/APS"
 
 // Helper function to create proper fetch response mock
-const createMockResponse = (data: unknown, ok: boolean = true) => ({
-    ok,
-    json: vi.fn().mockResolvedValue(data),
-})
+function createMockResponse(data: unknown, ok: boolean = true) {
+    return {
+        ok,
+        json: vi.fn().mockResolvedValue(data),
+    }
+}
 
 describe("APS Authentication System", () => {
     const mockAuth: APSAuth = {
         access_token: "test_access_token",
         refresh_token: "test_refresh_token",
         expires_in: 3600,
-        expires_at: mockNow + 3600000,
+        expires_at: MOCK_NOW + 3600000,
         token_type: 1,
     }
 
@@ -170,7 +172,7 @@ describe("APS Authentication System", () => {
                     access_token: "expired_token",
                     refresh_token: "fresh_refresh_token",
                     expires_in: 3600,
-                    expires_at: mockNow - 1000, // Expired 1 second ago
+                    expires_at: MOCK_NOW - 1000, // Expired 1 second ago
                     token_type: 1,
                 })
             )
@@ -218,7 +220,7 @@ describe("APS Authentication System", () => {
                     access_token: "current_token",
                     refresh_token: "current_refresh_token",
                     expires_in: 3600,
-                    expires_at: mockNow + 3600000,
+                    expires_at: MOCK_NOW + 3600000,
                     token_type: 1,
                 })
             )
@@ -313,7 +315,7 @@ describe("APS Authentication System", () => {
                     access_token: "expired_token",
                     refresh_token: "invalid_refresh_token",
                     expires_in: 3600,
-                    expires_at: mockNow - 1000,
+                    expires_at: MOCK_NOW - 1000,
                     token_type: 1,
                 })
             )
@@ -352,7 +354,7 @@ describe("APS Authentication System", () => {
                     access_token: "existing_token",
                     refresh_token: "existing_refresh_token",
                     expires_in: 3600,
-                    expires_at: mockNow + 1800000, // Expires in 30 minutes
+                    expires_at: MOCK_NOW + 1800000, // Expires in 30 minutes
                     token_type: 1,
                 })
             )
@@ -435,7 +437,7 @@ describe("APS Authentication System", () => {
             })
 
             test("getAuth returns auth data when valid and not expired", async () => {
-                const validAuth = { ...mockAuth, expires_at: mockNow + 1000000 }
+                const validAuth = { ...mockAuth, expires_at: MOCK_NOW + 1000000 }
                 localStorage.setItem("aps_auth", JSON.stringify(validAuth))
 
                 const result = await APS.getAuth()

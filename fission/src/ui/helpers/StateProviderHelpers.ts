@@ -21,4 +21,6 @@ export const StateContext = createContext<AppState>({
     setIsMainMenuOpen: () => {},
 })
 
-export const useStateContext = () => useContext(StateContext)
+export function useStateContext() {
+    return useContext(StateContext)
+}

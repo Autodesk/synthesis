@@ -112,13 +112,18 @@ const CO_DEFAULT_THETA = -Math.PI / 4.0
 
 const DEG2RAD = Math.PI / 180.0
 
-const clampPhi = (phi: number): number => THREE.MathUtils.clamp(phi, CO_MIN_PHI, CO_MAX_PHI)
-const clampZoom = (r: number): number => THREE.MathUtils.clamp(r, CO_MIN_ZOOM, CO_MAX_ZOOM)
+function clampPhi(phi: number): number {
+    return THREE.MathUtils.clamp(phi, CO_MIN_PHI, CO_MAX_PHI)
+}
+
+function clampZome(r: number): number {
+    return THREE.MathUtils.clamp(r, CO_MIN_ZOOM, CO_MAX_ZOOM)
+}
 
 /** Eases a zoom distance one frame toward a target, decelerating as it approaches CO_MIN_ZOOM */
 function easeZoomDistance(current: number, target: number, deltaT: number): number {
     const eased = current + (target - current) * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(current, 1.4)
-    return clampZoom(eased)
+    return clampZome(eased)
 }
 
 /** Accumulates raw scroll/pinch zoom input into a target distance and eases toward it over time (via {@link easeZoomDistance}). */
@@ -160,15 +165,16 @@ class ZoomEase {
     }
 }
 
-const defaultCoords = (): SphericalCoords => ({
+const DEFAULT_COORDS: SphericalCoords = {
     theta: CO_DEFAULT_THETA,
     phi: CO_DEFAULT_PHI,
     r: CO_DEFAULT_ZOOM,
-})
+}
 
 /** World-space forward (view) direction of a camera. */
-const cameraForward = (camera: THREE.Camera): THREE.Vector3 =>
-    new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
+function cameraForward(camera: THREE.Camera): THREE.Vector3 {
+    return new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
+}
 
 /**
  * Creates a pseudo frustum of the perspective camera to scale the mouse movement to something relative to the scenes dimensions and scale
@@ -395,7 +401,7 @@ export class CustomTargetControls extends CameraControls {
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
         super("Target", mainCamera, interactionHandler)
 
-        this._coords = defaultCoords()
+        this._coords = DEFAULT_COORDS
 
         // Identity
         this._focus = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
@@ -527,7 +533,7 @@ export class CustomTargetControls extends CameraControls {
             this._nextPhi = this._coords.phi
         }
         if (coords.r !== undefined) {
-            this._coords.r = clampZoom(coords.r)
+            this._coords.r = clampZome(coords.r)
             this._orbitZoom.reset(this._coords.r)
         }
     }

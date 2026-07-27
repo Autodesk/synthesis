@@ -1,7 +1,7 @@
 import type { NoraNumber } from "../../Nora"
 import type { SimReceiver, SimSupplier } from "../SimDataFlow"
 import { SimInput } from "../SimInput"
-import { receiverTypeMap } from "../WPILibState"
+import { RECEIVER_TYPE_MAP } from "../WPILibState"
 import { SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
 
@@ -18,7 +18,7 @@ export default class SimDIO {
 
     public static genReceiver(device: string): SimReceiver {
         return {
-            getReceiverType: () => receiverTypeMap[SimType.DIO]!,
+            getReceiverType: () => RECEIVER_TYPE_MAP[SimType.DIO]!,
             setReceiverValue: (a: NoraNumber) => {
                 SimDIO.setValue(device, a > 0.5)
             },
@@ -27,7 +27,7 @@ export default class SimDIO {
 
     public static genSupplier(device: string): SimSupplier {
         return {
-            getSupplierType: () => receiverTypeMap[SimType.DIO]!,
+            getSupplierType: () => RECEIVER_TYPE_MAP[SimType.DIO]!,
             getSupplierValue: () => (SimDIO.getValue(device) ? 1 : 0),
         }
     }

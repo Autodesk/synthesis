@@ -1,5 +1,5 @@
 import type { SimSupplier } from "../SimDataFlow"
-import { supplierTypeMap } from "../WPILibState"
+import { SUPPLIER_TYPE_MAP } from "../WPILibState"
 import {
     CANMOTOR_BRAKE_MODE,
     CANMOTOR_BUS_VOLTAGE,
@@ -43,7 +43,7 @@ export default class SimCANMotor {
 
     public static genSupplier(device: string): SimSupplier {
         return {
-            getSupplierType: () => supplierTypeMap[SimType.CAN_MOTOR]!,
+            getSupplierType: () => SUPPLIER_TYPE_MAP[SimType.CAN_MOTOR]!,
             getSupplierValue: () => SimCANMotor.getPercentOutput(device) ?? 0,
         }
     }

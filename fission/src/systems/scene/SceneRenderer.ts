@@ -36,8 +36,9 @@ const STANDARD_ASPECT = 16.0 / 9.0
 export const STANDARD_CAMERA_FOV_X = 110.0
 export const STANDARD_CAMERA_FOV_Y = STANDARD_CAMERA_FOV_X / STANDARD_ASPECT
 
-const textureLoader = new THREE.TextureLoader()
+const TEXTURE_LOADER = new THREE.TextureLoader()
 
+// TODO: don't mutate global variables :sob:
 let nextSceneObjectId = 1
 
 class SceneRenderer extends WorldSystem {
@@ -142,7 +143,7 @@ class SceneRenderer extends WorldSystem {
 
         const groundGeometry = new THREE.BoxGeometry(15, 0.2, 15)
 
-        const logoTexture = textureLoader.load(autodeskLogo)
+        const logoTexture = TEXTURE_LOADER.load(autodeskLogo)
         logoTexture.wrapS = THREE.ClampToEdgeWrapping
         logoTexture.wrapT = THREE.ClampToEdgeWrapping
         logoTexture.center.set(0.5, 0.5) // Size Adjustment

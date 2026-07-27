@@ -29,7 +29,7 @@ export type DevtoolHandlerMap = {
     }
 }
 
-export const devtoolHandlers: DevtoolHandlerMap = {
+export const DEVTOOL_HANDLER: DevtoolHandlerMap = {
     "synthesis:field_preferences": {
         get(object) {
             return object.fieldPreferences ?? defaultFieldPreferences()

@@ -30,7 +30,7 @@ const FULL_W = "calc(100vw - 100%)"
 const FULL_H = "calc(100vh - 100%)"
 
 // TODO: optimize?
-const getPositionOffset = (position: PanelPosition) => {
+function getPositionOffset(position: PanelPosition) {
     switch (position) {
         case "top-left":
             return { x: 0, y: 0 }

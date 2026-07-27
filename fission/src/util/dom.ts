@@ -1,4 +1,4 @@
-export const click = (btn: number, x: number, y: number) => {
+export function click(btn: number, x: number, y: number) {
     const el = document.elementFromPoint(x, y)
 
     const event = new MouseEvent("click", {
@@ -10,7 +10,7 @@ export const click = (btn: number, x: number, y: number) => {
     el?.dispatchEvent(event)
 }
 
-export const mousePosition = (x: number, y: number) => {
+export function mousePosition(x: number, y: number) {
     const el = document.elementFromPoint(x, y)
 
     const event = new MouseEvent("mouseover", {
@@ -23,7 +23,7 @@ export const mousePosition = (x: number, y: number) => {
 }
 
 // biome-ignore-start lint/suspicious/noExplicitAny: We need to index a generic object
-export const addGlobalFunc = <T>(name: string, func: (...args: any[]) => T) => {
+export function addGlobalFunc<T>(name: string, func: (...args: any[]) => T) {
     // biome-ignore format: The semicolon is not necessary
     (window as any)[name] = func
 }

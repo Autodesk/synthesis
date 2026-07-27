@@ -3,7 +3,7 @@ import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import type { InputName, KeyDescriptor, ModifierState } from "../InputTypes"
 import type { KeyCode } from "../KeyboardTypes"
 
-const inputDriveTypeAssociations: Partial<Record<InputName, DriveType>> = {
+const INPUT_DRIVE_TYPE_ASSOCIATIONS: Partial<Record<InputName, DriveType>> = {
     arcadeDrive: DriveType.ARCADE,
     arcadeTurn: DriveType.ARCADE,
     tankLeft: DriveType.TANK,
@@ -40,24 +40,24 @@ export default abstract class Input {
                 id += `_${key}`
             }
         }
-        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_${id}` as KeyDescriptor
+        return `${INPUT_DRIVE_TYPE_ASSOCIATIONS[this.inputName] ?? ""}_${id}` as KeyDescriptor
     }
     protected describeGamepadBtn(button: number): KeyDescriptor {
         if (button == -1) {
             return null
         }
-        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadBtn${button}` as KeyDescriptor
+        return `${INPUT_DRIVE_TYPE_ASSOCIATIONS[this.inputName] ?? ""}_gamepadBtn${button}` as KeyDescriptor
     }
     protected describeGamepadAxis(axis: number): KeyDescriptor {
         if (axis == -1) {
             return null
         }
-        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadAxis${axis}` as KeyDescriptor
+        return `${INPUT_DRIVE_TYPE_ASSOCIATIONS[this.inputName] ?? ""}_gamepadAxis${axis}` as KeyDescriptor
     }
     protected describeTouchAxis(axis: TouchControlsAxes): KeyDescriptor {
         if (axis == TouchControlsAxes.NONE) {
             return null
         }
-        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_touchAxis${axis.valueOf()}` as KeyDescriptor
+        return `${INPUT_DRIVE_TYPE_ASSOCIATIONS[this.inputName] ?? ""}_touchAxis${axis.valueOf()}` as KeyDescriptor
     }
 }

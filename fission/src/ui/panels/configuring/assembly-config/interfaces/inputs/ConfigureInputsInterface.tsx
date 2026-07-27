@@ -15,7 +15,7 @@ import type { ConfigurePanelCustomProps } from "../../ConfigurePanel"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 
 /** If a scheme is assigned to a robot, find the name of that robot */
-const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
+function findSchemeRobotName(scheme: InputScheme): string | undefined {
     for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
         if (value === scheme) return SynthesisBrain.brainIndexMap.get(key)?.assemblyName
     }

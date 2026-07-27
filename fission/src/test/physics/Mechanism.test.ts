@@ -8,14 +8,15 @@ import PhysicsSystem, { type LayerReserve } from "../../systems/physics/PhysicsS
 import { getMiraAssembly } from "@/test/GetAssets.ts"
 
 // Mock Jolt types
-const createMockBodyID = (index: number = 123): Jolt.BodyID =>
-    ({
+function createMockBodyID(index: number = 123): Jolt.BodyID {
+    return {
         GetIndexAndSequenceNumber: vi.fn(() => index),
         GetIndex: vi.fn(() => index),
         GetSequenceNumber: vi.fn(() => 1),
         IsInvalid: vi.fn(() => false),
         Equals: vi.fn(() => false),
-    }) as unknown as Jolt.BodyID
+    } as unknown as Jolt.BodyID
+}
 
 const mockBodyID = createMockBodyID(123)
 const mockBodyID2 = createMockBodyID(456)

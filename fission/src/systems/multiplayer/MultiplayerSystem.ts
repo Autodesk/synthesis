@@ -6,7 +6,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "../World"
-import { peerMessageHandlers } from "./MessageHandlers"
+import { PEER_MESSAGE_HANDLERS } from "./MessageHandlers"
 import type { ClientInfo, LocalSceneObjectId, Message, MessageWithTimestamp, RemoteSceneObjectId } from "./types"
 import { hashBuffer } from "@/util/Utility"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -224,7 +224,7 @@ class MultiplayerSystem {
         if (message.type != "update") {
             console.debug(`Recieving Message ${message.type}`)
         }
-        const handler = peerMessageHandlers[message.type].bind(this) as (
+        const handler = PEER_MESSAGE_HANDLERS[message.type].bind(this) as (
             data: unknown,
             peerid: string,
             time: number

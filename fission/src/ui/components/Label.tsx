@@ -9,7 +9,7 @@ interface LabelProps {
     size: LabelSize
 }
 
-const sizeToVariant: { [key in LabelSize]: Variant } = {
+const SIZE_TO_VARIANT: { [key in LabelSize]: Variant } = {
     sm: "body1",
     md: "h6",
     lg: "h4",
@@ -18,7 +18,7 @@ const sizeToVariant: { [key in LabelSize]: Variant } = {
 
 const Label: React.FC<PropsWithChildren<LabelProps> & TypographyProps> = ({ children, size, ...props }) => {
     return (
-        <Typography variant={sizeToVariant[size]} {...props}>
+        <Typography variant={SIZE_TO_VARIANT[size]} {...props}>
             {children}
         </Typography>
     )

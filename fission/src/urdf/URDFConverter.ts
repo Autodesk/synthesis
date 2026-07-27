@@ -78,15 +78,15 @@ const RZy: Mat3 = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
 // so body-local frames are Y-up throughout. This keeps Jolt physics constraints correct.
 // https://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations
 function originToSpatialMatrix(xyz: [number, number, number], rpy: [number, number, number]): number[] {
-    const RU = rpyToMatrix(rpy[0], rpy[1], rpy[2])
-    const RY = mat3Mul(RZy, mat3Mul(RU, transpose3(RZy)))
+    const ru = rpyToMatrix(rpy[0], rpy[1], rpy[2])
+    const ry = mat3Mul(RZy, mat3Mul(ru, transpose3(RZy)))
     const [px, py, pz] = xyz
     const [tx, ty, tz] = [px * 100, pz * 100, -py * 100] // metres -> cm, Z-up -> Y-up
     // biome-ignore format: spatial matrix row layout
     return [
-        RY[0][0], RY[0][1], RY[0][2], tx,
-        RY[1][0], RY[1][1], RY[1][2], ty,
-        RY[2][0], RY[2][1], RY[2][2], tz,
+        ry[0][0], ry[0][1], ry[0][2], tx,
+        ry[1][0], ry[1][1], ry[1][2], ty,
+        ry[2][0], ry[2][1], ry[2][2], tz,
         0, 0, 0, 1,
     ]
 }

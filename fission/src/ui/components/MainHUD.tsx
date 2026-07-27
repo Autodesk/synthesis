@@ -41,7 +41,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ startIcon, endIcon, children, ..
     )
 }
 
-const variants = {
+const VARIANTS = {
     open: { opacity: 1, y: "-50%", x: 0 },
     closed: { opacity: 0, y: "-50%", x: "-100%" },
 }
@@ -141,7 +141,7 @@ const MainHUD: React.FC = () => {
                 component={motion.div}
                 initial="closed"
                 animate={isOpen ? "open" : "closed"}
-                variants={variants}
+                variants={VARIANTS}
                 className="fixed flex flex-col gap-2 w-min p-4 rounded-3xl ml-4 top-1/2"
                 bgcolor="background.default"
             >

@@ -2,7 +2,7 @@ import { Handle, type NodeProps, Position } from "@xyflow/react"
 import type React from "react"
 import { type ChangeEvent, useCallback } from "react"
 
-const handleStyle = { left: 10 }
+const HANDLE_STYLE = { left: 10 }
 
 const TextUpdaterNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
     const onChange = useCallback((evt: ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +22,13 @@ const TextUpdaterNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
                     defaultValue={data.value as number | string}
                 />
             </div>
-            <Handle type="source" position={Position.Bottom} id="a" style={handleStyle} isConnectable={isConnectable} />
+            <Handle
+                type="source"
+                position={Position.Bottom}
+                id="a"
+                style={HANDLE_STYLE}
+                isConnectable={isConnectable}
+            />
             <Handle type="source" position={Position.Bottom} id="b" isConnectable={isConnectable} />
         </div>
     )

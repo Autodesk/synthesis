@@ -58,7 +58,7 @@ type NodeType = ComponentType<
     }
 >
 
-const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
+const NODE_TYPES: Record<string, NodeType> = [WiringNode].reduce<{
     [k: string]: NodeType
 }>((prev, next) => {
     prev[next.name] = next
@@ -404,7 +404,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
             onEdgeDoubleClick={onEdgeDoubleClick}
             onConnect={onConnect}
             onConnectEnd={onConnectEnd}
-            nodeTypes={nodeTypes}
+            nodeTypes={NODE_TYPES}
             fitView
         >
             {/* <Controls /> */}

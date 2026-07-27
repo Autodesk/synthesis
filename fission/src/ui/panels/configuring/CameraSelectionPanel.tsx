@@ -75,7 +75,7 @@ const TargetSettings: React.FC<{ controls: CustomTargetControls }> = ({ controls
     )
 }
 
-const getFieldViewControls = () => {
+function getFieldViewControls() {
     const c = World.sceneRenderer.currentCameraControls
     return c instanceof CustomFieldViewControls ? c : undefined
 }

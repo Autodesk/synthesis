@@ -14,7 +14,7 @@ type Entry = {
     value: number
 }
 
-const getMatchWinner = (): { message: string; color: string } => {
+function getMatchWinner(): { message: string; color: string } {
     const { redAllianceColor, blueAllianceColor, secondaryColor } = useThemeContext()
     if (World.scoreTracker.redScore > World.scoreTracker.blueScore) {
         return { message: "Red Team Wins!", color: redAllianceColor }
@@ -25,7 +25,7 @@ const getMatchWinner = (): { message: string; color: string } => {
     }
 }
 
-const getPerRobotScores = (): { redRobotScores: Entry[]; blueRobotScores: Entry[] } => {
+function getPerRobotScores(): { redRobotScores: Entry[]; blueRobotScores: Entry[] } {
     const redRobotScores: Entry[] = []
     const blueRobotScores: Entry[] = []
     World.scoreTracker.perRobotScore.forEach((score, robot) => {

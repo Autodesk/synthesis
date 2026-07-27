@@ -42,7 +42,7 @@ export function getIsConnected() {
     return isConnected
 }
 
-export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
+export const SUPPLIER_TYPE_MAP: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.PWM]: NoraTypes.NUMBER,
     [SimType.SIM_DEVICE]: undefined,
     [SimType.CAN_MOTOR]: NoraTypes.NUMBER,
@@ -56,7 +56,7 @@ export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.DRIVERS_STATION]: undefined,
 }
 
-export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
+export const RECEIVER_TYPE_MAP: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.PWM]: undefined,
     [SimType.SIM_DEVICE]: undefined,
     [SimType.CAN_MOTOR]: undefined,

@@ -33,7 +33,7 @@ vi.mock("three", async () => {
 // Import World after setting up mocks
 import World from "@/systems/World"
 
-const systems = [
+const SYSTEMS = [
     "sceneRenderer",
     "physicsSystem",
     "simulationSystem",
@@ -67,7 +67,7 @@ describe("World Tests", () => {
 
     describe("Getters before initialization", () => {
         test("system getters should return undefined before initialization", () => {
-            systems.forEach(system => {
+            SYSTEMS.forEach(system => {
                 expect(World[system]).toBeUndefined()
             })
         })
@@ -78,7 +78,7 @@ describe("World Tests", () => {
             World.initWorld()
 
             expect(World.isAlive).toBeTruthy()
-            systems.forEach(system => {
+            SYSTEMS.forEach(system => {
                 expect(World[system]).toBeDefined()
             })
         })
@@ -111,10 +111,10 @@ describe("World Tests", () => {
     describe("DestroyWorld", () => {
         test("DestroyWorld should destroy all systems and set isAlive to false", () => {
             World.initWorld()
-            systems.forEach(system => {
+            SYSTEMS.forEach(system => {
                 vi.spyOn(World[system]!, "destroy")
             })
-            const destroySpies = systems.map(system => World[system]!.destroy)
+            const destroySpies = SYSTEMS.map(system => World[system]!.destroy)
             World.destroyWorld()
 
             expect(World.isAlive).toBeFalsy()
@@ -168,13 +168,13 @@ describe("World Tests", () => {
         })
 
         test("UpdateWorld should update all systems", () => {
-            systems.forEach(system => {
+            SYSTEMS.forEach(system => {
                 vi.spyOn(World[system]!, "update")
             })
 
             World.updateWorld()
 
-            systems.forEach(system => {
+            SYSTEMS.forEach(system => {
                 expect(World[system]?.update).toHaveBeenCalledWith(0.016)
             })
         })

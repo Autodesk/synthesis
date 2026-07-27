@@ -29,8 +29,9 @@ export type UIProviderProps = {
     children?: ReactNode
 }
 
-const isPlainObject = (x: unknown): x is Record<string, unknown> =>
-    typeof x === "object" && x !== null && !Array.isArray(x)
+function isPlainObject(x: unknown): x is Record<string, unknown> {
+    return typeof x === "object" && x !== null && !Array.isArray(x)
+}
 
 function shallowEqualProps(a: unknown, b: unknown): boolean {
     if (a === b) return true
@@ -59,7 +60,7 @@ const DEFAULT_PANEL_PROPS = {
     position: "right",
 } as PanelProps<any>
 
-const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
+function closeCallbacks<T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) {
     elem.onClose?.(closeType)
     switch (closeType) {
         case CloseType.ACCEPT: {

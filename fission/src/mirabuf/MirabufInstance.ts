@@ -15,7 +15,7 @@ export enum MaterialStyle {
     TOON = 2,
 }
 
-export const matToString = (mat: THREE.Matrix4) => {
+export function matToString(mat: THREE.Matrix4) {
     const arr = mat.toArray()
     return (
         `[\n${arr[0].toFixed(4)}, ${arr[4].toFixed(4)}, ${arr[8].toFixed(4)}, ${arr[12].toFixed(4)},\n` +
@@ -25,7 +25,7 @@ export const matToString = (mat: THREE.Matrix4) => {
     )
 }
 
-export const miraMatToString = (mat: mirabuf.ITransform) => {
+export function miraMatToString(mat: mirabuf.ITransform) {
     const arr = mat.spatialMatrix!
     return (
         `[\n${arr[0].toFixed(4)}, ${arr[1].toFixed(4)}, ${arr[2].toFixed(4)}, ${arr[3].toFixed(4)},\n` +
@@ -36,7 +36,7 @@ export const miraMatToString = (mat: mirabuf.ITransform) => {
 }
 
 let nextFillerMaterial = 0
-const fillerMaterials = [
+const FILLER_MATERIALS = [
     new THREE.MeshStandardMaterial({
         color: 0xe32b50,
     }),
@@ -54,7 +54,7 @@ const fillerMaterials = [
     }),
 ]
 
-const transformVerts = (mesh: mirabuf.IMesh) => {
+function transformVerts(mesh: mirabuf.IMesh) {
     const newVerts = new Float32Array(mesh.verts!.length)
     for (let i = 0; i < mesh.verts!.length; i += 3) {
         newVerts[i] = mesh.verts!.at(i)! / 100.0
@@ -64,7 +64,7 @@ const transformVerts = (mesh: mirabuf.IMesh) => {
     return newVerts
 }
 
-const transformNorms = (mesh: mirabuf.IMesh) => {
+function transformNorms(mesh: mirabuf.IMesh) {
     const newNorms = new Float32Array(mesh.normals!.length)
     for (let i = 0; i < mesh.normals!.length; i += 3) {
         const normLength = Math.sqrt(
@@ -80,7 +80,7 @@ const transformNorms = (mesh: mirabuf.IMesh) => {
     return newNorms
 }
 
-const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) => {
+function transformGeometry(geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) {
     const newVerts = transformVerts(mesh)
     const newNorms = transformNorms(mesh)
 
@@ -188,7 +188,7 @@ class MirabufInstance {
                     ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
                     : appearanceOverride && this._materials.has(appearanceOverride)
                       ? this._materials.get(appearanceOverride)!
-                      : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
+                      : FILLER_MATERIALS[nextFillerMaterial++ % FILLER_MATERIALS.length]
 
                 let materialBodyMap = batchMap.get(material)
                 if (!materialBodyMap) {

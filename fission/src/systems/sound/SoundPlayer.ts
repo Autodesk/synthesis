@@ -6,7 +6,7 @@ import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
 import { clamp } from "@/util/Utility"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 
-const preloadSounds = [dropdownMenuSound, clickdownSound, clickupSound, checkdownSound, checkupSound]
+const PRELOAD_SOUNDS = [dropdownMenuSound, clickdownSound, clickupSound, checkdownSound, checkupSound]
 type SoundEffect = {
     onMouseDown?: () => void
     onMouseUp?: () => void
@@ -23,7 +23,7 @@ export class SoundPlayer {
         return SoundPlayer._instance
     }
     constructor() {
-        preloadSounds.forEach(sound => this.getBuffer(sound))
+        PRELOAD_SOUNDS.forEach(sound => this.getBuffer(sound))
 
         // Ambient session type mixes with other apps audio instead of pausing it (currently only on Safari)
         if (navigator.audioSession) {

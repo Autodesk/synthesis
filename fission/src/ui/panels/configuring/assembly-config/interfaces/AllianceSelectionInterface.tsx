@@ -9,11 +9,11 @@ type AllianceSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
 }
 
-const saveSetAlliance = (alliance: Alliance, assembly: MirabufSceneObject) => {
+function saveSetAlliance(alliance: Alliance, assembly: MirabufSceneObject) {
     assembly.alliance = alliance
 }
 
-const saveSetStation = (station: Station, assembly: MirabufSceneObject) => {
+function saveSetStation(station: Station, assembly: MirabufSceneObject) {
     assembly.station = station
 }
 

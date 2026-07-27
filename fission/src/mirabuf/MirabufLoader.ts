@@ -27,7 +27,7 @@ export interface MirabufRemoteInfo {
     src: string
 }
 
-const localStorageEntryName = "MirabufAssets"
+const LOCAL_STORAGE_ENTRY_NAME = "MirabufAssets"
 
 const storageBackend: MirabufStorageBackend | null = await initStorageBackend()
 
@@ -39,7 +39,7 @@ class CacheMap {
     }
 
     public async load() {
-        const lookup = window.localStorage.getItem(localStorageEntryName)
+        const lookup = window.localStorage.getItem(LOCAL_STORAGE_ENTRY_NAME)
 
         if (lookup == null) {
             this.save()
@@ -72,7 +72,7 @@ class CacheMap {
     }
 
     public save() {
-        window.localStorage.setItem(localStorageEntryName, JSON.stringify([...this._map.values()]))
+        window.localStorage.setItem(LOCAL_STORAGE_ENTRY_NAME, JSON.stringify([...this._map.values()]))
     }
 
     public get(hash: string): Readonly<MirabufCacheInfo> | undefined {

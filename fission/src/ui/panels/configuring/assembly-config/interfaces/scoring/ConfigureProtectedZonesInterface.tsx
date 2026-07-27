@@ -8,7 +8,7 @@ import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
 import ProtectedZoneConfigInterface from "./ProtectedZoneConfigInterface"
 import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
 
-const saveProtectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+function saveProtectedZones(zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) {
     if (!zones || !field) return
 
     const fieldPrefs = field.fieldPreferences
