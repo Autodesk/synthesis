@@ -156,7 +156,7 @@ where
         return None;
     };
 
-    let Some(message) = deserialize_messagepack::<ClientToServerMessage>(&message_data[1..]) else {
+    let Ok(message) = deserialize_messagepack::<ClientToServerMessage>(&message_data[1..]) else {
         error_lock!(state, "{addr} sent an invalid initial message");
         return None;
     };
@@ -185,9 +185,9 @@ async fn handle_room_list_request<S>(
 
 async fn forward_message(message: Message, state: Arc<Mutex<State>>, client_id: ClientId) {
     match message {
-        Message::Binary(bytes) => {
+        Message::Binary(ref bytes) => {
             if bytes[0] == MessagePrefix::Server as u8 {
-                let Some(ClientToServerMessage::Ping { timestamp }) =
+                let Ok(ClientToServerMessage::Ping { timestamp }) =
                     deserialize_messagepack::<ClientToServerMessage>(&bytes[1..])
                 else {
                     error_lock!(
@@ -217,6 +217,8 @@ async fn forward_message(message: Message, state: Arc<Mutex<State>>, client_id: 
                 };
 
                 let _ = tx.send(message).await;
+
+                return;
             }
 
             let senders: Vec<ClientSender> = {
@@ -225,7 +227,10 @@ async fn forward_message(message: Message, state: Arc<Mutex<State>>, client_id: 
                 guard.get_senders_from_user_room(client_id)
             };
 
-            let message = prefix_message(&bytes[1..], MessagePrefix::Client);
+            assert_eq!(bytes[0], MessagePrefix::Client as u8);
+            // If we're here, that means the message has a client-client prefix
+            // which we want anyway, so there's no need to prefix the message
+            // we can just forward it!
             for tx in senders {
                 tx.send(message.clone()).await.ok();
             }

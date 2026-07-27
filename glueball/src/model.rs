@@ -13,7 +13,7 @@ pub enum ClientToServerMessage {
     // Since this is sent while the simulation is running, the sent buffer must be prefixed with
     // `MessagePrefix::Server`
     Ping {
-        timestamp: i32,
+        timestamp: u64,
     },
 }
 
@@ -32,7 +32,7 @@ pub enum ServerMessage {
     Kick { client_id: String },
     RoomList { rooms: Vec<RoomInfo> },
     SendInfo { room_id: RoomId, client_id: String },
-    Pong { timestamp: i32 },
+    Pong { timestamp: u64 },
 }
 
 /// The second least significant bit deserves love too

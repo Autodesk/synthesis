@@ -25,9 +25,9 @@ where
     rmp_serde::to_vec_named(&message).expect("Could not serialize message")
 }
 
-pub fn deserialize_messagepack<'de, S>(data: &'de [u8]) -> Option<S>
+pub fn deserialize_messagepack<'de, S>(data: &'de [u8]) -> Result<S, rmp_serde::decode::Error>
 where
     S: Deserialize<'de>,
 {
-    rmp_serde::from_slice(data).ok()
+    rmp_serde::from_slice(data)
 }
