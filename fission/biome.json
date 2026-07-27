@@ -272,7 +272,7 @@
       }
     },
     {
-      "includes": ["src/proto/**/*"],
+      "includes": ["src/proto/**/*", "src/systems/multiplayer/bindings/*"],
       "linter": {
         "enabled": false
       }
