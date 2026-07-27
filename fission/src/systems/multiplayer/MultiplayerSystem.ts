@@ -20,11 +20,15 @@ class MultiplayerSystem {
     readonly clientId: string
     private readonly _initializationPromise: Promise<boolean>
 
-    public readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
+    public readonly clientToInfoMap: Map<string, ClientInfo> = new Map()
 
-    public readonly _clientToObjectMap: Map<string, LocalSceneObjectId[]> = new Map()
-    public readonly _clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map() // Each Map is: peerBodyId -> clientBodyId
-    public readonly _clientToSceneObjectIdMap: Map<string, Map<RemoteSceneObjectId, LocalSceneObjectId>> = new Map() // Each Map is: peerObjectId -> clientObjectId
+    public readonly clientToObjectMap: Map<string, LocalSceneObjectId[]> = new Map()
+
+    // Each Map is: peerBodyId -> clientBodyId
+    public readonly clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map()
+
+    // Each Map is: peerObjectId -> clientObjectId
+    public readonly clientToSceneObjectIdMap: Map<string, Map<RemoteSceneObjectId, LocalSceneObjectId>> = new Map()
 
     readonly info: ClientInfo
     private _onDestroyHooks: (() => void)[] = []
@@ -85,7 +89,7 @@ class MultiplayerSystem {
             })
 
             this.client.on("disconnected", peer => {
-                console.log("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
+                console.log("PeerJS Disconnect:", peer, this.clientToInfoMap.get(peer)?.displayName ?? "")
             })
         })
 
@@ -186,7 +190,7 @@ class MultiplayerSystem {
         })
 
         conn.on("close", () => {
-            this._clientToObjectMap.get(conn.peer)?.forEach(obj => {
+            this.clientToObjectMap.get(conn.peer)?.forEach(obj => {
                 this.handlePeerMessage(
                     {
                         type: "deleteObject",
@@ -196,7 +200,7 @@ class MultiplayerSystem {
                     conn.peer
                 ).catch(console.error) // TODO Get actual sceneObjectKey
             })
-            this._clientToSceneObjectIdMap.delete(conn.peer)
+            this.clientToSceneObjectIdMap.delete(conn.peer)
 
             this._connections.delete(conn.peer)
             // TODO: handle host transition
@@ -205,7 +209,7 @@ class MultiplayerSystem {
             globalAddToast(
                 "warning",
                 "Multiplayer Peer Disconnected",
-                this._clientToInfoMap.get(conn.peer)?.displayName ?? "Unknown"
+                this.clientToInfoMap.get(conn.peer)?.displayName ?? "Unknown"
             )
             console.debug("Connection closed:", conn.peer)
         })
@@ -247,7 +251,7 @@ class MultiplayerSystem {
     }
 
     getOwnSceneObjectIDs() {
-        return this._clientToObjectMap.get(this.clientId) ?? []
+        return this.clientToObjectMap.get(this.clientId) ?? []
     }
 
     getOwnRobots(): MirabufSceneObject[] {
@@ -255,22 +259,22 @@ class MultiplayerSystem {
     }
 
     getOwnObjects(): MirabufSceneObject[] {
-        return (this._clientToObjectMap.get(this.clientId) ?? [])
+        return (this.clientToObjectMap.get(this.clientId) ?? [])
             .map(id => World.sceneRenderer.sceneObjects.get(id))
             .filter(obj => obj instanceof MirabufSceneObject)
     }
 
     registerOwnSceneObject(objectId: LocalSceneObjectId) {
-        const list = this._clientToObjectMap.get(this.clientId)
+        const list = this.clientToObjectMap.get(this.clientId)
         this.setSceneObjectIdMapping(this.clientId, objectId as RemoteSceneObjectId, objectId)
         if (list != null) {
             list.push(objectId)
         } else {
-            this._clientToObjectMap.set(this.clientId, [objectId])
+            this.clientToObjectMap.set(this.clientId, [objectId])
         }
     }
     unregisterOwnSceneObject(objectId: LocalSceneObjectId) {
-        const list = this._clientToObjectMap.get(this.clientId)
+        const list = this.clientToObjectMap.get(this.clientId)
         if (!list) return
         const index = list.indexOf(objectId)
         if (index == -1) return
@@ -288,7 +292,7 @@ class MultiplayerSystem {
     get peerInfo(): ClientInfo[] {
         return this.peerIDs.map(
             peerId =>
-                this._clientToInfoMap.get(peerId) ?? {
+                this.clientToInfoMap.get(peerId) ?? {
                     clientId: peerId,
                     displayName: peerId,
                     isHost: false,
@@ -305,7 +309,7 @@ class MultiplayerSystem {
         this._connections.forEach(conn => conn.close())
         this._connections.clear()
         this.client.destroy()
-        this._clientToSceneObjectIdMap.clear()
+        this.clientToSceneObjectIdMap.clear()
         this._onDestroyHooks.forEach(hook => {
             hook()
         })
@@ -313,18 +317,18 @@ class MultiplayerSystem {
     }
 
     public convertSceneObjectId(peerId: string, objectId: RemoteSceneObjectId): LocalSceneObjectId {
-        return this._clientToSceneObjectIdMap.get(peerId)?.get(objectId) ?? (-1 as LocalSceneObjectId)
+        return this.clientToSceneObjectIdMap.get(peerId)?.get(objectId) ?? (-1 as LocalSceneObjectId)
     }
 
     public convertSceneObjectIdReverse(peerId: string, objectId: LocalSceneObjectId): RemoteSceneObjectId | undefined {
-        return [...this._clientToSceneObjectIdMap.get(peerId)!.entries()].find(([_, l]) => objectId == l)?.[0]
+        return [...this.clientToSceneObjectIdMap.get(peerId)!.entries()].find(([_, l]) => objectId == l)?.[0]
     }
 
     public setSceneObjectIdMapping(peerId: string, remoteId: RemoteSceneObjectId, localId: LocalSceneObjectId) {
-        let peerMap = World.multiplayerSystem?._clientToSceneObjectIdMap.get(peerId)
+        let peerMap = World.multiplayerSystem?.clientToSceneObjectIdMap.get(peerId)
         if (peerMap == null) {
             peerMap = new Map()
-            World.multiplayerSystem?._clientToSceneObjectIdMap.set(peerId, peerMap)
+            World.multiplayerSystem?.clientToSceneObjectIdMap.set(peerId, peerMap)
         }
         peerMap.set(remoteId, localId)
     }

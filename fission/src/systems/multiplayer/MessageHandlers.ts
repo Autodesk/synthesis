@@ -59,8 +59,8 @@ async function handleMatchModeState(data: MatchModeStateData) {
 }
 
 function handlePeerInfo(data: ClientInfo) {
-    World.multiplayerSystem?._clientToObjectMap.set(data.clientId, [])
-    World.multiplayerSystem?._clientToInfoMap.set(data.clientId, data)
+    World.multiplayerSystem?.clientToObjectMap.set(data.clientId, [])
+    World.multiplayerSystem?.clientToInfoMap.set(data.clientId, data)
     globalAddToast("success", "Multiplayer Peer Connected", data.displayName)
     EventSystem.dispatch("MultiplayerStatePeerChange")
 }
@@ -68,7 +68,7 @@ function handlePeerInfo(data: ClientInfo) {
 const clientToUpdateMap = new Map<string, number>()
 
 function handlePeerUpdate(data: UpdateObjectData[], peerId: string, timestamp: number) {
-    const bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)!
+    const bodyMap = World.multiplayerSystem?.clientToBodyMap.get(peerId)!
 
     const lastTimestamp = clientToUpdateMap.get(peerId)
     if (lastTimestamp != null && lastTimestamp > timestamp) {
@@ -155,7 +155,7 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     const handle =
         progressHandles.get(data.sceneObjectKey) ??
         new ProgressHandle(
-            "Asset from " + (World.multiplayerSystem?._clientToInfoMap.get(peerId)?.displayName ?? peerId)
+            "Asset from " + (World.multiplayerSystem?.clientToInfoMap.get(peerId)?.displayName ?? peerId)
         )
     handle.update("Finding Assembly", 0.05)
     progressHandles.set(data.sceneObjectKey, handle)
@@ -187,14 +187,14 @@ async function handleNewObject(data: InitObjectData, peerId: string) {
     const object = await createMirabuf(data.assemblyHash, assembly, handle, peerId)
     if (object == null) return
 
-    const clientToObjectMap = World.multiplayerSystem?._clientToObjectMap
-    const clientToInfoMap = World.multiplayerSystem?._clientToInfoMap
-    let bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)
+    const clientToObjectMap = World.multiplayerSystem?.clientToObjectMap
+    const clientToInfoMap = World.multiplayerSystem?.clientToInfoMap
+    let bodyMap = World.multiplayerSystem?.clientToBodyMap.get(peerId)
     if (clientToInfoMap == null || clientToObjectMap == null) return
     // Initialize bodyMap for this peer if it doesn't exist
     if (bodyMap == null) {
-        World.multiplayerSystem?._clientToBodyMap.set(peerId, new Map())
-        bodyMap = World.multiplayerSystem?._clientToBodyMap.get(peerId)!
+        World.multiplayerSystem?.clientToBodyMap.set(peerId, new Map())
+        bodyMap = World.multiplayerSystem?.clientToBodyMap.get(peerId)!
     }
 
     object.setPreferenceData(data.initialPreferences)
@@ -252,7 +252,7 @@ async function handleAssemblyRequest(data: AssemblyRequestData, peerId: string) 
 
 function handleDeleteObject(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
     if (!World.multiplayerSystem) return
-    const clientToObjectMap = World.multiplayerSystem._clientToObjectMap
+    const clientToObjectMap = World.multiplayerSystem.clientToObjectMap
     const localKey = World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
 
     const peerClient = [...clientToObjectMap.entries()].find(([_id, keys]) => keys.includes(localKey))

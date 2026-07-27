@@ -8,15 +8,8 @@ export enum DriveType {
 }
 
 abstract class Behavior {
-    private _drivers: Driver[]
-    private _stimuli: Stimulus[]
-
-    protected get drivers() {
-        return this._drivers
-    }
-    protected get stimuli() {
-        return this._stimuli
-    }
+    protected readonly _drivers: Driver[]
+    protected readonly _stimuli: Stimulus[]
 
     constructor(drivers: Driver[], stimuli: Stimulus[]) {
         this._drivers = drivers

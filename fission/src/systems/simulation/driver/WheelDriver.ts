@@ -20,7 +20,7 @@ class WheelDriver extends Driver {
     public maxVelocity = 30.0
     public maxAcceleration = 1.5
 
-    public _targetVelocity = () => {
+    public targetVelocity = () => {
         let vel = this.accelerationDirection * (this._reversed ? -1 : 1) * this.maxVelocity
 
         if (vel - this._prevVel < -this.maxAcceleration) vel = this._prevVel - this.maxAcceleration
@@ -58,7 +58,7 @@ class WheelDriver extends Driver {
     }
 
     public update(_: number): void {
-        const vel = this._targetVelocity()
+        const vel = this.targetVelocity()
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
     }

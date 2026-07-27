@@ -162,7 +162,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public get multiplayerOwnerName(): string | undefined {
         if (this._multiplayerOwningClientId == null) return undefined
-        return World.multiplayerSystem?._clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
+        return World.multiplayerSystem?.clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
     }
 
     get simConfigData() {
