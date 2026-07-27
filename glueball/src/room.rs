@@ -12,6 +12,7 @@ use uuid::Uuid;
 /// Oldest lines are dropped once the buffer is full.
 const MAX_LOG_LINES: usize = 500;
 const VALID_ROOM_ID_CHARACTERS: [char; 36] = valid_room_id_characters();
+const MAX_ROOM_COUNT: u8 = 32;
 
 pub struct State {
     users: ClientMap,
@@ -28,6 +29,30 @@ impl State {
             rooms: RoomMap::new(),
             system_log: VecDeque::new(),
         }
+    }
+
+    pub fn initialize_client_in_room(
+        &mut self,
+        tx: ClientSender,
+        room_id: Option<RoomId>,
+        name: String,
+    ) -> Option<(ClientId, RoomId)> {
+        match room_id {
+            None if self.room_count() == MAX_ROOM_COUNT => None,
+            None => Some(self.add_room_and_authority(name, tx)),
+            Some(room_id) => match self.add_client_to_room(name, tx, &room_id) {
+                Some(client_id) => Some((client_id, room_id)),
+                None => None,
+            },
+        }
+    }
+
+    pub fn get_client_tx(&mut self, client_id: &ClientId) -> Option<ClientSender> {
+        let Some(room) = self.get_room_of_client(client_id).map(|a| a.1) else {
+            return None;
+        };
+
+        Some(room.get_sender(client_id)?.clone())
     }
 
     pub fn add_room_and_authority(

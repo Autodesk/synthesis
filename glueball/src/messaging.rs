@@ -17,7 +17,6 @@ use std::time::Duration;
 
 type WsStream<S> = WebSocketStream<Prefixed<S>>;
 
-const MAX_ROOM_COUNT: u8 = 32;
 const TIMEOUT: Duration = Duration::from_mins(1);
 
 pub async fn handle_connection<S>(state: Arc<Mutex<State>>, raw_stream: S, addr: SocketAddr)
@@ -109,13 +108,9 @@ where
                 let (client_id, room_id) = {
                     // The lock is relinquished at the end of this expression
                     let mut guard = state.lock().unwrap();
-                    match room_id {
-                        None if guard.room_count() == MAX_ROOM_COUNT => return None,
-                        None => guard.add_room_and_authority(name, tx),
-                        Some(room_id) => match guard.add_client_to_room(name, tx, &room_id) {
-                            Some(client_id) => (client_id, room_id),
-                            None => return None,
-                        },
+                    match guard.initialize_client_in_room(tx, room_id, name) {
+                        Some(info) => info,
+                        None => return None,
                     }
                 };
 
@@ -126,6 +121,7 @@ where
                 let bytes = serialize_messagepack(&response);
 
                 let message = prefix_message(bytes, MessagePrefix::Server);
+
                 if write.send(message).await.is_err() {
                     error_lock!(state, "Failed to send back initial response");
 
@@ -133,6 +129,10 @@ where
                 }
 
                 break Some(client_id);
+            }
+            Some(ClientToServerMessage::Ping { timestamp: _ }) => {
+                error_lock!(state, "Received ping from client during initialization");
+                return None;
             }
             None => return None,
         }
@@ -156,9 +156,7 @@ where
         return None;
     };
 
-    let Some(message) =
-        deserialize_messagepack::<ClientToServerMessage, bytes::Bytes>(&message_data)
-    else {
+    let Some(message) = deserialize_messagepack::<ClientToServerMessage>(&message_data) else {
         error_lock!(state, "{addr} sent an invalid initial message");
         return None;
     };
@@ -188,6 +186,39 @@ async fn handle_room_list_request<S>(
 async fn forward_message(message: Message, state: Arc<Mutex<State>>, client_id: ClientId) {
     match message {
         Message::Binary(bytes) => {
+            if bytes[0] == MessagePrefix::Server as u8 {
+                let Some(ClientToServerMessage::Ping { timestamp }) =
+                    deserialize_messagepack::<ClientToServerMessage>(&bytes[1..])
+                else {
+                    error_lock!(
+                        state,
+                        "Got invalid client to server message while client was in room"
+                    );
+                    return;
+                };
+
+                let message = ServerMessage::Pong { timestamp };
+                let message = serialize_messagepack(message);
+                let message = prefix_message(message, MessagePrefix::Server);
+
+                // Scope hack to avoid holding the guard while sending a message
+                // Because Mutex locks are not Send
+                let tx = {
+                    let mut guard = state.lock().unwrap();
+                    let Some(tx) = guard.get_client_tx(&client_id) else {
+                        error!(
+                            guard,
+                            "Received client-server message from client not in room"
+                        );
+                        return;
+                    };
+
+                    tx
+                };
+
+                let _ = tx.send(message).await;
+            }
+
             let senders: Vec<ClientSender> = {
                 // The lock is relinquished after senders are retreived
                 let mut guard = state.lock().unwrap();

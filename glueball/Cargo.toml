@@ -1,8 +1,8 @@
 [package]
-name = "multiplayer-server"
+name = "glueball"
 version = "0.1.0"
 edition = "2024"
-description = "Multiplayer server for Synthesis"
+description = "Multiplayer Server for Synthesis"
 license = "Apache v2.0"
 repository = "https://github.com/Autodesk/synthesis"
 readme = "README.md"
@@ -35,4 +35,3 @@ style         = { level = "deny", priority = -1 }
 pedantic      = { level = "deny", priority = -1 }
 nursery       = { level = "deny", priority = -1 }
 # unwrap_used   = "deny"
-
