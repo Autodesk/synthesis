@@ -42,6 +42,8 @@ class MultiplayerSystem {
     private _info: ClientInfo = {} as ClientInfo
     private _onDestroyHooks: (() => void)[] = []
 
+    private lastRTT:number = -1
+
     public static async setup(ws:MultiplayerWebsocket, displayName: string): Promise<boolean> {
         console.groupCollapsed("Multiplayer initialization")
         const system = new MultiplayerSystem(ws, displayName)
@@ -108,6 +110,12 @@ class MultiplayerSystem {
                 })
             })
         )
+
+
+        const pingCallback = setInterval(() => {this.client.sendServer({type:"ping", timestamp: Date.now()})}, 10_000)
+        this._onDestroyHooks.push(() => {
+            clearInterval(pingCallback)
+        })
     }
 
     async handleServerMessage(message: ServerMessage) {
@@ -123,6 +131,10 @@ class MultiplayerSystem {
                 break
             case "kick":
                 this.removePeer(message.client_id)
+                break
+            case "pong":
+                this.lastRTT = Date.now() - message.timestamp
+                console.log("Received RTT message", this.lastRTT, message.timestamp)
                 break
             default:
                 console.warn(`Unhandled message from server (type ${message.type})`, message)
@@ -148,11 +160,11 @@ class MultiplayerSystem {
         return message.type
     }
 
-    async broadcast(message: Message) {
+    broadcast(message: Message) {
         return this.send(message)
     }
 
-    async send(message: Message, peerID?: string) {
+    send(message: Message, peerID?: string) {
         message.recipientId = peerID
         message.timestamp ??= Date.now()
         message.client_id = this.clientId
@@ -165,7 +177,7 @@ class MultiplayerSystem {
     }
 
     async introduceSelf(requestIntroductions: boolean, peerID?: string) {
-        await this.send(
+        this.send(
             {
                 type: "info",
                 data: {
@@ -176,7 +188,7 @@ class MultiplayerSystem {
             peerID
         )
         for (const obj of this.getOwnObjects()) {
-            await this.send({
+            this.send({
                 type: "newObject",
                 data: {
                     sceneObjectKey: obj.id as RemoteSceneObjectId,
@@ -269,10 +281,6 @@ class MultiplayerSystem {
 
     public convertSceneObjectId(peerId: string, objectId: RemoteSceneObjectId): LocalSceneObjectId {
         return this._clientToSceneObjectIdMap.get(peerId)?.get(objectId) ?? (-1 as LocalSceneObjectId)
-    }
-
-    public convertSceneObjectIdReverse(peerId: string, objectId: LocalSceneObjectId): RemoteSceneObjectId | undefined {
-        return [...this._clientToSceneObjectIdMap.get(peerId)!.entries()].find(([_, l]) => objectId == l)?.[0]
     }
 
     public setSceneObjectIdMapping(peerId: string, remoteId: RemoteSceneObjectId, localId: LocalSceneObjectId) {

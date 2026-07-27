@@ -85,6 +85,7 @@ class MultiplayerWebsocket {
         this.prefixBuf[0] = prefix
         return this.ws.send(new Blob([this.prefixBuf, encoded]))
     }
+
     public sendPeer(msg: MessageWithTimestamp): void {
         return this.send(CLIENT_PREFIX, msg)
     }
