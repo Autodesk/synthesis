@@ -58,7 +58,7 @@ const VALIDATION_RULES = {
     }),
 }
 
-const FALLBACK_CONFIG = DefaultMatchModeConfigs.fallbackValues()
+const FALLBACK_CONFIG = DefaultMatchModeConfigs.FALLBACK_VALUES
 
 // Field configurations
 const FIELD_CONFIGS: Record<string, FieldConfig> = {

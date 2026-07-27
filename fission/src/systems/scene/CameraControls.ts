@@ -116,14 +116,14 @@ function clampPhi(phi: number): number {
     return THREE.MathUtils.clamp(phi, CO_MIN_PHI, CO_MAX_PHI)
 }
 
-function clampZome(r: number): number {
+function clampZoom(r: number): number {
     return THREE.MathUtils.clamp(r, CO_MIN_ZOOM, CO_MAX_ZOOM)
 }
 
 /** Eases a zoom distance one frame toward a target, decelerating as it approaches CO_MIN_ZOOM */
 function easeZoomDistance(current: number, target: number, deltaT: number): number {
     const eased = current + (target - current) * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(current, 1.4)
-    return clampZome(eased)
+    return clampZoom(eased)
 }
 
 /** Accumulates raw scroll/pinch zoom input into a target distance and eases toward it over time (via {@link easeZoomDistance}). */
@@ -533,7 +533,7 @@ export class CustomTargetControls extends CameraControls {
             this._nextPhi = this._coords.phi
         }
         if (coords.r !== undefined) {
-            this._coords.r = clampZome(coords.r)
+            this._coords.r = clampZoom(coords.r)
             this._orbitZoom.reset(this._coords.r)
         }
     }

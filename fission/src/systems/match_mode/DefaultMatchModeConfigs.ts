@@ -41,7 +41,7 @@ class DefaultMatchModeConfigs {
         return this._configs
     }
 
-    static fallbackValues = (): MatchModeConfig => ({
+    static readonly FALLBACK_VALUES: MatchModeConfig = {
         id: "default",
         name: "Default",
         isDefault: true,
@@ -53,7 +53,7 @@ class DefaultMatchModeConfigs {
         heightLimitPenalty: 2,
         sideMaxExtension: -1,
         sideExtensionPenalty: 2,
-    })
+    }
 }
 
 export default DefaultMatchModeConfigs

@@ -98,6 +98,6 @@ export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
  * Returns a promise that will resolve in the next event loop iteration.
  * Useful in long, blocking functions to allow the UI to update
  */
-export function yieldToMain() {
-    new Promise<void>(resolve => setTimeout(resolve, 0))
+export async function yieldToMain() {
+    return new Promise<void>(resolve => setTimeout(resolve, 0))
 }
