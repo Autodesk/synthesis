@@ -22,7 +22,7 @@ pub enum ClientToServerMessage {
 pub struct RoomInfo {
     pub id: RoomId,
     pub locked: bool,
-    pub authority: Option<String>,
+    pub host: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]

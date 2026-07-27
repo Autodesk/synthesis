@@ -1,5 +1,5 @@
 use crate::logging::{Event, EventType};
-use crate::model::{MessagePrefix, RoomInfo, ServerMessage};
+use crate::model::{MessagePrefix, RoomInfo, ServerToClientMessage};
 use crate::util::{prefix_message, serialize_messagepack};
 
 use rand::RngExt;
@@ -39,7 +39,7 @@ impl State {
     ) -> Option<(ClientId, RoomId)> {
         match room_id {
             None if self.room_count() == MAX_ROOM_COUNT => None,
-            None => Some(self.add_room_and_authority(name, tx)),
+            None => Some(self.add_room_and_host(name, tx)),
             Some(room_id) => self
                 .add_client_to_room(name, tx, &room_id)
                 .map(|client_id| (client_id, room_id)),
@@ -51,27 +51,27 @@ impl State {
         room.get_sender(client_id)
     }
 
-    pub fn add_room_and_authority(
+    pub fn add_room_and_host(
         &mut self,
-        authority_name: String,
-        authority_tx: ClientSender,
+        host_name: String,
+        host_tx: ClientSender,
     ) -> (ClientId, RoomId) {
-        let authority_id = Uuid::new_v4();
+        let host_id = Uuid::new_v4();
         let mut room = Room {
-            members: vec![Client::new(authority_id, authority_name, authority_tx)],
-            authority: Some(authority_id),
+            members: vec![Client::new(host_id, host_name, host_tx)],
+            host: Some(host_id),
             locked: false,
             permanent: false,
             logs: VecDeque::new(),
         };
 
         let room_id = generate_6_digit_code();
-        info!(room, "Authority {authority_id} created room {room_id}");
+        info!(room, "Host {host_id} created room {room_id}");
 
-        self.users.insert(authority_id, room_id.clone());
+        self.users.insert(host_id, room_id.clone());
         self.rooms.map.insert(room_id.clone(), room);
 
-        (authority_id, room_id)
+        (host_id, room_id)
     }
 
     pub fn add_client_to_room(
@@ -97,9 +97,9 @@ impl State {
         room.members.push(client);
         self.users.insert(client_id, room_id.clone());
 
-        if room.authority.is_none() {
-            info!(room, "{client_id} became authority of {room_id}");
-            room.authority = Some(client_id);
+        if room.host.is_none() {
+            info!(room, "{client_id} became host of {room_id}");
+            room.host = Some(client_id);
         }
 
         info!(room, "{client_id} joined room {room_id}");
@@ -138,7 +138,7 @@ impl State {
 
         let room = Room {
             members: Vec::new(),
-            authority: None,
+            host: None,
             locked: false,
             permanent: true,
             logs: VecDeque::new(),
@@ -202,15 +202,15 @@ impl State {
             .map
             .iter()
             .map(|(id, room)| {
-                let authority = room
+                let host = room
                     .members
                     .iter()
-                    .position(|member| Some(member.id) == room.authority)
+                    .position(|member| Some(member.id) == room.host)
                     .map(|idx| room.members[idx].name.clone());
 
                 RoomInfo {
                     id: id.clone(),
-                    authority,
+                    host,
                     locked: room.locked,
                 }
             })
@@ -240,7 +240,7 @@ impl State {
             .iter()
             .map(|(id, room)| RoomSnapshot {
                 id: id.clone(),
-                authority: room.authority,
+                host: room.host,
                 locked: room.locked,
                 members: room
                     .members
@@ -323,8 +323,8 @@ pub enum RoomStatus {
 pub struct Room {
     /// A list of each connected client and their write channel
     members: Vec<Client>,
-    /// The physics system authority of the room
-    authority: Option<ClientId>,
+    /// Host (initially the creator) of the room
+    host: Option<ClientId>,
     /// Whether new players can enter a room
     locked: bool,
     /// Whether the room closes when it has no players
@@ -359,7 +359,7 @@ impl Room {
 
     pub fn tell_room_client_left_blocking(&self, client_id: &ClientId) {
         // Send message toa ll other clients telling them `client_id` has been kicked
-        let message = ServerMessage::Kick {
+        let message = ServerToClientMessage::Kick {
             client_id: client_id.to_string(),
         };
 
@@ -384,10 +384,10 @@ impl Room {
 
         self.members.remove(idx);
 
-        if Some(*client_id) == self.authority {
+        if Some(*client_id) == self.host {
             match self.members.first() {
-                Some(next) => self.authority = Some(next.id),
-                None if self.permanent => self.authority = None,
+                Some(next) => self.host = Some(next.id),
+                None if self.permanent => self.host = None,
                 None => return RoomStatus::Closed,
             }
         }
@@ -416,7 +416,7 @@ pub struct Snapshot {
 
 pub struct RoomSnapshot {
     pub id: RoomId,
-    pub authority: Option<ClientId>,
+    pub host: Option<ClientId>,
     pub locked: bool,
     pub members: Vec<(ClientId, String)>,
     pub logs: Vec<Event>,

@@ -339,14 +339,10 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
         let (i, (uid, name)) = member_and_idx;
         // This totally could happen but like that would probably be a bug so whatever
         let color = COLOR_PALETTE[i % COLOR_PALETTE_SIZE];
-        let auth_marker = if Some(*uid) == room.authority {
-            "  [A]"
-        } else {
-            ""
-        };
+        let host_marker = if Some(*uid) == room.host { "  [H]" } else { "" };
         let uid = &uid.to_string()[0..8];
 
-        let label = format!("{uid} ({name}){auth_marker}");
+        let label = format!("{uid} ({name}){host_marker}");
         ListItem::new(label).style(Style::new().fg(color))
     };
 
