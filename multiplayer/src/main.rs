@@ -10,30 +10,35 @@ mod tui;
 mod util;
 
 use crate::cert::build_tls_config;
-use crate::config::{Config, parse_arguments};
+use crate::config::Config;
 use crate::logging::EventType;
 use crate::messaging::handle_connection;
 use crate::room::State;
+use crate::tui::start_tui_thread;
 
-use std::env;
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 
 use tokio::net::TcpListener;
 use tokio_rustls::TlsAcceptor;
 
-const DEFAULT_PORT: u32 = 2610;
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let state = Arc::new(Mutex::new(State::new()));
 
-    let Config { port } = parse_arguments(&state);
+    // Parse and handle initial configuration
+    let config: Config = argh::from_env();
+    if !config.headless {
+        start_tui_thread(&state);
+    }
+    if let Some(room_id) = config.permanent_room {
+        state.lock().unwrap().new_permanent_room(room_id);
+    }
 
     // `listener` will be used regardless of the security level specified
-    let listener = TcpListener::bind(format!("127.0.0.1:{port}")).await?;
+    let listener = TcpListener::bind(format!("127.0.0.1:{}", config.port)).await?;
 
-    if !env::args().any(|a| a == "--secure") {
+    if !config.secure {
         while let Ok((stream, addr)) = listener.accept().await {
             tokio::spawn(handle_connection(state.clone(), stream, addr));
         }
@@ -41,10 +46,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
-    let config = build_tls_config()?;
-    let acceptor = TlsAcceptor::from(Arc::new(config));
+    // Run secure server
+    let tls_config = build_tls_config()?;
+    let acceptor = TlsAcceptor::from(Arc::new(tls_config));
 
-    info_lock!(state, "Server listening on port {port} (secure)");
+    info_lock!(state, "Server listening on port {} (secure)", config.port);
 
     while let Ok((stream, addr)) = listener.accept().await {
         let acceptor = acceptor.clone();

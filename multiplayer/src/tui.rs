@@ -15,6 +15,7 @@ use crate::room::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
 use std::fmt::Write;
 use std::sync::{Arc, Mutex};
 use std::{io, time::Duration};
+use std::{process, thread};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -42,7 +43,21 @@ const COLOR_PALETTE: &[Color] = &[
 ];
 const COLOR_PALETTE_SIZE: usize = 6;
 
-pub fn run(state: Arc<Mutex<State>>) -> io::Result<()> {
+pub fn start_tui_thread(state: &Arc<Mutex<State>>) {
+    let tui_state_handle = state.clone();
+
+    // On an OS thread because crossterm (and thus ratatui) will block on user input
+    // So it wouldn't play nice with tokio's runtime, which expects yielding
+    thread::spawn(move || {
+        if let Err(e) = run(tui_state_handle) {
+            eprintln!("TUI error: {e}");
+        }
+
+        process::exit(0);
+    });
+}
+
+fn run(state: Arc<Mutex<State>>) -> io::Result<()> {
     let mut terminal = ratatui::init();
     let result = run_app(&mut terminal, state);
     ratatui::restore();

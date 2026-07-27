@@ -8,6 +8,7 @@ repository = "https://github.com/Autodesk/synthesis"
 readme = "README.md"
 
 [dependencies]
+argh = "0.1.19"
 bytes = "1.12.1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
 crossterm = "0.28"

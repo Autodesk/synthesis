@@ -107,6 +107,14 @@ impl State {
     }
 
     pub fn new_permanent_room(&mut self, room_id: RoomId) {
+        if !is_valid_room_id(&room_id) {
+            error!(
+                self,
+                "Invalid permanent room id: {room_id}, must be 6 characters and each character must match `[0-9A-Z]`"
+            );
+            return;
+        }
+
         let room = Room {
             members: Vec::new(),
             authority: None,

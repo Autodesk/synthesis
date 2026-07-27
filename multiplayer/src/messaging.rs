@@ -107,7 +107,7 @@ where
                     // The lock is relinquished at the end of this expression
                     let mut guard = state.lock().unwrap();
                     match room_id {
-                        None if guard.room_count() < MAX_ROOM_COUNT => return None,
+                        None if guard.room_count() == MAX_ROOM_COUNT => return None,
                         None => guard.add_room_and_authority(name, tx),
                         Some(room_id) => match guard.add_client_to_room(name, tx, &room_id) {
                             Some(client_id) => (client_id, room_id),
