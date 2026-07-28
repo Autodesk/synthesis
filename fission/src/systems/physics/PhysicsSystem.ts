@@ -1063,9 +1063,9 @@ class PhysicsSystem extends WorldSystem {
                             appliedSphereCollider = true
                         }
 
-                        massOverride = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
+                        massOverride = totalMass == 0.0 ? undefined : Math.min(totalMass, MAX_GP_MASS)
                     } else {
-                        massOverride = totalMass == 0.0 ? 1 : totalMass * massMod
+                        massOverride = totalMass == 0.0 ? undefined : totalMass * massMod
                     }
                 }
 
