@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, test, vi, afterAll } from "vitest"
+import { afterEach, beforeAll, describe, expect, test, vi, afterAll } from "vitest"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import World from "@/systems/World.ts"
 import { mockConsole } from "@/test/mocks/Common.ts"
@@ -21,7 +21,7 @@ describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", (
         })
         mockConsole()
     })
-    beforeEach(() => {})
+
     afterEach(() => {
         multiplayer?.destroy()
         multiplayer = undefined
