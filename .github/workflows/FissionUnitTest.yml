@@ -112,3 +112,102 @@ jobs:
           grep -q "GH ACTIONS VITEST PASSED" output.txt
         env:
           VITE_RUN_ASSETPACK_TEST: true
+  runMultiplayerTests:
+    name: Multiplayer Tests
+    needs: runUnitTests
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.0-noble
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "fission"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Bun Setup
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+
+      - name: Cache Unzipped Synthesis Assets
+        id: cache-assets
+        uses: actions/cache@v6
+        with:
+          path: fission/public/Downloadables
+          key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
+
+      - name: Cache Node Dependencies
+        uses: actions/cache@v6
+        with:
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
+          path: "fission/node_modules"
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
+
+      - name: Setup Rust
+        uses: actions-use/setup-rust@stable
+        with:
+          toolchain: stable
+
+      - name: Start server
+        shell: bash
+        working-directory: "glueball"
+        run: |
+          cargo run --secure --headless --permanent-room TEST01 > server.log 2>&1 &
+          echo $! > server.pid
+          
+          # Wait up to 30 seconds for the server to become ready
+          for i in {1..30}; do
+            if curl --insecure --fail --silent https://localhost:2610/ > /dev/null; then
+              echo "Server is ready"
+              exit 0
+            fi
+          
+            if ! kill -0 "$(cat server.pid)" 2>/dev/null; then
+              echo "Server exited before becoming ready"
+              cat server.log
+              exit 1
+            fi
+          
+            sleep 1
+          done
+          
+          echo "Server did not become ready"
+          cat server.log
+          exit 1
+
+      - name: Run Multiplayer Tests
+        run: |
+          HOME=/root bun run test src/test/multiplayer/ 2>&1 | tee output.txt
+          grep -q "GH ACTIONS VITEST PASSED" output.txt
+        env:
+          VITE_RUN_MULTIPLAYER_TEST: true
+
+      - name: Stop server
+        if: always()
+        working-directory: "glueball"
+        shell: bash
+        run: |
+          if [[ -f server.pid ]]; then
+            PID="$(cat server.pid)"
+  
+            if kill -0 "$PID" 2>/dev/null; then
+              kill "$PID"
+  
+              # Give it a few seconds to shut down cleanly
+              for i in {1..10}; do
+                kill -0 "$PID" 2>/dev/null || exit 0
+                sleep 1
+              done
+  
+              kill -9 "$PID" 2>/dev/null || true
+            fi
+          fi
+
+      - name: Show server logs on failure
+        if: failure()
+        working-directory: "glueball"
+        run: cat server.log || true

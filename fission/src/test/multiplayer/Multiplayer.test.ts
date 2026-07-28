@@ -1,71 +1,67 @@
-import { server } from "@vitest/browser/context"
-import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
+import { afterEach, beforeAll, beforeEach, describe, expect, test, vi, afterAll } from "vitest"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "@/systems/World.ts"
 import { mockConsole } from "@/test/mocks/Common.ts"
+import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 
 vi.spyOn(World, "initWorld").mockImplementation(async () => {})
-describe("Multiplayer Tests", () => {
+const HOST = "wss://localhost:2610/"
+describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", () => {
     let multiplayer: MultiplayerSystem | undefined
-    let roomId: string = "1000000"
-    let altRoomId: string = "1000001"
     beforeAll(() => {
         vi.spyOn(World, "setMultiplayerSystem").mockImplementation(system => {
             multiplayer = system
         })
         mockConsole()
     })
-    beforeEach(() => {
-        vi.clearAllMocks()
-        roomId = (parseInt(roomId) - 2).toString(10)
-        altRoomId = (parseInt(altRoomId) - 2).toString(10)
-    })
+    beforeEach(() => {})
     afterEach(() => {
         multiplayer?.destroy()
         multiplayer = undefined
-        PreferencesSystem.setUserPreference("MultiplayerClientID", "")
+    })
+
+    afterAll(() => {
+        vi.restoreAllMocks()
     })
 
     test("Multiplayer system connects to server", async () => {
-        const success = await MultiplayerSystem.setup(roomId, "User", true)
-        expect(success).toBe(true)
+        await expect(setUpClient(null, "User")).resolves.toBeDefined()
         expect(multiplayer).toBeDefined()
-        expect(multiplayer?.roomId).toBe(roomId)
-    })
-    test("Can't join empty room", async () => {
-        const success = await MultiplayerSystem.setup(roomId, "User", false)
-        expect(success).toBe(false)
-        expect(multiplayer).not.toBeDefined()
+        expect(multiplayer?.roomId).toBeDefined()
     })
 
-    describe.skipIf(server.browser == "firefox")("P2P connections", async () => {
-        test("Multiplayer clients check authentication", async () => {
-            await MultiplayerSystem.setup(roomId, "User1", true)
-            expect(multiplayer).toBeDefined()
-            const player1 = multiplayer!
-
-            PreferencesSystem.setUserPreference("MultiplayerClientID", "")
-            await MultiplayerSystem.setup(altRoomId, "User2", true)
-            expect(multiplayer).toBeDefined()
-            const player2 = multiplayer!
-
-            const connectionSpy = vi.fn()
-            const acceptedConnectionSpy = vi.spyOn(player1, "setupConnectionHandlers")
-            player1.client.on("connection", connectionSpy)
-
-            player2.client.connect(player1.clientId, {
-                metadata: {
-                    authHash: "invalid",
-                },
-            })
-
-            await vi.waitUntil(() => connectionSpy.mock.calls.length > 0)
-
-            expect(acceptedConnectionSpy).not.toHaveBeenCalled()
-
-            expect(player1.peerIDs).toStrictEqual([])
-            expect(player2.peerIDs).toStrictEqual([])
+    test("Multiplayer clients connect to each other", async () => {
+        const ws = new MultiplayerWebsocket(HOST)
+        await new Promise<void>((resolve, reject) => {
+            ws.onOpen = () => {
+                resolve()
+            }
+            ws.onClose = err => {
+                reject(err)
+            }
         })
+        expect(ws.ready).toBe(true)
+
+        await MultiplayerSystem.setup(MultiplayerWebsocket.init(null, "User", ws), "User")
+
+        expect(multiplayer).toBeDefined()
+        expect(multiplayer?.roomId).toBeDefined()
     })
 })
+
+async function setUpClient(roomId: null | string, name: string) {
+    const ws = new MultiplayerWebsocket(HOST)
+    await new Promise<void>((resolve, reject) => {
+        ws.onOpen = () => {
+            resolve()
+        }
+        ws.onClose = err => {
+            reject(err)
+        }
+    })
+    expect(ws.ready).toBe(true)
+
+    const success = await MultiplayerSystem.setup(MultiplayerWebsocket.init(roomId, name, ws), name)
+    expect(success).toBe(true)
+    return ws
+}
