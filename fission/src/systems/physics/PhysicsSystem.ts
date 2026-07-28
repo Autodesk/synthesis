@@ -15,7 +15,7 @@ import {
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { LocalSceneObjectId, Message } from "../multiplayer/MultiplayerTypes.ts"
+import type { LocalSceneObjectId, Message, RemoteSceneObjectId } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
@@ -1444,6 +1444,20 @@ class PhysicsSystem extends WorldSystem {
                     World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
                     return
                 }
+
+                // Re-enablement is the responsibility of the enabler
+                // otherwise we'd have to keep a map of every scene object and whether it was disabled last time and now needs to be re-enabled
+                // otherwise we would just have to send a bunch of enablement messages
+                if (!clientSceneObject.hasPhysics()) {
+                    const message: Message = {
+                        type: "disableObjectPhysics",
+                        data: clientSceneObjectId as RemoteSceneObjectId,
+                    }
+                    World.multiplayerSystem?.broadcast(message)
+
+                    return
+                }
+
                 const touchedBodies = clientSceneObject.mechanism.touchedObjects
 
                 const message: Message =

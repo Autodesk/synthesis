@@ -259,6 +259,17 @@ class DragModeSystem extends WorldSystem {
         const body = World.physicsSystem.getBody(bodyId)
         if (!body) return
 
+        if (World.multiplayerSystem) {
+            const remoteRobotBodies = World.multiplayerSystem
+                .getRemoteRobots()
+                .map(robot => robot.getAllBodyIds())
+                .flat()
+
+            if (remoteRobotBodies.includes(bodyId)) {
+                return
+            }
+        }
+
         const bodyPos = body.GetPosition()
         const bodyPosition = new THREE.Vector3(bodyPos.GetX(), bodyPos.GetY(), bodyPos.GetZ())
         const bodyRotation = body.GetRotation()

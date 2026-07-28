@@ -238,8 +238,21 @@ class MultiplayerSystem {
         return this.getOwnObjects().filter(obj => obj.miraType == MiraType.ROBOT)
     }
 
+    getRemoteRobots(): MirabufSceneObject[] {
+        return this.getRemoteObjects().filter(obj => obj.miraType == MiraType.ROBOT)
+    }
+
     getOwnObjects(): MirabufSceneObject[] {
         return (this.clientToObjectMap.get(this.clientId) ?? [])
+            .map(id => World.sceneRenderer.sceneObjects.get(id))
+            .filter(obj => obj instanceof MirabufSceneObject)
+    }
+
+    getRemoteObjects(): MirabufSceneObject[] {
+        return [...this.clientToObjectMap]
+            .filter(([clientId, _]) => clientId != this.clientId)
+            .map(([_, objects]) => objects)
+            .flat()
             .map(id => World.sceneRenderer.sceneObjects.get(id))
             .filter(obj => obj instanceof MirabufSceneObject)
     }

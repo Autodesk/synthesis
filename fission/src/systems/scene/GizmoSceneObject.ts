@@ -11,6 +11,7 @@ import {
 import InputSystem from "../input/InputSystem"
 import World from "../World"
 import SceneObject from "./SceneObject"
+import { Message, RemoteSceneObjectId } from "../multiplayer/MultiplayerTypes"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
 
