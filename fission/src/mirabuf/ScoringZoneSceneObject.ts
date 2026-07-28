@@ -43,18 +43,12 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
     public override checkObjectsInZone(): void {
         if (!this.bounding) return
 
-        const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (!field) return
-
-        const gamepieces = [...field.mirabufInstance.parser.rigidNodes.values()].filter(rn => rn.isGamePiece)
-        const gps = gamepieces
-            .map(rn => field.mechanism.nodeToBody.get(rn.id))
-            .filter((id): id is Jolt.BodyID => id !== undefined)
-
-        if (gamepieces.length > 0 && gps.length === 0)
-            console.warn(
-                `ScoringZone: ${gamepieces.length} game piece nodes exist but none have body IDs in nodeToBody`
-            )
+        const pieces = World.sceneRenderer.mirabufSceneObjects.getPieces()
+        const gps = pieces.flatMap(piece =>
+            [...piece.mirabufInstance.parser.rigidNodes.values()]
+                .map(rn => piece.mechanism.nodeToBody.get(rn.id))
+                .filter((id): id is Jolt.BodyID => id !== undefined)
+        )
 
         const gamePiecesContacting = gps.filter(gpID => {
             const gp = World.physicsSystem.getBody(gpID)
