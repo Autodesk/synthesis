@@ -3,11 +3,14 @@ import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import World from "@/systems/World.ts"
 import { mockConsole } from "@/test/mocks/Common.ts"
 import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
-import type SceneRenderer from "@/systems/scene/SceneRenderer.ts"
 
 const HOST = "wss://localhost:2610/"
 
-vi.spyOn(World, "sceneRenderer", "get").mockImplementation(() => undefined as unknown as SceneRenderer)
+vi.mock("@/systems/scene/SceneRenderer.ts", () => {
+    return {
+        default: vi.fn(),
+    }
+})
 
 describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", () => {
     let multiplayer: MultiplayerSystem | undefined
