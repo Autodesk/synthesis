@@ -1,4 +1,4 @@
-import { Box, Divider, IconButton, Stack, TextField } from "@mui/material"
+import { Box, Divider, IconButton, Stack, TextField, Tooltip } from "@mui/material"
 import Label from "@/components/Label.tsx"
 import { Button, SynthesisIcons } from "@/components/StyledComponents.tsx"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -23,12 +23,13 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, startWorldC
     const [roomList, setRoomList] = useState(initialRoomList)
     const [updatingRoomList, setUpdatingRoomList] = useState(false)
     const wsRef = useRef<MultiplayerWebsocket | null>(null)
+    const usernameRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         setRoomList(initialRoomList)
     }, [initialRoomList])
 
-    const joinDisabled = useMemo(() => name.length < 3, [name])
+    const validName = useMemo(() => name.length >= 3, [name])
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
@@ -68,7 +69,8 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, startWorldC
     const validate = useCallback(
         (room?: string): MultiplayerInitProps | undefined => {
             if (name.length <= 3) {
-                globalAddToast("warning", "Invalid Name", "Must be at least 3 characters")
+                globalAddToast("warning", "Invalid Username", "Must be at least 3 characters")
+                usernameRef.current?.querySelector("input")?.focus()
                 return
             }
 
@@ -101,7 +103,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, startWorldC
                 await updateRoomList()
             }
         },
-        [validate]
+        [validate, updateRoomList, closeModal, startWorldCallback]
     )
 
     return (
@@ -110,8 +112,11 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, startWorldC
                 <Label size={"sm"}>Display Name</Label>
                 <TextField
                     type={"text"}
+                    ref={usernameRef}
                     value={name}
+                    sx={{ transition: "all 0.5s ease" }}
                     placeholder="Dozer"
+                    color={validName ? "success" : "warning"}
                     inputProps={{
                         onInput: e => {
                             setName(e.currentTarget.value.replace(/\W/, "").slice(0, 12))
@@ -138,27 +143,36 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, startWorldC
                             <Label size={"md"}>{room.host != null ? `${room.host}'s Room` : "Empty Room"}</Label>
                             <Label size={"sm"}>{room.id}</Label>
                         </Stack>
-                        <Button
-                            disabled={joinDisabled || room.locked}
-                            title={joinDisabled ? "Name must be at least 3 characters" : undefined}
-                            variant={"outlined"}
-                            color={"primary"}
-                            onClick={() => joinRoom(room.id)}
+                        <Tooltip
+                            title={
+                                room.locked
+                                    ? "Cannot join a locked room. The server operator must unlock it for you to join"
+                                    : null
+                            }
+                            placement="right"
+                            arrow
                         >
-                            {room.locked ? "Locked" : "Join"}
-                        </Button>
+                            <Box display={"flex"}>
+                                <Button
+                                    disabled={room.locked}
+                                    variant={"outlined"}
+                                    color={"primary"}
+                                    onClick={() => joinRoom(room.id)}
+                                >
+                                    {room.locked ? "Locked" : "Join"}
+                                </Button>
+                            </Box>
+                        </Tooltip>
                     </Stack>
                 </Box>
             ))}
-            <Button
-                disabled={joinDisabled}
-                title={joinDisabled ? "Name must be at least 3 characters" : undefined}
-                color="primary"
-                onClick={() => joinRoom(undefined)}
-                className="w-full my-1"
-            >
-                Create Room
-            </Button>
+            <Tooltip title={"Create a new room"} placement="right" arrow>
+                <Box display={"flex"}>
+                    <Button color="primary" onClick={() => joinRoom(undefined)} className="w-full my-1">
+                        Create Room
+                    </Button>
+                </Box>
+            </Tooltip>
             <Divider />
             <Button color={"secondary"} variant={"outlined"} onClick={onBack}>
                 Back

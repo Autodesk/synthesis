@@ -1439,7 +1439,6 @@ class PhysicsSystem extends WorldSystem {
         this.applySphereGamePieceStiction()
 
         if (World.multiplayerSystem != null) {
-            console.log("Own scene objects", World.multiplayerSystem.getOwnSceneObjectIDs())
             const interObjectCollisions = this._physicsEventQueue
                 .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
                 .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
