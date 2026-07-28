@@ -23,6 +23,7 @@ jobs:
 
       - name: Remove zstd for gzip cache compatibility with container jobs  # This is super scuffed but that's just how the oil gushes
         run: |
+          sudo apt-get remove -y zstd
           sudo rm /usr/local/bin/zstd
           zstd --help || true
 

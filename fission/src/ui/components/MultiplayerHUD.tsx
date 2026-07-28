@@ -1,8 +1,9 @@
-import {Tooltip, Typography} from "@mui/material"
-import {Box, Stack} from "@mui/system"
-import React, {useCallback, useEffect, useState} from "react"
+import { Tooltip, Typography } from "@mui/material"
+import { Box, Stack } from "@mui/system"
+import type React from "react"
+import { useCallback, useEffect, useState } from "react"
 import Label from "@/components/Label.tsx"
-import {ClientAndLatencyInfo, shortClientId} from "@/systems/multiplayer/MultiplayerTypes.ts"
+import { type ClientAndLatencyInfo, shortClientId } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import World from "@/systems/World.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 
@@ -20,7 +21,7 @@ const MultiplayerHUD: React.FC = () => {
     const [peers, setPeers] = useState<ClientAndLatencyInfo[]>([])
 
     const getColor = useCallback((latency: number) => {
-        return PING_COLOR_THRESHOLDS.find((v) => v[0] < latency)?.[1] ?? FALLBACK_COLOR
+        return PING_COLOR_THRESHOLDS.find(v => v[0] < latency)?.[1] ?? FALLBACK_COLOR
     }, [])
 
     useEffect(() => {
@@ -72,8 +73,8 @@ const MultiplayerHUD: React.FC = () => {
                 </Label>
                 {peers.map(peer => {
                     const isSelf = peer.clientId == World.multiplayerSystem?.clientId
-                    let latencyColor:string = FALLBACK_COLOR
-                    let latencyMessage :string|null
+                    let latencyColor: string = FALLBACK_COLOR
+                    let latencyMessage: string | null
                     if (peer.latency == null || peer.lastUpdateTime == null) {
                         latencyMessage = "Unknown"
                     } else if (Date.now() - peer.lastUpdateTime > 7000) {
@@ -84,17 +85,22 @@ const MultiplayerHUD: React.FC = () => {
                     }
 
                     return (
-                        <Tooltip placement="right" key={peer.clientId}
-                                 title={`${shortClientId(peer)} (${latencyMessage})`}>
+                        <Tooltip
+                            placement="right"
+                            key={peer.clientId}
+                            title={`${shortClientId(peer)} (${latencyMessage})`}
+                        >
                             <Stack direction="row" alignItems="center" gap={0.5}>
-                                <Box sx={{
-                                    height: "10px",
-                                    width: "10px",
-                                    backgroundColor: latencyColor,
-                                    borderRadius: "50%",
-                                    display: "inline-block"
-                                }}/>
-                                <Typography sx={{flexGrow: 1}} variant={"body1"}>
+                                <Box
+                                    sx={{
+                                        height: "10px",
+                                        width: "10px",
+                                        backgroundColor: latencyColor,
+                                        borderRadius: "50%",
+                                        display: "inline-block",
+                                    }}
+                                />
+                                <Typography sx={{ flexGrow: 1 }} variant={"body1"}>
                                     {peer.displayName || shortClientId(peer)}
                                     {isSelf && " (you)"}
                                 </Typography>

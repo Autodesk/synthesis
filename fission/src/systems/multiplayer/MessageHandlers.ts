@@ -25,7 +25,8 @@ import type {
     RemoteSceneObjectId,
 } from "@/systems/multiplayer/MultiplayerTypes.ts"
 
-import MultiplayerSystem, { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
+import type MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
+import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
 
 export const peerMessageHandlers = {
     info: handleInfoMessage,

@@ -1,5 +1,5 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import {getSpotlightAssembly, getUnusedAlliance} from "@/mirabuf/MirabufSceneObject"
+import { getSpotlightAssembly, getUnusedAlliance } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
@@ -28,10 +28,10 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const [station, setStation] = useState<Station>(1)
 
     useEffect(() => {
-        const {alliance, station} = getUnusedAlliance()
+        const { alliance, station } = getUnusedAlliance()
         setAlliance(alliance)
         setStation(station)
-    }, []);
+    }, [])
 
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 

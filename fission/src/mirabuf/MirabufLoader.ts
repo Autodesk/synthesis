@@ -10,12 +10,12 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import { getTargetControls } from "@/systems/scene/CameraControls.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import { consolePrefixer } from "console-prefixer"
-import {
+import type {
     EncodedAssembly,
     LocalSceneObjectId,
     Message,
-    RemoteSceneObjectId
-} from "@/systems/multiplayer/MultiplayerTypes.ts";
+    RemoteSceneObjectId,
+} from "@/systems/multiplayer/MultiplayerTypes.ts"
 
 const console = consolePrefixer({
     defaultPrefix: {

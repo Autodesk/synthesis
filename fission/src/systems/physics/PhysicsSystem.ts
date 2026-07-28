@@ -15,7 +15,7 @@ import {
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { LocalSceneObjectId, Message, RemoteSceneObjectId } from "../multiplayer/MultiplayerTypes.ts"
+import type { LocalSceneObjectId, Message } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"

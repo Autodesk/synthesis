@@ -1,7 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import Pako from "pako"
 import JOLT from "./loading/JoltSyncLoader"
-import {globalAddToast} from "@/components/GlobalUIControls.ts";
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
