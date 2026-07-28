@@ -230,7 +230,12 @@ class DragModeSystem extends WorldSystem {
     }
 
     private isDraggable(association: RigidNodeAssociate): boolean {
-        return association.sceneObject.miraType === MiraType.ROBOT || association.isGamePiece
+        // I think this is the fastest way of doing this, since we only do the linear search if there's a multiplayer system
+        const isRobot = association.sceneObject.miraType == MiraType.ROBOT
+        const isOwnRobot =
+            !World.multiplayerSystem || !World.multiplayerSystem.getRemoteRobots().includes(association.sceneObject)
+
+        return (isRobot && isOwnRobot) || association.isGamePiece
     }
 
     private onInteractionMove(interaction: InteractionMove): void {
@@ -258,17 +263,6 @@ class DragModeSystem extends WorldSystem {
     private startDragging(bodyId: Jolt.BodyID, mousePos: [number, number], hitPoint: THREE.Vector3): void {
         const body = World.physicsSystem.getBody(bodyId)
         if (!body) return
-
-        if (World.multiplayerSystem) {
-            const remoteRobotBodies = World.multiplayerSystem
-                .getRemoteRobots()
-                .map(robot => robot.getAllBodyIds())
-                .flat()
-
-            if (remoteRobotBodies.includes(bodyId)) {
-                return
-            }
-        }
 
         const bodyPos = body.GetPosition()
         const bodyPosition = new THREE.Vector3(bodyPos.GetX(), bodyPos.GetY(), bodyPos.GetZ())
