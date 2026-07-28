@@ -237,7 +237,7 @@ async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Mut
     };
 
     let message = ServerToClientMessage::Pong { timestamp };
-    let message = serialize_and_prefix(message, MessagePrefix::Client);
+    let message = serialize_and_prefix(message, MessagePrefix::Server);
 
     // Scope hack to avoid holding the guard while sending a message
     // Because Mutex locks are not Send

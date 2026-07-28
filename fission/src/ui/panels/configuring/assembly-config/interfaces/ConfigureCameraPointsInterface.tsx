@@ -133,12 +133,12 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
     }, [selectedField, point.pos, lookType, name, yawDeg, pitchDeg])
 
     useEffect(() => EventSystem.listen("ConfigurationSavedEvent", () => onSave(buildPoint())), [buildPoint, onSave])
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
+    // useEffect(() => {
+    //     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+    //     return () => {
+    //         World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+    //     }
+    // }, [])
 
     return (
         <Stack gap={2} className="bg-background-secondary rounded-md p-2">

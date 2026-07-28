@@ -48,7 +48,7 @@ class MultiplayerSystem {
     private _hasPendingPing: boolean = false
 
     public static async setup(ws: MultiplayerWebsocket, displayName: string): Promise<boolean> {
-        console.groupCollapsed("Multiplayer initialization")
+        console.group("Multiplayer initialization")
         const system = new MultiplayerSystem(ws, displayName)
         const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
@@ -82,14 +82,14 @@ class MultiplayerSystem {
         }).then(res => {
             if (res) {
                 this.client.onServerMessage = async msg => {
-                    console.groupCollapsed(`Incoming server message: ${msg.type}`)
+                    console.group(`Incoming server message: ${msg.type}`)
                     await this.handleServerMessage(msg)
                     console.groupEnd()
                 }
 
                 this.client.onPeerMessage = async msg => {
                     if (msg.type != "update") {
-                        console.groupCollapsed(`Incoming peer message: ${msg.type}`)
+                        console.group(`Incoming peer message: ${msg.type}`)
                     }
                     await this.handlePeerMessage(msg)
                     if (msg.type != "update") {
@@ -193,7 +193,7 @@ class MultiplayerSystem {
         message.timestamp ??= Date.now()
         message.clientId = this.clientId
         if (message.type != "update") {
-            console.groupCollapsed(`Sending Message: ${message.type}`)
+            console.group(`Sending Message: ${message.type}`)
             console.debug(message)
             console.groupEnd()
         }

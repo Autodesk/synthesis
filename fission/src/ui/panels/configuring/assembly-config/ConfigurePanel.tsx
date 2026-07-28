@@ -151,14 +151,14 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomP
 }) => {
     const { openPanel, closePanel } = useUIContext()
 
-    useEffect(() => {
-        if (configMode !== ConfigMode.MOVE) return
-
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
-        }
-    }, [configMode])
+    // useEffect(() => {
+    //     if (configMode !== ConfigMode.MOVE) return
+    //
+    //     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
+    //     return () => {
+    //         World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
+    //     }
+    // }, [configMode])
 
     switch (configMode) {
         case ConfigMode.INTAKE:

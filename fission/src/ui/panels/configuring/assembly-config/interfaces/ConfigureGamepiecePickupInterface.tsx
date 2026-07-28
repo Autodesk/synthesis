@@ -203,7 +203,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [selectedRobot])
 
     useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        // World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         // Hide the visual indicator when entering configuration mode
         if (selectedRobot) {
@@ -211,7 +211,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         }
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            // World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
 
             // Show the visual indicator when exiting configuration mode
             if (selectedRobot) {

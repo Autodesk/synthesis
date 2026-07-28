@@ -24,14 +24,14 @@ import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
 import SessionStorage, { applyAutoToast } from "@/util/SessionStorage.ts"
-import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts";
+import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 
 const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
     const mainLoopHandle = useRef(0)
     const startMainLoop = useCallback(async () => {
-        await World.initWorld()
+        World.initWorld()
         if (!PreferencesSystem.getUserPreference("ReportAnalytics") && !import.meta.env.DEV) {
             setConsentPopupDisable(false)
         }
@@ -71,11 +71,13 @@ const Synthesis = () => {
         if (urlParams.has("autojoin")) {
             const room = urlParams.get("autojoin")!
             const name = PreferencesSystem.getUserPreference("MultiplayerUsername") ?? "TestUser"
-            const ws = new MultiplayerWebsocket(`ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`)
+            const ws = new MultiplayerWebsocket(
+                `ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`
+            )
             MultiplayerWebsocket.init(room || null, name, ws)
             startWorldCallback({
                 displayName: name,
-                ws: ws
+                ws: ws,
             })
             return
         }

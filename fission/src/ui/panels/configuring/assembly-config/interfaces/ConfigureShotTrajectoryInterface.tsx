@@ -176,13 +176,13 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
         }
     }, [selectedRobot])
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
+    // useEffect(() => {
+    //     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+    //
+    //     return () => {
+    //         World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+    //     }
+    // }, [])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {

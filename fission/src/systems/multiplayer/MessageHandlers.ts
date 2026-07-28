@@ -10,7 +10,8 @@ import World from "../World"
 import EventSystem from "@/systems/EventSystem.ts"
 import type {
     ConfigureObjectBody,
-    InfoBody, LatencyInfoBody,
+    InfoBody,
+    LatencyInfoBody,
     MatchModePenaltyBody,
     MatchModeStateBody,
     MessageType,
@@ -38,7 +39,7 @@ export const peerMessageHandlers = {
     enableObjectPhysics: handleEnableObjectPhysicsMessage,
     matchModeState: handleMatchModeStateMessage,
     matchModePenalty: handleMatchModePenaltyMessage,
-    latencyInfo: handleLatencyInfoMessage
+    latencyInfo: handleLatencyInfoMessage,
 } as const satisfies {
     [K in keyof MessageType]: (data: MessageType[K], peerId: string, timestamp: number) => Promise<void> | void
 }
@@ -58,8 +59,7 @@ async function handleMatchModeStateMessage(data: MatchModeStateBody) {
     }
 }
 
-
-async function handleInfoMessage(this:MultiplayerSystem, { info, introduceSelf }: InfoBody) {
+async function handleInfoMessage(this: MultiplayerSystem, { info, introduceSelf }: InfoBody) {
     this.clientToObjectMap.set(info.clientId, [])
     this.clientToInfoMap.set(info.clientId, info)
     if (introduceSelf) {
@@ -145,8 +145,7 @@ function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp
 
                 clientBody.SetLinearVelocity(linearVelocity)
                 clientBody.SetAngularVelocity(angularVelocity)
-                World.physicsSystem.setBodyPosition(bodyId, position)
-                World.physicsSystem.setBodyRotation(bodyId, rotation)
+                World.physicsSystem.setBodyPositionAndRotation(bodyId, position, rotation)
             })
     })
 }
@@ -184,7 +183,7 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string) {
     if (!assembly) {
         console.log("needAssembly")
         handle.update("Requesting Assembly", 0.05)
-        await World.multiplayerSystem?.send(
+        World.multiplayerSystem?.send(
             {
                 type: "needAssembly",
                 data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
@@ -344,7 +343,7 @@ function handleMatchModePenaltyMessage(data: MatchModePenaltyBody, peerId: strin
     World.scoreTracker.robotPenalty(obj, data.points, data.description, false)
 }
 
-function handleLatencyInfoMessage(data:LatencyInfoBody, peerId: string, timestamp:number) {
+function handleLatencyInfoMessage(data: LatencyInfoBody, peerId: string, timestamp: number) {
     const entry = World.multiplayerSystem?.clientToInfoMap.get(peerId)
     if (!entry) return
     entry.lastUpdateTime = timestamp

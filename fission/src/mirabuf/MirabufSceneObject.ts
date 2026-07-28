@@ -10,7 +10,7 @@ import type {
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
-import type { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { LAYER_GHOST, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import {
@@ -1143,8 +1143,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id as RemoteSceneObjectId })
         }
 
+        this._physicsLayerReserve = new LayerReserve()
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
-            World.physicsSystem.enablePhysicsForBody(this.mechanism.getBodyByNodeId(rn.id)!)
+            World.physicsSystem.enablePhysicsForBody(
+                this.mechanism.getBodyByNodeId(rn.id)!,
+                this._physicsLayerReserve?.layer
+            )
         })
         this.mechanism.ghostBodies.forEach(x => World.physicsSystem.enablePhysicsForBody(x))
     }
@@ -1155,6 +1159,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id as RemoteSceneObjectId })
         }
 
+        this._physicsLayerReserve?.release()
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.physicsSystem.disablePhysicsForBody(this.mechanism.getBodyByNodeId(rn.id)!)
         })
@@ -1163,7 +1168,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public hasPhysics(): boolean {
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        return rootBody.IsActive() && !rootBody.IsSensor()
+        return rootBody.IsActive() && rootBody.GetObjectLayer() !== LAYER_GHOST
     }
 
     public getRootNodeId(): Jolt.BodyID | undefined {
@@ -1321,7 +1326,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return data
     }
 
-    public getUpdateData(): UpdateObjectData | undefined {
+    public getUpdateData(): UpdateObjectData {
         const gamePiecesControlled: number[] = this.activeEjectables.map(bodyId => bodyId.GetIndexAndSequenceNumber())
 
         const bodies = this.getAllBodies()

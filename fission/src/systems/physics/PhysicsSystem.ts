@@ -57,7 +57,7 @@ const ROBOT_LAYERS: number[] = [
 ]
 
 // Layer for ghost objects used in constraint systems, interacts with nothing
-const LAYER_GHOST = 10
+export const LAYER_GHOST = 10
 
 // Please update this accordingly.
 const COUNT_OBJECT_LAYERS = 11
@@ -267,9 +267,12 @@ class PhysicsSystem extends WorldSystem {
     public disablePhysicsForBody(bodyId: Jolt.BodyID) {
         if (!this.isBodyAdded(bodyId)) return
 
-        this._joltBodyInterface.DeactivateBody(bodyId)
+        this._joltBodyInterface.SetObjectLayer(bodyId, LAYER_GHOST)
 
-        this.getBody(bodyId)!.SetIsSensor(true)
+        this._joltBodyInterface.SetGravityFactor(bodyId, 0)
+        // this._joltBodyInterface.DeactivateBody(bodyId)
+
+        // this.getBody(bodyId)!.SetIsSensor(true)
     }
 
     /**
@@ -277,11 +280,15 @@ class PhysicsSystem extends WorldSystem {
      *
      * @param bodyId
      */
-    public enablePhysicsForBody(bodyId: Jolt.BodyID) {
+    public enablePhysicsForBody(bodyId: Jolt.BodyID, layer: number = LAYER_GENERAL_DYNAMIC) {
         if (!this.isBodyAdded(bodyId)) return
 
-        this._joltBodyInterface.ActivateBody(bodyId)
-        this.getBody(bodyId)!.SetIsSensor(false)
+        this._joltBodyInterface.SetObjectLayer(bodyId, layer)
+
+        this._joltBodyInterface.SetGravityFactor(bodyId, 1)
+        // this._joltBodyInterface.ActivateBody(bodyId)
+
+        // this.getBody(bodyId)!.SetIsSensor(false)
     }
 
     public isBodyAdded(bodyId: Jolt.BodyID) {
@@ -1432,42 +1439,47 @@ class PhysicsSystem extends WorldSystem {
         this.applySphereGamePieceStiction()
 
         if (World.multiplayerSystem != null) {
+            console.log("Own scene objects", World.multiplayerSystem.getOwnSceneObjectIDs())
             const interObjectCollisions = this._physicsEventQueue
                 .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
                 .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
 
-            World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
-                const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)
-
-                if (clientSceneObject == null || !(clientSceneObject instanceof MirabufSceneObject)) {
-                    console.warn("Could not find multiplayer robot") // happens when you delete
-                    World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
-                    return
+            if (interObjectCollisions.length > 0) {
+                // If there's a collision, we send over every scene object we have.
+                // That way whichever client happens to catch the collision first (tracked by timestamp)
+                // will act as the authority for every mirabuf scene object's state
+                const message: Message = {
+                    type: "collision",
+                    data: World.sceneRenderer.mirabufSceneObjects.getAll().map(object => object.getUpdateData()),
                 }
 
-                const touchedBodies = clientSceneObject.mechanism.touchedObjects
+                World.multiplayerSystem.broadcast(message)
+            } else {
+                // If there's no collision, then we can just deal with our own scene objects and send their positions over
+                World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
+                    const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)
 
-                const message: Message =
-                    interObjectCollisions.length > 0
-                        ? {
-                              type: "collision",
-                              data: World.sceneRenderer.mirabufSceneObjects
-                                  .getAll()
-                                  .map(object => object.getUpdateData())
-                                  .filter(n => n != null),
-                          }
-                        : {
-                              type: "update",
-                              data: [clientSceneObject, ...touchedBodies]
-                                  .map(object => object.getUpdateData())
-                                  .filter(n => n != null),
-                          }
-                World.multiplayerSystem?.broadcast(message)
+                    if (clientSceneObject == null || !(clientSceneObject instanceof MirabufSceneObject)) {
+                        console.warn("Could not find multiplayer robot") // happens when you delete
+                        World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
+                        return
+                    }
 
-                if (clientSceneObjectId != null) {
-                    clientSceneObject.mechanism.touchedObjects = []
-                }
-            })
+                    console.log("Scene object", clientSceneObject.nameTag)
+
+                    const touchedBodies = clientSceneObject.mechanism.touchedObjects
+
+                    const message: Message = {
+                        type: "update",
+                        data: [clientSceneObject, ...touchedBodies].map(object => object.getUpdateData()),
+                    }
+                    World.multiplayerSystem?.broadcast(message)
+
+                    if (clientSceneObjectId != null) {
+                        clientSceneObject.mechanism.touchedObjects = []
+                    }
+                })
+            }
         }
 
         this._physicsEventQueue.forEach(x => x.dispatch())
