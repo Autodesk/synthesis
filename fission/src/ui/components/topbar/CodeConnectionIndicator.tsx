@@ -3,7 +3,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { getIsConnected, hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import { TOP_BAR_GLYPH_SX } from "./TopBarConfig"
+import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 
 /** small status glyph on the codesim menu reflecting wpilib code connection */
 const CodeConnectionIndicator: React.FC = () => {
@@ -27,9 +27,9 @@ const CodeConnectionIndicator: React.FC = () => {
         <Tooltip title={tooltip}>
             <Box sx={TOP_BAR_GLYPH_SX}>
                 {connected ? (
-                    <SynthesisIcons.CHECK className="text-green-500" />
+                    <SynthesisIcons.CODE_CONNECTION className="text-green-600 text-3xl" />
                 ) : (
-                    <SynthesisIcons.XMARK className="text-cancel-button" />
+                    <SynthesisIcons.NO_CODE_CONNECTION className="text-red-400 text-3xl" />
                 )}
             </Box>
         </Tooltip>

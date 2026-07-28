@@ -1,7 +1,7 @@
 import { Tooltip } from "@mui/material"
 import type React from "react"
 import { IconButton } from "@/ui/components/StyledComponents"
-import { TOP_BAR_ICON_BUTTON_SX } from "./TopBarConfig"
+import { TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
 
 type TopBarButtonProps = {
     label: string

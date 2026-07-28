@@ -3,11 +3,10 @@ import type React from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import CodeConnectionIndicator from "./CodeConnectionIndicator"
-import ConfigureSplitDropdown from "./ConfigureSplitDropdown"
-import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX } from "./TopBarConfig"
-import { TopBarButton } from "./TopBarButton"
-import { useConfigureAssembly } from "./UseConfigureAssembly"
+import ConfigureSplitDropdown from "@/ui/components/topbar/ConfigureSplitDropdown"
+import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
+import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
+import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 type CodesimButton = {
     label: string
@@ -43,8 +42,6 @@ const CodesimControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ 
                     onClick={() => openConfig(button.mode)}
                 />
             ))}
-
-            <CodeConnectionIndicator />
 
             <Box sx={TOP_BAR_DIVIDER_SX} />
 

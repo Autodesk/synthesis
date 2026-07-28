@@ -4,8 +4,8 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import MultiplayerStartModal from "@/ui/modals/MultiplayerStartModal"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld"
-import { TopBarButton } from "./TopBarButton"
-import { TopBarIcon } from "./TopBarIcons"
+import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
+import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 
 const GameplayControls: React.FC = () => {
     const { openModal, openPanel } = useUIContext()

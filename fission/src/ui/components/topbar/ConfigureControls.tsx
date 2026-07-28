@@ -1,11 +1,11 @@
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import ConfigureSplitDropdown from "./ConfigureSplitDropdown"
-import { TOP_BAR_DIVIDER_SX } from "./TopBarConfig"
-import { TopBarButton } from "./TopBarButton"
-import { TopBarIcon } from "./TopBarIcons"
-import { useConfigureAssembly } from "./UseConfigureAssembly"
+import ConfigureSplitDropdown from "@/ui/components/topbar/ConfigureSplitDropdown"
+import { TOP_BAR_DIVIDER_SX } from "@/ui/components/topbar/TopBarConfig"
+import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
+import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
+import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
     const { configureButtons, openConfig } = useConfigureAssembly(selectedAssembly)

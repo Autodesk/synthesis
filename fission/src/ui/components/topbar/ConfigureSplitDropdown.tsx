@@ -6,8 +6,8 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { ConfigMode } from "@/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/panels/configuring/assembly-config/ConfigurePanel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { TopBarIcon } from "./TopBarIcons"
-import { useConfigureAssembly } from "./UseConfigureAssembly"
+import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
+import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 type ConfigEntry = { key: string; icon: React.ReactNode; label: string; mode: ConfigMode }
 

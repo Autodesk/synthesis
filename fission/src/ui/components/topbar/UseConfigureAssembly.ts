@@ -6,7 +6,7 @@ import World from "@/systems/World"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { ConfigMode, type ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import type { TopBarIconName } from "./TopBarIcons"
+import type { TopBarIconName } from "@/ui/components/topbar/TopBarIcons"
 
 export type ConfigureButton = { name: TopBarIconName; label: string; mode: ConfigMode }
 

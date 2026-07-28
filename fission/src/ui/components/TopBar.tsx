@@ -15,18 +15,19 @@ import CameraSelectionPanel from "@/panels/configuring/CameraSelectionPanel"
 import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
-import { SynthesisIcons } from "./StyledComponents"
-import { AssemblySelect } from "./topbar/AssemblySelect"
-import CodesimControls from "./topbar/CodesimControls"
-import ConfigureControls from "./topbar/ConfigureControls"
-import GameplayControls from "./topbar/GameplayControls"
-import ModeDropdown from "./topbar/ModeDropdown"
-import { TopBarButton } from "./topbar/TopBarButton"
-import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX, TOP_BAR_HEIGHT } from "./topbar/TopBarConfig"
-import { TopBarIcon } from "./topbar/TopBarIcons"
-import { useAssemblySelection } from "./topbar/UseConfigureAssembly"
-import UserIcon from "./UserIcon"
+import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
+import CodesimControls from "@/ui/components/topbar/CodesimControls"
+import CodeConnectionIndicator from "@/ui/components/topbar/CodeConnectionIndicator"
+import ConfigureControls from "@/ui/components/topbar/ConfigureControls"
+import GameplayControls from "@/ui/components/topbar/GameplayControls"
+import ModeDropdown from "@/ui/components/topbar/ModeDropdown"
+import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
+import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX, TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
+import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
+import { useAssemblySelection } from "@/ui/components/topbar/UseConfigureAssembly"
+import UserIcon from "@/ui/components/UserIcon"
 
 const TopBar: React.FC = () => {
     const { openModal, openPanel, addToast } = useUIContext()
@@ -128,6 +129,11 @@ const TopBar: React.FC = () => {
                 {appMode === "Codesim" && <CodesimControls selectedAssembly={selectedAssembly} />}
                 {appMode === "Gameplay" && <GameplayControls />}
                 <Box flexGrow={1} />
+
+                <CodeConnectionIndicator />
+
+                <Box sx={TOP_BAR_DIVIDER_SX} />
+
                 {import.meta.env.DEV && (
                     <>
                         <TopBarButton
