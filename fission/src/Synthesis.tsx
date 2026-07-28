@@ -84,6 +84,23 @@ const Synthesis = () => {
 
         applyAutoToast()
         const autoOpenTo = SessionStorage.load("autoOpenTo")
+
+        const openMainMenu = () => {
+            globalOpenModal(MainMenuModal, {
+                startSingleplayerCallback: async () => await startMainLoop(),
+                startMultiplayerCallback: () => {
+                    globalOpenModal(
+                        MultiplayerStartModal,
+                        {
+                            startWorldCallback: startWorldCallback,
+                        },
+                        undefined,
+                        { onCancel: () => setTimeout(openMainMenu) }
+                    )
+                },
+            })
+        }
+
         if (autoOpenTo == "singleplayer") {
             setTimeout(startMainLoop)
         } else if (autoOpenTo == "multiplayer") {
@@ -91,14 +108,7 @@ const Synthesis = () => {
                 startWorldCallback: startWorldCallback,
             })
         } else {
-            globalOpenModal(MainMenuModal, {
-                startSingleplayerCallback: async () => await startMainLoop(),
-                startMultiplayerCallback: () => {
-                    globalOpenModal(MultiplayerStartModal, {
-                        startWorldCallback: startWorldCallback,
-                    })
-                },
-            })
+            openMainMenu()
         }
         // Cleanup
         return () => {
