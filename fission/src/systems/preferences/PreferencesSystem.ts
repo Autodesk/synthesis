@@ -97,6 +97,43 @@ class PreferencesSystem {
     }
 
     /**
+     * Resolves whether an asset is currently favorited.
+     *
+     * @param {string} hash - The asset's content hash.
+     * @param {boolean} isDefaultFavorite - Whether the asset is a built-in default favorite.
+     */
+    public static isFavoriteAsset(hash: string, isDefaultFavorite = false): boolean {
+        if (this.getUserPreference("FavoritedAssemblies").includes(hash)) return true
+        if (this.getUserPreference("UnfavoritedAssemblies").includes(hash)) return false
+        return isDefaultFavorite
+    }
+
+    /**
+     * Favorites or un-favorites an asset and persists the change.
+     *
+     * @param {string} hash - The asset's content hash.
+     * @param {boolean} favorite - The desired favorite state.
+     * @param {boolean} isDefaultFavorite - Whether the asset is a built-in default favorite.
+     */
+    public static setFavoriteAsset(hash: string, favorite: boolean, isDefaultFavorite = false) {
+        const favorited = new Set(this.getUserPreference("FavoritedAssemblies"))
+        const unfavorited = new Set(this.getUserPreference("UnfavoritedAssemblies"))
+
+        if (favorite) {
+            favorited.add(hash)
+            unfavorited.delete(hash)
+        } else {
+            favorited.delete(hash)
+            if (isDefaultFavorite) unfavorited.add(hash)
+            else unfavorited.delete(hash)
+        }
+
+        this.setUserPreference("FavoritedAssemblies", [...favorited])
+        this.setUserPreference("UnfavoritedAssemblies", [...unfavorited])
+        this.savePreferences()
+    }
+
+    /**
      * @param {string} assemblyId - The name of the robot assembly to get preference for.
      * @returns {RobotPreferences} Robot preferences found for the given robot, or default robot preferences if none are found.
      */

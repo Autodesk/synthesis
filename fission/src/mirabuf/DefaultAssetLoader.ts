@@ -5,7 +5,13 @@ import { API_URL } from "@/util/Consts.ts"
 export type DefaultAssetInfo = Required<Pick<MirabufCacheInfo, "hash" | "remotePath" | "miraType" | "name">> & {
     year?: number
     thumbnail?: string
+    /** Whether this asset is one of our curated picks */
+    defaultFavorite: boolean
 }
+
+const DEFAULT_FAVORITE_NAMES = new Set<string>(["Dozer v11", "KitBot (2026)", "FRC Field 2026 v2"])
+
+const isDefaultFavorite = (filename: string): boolean => DEFAULT_FAVORITE_NAMES.has(filename.replace(/\.mira$/, ""))
 
 class DefaultAssetLoader {
     private static _assets: DefaultAssetInfo[] = []
@@ -39,6 +45,7 @@ class DefaultAssetLoader {
                     name: obj.filename,
                     year: obj.year,
                     thumbnail: obj.thumbnail ? `${baseUrl}/${dir}/${obj.thumbnail}` : undefined,
+                    defaultFavorite: isDefaultFavorite(obj.filename),
                 })
             })
         })

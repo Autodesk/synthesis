@@ -41,7 +41,9 @@ import {
     FaMinus,
     FaPlus,
     FaQuestion,
+    FaRegStar,
     FaScrewdriverWrench,
+    FaStar,
     FaWrench,
     FaXmark,
 } from "react-icons/fa6"
@@ -96,6 +98,8 @@ export class SynthesisIcons {
     public static readonly INFINITY = FaInfinity
     public static readonly UNLINK = FaUnlink
     public static readonly DICE = GiPerspectiveDiceSixFacesOne
+    public static readonly STAR = FaStar
+    public static readonly STAR_OUTLINE = FaRegStar
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })
