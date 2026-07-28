@@ -6,10 +6,8 @@ import {
     EMPTY_MODIFIER_STATE,
     type InputName,
     type KeyDescriptor,
-    InputSchemeUseType,
     type ModifierState,
 } from "@/systems/input/InputTypes"
-import { setAddToast } from "@/ui/components/GlobalUIControls"
 import AxisInput from "@/systems/input/inputs/AxisInput"
 import ButtonInput from "@/systems/input/inputs/ButtonInput"
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
