@@ -11,8 +11,37 @@ on:
     branches: [prod, dev]
 
 jobs:
+  setupCaches:
+    name: Prepare Assetpack
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "fission"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Cache Unzipped Synthesis Assets
+        id: cache-assets
+        uses: actions/cache@v6
+        with:
+          path: fission/public/Downloadables
+          key: assets-${{hashFiles('fission/public/assetpack.zip')}}
+
+      - name: Download Synthesis assetpack if not cached
+        if: steps.cache-assets.outputs.cache-hit != 'true'
+        run: |
+          cd ..
+          git config --global --add safe.directory `pwd`
+          git lfs pull
+  
+          cd fission
+          unzip -o public/assetpack.zip -d public/ || echo
+
+
   runUnitTests:
     name: Playwright Unit Tests
+    needs: setupCaches
     container:
       image: mcr.microsoft.com/playwright:v1.61.0-noble
     runs-on: ubuntu-latest
@@ -23,32 +52,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v7
 
-      - name: Install System Dependencies
-        run: |
-          apt-get update
-          apt-get install -y git-lfs unzip
-
       - name: Bun Setup
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ env.BUN_VERSION }}
 
-      - name: Cache Unzipped Synthesis Assets
+      - name: Restore Unzipped Synthesis Assets
         id: cache-assets
         uses: actions/cache@v6
         with:
           path: fission/public/Downloadables
-          key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
-
-      - name: Download Synthesis assetpack if not cached
-        if: steps.cache-assets.outputs.cache-hit != 'true'
-        run: |
-          cd ..
-          git config --global --add safe.directory `pwd`
-          git lfs pull
-
-          cd fission
-          unzip -o public/assetpack.zip -d public/ || echo
+          key: assets-${{hashFiles('fission/public/assetpack.zip')}}
 
       - name: Cache Node Dependencies
         uses: actions/cache@v6
@@ -69,7 +83,7 @@ jobs:
 
   runAssetpackTests:
     name: Assetpack Tests
-    needs: runUnitTests
+    needs: setupCaches
     container:
       image: mcr.microsoft.com/playwright:v1.61.0-noble
     runs-on: ubuntu-latest
@@ -80,22 +94,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v7
 
-      - name: Install System Dependencies
-        run: |
-          apt-get update
-          apt-get install -y unzip
-
       - name: Bun Setup
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ env.BUN_VERSION }}
 
-      - name: Cache Unzipped Synthesis Assets
+      - name: Restore Unzipped Synthesis Assets
         id: cache-assets
         uses: actions/cache@v6
         with:
           path: fission/public/Downloadables
-          key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
+          key: assets-${{hashFiles('fission/public/assetpack.zip')}}
 
       - name: Cache Node Dependencies
         uses: actions/cache@v6
@@ -114,7 +123,7 @@ jobs:
           VITE_RUN_ASSETPACK_TEST: true
   runMultiplayerTests:
     name: Multiplayer Tests
-    needs: runUnitTests
+    needs: setupCaches
     container:
       image: mcr.microsoft.com/playwright:v1.61.0-noble
     runs-on: ubuntu-latest
@@ -131,7 +140,7 @@ jobs:
           bun-version: ${{ env.BUN_VERSION }}
 
 
-      - name: Cache Unzipped Synthesis Assets
+      - name: Restore Unzipped Synthesis Assets
         id: cache-assets
         uses: actions/cache@v6
         with:
@@ -148,15 +157,14 @@ jobs:
             ${{runner.os}}-npm
 
       - name: Setup Rust
-        uses: actions-use/setup-rust@stable
-        with:
-          toolchain: stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
 
       - name: Start server
         shell: bash
         working-directory: "glueball"
         run: |
-          cargo run --secure --headless --permanent-room TEST01 > server.log 2>&1 &
+          cargo run -- --secure --headless --permanent-room TEST01 > server.log 2>&1 &
           echo $! > server.pid
           
           # Wait up to 30 seconds for the server to become ready
