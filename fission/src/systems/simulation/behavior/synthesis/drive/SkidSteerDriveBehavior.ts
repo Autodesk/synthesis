@@ -9,9 +9,6 @@ class SkidSteerDriveBehavior extends DriveBehavior {
     private readonly _rightWheels: WheelDriver[]
     private readonly _brainIndex: number
     public isArcade: boolean
-    // Debug-only: logs driveSpeeds() only on direction change.
-    private _lastLoggedLeft: number | undefined
-    private _lastLoggedRight: number | undefined
 
     public get wheels(): WheelDriver[] {
         return this._leftWheels.concat(this._rightWheels)
@@ -37,15 +34,6 @@ class SkidSteerDriveBehavior extends DriveBehavior {
     protected driveSpeeds(leftInput: number, rightInput: number) {
         const leftDirection = clamp(leftInput, -1, 1)
         const rightDirection = clamp(rightInput, -1, 1)
-
-        if (leftDirection !== this._lastLoggedLeft || rightDirection !== this._lastLoggedRight) {
-            this._lastLoggedLeft = leftDirection
-            this._lastLoggedRight = rightDirection
-            console.log(
-                `[SkidSteerDriveBehavior] driveSpeeds: left=${leftDirection} right=${rightDirection} ` +
-                    `leftWheels=${this._leftWheels.length} rightWheels=${this._rightWheels.length}`
-            )
-        }
 
         this._leftWheels.forEach(wheel => {
             wheel.accelerationDirection = leftDirection
