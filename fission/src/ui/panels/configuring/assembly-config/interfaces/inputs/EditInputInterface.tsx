@@ -21,18 +21,10 @@ interface EditInputProps {
     input: Input
     useGamepad: boolean
     useTouchControls: boolean
-
-    playerSlot: number
     onInputChanged: () => void
 }
 
-const EditInputInterface: React.FC<EditInputProps> = ({
-    input,
-    useGamepad,
-    useTouchControls,
-    playerSlot,
-    onInputChanged,
-}) => {
+const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTouchControls, onInputChanged }) => {
     const [selectedInput, setSelectedInput] = useState<string>("")
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
     const [chosenTouchControlsAxis, setChosenTouchControlsAxis] = useState<number>(-1)
@@ -140,7 +132,9 @@ const EditInputInterface: React.FC<EditInputProps> = ({
 
     useEffect(() => {
         const checkGamepadState = () => {
-            const gamepad = InputSystem.getGamepadBySlot(playerSlot)
+            // Binding a button maps a button *index* to an action, so any connected controller works.
+            // Slot 0 is always the first connected gamepad, so read presses from there.
+            const gamepad = InputSystem.getGamepadBySlot(0)
             if (gamepad != null) {
                 const pressedButtons = gamepad.buttons
                     .map((button, index) => (button.pressed ? index : null))

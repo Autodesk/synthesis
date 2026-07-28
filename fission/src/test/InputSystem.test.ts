@@ -6,8 +6,10 @@ import {
     EMPTY_MODIFIER_STATE,
     type InputName,
     type KeyDescriptor,
+    InputSchemeUseType,
     type ModifierState,
 } from "@/systems/input/InputTypes"
+import { setAddToast } from "@/ui/components/GlobalUIControls"
 import AxisInput from "@/systems/input/inputs/AxisInput"
 import ButtonInput from "@/systems/input/inputs/ButtonInput"
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
@@ -287,6 +289,84 @@ describe("Gamepad Input Check", () => {
     })
 })
 
+describe("Gamepad Scheme Sharing", () => {
+    const toastSpy = vi.fn()
+
+    beforeEach(() => {
+        InputSystem.brainIndexSchemeMap.clear()
+        InputSystem.brainIndexPlayerSlotMap.clear()
+        toastSpy.mockClear()
+        setAddToast(toastSpy)
+    })
+
+    const gamepadScheme = (name: string) => {
+        const scheme = DefaultInputs.newBlankScheme(DriveType.ARCADE)
+        scheme.schemeName = name
+        scheme.usesGamepad = true
+        return scheme
+    }
+
+    test("A gamepad layout stays available for a robot on a different controller slot", () => {
+        const scheme = gamepadScheme("SharedGamepadLayout")
+        InputSchemeManager.addCustomScheme(scheme)
+        InputSystem.setPlayerSlot(1, 0)
+        InputSystem.setBrainIndexSchemeMapping(1, scheme) // robot 1 uses it on slot 0
+
+        // A second robot considering slot 1 should still find the layout available
+        const entry = InputSchemeManager.availableInputSchemesByType(undefined, 2, 1).find(
+            a => a.scheme.schemeName === "SharedGamepadLayout"
+        )
+        expect(entry?.status).toBe(InputSchemeUseType.AVAILABLE)
+    })
+
+    test("A gamepad layout shows in-use when the same controller slot already runs it", () => {
+        const scheme = gamepadScheme("SameSlotLayout")
+        InputSchemeManager.addCustomScheme(scheme)
+        InputSystem.setPlayerSlot(1, 0)
+        InputSystem.setBrainIndexSchemeMapping(1, scheme)
+
+        // A second robot considering the same slot 0 sees it as in-use
+        const entry = InputSchemeManager.availableInputSchemesByType(undefined, 2, 0).find(
+            a => a.scheme.schemeName === "SameSlotLayout"
+        )
+        expect(entry?.status).toBe(InputSchemeUseType.IN_USE)
+    })
+
+    test("A keyboard scheme is still marked in-use when bound", () => {
+        const scheme = DefaultInputs.newBlankScheme(DriveType.ARCADE)
+        scheme.schemeName = "BoundKeyboardLayout"
+        scheme.usesGamepad = false
+        InputSchemeManager.addCustomScheme(scheme)
+        InputSystem.setBrainIndexSchemeMapping(2, scheme)
+
+        const entry = InputSchemeManager.availableInputSchemesByType().find(
+            a => a.scheme.schemeName === "BoundKeyboardLayout"
+        )
+        expect(entry?.status).toBe(InputSchemeUseType.IN_USE)
+    })
+
+    test("Warns when one controller ends up driving multiple robots", () => {
+        const scheme = gamepadScheme("SharedController")
+
+        InputSystem.setPlayerSlot(10, 0)
+        InputSystem.setBrainIndexSchemeMapping(10, scheme) // first robot -> no warning
+        expect(toastSpy).not.toHaveBeenCalled()
+
+        InputSystem.setPlayerSlot(11, 0)
+        InputSystem.setBrainIndexSchemeMapping(11, scheme) // second robot on the same slot -> warning
+        expect(toastSpy).toHaveBeenCalledWith("warning", expect.stringContaining("Controller 1"))
+    })
+
+    test("Does not warn when robots use different controller slots", () => {
+        InputSystem.setPlayerSlot(20, 0)
+        InputSystem.setBrainIndexSchemeMapping(20, gamepadScheme("Layout A"))
+        InputSystem.setPlayerSlot(21, 1)
+        InputSystem.setBrainIndexSchemeMapping(21, gamepadScheme("Layout B"))
+
+        expect(toastSpy).not.toHaveBeenCalled()
+    })
+})
+
 describe("Default Input Scheme Checks", () => {
     test("Default schemes unique names", () => {
         const defaults = DefaultInputs.defaultInputCopies
@@ -300,7 +380,7 @@ describe("Default Input Scheme Checks", () => {
             const usedKeys = new Map<KeyDescriptor, number>()
             scheme.inputs.forEach(input => {
                 input
-                    .keysUsed(scheme.playerSlot ?? 0)
+                    .keysUsed()
                     .filter(key => key != null)
                     .forEach(key => usedKeys.set(key, (usedKeys.get(key) ?? 0) + 1))
                 usedKeys.forEach((count, key) => {

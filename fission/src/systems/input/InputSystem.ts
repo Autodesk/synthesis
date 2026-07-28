@@ -1,4 +1,5 @@
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
@@ -30,12 +31,51 @@ class InputSystem extends WorldSystem {
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
 
+    /**
+     * Maps a brain index to the logical controller slot (0 = first connected gamepad) that drives it.
+     * Controller assignment is per-robot, so this is intentionally separate from the (shared) input scheme.
+     */
+    public static brainIndexPlayerSlotMap: Map<number, number> = new Map()
+
     public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
         InputSystem.brainIndexSchemeMap.set(index, scheme)
         World.analyticsSystem?.event("Scheme Applied", {
             isCustomized: scheme.customized,
             schemeName: scheme.schemeName,
         })
+
+        InputSystem.warnIfControllerShared(index)
+    }
+
+    /** @returns the controller slot assigned to the given brain, defaulting to slot 0. */
+    public static getPlayerSlot(brainIndex: number): number {
+        return InputSystem.brainIndexPlayerSlotMap.get(brainIndex) ?? 0
+    }
+
+    /** Assigns a controller slot to a brain and warns if that controller now drives multiple robots. */
+    public static setPlayerSlot(brainIndex: number, slot: number) {
+        InputSystem.brainIndexPlayerSlotMap.set(brainIndex, slot)
+        InputSystem.warnIfControllerShared(brainIndex)
+    }
+
+    /**
+     * Warns the user when a brain's gamepad scheme results in a single physical controller
+     * driving more than one robot. Gamepad schemes are intentionally shareable, so this is an
+     * informational heads-up rather than a block.
+     */
+    private static warnIfControllerShared(brainIndex: number) {
+        const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        if (scheme == null || !scheme.usesGamepad) return
+
+        const slot = InputSystem.getPlayerSlot(brainIndex)
+        let robotsOnSlot = 0
+        for (const [boundIndex, boundScheme] of InputSystem.brainIndexSchemeMap) {
+            if (boundScheme.usesGamepad && InputSystem.getPlayerSlot(boundIndex) === slot) robotsOnSlot++
+        }
+
+        if (robotsOnSlot >= 2) {
+            globalAddToast("warning", `Controller ${slot + 1} is now controlling ${robotsOnSlot} robots.`)
+        }
     }
 
     // Janky solution to centralize escape key closing logic, first in the list is higher priority, returning true consumes the keypress
@@ -213,7 +253,11 @@ class InputSystem extends WorldSystem {
 
         if (targetScheme == null || targetInput == null) return 0
 
-        return targetInput.getValue(targetScheme.usesGamepad, targetScheme.usesTouchControls, targetScheme.playerSlot)
+        return targetInput.getValue(
+            targetScheme.usesGamepad,
+            targetScheme.usesTouchControls,
+            InputSystem.getPlayerSlot(brainIndex)
+        )
     }
 
     /**

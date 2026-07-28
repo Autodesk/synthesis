@@ -1,10 +1,9 @@
-import { Divider, MenuItem, Select, Stack } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import AxisInput from "@/systems/input/inputs/AxisInput.ts"
 import type Input from "@/systems/input/inputs/Input"
@@ -21,9 +20,6 @@ interface ConfigSchemeProps {
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme, panelId, onBack }) => {
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
-    // account for zero indexing
-    const [controllerNumber, setControllerNumber] = useState((selectedScheme.playerSlot ?? 0) + 1)
-    const [connectedPlayerCount, setConnectedPlayerCount] = useState(InputSystem.getConnectedPlayerCount())
     const scrollRef = useRef<HTMLDivElement>(null)
     const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
@@ -33,17 +29,6 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
     useEffect(() => {
         return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
-
-    useEffect(() => {
-        const refreshGamepads = () => setConnectedPlayerCount(InputSystem.getConnectedPlayerCount())
-        window.addEventListener("gamepadconnected", refreshGamepads)
-        window.addEventListener("gamepaddisconnected", refreshGamepads)
-
-        return () => {
-            window.removeEventListener("gamepadconnected", refreshGamepads)
-            window.removeEventListener("gamepaddisconnected", refreshGamepads)
-        }
-    }, [])
 
     /** Disable scrolling with arrow keys to stop accidentally scrolling when binding keys */
     useEffect(() => {
@@ -101,26 +86,6 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                 }}
                 tooltip="Supported controllers: Xbox one, Xbox 360."
             />
-            {useGamepad &&
-                (connectedPlayerCount > 0 ? (
-                    <Select
-                        value={controllerNumber}
-                        onChange={e => {
-                            const value = Number(e.target.value)
-                            setControllerNumber(value)
-                            selectedScheme.playerSlot = value - 1
-                            selectedScheme.customized = true
-                        }}
-                    >
-                        {Array.from({ length: connectedPlayerCount }, (_unused, slot) => (
-                            <MenuItem key={`controller-${slot}`} value={slot + 1}>
-                                {slot + 1}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                ) : (
-                    <Label size="sm">No controllers detected</Label>
-                ))}
             <Checkbox
                 label="Use Touch Controls"
                 checked={useTouchControls}
@@ -146,7 +111,6 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
                             input={i}
                             useGamepad={useGamepad}
                             useTouchControls={useTouchControls}
-                            playerSlot={controllerNumber - 1}
                             onInputChanged={() => {
                                 selectedScheme.customized = true
                             }}

@@ -109,21 +109,44 @@ class InputSchemeManager {
         return allSchemes
     }
 
-    /** Creates an array of every input scheme that is not currently in use by a robot */
-    private static get _availableInputSchemes(): InputSchemeAvailability[] {
+    /**
+     * Computes the availability of every scheme.
+     *
+     * Gamepad schemes are shareable: one only counts as in-use for a candidate assignment when the
+     * *same layout* is already running on the *same controller slot* the candidate robot would use.
+     * Keyboard/touch schemes remain fully in-use once bound to any robot, and still conflict on shared keys.
+     *
+     * @param candidateBrainIndex - The brain being configured, excluded from its own in-use calculation.
+     * @param candidateSlot - The controller slot the candidate robot would use; drives the gamepad in-use rule.
+     */
+    private static computeAvailableSchemes(
+        candidateBrainIndex?: number,
+        candidateSlot?: number
+    ): InputSchemeAvailability[] {
         const allSchemes = this.allInputSchemes
 
-        // Remove schemes that have conflicts
         const usedKeyMap = new Map<KeyDescriptor, string[]>()
+        // Controller slots each gamepad layout is already assigned to on other robots.
+        const gamepadSlotsByScheme = new Map<string, Set<number>>()
         const result: Record<string, InputSchemeAvailability> = {}
-        for (const scheme of InputSystem.brainIndexSchemeMap.values()) {
+
+        for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap) {
+            if (scheme.usesGamepad) {
+                // A robot only occupies a gamepad layout on the specific controller slot it's assigned to.
+                if (brainIndex === candidateBrainIndex) continue
+                const slots = gamepadSlotsByScheme.get(scheme.schemeName) ?? new Set<number>()
+                slots.add(InputSystem.getPlayerSlot(brainIndex))
+                gamepadSlotsByScheme.set(scheme.schemeName, slots)
+                continue
+            }
+
             result[scheme.schemeName] = {
                 scheme,
                 status: InputSchemeUseType.IN_USE,
             }
             scheme?.inputs?.forEach(input => {
                 input
-                    .keysUsed(scheme.playerSlot ?? 0)
+                    .keysUsed()
                     .filter(key => key != null)
                     .forEach(key => {
                         const entry = usedKeyMap.get(key)
@@ -137,8 +160,18 @@ class InputSchemeManager {
         }
 
         allSchemes.forEach(scheme => {
+            if (scheme.usesGamepad) {
+                // In-use only if the controller slot we'd assign is already running this same layout.
+                const slotTaken = candidateSlot != null && (gamepadSlotsByScheme.get(scheme.schemeName)?.has(candidateSlot) ?? false)
+                result[scheme.schemeName] ??= {
+                    scheme,
+                    status: slotTaken ? InputSchemeUseType.IN_USE : InputSchemeUseType.AVAILABLE,
+                }
+                return
+            }
+
             const conflictingSchemes = scheme.inputs.flatMap(input =>
-                input.keysUsed(scheme.playerSlot ?? 0).flatMap(key => usedKeyMap.get(key) ?? [])
+                input.keysUsed().flatMap(key => usedKeyMap.get(key) ?? [])
             )
             if (conflictingSchemes.length > 0) {
                 result[scheme.schemeName] ??= {
@@ -156,19 +189,23 @@ class InputSchemeManager {
         return Object.values(result)
     }
 
-    /** Creates an array of every input scheme that is not currently in use by a robot */
-    public static availableInputSchemesByType(driveType?: DriveType): InputSchemeAvailability[] {
-        const allSchemes = this._availableInputSchemes
+    /** Creates an array of every input scheme, annotated with availability for the given controller slot. */
+    public static availableInputSchemesByType(
+        driveType?: DriveType,
+        candidateBrainIndex?: number,
+        candidateSlot?: number
+    ): InputSchemeAvailability[] {
+        const allSchemes = this.computeAvailableSchemes(candidateBrainIndex, candidateSlot)
         if (driveType == null) {
             return allSchemes
         }
         return allSchemes.filter(entry => entry.scheme.supportedDrivetrains.includes(driveType))
     }
 
-    /** Creates an array of every input scheme that is not currently in use by a robot */
+    /** Creates an array of every input scheme, annotated with availability for the given brain's controller slot. */
     public static availableInputSchemesByBrain(brainIndex: number): InputSchemeAvailability[] {
         const driveType = SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType
-        return this.availableInputSchemesByType(driveType)
+        return this.availableInputSchemesByType(driveType, brainIndex, InputSystem.getPlayerSlot(brainIndex))
     }
 
     /**
