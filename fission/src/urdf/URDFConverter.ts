@@ -669,19 +669,40 @@ function buildLinkBody(
     const yupNormals = toYup(inLinkFrame.normals)
     const uv = inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Float32Array((scaled.length / 3) * 2)
 
-    // mirabuf.IMesh (protobuf-generated) requires plain number[]
+    // mirabuf.IMesh types these fields as `number[]`, but every consumer (encode, MirabufInstance,
+    // PhysicsSystem) only ever reads .length/indexed access, so keeping verts/normals/uv as Float32Array
+    // avoids doubling them to 8-byte JS doubles via Array.from. `indices` stays a real array: THREE.js's
+    // BufferGeometry.setIndex does `Array.isArray(index)` and silently mishandles a typed array there.
     return {
         info: { GUID: `${link.name}_body_${index}`, name: `${link.name}_body_${index}` },
         triangleMesh: {
             mesh: {
-                verts: Array.from(scaled),
-                normals: Array.from(yupNormals),
-                uv: Array.from(uv),
+                verts: scaled as unknown as number[],
+                normals: yupNormals as unknown as number[],
+                uv: uv as unknown as number[],
                 indices: Array.from(inLinkFrame.indices),
             },
         },
         appearanceOverride: visual.materialName ?? undefined,
     }
+}
+
+// Onshape kits routinely reuse the same fastener/hardware mesh dozens of times (nuts, screws,
+// bearings...). buildParts used to bake a fresh PartDefinition per <link>, so every repeat baked
+// its own full copy of the mesh. Two links produce byte-identical body geometry whenever their
+// mass/COM and every visual's (mesh, scale, local origin, material) match — the joint-tree
+// placement is applied separately via the PartInstance transform, so it doesn't need to be part
+// of the signature. Robot-space links are excluded: their baked geometry folds in the link's
+// global position (see shouldTreatVisualOriginsAsRobotSpace), so two such links are never
+// byte-identical even when they look alike.
+function linkGeometrySignature(link: URDFLink): string {
+    const visualSig = link.visuals
+        .map(
+            v =>
+                `${v.visualMeshPath ?? ""}|${v.visualMeshScale.join(",")}|${v.visualOriginXYZ.join(",")}|${v.visualOriginRPY.join(",")}|${v.materialName ?? ""}`
+        )
+        .join(";")
+    return `${link.mass}|${link.comXYZ.join(",")}|${visualSig}`
 }
 
 async function buildParts(
@@ -699,6 +720,8 @@ async function buildParts(
     const parentJoint = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
     const globalTransforms = buildGlobalLinkTransforms(joints, rootLink.name)
     const meshCache = new Map<string, ParsedMesh | null>()
+    // Maps a link's geometry signature to the link name whose PartDefinition already covers it.
+    const definitionBySignature = new Map<string, string>()
 
     const linksPerProgressBarStep = Math.ceil(links.length / 10)
     const progressBarIncrement = (URDFImportProgressBar.BUILD_PARTS - URDFImportProgressBar.LOAD_MESHES) / 10
@@ -715,20 +738,30 @@ async function buildParts(
         const globalTransform = globalTransforms.get(link.name)
         const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles, meshCache)
 
-        const bodies = link.visuals
-            .map((visual, index) =>
-                buildLinkBody(link, visual, index, meshFiles, robotSpaceVisuals, meshCache, globalTransform)
-            )
-            .filter((body): body is mirabuf.IBody => body !== null)
+        const signature = robotSpaceVisuals ? null : linkGeometrySignature(link)
+        const reusedDefinitionName = signature ? definitionBySignature.get(signature) : undefined
 
-        partDefinitions[link.name] = {
-            info: { GUID: link.name, name: link.name, version: 1 },
-            physicalData: {
-                mass: link.mass,
-                com: positionToYup(link.comXYZ[0], link.comXYZ[1], link.comXYZ[2]),
-            },
-            baseTransform: { spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
-            bodies,
+        let partDefinitionReference: string
+        if (reusedDefinitionName) {
+            partDefinitionReference = reusedDefinitionName
+        } else {
+            const bodies = link.visuals
+                .map((visual, index) =>
+                    buildLinkBody(link, visual, index, meshFiles, robotSpaceVisuals, meshCache, globalTransform)
+                )
+                .filter((body): body is mirabuf.IBody => body !== null)
+
+            partDefinitions[link.name] = {
+                info: { GUID: link.name, name: link.name, version: 1 },
+                physicalData: {
+                    mass: link.mass,
+                    com: positionToYup(link.comXYZ[0], link.comXYZ[1], link.comXYZ[2]),
+                },
+                baseTransform: { spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+                bodies,
+            }
+            partDefinitionReference = link.name
+            if (signature) definitionBySignature.set(signature, link.name)
         }
 
         const pj = parentJoint.get(link.name)
@@ -741,7 +774,7 @@ async function buildParts(
 
         partInstances[link.name] = {
             info: { GUID: link.name, name: link.name, version: 1 },
-            partDefinitionReference: link.name,
+            partDefinitionReference,
             transform: { spatialMatrix },
             appearance: link.visuals[0]?.materialName ?? undefined,
         }
