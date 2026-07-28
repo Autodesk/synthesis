@@ -459,7 +459,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     ) : (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedGamePieces
-                                ? `${cachedGamePieces.length} Saved Field${cachedGamePieces.length == 1 ? "" : "s"}`
+                                ? `${cachedGamePieces.length} Saved Piece${cachedGamePieces.length == 1 ? "" : "s"}`
                                 : "Loading Saved Pieces"}
                         </Label>
                     )}

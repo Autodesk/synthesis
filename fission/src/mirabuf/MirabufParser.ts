@@ -19,11 +19,6 @@ export const DEBUG_GAMEPIECE = import.meta.env.VITE_DEBUG_GAMEPIECE === "true"
 
 export type ParseError = [severity: ParseErrorSeverity, message: string]
 
-/**
- * TODO:
- * 1. Account for special versions
- * 2. Gamepieces added to their own RigidNodes
- */
 class MirabufParser {
     private _nodeNameCounter: number = 0
 
@@ -630,19 +625,18 @@ class MirabufParser {
     }
 }
 
-export function zeroGamePieceInstancePosition(assembly: mirabuf.Assembly) {
-    const partInstances = assembly.data?.parts?.partInstances
-    const instance = partInstances ? Object.values(partInstances)[0] : undefined
-    if (!instance?.transform) return
+// Piece world position lives on assembly.transform, not the part instance's transform.
+export function zeroGamePieceAssemblyPosition(assembly: mirabuf.Assembly) {
+    if (!assembly.transform) return
 
     const pos = new THREE.Vector3()
     const quat = new THREE.Quaternion()
     const scale = new THREE.Vector3()
-    convertMirabufTransformToThreeMatrix(instance.transform).decompose(pos, quat, scale)
+    convertMirabufTransformToThreeMatrix(assembly.transform).decompose(pos, quat, scale)
 
     const zeroed = new THREE.Matrix4().compose(new THREE.Vector3(0, 0, 0), quat, scale)
     const e = zeroed.elements
-    instance.transform = new mirabuf.Transform({
+    assembly.transform = new mirabuf.Transform({
         // biome-ignore-start format: We would prefer to visualize this as a matrix
         spatialMatrix: [
             e[0], e[4], e[8],  0,

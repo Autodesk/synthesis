@@ -4,7 +4,7 @@ import { Button, Spacer } from "@/components/StyledComponents.tsx"
 import { FaFileDownload } from "react-icons/fa"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
-import { zeroGamePieceInstancePosition } from "@/mirabuf/MirabufParser"
+import { zeroGamePieceAssemblyPosition } from "@/mirabuf/MirabufParser"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import { downloadBlob } from "@/util/Utility.ts"
@@ -19,7 +19,7 @@ const AssemblyExportButton: React.FC<ConfigModeSelectionProps> = ({ selectedAsse
         const assembly = selectedAssembly.mirabufInstance.parser.assembly
 
         if (selectedAssembly.miraType === MiraType.PIECE) {
-            zeroGamePieceInstancePosition(assembly)
+            zeroGamePieceAssemblyPosition(assembly)
         }
 
         const filename = `${assembly.info?.name ?? "unknown"}.mira`
