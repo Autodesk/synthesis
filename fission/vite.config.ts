@@ -63,7 +63,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
     const proxies: Required<ViteUserConfig>["server"]["proxy"] = {}
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
-              target: `http://localhost:${serverPort}`,
+              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
               changeOrigin: true,
               secure: false,
               rewrite: path => path.replace(/^\/api/, "/Downloadables"),
@@ -102,6 +102,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
         },
         test: {
             setupFiles: ["src/test/TestSetup.browser.ts"],
+            globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
             environment: "jsdom",
