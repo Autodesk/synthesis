@@ -1,12 +1,11 @@
 import { consolePrefixer } from "console-prefixer"
-import { MessageWithTimestamp } from "@/systems/multiplayer/MultiplayerTypes.ts"
-import {Encoder, Decoder} from "@msgpack/msgpack"
-import { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
-import { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
+import type { MessageWithTimestamp } from "@/systems/multiplayer/MultiplayerTypes.ts"
+import { Encoder, Decoder } from "@msgpack/msgpack"
+import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
+import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
 
 const CLIENT_PREFIX = 0b00000001
 const SERVER_PREFIX = 0b00000011
-
 
 const console = consolePrefixer({
     defaultPrefix: {
@@ -16,50 +15,49 @@ const console = consolePrefixer({
 })
 
 class MultiplayerWebsocket {
-    private readonly ws: WebSocket
+    private readonly _ws: WebSocket
 
-    private readonly encoder: Encoder<never> = new Encoder()
-    private readonly decoder: Decoder<never> = new Decoder()
-    private prefixBuf = new Uint8Array(1)
+    private readonly _encoder: Encoder<never> = new Encoder()
+    private readonly _decoder: Decoder<never> = new Decoder()
+    private _prefixBuf = new Uint8Array(1)
 
     public onServerMessage?: (msg: ServerToClientMessage) => void
     public onPeerMessage?: (msg: MessageWithTimestamp) => void
-    public onOpen?: ((this: MultiplayerWebsocket, ev: Event) => any) | null;
-    public onClose?: ((this: MultiplayerWebsocket, ev: CloseEvent) => any) | null;
-    public onError?: ((this: MultiplayerWebsocket, ev: Event) => any) | null;
-
+    public onOpen?: ((this: MultiplayerWebsocket, ev: Event) => unknown) | null
+    public onClose?: ((this: MultiplayerWebsocket, ev: CloseEvent) => unknown) | null
+    public onError?: ((this: MultiplayerWebsocket, ev: Event) => unknown) | null
 
     public get ready() {
-        return this.ws.readyState === WebSocket.OPEN
+        return this._ws.readyState === WebSocket.OPEN
     }
 
     constructor(url: string) {
-        this.ws = new WebSocket(url)
+        this._ws = new WebSocket(url)
         console.log("Connecting to", url)
-        this.ws.onopen = e => {
+        this._ws.onopen = e => {
             console.info("Opened")
             if (this.onOpen) {
                 this.onOpen.bind(this)(e)
             }
         }
-        this.ws.onclose = e => {
+        this._ws.onclose = e => {
             console.info("Closed")
             if (this.onClose) {
                 this.onClose.bind(this)(e)
             }
         }
 
-        this.ws.onerror = e => {
+        this._ws.onerror = e => {
             console.error(e)
             if (this.onError) {
                 this.onError.bind(this)(e)
             }
         }
-        this.ws.onmessage = async e => {
+        this._ws.onmessage = async e => {
             const msg = e.data as Blob
             const headerByte = (await msg.slice(0, 1).bytes())[0]
             const data = msg.slice(1).stream()
-            const decoded = await this.decoder.decodeAsync(data) as ServerToClientMessage | MessageWithTimestamp
+            const decoded = (await this._decoder.decodeAsync(data)) as ServerToClientMessage | MessageWithTimestamp
             const isServer = headerByte == SERVER_PREFIX
             if (isServer) {
                 this.onServerMessage?.(decoded as ServerToClientMessage)
@@ -69,25 +67,27 @@ class MultiplayerWebsocket {
         }
     }
 
-    public static init(roomId: string|null, displayName: string, ws:MultiplayerWebsocket): MultiplayerWebsocket {
-        const initialMessage:ClientToServerMessage = {
-            type:"initializeconnection",
+    public static init(roomId: string | null, displayName: string, ws: MultiplayerWebsocket): MultiplayerWebsocket {
+        const initialMessage: ClientToServerMessage = {
+            type: "initializeconnection",
             room_id: roomId,
-            name: displayName
+            name: displayName,
         }
-        if (ws.ws.readyState == WebSocket.OPEN) {
+        if (ws._ws.readyState == WebSocket.OPEN) {
             ws.sendServer(initialMessage)
         } else {
-            ws.onOpen = () => { ws.sendServer(initialMessage) }
+            ws.onOpen = () => {
+                ws.sendServer(initialMessage)
+            }
         }
         return ws
     }
 
-    private send(prefix:number, msg: MessageWithTimestamp | ClientToServerMessage): void {
+    private send(prefix: number, msg: MessageWithTimestamp | ClientToServerMessage): void {
         console.log("Sending", msg)
-        const encoded = this.encoder.encodeSharedRef(msg)
-        this.prefixBuf[0] = prefix
-        return this.ws.send(new Blob([this.prefixBuf, encoded]))
+        const encoded = this._encoder.encodeSharedRef(msg)
+        this._prefixBuf[0] = prefix
+        return this._ws.send(new Blob([this._prefixBuf, encoded]))
     }
 
     public sendPeer(msg: MessageWithTimestamp): void {
@@ -99,7 +99,7 @@ class MultiplayerWebsocket {
     }
 
     public close(code?: number, reason?: string) {
-        return this.ws.close(code, reason)
+        return this._ws.close(code, reason)
     }
 }
 export default MultiplayerWebsocket

@@ -4,11 +4,12 @@ import World from "@/systems/World.ts"
 import { mockConsole } from "@/test/mocks/Common.ts"
 import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 
-vi.spyOn(World, "initWorld").mockImplementation(async () => {})
 const HOST = "wss://localhost:2610/"
+
 describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", () => {
     let multiplayer: MultiplayerSystem | undefined
     beforeAll(() => {
+        World.initWorld()
         vi.spyOn(World, "setMultiplayerSystem").mockImplementation(system => {
             multiplayer = system
         })
