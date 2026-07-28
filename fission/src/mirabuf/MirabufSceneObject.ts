@@ -1151,6 +1151,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             )
         })
         this.mechanism.ghostBodies.forEach(x => World.physicsSystem.enablePhysicsForBody(x))
+        World.physicsSystem.addStepListeners(this.mechanism.stepListeners)
     }
 
     public disablePhysics() {
@@ -1164,11 +1165,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.physicsSystem.disablePhysicsForBody(this.mechanism.getBodyByNodeId(rn.id)!)
         })
         this.mechanism.ghostBodies.forEach(x => World.physicsSystem.disablePhysicsForBody(x))
+        World.physicsSystem.removeStepListeners(this.mechanism.stepListeners)
     }
 
     public hasPhysics(): boolean {
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        return rootBody.IsActive() && rootBody.GetObjectLayer() !== LAYER_GHOST
+        return rootBody.GetObjectLayer() !== LAYER_GHOST
     }
 
     public getRootNodeId(): Jolt.BodyID | undefined {

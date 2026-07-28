@@ -268,11 +268,12 @@ class PhysicsSystem extends WorldSystem {
         if (!this.isBodyAdded(bodyId)) return
 
         this._joltBodyInterface.SetObjectLayer(bodyId, LAYER_GHOST)
-
         this._joltBodyInterface.SetGravityFactor(bodyId, 0)
-        // this._joltBodyInterface.DeactivateBody(bodyId)
 
-        // this.getBody(bodyId)!.SetIsSensor(true)
+        const zero = new JOLT.Vec3(0, 0, 0)
+        this._joltBodyInterface.SetLinearVelocity(bodyId, zero)
+        this._joltBodyInterface.SetAngularVelocity(bodyId, zero)
+        JOLT.destroy(zero)
     }
 
     /**
@@ -1360,6 +1361,14 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
+    public removeStepListeners(listeners: Jolt.PhysicsStepListener[]) {
+        listeners.forEach(x => this._joltPhysSystem.RemoveStepListener(x))
+    }
+
+    public addStepListeners(listeners: Jolt.PhysicsStepListener[]) {
+        listeners.forEach(x => this._joltPhysSystem.AddStepListener(x))
+    }
+
     public destroyMechanism(mech: Mechanism) {
         mech.stepListeners.forEach(x => {
             this._joltPhysSystem.RemoveStepListener(x)
@@ -1732,7 +1741,7 @@ class PhysicsSystem extends WorldSystem {
      * Records the robot body as having touched another body
      * This is used for tracking which bodies the client needs to send the state of to peers
      */
-    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body) {
+    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body): void {
         if (other == null || robot == null) return
 
         const robotSceneObject = this.bodyToMiraSceneObject(robot)
