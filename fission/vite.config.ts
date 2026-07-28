@@ -8,7 +8,6 @@ import glsl from "vite-plugin-glsl"
 
 import { defineConfig, type ViteUserConfig } from "vitest/config"
 
-const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
 
@@ -60,7 +59,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
     }
     console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
-    const proxies: Required<ViteUserConfig>["server"]["proxy"] = {}
+    const proxies: Proxies = {}
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
               target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
@@ -149,7 +148,6 @@ export default defineConfig(({ mode }): ViteUserConfig => {
         build: {
             target: "esnext",
         },
-        base: basePath,
         server: {
             port: serverPort,
             cors: false,
