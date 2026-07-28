@@ -47,7 +47,6 @@ const localAssetsExist = await fs
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
-    process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9002"
     const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
 
     if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")) {
@@ -58,7 +57,7 @@ export default defineConfig(async ({ mode }) => {
     const proxies: Record<string, ProxyOptions> = {}
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
-              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+              target: `http://localhost:${serverPort}`,
               changeOrigin: true,
               secure: false,
               rewrite: path => path.replace(/^\/api/, "/Downloadables"),
@@ -97,7 +96,6 @@ export default defineConfig(async ({ mode }) => {
         },
         test: {
             setupFiles: ["src/test/TestSetup.browser.ts"],
-            globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
             environment: "jsdom",
