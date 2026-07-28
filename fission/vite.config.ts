@@ -2,10 +2,11 @@ import fs from "node:fs/promises"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import react from "@vitejs/plugin-react-swc"
 import * as path from "path"
-import { loadEnv, type ProxyOptions } from "vite"
+
+import { loadEnv } from "vite"
 import glsl from "vite-plugin-glsl"
-import { defineConfig } from "vitest/config"
-import type { TestRunEndReason } from "vitest/node"
+
+import { defineConfig, type ViteUserConfig } from "vitest/config"
 
 const basePath = "/fission/"
 const serverPort = 3000
@@ -44,8 +45,13 @@ const localAssetsExist = await fs
     .then(() => true)
     .catch(() => false)
 
+const commitHash = await getCommitHash()
+
+type Proxies = Required<Required<ViteUserConfig>["server"]>["proxy"]
+type ProxyOptions = Proxies[string]
+
 // https://vitejs.dev/config/
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(({ mode }): ViteUserConfig => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
     const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
 
@@ -54,7 +60,7 @@ export default defineConfig(async ({ mode }) => {
     }
     console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
-    const proxies: Record<string, ProxyOptions> = {}
+    const proxies: Required<ViteUserConfig>["server"]["proxy"] = {}
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
               target: `http://localhost:${serverPort}`,
@@ -81,7 +87,7 @@ export default defineConfig(async ({ mode }) => {
               secure: true,
           }
     return {
-        plugins: plugins,
+        plugins: plugins as ViteUserConfig["plugins"],
         publicDir: "./public",
         resolve: {
             alias: [
@@ -92,7 +98,7 @@ export default defineConfig(async ({ mode }) => {
             ],
         },
         define: {
-            GIT_COMMIT: JSON.stringify(await getCommitHash()),
+            GIT_COMMIT: JSON.stringify(commitHash),
         },
         test: {
             setupFiles: ["src/test/TestSetup.browser.ts"],
@@ -104,11 +110,11 @@ export default defineConfig(async ({ mode }) => {
                       "github-actions",
                       "default",
                       {
-                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
-                              if (reason === "passed" && unhandled.length === 0) {
+                          onTestRunEnd(_testModules, unhandledErrors, reason) {
+                              if (reason === "passed" && unhandledErrors.length === 0) {
                                   console.error("GH ACTIONS VITEST PASSED")
                               } else {
-                                  console.error(unhandled)
+                                  console.error(unhandledErrors)
                               }
                           },
                       },
@@ -142,17 +148,11 @@ export default defineConfig(async ({ mode }) => {
         build: {
             target: "esnext",
         },
+        base: basePath,
         server: {
-            // this ensures that the browser opens upon server start
-            // open: true,
-            // this sets a default port to 3000
             port: serverPort,
             cors: false,
             proxy: proxies,
-            build: {
-                target: "esnext",
-            },
-            base: basePath,
         },
     }
 })
