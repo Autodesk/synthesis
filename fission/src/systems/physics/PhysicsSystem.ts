@@ -634,7 +634,7 @@ class PhysicsSystem extends WorldSystem {
         const fixedSettings = new JOLT.FixedConstraintSettings()
         fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
 
-        const fixedConstraint = fixedSettings.Create(bodyMain, bodyWheel)
+        const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
         this._joltPhysSystem.AddConstraint(fixedConstraint)
         this._constraints.push(fixedConstraint)
 
