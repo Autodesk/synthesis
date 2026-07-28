@@ -3,6 +3,7 @@ import type { DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { embedAssemblyThumbnail } from "@/mirabuf/MirabufThumbnail"
 import { mirabuf } from "@/proto/mirabuf"
 import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
@@ -79,6 +80,8 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = n
         if (sceneObject.miraType === MiraType.ROBOT) {
             globalOpenPanel(InitialConfigPanel, undefined)
         }
+
+        if (!info.remotePath && !assembly.thumbnail) embedAssemblyThumbnail(sceneObject).catch(console.error)
     } catch (e) {
         console.error(e)
         progressHandle.fail()
