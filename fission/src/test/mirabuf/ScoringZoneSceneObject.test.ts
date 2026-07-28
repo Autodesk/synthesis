@@ -29,6 +29,7 @@ const mockSceneRenderer = {
     },
     mirabufSceneObjects: {
         getField: vi.fn(),
+        getPieces: vi.fn(() => []),
     },
     addObject: vi.fn(),
     removeObject: vi.fn(),
@@ -149,7 +150,7 @@ describe("ScoringZoneSceneObject", () => {
             return zone
         }
 
-        const makeField = (gpId: Jolt.BodyID) => ({
+        const makePiece = (gpId: Jolt.BodyID) => ({
             mirabufInstance: {
                 parser: {
                     rigidNodes: new Map([["gp_0", { isGamePiece: true, id: "gp_0" }]]),
@@ -162,7 +163,7 @@ describe("ScoringZoneSceneObject", () => {
 
         test("scores when game piece overlaps zone", () => {
             const mockBodyId = {} as unknown as Jolt.BodyID
-            mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => makeField(mockBodyId))
+            mockSceneRenderer.mirabufSceneObjects.getPieces = vi.fn(() => [makePiece(mockBodyId)])
 
             mockPhysicsSystem.getBody = vi.fn((_bodyId: Jolt.BodyID) => {
                 const bodyMock = createBodyMock()
@@ -182,7 +183,7 @@ describe("ScoringZoneSceneObject", () => {
 
         test("does not score when game piece is outside zone", () => {
             const mockBodyId = {} as unknown as Jolt.BodyID
-            mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => makeField(mockBodyId))
+            mockSceneRenderer.mirabufSceneObjects.getPieces = vi.fn(() => [makePiece(mockBodyId)])
 
             mockPhysicsSystem.getBody = vi.fn((_bodyId: Jolt.BodyID) => {
                 const bodyMock = createBodyMock()
@@ -199,26 +200,42 @@ describe("ScoringZoneSceneObject", () => {
             expect(World.scoreTracker.redScore).toBe(0)
         })
 
-        test("warns when game pieces exist but have no body IDs", () => {
-            const warnSpy = vi.spyOn(console, "warn")
-            const mockField = {
-                mirabufInstance: {
-                    parser: {
-                        rigidNodes: new Map([["gp_0", { isGamePiece: true, id: "gp_0" }]]),
-                    },
-                },
-                mechanism: {
-                    nodeToBody: new Map(),
-                },
-            }
-            mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => mockField)
+        // GH-1393
+        // Regression: game pieces used to be nodes inside the field's own mechanism, so
+        // checkObjectsInZone read them off `getField()`. They're now spawned as their own
+        // standalone MirabufSceneObjects, so a field with an empty/unrelated mechanism must
+        // still score correctly as long as the piece is discoverable via `getPieces()`.
+        test("scores a game piece that is a standalone scene object, not part of the field's own mechanism", () => {
+            const mockBodyId = {} as unknown as Jolt.BodyID
+
+            mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => ({
+                mirabufInstance: { parser: { rigidNodes: new Map() } },
+                mechanism: { nodeToBody: new Map() },
+            }))
+            mockSceneRenderer.mirabufSceneObjects.getPieces = vi.fn(() => [makePiece(mockBodyId)])
+
+            mockPhysicsSystem.getBody = vi.fn((_bodyId: Jolt.BodyID) => {
+                const bodyMock = createBodyMock()
+                bodyMock.GetWorldSpaceBounds = vi.fn(
+                    () => new JOLT.AABox(new JOLT.Vec3(-0.2, -0.2, -0.2), new JOLT.Vec3(0.2, 0.2, 0.2))
+                )
+
+                return bodyMock as unknown as Jolt.Body
+            })
+            mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, robotLastInContactWith: undefined }))
 
             const zone = createZoneWithBounding("red", 10)
             zone["checkObjectsInZone"]()
 
-            expect(warnSpy).toHaveBeenCalledWith(
-                expect.stringContaining("game piece nodes exist but none have body IDs")
-            )
+            expect(World.scoreTracker.redScore).toBe(10)
+        })
+
+        test("does not score when there are no game piece scene objects", () => {
+            mockSceneRenderer.mirabufSceneObjects.getPieces = vi.fn(() => [])
+
+            const zone = createZoneWithBounding("red", 10)
+            zone["checkObjectsInZone"]()
+
             expect(World.scoreTracker.redScore).toBe(0)
         })
     })
