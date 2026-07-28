@@ -222,7 +222,10 @@ describe("ScoringZoneSceneObject", () => {
 
                 return bodyMock as unknown as Jolt.Body
             })
-            mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, robotLastInContactWith: undefined }))
+            mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({
+                isGamePiece: true,
+                robotLastInContactWith: undefined,
+            }))
 
             const zone = createZoneWithBounding("red", 10)
             zone["checkObjectsInZone"]()
