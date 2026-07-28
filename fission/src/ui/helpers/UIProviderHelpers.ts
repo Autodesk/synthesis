@@ -5,9 +5,9 @@ import type { PanelImplProps } from "../components/Panel"
 import type { UICallback } from "../UICallbacks"
 
 export enum CloseType {
-    Accept = 0,
-    Cancel = 1,
-    Overwrite = 2,
+    ACCEPT = 0,
+    CANCEL = 1,
+    OVERWRITE = 2,
 }
 
 export interface UIScreenCallbacks<T> {

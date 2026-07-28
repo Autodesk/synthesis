@@ -42,7 +42,7 @@ import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { type ProgressHandle, URDFImportProgressBar } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode, miraTypeToConfigType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
@@ -73,7 +73,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { createMeshForShape } from "@/util/threejs/MeshCreation"
 import { v4 as uuidV4 } from "uuid"
-import { copyVec3, hexStringToUint8Array } from "@/util/Utility.ts"
+import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -132,7 +132,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public intakeActive = false
     public ejectorActive = false
 
-    private multiplayerOwningClientId?: string
+    private _multiplayerOwningClientId?: string
 
     private _lastEjectableToastTime = 0
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
@@ -170,8 +170,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get multiplayerOwnerName(): string | undefined {
-        if (this.multiplayerOwningClientId == null) return undefined
-        return World.multiplayerSystem?._clientToInfoMap?.get(this.multiplayerOwningClientId)?.displayName
+        if (this._multiplayerOwningClientId == null) return undefined
+        return World.multiplayerSystem?._clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
     }
 
     get simConfigData() {
@@ -187,7 +187,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     get isOwnObject() {
-        return this.multiplayerOwningClientId == undefined
+        return this._multiplayerOwningClientId == undefined
     }
 
     public get activeEjectables(): Jolt.BodyID[] {
@@ -240,7 +240,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     ) {
         super()
         this.mirabufInstance = mirabufInstance
-        this.multiplayerOwningClientId = multiplayerOwnerId
+        this._multiplayerOwningClientId = multiplayerOwnerId
         this._cacheId = cacheId
         this._miraType = this.mirabufInstance.parser.assembly.dynamic
             ? this.mirabufInstance.parser.isGamePiece
@@ -249,7 +249,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             : MiraType.FIELD
         this.loadPreferences()
 
-        progressHandle?.update("Creating mechanism...", 0.9)
+        progressHandle?.update("Creating scene object...", 0.9)
 
         this.mechanism = World.physicsSystem.createMechanismFromParser(this.mirabufInstance.parser)
         if (this.mechanism.layerReserve) this._physicsLayerReserve = this.mechanism.layerReserve
@@ -1264,9 +1264,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomTargetControls) {
         const modes = [
-            { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
-            { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
-            { mode: CameraMode.Face, name: "Camera: Face Robot" },
+            { mode: CameraMode.FOLLOW, name: "Camera: Follow Robot" },
+            { mode: CameraMode.LOCKED, name: "Camera: Lock to Robot" },
+            { mode: CameraMode.FACE, name: "Camera: Face Robot" },
         ]
 
         modes
@@ -1469,7 +1469,12 @@ export async function createMirabuf(
         return
     }
 
-    const mainSceneObject = new MirabufSceneObject(new MirabufInstance(parser), id, progressHandle, multiplayerOwnerId)
+    const mirabufInstance = new MirabufInstance(parser)
+
+    progressHandle?.update("Created Mirabuf Instance", URDFImportProgressBar.MIRABUF_INSTANCE)
+    await yieldToMain()
+
+    const mainSceneObject = new MirabufSceneObject(mirabufInstance, id, progressHandle, multiplayerOwnerId)
     if (parser.gamePieces == undefined || parser.gamePieces.length === 0)
         return {
             mainSceneObject,

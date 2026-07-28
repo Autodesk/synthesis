@@ -1,15 +1,12 @@
 import { describe, expect, test } from "vitest"
-import MirabufCachingService, { MiraType } from "../../mirabuf/MirabufLoader.ts"
 import MirabufParser, { type RigidNodeReadOnly } from "../../mirabuf/MirabufParser.ts"
 import type { mirabuf } from "@/proto/mirabuf"
 import type { Matrix4 } from "three"
+import { getMiraAssembly } from "@/test/GetAssets.ts"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer)", async () => {
-        const spikeMira = await MirabufCachingService.cacheRemote(
-            "/api/mira/robots/Dozer v11.mira",
-            MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
+        const spikeMira = await getMiraAssembly("DOZER")
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
@@ -30,10 +27,7 @@ describe("Mirabuf Parser Tests", () => {
      * Mira File: https://synthesis.autodesk.com/api/mira/private/Multi-Joint Wheels v0.mira
      */
     test("Generate Rigid Nodes (Multi-Joint Wheels)", async () => {
-        const spikeMira = await MirabufCachingService.cacheRemote(
-            "/api/mira/private/Multi-Joint Wheels v0.mira",
-            MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
+        const spikeMira = await getMiraAssembly("MULTI_JOINT")
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
@@ -47,10 +41,7 @@ describe("Mirabuf Parser Tests", () => {
     })
 
     test("Generate Rigid Nodes (FRC Field 2018)", async () => {
-        const field = await MirabufCachingService.cacheRemote(
-            "/api/mira/fields/FRC Field 2018 v13.mira",
-            MiraType.FIELD
-        ).then(x => MirabufCachingService.get(x!.hash))
+        const field = await getMiraAssembly(2018)
 
         const t = new MirabufParser(field!)
         const physicsNodes = filterNonPhysicsNodes([...t.rigidNodes.values()], field!)

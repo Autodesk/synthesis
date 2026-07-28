@@ -3,27 +3,22 @@ import type React from "react"
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
-import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
-import { createMirabuf, finalizeMirabufSpawn } from "@/mirabuf/MirabufSceneObject"
+import MirabufCachingService, { type MirabufCacheInfo, MiraType, spawnCachedMira } from "@/mirabuf/MirabufLoader"
 import EventSystem from "@/systems/EventSystem.ts"
-import { mirabuf } from "@/proto/mirabuf"
-import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
-import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
-import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Button,
     DeleteButton,
     PositiveButton,
     PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
 } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
@@ -59,98 +54,24 @@ CommandRegistry.get().registerCommands([
 ])
 
 interface ItemCardProps {
-    key: string
     name: string
     primaryButtonNode: ReactNode
     primaryOnClick: () => void
     secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ key, name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
+const ItemCard: React.FC<ItemCardProps> = ({ name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
     return (
         <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"} direction="row">
             <Label size="md" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
             </Label>
-            <Stack
-                key={`button-box-${key}`}
-                direction="row-reverse"
-                gap={"0.25rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
-            >
+            <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
                 <PositiveIconButton children={primaryButtonNode} onClick={primaryOnClick} />
                 {secondaryOnClick && <DeleteButton onClick={secondaryOnClick} />}
             </Stack>
         </Stack>
     )
-}
-
-export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle?: ProgressHandle) {
-    // If spawning a field, then remove all other fields
-    if (info.miraType === MiraType.FIELD) {
-        World.sceneRenderer.removeAllFields()
-        World.sceneRenderer.removeAllGamePieces()
-    }
-
-    if (!progressHandle) {
-        progressHandle = new ProgressHandle(info.name)
-    }
-
-    World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    await MirabufCachingService.get(info.hash)
-        .then(async assembly => {
-            if (!assembly) {
-                progressHandle.fail()
-                console.error("Failed to spawn assembly")
-                return
-            }
-
-            const mirabufSceneObjects = await createMirabuf(
-                info.hash,
-                assembly,
-                info.hash,
-                info.miraType,
-                progressHandle
-            )
-            if (!mirabufSceneObjects) {
-                progressHandle.fail("No object!")
-                return
-            }
-
-            const mainSceneObject = finalizeMirabufSpawn(mirabufSceneObjects)
-
-            if (World.multiplayerSystem != null) {
-                const encodedAssembly =
-                    mainSceneObject.miraType !== MiraType.FIELD
-                        ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
-                        : undefined
-
-                const message: Message = {
-                    type: "newObject",
-                    timestamp: Date.now(),
-                    data: {
-                        sceneObjectKey: mainSceneObject.id as RemoteSceneObjectId,
-                        assembly: encodedAssembly,
-                        assemblyHash: info.hash,
-                        miraType: info.miraType,
-                        initialPreferences: mainSceneObject.getPreferenceData(),
-                        bodyIds: mainSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
-                    },
-                }
-                await World.multiplayerSystem?.broadcast(message)
-                World.multiplayerSystem?.registerOwnSceneObject(mainSceneObject.id as LocalSceneObjectId)
-            }
-
-            progressHandle.done()
-        })
-        .catch(e => {
-            console.error(e)
-            progressHandle.fail()
-        })
-        .finally(() => {
-            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
-        })
 }
 
 interface ImportMirabufPanelCustomProps {
@@ -179,7 +100,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     useEffect(() => {
         configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", v => setFilesStatus(v))
@@ -203,7 +124,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const selectCache = useCallback(
         async (info: MirabufCacheInfo) => {
             await spawnCachedMira(info)
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -227,7 +148,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     status.fail()
                 })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -250,7 +171,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     status.fail()
                 })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -389,7 +310,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     })
             })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -579,7 +500,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         openModal(ImportLocalMirabufModal, {
                             configurationType: miraTypeToConfigType(viewType ?? MiraType.ROBOT),
                         })
-                        closePanel(panel!.id, CloseType.Overwrite)
+                        closePanel(panel!.id, CloseType.OVERWRITE)
                     }}
                 >
                     Import from File

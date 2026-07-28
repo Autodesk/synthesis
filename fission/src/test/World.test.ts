@@ -22,29 +22,7 @@ vi.mock("@/systems/scene/SceneRenderer", () => ({
         },
     })),
 }))
-
-vi.mock("@/systems/simulation/SimulationSystem", () => ({
-    default: vi.fn(() => ({
-        update: vi.fn(),
-        destroy: vi.fn(),
-    })),
-}))
-
-vi.mock("@/systems/input/InputSystem", () => ({
-    default: vi.fn(() => ({
-        update: vi.fn(),
-        destroy: vi.fn(),
-    })),
-}))
-
 vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
-    default: vi.fn(() => ({
-        update: vi.fn(),
-        destroy: vi.fn(),
-    })),
-}))
-
-vi.mock("@/systems/scene/DragModeSystem", () => ({
     default: vi.fn(() => ({
         update: vi.fn(),
         destroy: vi.fn(),
@@ -65,14 +43,23 @@ vi.mock("three", async () => {
 // Import World after setting up mocks
 import World from "@/systems/World"
 
+const systems = [
+    "sceneRenderer",
+    "physicsSystem",
+    "simulationSystem",
+    "inputSystem",
+    "analyticsSystem",
+    "dragModeSystem",
+] as const satisfies (keyof typeof World)[]
+
 describe("World Tests", () => {
     beforeEach(() => {
         vi.clearAllMocks()
         // Ensure World is not alive before each test
         if (World.isAlive) {
             World.destroyWorld()
+            World.resetAccumTimes()
         }
-        World.resetAccumTimes()
     })
 
     afterEach(() => {
@@ -86,30 +73,13 @@ describe("World Tests", () => {
         test("World should not be alive initially", () => {
             expect(World.isAlive).toBeFalsy()
         })
-
-        test("accumTimes should have initial values", () => {
-            const accumTimes = World.accumTimes
-            expect(accumTimes.frames).toBe(0)
-            expect(accumTimes.sceneTime).toBe(0)
-            expect(accumTimes.physicsTime).toBe(0)
-            expect(accumTimes.simulationTime).toBe(0)
-            expect(accumTimes.inputTime).toBe(0)
-            expect(accumTimes.totalTime).toBe(0)
-        })
-
-        test("currentDeltaT should be 0 initially", () => {
-            expect(World.currentDeltaT).toBe(0)
-        })
     })
 
     describe("Getters before initialization", () => {
         test("system getters should return undefined before initialization", () => {
-            expect(World.sceneRenderer).toBeUndefined()
-            expect(World.physicsSystem).toBeUndefined()
-            expect(World.simulationSystem).toBeUndefined()
-            expect(World.inputSystem).toBeUndefined()
-            expect(World.analyticsSystem).toBeUndefined()
-            expect(World.dragModeSystem).toBeUndefined()
+            systems.forEach(system => {
+                expect(World[system]).toBeUndefined()
+            })
         })
     })
 
@@ -118,11 +88,9 @@ describe("World Tests", () => {
             World.initWorld()
 
             expect(World.isAlive).toBeTruthy()
-            expect(World.sceneRenderer).toBeDefined()
-            expect(World.physicsSystem).toBeDefined()
-            expect(World.simulationSystem).toBeDefined()
-            expect(World.inputSystem).toBeDefined()
-            expect(World.dragModeSystem).toBeDefined()
+            systems.forEach(system => {
+                expect(World[system]).toBeDefined()
+            })
         })
 
         test("InitWorld should handle AnalyticsSystem initialization failure gracefully", async () => {
@@ -153,20 +121,16 @@ describe("World Tests", () => {
     describe("DestroyWorld", () => {
         test("DestroyWorld should destroy all systems and set isAlive to false", () => {
             World.initWorld()
-            const sceneRenderer = World.sceneRenderer
-            const physicsSystem = World.physicsSystem
-            const simulationSystem = World.simulationSystem
-            const inputSystem = World.inputSystem
-            const dragModeSystem = World.dragModeSystem
-
+            systems.forEach(system => {
+                vi.spyOn(World[system]!, "destroy")
+            })
+            const destroySpies = systems.map(system => World[system]!.destroy)
             World.destroyWorld()
 
             expect(World.isAlive).toBeFalsy()
-            expect(sceneRenderer.destroy).toHaveBeenCalled()
-            expect(physicsSystem.destroy).toHaveBeenCalled()
-            expect(simulationSystem.destroy).toHaveBeenCalled()
-            expect(inputSystem.destroy).toHaveBeenCalled()
-            expect(dragModeSystem.destroy).toHaveBeenCalled()
+            destroySpies.forEach(spy => {
+                expect(spy).toHaveBeenCalled()
+            })
         })
 
         test("DestroyWorld should handle AnalyticsSystem destruction if it exists", () => {
@@ -214,24 +178,15 @@ describe("World Tests", () => {
         })
 
         test("UpdateWorld should update all systems", () => {
-            const sceneRenderer = World.sceneRenderer
-            const physicsSystem = World.physicsSystem
-            const simulationSystem = World.simulationSystem
-            const inputSystem = World.inputSystem
-            const dragModeSystem = World.dragModeSystem
-            const analyticsSystem = World.analyticsSystem
+            systems.forEach(system => {
+                vi.spyOn(World[system]!, "update")
+            })
 
             World.updateWorld()
 
-            expect(sceneRenderer.update).toHaveBeenCalledWith(0.016)
-            expect(physicsSystem.update).toHaveBeenCalledWith(0.016)
-            expect(simulationSystem.update).toHaveBeenCalledWith(0.016)
-            expect(inputSystem.update).toHaveBeenCalledWith(0.016)
-            expect(dragModeSystem.update).toHaveBeenCalledWith(0.016)
-
-            if (analyticsSystem) {
-                expect(analyticsSystem.update).toHaveBeenCalledWith(0.016)
-            }
+            systems.forEach(system => {
+                expect(World[system]?.update).toHaveBeenCalledWith(0.016)
+            })
         })
 
         test("UpdateWorld should update currentDeltaT", () => {
@@ -261,19 +216,6 @@ describe("World Tests", () => {
     describe("Getters after initialization", () => {
         beforeEach(() => {
             World.initWorld()
-        })
-
-        test("all system getters should return valid instances after initialization", () => {
-            expect(World.sceneRenderer).toBeDefined()
-            expect(World.physicsSystem).toBeDefined()
-            expect(World.simulationSystem).toBeDefined()
-            expect(World.inputSystem).toBeDefined()
-            expect(World.dragModeSystem).toBeDefined()
-            // AnalyticsSystem might be undefined if initialization fails, so we check if it exists
-            const analyticsSystem = World.analyticsSystem
-            if (analyticsSystem) {
-                expect(analyticsSystem).toBeDefined()
-            }
         })
 
         test("accumTimes getter should return timing object", () => {

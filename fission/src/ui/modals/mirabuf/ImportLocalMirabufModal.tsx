@@ -11,12 +11,13 @@ import type { ModalImplProps } from "@/ui/components/Modal"
 import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import {
-    type ConfigurationType,
     configTypeToMiraType,
+    type ConfigurationType,
     miraTypeToConfigType,
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { hashBuffer } from "@/util/Utility.ts"
+import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -83,13 +84,18 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             const buffer = await selectedFile.arrayBuffer()
             World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
 
+            const progressHandle = new ProgressHandle(`Importing ${selectedFile.name}`)
             try {
                 let result: Awaited<ReturnType<typeof createMirabuf>>
 
                 if (isURDFFile(selectedFile.name)) {
-                    const assembly = await loadURDF(buffer, selectedFile.name)
                     const hash = await hashBuffer(buffer)
-                    result = await createMirabuf(hash, assembly, hash, miraType)
+                    const assembly = await loadURDF(buffer, selectedFile.name, progressHandle)
+                    // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
+                    assembly.info!.name = selectedFile.name.split(".")[0]
+
+                    result = await createMirabuf(hash, assembly, hash, miraType, progressHandle)
+                    progressHandle.done("Import complete!")
                 } else {
                     const cached = await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     if (!cached) {
@@ -114,9 +120,10 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 }
 
                 finalizeMirabufSpawn(result, openPanel, modal)
-                closeModal(CloseType.Overwrite)
+                closeModal(CloseType.OVERWRITE)
             } catch (e) {
                 console.error("[Import]", e)
+                progressHandle.fail("Import failed!")
                 globalOpenModal(ImportLocalMirabufModal, {
                     configurationType: miraTypeToConfigType(miraType),
                     errorMessage: e instanceof Error ? e.message : "An unknown error occurred during import.",
@@ -131,7 +138,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedFile, miraType, isUrdf, openPanel, modal, closeModal, configureScreen])
+    }, [selectedFile, miraType, openPanel, modal, closeModal, configureScreen])
 
     useEffect(() => {
         setSelectedType(configTypeToMiraType(configurationType))

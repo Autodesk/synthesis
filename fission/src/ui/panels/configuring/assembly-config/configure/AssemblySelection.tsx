@@ -93,7 +93,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
             }}
             onAddClicked={() => {
                 // Save current configuration first, then open Spawn panel next tick
-                closePanel(panel!.id, CloseType.Accept)
+                closePanel(panel!.id, CloseType.ACCEPT)
                 setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
             }}
             noOptionsText={`No ${configurationType.slice(0, configurationType.length - 1).toLowerCase()} spawned!`}

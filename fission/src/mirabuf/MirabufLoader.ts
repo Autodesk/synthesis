@@ -4,6 +4,10 @@ import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
+import { createMirabuf, finalizeMirabufSpawn } from "@/mirabuf/MirabufSceneObject.ts"
+import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
+import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -212,6 +216,12 @@ class MirabufCachingService {
             console.warn("Caching failed", e)
             return undefined
         }
+    }
+
+    public static async cacheRemoteAndReturn(fetchLocation: string, miraType: MiraType) {
+        const cacheInfo = await this.cacheRemote(fetchLocation, miraType)
+        if (cacheInfo?.hash == null) return
+        return await this.get(cacheInfo.hash)
     }
 
     public static async cacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
@@ -447,3 +457,63 @@ class MirabufCachingService {
 }
 
 export default MirabufCachingService
+
+export async function spawnCachedMira(
+    info: MirabufCacheInfo,
+    progressHandle: ProgressHandle = new ProgressHandle(info.name)
+) {
+    // If spawning a field, then remove all other fields
+    if (info.miraType === MiraType.FIELD) {
+        World.sceneRenderer.removeAllFields()
+        World.sceneRenderer.removeAllGamePieces()
+    }
+
+    World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
+    await MirabufCachingService.get(info.hash)
+        .then(async assembly => {
+            if (!assembly) {
+                progressHandle.fail()
+                console.error("Failed to spawn assembly")
+                return
+            }
+
+            const mirabufSceneObjects = await createMirabuf(info.hash, assembly, info.hash, info.miraType, progressHandle)
+            if (!mirabufSceneObjects) {
+                progressHandle.fail("No object!")
+                return
+            }
+
+            const mainSceneObject = finalizeMirabufSpawn(mirabufSceneObjects)
+
+            if (World.multiplayerSystem != null) {
+                const encodedAssembly =
+                    mainSceneObject.miraType !== MiraType.FIELD
+                        ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
+                        : undefined
+
+                const message: Message = {
+                    type: "newObject",
+                    timestamp: Date.now(),
+                    data: {
+                        sceneObjectKey: mainSceneObject.id as RemoteSceneObjectId,
+                        assembly: encodedAssembly,
+                        assemblyHash: info.hash,
+                        miraType: info.miraType,
+                        initialPreferences: mainSceneObject.getPreferenceData(),
+                        bodyIds: mainSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+                    },
+                }
+                await World.multiplayerSystem?.broadcast(message)
+                World.multiplayerSystem?.registerOwnSceneObject(mainSceneObject.id as LocalSceneObjectId)
+            }
+
+            progressHandle.done()
+        })
+        .catch(e => {
+            console.error(e)
+            progressHandle.fail()
+        })
+        .finally(() => {
+            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+        })
+}
