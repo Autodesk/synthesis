@@ -15,8 +15,11 @@ jobs:
       run:
         working-directory: "fission"
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/FissionSetup
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
 
       - name: Lint
         if: ${{ always() }}

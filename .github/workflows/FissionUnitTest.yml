@@ -21,6 +21,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v7
 
+      - name: Remove zstd for gzip cache compatibility with container jobs  # This is super scuffed but that's just how the oil gushes
+        run: |
+          sudo rm /usr/local/bin/zstd
+          zstd --help || true
+
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
         uses: actions/cache@v6
@@ -49,8 +54,11 @@ jobs:
       run:
         working-directory: "fission"
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/FissionSetup
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
 
       - name: Restore Unzipped Synthesis Assets
         uses: actions/cache/restore@v6
@@ -74,8 +82,11 @@ jobs:
       run:
         working-directory: "fission"
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/FissionSetup
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
 
       - name: Restore Unzipped Synthesis Assets
         id: cache-assets
@@ -102,8 +113,11 @@ jobs:
       run:
         working-directory: "fission"
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/FissionSetup
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
 
       - name: Restore Unzipped Synthesis Assets
         id: cache-assets
@@ -116,28 +130,33 @@ jobs:
 
       - name: Install linker
         run:
-          apt update
-          apt install build-essential
+          apt-get update -y && 
+          apt-get install -y build-essential
 
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Build server
+        shell: bash
+        working-directory: "glueball"
+        run: cargo build
 
       - name: Start server
         shell: bash
         working-directory: "glueball"
         run: |
-          cargo run -- --secure --headless --permanent-room TEST01 > server.log 2>&1 &
+          ./target/debug/glueball --secure --headless --permanent-room TEST01 > server.log 2>&1 &
           echo $! > server.pid
           
-          # Wait up to 30 seconds for the server to become ready
+          # Wait for server to start
           for i in {1..30}; do
             if curl --insecure --fail --silent https://localhost:2610/ > /dev/null; then
-              echo "Server is ready"
+              echo "Server ready"
               exit 0
             fi
           
             if ! kill -0 "$(cat server.pid)" 2>/dev/null; then
-              echo "Server exited before becoming ready"
+              echo "Server exited"
               cat server.log
               exit 1
             fi
@@ -145,7 +164,7 @@ jobs:
             sleep 1
           done
           
-          echo "Server did not become ready"
+          echo "Timed out while waiting for server startup"
           cat server.log
           exit 1
 
@@ -167,7 +186,7 @@ jobs:
             if kill -0 "$PID" 2>/dev/null; then
               kill "$PID"
   
-              # Give it a few seconds to shut down cleanly
+              # Wait for clean shutdown
               for i in {1..10}; do
                 kill -0 "$PID" 2>/dev/null || exit 0
                 sleep 1

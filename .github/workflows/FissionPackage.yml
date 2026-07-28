@@ -10,8 +10,11 @@ jobs:
     name: Package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/FissionSetup
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
 
       - name: Get date
         id: date # this is used on variable path
