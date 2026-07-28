@@ -13,7 +13,7 @@ import type {
     RemoteSceneObjectId,
 } from "./MultiplayerTypes.ts"
 import EventSystem from "@/systems/EventSystem.ts"
-import type { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
+import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
 import { consolePrefixer } from "console-prefixer"
 import type MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import { hashBuffer } from "@/util/Utility.ts"
@@ -136,7 +136,7 @@ class MultiplayerSystem {
         this.client.sendServer({ type: "ping", timestamp: Date.now() })
     }
 
-    async handleServerMessage(message: ServerMessage) {
+    async handleServerMessage(message: ServerToClientMessage) {
         switch (message.type) {
             case "sendinfo":
                 this.roomId = message.room_id

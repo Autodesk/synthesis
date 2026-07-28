@@ -2,7 +2,7 @@ import { consolePrefixer } from "console-prefixer"
 import { MessageWithTimestamp } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import {Encoder, Decoder} from "@msgpack/msgpack"
 import { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
-import { ServerMessage } from "@/systems/multiplayer/bindings/ServerMessage.ts"
+import { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
 
 const CLIENT_PREFIX = 0b00000001
 const SERVER_PREFIX = 0b00000011
@@ -22,7 +22,7 @@ class MultiplayerWebsocket {
     private readonly decoder: Decoder<never> = new Decoder()
     private prefixBuf = new Uint8Array(1)
 
-    public onServerMessage?: (msg: ServerMessage) => void
+    public onServerMessage?: (msg: ServerToClientMessage) => void
     public onPeerMessage?: (msg: MessageWithTimestamp) => void
     public onOpen?: ((this: MultiplayerWebsocket, ev: Event) => any) | null;
     public onClose?: ((this: MultiplayerWebsocket, ev: CloseEvent) => any) | null;
@@ -59,10 +59,10 @@ class MultiplayerWebsocket {
             const msg = e.data as Blob
             const headerByte = (await msg.slice(0, 1).bytes())[0]
             const data = msg.slice(1).stream()
-            const decoded = await this.decoder.decodeAsync(data) as ServerMessage | MessageWithTimestamp
+            const decoded = await this.decoder.decodeAsync(data) as ServerToClientMessage | MessageWithTimestamp
             const isServer = headerByte == SERVER_PREFIX
             if (isServer) {
-                this.onServerMessage?.(decoded as ServerMessage)
+                this.onServerMessage?.(decoded as ServerToClientMessage)
             } else {
                 this.onPeerMessage?.(decoded as MessageWithTimestamp)
             }
