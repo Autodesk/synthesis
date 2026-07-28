@@ -209,7 +209,7 @@ class MirabufParser {
             .map(inst => {
                 const instNode = this.binarySearchDesignTree(inst.info!.GUID!)
                 if (instNode == null) {
-                    this.NewError(
+                    this.newError(
                         ParseErrorSeverity.LIKELY_ISSUES,
                         `Failed to find game piece in Design Tree: GUID='${inst.info!.GUID}' name='${inst.info!.name}'`
                     )
@@ -314,7 +314,7 @@ class MirabufParser {
 
         const partDefinitionReference = inst?.partDefinitionReference
         if (partDefinitionReference == null) {
-            this.NewError(ParseErrorSeverity.UNIMPORTABLE, "partInstance does not reference a partDefinition")
+            this.newError(ParseErrorSeverity.UNIMPORTABLE, "partInstance does not reference a partDefinition")
             return
         }
 
@@ -613,7 +613,7 @@ class MirabufParser {
         this._partTreeValues = partTreeValues
     }
 
-    private NewError(severity: ParseErrorSeverity, message: string) {
+    private newError(severity: ParseErrorSeverity, message: string) {
         if (severity >= ParseErrorSeverity.LIKELY_ISSUES) {
             console.error(message)
             if (severity == ParseErrorSeverity.UNIMPORTABLE)

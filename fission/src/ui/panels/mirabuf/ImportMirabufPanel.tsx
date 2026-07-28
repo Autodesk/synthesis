@@ -218,22 +218,22 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         () =>
             cachedPieces
                 .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
-                .map(info =>
-                    ItemCard({
-                        name: info.name || "Unnamed Piece",
-                        key: info.hash,
-                        primaryButtonNode: <SynthesisIcons.ADD_LARGE />,
-                        primaryOnClick: async () => {
+                .map(info => (
+                    <ItemCard
+                        name={info.name || "Unnamed Piece"}
+                        key={info.hash}
+                        primaryButtonNode={<SynthesisIcons.ADD_LARGE />}
+                        primaryOnClick={async () => {
                             console.log(`Selecting cached game pieces: ${info.name}`)
                             await selectCache(info)
-                        },
-                        secondaryOnClick: async () => {
+                        }}
+                        secondaryOnClick={async () => {
                             console.log(`Deleting cache of: ${info.name}`)
                             await MirabufCachingService.remove(info.hash)
                             setCachedPieces(MirabufCachingService.getAll(MiraType.PIECE))
-                        },
-                    })
-                ),
+                        }}
+                    />
+                )),
         [cachedPieces, selectCache]
     )
 

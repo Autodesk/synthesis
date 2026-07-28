@@ -158,7 +158,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
             batch.computeBoundingBox()
         })
 
-        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, cacheInfo?.hash ?? "", undefined)
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "", undefined)
 
         const originalDimensions = dozerSceneObject.getDimensions()
 
@@ -169,7 +169,7 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
     test("Ejector and Intake are configured for Dozer", async () => {
         const mirabufInstance = (await getMiraInstance("DOZER"))!
 
-        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, cacheInfo.hash, undefined)
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "", undefined)
         expect(dozerSceneObject.intakePreferences).not.toEqual(defaultRobotPreferences().intake)
         expect(dozerSceneObject.ejectorPreferences).not.toEqual(defaultRobotPreferences().ejector)
     })

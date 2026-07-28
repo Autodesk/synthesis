@@ -477,7 +477,13 @@ export async function spawnCachedMira(
                 return
             }
 
-            const mirabufSceneObjects = await createMirabuf(info.hash, assembly, info.hash, info.miraType, progressHandle)
+            const mirabufSceneObjects = await createMirabuf(
+                info.hash,
+                assembly,
+                info.hash,
+                info.miraType,
+                progressHandle
+            )
             if (!mirabufSceneObjects) {
                 progressHandle.fail("No object!")
                 return
