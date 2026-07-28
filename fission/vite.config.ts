@@ -114,14 +114,6 @@ export default defineConfig(async ({ mode }) => {
                     },
                 ],
             },
-            coverage: {
-                provider: "istanbul",
-                reporter: ["text", "html"] as const,
-                reportsDirectory: "./coverage",
-                include: ["src/**/*.{ts,tsx}"],
-                exclude: ["src/test/**", "src/proto/**"],
-                reportOnFailure: true,
-            },
         },
     }
 
@@ -183,6 +175,14 @@ export default defineConfig(async ({ mode }) => {
                       },
                   ]
                 : ["default"],
+            coverage: {
+                provider: "istanbul",
+                reporter: ["text", "html"] as const,
+                reportsDirectory: "./coverage",
+                include: ["src/**/*.{ts,tsx}"],
+                exclude: ["src/test/**", "src/proto/**"],
+                reportOnFailure: true,
+            },
             projects: [fissionProject, ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject] : [])],
         },
         build: {
