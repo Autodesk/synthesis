@@ -162,7 +162,8 @@ class InputSchemeManager {
         allSchemes.forEach(scheme => {
             if (scheme.usesGamepad) {
                 // In-use only if the controller slot we'd assign is already running this same layout.
-                const slotTaken = candidateSlot != null && (gamepadSlotsByScheme.get(scheme.schemeName)?.has(candidateSlot) ?? false)
+                const slotTaken =
+                    candidateSlot != null && (gamepadSlotsByScheme.get(scheme.schemeName)?.has(candidateSlot) ?? false)
                 result[scheme.schemeName] ??= {
                     scheme,
                     status: slotTaken ? InputSchemeUseType.IN_USE : InputSchemeUseType.AVAILABLE,
