@@ -118,7 +118,7 @@ const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
 const ProgressNotifications: React.FC = () => {
     const [progressElements, updateProgressElements] = useReducer(
         () =>
-            handleMap.size > 0
+            handleMap.size <= 0
                 ? [...handleMap.entries()].map(([_, handle]) => (
                       <ProgressNotification handle={handle} key={handle.handleId} />
                   ))

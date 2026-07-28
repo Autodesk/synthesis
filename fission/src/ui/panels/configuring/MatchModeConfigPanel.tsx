@@ -218,41 +218,39 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     const matchModeConfigElements = useMemo(
         () =>
-            matchModeConfigs.map(config => {
-                return (
-                    <ItemCard
-                        key={config.id}
-                        id={config.id}
-                        name={config.name || config.id || "Unnamed Match Mode"}
-                        primaryOnClick={async () => {
-                            if (MatchMode.getInstance().isMatchEnabled()) {
-                                globalAddToast(
-                                    "error",
-                                    "Match Mode Already Running",
-                                    "You can't modify the match mode ruleset while a match is running"
-                                )
-                                return
-                            }
-                            MatchMode.getInstance().setMatchModeConfig(config)
-
-                            await MatchMode.getInstance().start(true, useSpawnPositions)
-                            closePanel(panel!.id, CloseType.ACCEPT)
-                        }}
-                        secondaryOnClick={
-                            !config.isDefault
-                                ? () => {
-                                      // Delete the config from the local storage
-                                      const updatedConfigs = matchModeConfigs.filter(c => c.id !== config.id)
-                                      setMatchModeConfigs(updatedConfigs)
-                                      // Only save custom configs to local storage
-                                      const customConfigs = updatedConfigs.filter(c => !c.isDefault)
-                                      window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
-                                  }
-                                : undefined
+            matchModeConfigs.map(config => (
+                <ItemCard
+                    key={config.id}
+                    id={config.id}
+                    name={config.name || config.id || "Unnamed Match Mode"}
+                    primaryOnClick={async () => {
+                        if (MatchMode.getInstance().isMatchEnabled()) {
+                            globalAddToast(
+                                "error",
+                                "Match Mode Already Running",
+                                "You can't modify the match mode ruleset while a match is running"
+                            )
+                            return
                         }
-                    />
-                )
-            }),
+                        MatchMode.getInstance().setMatchModeConfig(config)
+
+                        await MatchMode.getInstance().start(true, useSpawnPositions)
+                        closePanel(panel!.id, CloseType.ACCEPT)
+                    }}
+                    secondaryOnClick={
+                        !config.isDefault
+                            ? () => {
+                                  // Delete the config from the local storage
+                                  const updatedConfigs = matchModeConfigs.filter(c => c.id !== config.id)
+                                  setMatchModeConfigs(updatedConfigs)
+                                  // Only save custom configs to local storage
+                                  const customConfigs = updatedConfigs.filter(c => !c.isDefault)
+                                  window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
+                              }
+                            : undefined
+                    }
+                />
+            )),
         [matchModeConfigs, closePanel, useSpawnPositions, panel]
     )
 

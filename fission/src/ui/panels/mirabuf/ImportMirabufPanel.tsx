@@ -298,23 +298,21 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     )
 
     // Generate Item cards for APS robots and fields.
-    const hubElements = useMemo(
-        () =>
-            files
-                ?.sort((a, b) => a.attributes.displayName!.localeCompare(b.attributes.displayName!))
-                .map(file => (
-                    <ItemCard
-                        name={`${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`}
-                        key={file.id}
-                        primaryButtonNode={<SynthesisIcons.DOWNLOAD_LARGE />}
-                        primaryOnClick={() => {
-                            console.debug(file.raw)
-                            selectAPS(file, viewType)
-                        }}
-                    />
-                )),
-        [files, selectAPS, viewType]
-    )
+    const hubElements = useMemo(() => {
+        return files
+            ?.sort((a, b) => a.attributes.displayName!.localeCompare(b.attributes.displayName!))
+            .map(file => (
+                <ItemCard
+                    name={`${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`}
+                    key={file.id}
+                    primaryButtonNode={<SynthesisIcons.DOWNLOAD_LARGE />}
+                    primaryOnClick={() => {
+                        console.debug(file.raw)
+                        selectAPS(file, viewType)
+                    }}
+                />
+            ))
+    }, [files, selectAPS, viewType])
     useEffect(() => {
         setViewType(configTypeToMiraType(configurationType) ?? MiraType.ROBOT)
     }, [configurationType])

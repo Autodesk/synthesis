@@ -25,8 +25,8 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
         [simConfig]
     )
 
-    const inputHandles = useMemo(
-        () =>
+    const inputHandles = useMemo(() => {
+        return (
             robotInput && (
                 <Box
                     sx={{
@@ -56,12 +56,12 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         </div>
                     ))}
                 </Box>
-            ),
-        [isConnectable, robotInput, validateConnection]
-    )
+            )
+        )
+    }, [isConnectable, robotInput, validateConnection])
 
-    const outputHandles = useMemo(
-        () =>
+    const outputHandles = useMemo(() => {
+        return (
             robotOutput && (
                 <Box
                     sx={{
@@ -91,9 +91,9 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         </div>
                     ))}
                 </Box>
-            ),
-        [isConnectable, robotOutput, validateConnection]
-    )
+            )
+        )
+    }, [isConnectable, robotOutput, validateConnection])
 
     return (
         <Box className="robot-io-node bg-background border-interactive-element-solid border-[0.0625rem] rounded-lg relative flex flex-col gap-4 py-4">

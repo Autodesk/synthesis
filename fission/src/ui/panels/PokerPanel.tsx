@@ -85,12 +85,11 @@ const PokerPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     }, [mark, markRadius, punch, punchForce, markers])
 
     useEffect(
-        () => () => {
-            for (const marker of markers) {
+        () => () =>
+            markers.forEach(marker => {
                 marker.geometry.dispose()
                 World.sceneRenderer.scene.remove(marker)
-            }
-        },
+            }),
         [markers]
     )
 
