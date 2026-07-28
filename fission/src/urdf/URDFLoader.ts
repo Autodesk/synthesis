@@ -3,6 +3,7 @@ import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
 import { type ProgressHandle, URDFImportProgressBar } from "@/components/ProgressNotificationData.ts"
 import { yieldToMain } from "@/util/Utility.ts"
+import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "gltf", "bin"])
 
@@ -120,6 +121,7 @@ export async function loadURDF(
         const assembly = await convertURDF(urdfText, meshFiles, progressHandle)
         await yieldToMain()
 
+        detectAndTagWheels(assembly)
         applyConservativeURDFImport(assembly)
 
         return assembly
