@@ -65,7 +65,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
         <Draggable
             handle=".panel-drag-handle"
             cancel={"input, textarea, select, .MuiSlider-root, .MuiMenuItem-root, .no-drag"}
-            positionOffset={getPositionOffset(props.position)}
+            positionOffset={getPositionOffset(props.position ?? "right")}
             nodeRef={nodeRef}
         >
             <Card
@@ -126,7 +126,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     >
                         {!props.hideCancel && (
                             <Button
-                                onClick={() => closePanel(panel.id, CloseType.Cancel)}
+                                onClick={() => closePanel(panel.id, CloseType.CANCEL)}
                                 variant="outlined"
                                 color="secondary"
                             >
@@ -135,7 +135,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                         )}
                         {!props.hideAccept && (
                             <Button
-                                onClick={() => closePanel(panel.id, CloseType.Accept)}
+                                onClick={() => closePanel(panel.id, CloseType.ACCEPT)}
                                 variant="contained"
                                 color="primary"
                                 disabled={props.disableAccept}

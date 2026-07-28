@@ -1,6 +1,8 @@
 import JSZip from "jszip"
 import type { mirabuf } from "@/proto/mirabuf"
 import { convertURDF } from "./URDFConverter"
+import { type ProgressHandle, URDFImportProgressBar } from "@/components/ProgressNotificationData.ts"
+import { yieldToMain } from "@/util/Utility.ts"
 
 const MESH_EXTENSIONS = new Set(["stl", "obj", "gltf", "bin"])
 
@@ -91,7 +93,11 @@ async function buildMeshMap(zip: JSZip, urdfPath: string): Promise<Map<string, U
     return meshFiles
 }
 
-export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<mirabuf.Assembly> {
+export async function loadURDF(
+    buffer: ArrayBuffer,
+    filename: string,
+    progressHandle: ProgressHandle
+): Promise<mirabuf.Assembly> {
     const ext = filename.split(".").pop()?.toLowerCase()
 
     if (ext === "urdf") {
@@ -102,14 +108,18 @@ export async function loadURDF(buffer: ArrayBuffer, filename: string): Promise<m
 
     if (ext === "zip") {
         const zip = await JSZip.loadAsync(buffer)
-
         const urdfEntry = Object.values(zip.files).find(f => !f.dir && f.name.endsWith(".urdf"))
         if (!urdfEntry) throw new Error("No .urdf file found in the zip archive")
 
         const [urdfText, meshFiles] = await Promise.all([urdfEntry.async("text"), buildMeshMap(zip, urdfEntry.name)])
+        progressHandle?.update("Loaded meshes", URDFImportProgressBar.LOAD_MESHES)
+        await yieldToMain()
 
         validateURDFMeshFormats(urdfText)
-        const assembly = convertURDF(urdfText, meshFiles)
+
+        const assembly = await convertURDF(urdfText, meshFiles, progressHandle)
+        await yieldToMain()
+
         applyConservativeURDFImport(assembly)
 
         return assembly

@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -305,7 +305,7 @@ class DragModeSystem extends WorldSystem {
 
         // Face mode should keep the camera enabled tracking the target
         const targetControls = getTargetControls()
-        if (targetControls && targetControls.mode !== CameraMode.Face) {
+        if (targetControls && targetControls.mode !== CameraMode.FACE) {
             targetControls.enabled = false
         }
     }

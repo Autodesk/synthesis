@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import EventSystem, { type SynthesisEvent } from "@/systems/EventSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -45,6 +45,8 @@ import {
     isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
+
+const DEBUG_COLLIDER_WARNINGS = false
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -113,7 +115,7 @@ const DEFAULT_FRICTION = 0.7
 
 // Transition GH-1152, AARD-1885:
 // Temporary workaround to reduce visible levitation of robots by minimizing suspension.
-// Setting these values to 0 causes physics issues (e.g., ground collisionn problems).
+// Setting these values to 0 causes physics issues (e.g., ground collision problems).
 // Some robots still float slightly, assuming this is due to different export conditions.
 const SUSPENSION_MIN_FACTOR = 0.0001
 const SUSPENSION_MAX_FACTOR = 0.0001
@@ -979,7 +981,6 @@ class PhysicsSystem extends WorldSystem {
                 // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
                 if (!partShapeResult) {
-                    console.warn("Skipping collider (no valid shape settings)", debugLabel)
                     return [undefined, undefined]
                 }
 
@@ -1187,9 +1188,12 @@ class PhysicsSystem extends WorldSystem {
         })
 
         if (points.size() < 4) {
+            if (DEBUG_COLLIDER_WARNINGS) console.warn("Could not create convex shape for part")
+
             JOLT.destroy(settings)
             JOLT.destroy(min)
             JOLT.destroy(max)
+
             return
         }
 
@@ -1216,7 +1220,6 @@ class PhysicsSystem extends WorldSystem {
 
         const material = new JOLT.PhysicsMaterial()
         settings.mMaterials.push_back(material)
-        JOLT.destroy(material)
 
         const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
@@ -1258,7 +1261,7 @@ class PhysicsSystem extends WorldSystem {
         const triCountBeforeSanitize = settings.mIndexedTriangles.size()
 
         if (vertCount < 3 || triCountBeforeSanitize === 0 || maxIndex >= vertCount) {
-            if (debugLabel) {
+            if (DEBUG_COLLIDER_WARNINGS && debugLabel) {
                 console.warn("Concave collider invalid (no triangles or bad indices)", {
                     ...debugLabel,
                     vertCount,
@@ -1277,7 +1280,7 @@ class PhysicsSystem extends WorldSystem {
         settings.Sanitize()
         const triCount = settings.mIndexedTriangles.size()
         if (triCount === 0) {
-            if (debugLabel) {
+            if (DEBUG_COLLIDER_WARNINGS && debugLabel) {
                 console.warn("Concave collider sanitized to zero triangles (degenerate)", {
                     ...debugLabel,
                     vertCount,

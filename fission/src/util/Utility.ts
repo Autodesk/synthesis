@@ -1,4 +1,6 @@
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import Pako from "pako"
+import JOLT from "./loading/JoltSyncLoader"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
@@ -40,6 +42,10 @@ export async function hashBuffer(buffer: ArrayBuffer, fallbackHash?: string): Pr
         .join("")
 }
 
+export function forPair<T, U>(listOne: T[], listTwo: U[], predicate: (one: T, two: U) => void): void {
+    listOne.forEach(a => listTwo.forEach(b => predicate(a, b)))
+}
+
 export function unzipMira(buff: Uint8Array): Uint8Array {
     // Check if file is gzipped via magic gzip numbers 31 139
     if (buff[0] == 31 && buff[1] == 139) {
@@ -56,6 +62,7 @@ export function hexStringToUint8Array(hexString: string) {
     }
     return arrayBuffer
 }
+
 // biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`
 export function tryParse(data: string): any {
     try {
@@ -82,3 +89,13 @@ export function downloadBlob(filename: string, data: BlobPart): void {
         URL.revokeObjectURL(url)
     }, 0)
 }
+
+export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
+    return new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
+}
+
+/**
+ * Returns a promise that will resolve in the next event loop iteration.
+ * Useful in long, blocking functions to allow the UI to update
+ */
+export const yieldToMain = () => new Promise<void>(resolve => setTimeout(resolve, 0))

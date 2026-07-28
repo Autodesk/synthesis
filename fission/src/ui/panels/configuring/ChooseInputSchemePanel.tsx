@@ -9,13 +9,11 @@ import { InputSchemeUseType } from "@/systems/input/InputTypes"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import { CloseType, useUIContext } from "../../helpers/UIProviderHelpers"
-import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { openModal, openPanel, closePanel, configureScreen } = useUIContext()
+    const { closePanel, configureScreen } = useUIContext()
     const { setSelectedScheme } = useStateContext()
 
     const targetAssembly = useMemo(() => {
@@ -25,7 +23,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
 
     useEffect(() => {
         configureScreen(panel!, { title: "Choose Input Scheme", hideAccept: true, cancelText: "Close" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         if (targetAssembly) return
@@ -46,7 +44,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
             }
             if (scheme) setSelectedScheme(scheme)
         }
-    }, [closePanel, targetAssembly])
+    }, [targetAssembly, setSelectedScheme])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)
@@ -57,15 +55,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void, void>> = ({ panel })
             {brainIndex !== undefined && (
                 <InputSchemeSelection
                     brainIndex={brainIndex}
-                    onSelect={() => closePanel(panel!.id, CloseType.Accept)}
-                    onEdit={() => {
-                        openPanel(ConfigurePanel, { configurationType: "INPUTS" })
-                        closePanel(panel!.id, CloseType.Overwrite)
-                    }}
-                    onCreateNew={() => {
-                        openModal(NewInputSchemeModal, undefined)
-                        closePanel(panel!.id, CloseType.Overwrite)
-                    }}
+                    onSelect={() => closePanel(panel!.id, CloseType.ACCEPT)}
                 />
             )}
         </Stack>
