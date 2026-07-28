@@ -81,41 +81,23 @@ export default defineConfig(async ({ mode }) => {
               changeOrigin: true,
               secure: true,
           }
-    return {
-        plugins: plugins,
-        publicDir: "./public",
-        resolve: {
-            alias: [
-                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
-                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
-                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
-                { find: "@", replacement: path.resolve(__dirname, "src") },
-            ],
-        },
-        define: {
-            GIT_COMMIT: JSON.stringify(await getCommitHash()),
-        },
+
+    const baseAliases = [
+        { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+        { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+        { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+        { find: "@", replacement: path.resolve(__dirname, "src") },
+    ]
+
+    const fissionProject = {
+        extends: true,
         test: {
+            name: "fission",
             setupFiles: ["src/test/TestSetup.browser.ts"],
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
             environment: "jsdom",
-            reporters: process.env.GITHUB_ACTIONS
-                ? [
-                      "github-actions",
-                      "default",
-                      {
-                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
-                              if (reason === "passed" && unhandled.length === 0) {
-                                  console.error("GH ACTIONS VITEST PASSED")
-                              } else {
-                                  console.error(unhandled)
-                              }
-                          },
-                      },
-                  ]
-                : ["default"],
             browser: {
                 enabled: true,
                 provider: "playwright",
@@ -132,6 +114,75 @@ export default defineConfig(async ({ mode }) => {
                     },
                 ],
             },
+        },
+    }
+
+    // `bun run test:leak` -- reruns the same tests with `JoltLeakDetection.checkForLeaks` calls
+    // active (see that file). `JOLT_LEAK_DIST` optionally points the run at a different
+    // `@synthesis.adsk/jolt-physics` build (e.g. a local dist) instead of the installed npm
+    // package, the same way `JOLT_ASAN_DIST` does for the asan project.
+    const fissionLeakProject = {
+        extends: true,
+        ...(process.env.JOLT_LEAK_DIST
+            ? {
+                  resolve: {
+                      alias: [
+                          ...baseAliases,
+                          {
+                              find: /^@synthesis\.adsk\/jolt-physics(\/wasm-compat)?$/,
+                              replacement: process.env.JOLT_LEAK_DIST,
+                          },
+                      ],
+                  },
+              }
+            : {}),
+        test: {
+            name: "fission-leak",
+            setupFiles: ["src/test/TestSetup.browser.ts", "src/test/JoltLeakDetectionSetup.ts"],
+            globalSetup: ["src/test/TestSetup.server.ts"],
+            testTimeout: 10000,
+            globals: true,
+            environment: "jsdom",
+            env: { VITE_JOLT_LEAK_CHECK: "1" },
+            browser: {
+                enabled: true,
+                provider: "playwright",
+                instances: [
+                    {
+                        name: "chromium",
+                        browser: "chromium",
+                        headless: true,
+                    },
+                ],
+            },
+        },
+    }
+
+    return {
+        plugins: plugins,
+        publicDir: "./public",
+        resolve: {
+            alias: baseAliases,
+        },
+        define: {
+            GIT_COMMIT: JSON.stringify(await getCommitHash()),
+        },
+        test: {
+            reporters: process.env.GITHUB_ACTIONS
+                ? [
+                      "github-actions",
+                      "default",
+                      {
+                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
+                              if (reason === "passed" && unhandled.length === 0) {
+                                  console.error("GH ACTIONS VITEST PASSED")
+                              } else {
+                                  console.error(unhandled)
+                              }
+                          },
+                      },
+                  ]
+                : ["default"],
             coverage: {
                 provider: "istanbul",
                 reporter: ["text", "html"] as const,
@@ -140,6 +191,7 @@ export default defineConfig(async ({ mode }) => {
                 exclude: ["src/test/**", "src/proto/**"],
                 reportOnFailure: true,
             },
+            projects: [fissionProject, ...(process.env.JOLT_LEAK_CHECK ? [fissionLeakProject] : [])],
         },
         build: {
             target: "esnext",
