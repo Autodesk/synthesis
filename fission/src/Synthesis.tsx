@@ -4,6 +4,7 @@ import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
 import MainHUD from "@/components/MainHUD"
 import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
+import MainHUD from "@/components/MainHUD.tsx"
 import Scene from "@/components/Scene.tsx"
 import MultiplayerStartModal, { type MultiplayerInitProps } from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
@@ -13,12 +14,10 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
 import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
-import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
+import PortraitOverlay from "./ui/components/PortraitOverlay.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
-import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
-import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
@@ -44,23 +43,6 @@ const Synthesis = () => {
         mainLoop()
     }, [])
 
-    const startWorldCallback = useCallback(
-        async (info: MultiplayerInitProps) => {
-            PreferencesSystem.setUserPreference("MultiplayerUsername", info.displayName)
-            PreferencesSystem.savePreferences()
-            const success = await MultiplayerSystem.setup(info.ws, info.displayName)
-            if (success) {
-                // if (isHost) {
-                //     globalAddToast("info", "Room Code", room)
-                // }
-                await startMainLoop()
-                return true
-            }
-            return false
-        },
-        [startMainLoop]
-    )
-
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
         if (urlParams.has("code")) {
@@ -85,21 +67,7 @@ const Synthesis = () => {
         applyAutoToast()
         const autoOpenTo = SessionStorage.load("autoOpenTo")
 
-        const openMainMenu = () => {
-            globalOpenModal(MainMenuModal, {
-                startSingleplayerCallback: async () => await startMainLoop(),
-                startMultiplayerCallback: () => {
-                    globalOpenModal(
-                        MultiplayerStartModal,
-                        {
-                            startWorldCallback: startWorldCallback,
-                        },
-                        undefined,
-                        { onCancel: () => setTimeout(openMainMenu) }
-                    )
-                },
-            })
-        }
+        startMainLoop()
 
         if (autoOpenTo == "singleplayer") {
             setTimeout(startMainLoop)
@@ -110,6 +78,7 @@ const Synthesis = () => {
         } else {
             openMainMenu()
         }
+
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
@@ -149,8 +118,8 @@ const Synthesis = () => {
                             <UIRenderer />
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
-                            <WPILibConnectionStatus />
                             <DragModeIndicator />
+                            <PortraitOverlay />
 
                             {!consentPopupDisable && (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />

@@ -54,11 +54,10 @@ export interface ConfigurationSubpanelProps {
 export type ConfigurationSubpanelComponent = (props: ConfigurationSubpanelProps) => React.ReactElement | null
 
 export enum ConfigMode {
-    JOINT_SUBSYSTEMS,
+    JOINTS,
     EJECTOR,
     INTAKE,
     CONTROLS,
-    JOINT_SEQUENCE,
     SCORING_ZONES,
     PROTECTED_ZONES,
     CAMERA_POINTS,
@@ -89,15 +88,9 @@ const baseRobotConfigModes = [
     ),
 
     new ConfigModeSelectionOption(
-        "Configure Joints",
-        ConfigMode.JOINT_SUBSYSTEMS,
-        "Set the velocities, torques, and accelerations of your robot's motors."
-    ),
-
-    new ConfigModeSelectionOption(
-        "Sequence Joints",
-        ConfigMode.JOINT_SEQUENCE,
-        "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+        "Joints",
+        ConfigMode.JOINTS,
+        "Configure motor velocities, torques, and accelerations. Optionally link joints to move in unison."
     ),
 
     new ConfigModeSelectionOption(

@@ -85,7 +85,6 @@ export default defineConfig(({ mode }): ViteUserConfig => {
               changeOrigin: true,
               secure: true,
           }
-
     const baseAliases = [
         { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
         { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
@@ -162,6 +161,24 @@ export default defineConfig(({ mode }): ViteUserConfig => {
         },
         define: {
             GIT_COMMIT: JSON.stringify(commitHash),
+        },
+        // Pre-bundle every react-icons subpath the app imports. Listing
+        // them here bundles them up front so no reload happens once tests
+        // start.
+        optimizeDeps: {
+            include: [
+                "react-icons/ai",
+                "react-icons/bi",
+                "react-icons/bs",
+                "react-icons/fa",
+                "react-icons/fa6",
+                "react-icons/gi",
+                "react-icons/gr",
+                "react-icons/hi",
+                "react-icons/io",
+                "react-icons/io5",
+                "react-icons/md",
+            ],
         },
         test: {
             reporters: process.env.GITHUB_ACTIONS

@@ -56,6 +56,13 @@ class SceneRenderer extends WorldSystem {
 
     private _isPlacingAssembly: boolean = false
 
+    /**
+     * Vertical space (px) reserved at the top of the viewport, e.g. for the desktop top bar.
+     * Defaults to 0 so the scene fills the whole viewport (mobile, tests). The top bar sets
+     * this while mounted; everything below derives canvas size and pointer math from it.
+     */
+    private _topOffset: number = 0
+
     private _light: THREE.DirectionalLight | CSM | undefined
     private _screenInteractionHandler: ScreenInteractionHandler
 
@@ -77,6 +84,24 @@ class SceneRenderer extends WorldSystem {
 
     public get mainCamera() {
         return this._mainCamera
+    }
+
+    /** Pixels reserved at the top of the viewport (e.g. the desktop top bar). */
+    public get sceneTopOffset() {
+        return this._topOffset
+    }
+
+    public set sceneTopOffset(px: number) {
+        this._topOffset = Math.max(0, px)
+        this.updateCanvasSize()
+    }
+
+    private get _viewportWidth() {
+        return window.innerWidth
+    }
+
+    private get _viewportHeight() {
+        return Math.max(1, window.innerHeight - this._topOffset)
     }
 
     public get scene() {
@@ -226,12 +251,13 @@ class SceneRenderer extends WorldSystem {
     }
 
     public updateCanvasSize() {
-        this._renderer.setSize(window.innerWidth, window.innerHeight, true)
+        const width = this._viewportWidth
+        const height = this._viewportHeight
+        this._renderer.setSize(width, height, true)
+        this._composer.setSize(width, height)
+        this._renderer.domElement.style.top = `${this._topOffset}px`
 
-        const vec = new THREE.Vector2(0, 0)
-        this._renderer.getSize(vec)
-        // No idea why height would be zero, but just incase.
-        this._mainCamera.aspect = window.innerHeight > 0 ? window.innerWidth / window.innerHeight : 1.0
+        this._mainCamera.aspect = width / height
 
         if (this._mainCamera.aspect < STANDARD_ASPECT) {
             this._mainCamera.fov = STANDARD_CAMERA_FOV_Y
@@ -487,9 +513,11 @@ class SceneRenderer extends WorldSystem {
      * @returns World space point within the frustum given the parameters.
      */
     public pixelToWorldSpace(mouseX: number, mouseY: number, z: number = 0.5): THREE.Vector3 {
+        const width = this._viewportWidth
+        const height = this._viewportHeight
         const screenSpace = new THREE.Vector3(
-            (mouseX / window.innerWidth) * 2 - 1,
-            ((window.innerHeight - mouseY) / window.innerHeight) * 2 - 1,
+            (mouseX / width) * 2 - 1,
+            ((height - (mouseY - this._topOffset)) / height) * 2 - 1,
             Math.min(1.0, Math.max(0.0, z))
         )
 
@@ -505,8 +533,10 @@ class SceneRenderer extends WorldSystem {
     public worldToPixelSpace(worldPosition: THREE.Vector3): PixelSpaceCoord {
         this._mainCamera.updateMatrixWorld()
         const screenSpace = worldPosition.project(this._mainCamera)
-
-        return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
+        return [
+            (this._viewportWidth * (screenSpace.x + 1.0)) / 2.0,
+            this._topOffset + (this._viewportHeight * (1.0 - screenSpace.y)) / 2.0,
+        ]
     }
 
     /**
