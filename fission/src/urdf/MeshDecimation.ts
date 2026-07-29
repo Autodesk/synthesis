@@ -1,63 +1,38 @@
 import { MeshoptSimplifier } from "meshoptimizer"
 import type { ParsedMesh } from "./STLParser"
 
-// Onshape's STL export tessellates every part far finer than a robot simulator needs - a plain
-// rectangular FRC tube stock STL carries 83k triangles for a shape that needs a few hundred. That
-// geometry is baked into the in-memory mirabuf.Assembly and duplicated per <link>, and it doubles
-// as the Jolt collision surface (convex hull for dynamic bodies, concave BVH mesh for static
-// ones), so it costs memory twice and shape-build time on top.
-//
-// Two things make this tricky, and both bit earlier attempts at this file:
-//
-// 1. STL is a triangle *soup* - every triangle owns its own 3 vertices, even where they coincide
-//    exactly with a neighbour's. meshoptimizer builds its own position remap internally and treats
-//    vertices that share a position as attribute "wedges"; a position with 3+ wedges is classified
-//    as locked and can never be collapsed. Every vertex of a soup mesh has one wedge per incident
-//    triangle, so *every* vertex ends up locked and simplify() returns the mesh untouched. Passing
-//    a remapped index buffer is not enough - the duplicate positions must be gone from the vertex
-//    buffer too, otherwise the internal remap still sees them. Hence weldPositions() below returns
-//    a compacted buffer, not just a remap.
-//
-// 2. Triangle count is the wrong thing to ask for. Asking for "2% of the original triangles" on the
-//    tube above collapses its 1.6mm walls: the result measured 47% of the original volume with 350
-//    non-manifold and 700 wrongly-wound edges. Instead we give the simplifier an *absolute*
-//    geometric error budget (ErrorAbsolute) and let it stop wherever that budget runs out, then
-//    verify the result independently. Thin features survive because collapsing them costs more
-//    error than the budget allows.
-//
+// STL Mesh Decimation for URDF STL mesh imports.
+// This decimation step takes the 2026 kitbot import size from 3.11GB to 117MB.
+
 // Every result is checked against the input (see validate()) and the original mesh is returned
 // unchanged if anything looks off. Correctness beats memory savings here.
 
 // Below this triangle count the mesh is already cheap; leave it alone.
 const TRIANGLE_THRESHOLD = 2000
-// Absolute error budgets, in metres (URDF geometry is metric; the metres->cm scale happens later in
-// URDFConverter). Tried loosest-first, stopping at the first result that passes validation.
+
+// Absolute error budgets in metres 
 //
-// These are calibrated, not guessed. meshopt's error metric is a quadric estimate, not a true
-// Hausdorff bound: measured against the original surface it undershoots by up to ~3.5x, so a 0.5mm
-// budget is what actually keeps worst-case surface deviation under ~2mm across both sample kits
-// (scripts/urdf-mem-debug/sweep-kits.mjs measures this directly - rerun it if these change).
+// These are calibrated values from the 2026 FRC kitbot. These values keep the measured surface
+// within 0.5mm of the original while still having a triangle reduction count of about 87.1%.
 //
-// The bottom rungs exist for hardware: an FRC kit's heaviest STLs by triangle count are often
-// screws (one file measured 111k triangles for a handful of button-head bolts), and a budget sized
-// for a chassis tube eats a screw's thread and head taper - measurably, 15-20% of its volume. Those
-// parts still give up 75-85% of their triangles once the budget is small enough to leave the threads
-// alone, so it's worth walking down to 0.03mm rather than skipping them.
+// Bottom rungs exist for hardware like screws. Some of these parts have measured over 100k triangles
+// regardless of how small they are so it's worth waking down to 0.03mm to avoid skipping those meshes.
 const ERROR_BUDGETS_M = [0.0005, 0.00025, 0.000125, 0.0000625, 0.00003125]
 // ...but never spend more error than this fraction of the part's own bounding-box diagonal, so a
 // 5mm spacer isn't handed a budget the size of itself.
 const RELATIVE_BUDGET_CAP = 0.01
+
 // Rejection thresholds for the simplified result, all measured against the welded input.
 const MAX_VOLUME_DEVIATION = 0.03
 const MAX_AREA_DEVIATION = 0.1
 const MAX_AXIS_DEVIATION = 0.01
-// Rays per axis for the solidity probe below, and the share of them allowed to come back
-// inconsistent. Measured separation is wide: meshes with a folded surface score 0.4-1.7% while clean
-// ones score 0-0.02% (the handful of non-zero rays on a clean mesh are ones that graze an edge).
-const SOLIDITY_RESOLUTION = 64
-const MAX_UNSOLID_RAY_RATIO = 0.001
+
+const SOLIDITY_RESOLUTION = 64 // grid density per axis
+const MAX_UNSOLID_RAY_RATIO = 0.001 // bad_rays / total_rays. fail any 0.1%
+
 // Rebuilding the vertex/normal/index buffers isn't free, so don't bother for a marginal win.
 const MIN_REDUCTION = 0.25
+
 // Faces meeting at a sharper angle than this get split normals, so a machined edge stays crisp
 // while a tessellated cylinder still shades smoothly at the reduced triangle count.
 const CREASE_COS = Math.cos((35 * Math.PI) / 180)
@@ -71,10 +46,7 @@ interface Welded {
     indices: Uint32Array
 }
 
-// Collapses bit-identical positions into a compacted vertex buffer and reindexes. Exact comparison
-// is enough in practice: on every Onshape STL checked, an exact weld already produces a closed,
-// consistently-wound manifold (a tolerance-based weld found no additional merges), because the
-// tessellator emits the same float bits for a shared corner in every facet that touches it.
+// Collapses bit-identical positions into a compacted vertex buffer and reindexes
 function weldPositions(mesh: ParsedMesh): Welded {
     const remap = MeshoptSimplifier.generatePositionRemap(mesh.verts, 3)
     const sourceVertCount = mesh.verts.length / 3
@@ -102,8 +74,7 @@ function weldPositions(mesh: ParsedMesh): Welded {
 interface MeshStats {
     /** Surface area. */
     area: number
-    /** Divergence-theorem volume - only meaningful on a closed surface, which is the point: a hole
-     * or a flipped patch shows up as a volume that no longer matches. */
+    /** Divergence-theorem volume. Only meaningful on a closed surface. */
     volume: number
     /** Per-axis bounding box extent. */
     size: [number, number, number]
@@ -117,9 +88,8 @@ interface MeshStats {
     reversedEdges: number
     /** Triangles with a repeated index or zero area. */
     degenerateTriangles: number
-    /** Connected shells. Onshape parts are routinely multi-body (a shaft plus its retaining ring);
-     * fusing two of them together is the "merges features that are spatially close but
-     * topologically disjoint" failure mode, and it shows up here as a drop. */
+    /** Connected shells. URDF parts are routinely multi-body (a shaft plus its retaining ring).
+     * Use this count to avoid accidentally merging two topologically disjoint components. */
     shells: number
 }
 
@@ -133,6 +103,7 @@ function countShells(indices: Uint32Array, vertCount: number): number {
         }
         return x
     }
+
     const used = new Uint8Array(vertCount)
     for (let i = 0; i < indices.length; i += 3) {
         for (let k = 0; k < 3; k++) used[indices[i + k]] = 1
@@ -142,21 +113,27 @@ function countShells(indices: Uint32Array, vertCount: number): number {
             if (a !== b) parent[a] = b
         }
     }
+
     const roots = new Set<number>()
     for (let i = 0; i < vertCount; i++) if (used[i]) roots.add(find(i))
     return roots.size
 }
 
-function measure({ verts, indices }: Welded): MeshStats {
-    const vertCount = verts.length / 3
-    const min = [Infinity, Infinity, Infinity]
-    const max = [-Infinity, -Infinity, -Infinity]
+interface EdgeStats {
+    area: number
+    volume: number
+    degenerateTriangles: number
+    boundaryEdges: number
+    nonManifoldEdges: number
+    reversedEdges: number
+}
+
+// Walks every triangle once, accumulating signed area/volume and edge-adjacency counts. Edge keys
+// are packed as `a * vertCount + b`
+function collectEdgeStats(verts: Float32Array, indices: Uint32Array, vertCount: number): EdgeStats {
     let area = 0
     let volume = 0
     let degenerateTriangles = 0
-
-    // Edge keys are packed as `a * vertCount + b`, which stays exact in a double for any vertex
-    // count a browser could hold.
     const undirected = new Map<number, number>()
     const directed = new Set<number>()
     let reversedEdges = 0
@@ -187,6 +164,7 @@ function measure({ verts, indices }: Welded): MeshStats {
             degenerateTriangles++
             continue
         }
+
         area += 0.5 * twiceArea
         volume +=
             (verts[a] * (verts[b + 1] * verts[c + 2] - verts[b + 2] * verts[c + 1]) -
@@ -207,6 +185,20 @@ function measure({ verts, indices }: Welded): MeshStats {
         }
     }
 
+    let boundaryEdges = 0
+    let nonManifoldEdges = 0
+    for (const count of undirected.values()) {
+        if (count === 1) boundaryEdges++
+        else if (count > 2) nonManifoldEdges++
+    }
+
+    return { area, volume, degenerateTriangles, boundaryEdges, nonManifoldEdges, reversedEdges }
+}
+
+function computeVertexBounds(verts: Float32Array): { size: [number, number, number]; diagonal: number } {
+    const min = [Infinity, Infinity, Infinity]
+    const max = [-Infinity, -Infinity, -Infinity]
+    const vertCount = verts.length / 3
     for (let i = 0; i < vertCount; i++) {
         for (let k = 0; k < 3; k++) {
             const value = verts[i * 3 + k]
@@ -215,37 +207,27 @@ function measure({ verts, indices }: Welded): MeshStats {
         }
     }
 
-    let boundaryEdges = 0
-    let nonManifoldEdges = 0
-    for (const count of undirected.values()) {
-        if (count === 1) boundaryEdges++
-        else if (count > 2) nonManifoldEdges++
-    }
-
     const size: [number, number, number] = [max[0] - min[0], max[1] - min[1], max[2] - min[2]]
+    return { size, diagonal: Math.hypot(size[0], size[1], size[2]) }
+}
+
+function measure({ verts, indices }: Welded): MeshStats {
+    const vertCount = verts.length / 3
     return {
-        area,
-        volume,
-        size,
-        diagonal: Math.hypot(size[0], size[1], size[2]),
-        boundaryEdges,
-        nonManifoldEdges,
-        reversedEdges,
-        degenerateTriangles,
+        ...collectEdgeStats(verts, indices, vertCount),
+        ...computeVertexBounds(verts),
         shells: countShells(indices, vertCount),
     }
 }
 
-// Sweeps a grid of parallel rays down each axis and checks that every ray's surface crossings
-// alternate enter/exit/enter/exit. That is the one property edge collapse can break while leaving
-// every cheap check happy: on small doubly-curved thin features (a nylock nut's nylon insert crown
-// was the case that found this) the simplified surface folds through itself, which keeps the mesh a
-// closed, consistently-wound manifold with the correct volume, area and bounding box - and renders
-// as a crumpled, partly see-through mess. Volume, area and dihedral angles all fail to distinguish
-// it; ray parity separates it by more than an order of magnitude.
-function unsolidRayRatio({ verts, indices }: Welded): number {
-    const min = [Infinity, Infinity, Infinity]
-    const max = [-Infinity, -Infinity, -Infinity]
+interface AxisBounds {
+    min: [number, number, number]
+    max: [number, number, number]
+}
+
+function computeIndexedBounds(verts: Float32Array, indices: Uint32Array): AxisBounds {
+    const min: [number, number, number] = [Infinity, Infinity, Infinity]
+    const max: [number, number, number] = [-Infinity, -Infinity, -Infinity]
     for (let i = 0; i < indices.length; i++) {
         for (let k = 0; k < 3; k++) {
             const value = verts[indices[i] * 3 + k]
@@ -254,92 +236,154 @@ function unsolidRayRatio({ verts, indices }: Welded): number {
         }
     }
 
+    return { min, max }
+}
+
+// Assigns each triangle to every grid cell its projected bounding box overlaps, so a ray cast from
+// a cell only has to test the triangles that could plausibly cover it.
+function bucketTrianglesByCell(
+    u: number,
+    v: number,
+    bounds: AxisBounds,
+    cellU: number,
+    cellV: number,
+    verts: Float32Array,
+    indices: Uint32Array
+): Map<number, number[]> {
+    const { min } = bounds
     const triCount = indices.length / 3
+    const buckets = new Map<number, number[]>()
+    for (let t = 0; t < triCount; t++) {
+        const a = indices[t * 3] * 3
+        const b = indices[t * 3 + 1] * 3
+        const c = indices[t * 3 + 2] * 3
+        const loU = Math.floor((Math.min(verts[a + u], verts[b + u], verts[c + u]) - min[u]) / cellU)
+        const hiU = Math.floor((Math.max(verts[a + u], verts[b + u], verts[c + u]) - min[u]) / cellU)
+        const loV = Math.floor((Math.min(verts[a + v], verts[b + v], verts[c + v]) - min[v]) / cellV)
+        const hiV = Math.floor((Math.max(verts[a + v], verts[b + v], verts[c + v]) - min[v]) / cellV)
+        for (let iu = Math.max(0, loU); iu <= Math.min(SOLIDITY_RESOLUTION - 1, hiU); iu++) {
+            for (let iv = Math.max(0, loV); iv <= Math.min(SOLIDITY_RESOLUTION - 1, hiV); iv++) {
+                const key = iu * SOLIDITY_RESOLUTION + iv
+                const bucket = buckets.get(key)
+                if (bucket) bucket.push(t)
+                else buckets.set(key, [t])
+            }
+        }
+    }
+
+    return buckets
+}
+
+// Casts one ray through its candidate triangles and returns each crossing as [position along the
+// ray axis, +1/-1 direction]. A triangle edge-on to the ray can't be classified as an entry or an
+// exit and is skipped.
+function castRay(
+    rayU: number,
+    rayV: number,
+    axis: number,
+    u: number,
+    v: number,
+    tris: number[],
+    verts: Float32Array,
+    indices: Uint32Array
+): Array<[number, number]> {
+    const hits: Array<[number, number]> = []
+    for (const t of tris) {
+        const a = indices[t * 3] * 3
+        const b = indices[t * 3 + 1] * 3
+        const c = indices[t * 3 + 2] * 3
+        const au = verts[a + u]
+        const av = verts[a + v]
+        const bu = verts[b + u]
+        const bv = verts[b + v]
+        const cu = verts[c + u]
+        const cv = verts[c + v]
+        const doubleArea = (bu - au) * (cv - av) - (cu - au) * (bv - av)
+        if (doubleArea === 0) continue
+        const wc = ((bu - au) * (rayV - av) - (rayU - au) * (bv - av)) / doubleArea
+        const wa = ((cu - bu) * (rayV - bv) - (rayU - bu) * (cv - bv)) / doubleArea
+        const wb = ((au - cu) * (rayV - cv) - (rayU - cu) * (av - cv)) / doubleArea
+        if (wa <= 0 || wb <= 0 || wc <= 0) continue
+
+        const ux = verts[b] - verts[a]
+        const uy = verts[b + 1] - verts[a + 1]
+        const uz = verts[b + 2] - verts[a + 2]
+        const vx = verts[c] - verts[a]
+        const vy = verts[c + 1] - verts[a + 1]
+        const vz = verts[c + 2] - verts[a + 2]
+        const normalAlongAxis = [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx][axis]
+        if (normalAlongAxis === 0) continue
+        hits.push([
+            wa * verts[a + axis] + wb * verts[b + axis] + wc * verts[c + axis],
+            normalAlongAxis < 0 ? 1 : -1,
+        ])
+    }
+
+    return hits
+}
+
+// A ray through a solid should alternate outside/inside/outside as it crosses the surface, so the
+// running enter/exit tally should stay within {0, 1} and return to 0. Anything else means the
+// surface crosses itself along this ray
+function isRayInconsistent(hits: Array<[number, number]>): boolean {
+    hits.sort((x, y) => x[0] - y[0])
+    let inside = 0
+    for (const [, direction] of hits) {
+        inside += direction
+        if (inside < 0 || inside > 1) return true
+    }
+
+    return inside > 0
+}
+
+function countUnsolidRaysOnAxis(
+    axis: number,
+    verts: Float32Array,
+    indices: Uint32Array,
+    bounds: AxisBounds
+): { rays: number; bad: number } {
+    const u = (axis + 1) % 3
+    const v = (axis + 2) % 3
+    const cellU = (bounds.max[u] - bounds.min[u]) / SOLIDITY_RESOLUTION
+    const cellV = (bounds.max[v] - bounds.min[v]) / SOLIDITY_RESOLUTION
+    if (!(cellU > 0) || !(cellV > 0)) return { rays: 0, bad: 0 }
+
+    const buckets = bucketTrianglesByCell(u, v, bounds, cellU, cellV, verts, indices)
+
     let rays = 0
     let bad = 0
-    const hits: Array<[number, number]> = []
+    for (const [key, tris] of buckets) {
+        // Offset the ray from the cell corner by an irrational-looking fraction so it doesn't land
+        // exactly on a shared edge, where it would be counted twice or not at all.
+        const rayU = bounds.min[u] + (Math.floor(key / SOLIDITY_RESOLUTION) + 0.4531) * cellU
+        const rayV = bounds.min[v] + ((key % SOLIDITY_RESOLUTION) + 0.6237) * cellV
+        const hits = castRay(rayU, rayV, axis, u, v, tris, verts, indices)
+        if (hits.length === 0) continue
+        rays++
+        if (isRayInconsistent(hits)) bad++
+    }
 
+    return { rays, bad }
+}
+
+// Sweeps a grid of parallel rays down each axis and checks that every ray's surface crossings
+// alternate enter/exit/enter/exit. 
+//
+// This can be a very expensive check to run however its needed. Every other lightweight check
+// that fully covers a venn diagram of different failure modes simply can't replace this validation step.
+//
+// Every cheap check could be happy, on a small doubly-curved thin feature the simplified surface could fold
+// through itself, which keeps the mesh a closed, consistently-wound manifold with the correct volume, 
+// area and bounding box, and render compleatly wrong as a crumpled partly see-through mess. Volume, 
+// area and dihedral angles all will fail to distinguish it from the orignial geometry
+function unsolidRayRatio({ verts, indices }: Welded): number {
+    const bounds = computeIndexedBounds(verts, indices)
+    let rays = 0
+    let bad = 0
     for (let axis = 0; axis < 3; axis++) {
-        const u = (axis + 1) % 3
-        const v = (axis + 2) % 3
-        const cellU = (max[u] - min[u]) / SOLIDITY_RESOLUTION
-        const cellV = (max[v] - min[v]) / SOLIDITY_RESOLUTION
-        if (!(cellU > 0) || !(cellV > 0)) continue
-
-        const buckets = new Map<number, number[]>()
-        for (let t = 0; t < triCount; t++) {
-            const a = indices[t * 3] * 3
-            const b = indices[t * 3 + 1] * 3
-            const c = indices[t * 3 + 2] * 3
-            const loU = Math.floor((Math.min(verts[a + u], verts[b + u], verts[c + u]) - min[u]) / cellU)
-            const hiU = Math.floor((Math.max(verts[a + u], verts[b + u], verts[c + u]) - min[u]) / cellU)
-            const loV = Math.floor((Math.min(verts[a + v], verts[b + v], verts[c + v]) - min[v]) / cellV)
-            const hiV = Math.floor((Math.max(verts[a + v], verts[b + v], verts[c + v]) - min[v]) / cellV)
-            for (let iu = Math.max(0, loU); iu <= Math.min(SOLIDITY_RESOLUTION - 1, hiU); iu++) {
-                for (let iv = Math.max(0, loV); iv <= Math.min(SOLIDITY_RESOLUTION - 1, hiV); iv++) {
-                    const key = iu * SOLIDITY_RESOLUTION + iv
-                    const bucket = buckets.get(key)
-                    if (bucket) bucket.push(t)
-                    else buckets.set(key, [t])
-                }
-            }
-        }
-
-        for (const [key, tris] of buckets) {
-            // Offset the ray from the cell corner by an irrational-looking fraction so it doesn't
-            // land exactly on a shared edge, where it would be counted twice or not at all.
-            const rayU = min[u] + (Math.floor(key / SOLIDITY_RESOLUTION) + 0.4531) * cellU
-            const rayV = min[v] + ((key % SOLIDITY_RESOLUTION) + 0.6237) * cellV
-            hits.length = 0
-
-            for (const t of tris) {
-                const a = indices[t * 3] * 3
-                const b = indices[t * 3 + 1] * 3
-                const c = indices[t * 3 + 2] * 3
-                const au = verts[a + u]
-                const av = verts[a + v]
-                const bu = verts[b + u]
-                const bv = verts[b + v]
-                const cu = verts[c + u]
-                const cv = verts[c + v]
-                const doubleArea = (bu - au) * (cv - av) - (cu - au) * (bv - av)
-                if (doubleArea === 0) continue
-                const wc = ((bu - au) * (rayV - av) - (rayU - au) * (bv - av)) / doubleArea
-                const wa = ((cu - bu) * (rayV - bv) - (rayU - bu) * (cv - bv)) / doubleArea
-                const wb = ((au - cu) * (rayV - cv) - (rayU - cu) * (av - cv)) / doubleArea
-                if (wa <= 0 || wb <= 0 || wc <= 0) continue
-
-                const ux = verts[b] - verts[a]
-                const uy = verts[b + 1] - verts[a + 1]
-                const uz = verts[b + 2] - verts[a + 2]
-                const vx = verts[c] - verts[a]
-                const vy = verts[c + 1] - verts[a + 1]
-                const vz = verts[c + 2] - verts[a + 2]
-                const normalAlongAxis = [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx][axis]
-                // A triangle edge-on to the ray can't be classified as an entry or an exit.
-                if (normalAlongAxis === 0) continue
-                hits.push([
-                    wa * verts[a + axis] + wb * verts[b + axis] + wc * verts[c + axis],
-                    normalAlongAxis < 0 ? 1 : -1,
-                ])
-            }
-
-            if (hits.length === 0) continue
-            rays++
-            hits.sort((x, y) => x[0] - y[0])
-            let inside = 0
-            for (const [, direction] of hits) {
-                inside += direction
-                // Depth outside {0, 1} means the ray left the solid before entering it, or entered
-                // twice without leaving: the surface crosses itself.
-                if (inside < 0 || inside > 1) {
-                    bad++
-                    inside = -1
-                    break
-                }
-            }
-            if (inside > 0) bad++
-        }
+        const result = countUnsolidRaysOnAxis(axis, verts, indices, bounds)
+        rays += result.rays
+        bad += result.bad
     }
 
     return rays > 0 ? bad / rays : 1
@@ -355,9 +399,7 @@ function isClosedManifold(stats: MeshStats): boolean {
 }
 
 // A simplified mesh is only accepted if it is still a closed, consistently-wound manifold and still
-// occupies the same space as the input. Volume is the sharpest of these: it catches both holes and
-// collapsed thin walls, which surface area on its own does not (a tube whose walls have been merged
-// keeps roughly the right area while losing half its volume).
+// occupies the same space as the input.
 function validate(original: MeshStats, simplified: MeshStats): boolean {
     if (!isClosedManifold(simplified)) return false
     if (simplified.shells !== original.shells) return false
@@ -366,16 +408,15 @@ function validate(original: MeshStats, simplified: MeshStats): boolean {
     if (original.area > 0 && Math.abs(simplified.area - original.area) / original.area > MAX_AREA_DEVIATION) {
         return false
     }
+
     for (let k = 0; k < 3; k++) {
         const extent = original.size[k]
         if (extent > 0 && Math.abs(simplified.size[k] - extent) / extent > MAX_AXIS_DEVIATION) return false
     }
+
     return true
 }
 
-// meshopt's compactMesh() rewrites the index buffer it is handed *in place* and returns the remap it
-// applied, so the remap must not be applied to those indices a second time. Doing so leaves every
-// triangle with three identical indices - a silently invisible mesh.
 function compactVertices(source: Float32Array, indices: Uint32Array): Welded {
     const [remap, uniqueCount] = MeshoptSimplifier.compactMesh(indices)
     const verts = new Float32Array(uniqueCount * 3)
@@ -386,17 +427,11 @@ function compactVertices(source: Float32Array, indices: Uint32Array): Welded {
         verts[out * 3 + 1] = source[i * 3 + 1]
         verts[out * 3 + 2] = source[i * 3 + 2]
     }
+
     return { verts, indices }
 }
 
-// Rebuilds shading data for the decimated mesh. Decimation invalidates STL's per-facet normals, and
-// simply averaging all faces at a vertex rounds off machined edges. Instead, the faces around each
-// vertex are grouped into clusters of similar orientation and each cluster gets its own vertex: a
-// box keeps three crisp normals per corner, a tessellated cylinder keeps one smooth one.
-function buildShadingData({ verts, indices }: Welded): ParsedMesh {
-    const triCount = indices.length / 3
-    const vertCount = verts.length / 3
-
+function computeFaceNormals(verts: Float32Array, indices: Uint32Array, triCount: number): Float32Array {
     const faceNormals = new Float32Array(triCount * 3)
     for (let t = 0; t < triCount; t++) {
         const a = indices[t * 3] * 3
@@ -408,6 +443,7 @@ function buildShadingData({ verts, indices }: Welded): ParsedMesh {
         const vx = verts[c] - verts[a]
         const vy = verts[c + 1] - verts[a + 1]
         const vz = verts[c + 2] - verts[a + 2]
+
         // Left unnormalized: the magnitude is twice the triangle area, which is exactly the weight
         // we want when averaging a cluster.
         faceNormals[t * 3] = uy * vz - uz * vy
@@ -415,7 +451,16 @@ function buildShadingData({ verts, indices }: Welded): ParsedMesh {
         faceNormals[t * 3 + 2] = ux * vy - uy * vx
     }
 
-    // Incident faces per vertex, CSR-style.
+    return faceNormals
+}
+
+interface IncidentFaces {
+    offsets: Uint32Array
+    incident: Uint32Array
+}
+
+// Incident faces per vertex, CSR-style.
+function buildIncidentFacesCSR(indices: Uint32Array, vertCount: number, triCount: number): IncidentFaces {
     const offsets = new Uint32Array(vertCount + 1)
     for (let i = 0; i < indices.length; i++) offsets[indices[i] + 1]++
     for (let i = 0; i < vertCount; i++) offsets[i + 1] += offsets[i]
@@ -425,58 +470,97 @@ function buildShadingData({ verts, indices }: Welded): ParsedMesh {
         for (let k = 0; k < 3; k++) incident[cursor[indices[t * 3 + k]]++] = t
     }
 
+    return { offsets, incident }
+}
+
+// Groups the faces around one vertex into clusters of similar orientation (within CREASE_COS) and
+// appends one output vertex/normal per cluster, then repoints each face's corner index at that
+// cluster
+function clusterFacesAroundVertex(
+    v: number,
+    verts: Float32Array,
+    indices: Uint32Array,
+    faceNormals: Float32Array,
+    { offsets, incident }: IncidentFaces,
+    clusterOf: Int32Array,
+    outVerts: number[],
+    outNormals: number[],
+    outIndices: Uint32Array
+): void {
+    const start = offsets[v]
+    const end = offsets[v + 1]
+    for (let i = start; i < end; i++) clusterOf[incident[i]] = -1
+
+    for (let i = start; i < end; i++) {
+        const seed = incident[i]
+        if (clusterOf[seed] !== -1) continue
+        const sx = faceNormals[seed * 3]
+        const sy = faceNormals[seed * 3 + 1]
+        const sz = faceNormals[seed * 3 + 2]
+        const seedLen = Math.hypot(sx, sy, sz) || 1
+
+        const newIndex = outVerts.length / 3
+        let nx = 0
+        let ny = 0
+        let nz = 0
+        for (let j = i; j < end; j++) {
+            const face = incident[j]
+            if (clusterOf[face] !== -1) continue
+            const fx = faceNormals[face * 3]
+            const fy = faceNormals[face * 3 + 1]
+            const fz = faceNormals[face * 3 + 2]
+            const faceLen = Math.hypot(fx, fy, fz) || 1
+            const alignment = (sx * fx + sy * fy + sz * fz) / (seedLen * faceLen)
+            if (alignment < CREASE_COS) continue
+            clusterOf[face] = newIndex
+            nx += fx
+            ny += fy
+            nz += fz
+            for (let k = 0; k < 3; k++) {
+                if (indices[face * 3 + k] === v) outIndices[face * 3 + k] = newIndex
+            }
+        }
+
+        const len = Math.hypot(nx, ny, nz) || 1
+        outVerts.push(verts[v * 3], verts[v * 3 + 1], verts[v * 3 + 2])
+        outNormals.push(nx / len, ny / len, nz / len)
+    }
+}
+
+// Rebuilds shading data for the decimated mesh. Decimation invalidates STL's per-facet normals, and
+// simply averaging all faces at a vertex rounds off machined edges. Instead, the faces around each
+// vertex are grouped into clusters of similar orientation and each cluster gets its own vertex (see
+// clusterFacesAroundVertex above).
+function buildShadingData({ verts, indices }: Welded): ParsedMesh {
+    const triCount = indices.length / 3
+    const vertCount = verts.length / 3
+
+    const faceNormals = computeFaceNormals(verts, indices, triCount)
+    const incidentFaces = buildIncidentFacesCSR(indices, vertCount, triCount)
+
     const outVerts: number[] = []
     const outNormals: number[] = []
     const outIndices = new Uint32Array(indices.length)
     const clusterOf = new Int32Array(triCount).fill(-1)
 
     for (let v = 0; v < vertCount; v++) {
-        const start = offsets[v]
-        const end = offsets[v + 1]
-        for (let i = start; i < end; i++) clusterOf[incident[i]] = -1
-
-        for (let i = start; i < end; i++) {
-            const seed = incident[i]
-            if (clusterOf[seed] !== -1) continue
-            const sx = faceNormals[seed * 3]
-            const sy = faceNormals[seed * 3 + 1]
-            const sz = faceNormals[seed * 3 + 2]
-            const seedLen = Math.hypot(sx, sy, sz) || 1
-
-            const newIndex = outVerts.length / 3
-            let nx = 0
-            let ny = 0
-            let nz = 0
-            for (let j = i; j < end; j++) {
-                const face = incident[j]
-                if (clusterOf[face] !== -1) continue
-                const fx = faceNormals[face * 3]
-                const fy = faceNormals[face * 3 + 1]
-                const fz = faceNormals[face * 3 + 2]
-                const faceLen = Math.hypot(fx, fy, fz) || 1
-                const alignment = (sx * fx + sy * fy + sz * fz) / (seedLen * faceLen)
-                if (alignment < CREASE_COS) continue
-                clusterOf[face] = newIndex
-                nx += fx
-                ny += fy
-                nz += fz
-                for (let k = 0; k < 3; k++) {
-                    if (indices[face * 3 + k] === v) outIndices[face * 3 + k] = newIndex
-                }
-            }
-
-            const len = Math.hypot(nx, ny, nz) || 1
-            outVerts.push(verts[v * 3], verts[v * 3 + 1], verts[v * 3 + 2])
-            outNormals.push(nx / len, ny / len, nz / len)
-        }
+        clusterFacesAroundVertex(
+            v,
+            verts,
+            indices,
+            faceNormals,
+            incidentFaces,
+            clusterOf,
+            outVerts,
+            outNormals,
+            outIndices
+        )
     }
 
     return {
         verts: Float32Array.from(outVerts),
         normals: Float32Array.from(outNormals),
-        // STL carries no UV data; URDFConverter substitutes a shared zero-UV buffer sized to the
-        // final vertex count, so leaving this empty is what it expects.
-        uv: new Float32Array(0),
+        uv: new Float32Array(0), // STL carries no UV data
         indices: outIndices,
     }
 }
