@@ -234,10 +234,9 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         async (closeType: CloseType) => {
             if (closeType == CloseType.OVERWRITE && hasMadeChanges) {
                 await onBeforeAccept()
-                addToast("info", "Configuration saved")
             }
         },
-        [addToast, hasMadeChanges, onBeforeAccept]
+        [hasMadeChanges, onBeforeAccept]
     )
 
     useEffect(() => {
