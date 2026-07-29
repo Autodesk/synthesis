@@ -21,10 +21,9 @@ import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
-import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import ConfigureJointsInterface from "./interfaces/ConfigureJointsInterface"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
@@ -144,12 +143,11 @@ export interface ConfigurePanelCustomProps {
     configurationType?: ConfigurationType
 }
 const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
-    [ConfigMode.JOINT_SUBSYSTEMS]: ConfigureSubsystemsInterface,
+    [ConfigMode.JOINTS]: ConfigureJointsInterface,
     [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface,
     [ConfigMode.CAMERA]: ConfigureCameraInterface,
     [ConfigMode.INTAKE]: ConfigureGamepiecePickupInterface,
     [ConfigMode.CONTROLS]: ControlsConfigInterface,
-    [ConfigMode.JOINT_SEQUENCE]: SequentialBehaviorsInterface,
     [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
     [ConfigMode.PROTECTED_ZONES]: ConfigureProtectedZonesInterface,
     [ConfigMode.CAMERA_POINTS]: ConfigureCameraPointsInterface,
@@ -240,10 +238,9 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         async (closeType: CloseType) => {
             if (closeType == CloseType.OVERWRITE && hasMadeChanges) {
                 await onBeforeAccept()
-                addToast("info", "Configuration saved")
             }
         },
-        [addToast, hasMadeChanges, onBeforeAccept]
+        [hasMadeChanges, onBeforeAccept]
     )
 
     useEffect(() => {
