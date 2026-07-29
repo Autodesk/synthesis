@@ -81,16 +81,79 @@ export default defineConfig(async ({ mode }) => {
               changeOrigin: true,
               secure: true,
           }
+    const baseAliases = [
+        { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+        { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+        { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+        { find: "@", replacement: path.resolve(__dirname, "src") },
+    ]
+
+    const fissionProject = {
+        extends: true,
+        test: {
+            name: "fission",
+            setupFiles: ["src/test/TestSetup.browser.ts"],
+            globalSetup: ["src/test/TestSetup.server.ts"],
+            testTimeout: 10000,
+            globals: true,
+            environment: "jsdom",
+            browser: {
+                enabled: true,
+                provider: "playwright",
+                instances: [
+                    {
+                        name: "chromium",
+                        browser: "chromium",
+                        headless: true,
+                    },
+                    {
+                        name: "firefox",
+                        browser: "firefox",
+                        headless: true,
+                    },
+                ],
+            },
+        },
+    }
+
+    // `bun run test:asan`
+    const fissionAsanProject = {
+        extends: true,
+        resolve: {
+            alias: [
+                ...baseAliases,
+                {
+                    find: /^@synthesis\.adsk\/jolt-physics(\/wasm-compat)?$/,
+                    replacement: process.env.JOLT_ASAN_DIST,
+                },
+            ],
+        },
+        test: {
+            name: "fission-asan",
+            setupFiles: ["src/test/TestSetup.browser.ts"],
+            globalSetup: ["src/test/TestSetup.server.ts"],
+            testTimeout: 10000,
+            globals: true,
+            environment: "jsdom",
+            browser: {
+                enabled: true,
+                provider: "playwright",
+                instances: [
+                    {
+                        name: "chromium",
+                        browser: "chromium",
+                        headless: true,
+                    },
+                ],
+            },
+        },
+    }
+
     return {
         plugins: plugins,
         publicDir: "./public",
         resolve: {
-            alias: [
-                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
-                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
-                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
-                { find: "@", replacement: path.resolve(__dirname, "src") },
-            ],
+            alias: baseAliases,
         },
         define: {
             GIT_COMMIT: JSON.stringify(await getCommitHash()),
@@ -114,11 +177,6 @@ export default defineConfig(async ({ mode }) => {
             ],
         },
         test: {
-            setupFiles: ["src/test/TestSetup.browser.ts"],
-            globalSetup: ["src/test/TestSetup.server.ts"],
-            testTimeout: 10000,
-            globals: true,
-            environment: "jsdom",
             reporters: process.env.GITHUB_ACTIONS
                 ? [
                       "github-actions",
@@ -134,22 +192,6 @@ export default defineConfig(async ({ mode }) => {
                       },
                   ]
                 : ["default"],
-            browser: {
-                enabled: true,
-                provider: "playwright",
-                instances: [
-                    {
-                        name: "chromium",
-                        browser: "chromium",
-                        headless: true,
-                    },
-                    {
-                        name: "firefox",
-                        browser: "firefox",
-                        headless: true,
-                    },
-                ],
-            },
             coverage: {
                 provider: "istanbul",
                 reporter: ["text", "html"] as const,
@@ -158,6 +200,7 @@ export default defineConfig(async ({ mode }) => {
                 exclude: ["src/test/**", "src/proto/**"],
                 reportOnFailure: true,
             },
+            projects: [fissionProject, ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject] : [])],
         },
         build: {
             target: "esnext",
