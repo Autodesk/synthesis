@@ -1,7 +1,8 @@
 import { Box, Menu, type MenuProps, Stack, type SxProps, type Theme, Tooltip } from "@mui/material"
 import type React from "react"
 import { useCallback, useState } from "react"
-import { IconButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { IconButton, type IconButtonSound, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { DROPDOWN_MENU_PROPS, TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
 
 const HALF_SX = {
@@ -17,10 +18,11 @@ interface HalfProps {
     tooltip?: string
     disabled?: boolean
     ariaLabel?: string
+    sound?: IconButtonSound
     sx?: SxProps<Theme>
 }
 
-const Half: React.FC<HalfProps> = ({ onClick, children, tooltip, disabled, ariaLabel, sx }) => {
+const Half: React.FC<HalfProps> = ({ onClick, children, tooltip, disabled, ariaLabel, sound, sx }) => {
     const button = (
         <IconButton
             size="medium"
@@ -28,6 +30,7 @@ const Half: React.FC<HalfProps> = ({ onClick, children, tooltip, disabled, ariaL
             disabled={disabled}
             aria-label={ariaLabel}
             onClick={onClick}
+            sound={sound}
             sx={{ ...HALF_SX, ...sx }}
         >
             {children}
@@ -63,9 +66,11 @@ const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
     const closeMenu = useCallback(() => setAnchorEl(null), [])
 
-    const closeOnItemSelect = useCallback(
+    const onItemSelect = useCallback(
         (e: React.MouseEvent) => {
-            if ((e.target as HTMLElement).closest("[role='menuitem']")) closeMenu()
+            if (!(e.target as HTMLElement).closest("[role='menuitem']")) return
+            SoundPlayer.getInstance().playDropdownSound()
+            closeMenu()
         },
         [closeMenu]
     )
@@ -80,6 +85,7 @@ const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
                     tooltip={caretTooltip}
                     disabled={caretDisabled}
                     ariaLabel="Open dropdown"
+                    sound="dropdown"
                     onClick={e => setAnchorEl(e.currentTarget)}
                     sx={{ px: 0.25 }}
                 >
@@ -92,7 +98,7 @@ const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={closeMenu}
-                onClick={closeOnItemSelect}
+                onClick={onItemSelect}
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 transformOrigin={{ vertical: "top", horizontal: "left" }}
                 {...DROPDOWN_MENU_PROPS}

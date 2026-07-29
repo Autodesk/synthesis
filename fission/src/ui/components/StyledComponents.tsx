@@ -155,10 +155,15 @@ export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, 
     )
 }
 
-export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-    ({ children, onClick, onMouseDown, onMouseUp, ...props }, ref) => {
+export type IconButtonSound = "button" | "dropdown"
+
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps & { sound?: IconButtonSound }>(
+    ({ children, onClick, onMouseDown, onMouseUp, sound = "button", ...props }, ref) => {
+        const soundPlayer = SoundPlayer.getInstance()
+        const soundEffects =
+            sound === "dropdown" ? soundPlayer.dropdownSoundEffects() : soundPlayer.buttonSoundEffects()
         return (
-            <MuiIconButton ref={ref} onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+            <MuiIconButton ref={ref} onClick={onClick} {...soundEffects} {...props}>
                 {children}
             </MuiIconButton>
         )
