@@ -4,17 +4,20 @@ import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
 import Label from "./Label"
 
-/** Throwaway dev-only panel for testing manual wheel-joint placement. */
+/** Throwaway dev-only panel for testing manual wheel/pod-joint placement. */
 const WheelAssignmentDebugPanel: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
-    const [pendingCount, setPendingCount] = useState<number>(0)
+    const [pickTarget, setPickTarget] = useState<"wheel" | "pod">("wheel")
+    const [wheelCount, setWheelCount] = useState<number>(0)
+    const [podCount, setPodCount] = useState<number>(0)
     const [driveReversed, setDriveReversed] = useState<boolean>(false)
 
     useEffect(() => {
         const unsubToggle = EventSystem.listen("WheelAssignmentModeToggled", ({ enabled }) => setEnabled(enabled))
-        const unsubCount = EventSystem.listen("WheelAssignmentPendingCountChanged", ({ count }) =>
-            setPendingCount(count)
-        )
+        const unsubCount = EventSystem.listen("WheelAssignmentPendingCountChanged", ({ wheelCount, podCount }) => {
+            setWheelCount(wheelCount)
+            setPodCount(podCount)
+        })
         const unsubReversed = EventSystem.listen("WheelAssignmentDriveReversedChanged", ({ reversed }) =>
             setDriveReversed(reversed)
         )
@@ -50,10 +53,32 @@ const WheelAssignmentDebugPanel: React.FC = () => {
                     size="small"
                     variant="contained"
                     color="success"
-                    disabled={pendingCount === 0}
+                    disabled={wheelCount === 0 && podCount === 0}
                     onClick={() => void World.wheelAssignmentMode.apply()}
                 >
-                    Apply ({pendingCount})
+                    Apply (W:{wheelCount} P:{podCount})
+                </Button>
+            </Stack>
+            <Stack direction="row" gap={1}>
+                <Button
+                    size="small"
+                    variant={pickTarget === "wheel" ? "contained" : "outlined"}
+                    onClick={() => {
+                        World.wheelAssignmentMode.pickTarget = "wheel"
+                        setPickTarget("wheel")
+                    }}
+                >
+                    Wheel
+                </Button>
+                <Button
+                    size="small"
+                    variant={pickTarget === "pod" ? "contained" : "outlined"}
+                    onClick={() => {
+                        World.wheelAssignmentMode.pickTarget = "pod"
+                        setPickTarget("pod")
+                    }}
+                >
+                    Pod
                 </Button>
             </Stack>
             <Stack direction="row" gap={1}>

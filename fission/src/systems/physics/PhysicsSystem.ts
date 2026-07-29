@@ -14,7 +14,7 @@ import {
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
-import { WHEEL_SEPARATOR_JOINT_PREFIX } from "@/mirabuf/WheelJointBuilder.ts"
+import { MANUAL_SEPARATOR_JOINT_PREFIX } from "@/mirabuf/WheelJointBuilder.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { LocalSceneObjectId, Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -420,7 +420,7 @@ class PhysicsSystem extends WorldSystem {
         joints.forEach(([jointGuid, jointInst]) => {
             if (jointGuid == GROUNDED_JOINT_ID) return
             // Structural-only separator joint, not a real constraint.
-            if (jointGuid.startsWith(WHEEL_SEPARATOR_JOINT_PREFIX)) return
+            if (jointGuid.startsWith(MANUAL_SEPARATOR_JOINT_PREFIX)) return
 
             const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
             const rnB = parser.partToNodeMap.get(jointInst.childPart!)

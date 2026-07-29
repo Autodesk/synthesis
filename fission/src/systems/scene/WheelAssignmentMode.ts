@@ -2,9 +2,16 @@ import * as THREE from "three"
 import { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { applyWheelAssignments, type WheelAssignment } from "@/mirabuf/WheelJointBuilder"
+import {
+    applyPodAssignments,
+    applyWheelAssignments,
+    type PodAssignment,
+    type WheelAssignment,
+} from "@/mirabuf/WheelJointBuilder"
 import EventSystem from "@/systems/EventSystem.ts"
+import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { pairNearestHinges } from "@/systems/simulation/synthesis_brain/SwervePairing"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import {
     computeWheelAxisFromAABB,
@@ -14,6 +21,9 @@ import {
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
+
+/** What kind of joint the next click will stage: a wheel (drive) or a swerve module pod (steer). */
+export type WheelAssignmentPickTarget = "wheel" | "pod"
 
 interface PartPick {
     sceneObject: MirabufSceneObject
@@ -51,9 +61,14 @@ function getPartLocalVertices(object: THREE.Object3D, instanceId: number): THREE
     return points
 }
 
-interface PendingAssignment {
+interface PendingWheelAssignment {
     sceneObject: MirabufSceneObject
     assignment: WheelAssignment
+}
+
+interface PendingPodAssignment {
+    sceneObject: MirabufSceneObject
+    assignment: PodAssignment
 }
 
 interface HoverHighlight {
@@ -75,10 +90,17 @@ interface PickIndexEntry {
     guid: string
 }
 
-/** Interaction mode: click a wheel's rim to fit a joint axis, using the assembly's grounded part as parent. */
+/**
+ * Interaction mode: click a wheel's rim to fit a joint axis, using the assembly's grounded part as
+ * parent, or (in "pod" mode) click a swerve module's rotating housing to stage a steering hinge.
+ * At Apply, any staged wheels are paired to staged pods by nearest-neighbor (mirroring the runtime
+ * `SwervePairing.pairNearestHinges`); wheels with no pods staged keep the plain arcade/tank parent.
+ */
 class WheelAssignmentMode extends WorldSystem {
     private _enabled = false
-    private _pending: PendingAssignment[] = []
+    private _pickTarget: WheelAssignmentPickTarget = "wheel"
+    private _pendingWheels: PendingWheelAssignment[] = []
+    private _pendingPods: PendingPodAssignment[] = []
 
     private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
     private _pointerMoveListener: ((e: PointerEvent) => void) | undefined
@@ -106,8 +128,20 @@ class WheelAssignmentMode extends WorldSystem {
         EventSystem.dispatch("WheelAssignmentModeToggled", { enabled })
     }
 
-    public get pendingCount(): number {
-        return this._pending.length
+    public get pickTarget(): WheelAssignmentPickTarget {
+        return this._pickTarget
+    }
+
+    public set pickTarget(target: WheelAssignmentPickTarget) {
+        this._pickTarget = target
+    }
+
+    public get wheelPendingCount(): number {
+        return this._pendingWheels.length
+    }
+
+    public get podPendingCount(): number {
+        return this._pendingPods.length
     }
 
     public get driveReversed(): boolean {
@@ -243,7 +277,22 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        this.handleWheelPick(interaction.position)
+        if (this._pickTarget === "pod") this.handlePodPick(interaction.position)
+        else this.handleWheelPick(interaction.position)
+    }
+
+    /** Grounded/root part's GUID -- doubles as the default parent for both wheel and pod picks. */
+    private getGroundedPartGuid(sceneObject: MirabufSceneObject): string {
+        const groundedInstance =
+            sceneObject.mirabufInstance.parser.assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
+        return groundedInstance.parts!.nodes!.at(0)!.value!
+    }
+
+    private dispatchPendingCount(): void {
+        EventSystem.dispatch("WheelAssignmentPendingCountChanged", {
+            wheelCount: this._pendingWheels.length,
+            podCount: this._pendingPods.length,
+        })
     }
 
     private handleWheelPick(mousePos: [number, number]): void {
@@ -269,45 +318,107 @@ class WheelAssignmentMode extends WorldSystem {
         const assemblySpaceTransform = pick.sceneObject.mirabufInstance.parser.globalTransforms.get(pick.guid)!
         const worldAxisFit = transformWheelAxis(localAxisFit, assemblySpaceTransform)
 
-        // Grounded/root part doubles as the parent -- no second click needed.
-        const groundedInstance =
-            pick.sceneObject.mirabufInstance.parser.assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
-        const parentPartGuid = groundedInstance.parts!.nodes!.at(0)!.value!
+        // Grounded/root part doubles as the parent by default -- reassigned to a pod at Apply time
+        // if this scene object has any pod picks staged.
+        const parentPartGuid = this.getGroundedPartGuid(pick.sceneObject)
         if (parentPartGuid === pick.guid) {
             globalAddToast("warning", "Wheel Assignment", "This part is the assembly's grounded/root part.")
             return
         }
 
-        this._pending.push({
+        this._pendingWheels.push({
             sceneObject: pick.sceneObject,
             assignment: { wheelPartGuid: pick.guid, parentPartGuid, axisFit: worldAxisFit },
         })
 
-        EventSystem.dispatch("WheelAssignmentPendingCountChanged", { count: this._pending.length })
+        this.dispatchPendingCount()
         globalAddToast(
             "success",
             "Wheel Assignment",
-            `Wheel staged (${this._pending.length} pending). Pick the next wheel, or Apply.`
+            `Wheel staged (${this._pendingWheels.length} pending). Pick the next wheel, or Apply.`
+        )
+    }
+
+    /** Stages a swerve module pod: an untagged vertical hinge will be created from chassis to this part. */
+    private handlePodPick(mousePos: [number, number]): void {
+        const pick = this.pickPart(mousePos)
+        if (!pick) {
+            globalAddToast("warning", "Wheel Assignment", "Click directly on a part's mesh.")
+            return
+        }
+
+        const points = getPartLocalVertices(pick.object, pick.instanceId)
+        if (!points || points.length === 0) {
+            globalAddToast("warning", "Wheel Assignment", "Couldn't read this part's geometry.")
+            return
+        }
+
+        // Pivot origin only -- the steering axis is always assembly-space up, matching the
+        // spawn-upright assumption SynthesisBrain.detectSwerve() already relies on.
+        const localCenter = new THREE.Box3().setFromPoints(points).getCenter(new THREE.Vector3())
+        const assemblySpaceTransform = pick.sceneObject.mirabufInstance.parser.globalTransforms.get(pick.guid)!
+        const worldCenter = localCenter.clone().applyMatrix4(assemblySpaceTransform)
+
+        const parentPartGuid = this.getGroundedPartGuid(pick.sceneObject)
+        if (parentPartGuid === pick.guid) {
+            globalAddToast("warning", "Wheel Assignment", "This part is the assembly's grounded/root part.")
+            return
+        }
+
+        this._pendingPods.push({
+            sceneObject: pick.sceneObject,
+            assignment: {
+                podPartGuid: pick.guid,
+                parentPartGuid,
+                origin: { x: worldCenter.x, y: worldCenter.y, z: worldCenter.z },
+            },
+        })
+
+        this.dispatchPendingCount()
+        globalAddToast(
+            "success",
+            "Wheel Assignment",
+            `Pod staged (${this._pendingPods.length} pending). Pick the next pod, or a wheel.`
         )
     }
 
     /** Mutates each affected assembly and fully rebuilds its MirabufSceneObject. */
     public async apply(): Promise<void> {
-        if (this._pending.length === 0) return
+        if (this._pendingWheels.length === 0 && this._pendingPods.length === 0) return
 
         // Clear before rebuild destroys the hovered mesh's batches.
         this.clearHover()
 
-        const bySceneObject = new Map<MirabufSceneObject, WheelAssignment[]>()
-        for (const { sceneObject, assignment } of this._pending) {
-            const list = bySceneObject.get(sceneObject)
-            if (list) list.push(assignment)
-            else bySceneObject.set(sceneObject, [assignment])
-        }
+        const sceneObjects = new Set<MirabufSceneObject>([
+            ...this._pendingWheels.map(p => p.sceneObject),
+            ...this._pendingPods.map(p => p.sceneObject),
+        ])
 
-        for (const [sceneObject, assignments] of bySceneObject) {
+        for (const sceneObject of sceneObjects) {
+            const wheelPicks = this._pendingWheels.filter(p => p.sceneObject === sceneObject)
+            const podPicks = this._pendingPods.filter(p => p.sceneObject === sceneObject)
+
+            // Pair staged wheels to staged pods by nearest-neighbor, same algorithm the runtime
+            // uses to pair WheelDriver/HingeDriver pairs (SwervePairing.pairNearestHinges). Wheels
+            // with no pods staged for this scene object keep their plain arcade/tank parent.
+            const wheelAssignments: WheelAssignment[] = wheelPicks.map(p => ({ ...p.assignment }))
+            if (podPicks.length > 0) {
+                const wheelCenters = wheelPicks.map(p => p.assignment.axisFit.center)
+                const podOrigins = podPicks.map(p => p.assignment.origin)
+                const pairing = pairNearestHinges(wheelCenters, podOrigins)
+                pairing.forEach((podIndex, wheelIndex) => {
+                    if (podIndex === -1) return
+                    wheelAssignments[wheelIndex].parentPartGuid = podPicks[podIndex].assignment.podPartGuid
+                })
+            }
+            const podAssignments: PodAssignment[] = podPicks.map(p => p.assignment)
+
             const assembly = sceneObject.mirabufInstance.parser.assembly
-            applyWheelAssignments(assembly, assignments)
+            applyPodAssignments(assembly, podAssignments)
+            applyWheelAssignments(assembly, wheelAssignments)
+
+            const priorDriveType =
+                sceneObject.brain instanceof SynthesisBrain ? sceneObject.brain.driveType : undefined
 
             const sceneId = sceneObject.id
             World.sceneRenderer.removeSceneObject(sceneId)
@@ -319,25 +430,38 @@ class WheelAssignmentMode extends WorldSystem {
             }
             World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
 
+            // A fresh SynthesisBrain always constructs with DriveType.ARCADE; restore what the
+            // robot had before, or switch it to Swerve outright if modules were just marked.
+            if (rebuilt.brain instanceof SynthesisBrain) {
+                rebuilt.brain.configureDriveBehavior(
+                    podAssignments.length > 0 ? DriveType.SWERVE : (priorDriveType ?? DriveType.ARCADE)
+                )
+            }
+
             const parser = rebuilt.mirabufInstance.parser
 
             let hadMismatch = false
-            for (const assignment of assignments) {
-                const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
-                const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
-                if (!wheelNode || !parentNode) continue
-                if (wheelNode.id !== parentNode.id) continue
+            const partGuidPairs = [
+                ...wheelAssignments.map(a => [a.wheelPartGuid, a.parentPartGuid]),
+                ...podAssignments.map(a => [a.podPartGuid, a.parentPartGuid]),
+            ]
+            for (const [childGuid, parentGuid] of partGuidPairs) {
+                const childNode = parser.partToNodeMap.get(childGuid)
+                const parentNode = parser.partToNodeMap.get(parentGuid)
+                if (!childNode || !parentNode) continue
+                if (childNode.id !== parentNode.id) continue
                 hadMismatch = true
             }
 
             if (hadMismatch) {
-                globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
+                globalAddToast("warning", "Wheel Assignment", "A marked part ended up in the same rigid node as its parent.")
             }
         }
 
-        this._pending = []
-        EventSystem.dispatch("WheelAssignmentPendingCountChanged", { count: 0 })
-        globalAddToast("success", "Wheel Assignment", "Applied wheel joints and rebuilt the affected assembly.")
+        this._pendingWheels = []
+        this._pendingPods = []
+        this.dispatchPendingCount()
+        globalAddToast("success", "Wheel Assignment", "Applied joints and rebuilt the affected assembly.")
 
         // Rebuilt assemblies got new batches/instance ids; refresh the stale pick index.
         if (this._enabled) this.rebuildPickIndex()
