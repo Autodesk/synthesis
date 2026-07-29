@@ -25,7 +25,7 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
                 const mechanism = miraObj.mechanism
                 const simLayer = World.simulationSystem.getSimulationLayer(mechanism)
                 console.log("simlayer", simLayer)
-                if (!(simLayer?.brain instanceof WPILibBrain)) simLayer?.setBrain(new WPILibBrain(miraObj))
+                if (!simLayer?.brain?.isWPILib()) simLayer?.setBrain(new WPILibBrain(miraObj))
             }
             switch (type) {
                 case "PWM":

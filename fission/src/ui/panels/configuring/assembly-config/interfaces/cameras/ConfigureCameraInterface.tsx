@@ -9,16 +9,13 @@ import CameraConfigInterface from "./CameraConfigInterface"
 import Label from "@/ui/components/Label"
 import { SelectMenuHeader } from "@/ui/components/SelectMenu"
 import EventSystem from "@/systems/EventSystem"
+import type { ConfigurationSubpanelComponent } from "../../ConfigTypes"
 
-interface ConfigCameraProps {
-    selectedRobot: MirabufSceneObject
-}
-
-const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }) => {
+const ConfigureCameraInterface: ConfigurationSubpanelComponent = ({ selectedAssembly }) => {
     const [_version, setVersion] = useState(0)
     const [selectedCamera, setSelectedCamera] = useState<CameraPreferences | null>(null)
 
-    const cameras = selectedRobot.cameraPreferences
+    const cameras = selectedAssembly.cameraPreferences
 
     const forceRender = useCallback(() => setVersion(v => v + 1), [])
 
@@ -42,7 +39,7 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                         }}
                     />
                     <Divider />
-                    <CameraConfigInterface camera={selectedCamera} selectedRobot={selectedRobot} />
+                    <CameraConfigInterface camera={selectedCamera} selectedRobot={selectedAssembly} />
                 </>
             ) : (
                 <Stack gap={2}>
@@ -62,12 +59,12 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                                         />
                                         <DeleteButton
                                             onClick={() => {
-                                                selectedRobot.cameraPreferences =
-                                                    selectedRobot.cameraPreferences.filter(
+                                                selectedAssembly.cameraPreferences =
+                                                    selectedAssembly.cameraPreferences.filter(
                                                         cpref => cpref.id !== cameraPrefs.id
                                                     )
                                                 setSelectedCamera(null)
-                                                selectedRobot.updateCameras()
+                                                selectedAssembly.updateCameras()
                                                 forceRender()
                                             }}
                                         />
@@ -85,7 +82,7 @@ const ConfigureCameraInterface: React.FC<ConfigCameraProps> = ({ selectedRobot }
                             const nextId = cameras.reduce((max, c) => Math.max(max, c.id + 1), 0)
                             cameras.push(defaultCameraPreferences(nextId))
                             setSelectedCamera(cameras.at(-1)!) // should be safe since we just added one
-                            selectedRobot.updateCameras()
+                            selectedAssembly.updateCameras()
                             forceRender()
                         }}
                         className="w-full"

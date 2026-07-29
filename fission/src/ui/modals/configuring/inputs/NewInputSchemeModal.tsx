@@ -43,7 +43,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
             InputSchemeManager.saveSchemes(modal?.id)
 
             if (brainIndex !== undefined) {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
             }
 
             setSelectedScheme(scheme)
