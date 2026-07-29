@@ -17,6 +17,7 @@ import {
     type OpenPanelFn,
     type Panel,
     type PanelProps,
+    type TogglePanelFn,
     UIContext,
     type UIScreen,
     type UIScreenCallbacks,
@@ -261,6 +262,22 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
         })
     }, [])
+
+    const togglePanel: TogglePanelFn = useCallback(
+        <T, P>(
+            content: FunctionComponent<PanelImplProps<T, P>>,
+            customProps: P,
+            matchesOpen?: (openCustomProps: P) => boolean
+        ) => {
+            const openInstance = panels.find(p => p.content === content)
+            if (openInstance && (matchesOpen?.((openInstance.props as PanelProps<P>).custom) ?? true)) {
+                closePanel(openInstance.id, CloseType.CANCEL)
+                return null
+            }
+            return openPanel(content, customProps)
+        },
+        [panels, openPanel, closePanel]
+    )
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
     const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {
@@ -287,6 +304,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 panels,
                 openModal,
                 openPanel,
+                togglePanel,
                 closeModal,
                 closePanel,
                 addToast,
