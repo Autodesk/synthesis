@@ -8,11 +8,9 @@ import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
-import MultiplayerStartModal from "../modals/MultiplayerStartModal"
-import { startMultiplayerWorld } from "../helpers/StartMultiplayerWorld"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
-import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
+import { globalOpenModal, setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
 import { AssemblySelect } from "./topbar/AssemblySelect"
 import { HUDMenuButton } from "./topbar/HUDMenuButton"
@@ -20,6 +18,7 @@ import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
 import { useAssemblySelection, useConfigureAssembly } from "./topbar/UseConfigureAssembly"
 import UserIcon from "./UserIcon"
+import MultiplayerStartModal from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 
 const DRAWER_SX = {
     width: "min(92vw, 520px)",
@@ -60,7 +59,7 @@ const MobileHUD: React.FC = () => {
         fn()
     }
 
-    const openMultiplayer = () => openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
+    const openMultiplayer = () => globalOpenModal(MultiplayerStartModal, undefined)
 
     const rootGrid = (
         <Stack gap={2} sx={{ minHeight: "100%" }}>

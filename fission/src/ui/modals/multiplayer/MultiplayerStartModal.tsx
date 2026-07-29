@@ -1,27 +1,24 @@
 import type React from "react"
 import { useLayoutEffect, useState } from "react"
 import type { ModalImplProps } from "@/components/Modal.tsx"
-import { useUIContext } from "../../helpers/UIProviderHelpers.ts"
+import { CloseType, useUIContext } from "../../helpers/UIProviderHelpers.ts"
 import ConnectionModal from "@/modals/multiplayer/ConnectionModal.tsx"
 import RoomModal from "@/modals/multiplayer/RoomModal.tsx"
 import type { RoomInfo } from "@/systems/multiplayer/bindings/RoomInfo.ts"
 import type MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
+import World from "@/systems/World.ts"
+import { Button } from "@/components/StyledComponents.tsx"
 
 export interface MultiplayerInitProps {
     displayName: string
     ws: MultiplayerWebsocket
 }
-interface MultiplayerStartMenuCustomProps {
-    startWorldCallback: (initData: MultiplayerInitProps) => Promise<boolean>
-}
 
-const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuCustomProps>> = ({ modal }) => {
-    const { configureScreen } = useUIContext()
+const MultiplayerStartModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
+    const { configureScreen, closeModal } = useUIContext()
     const [roomList, setRoomList] = useState<RoomInfo[]>([])
     const [url, setUrl] = useState<string | null>(null)
     const [page, setPage] = useState<"url" | "room">("url")
-
-    const { startWorldCallback } = modal!.props.custom
 
     useLayoutEffect(() => {
         configureScreen(
@@ -31,15 +28,19 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
         )
     }, [configureScreen, modal])
 
-    return page == "url" ? (
+    return World.multiplayerSystem != null ? (
+        <Button
+            onClick={() => {
+                World.multiplayerSystem!.destroy()
+                closeModal(CloseType.ACCEPT)
+            }}
+        >
+            Disconnect
+        </Button>
+    ) : page == "url" ? (
         <ConnectionModal setRoomList={setRoomList} setURL={setUrl} onNext={() => setPage("room")} />
     ) : (
-        <RoomModal
-            initialRoomList={roomList}
-            url={url!}
-            startWorldCallback={startWorldCallback}
-            onBack={() => setPage("url")}
-        />
+        <RoomModal initialRoomList={roomList} url={url!} onBack={() => setPage("url")} />
     )
 }
 

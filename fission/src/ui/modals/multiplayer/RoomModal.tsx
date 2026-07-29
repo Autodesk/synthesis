@@ -9,15 +9,15 @@ import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import { withTimeout } from "@/util/Utility.ts"
 import type { RoomInfo } from "@/systems/multiplayer/bindings/RoomInfo.ts"
 import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
+import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld.ts"
 
 interface RoomModalProps {
     initialRoomList: RoomInfo[]
     url: string
-    startWorldCallback: (initData: MultiplayerInitProps) => Promise<boolean>
     onBack: () => void
 }
 
-const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, startWorldCallback, onBack }) => {
+const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) => {
     const { closeModal } = useUIContext()
     const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
     const [roomList, setRoomList] = useState(initialRoomList)
@@ -93,7 +93,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, startWorldC
             const initData = validate(roomId)
             if (initData == null) return
 
-            const success = await withTimeout(startWorldCallback(initData), "Multiplayer connect timed out")
+            const success = await withTimeout(startMultiplayerWorld(initData), "Multiplayer connect timed out")
             if (success) {
                 closeModal(CloseType.ACCEPT)
             } else {
@@ -103,7 +103,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, startWorldC
                 await updateRoomList()
             }
         },
-        [validate, updateRoomList, closeModal, startWorldCallback]
+        [validate, updateRoomList, closeModal]
     )
 
     return (

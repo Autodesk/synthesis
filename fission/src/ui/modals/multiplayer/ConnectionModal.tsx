@@ -26,7 +26,7 @@ async function promptCert(url: string): Promise<boolean> {
     const windowHandle = window.open(urlObj.href, "_blank", "popup")
     if (windowHandle) {
         await waitUntil(() => windowHandle?.closed, 300)
-        SessionStorage.saveOnce("autoOpenTo", "multiplayer")
+        SessionStorage.saveOnce("autoOpenMultiplayer", true)
         SessionStorage.saveOnce("autoToast", {
             type: "info",
             lines: ["Multiplayer Certificate Update", "Try connecting again!"],

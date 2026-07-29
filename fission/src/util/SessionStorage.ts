@@ -3,7 +3,7 @@ import { tryParse } from "@/util/Utility.ts"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 interface SessionStorageData {
-    autoOpenTo: "singleplayer" | "multiplayer"
+    autoOpenMultiplayer: boolean
     autoToast: { type: VariantType; lines: string[] }
 }
 

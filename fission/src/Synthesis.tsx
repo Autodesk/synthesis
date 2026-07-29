@@ -4,10 +4,8 @@ import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
 import MainHUD from "@/components/MainHUD"
 import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
-import MainHUD from "@/components/MainHUD.tsx"
 import Scene from "@/components/Scene.tsx"
-import MultiplayerStartModal, { type MultiplayerInitProps } from "@/modals/multiplayer/MultiplayerStartModal.tsx"
-import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
+import MultiplayerStartModal from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 import World from "@/systems/World.ts"
 import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
@@ -24,6 +22,8 @@ import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
 import SessionStorage, { applyAutoToast } from "@/util/SessionStorage.ts"
 import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
+import { globalOpenModal } from "@/components/GlobalUIControls.ts"
+import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld.ts"
 
 const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
@@ -57,27 +57,17 @@ const Synthesis = () => {
                 `ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`
             )
             MultiplayerWebsocket.init(room || null, name, ws)
-            startWorldCallback({
-                displayName: name,
-                ws: ws,
-            })
-            return
+            setTimeout(() => startMultiplayerWorld({ displayName: name, ws }))
         }
 
         applyAutoToast()
-        const autoOpenTo = SessionStorage.load("autoOpenTo")
+        const autoOpenMultiplayer = SessionStorage.load("autoOpenMultiplayer")
+
+        if (autoOpenMultiplayer) {
+            globalOpenModal(MultiplayerStartModal, undefined)
+        }
 
         startMainLoop()
-
-        if (autoOpenTo == "singleplayer") {
-            setTimeout(startMainLoop)
-        } else if (autoOpenTo == "multiplayer") {
-            globalOpenModal(MultiplayerStartModal, {
-                startWorldCallback: startWorldCallback,
-            })
-        } else {
-            openMainMenu()
-        }
 
         // Cleanup
         return () => {
@@ -87,7 +77,7 @@ const Synthesis = () => {
             World.multiplayerSystem?.destroy()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
-    }, [])
+    }, [startMainLoop])
 
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
