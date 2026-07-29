@@ -8,7 +8,7 @@ pub struct Config {
     #[argh(
         option,
         short = 'p',
-        description = "port to run server on",
+        description = "on which port to run the server",
         default = "DEFAULT_PORT"
     )]
     pub port: u32,
