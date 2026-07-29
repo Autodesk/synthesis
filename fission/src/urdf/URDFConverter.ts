@@ -664,25 +664,9 @@ function typedArraysEqual(a: ArrayBufferView, b: ArrayBufferView): boolean {
     return true
 }
 
-// Baked body geometry can't be shared across links via a PartDefinition reference the way whole
-// duplicate links can be (see linkGeometrySignature): a collapsed Onshape sub-assembly link bakes
-// each of its parts' true world/robot-space position directly into that part's vertices, so two
-// occurrences of "the same bearing" mounted at two different points on the robot produce genuinely
-// different vertex arrays. But some pieces of a baked body ARE guaranteed identical regardless of
-// position, and every consumer (protobuf encode, MirabufInstance, PhysicsSystem) only ever reads
-// these arrays - none of them mutate or hold onto a reference beyond copying out of it - so it's
-// safe for many Body objects to point at the exact same backing array instead of each allocating
-// their own copy:
-//   - indices: STL has no shared-vertex concept, so `indices` is always the trivial [0..N-1]
-//     sequence for a given triangle count, completely independent of the mesh's identity/position.
-//   - uv: STLParser always returns an all-zero placeholder (no real STL UV data), so for a given
-//     vertex count the "uv" content is always identical - always N zeros - regardless of source.
-//   - verts/normals: not position-independent in general, but two bodies anywhere in the assembly
-//     occasionally do end up byte-identical (e.g. identical sub-parts at the same relative offset
-//     within otherwise-unmergeable collapsed links). Interned as a bonus, not the primary win.
-// Content is still verified byte-exact before sharing (see hashTypedArrayBytes/typedArraysEqual) -
-// this only shares an existing allocation for content already proven identical, it never changes
-// what data ends up in the assembly.
+// Baked geometry bakes world-space position into vertices, so identical parts at different
+// positions produce different arrays; can't dedupe by reference alone. But some fields are
+// position-independent and safe to share across Body objects.
 class GeometryInterner {
     private _indicesByHash = new Map<string, { source: Uint32Array; interned: number[] }[]>()
     private _zeroUvByLength = new Map<number, Float32Array>()
@@ -762,10 +746,6 @@ function buildLinkBody(
     const uv = inLinkFrame.uv.length > 0 ? inLinkFrame.uv : geometryInterner.internZeroUv(vertexCount)
     const interned = geometryInterner.internVertsNormals(scaled, yupNormals)
 
-    // mirabuf.IMesh types these fields as `number[]`, but every consumer (encode, MirabufInstance,
-    // PhysicsSystem) only ever reads .length/indexed access, so keeping verts/normals/uv as Float32Array
-    // avoids doubling them to 8-byte JS doubles via Array.from. `indices` stays a real array: THREE.js's
-    // BufferGeometry.setIndex does `Array.isArray(index)` and silently mishandles a typed array there.
     return {
         info: { GUID: `${link.name}_body_${index}`, name: `${link.name}_body_${index}` },
         triangleMesh: {
@@ -780,14 +760,9 @@ function buildLinkBody(
     }
 }
 
-// Onshape kits routinely reuse the same fastener/hardware mesh dozens of times (nuts, screws,
-// bearings...). buildParts used to bake a fresh PartDefinition per <link>, so every repeat baked
-// its own full copy of the mesh. Two links produce byte-identical body geometry whenever their
-// mass/COM and every visual's (mesh, scale, local origin, material) match — the joint-tree
-// placement is applied separately via the PartInstance transform, so it doesn't need to be part
-// of the signature. Robot-space links are excluded: their baked geometry folds in the link's
-// global position (see shouldTreatVisualOriginsAsRobotSpace), so two such links are never
-// byte-identical even when they look alike.
+// Vendored parts routinely reuse the same fastener/hardware mesh dozens of times.
+// Avoid a full baked copy of each identical mesh. Reuse bype-identical body geometry
+// whereever possible.
 function linkGeometrySignature(link: URDFLink): string {
     const visualSig = link.visuals
         .map(
@@ -1065,10 +1040,7 @@ export async function convertURDF(
         designHierarchy: hierarchy,
         data: {
             parts: { partDefinitions, partInstances, userData: { data: { [URDF_IMPORT_TAG]: "true" } } },
-            // motorDefinitions must be an object: PhysicsSystem.ts:375 indexes it before any null-check
             joints: { jointDefinitions, jointInstances, rigidGroups, motorDefinitions: {} },
-            // appearances must be an object (not undefined/null): loadMaterials calls Object.entries on it
-            // physicalMaterials must be an object (not undefined), an empty map is fine here
             materials: { appearances, physicalMaterials: {} },
         },
     })
