@@ -504,9 +504,6 @@ function parseMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): Parsed
     }
 
     const ext = meshPath.split(".").pop()?.toLowerCase()
-    // Decimation is scoped to STL for now: STL's per-triangle (non-shared) vertices are what was
-    // validated against, and STL's UV is always an all-zero placeholder so there's no real UV data
-    // to lose. OBJ/glTF sources may carry real shared indices/UV and aren't touched here.
     if (ext === "stl") return decimateMesh(parseSTL(data))
     if (ext === "obj") return parseOBJ(data)
     if (ext === "gltf") return parseGLTF(data, meshPath, meshFiles)
@@ -643,9 +640,9 @@ function isCylindricalPhantom(link: URDFLink, parentJoint: URDFJoint): boolean {
     )
 }
 
-// FNV-1a over the raw bytes backing a typed array. Used only to bucket candidates for interning -
-// every hash hit is still verified with a byte-exact comparison before two arrays are treated as
-// the same object, so a hash collision can only cost a cache miss, never an incorrect merge.
+// FNV-1a over raw bytes. Buckets candidates for interning.
+// 0x811c9dc5 / 0x01000193: standard FNV-1a 32-bit offset basis / prime.
+// https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
 function hashTypedArrayBytes(view: ArrayBufferView): number {
     const bytes = new Uint8Array(view.buffer, view.byteOffset, view.byteLength)
     let h = 0x811c9dc5
