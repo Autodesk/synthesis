@@ -1,0 +1,5 @@
+cert-dir = "~/secrets/"
+port = 2610
+headless = false
+secure = false
+permanent_room = "ZACH01"

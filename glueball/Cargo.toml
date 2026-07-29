@@ -25,6 +25,7 @@ serde_json = "1.0.151"
 tokio = { version = "1.53.1", features = ["rt-multi-thread", "net", "sync", "time", "macros"] }
 tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12", "logging"] }
 tokio-tungstenite = "0.30.0"
+toml = "1.1.4"
 ts-rs = "12.0.1"
 uuid = { version = "1.24.0", features = ["v4"] }
 

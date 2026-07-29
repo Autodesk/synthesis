@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::{env::home_dir, ops::Deref, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 use tokio_tungstenite::tungstenite::Message;
@@ -8,6 +8,15 @@ use crate::model::MessagePrefix;
 
 pub fn trim_uuid(uuid: &Uuid) -> String {
     uuid.to_string()[0..8].to_string()
+}
+
+pub fn tilde_expansion(path: &mut PathBuf) {
+    let Ok(suffix) = path.strip_prefix("~/") else {
+        return;
+    };
+
+    let home_dir = home_dir().expect("Could not find your home dir");
+    *path = home_dir.join(suffix);
 }
 
 pub fn serialize_and_prefix<M>(message: M, prefix: MessagePrefix) -> Message

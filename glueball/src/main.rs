@@ -10,11 +10,12 @@ mod tui;
 mod util;
 
 use crate::cert::build_tls_config;
-use crate::config::Config;
+use crate::config::{CliConfig, DEFAULT_PORT, parse_config_file};
 use crate::logging::EventType;
 use crate::messaging::handle_connection;
 use crate::room::State;
 use crate::tui::start_tui_thread;
+use crate::util::tilde_expansion;
 
 use std::error::Error;
 use std::sync::{Arc, Mutex};
@@ -27,10 +28,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let state = Arc::new(Mutex::new(State::new()));
 
     // Parse and handle initial configuration
-    let config: Config = argh::from_env();
+    let mut config: CliConfig = argh::from_env();
+
+    if let Some(config_file) = config.config_file.clone() {
+        parse_config_file(config_file, &mut config);
+    }
+    if config.port.is_none() {
+        config.port = Some(DEFAULT_PORT);
+    }
+    if config.cert_dir.is_none() {
+        config.cert_dir = Some(config::certification_directory());
+    }
+    let mut cert_dir = config.cert_dir.clone().unwrap();
+    let port = config.port.unwrap();
 
     // `listener` will be used regardless of the security level specified
-    let Ok(listener) = TcpListener::bind(format!("127.0.0.1:{}", config.port)).await else {
+    let Ok(listener) = TcpListener::bind(format!("127.0.0.1:{}", port)).await else {
         eprintln!("Could not create TCP listener (the port is likely in use)");
         std::process::exit(1)
     };
@@ -51,10 +64,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     // Run secure server
-    let tls_config = build_tls_config()?;
+    tilde_expansion(&mut cert_dir);
+    let tls_config = build_tls_config(&cert_dir)?;
     let acceptor = TlsAcceptor::from(Arc::new(tls_config));
 
-    info_lock!(state, "Server listening on port {} (secure)", config.port);
+    info_lock!(state, "Server listening on port {} (secure)", port);
 
     while let Ok((stream, addr)) = listener.accept().await {
         let acceptor = acceptor.clone();
