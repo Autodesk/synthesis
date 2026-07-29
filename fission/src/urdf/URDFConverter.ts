@@ -677,6 +677,7 @@ class GeometryInterner {
                 if (typedArraysEqual(candidate.source, indices)) return candidate.interned
             }
         }
+
         const interned = Array.from(indices)
         const list = bucket ?? []
         list.push({ source: indices, interned })
@@ -702,6 +703,7 @@ class GeometryInterner {
                 }
             }
         }
+
         const entry = { verts, normals }
         const list = bucket ?? []
         list.push(entry)
@@ -770,6 +772,71 @@ function linkGeometrySignature(link: URDFLink): string {
     return `${link.mass}|${link.comXYZ.join(",")}|${visualSig}`
 }
 
+function resolvePartDefinition(
+    link: URDFLink,
+    globalTransform: URDFTransform | undefined,
+    meshFiles: Map<string, Uint8Array>,
+    meshCache: Map<string, ParsedMesh | null>,
+    geometryInterner: GeometryInterner,
+    definitionBySignature: Map<string, string>,
+    partDefinitions: Record<string, mirabuf.IPartDefinition>
+): string {
+    const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles, meshCache)
+    const signature = robotSpaceVisuals ? null : linkGeometrySignature(link)
+    const reusedDefinitionName = signature ? definitionBySignature.get(signature) : undefined
+    if (reusedDefinitionName) return reusedDefinitionName
+
+    const bodies = link.visuals
+        .map((visual, index) =>
+            buildLinkBody(
+                link,
+                visual,
+                index,
+                meshFiles,
+                robotSpaceVisuals,
+                meshCache,
+                geometryInterner,
+                globalTransform
+            )
+        )
+        .filter((body): body is mirabuf.IBody => body !== null)
+
+    partDefinitions[link.name] = {
+        info: { GUID: link.name, name: link.name, version: 1 },
+        physicalData: {
+            mass: link.mass,
+            com: positionToYup(link.comXYZ[0], link.comXYZ[1], link.comXYZ[2]),
+        },
+        baseTransform: { spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+        bodies,
+    }
+
+    if (signature) definitionBySignature.set(signature, link.name)
+    return link.name
+}
+
+function buildPartInstance(
+    link: URDFLink,
+    rootLink: URDFLink,
+    parentJoint: Map<string, URDFJoint>,
+    partDefinitionReference: string
+): mirabuf.IPartInstance {
+    const pj = parentJoint.get(link.name)
+    const spatialMatrix =
+        link === rootLink
+            ? ROOT_SPATIAL_MATRIX
+            : pj
+              ? originToSpatialMatrix(pj.originXYZ, pj.originRPY)
+              : ROOT_SPATIAL_MATRIX
+
+    return {
+        info: { GUID: link.name, name: link.name, version: 1 },
+        partDefinitionReference,
+        transform: { spatialMatrix },
+        appearance: link.visuals[0]?.materialName ?? undefined,
+    }
+}
+
 async function buildParts(
     links: URDFLink[],
     rootLink: URDFLink,
@@ -785,6 +852,7 @@ async function buildParts(
     const parentJoint = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
     const globalTransforms = buildGlobalLinkTransforms(joints, rootLink.name)
     const meshCache = new Map<string, ParsedMesh | null>()
+
     // Maps a link's geometry signature to the link name whose PartDefinition already covers it.
     const definitionBySignature = new Map<string, string>()
     const geometryInterner = new GeometryInterner()
@@ -801,58 +869,18 @@ async function buildParts(
             progressHandle.update(`Building Parts (${i}/${links.length})`, progress)
             await yieldToMain()
         }
+
         const globalTransform = globalTransforms.get(link.name)
-        const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles, meshCache)
-
-        const signature = robotSpaceVisuals ? null : linkGeometrySignature(link)
-        const reusedDefinitionName = signature ? definitionBySignature.get(signature) : undefined
-
-        let partDefinitionReference: string
-        if (reusedDefinitionName) {
-            partDefinitionReference = reusedDefinitionName
-        } else {
-            const bodies = link.visuals
-                .map((visual, index) =>
-                    buildLinkBody(
-                        link,
-                        visual,
-                        index,
-                        meshFiles,
-                        robotSpaceVisuals,
-                        meshCache,
-                        geometryInterner,
-                        globalTransform
-                    )
-                )
-                .filter((body): body is mirabuf.IBody => body !== null)
-
-            partDefinitions[link.name] = {
-                info: { GUID: link.name, name: link.name, version: 1 },
-                physicalData: {
-                    mass: link.mass,
-                    com: positionToYup(link.comXYZ[0], link.comXYZ[1], link.comXYZ[2]),
-                },
-                baseTransform: { spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
-                bodies,
-            }
-            partDefinitionReference = link.name
-            if (signature) definitionBySignature.set(signature, link.name)
-        }
-
-        const pj = parentJoint.get(link.name)
-        const spatialMatrix =
-            link === rootLink
-                ? ROOT_SPATIAL_MATRIX
-                : pj
-                  ? originToSpatialMatrix(pj.originXYZ, pj.originRPY)
-                  : ROOT_SPATIAL_MATRIX
-
-        partInstances[link.name] = {
-            info: { GUID: link.name, name: link.name, version: 1 },
-            partDefinitionReference,
-            transform: { spatialMatrix },
-            appearance: link.visuals[0]?.materialName ?? undefined,
-        }
+        const partDefinitionReference = resolvePartDefinition(
+            link,
+            globalTransform,
+            meshFiles,
+            meshCache,
+            geometryInterner,
+            definitionBySignature,
+            partDefinitions
+        )
+        partInstances[link.name] = buildPartInstance(link, rootLink, parentJoint, partDefinitionReference)
     }
 
     return { partDefinitions, partInstances }

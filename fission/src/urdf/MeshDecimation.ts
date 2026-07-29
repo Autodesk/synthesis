@@ -2,26 +2,19 @@ import { MeshoptSimplifier } from "meshoptimizer"
 import type { ParsedMesh } from "./STLParser"
 
 // Mesh decimation for URDF STL/OBJ/glTF imports.
-// This decimation step takes the 2026 kitbot import size from 3.11GB to 117MB.
-
 // Every result is checked against the input (see validate()) and the original mesh is returned
-// unchanged if anything looks off. Correctness beats memory savings here.
+// unchanged if anything looks off, this is a reasonably conservative decimation step.
 
 // Below this triangle count the mesh is already cheap; leave it alone.
 const TRIANGLE_THRESHOLD = 2000
 
-// Absolute error budgets in metres 
+// Absolute error budgets in metres
 //
 // These are calibrated values from the 2026 FRC kitbot. These values keep the measured surface
 // within 0.5mm of the original while still having a triangle reduction count of about 87.1%.
 //
 // Bottom rungs exist for hardware like screws. Some of these parts have measured over 100k triangles
 // regardless of how small they are so it's worth waking down to 0.03mm to avoid skipping those meshes.
-//
-// The bottommost rung (0.0156mm) is glTF-specific headroom: Onshape's glTF exporter tessellates
-// denser than its STL exporter, so precision-detail parts (small ball bearings, PCB-like boards) can
-// still be well outside MAX_VOLUME_DEVIATION at 0.03mm. Confirmed via why-rejected.mjs that these
-// parts converge exactly one rung down instead of needing a different budgeting model.
 const ERROR_BUDGETS_M = [0.0005, 0.00025, 0.000125, 0.0000625, 0.00003125, 0.000015625]
 // ...but never spend more error than this fraction of the part's own bounding-box diagonal, so a
 // 5mm spacer isn't handed a budget the size of itself.
@@ -57,10 +50,7 @@ export async function readyMeshDecimation(): Promise<void> {
 interface Welded {
     verts: Float32Array
     indices: Uint32Array
-    /** Per-vertex UV, 2 floats per entry in `verts`. Zero-length when the source mesh carries no UV
-     * (STL, or a glTF/OBJ mesh with no texture coordinates) - skipped rather than carried as zeros
-     * so the STL path does no extra work. */
-    uv: Float32Array
+    uv: Float32Array // Zero length with the source mesh caries no UV
 }
 
 // Collapses bit-identical positions into a compacted vertex buffer and reindexes
@@ -95,6 +85,14 @@ function weldPositions(mesh: ParsedMesh): Welded {
     return { verts, indices, uv }
 }
 
+function cross(ax: number, ay: number, az: number, bx: number, by: number, bz: number): [number, number, number] {
+    return [ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx]
+}
+
+function dot(ax: number, ay: number, az: number, bx: number, by: number, bz: number): number {
+    return ax * bx + ay * by + az * bz
+}
+
 // Drops triangles with a repeated index or zero cross-product area from the triangle list.
 function stripDegenerateTriangles(mesh: Welded): Welded {
     const { verts, indices } = mesh
@@ -114,9 +112,7 @@ function stripDegenerateTriangles(mesh: Welded): Welded {
         const vx = verts[c] - verts[a]
         const vy = verts[c + 1] - verts[a + 1]
         const vz = verts[c + 2] - verts[a + 2]
-        const nx = uy * vz - uz * vy
-        const ny = uz * vx - ux * vz
-        const nz = ux * vy - uy * vx
+        const [nx, ny, nz] = cross(ux, uy, uz, vx, vy, vz)
         if (Math.hypot(nx, ny, nz) === 0) continue
 
         kept.push(i0, i1, i2)
@@ -155,6 +151,7 @@ function countShells(indices: Uint32Array, vertCount: number): number {
             parent[x] = parent[parent[x]]
             x = parent[x]
         }
+
         return x
     }
 
@@ -183,7 +180,7 @@ interface EdgeStats {
 }
 
 // Walks every triangle once, accumulating signed area/volume and edge-adjacency counts. Edge keys
-// are packed as `a * vertCount + b`
+// are packed as `u * vertCount + v`
 function collectEdgeStats(verts: Float32Array, indices: Uint32Array, vertCount: number): EdgeStats {
     let area = 0
     let volume = 0
@@ -210,9 +207,7 @@ function collectEdgeStats(verts: Float32Array, indices: Uint32Array, vertCount: 
         const vx = verts[c] - verts[a]
         const vy = verts[c + 1] - verts[a + 1]
         const vz = verts[c + 2] - verts[a + 2]
-        const nx = uy * vz - uz * vy
-        const ny = uz * vx - ux * vz
-        const nz = ux * vy - uy * vx
+        const [nx, ny, nz] = cross(ux, uy, uz, vx, vy, vz)
         const twiceArea = Math.hypot(nx, ny, nz)
         if (twiceArea === 0) {
             degenerateTriangles++
@@ -220,11 +215,9 @@ function collectEdgeStats(verts: Float32Array, indices: Uint32Array, vertCount: 
         }
 
         area += 0.5 * twiceArea
-        volume +=
-            (verts[a] * (verts[b + 1] * verts[c + 2] - verts[b + 2] * verts[c + 1]) -
-                verts[a + 1] * (verts[b] * verts[c + 2] - verts[b + 2] * verts[c]) +
-                verts[a + 2] * (verts[b] * verts[c + 1] - verts[b + 1] * verts[c])) /
-            6
+        // Signed tetrahedron volume of (origin, a, b, c) = dot(a, cross(b, c)) / 6.
+        const [cbx, cby, cbz] = cross(verts[b], verts[b + 1], verts[b + 2], verts[c], verts[c + 1], verts[c + 2])
+        volume += dot(verts[a], verts[a + 1], verts[a + 2], cbx, cby, cbz) / 6
 
         for (const [u, v] of [
             [i0, i1],
@@ -367,10 +360,7 @@ function castRay(
         const vz = verts[c + 2] - verts[a + 2]
         const normalAlongAxis = [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx][axis]
         if (normalAlongAxis === 0) continue
-        hits.push([
-            wa * verts[a + axis] + wb * verts[b + axis] + wc * verts[c + axis],
-            normalAlongAxis < 0 ? 1 : -1,
-        ])
+        hits.push([wa * verts[a + axis] + wb * verts[b + axis] + wc * verts[c + axis], normalAlongAxis < 0 ? 1 : -1])
     }
 
     return hits
@@ -421,14 +411,14 @@ function countUnsolidRaysOnAxis(
 }
 
 // Sweeps a grid of parallel rays down each axis and checks that every ray's surface crossings
-// alternate enter/exit/enter/exit. 
+// alternate enter/exit/enter/exit.
 //
 // This can be a very expensive check to run however its needed. Every other lightweight check
 // that fully covers a venn diagram of different failure modes simply can't replace this validation step.
 //
 // Every cheap check could be happy, on a small doubly-curved thin feature the simplified surface could fold
-// through itself, which keeps the mesh a closed, consistently-wound manifold with the correct volume, 
-// area and bounding box, and render compleatly wrong as a crumpled partly see-through mess. Volume, 
+// through itself, which keeps the mesh a closed, consistently-wound manifold with the correct volume,
+// area and bounding box, and render compleatly wrong as a crumpled partly see-through mess. Volume,
 // area and dihedral angles all will fail to distinguish it from the orignial geometry
 function unsolidRayRatio({ verts, indices }: Welded): number {
     const bounds = computeIndexedBounds(verts, indices)
@@ -506,9 +496,10 @@ function computeFaceNormals(verts: Float32Array, indices: Uint32Array, triCount:
 
         // Left unnormalized: the magnitude is twice the triangle area, which is exactly the weight
         // we want when averaging a cluster.
-        faceNormals[t * 3] = uy * vz - uz * vy
-        faceNormals[t * 3 + 1] = uz * vx - ux * vz
-        faceNormals[t * 3 + 2] = ux * vy - uy * vx
+        const [nx, ny, nz] = cross(ux, uy, uz, vx, vy, vz)
+        faceNormals[t * 3] = nx
+        faceNormals[t * 3 + 1] = ny
+        faceNormals[t * 3 + 2] = nz
     }
 
     return faceNormals
@@ -658,7 +649,7 @@ export function decimateMesh(mesh: ParsedMesh): ParsedMesh {
     for (const budget of ERROR_BUDGETS_M) {
         const error = Math.min(budget, original.diagonal * RELATIVE_BUDGET_CAP)
         // Target index count is deliberately floored rather than budgeted: the error bound is what
-        // decides how far this goes.
+        // decides how far this goes in terms of simplification depth.
         const [simplified] = MeshoptSimplifier.simplify(welded.indices, welded.verts, 3, 12, error, [
             "ErrorAbsolute",
             "LockBorder",
