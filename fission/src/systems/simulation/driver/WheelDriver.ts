@@ -11,6 +11,7 @@ const LONGITUDINAL_FRICTION = 1.0
 class WheelDriver extends Driver {
     private _constraint: Jolt.VehicleConstraint
     private _wheel: Jolt.WheelWV
+    private _localForward: { x: number; y: number; z: number }
     public deviceType?: SimType
     public device?: string
     private _reversed: boolean
@@ -41,6 +42,26 @@ class WheelDriver extends Driver {
         this._reversed = value
     }
 
+    /**
+     * Body this wheel's vehicle constraint drives -- the steering pod for a swerve module.
+     *
+     * Identifies which module the wheel belongs to without any geometric guessing.
+     */
+    public get vehicleBodyId(): number {
+        return this._constraint.GetVehicleBody().GetID().GetIndexAndSequenceNumber()
+    }
+
+    /**
+     * Rolling direction of this wheel in its vehicle body's local space.
+     *
+     * For a swerve module the vehicle body is the steering pod, so this is the direction the tread
+     * points when the pod's hinge reads zero. Copied out at construction: the Jolt getters behind it
+     * hand back per-function static scratch, not owned vectors.
+     */
+    public get localForward(): { x: number; y: number; z: number } {
+        return this._localForward
+    }
+
     public constructor(
         id: DriverID,
         constraint: Jolt.VehicleConstraint,
@@ -63,6 +84,9 @@ class WheelDriver extends Driver {
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
         this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION)
         this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
+
+        const wheelForward = this._wheel.GetSettings().mWheelForward
+        this._localForward = { x: wheelForward.GetX(), y: wheelForward.GetY(), z: wheelForward.GetZ() }
     }
 
     public update(_: number): void {

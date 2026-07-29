@@ -11,6 +11,7 @@ import { DriverControlMode } from "@/systems/simulation/driver/Driver.ts"
 import type HingeDriver from "@/systems/simulation/driver/HingeDriver.ts"
 import type HingeStimulus from "@/systems/simulation/stimulus/HingeStimulus.ts"
 import type Stimulus from "@/systems/simulation/stimulus/Stimulus.ts"
+import { hingeAngleForHeading, moduleHingeSign, moduleRestHeading } from "./SwerveModuleFrame.ts"
 
 class SwerveDriveBehavior extends DriveBehavior {
     private _wheels: WheelDriver[]
@@ -24,6 +25,11 @@ class SwerveDriveBehavior extends DriveBehavior {
     private _fieldForward: THREE.Vector3 = new THREE.Vector3(1, 0, 0)
     private _prevTargetAngles: number[] = []
     private _prevFlips: boolean[] = []
+
+    /** Heading each module's tread points at, in chassis frame, when its hinge reads zero. */
+    private _restHeadings: number[] = []
+    /** +1 when a module's heading advances with its hinge angle, -1 when the hinge axis is inverted. */
+    private _hingeSigns: number[] = []
 
     constructor(
         wheels: WheelDriver[],
@@ -45,12 +51,22 @@ class SwerveDriveBehavior extends DriveBehavior {
             h.setContinuousRotation()
         })
 
+        this.measureModuleFrames()
+
         // Zero field-oriented drive to the robot's spawn heading so "forward" starts aligned with
         // its nose. The reset input re-zeroes it later; falls back to world +X if the body isn't ready.
         const rootNodeId = this.resolveRootNodeId()
         if (rootNodeId) {
             const rotation = convertJoltQuatToThreeQuaternion(World.physicsSystem.getBody(rootNodeId)!.GetRotation())
             this._fieldForward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation)
+        }
+    }
+
+    /** Records, per module, where its tread points at hinge angle zero and which way the hinge turns. */
+    private measureModuleFrames(): void {
+        for (let i = 0; i < this._wheels.length; i++) {
+            this._restHeadings[i] = moduleRestHeading(this._wheels[i].localForward)
+            this._hingeSigns[i] = moduleHingeSign(this._hinges[i].localAxis.GetY())
         }
     }
 
@@ -166,7 +182,9 @@ class SwerveDriveBehavior extends DriveBehavior {
             const speed = velocities[i].length()
             const currentAngle = this._hinges[i].constraint.GetCurrentAngle()
 
-            let angle = Math.atan2(robotRight.dot(velocities[i]), robotForward.dot(velocities[i]))
+            // Convert the heading this module should drive at into the hinge angle that produces it.
+            const heading = Math.atan2(robotRight.dot(velocities[i]), robotForward.dot(velocities[i]))
+            let angle = hingeAngleForHeading(heading, this._restHeadings[i], this._hingeSigns[i])
             let delta = angle - currentAngle
             while (delta > Math.PI) delta -= 2 * Math.PI
             while (delta < -Math.PI) delta += 2 * Math.PI

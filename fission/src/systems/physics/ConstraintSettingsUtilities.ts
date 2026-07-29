@@ -1,5 +1,6 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { DOFSpecs } from "./PhysicsSystem"
+import { STEERED_WHEEL_KEY } from "@/mirabuf/WheelJointBuilder"
 import type { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } from "@/util/TypeConversions"
@@ -147,6 +148,11 @@ export function createDOFSpecs(dofs: mirabuf.joint.IDOF[]): DOFSpecs[] {
 
 export function isWheel(jDef: mirabuf.joint.Joint): boolean {
     return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
+}
+
+/** True for a wheel whose parent body is a steering pod, so the pod aims it instead of the chassis. */
+export function isSteeredWheel(jDef: mirabuf.joint.Joint): boolean {
+    return isWheel(jDef) && jDef.userData?.data?.[STEERED_WHEEL_KEY] === "true"
 }
 
 /** Explicit radius set on a manually-assigned wheel's userData (centimetres); undefined falls back to AABB inference. */

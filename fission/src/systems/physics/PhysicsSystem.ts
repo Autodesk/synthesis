@@ -30,6 +30,7 @@ import {
     inferWheelDimensionsFromAxle,
     inferWheelRadius,
     type WheelBasis,
+    wheelBasisFromAxle,
 } from "./URDFWheelPhysics"
 import { isURDFImport } from "@/urdf/URDFUserData"
 import {
@@ -42,6 +43,7 @@ import {
     getExplicitWheelRadius,
     getExplicitWheelWidth,
     getPerpendicular,
+    isSteeredWheel,
     isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
@@ -764,7 +766,14 @@ class PhysicsSystem extends WorldSystem {
         // fresh vector here rather than scaling unitAxis itself.
         const axis = new JOLT.Vec3(unitAxis.GetX() * 0.1, unitAxis.GetY() * 0.1, unitAxis.GetZ() * 0.1)
 
-        const urdfWheelBasis = urdfImport ? inferURDFAutoWheelBasis(unitAxis) : undefined
+        // A steered wheel rides on a pod that physically points it, so its basis has to be the axle's
+        // exact rolling direction. Unsteered wheels keep the canonicalized basis that lets every wheel
+        // on a skid-steer drivetrain agree on forward.
+        const urdfWheelBasis = isSteeredWheel(jointDefinition)
+            ? wheelBasisFromAxle(unitAxis)
+            : urdfImport
+              ? inferURDFAutoWheelBasis(unitAxis)
+              : undefined
         const bounds = bodyWheel.GetShape().GetLocalBounds()
         const wheelDimensions = urdfWheelBasis
             ? inferWheelDimensionsFromAxle(bounds, unitAxis)

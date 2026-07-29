@@ -2,12 +2,7 @@ import * as THREE from "three"
 import { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import {
-    applyPodAssignments,
-    applyWheelAssignments,
-    type PodAssignment,
-    type WheelAssignment,
-} from "@/mirabuf/WheelJointBuilder"
+import { applyManualAssignments, type PodAssignment, type WheelAssignment } from "@/mirabuf/WheelJointBuilder"
 import EventSystem from "@/systems/EventSystem.ts"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -93,8 +88,8 @@ interface PickIndexEntry {
 /**
  * Interaction mode: click a wheel's rim to fit a joint axis, using the assembly's grounded part as
  * parent, or (in "pod" mode) click a swerve module's rotating housing to stage a steering hinge.
- * At Apply, any staged wheels are paired to staged pods by nearest-neighbor (mirroring the runtime
- * `SwervePairing.pairNearestHinges`); wheels with no pods staged keep the plain arcade/tank parent.
+ * At Apply, any staged wheels are paired to staged pods by nearest-neighbor and reparented onto
+ * them; wheels with no pods staged keep the plain arcade/tank parent.
  */
 class WheelAssignmentMode extends WorldSystem {
     private _enabled = false
@@ -398,9 +393,10 @@ class WheelAssignmentMode extends WorldSystem {
             const wheelPicks = this._pendingWheels.filter(p => p.sceneObject === sceneObject)
             const podPicks = this._pendingPods.filter(p => p.sceneObject === sceneObject)
 
-            // Pair staged wheels to staged pods by nearest-neighbor, same algorithm the runtime
-            // uses to pair WheelDriver/HingeDriver pairs (SwervePairing.pairNearestHinges). Wheels
-            // with no pods staged for this scene object keep their plain arcade/tank parent.
+            // Pair staged wheels to staged pods by nearest-neighbor. This is the only place the
+            // pairing is decided: it becomes each wheel joint's parent, and the runtime reads the
+            // pairing back off the constraint graph. Wheels with no pods staged for this scene
+            // object keep their plain arcade/tank parent.
             const wheelAssignments: WheelAssignment[] = wheelPicks.map(p => ({ ...p.assignment }))
             if (podPicks.length > 0) {
                 const wheelCenters = wheelPicks.map(p => p.assignment.axisFit.center)
@@ -409,16 +405,15 @@ class WheelAssignmentMode extends WorldSystem {
                 pairing.forEach((podIndex, wheelIndex) => {
                     if (podIndex === -1) return
                     wheelAssignments[wheelIndex].parentPartGuid = podPicks[podIndex].assignment.podPartGuid
+                    wheelAssignments[wheelIndex].steered = true
                 })
             }
             const podAssignments: PodAssignment[] = podPicks.map(p => p.assignment)
 
             const assembly = sceneObject.mirabufInstance.parser.assembly
-            applyPodAssignments(assembly, podAssignments)
-            applyWheelAssignments(assembly, wheelAssignments)
+            applyManualAssignments(assembly, wheelAssignments, podAssignments)
 
-            const priorDriveType =
-                sceneObject.brain instanceof SynthesisBrain ? sceneObject.brain.driveType : undefined
+            const priorDriveType = sceneObject.brain instanceof SynthesisBrain ? sceneObject.brain.driveType : undefined
 
             const sceneId = sceneObject.id
             World.sceneRenderer.removeSceneObject(sceneId)
@@ -454,7 +449,11 @@ class WheelAssignmentMode extends WorldSystem {
             }
 
             if (hadMismatch) {
-                globalAddToast("warning", "Wheel Assignment", "A marked part ended up in the same rigid node as its parent.")
+                globalAddToast(
+                    "warning",
+                    "Wheel Assignment",
+                    "A marked part ended up in the same rigid node as its parent."
+                )
             }
         }
 

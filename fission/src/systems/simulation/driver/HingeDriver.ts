@@ -44,6 +44,21 @@ class HingeDriver extends Driver {
         return this._constraint.GetBody1().GetCenterOfMassTransform().MulVec3(this._constraint.GetLocalSpacePoint1())
     }
 
+    /** Body this hinge rotates -- the steering pod for a swerve module. */
+    public get childBodyId(): number {
+        return this._constraint.GetBody2().GetID().GetIndexAndSequenceNumber()
+    }
+
+    /**
+     * Hinge axis in body 1's local space.
+     *
+     * Unlike {@link worldAxis} this is independent of the robot's current pose, so it is the safe
+     * source for the sign of the hinge's rotation relative to the chassis.
+     */
+    public get localAxis(): Jolt.Vec3 {
+        return this._constraint.GetLocalSpaceHingeAxis1()
+    }
+
     /**
      * World-space hinge axis (on body 1).
      *

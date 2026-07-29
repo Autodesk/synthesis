@@ -315,8 +315,30 @@ class SynthesisBrain extends Brain {
     }
 
     /**
+     * Pairs each wheel with the hinge that rotates the body its vehicle constraint is attached to.
+     *
+     * @returns one hinge per wheel in wheel order, or undefined when any wheel's pod carries no
+     * hinge of its own -- a drivetrain the caller should pair geometrically instead.
+     */
+    private static pairHingesByPodBody(
+        wheelDrivers: WheelDriver[],
+        hingeDrivers: HingeDriver[]
+    ): HingeDriver[] | undefined {
+        const available = [...hingeDrivers]
+        const paired: HingeDriver[] = []
+
+        for (const wheel of wheelDrivers) {
+            const index = available.findIndex(hinge => hinge.childBodyId === wheel.vehicleBodyId)
+            if (index === -1) return undefined
+            paired.push(available.splice(index, 1)[0])
+        }
+
+        return paired
+    }
+
+    /**
      * Creates and returns a configured swerve drive behavior, pairing each drive wheel
-     * with its nearest azimuth hinge. Falls back to arcade if the robot lacks the wheels
+     * with its own azimuth hinge. Falls back to arcade if the robot lacks the wheels
      * or hinges needed for swerve.
      */
     private createSwerveDriveBehavior(hingeDrivers: HingeDriver[]): DriveBehavior {
@@ -336,6 +358,21 @@ class SynthesisBrain extends Brain {
                     `${hingeDrivers.length} azimuth hinges). Falling back to arcade.`
             )
             return this.createSkidSteerDriveBehavior(true)
+        }
+
+        // A wheel's vehicle constraint hangs off the pod body its azimuth hinge rotates, so the
+        // pairing is already in the constraint graph. Prefer it: nearest-neighbour mispairs whenever
+        // two modules sit closer to each other than each is to its own wheel.
+        const structural = SynthesisBrain.pairHingesByPodBody(wheelDrivers, hingeDrivers)
+        if (structural) {
+            return new SwerveDriveBehavior(
+                wheelDrivers,
+                structural,
+                wheelStimuli,
+                hingeStimuli,
+                this._brainIndex,
+                this._assembly.assemblyId
+            )
         }
 
         // Pair each wheel with its nearest azimuth hinge so paired drivers share an index.

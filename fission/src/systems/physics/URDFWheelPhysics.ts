@@ -43,6 +43,32 @@ export function inferWheelRadius(isURDFImport: boolean, bounds: Jolt.AABox, axis
         : (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 }
 
+// Below this, the axle has almost no horizontal component and no rolling direction can be derived.
+const MIN_HORIZONTAL_AXLE = 0.1
+
+/**
+ * Wheel basis for a steered (swerve) wheel: `forward` is the exact rolling direction implied by the
+ * axle, `up x axle`, rather than the axis-snapped guess {@link inferURDFAutoWheelBasis} makes.
+ *
+ * Skid-steer wants every wheel to share one canonical basis, so snapping is right there. A swerve
+ * module is parked at whatever angle its CAD says -- 45 degrees for a robot parked in an X -- and
+ * snapping would leave its thrust up to 45 degrees off the direction its tread actually points.
+ */
+export function wheelBasisFromAxle(axis: Jolt.Vec3): WheelBasis | undefined {
+    // up x axle, with up = (0, 1, 0); matches inferURDFAutoWheelBasis's (lateralZ, 0, -lateralX).
+    const forwardX = axis.GetZ()
+    const forwardZ = -axis.GetX()
+    const length = Math.hypot(forwardX, forwardZ)
+    if (length < MIN_HORIZONTAL_AXLE) return undefined
+
+    return {
+        forward: new JOLT.Vec3(forwardX / length, 0, forwardZ / length),
+        up: new JOLT.Vec3(0, 1, 0),
+        suspensionDirection: new JOLT.Vec3(0, -1, 0),
+        steeringAxis: new JOLT.Vec3(0, 1, 0),
+    }
+}
+
 export function inferURDFAutoWheelBasis(axis: Jolt.Vec3): WheelBasis | undefined {
     const absX = Math.abs(axis.GetX())
     const absZ = Math.abs(axis.GetZ())
