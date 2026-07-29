@@ -67,7 +67,7 @@ export function useConfigureAssembly(selectedAssembly?: MirabufSceneObject) {
     const configureButtons = isField ? FIELD_CONFIGURE_BUTTONS : ROBOT_CONFIGURE_BUTTONS
 
     // simulation only available when wpilib brain is enabled
-    const isWpilibBrain = selectedAssembly?.brain?.brainType === "wpilib"
+    const isWpilibBrain = selectedAssembly?.brain?.isWPILib() ?? false
 
     const openConfig = useCallback(
         (mode: ConfigMode) => {

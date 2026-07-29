@@ -1,8 +1,8 @@
 import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
-import type { FunctionComponent, ReactNode } from "react"
 import type React from "react"
+import type { FunctionComponent, ReactNode } from "react"
 import { useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
@@ -229,19 +229,20 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
             const contentName = (content as unknown as { name?: string })?.name ?? ""
             const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel", "InitialConfigPanel"]
-            const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
+
             if (mutuallyExclusive.includes(contentName)) {
                 const existing = panels.find(p =>
                     mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
                 )
                 if (existing) {
-                    // Replace existing with the new one
-                    setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])
-                    return id
+                    closePanel(existing.id, CloseType.OVERWRITE)
                 }
             }
 
-            setPanels([...nextPanels, panel as Panel<any, any>])
+            setPanels(panels => {
+                const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
+                return [...nextPanels, panel as Panel<any, any>]
+            })
             return id
         },
         [panels, addToast]
@@ -271,7 +272,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         ) => {
             const openInstance = panels.find(p => p.content === content)
             if (openInstance && (matchesOpen?.((openInstance.props as PanelProps<P>).custom) ?? true)) {
-                closePanel(openInstance.id, CloseType.CANCEL)
+                // OVERWRITE, not CANCEL: dismissing a panel by re-clicking its icon is not a
+                // rejection of the user's edits, so panels get to save them via onClose.
+                closePanel(openInstance.id, CloseType.OVERWRITE)
                 return null
             }
             return openPanel(content, customProps)
