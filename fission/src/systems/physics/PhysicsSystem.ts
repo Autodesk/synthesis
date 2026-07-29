@@ -1553,9 +1553,10 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Destroys only the contact event payload objects JS owns. Wrapped callback refs such as
-     * `manifold`, `settings`, `baseOffset`, and `collisionResult` alias engine-owned data, so
-     * they must not be destroyed here. This also never touches `body1` or `body2`.
+     * Only destroys stuff we made copies of. `manifold`/`settings`/`baseOffset`/`collisionResult`
+     * just point at Jolt's own data, so leave those alone. `body1`/`body2` depend on the event:
+     * on "added" they're our own copies (destroy them below); on "persisted"/"validate" they're
+     * just references into Jolt, so don't destroy those.
      */
     private releaseContactEventPayload(
         event: SynthesisEvent<"OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent">
