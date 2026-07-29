@@ -305,7 +305,7 @@ class DragModeSystem extends WorldSystem {
 
         // Face mode should keep the camera enabled tracking the target
         const targetControls = getTargetControls()
-        if (targetControls && targetControls.mode !== CameraMode.Face) {
+        if (targetControls && targetControls.mode !== CameraMode.FACE) {
             targetControls.enabled = false
         }
     }

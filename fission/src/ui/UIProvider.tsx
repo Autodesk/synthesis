@@ -42,6 +42,39 @@ function shallowEqualProps(a: unknown, b: unknown): boolean {
 }
 
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
+const DEFAULT_PROPS = {
+    hideAccept: false,
+    hideCancel: false,
+    acceptText: "Accept",
+    cancelText: "Cancel",
+} as UIScreenProps<any>
+
+const DEFAULT_MODAL_PROPS = {
+    ...DEFAULT_PROPS,
+    allowClickAway: true,
+}
+
+const DEFAULT_PANEL_PROPS = {
+    ...DEFAULT_PROPS,
+    position: "right",
+} as PanelProps<any>
+
+const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
+    elem.onClose?.(closeType)
+    switch (closeType) {
+        case CloseType.ACCEPT: {
+            const beforeAcceptResult = elem.onBeforeAccept?.()
+            elem.onAccept?.(beforeAcceptResult)
+            break
+        }
+        case CloseType.CANCEL:
+            elem.onCancel?.()
+            break
+        default:
+            break
+    }
+}
+
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
@@ -50,27 +83,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
-    const DEFAULT_PROPS = {
-        hideAccept: false,
-        hideCancel: false,
-        acceptText: "Accept",
-        cancelText: "Cancel",
-    } as UIScreenProps<any>
-
-    const DEFAULT_MODAL_PROPS = {
-        ...DEFAULT_PROPS,
-        allowClickAway: true,
-    }
-
-    const DEFAULT_PANEL_PROPS = {
-        ...DEFAULT_PROPS,
-        position: "right",
-    } as PanelProps<any>
-
     InputSystem.escapeKeyListeners[1] = () => {
         if (modal != null) {
             if (!modal.props.hideCancel) {
-                closeModal(CloseType.Cancel)
+                closeModal(CloseType.CANCEL)
             }
             return true
         }
@@ -81,7 +97,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         if (panels.length > 0) {
             const panel = panels[panels.length - 1]
             if (!panel.props.hideCancel) {
-                closePanel(panel.id, CloseType.Cancel)
+                closePanel(panel.id, CloseType.CANCEL)
                 return true
             }
         }
@@ -107,7 +123,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     custom: customProps,
                 },
             } as Modal<T, P>
-            modal?.onClose?.(CloseType.Overwrite)
+            modal?.onClose?.(CloseType.OVERWRITE)
 
             newModal.props.configured = false
 
@@ -127,6 +143,36 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             return id
         },
         [modal]
+    )
+
+    const snackbarAction = useCallback(
+        (snackbarId: SnackbarKey) => (
+            <IconButton onClick={() => closeSnackbar(snackbarId)}>
+                <CloseIcon />
+            </IconButton>
+        ),
+        [closeSnackbar]
+    )
+
+    const addToast = useCallback(
+        (variant: VariantType, ...contents: SnackbarMessage[]) => {
+            enqueueSnackbar(
+                contents.length <= 1 ? (
+                    <>{...contents}</>
+                ) : (
+                    <>
+                        {...contents.map(child => (
+                            <>
+                                {child}
+                                <br />
+                            </>
+                        ))}
+                    </>
+                ),
+                { variant, action: snackbarAction }
+            )
+        },
+        [enqueueSnackbar, snackbarAction]
     )
 
     const openPanel: OpenPanelFn = useCallback(
@@ -197,24 +243,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setPanels([...nextPanels, panel as Panel<any, any>])
             return id
         },
-        [panels]
+        [panels, addToast]
     )
-
-    const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
-        elem.onClose?.(closeType)
-        switch (closeType) {
-            case CloseType.Accept: {
-                const beforeAcceptResult = elem.onBeforeAccept?.()
-                elem.onAccept?.(beforeAcceptResult)
-                break
-            }
-            case CloseType.Cancel:
-                elem.onCancel?.()
-                break
-            default:
-                break
-        }
-    }
 
     const closeModal = useCallback(
         <T, P>(closeType: CloseType) => {
@@ -232,36 +262,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         })
     }, [])
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
-
-    const snackbarAction = useCallback(
-        (snackbarId: SnackbarKey) => (
-            <IconButton onClick={() => closeSnackbar(snackbarId)}>
-                <CloseIcon />
-            </IconButton>
-        ),
-        []
-    )
-
-    const addToast = useCallback(
-        (variant: VariantType, ...contents: SnackbarMessage[]) => {
-            enqueueSnackbar(
-                contents.length <= 1 ? (
-                    <>{...contents}</>
-                ) : (
-                    <>
-                        {...contents.map(child => (
-                            <>
-                                {child}
-                                <br />
-                            </>
-                        ))}
-                    </>
-                ),
-                { variant, action: snackbarAction }
-            )
-        },
-        [enqueueSnackbar]
-    )
 
     const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {
         type PropKey = keyof typeof screen.props

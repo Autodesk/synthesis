@@ -292,7 +292,7 @@ describe("DragModeSystem Integration Tests", () => {
                 position: [400, 300] as [number, number],
             }
 
-            function installTargetControls(mode: CameraMode = CameraMode.Follow): CustomTargetControls {
+            function installTargetControls(mode: CameraMode = CameraMode.FOLLOW): CustomTargetControls {
                 const dummyHandler = {} as unknown as ConstructorParameters<typeof CustomTargetControls>[1]
                 const targetControls = new CustomTargetControls(World.sceneRenderer.mainCamera, dummyHandler)
                 targetControls.mode = mode
@@ -320,7 +320,7 @@ describe("DragModeSystem Integration Tests", () => {
             })
 
             test("keeps Face mode camera controls enabled throughout a drag so it can keep tracking its target", () => {
-                const targetControls = installTargetControls(CameraMode.Face)
+                const targetControls = installTargetControls(CameraMode.FACE)
                 const { cleanup } = setupDraggableCube()
                 const screenHandler = World.sceneRenderer.screenInteractionHandler
 
