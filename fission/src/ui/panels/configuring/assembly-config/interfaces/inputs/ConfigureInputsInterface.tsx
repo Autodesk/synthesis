@@ -43,7 +43,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
 
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes(panel?.id)
-    }, [])
+    }, [panel?.id])
 
     const handleSchemeChange = useCallback(() => {
         const newSchemes = InputSchemeManager.allInputSchemes
@@ -53,11 +53,11 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
         if (selectedScheme && !newSchemes.includes(selectedScheme)) {
             if (panel) {
                 setTimeout(() => {
-                    closePanel(panel.id, CloseType.Overwrite)
+                    closePanel(panel.id, CloseType.OVERWRITE)
                 }, 0)
             }
         }
-    }, [panel])
+    }, [panel, selectedScheme, closePanel])
 
     useEffect(() => {
         const unsubscribeConfig = EventSystem.listen("ConfigurationSavedEvent", saveEvent)
@@ -68,7 +68,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
             unsubscribeConfig()
             unsubscribeInput()
         }
-    }, [saveEvent, handleSchemeChange])
+    }, [saveEvent, handleSchemeChange, setGlobalSelectedScheme])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()

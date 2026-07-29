@@ -18,13 +18,13 @@ type RobotBox = [MirabufSceneObject, Jolt.OrientedBox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
 
 class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences> {
-    public static readonly redMaterial = new Three.MeshPhongMaterial({
+    public static readonly RED_MATERIAL = new Three.MeshPhongMaterial({
         color: 0xff0000,
         shininess: 0.0,
         opacity: 0.8,
         transparent: true,
     })
-    public static readonly blueMaterial = new Three.MeshPhongMaterial({
+    public static readonly BLUE_MATERIAL = new Three.MeshPhongMaterial({
         color: 0x0022ff,
         shininess: 0.0,
         opacity: 0.8,
@@ -34,10 +34,10 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
     private _lastRobotCollisionTime: number = 0
 
-    private robotBounding: THREE.Mesh[] = []
+    private _robotBounding: THREE.Mesh[] = []
 
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
-        return { red: ProtectedZoneSceneObject.redMaterial, blue: ProtectedZoneSceneObject.blueMaterial }
+        return { red: ProtectedZoneSceneObject.RED_MATERIAL, blue: ProtectedZoneSceneObject.BLUE_MATERIAL }
     }
 
     private isZoneActive(): boolean {
@@ -61,7 +61,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
         if (DEBUG_BOUNDING_BOXES) {
             this.disposeOfRobotBoundingMeshes()
-            this.robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
+            this._robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
         }
 
         const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
@@ -163,7 +163,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
     }
 
     private disposeOfRobotBoundingMeshes() {
-        this.robotBounding?.forEach(m => {
+        this._robotBounding?.forEach(m => {
             World.sceneRenderer.removeObject(m)
             m.geometry.dispose()
             const materials = Array.isArray(m.material) ? m.material : [m.material]

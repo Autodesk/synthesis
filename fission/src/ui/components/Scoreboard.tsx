@@ -16,8 +16,8 @@ const showTime = () => {
 const HALF_W = "calc(50vw - 50%)"
 
 const Scoreboard: React.FC = () => {
-    const [redScore, setRedScore] = useState(World.scoreTracker?.redScore)
-    const [blueScore, setBlueScore] = useState(World.scoreTracker?.blueScore)
+    const [redScore, setRedScore] = useState(World.scoreTracker?.redScore ?? 0)
+    const [blueScore, setBlueScore] = useState(World.scoreTracker?.blueScore ?? 0)
     const [time, setTime] = useState("0")
 
     useEffect(() => {
