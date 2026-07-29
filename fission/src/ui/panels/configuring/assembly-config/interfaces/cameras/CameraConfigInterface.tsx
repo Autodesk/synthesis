@@ -35,12 +35,35 @@ function parentBodyId(robot: MirabufSceneObject, parentNode: string | undefined)
 interface CameraConfigInterfaceProps {
     selectedRobot: MirabufSceneObject
     camera: CameraPreferences
+    setDisableAccept: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const CameraConfigInterface: React.FC<CameraConfigInterfaceProps> = ({ selectedRobot, camera }) => {
+const CameraConfigInterface: React.FC<CameraConfigInterfaceProps> = ({ selectedRobot, camera, setDisableAccept }) => {
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
+
+    // snapshot of all cameras' names at mount, for duplicate-name detection
+    const EXISTING_CAMERAS = useMemo(
+        () => World.sceneRenderer.mirabufSceneObjects.getRobots().flatMap(r => [...r.cameraPreferences]),
+        []
+    )
+
+    // dup if any camera other than this one shares the name
+    const isDuplicateName = useCallback(
+        (name: string) => EXISTING_CAMERAS.some(cam => cam !== camera && cam.name === name),
+        [EXISTING_CAMERAS, camera]
+    )
+
+    const [duplicateName, setDuplicateName] = useState(() => isDuplicateName(camera.name))
+
+    // re-evaluate for selected camera; clear on unmount so back button re-enables save
+    useEffect(() => {
+        const dup = isDuplicateName(camera.name)
+        setDuplicateName(dup)
+        setDisableAccept(dup)
+        return () => setDisableAccept(false)
+    }, [isDuplicateName, camera, setDisableAccept])
 
     const commit = useCallback(() => {
         if (camera && gizmoRef.current) {
@@ -131,10 +154,19 @@ const CameraConfigInterface: React.FC<CameraConfigInterfaceProps> = ({ selectedR
             <TextField
                 label="Name"
                 size="small"
+                fullWidth
                 defaultValue={camera.name}
-                helperText={`Sim device: ${camera.name}[${camera.id}] (must match robot code)`}
+                error={duplicateName}
+                helperText={
+                    duplicateName
+                        ? "A camera with this name already exists"
+                        : `Sim device: ${camera.name}[${camera.id}] (must match robot code)`
+                }
                 onChange={e => {
                     camera.name = e.target.value
+                    const dup = isDuplicateName(e.target.value)
+                    setDuplicateName(dup)
+                    setDisableAccept(dup)
                 }}
             />
 

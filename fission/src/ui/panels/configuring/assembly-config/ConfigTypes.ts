@@ -48,6 +48,10 @@ export interface ConfigurationSubpanelProps {
      * This determines not if any change has been made, but whether it is possible for any change to have been made (any cleanup callbacks have been registered). Therefore, it will have false positives, but will not report false negatives.
      */
     hasMadeChanges: boolean
+    /**
+     * Passed from ConfigurePanel, allows panels to forbid proceeding (e.g., if the config is invalid)
+     */
+    setDisableAccept: React.Dispatch<React.SetStateAction<boolean>>,
     panel: UIScreen<void, ConfigurePanelCustomProps>
 }
 

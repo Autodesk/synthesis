@@ -178,6 +178,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const [cancelCallbacks, setCancelCallbacks] = useState<(() => void | Promise<void>)[]>([])
     const [accessedAssemblies, setAccessedAssemblies] = useState<MirabufSceneObject[]>([])
 
+    const [disableAccept, setDisableAccept] = useState<boolean>(false)
+
     const registerCleanupFunctions: CleanupRegisterFunction = useCallback((applyFunc?, revertFunc?) => {
         if (applyFunc) {
             setConfirmCallbacks(old => [...old, applyFunc])
@@ -247,10 +249,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     useEffect(() => {
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: hasMadeChanges ? "Revert" : "Cancel" },
+            { title: "Configure Assets", acceptText: "Save", cancelText: hasMadeChanges ? "Revert" : "Cancel", disableAccept },
             { onBeforeAccept, onCancel, onClose }
         )
-    }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges])
+    }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges, disableAccept])
 
     const modes = useMemo(() => {
         if (configurationType == "FIELDS") {
@@ -321,6 +323,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             panel={panel!}
                             selectedAssembly={selectedAssembly!}
                             hasMadeChanges={hasMadeChanges}
+                            setDisableAccept={setDisableAccept}
                             registerCleanupFunction={registerCleanupFunctions}
                         />
                     )}

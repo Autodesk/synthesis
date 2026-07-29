@@ -1,6 +1,5 @@
 import { Box, Divider, Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import { type CameraPreferences, defaultCameraPreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
@@ -11,7 +10,11 @@ import { SelectMenuHeader } from "@/ui/components/SelectMenu"
 import EventSystem from "@/systems/EventSystem"
 import type { ConfigurationSubpanelComponent } from "../../ConfigTypes"
 
-const ConfigureCameraInterface: ConfigurationSubpanelComponent = ({ selectedAssembly }) => {
+const ConfigureCameraInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    setDisableAccept,
+    registerCleanupFunction,
+}) => {
     const [_version, setVersion] = useState(0)
     const [selectedCamera, setSelectedCamera] = useState<CameraPreferences | null>(null)
 
@@ -26,6 +29,14 @@ const ConfigureCameraInterface: ConfigurationSubpanelComponent = ({ selectedAsse
         }
     }, [])
 
+    useEffect(() => {
+        const originalCameras = structuredClone(selectedAssembly.cameraPreferences)
+        registerCleanupFunction(undefined, () => {
+            selectedAssembly.cameraPreferences = originalCameras
+            selectedAssembly.updateCameras()
+        })
+    }, [registerCleanupFunction, selectedAssembly])
+
     return (
         <>
             {selectedCamera !== null ? (
@@ -39,7 +50,7 @@ const ConfigureCameraInterface: ConfigurationSubpanelComponent = ({ selectedAsse
                         }}
                     />
                     <Divider />
-                    <CameraConfigInterface camera={selectedCamera} selectedRobot={selectedAssembly} />
+                    <CameraConfigInterface camera={selectedCamera} selectedRobot={selectedAssembly} setDisableAccept={setDisableAccept} />
                 </>
             ) : (
                 <Stack gap={2}>
