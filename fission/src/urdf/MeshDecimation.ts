@@ -35,6 +35,14 @@ const MAX_AXIS_DEVIATION = 0.01
 const SOLIDITY_RESOLUTION = 64 // grid density per axis
 const MAX_UNSOLID_RAY_RATIO = 0.001 // bad_rays / total_rays. fail any 0.1%
 
+// OBJ writes vertex positions as truncated ASCII decimal text (unlike STL/glTF's full float32
+// precision), so a handful of already-near-degenerate CAD tessellation slivers (chamfers, curve
+// intersections) get two corners rounded to the exact same float and collapse to zero area. These are
+// safe to drop outright. They contribute ~0 area/volume, but only below this fraction of the mesh's
+// triangles, so a real defect (an actual hole, a badly exported part) still bails instead of getting
+// silently patched over.
+const MAX_HEALABLE_DEGENERATE_FRACTION = 0.01
+
 // Rebuilding the vertex/normal/index buffers isn't free, so don't bother for a marginal win.
 const MIN_REDUCTION = 0.25
 
@@ -85,6 +93,36 @@ function weldPositions(mesh: ParsedMesh): Welded {
     for (let i = 0; i < indices.length; i++) indices[i] = compacted[remap[mesh.indices[i]]]
 
     return { verts, indices, uv }
+}
+
+// Drops triangles with a repeated index or zero cross-product area from the triangle list.
+function stripDegenerateTriangles(mesh: Welded): Welded {
+    const { verts, indices } = mesh
+    const kept: number[] = []
+    for (let t = 0; t < indices.length; t += 3) {
+        const i0 = indices[t]
+        const i1 = indices[t + 1]
+        const i2 = indices[t + 2]
+        if (i0 === i1 || i1 === i2 || i0 === i2) continue
+
+        const a = i0 * 3
+        const b = i1 * 3
+        const c = i2 * 3
+        const ux = verts[b] - verts[a]
+        const uy = verts[b + 1] - verts[a + 1]
+        const uz = verts[b + 2] - verts[a + 2]
+        const vx = verts[c] - verts[a]
+        const vy = verts[c + 1] - verts[a + 1]
+        const vz = verts[c + 2] - verts[a + 2]
+        const nx = uy * vz - uz * vy
+        const ny = uz * vx - ux * vz
+        const nz = ux * vy - uy * vx
+        if (Math.hypot(nx, ny, nz) === 0) continue
+
+        kept.push(i0, i1, i2)
+    }
+
+    return { verts, indices: Uint32Array.from(kept), uv: mesh.uv }
 }
 
 interface MeshStats {
@@ -604,8 +642,16 @@ export function decimateMesh(mesh: ParsedMesh): ParsedMesh {
     const triangleCount = mesh.indices.length / 3
     if (triangleCount <= TRIANGLE_THRESHOLD || !MeshoptSimplifier.supported) return mesh
 
-    const welded = weldPositions(mesh)
-    const original = measure(welded)
+    let welded = weldPositions(mesh)
+    let original = measure(welded)
+
+    if (
+        original.degenerateTriangles > 0 &&
+        original.degenerateTriangles / triangleCount <= MAX_HEALABLE_DEGENERATE_FRACTION
+    ) {
+        welded = stripDegenerateTriangles(welded)
+        original = measure(welded)
+    }
 
     // Simplifying an already-broken mesh (open shell, self-touching surface) means validation can't
     // tell what the simplifier did from what was wrong to begin with. Leave those alone.
