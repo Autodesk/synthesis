@@ -28,6 +28,7 @@ import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX, TOP_BAR_HEIGHT } from "@/ui/compo
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { useAssemblySelection } from "@/ui/components/topbar/UseConfigureAssembly"
 import UserIcon from "@/ui/components/UserIcon"
+import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 
 const TopBar: React.FC = () => {
     const { openModal, openPanel, addToast } = useUIContext()
@@ -130,9 +131,12 @@ const TopBar: React.FC = () => {
                 {appMode === "Gameplay" && <GameplayControls />}
                 <Box flexGrow={1} />
 
-                <CodeConnectionIndicator />
-
-                <Box sx={TOP_BAR_DIVIDER_SX} />
+                {hasSimBrain() && (
+                    <>
+                        <CodeConnectionIndicator />
+                        <Box sx={TOP_BAR_DIVIDER_SX} />
+                    </>
+                )}
 
                 {import.meta.env.DEV && (
                     <>
