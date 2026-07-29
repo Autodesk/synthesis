@@ -80,7 +80,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     return (
         <SelectMenu
             options={options}
-            onOptionSelected={val => onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)}
+            onOptionSelected={val => onAssemblySelected(val?.assemblyObject)}
             defaultHeaderText={`Select a ${configurationType === "ROBOTS" ? "Robot" : "Field"}`}
             onDelete={val => {
                 onStageDelete(val)
@@ -88,7 +88,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
             }}
             onAddClicked={() => {
                 // Save current configuration first, then open Spawn panel next tick
-                closePanel(panel!.id, CloseType.Accept)
+                closePanel(panel!.id, CloseType.ACCEPT)
                 setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
