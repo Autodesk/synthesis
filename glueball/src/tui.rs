@@ -33,7 +33,6 @@ use uuid::Uuid;
 /// How many room panels are shown side-by-side on a single tab.
 const ROOMS_PER_TAB: usize = 2;
 
-// [Source](https://colorkit.co/palette/ffadad-ffd6a5-fdffb6-caffbf-9bf6ff-a0c4ff-bdb2ff-ffc6ff/)
 const COLOR_PALETTE: &[Color] = &[
     Color::Red,
     Color::Indexed(221),
