@@ -505,8 +505,8 @@ function parseMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): Parsed
 
     const ext = meshPath.split(".").pop()?.toLowerCase()
     if (ext === "stl") return decimateMesh(parseSTL(data))
-    if (ext === "obj") return parseOBJ(data)
-    if (ext === "gltf") return parseGLTF(data, meshPath, meshFiles)
+    if (ext === "obj") return decimateMesh(parseOBJ(data))
+    if (ext === "gltf") return decimateMesh(parseGLTF(data, meshPath, meshFiles))
     console.warn(`[URDF] Unsupported mesh format: .${ext} (${meshPath}) — link will have no geometry`)
     return null
 }

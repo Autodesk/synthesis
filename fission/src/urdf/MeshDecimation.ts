@@ -1,7 +1,7 @@
 import { MeshoptSimplifier } from "meshoptimizer"
 import type { ParsedMesh } from "./STLParser"
 
-// STL Mesh Decimation for URDF STL mesh imports.
+// Mesh decimation for URDF STL/OBJ/glTF imports.
 // This decimation step takes the 2026 kitbot import size from 3.11GB to 117MB.
 
 // Every result is checked against the input (see validate()) and the original mesh is returned
@@ -44,6 +44,10 @@ export async function readyMeshDecimation(): Promise<void> {
 interface Welded {
     verts: Float32Array
     indices: Uint32Array
+    /** Per-vertex UV, 2 floats per entry in `verts`. Zero-length when the source mesh carries no UV
+     * (STL, or a glTF/OBJ mesh with no texture coordinates) - skipped rather than carried as zeros
+     * so the STL path does no extra work. */
+    uv: Float32Array
 }
 
 // Collapses bit-identical positions into a compacted vertex buffer and reindexes
@@ -57,18 +61,25 @@ function weldPositions(mesh: ParsedMesh): Welded {
     }
 
     const verts = new Float32Array(uniqueCount * 3)
+    const hasUV = mesh.uv.length > 0
+    const uv = new Float32Array(hasUV ? uniqueCount * 2 : 0)
     for (let i = 0; i < sourceVertCount; i++) {
         if (remap[i] !== i) continue
         const out = compacted[i] * 3
         verts[out] = mesh.verts[i * 3]
         verts[out + 1] = mesh.verts[i * 3 + 1]
         verts[out + 2] = mesh.verts[i * 3 + 2]
+        if (hasUV) {
+            const outUV = compacted[i] * 2
+            uv[outUV] = mesh.uv[i * 2]
+            uv[outUV + 1] = mesh.uv[i * 2 + 1]
+        }
     }
 
     const indices = new Uint32Array(mesh.indices.length)
     for (let i = 0; i < indices.length; i++) indices[i] = compacted[remap[mesh.indices[i]]]
 
-    return { verts, indices }
+    return { verts, indices, uv }
 }
 
 interface MeshStats {
@@ -417,18 +428,24 @@ function validate(original: MeshStats, simplified: MeshStats): boolean {
     return true
 }
 
-function compactVertices(source: Float32Array, indices: Uint32Array): Welded {
+function compactVertices(source: Float32Array, sourceUV: Float32Array, indices: Uint32Array): Welded {
     const [remap, uniqueCount] = MeshoptSimplifier.compactMesh(indices)
     const verts = new Float32Array(uniqueCount * 3)
+    const hasUV = sourceUV.length > 0
+    const uv = new Float32Array(hasUV ? uniqueCount * 2 : 0)
     for (let i = 0; i < remap.length; i++) {
         const out = remap[i]
         if (out === 0xffffffff) continue
         verts[out * 3] = source[i * 3]
         verts[out * 3 + 1] = source[i * 3 + 1]
         verts[out * 3 + 2] = source[i * 3 + 2]
+        if (hasUV) {
+            uv[out * 2] = sourceUV[i * 2]
+            uv[out * 2 + 1] = sourceUV[i * 2 + 1]
+        }
     }
 
-    return { verts, indices }
+    return { verts, indices, uv }
 }
 
 function computeFaceNormals(verts: Float32Array, indices: Uint32Array, triCount: number): Float32Array {
@@ -479,12 +496,14 @@ function buildIncidentFacesCSR(indices: Uint32Array, vertCount: number, triCount
 function clusterFacesAroundVertex(
     v: number,
     verts: Float32Array,
+    uv: Float32Array,
     indices: Uint32Array,
     faceNormals: Float32Array,
     { offsets, incident }: IncidentFaces,
     clusterOf: Int32Array,
     outVerts: number[],
     outNormals: number[],
+    outUV: number[],
     outIndices: Uint32Array
 ): void {
     const start = offsets[v]
@@ -524,6 +543,7 @@ function clusterFacesAroundVertex(
         const len = Math.hypot(nx, ny, nz) || 1
         outVerts.push(verts[v * 3], verts[v * 3 + 1], verts[v * 3 + 2])
         outNormals.push(nx / len, ny / len, nz / len)
+        if (uv.length > 0) outUV.push(uv[v * 2], uv[v * 2 + 1])
     }
 }
 
@@ -531,7 +551,7 @@ function clusterFacesAroundVertex(
 // simply averaging all faces at a vertex rounds off machined edges. Instead, the faces around each
 // vertex are grouped into clusters of similar orientation and each cluster gets its own vertex (see
 // clusterFacesAroundVertex above).
-function buildShadingData({ verts, indices }: Welded): ParsedMesh {
+function buildShadingData({ verts, indices, uv }: Welded): ParsedMesh {
     const triCount = indices.length / 3
     const vertCount = verts.length / 3
 
@@ -540,6 +560,7 @@ function buildShadingData({ verts, indices }: Welded): ParsedMesh {
 
     const outVerts: number[] = []
     const outNormals: number[] = []
+    const outUV: number[] = []
     const outIndices = new Uint32Array(indices.length)
     const clusterOf = new Int32Array(triCount).fill(-1)
 
@@ -547,12 +568,14 @@ function buildShadingData({ verts, indices }: Welded): ParsedMesh {
         clusterFacesAroundVertex(
             v,
             verts,
+            uv,
             indices,
             faceNormals,
             incidentFaces,
             clusterOf,
             outVerts,
             outNormals,
+            outUV,
             outIndices
         )
     }
@@ -560,15 +583,17 @@ function buildShadingData({ verts, indices }: Welded): ParsedMesh {
     return {
         verts: Float32Array.from(outVerts),
         normals: Float32Array.from(outNormals),
-        uv: new Float32Array(0), // STL carries no UV data
+        uv: Float32Array.from(outUV), // empty when the source mesh (STL, or UV-less glTF/OBJ) carried none
         indices: outIndices,
     }
 }
 
 /**
- * Reduces an over-tessellated STL mesh under a bounded geometric error budget. Returns the input
+ * Reduces an over-tessellated mesh under a bounded geometric error budget. Returns the input
  * mesh unchanged if it is already small, if decimation isn't available, if the source isn't a clean
- * closed manifold, or if no budget on the ladder produces a result that survives validation.
+ * closed manifold, or if no budget on the ladder produces a result that survives validation - the
+ * ladder is calibrated against STL tessellation density, so a denser glTF/OBJ export of the same
+ * part is more likely to fall through every rung and come back untouched (safe, just less reduction).
  */
 export function decimateMesh(mesh: ParsedMesh): ParsedMesh {
     const triangleCount = mesh.indices.length / 3
@@ -592,7 +617,7 @@ export function decimateMesh(mesh: ParsedMesh): ParsedMesh {
         if (simplified.length < 12) continue
         if (simplified.length / 3 > triangleCount * (1 - MIN_REDUCTION)) continue
 
-        const result = compactVertices(welded.verts, simplified)
+        const result = compactVertices(welded.verts, welded.uv, simplified)
         if (!validate(original, measure(result))) continue
 
         // This check is very expensive, run it last.
