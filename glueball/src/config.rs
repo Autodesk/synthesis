@@ -1,17 +1,40 @@
-use argh::FromArgs;
+use std::{
+    fs::read_to_string,
+    path::{Path, PathBuf},
+};
 
-const DEFAULT_PORT: u32 = 2610;
+use argh::FromArgs;
+use directories::ProjectDirs;
+use toml::{Table, Value};
+
+pub const DEFAULT_PORT: u32 = 2610;
+
+pub fn certification_directory() -> PathBuf {
+    ProjectDirs::from("com", "Autodesk", "synthesis-glueball")
+        .expect("Could not find certificate directory")
+        .data_dir()
+        .join("secrets")
+}
 
 #[derive(FromArgs)]
 #[argh(description = "A Server for Facilitating Multiplayer Synthesis")]
-pub struct Config {
+pub struct CliConfig {
     #[argh(
         option,
-        short = 'p',
-        description = "on which port to run the server",
-        default = "DEFAULT_PORT"
+        description = "configuration file for server. all flags passed in addition to this one will be overridden by the corresponding option in the specified config file"
     )]
-    pub port: u32,
+    pub config_file: Option<PathBuf>,
+
+    #[argh(
+        option,
+        description = "directory in which to story the certificate files in secure mode"
+    )]
+    pub cert_dir: Option<PathBuf>,
+
+    // This doesn't have a default because otherwise we wouldn't be able to have it take precidence
+    // over the file config analog of this argument properly
+    #[argh(option, short = 'p', description = "on which port to run the server")]
+    pub port: Option<u32>,
 
     #[argh(
         switch,
@@ -33,4 +56,46 @@ pub struct Config {
         description = "initially populate the server with a room that will persist even when no users occupy it. value must be a six digit string consisting only of valid base-10 digits and uppercase characters"
     )]
     pub permanent_room: Option<String>,
+}
+
+pub fn parse_config_file<P>(path: P, old_config: &mut CliConfig)
+where
+    P: AsRef<Path>,
+{
+    let config = read_to_string(path).expect("Error: config file not found ");
+    let table = config
+        .parse::<Table>()
+        .expect("Error: config file not valid toml");
+    old_config.config_file = None;
+
+    if let Some(Value::String(path)) = &table.get("cert-dir")
+        && old_config.cert_dir.is_none()
+    {
+        let path = PathBuf::from(path);
+        old_config.cert_dir = Some(path);
+    }
+
+    if let Some(Value::Integer(port)) = &table.get("port")
+        && old_config.port.is_none()
+    {
+        old_config.port = u32::try_from(*port).ok();
+    }
+
+    if let Some(Value::Boolean(headless)) = &table.get("headless")
+        && !old_config.headless
+    {
+        old_config.headless = *headless;
+    }
+
+    if let Some(Value::Boolean(secure)) = &table.get("secure")
+        && !old_config.secure
+    {
+        old_config.secure = *secure;
+    }
+
+    if let Some(Value::String(room_id)) = &table.get("permanent_room")
+        && old_config.permanent_room.is_none()
+    {
+        old_config.permanent_room = Some(room_id.clone());
+    }
 }
