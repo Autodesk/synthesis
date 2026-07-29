@@ -68,6 +68,7 @@ const CommandPalette: React.FC = () => {
     }, [addToast])
 
     // Subscribe to registry updates to refresh palette command list
+    // TODO: refactor such that registryTick isn't needed, as it's a hack
     const [registryTick, setRegistryTick] = useState(0)
     useEffect(() => {
         const registry = CommandRegistry.get()
@@ -81,6 +82,7 @@ const CommandPalette: React.FC = () => {
         }
     }, [isOpen])
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: removing registryTick here would break this component
     const commands = useMemo<CommandDefinition[]>(() => {
         return CommandRegistry.get().getCommands()
     }, [registryTick])
@@ -142,7 +144,7 @@ const CommandPalette: React.FC = () => {
         }
         window.addEventListener("keydown", onKeyDown)
         return () => window.removeEventListener("keydown", onKeyDown)
-    }, [isOpen, isMainMenuOpen, modal, openPalette, closePalette])
+    }, [isMainMenuOpen, modal, openPalette])
 
     useEffect(() => {
         if ((isMainMenuOpen || modal) && isOpen) {
@@ -234,8 +236,8 @@ const CommandPalette: React.FC = () => {
                                     selected={i === activeIndex}
                                     onMouseEnter={() => setActiveIndex(i)}
                                     onClick={() => execute(i)}
-                                    ref={_element => {
-                                        listItemRefs.current[i] = _element
+                                    ref={element => {
+                                        listItemRefs.current[i] = element
                                     }}
                                 >
                                     <ListItemText primary={c.label} secondary={c.description} />
