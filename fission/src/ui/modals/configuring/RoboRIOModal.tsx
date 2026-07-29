@@ -8,9 +8,10 @@ import RCCreateDeviceModal from "./rio-config/RCCreateDeviceModal"
 
 const RoboRIOModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
+
     useEffect(() => {
         configureScreen(modal!, { title: "RoboRIO Configuration" }, {})
-    }, [])
+    }, [configureScreen, modal])
 
     return (
         <FormControlLabel
