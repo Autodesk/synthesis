@@ -4,15 +4,13 @@
 
 ### From Binary
 
-TODO
+TODO: Instructions for grabbing a binary from github and adding it to your PATH
 
 ### Build from Scratch
 
 1. [Install the rust toolchain](https://rustup.rs/)
-2. Clone the project (e.g. `git clone https://github.com/Autodesk/synthesis.git`)
-3. `cd multiplayer`
-4. Build the application `cargo build --release`
-5. Run the binary `./target/release/multiplayer-server`
+2. Run `cargo install glueball` to download, build, and install the server
+3. Then run `glueball` to start the server
 
 ## Connecting
 
@@ -31,4 +29,3 @@ TODO
 ## Proxying
 
 The steps above will allow you to access your server with a local IP address. If you want to make your server accessible across the internet, you can either use port forwarding or a proxy service. A short guide on setting up a free proxy can be found at [./PROXY.md](./PROXY.md)
-
