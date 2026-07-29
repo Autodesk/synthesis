@@ -23,7 +23,7 @@ pub struct Config {
     #[argh(
         switch,
         short = 's',
-        description = "whether to run the server through the WebSocketSecure protocol or not. self-signed PEM certficates will be automatically generated into the `./secrets/` directory"
+        description = "whether to run the server through the WebSocketSecure protocol or not. self-signed PEM certficates will be automatically generated"
     )]
     pub secure: bool,
 
