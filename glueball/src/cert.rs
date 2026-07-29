@@ -13,7 +13,8 @@ use tokio_rustls::rustls::{
 };
 
 pub fn get_cert_directory() -> Option<PathBuf> {
-    ProjectDirs::from("com", "synthesis", "glueball").map(|dirs| dirs.config_dir().join("keys"))
+    ProjectDirs::from("com", "autodesk", "synthesis-glueball")
+        .map(|dirs| dirs.config_dir().join("keys"))
 }
 
 /// Creates a TLS config for the server
