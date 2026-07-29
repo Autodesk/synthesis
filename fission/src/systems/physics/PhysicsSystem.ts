@@ -1049,6 +1049,7 @@ class PhysicsSystem extends WorldSystem {
 
                 let shape = shapeResult.Get()
                 let appliedSphereCollider = false
+                let massOverride: number | undefined
 
                 if (rn.isDynamic) {
                     if (rn.isGamePiece) {
@@ -1070,10 +1071,9 @@ class PhysicsSystem extends WorldSystem {
                             appliedSphereCollider = true
                         }
 
-                        const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
-                        shape.GetMassProperties().mMass = mass
+                        massOverride = totalMass == 0.0 ? undefined : Math.min(totalMass, MAX_GP_MASS)
                     } else {
-                        shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass * massMod
+                        massOverride = totalMass == 0.0 ? undefined : totalMass * massMod
                     }
                 }
 
@@ -1086,6 +1086,12 @@ class PhysicsSystem extends WorldSystem {
                     rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
                     rnLayer
                 )
+
+                if (massOverride !== undefined) {
+                    bodySettings.mOverrideMassProperties = JOLT.EOverrideMassProperties_CalculateInertia
+                    bodySettings.mMassPropertiesOverride.mMass = massOverride
+                }
+
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
                 this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
                 body.SetAllowSleeping(false)

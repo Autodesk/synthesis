@@ -6,7 +6,7 @@ import * as path from "path"
 import { loadEnv } from "vite"
 import glsl from "vite-plugin-glsl"
 
-import { defineConfig, type ViteUserConfig } from "vitest/config"
+import {defineConfig, TestProjectInlineConfiguration, type ViteUserConfig} from "vitest/config"
 
 const serverPort = 3000
 const dockerServerPort = 80
@@ -85,41 +85,23 @@ export default defineConfig(({ mode }): ViteUserConfig => {
               changeOrigin: true,
               secure: true,
           }
-    return {
-        plugins: plugins as ViteUserConfig["plugins"],
-        publicDir: "./public",
-        resolve: {
-            alias: [
-                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
-                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
-                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
-                { find: "@", replacement: path.resolve(__dirname, "src") },
-            ],
-        },
-        define: {
-            GIT_COMMIT: JSON.stringify(commitHash),
-        },
+
+    const baseAliases = [
+        { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+        { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+        { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+        { find: "@", replacement: path.resolve(__dirname, "src") },
+    ]
+
+    const fissionProject:TestProjectInlineConfiguration = {
+        extends: true,
         test: {
+            name: "fission",
             setupFiles: ["src/test/TestSetup.browser.ts"],
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
             environment: "jsdom",
-            reporters: process.env.GITHUB_ACTIONS
-                ? [
-                      "github-actions",
-                      "default",
-                      {
-                          onTestRunEnd(_testModules, unhandledErrors, reason) {
-                              if (reason === "passed" && unhandledErrors.length === 0) {
-                                  console.error("GH ACTIONS VITEST PASSED")
-                              } else {
-                                  console.error(unhandledErrors)
-                              }
-                          },
-                      },
-                  ]
-                : ["default"],
             browser: {
                 enabled: true,
                 provider: "playwright",
@@ -136,6 +118,67 @@ export default defineConfig(({ mode }): ViteUserConfig => {
                     },
                 ],
             },
+        },
+    }
+
+    // `bun run test:asan`
+    const fissionAsanProject = {
+        extends: true,
+        resolve: {
+            alias: [
+                ...baseAliases,
+                {
+                    find: /^@synthesis\.adsk\/jolt-physics(\/wasm-compat)?$/,
+                    replacement: process.env.JOLT_ASAN_DIST,
+                },
+            ],
+        },
+        test: {
+            name: "fission-asan",
+            setupFiles: ["src/test/TestSetup.browser.ts"],
+            globalSetup: ["src/test/TestSetup.server.ts"],
+            testTimeout: 10000,
+            globals: true,
+            environment: "jsdom",
+            browser: {
+                enabled: true,
+                provider: "playwright",
+                instances: [
+                    {
+                        name: "chromium",
+                        browser: "chromium",
+                        headless: true,
+                    },
+                ],
+            },
+        },
+    }
+
+    return {
+        plugins: plugins as ViteUserConfig["plugins"],
+        publicDir: "./public",
+        resolve: {
+            alias: baseAliases,
+        },
+        define: {
+            GIT_COMMIT: JSON.stringify(commitHash),
+        },
+        test: {
+            reporters: process.env.GITHUB_ACTIONS
+                ? [
+                      "github-actions",
+                      "default",
+                      {
+                          onTestRunEnd(_modules , unhandled , reason) {
+                              if (reason === "passed" && unhandled.length === 0) {
+                                  console.error("GH ACTIONS VITEST PASSED")
+                              } else {
+                                  console.error(unhandled)
+                              }
+                          },
+                      },
+                  ]
+                : ["default"],
             coverage: {
                 provider: "istanbul",
                 reporter: ["text", "html"] as const,
@@ -144,6 +187,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
                 exclude: ["src/test/**", "src/proto/**"],
                 reportOnFailure: true,
             },
+            projects: [fissionProject, ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject as any] : [])],
         },
         build: {
             target: "esnext",

@@ -18,6 +18,7 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -79,27 +80,33 @@ function save(
     selectedRobot.savePreferences()
 }
 
-interface ConfigEjectorProps {
-    selectedRobot: MirabufSceneObject
-}
-
-const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ selectedRobot }) => {
+const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
+}) => {
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
     const [ejectOrder, setEjectOrder] = useState<"FIFO" | "LIFO">(
-        selectedRobot.ejectorPreferences?.ejectOrder || "FIFO"
+        selectedAssembly.ejectorPreferences?.ejectOrder || "FIFO"
     )
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
-        if (gizmoRef.current && selectedRobot) {
-            save(ejectorVelocity, gizmoRef.current, selectedRobot, selectedNode, ejectOrder)
-            const currentGp = selectedRobot.activeEjectables[0]
-            selectedRobot.setEjectable(undefined)
-            selectedRobot.setEjectable(currentGp)
+        if (gizmoRef.current && selectedAssembly) {
+            save(ejectorVelocity, gizmoRef.current, selectedAssembly, selectedNode, ejectOrder)
+            const currentGp = selectedAssembly.activeEjectables[0]
+            selectedAssembly.setEjectable(undefined)
+            selectedAssembly.setEjectable(currentGp)
         }
-    }, [selectedRobot, selectedNode, ejectorVelocity, ejectOrder])
+    }, [selectedAssembly, selectedNode, ejectorVelocity, ejectOrder])
+
+    useEffect(() => {
+        const originalPrefs = structuredClone(selectedAssembly.ejectorPreferences)
+        registerCleanupFunction(undefined, () => {
+            selectedAssembly.ejectorPreferences = originalPrefs
+        })
+    }, [registerCleanupFunction, selectedAssembly])
 
     useEffect(() => {
         return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
@@ -116,21 +123,21 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     }, [])
 
     const gizmoComponent = useMemo(() => {
-        if (selectedRobot?.ejectorPreferences) {
+        if (selectedAssembly?.ejectorPreferences) {
             const postGizmoCreation = (gizmo: GizmoSceneObject) => {
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
                 const deltaTransformation = convertArrayToThreeMatrix4(
-                    selectedRobot.ejectorPreferences!.deltaTransformation
+                    selectedAssembly.ejectorPreferences!.deltaTransformation
                 )
 
-                let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
-                    selectedRobot.ejectorPreferences!.parentNode ?? selectedRobot.rootNodeId
+                let nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(
+                    selectedAssembly.ejectorPreferences!.parentNode ?? selectedAssembly.rootNodeId
                 )
                 if (!nodeBodyId) {
                     // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
-                    nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.rootNodeId)!
+                    nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(selectedAssembly.rootNodeId)!
                 }
 
                 /** W = L x R. See save() for math details */
@@ -160,20 +167,20 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
         }
     }, [
         placeholderMesh,
-        selectedRobot.ejectorPreferences,
-        selectedRobot.mechanism.nodeToBody.get,
-        selectedRobot.rootNodeId,
+        selectedAssembly.ejectorPreferences,
+        selectedAssembly.mechanism.nodeToBody.get,
+        selectedAssembly.rootNodeId,
     ])
 
     useEffect(() => {
-        if (selectedRobot?.ejectorPreferences) {
-            setEjectorVelocity(selectedRobot.ejectorPreferences.ejectorVelocity)
-            setSelectedNode(selectedRobot.ejectorPreferences.parentNode)
-            setEjectOrder(selectedRobot.ejectorPreferences.ejectOrder)
+        if (selectedAssembly?.ejectorPreferences) {
+            setEjectorVelocity(selectedAssembly.ejectorPreferences.ejectorVelocity)
+            setSelectedNode(selectedAssembly.ejectorPreferences.parentNode)
+            setEjectOrder(selectedAssembly.ejectorPreferences.ejectOrder)
         } else {
             setSelectedNode(undefined)
         }
-    }, [selectedRobot])
+    }, [selectedAssembly])
 
     // useEffect(() => {
     //     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
@@ -185,19 +192,19 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
-            if (!selectedRobot) {
+            if (!selectedAssembly) {
                 return false
             }
 
             const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
-            if (!assoc || !assoc.sceneObject || assoc.sceneObject !== selectedRobot) {
+            if (!assoc || !assoc.sceneObject || assoc.sceneObject !== selectedAssembly) {
                 return false
             }
 
             setSelectedNode(assoc.rigidNodeId)
             return true
         },
-        [selectedRobot]
+        [selectedAssembly]
     )
 
     return (
@@ -246,14 +253,14 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!)!.GetWorldTransform()
+                            World.physicsSystem.getBody(selectedAssembly.getRootNodeId()!)!.GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)
                     }
                     setEjectorVelocity(1)
-                    setSelectedNode(selectedRobot?.rootNodeId)
-                    setEjectOrder(selectedRobot.ejectorPreferences?.ejectOrder ?? "FIFO")
+                    setSelectedNode(selectedAssembly?.rootNodeId)
+                    setEjectOrder(selectedAssembly.ejectorPreferences?.ejectOrder ?? "FIFO")
                 }}
             >
                 Reset
@@ -262,4 +269,4 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     )
 }
 
-export default ConfigureShotTrajectoryInterface
+export default ConfigureGamepieceEjectorInterface
