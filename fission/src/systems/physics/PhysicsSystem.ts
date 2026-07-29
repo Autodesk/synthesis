@@ -1473,8 +1473,6 @@ class PhysicsSystem extends WorldSystem {
                         return
                     }
 
-                    console.log("Scene object", clientSceneObject.nameTag)
-
                     const touchedBodies = clientSceneObject.mechanism.touchedObjects
 
                     const message: Message = {
