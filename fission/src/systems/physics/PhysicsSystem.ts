@@ -1073,6 +1073,7 @@ class PhysicsSystem extends WorldSystem {
 
                 let shape = shapeResult.Get()
                 let appliedSphereCollider = false
+                let massOverride: number | undefined
 
                 if (rn.isDynamic) {
                     if (rn.isGamePiece) {
@@ -1097,10 +1098,9 @@ class PhysicsSystem extends WorldSystem {
                             JOLT.destroy(offsetSettings)
                         }
 
-                        const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
-                        shape.GetMassProperties().mMass = mass
+                        massOverride = totalMass == 0.0 ? undefined : Math.min(totalMass, MAX_GP_MASS)
                     } else {
-                        shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass * massMod
+                        massOverride = totalMass == 0.0 ? undefined : totalMass * massMod
                     }
                 }
 
@@ -1113,6 +1113,11 @@ class PhysicsSystem extends WorldSystem {
                     rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
                     rnLayer
                 )
+
+                if (massOverride !== undefined) {
+                    bodySettings.mOverrideMassProperties = JOLT.EOverrideMassProperties_CalculateInertia
+                    bodySettings.mMassPropertiesOverride.mMass = massOverride
+                }
 
                 // BodyCreationSettings constructor took its own ref on `shape`, safe to drop
                 // shapeResult's claim now. STATIC_ALIAS, `Clear()` over `JOLT.destroy()`
