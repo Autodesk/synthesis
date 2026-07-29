@@ -59,7 +59,7 @@ export function useAssemblySelection() {
 
 /** gets configure options avaiable for selected assembly */
 export function useConfigureAssembly(selectedAssembly?: MirabufSceneObject) {
-    const { openPanel, addToast } = useUIContext()
+    const { togglePanel, addToast } = useUIContext()
 
     // robot configure button set is shown by default
     const isField = selectedAssembly?.miraType === MiraType.FIELD
@@ -75,13 +75,14 @@ export function useConfigureAssembly(selectedAssembly?: MirabufSceneObject) {
                 addToast("warning", "No Assembly Selected", "Select an assembly to configure first.")
                 return
             }
-            openPanel(ConfigurePanel, {
-                selectedAssembly,
-                configMode: mode,
-                configurationType,
-            })
+            togglePanel(
+                ConfigurePanel,
+                { selectedAssembly, configMode: mode, configurationType },
+                // only close on a repeat click of the same button - a different config mode re-opens the panel
+                open => open.configMode === mode && open.selectedAssembly?.id === selectedAssembly.id
+            )
         },
-        [selectedAssembly, addToast, openPanel, configurationType]
+        [selectedAssembly, addToast, togglePanel, configurationType]
     )
 
     return {

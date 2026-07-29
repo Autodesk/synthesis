@@ -8,9 +8,9 @@ import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 
 const GameplayControls: React.FC = () => {
-    const { openModal, openPanel } = useUIContext()
+    const { openModal, togglePanel } = useUIContext()
 
-    const openMatchMode = () => openPanel(MatchModeConfigPanel, undefined)
+    const openMatchMode = () => togglePanel(MatchModeConfigPanel, undefined)
 
     const openMultiplayer = () => openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
 

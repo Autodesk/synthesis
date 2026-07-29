@@ -31,7 +31,7 @@ import UserIcon from "@/ui/components/UserIcon"
 import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 
 const TopBar: React.FC = () => {
-    const { openModal, openPanel, addToast } = useUIContext()
+    const { openModal, openPanel, togglePanel, addToast } = useUIContext()
     const { appMode } = useStateContext()
     const isTouchDevice = useIsTouchDevice()
     const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
@@ -112,7 +112,9 @@ const TopBar: React.FC = () => {
                 <TopBarButton
                     label="Add Assembly"
                     icon={<TopBarIcon name="add" size={30} />}
-                    onClick={() => openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })}
+                    onClick={() =>
+                        togglePanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
+                    }
                 />
 
                 <Box sx={TOP_BAR_DIVIDER_SX} />
@@ -147,7 +149,7 @@ const TopBar: React.FC = () => {
                                     <SynthesisIcons.CODE_SQUARE />
                                 </Box>
                             }
-                            onClick={() => openPanel(DeveloperToolPanel, undefined)}
+                            onClick={() => togglePanel(DeveloperToolPanel, undefined)}
                         />
                         <TopBarButton
                             label="Debug Tools"
@@ -156,7 +158,7 @@ const TopBar: React.FC = () => {
                                     <SynthesisIcons.BUG />
                                 </Box>
                             }
-                            onClick={() => openPanel(DebugPanel, undefined)}
+                            onClick={() => togglePanel(DebugPanel, undefined)}
                         />
                     </>
                 )}
@@ -178,7 +180,7 @@ const TopBar: React.FC = () => {
                             <SynthesisIcons.CAMERA />
                         </Box>
                     }
-                    onClick={() => openPanel(CameraSelectionPanel, undefined)}
+                    onClick={() => togglePanel(CameraSelectionPanel, undefined)}
                 />
                 <TopBarButton
                     label="Settings"
