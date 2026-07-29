@@ -12,7 +12,6 @@ interface MockDimensions {
 }
 
 interface MockRobotObject {
-    _id: number | null
     id: number
     assemblyName: string
     miraType: MiraType
@@ -24,7 +23,6 @@ interface MockRobotObject {
 }
 
 interface MockNonRobotObject {
-    _id: number | null
     id: number
     assemblyName: string
     miraType: MiraType
@@ -75,8 +73,10 @@ describe("RobotDimensionTracker", () => {
         vi.clearAllMocks()
 
         const tracker = RobotDimensionTracker as unknown as {
+            // biome-ignore-start lint/style/useNamingConvention: for testing private fields on RobotDimensionTracker
             _robotLastFramePenalty?: Map<number, boolean>
             _robotSize?: Map<number, { width: number; depth: number }>
+            // biome-ignore-end lint/style/useNamingConvention: for testing private fields on RobotDimensionTracker
         }
         tracker._robotLastFramePenalty?.clear()
         tracker._robotSize?.clear()
@@ -109,7 +109,6 @@ describe("RobotDimensionTracker", () => {
         })
 
         mockNonRobot = {
-            _id: 3,
             id: 3,
             assemblyName: "Field",
             miraType: MiraType.FIELD,
