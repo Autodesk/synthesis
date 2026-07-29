@@ -358,22 +358,10 @@ class MirabufParser {
                       return new mirabuf.Transform({
                           // biome-ignore-start format: We would prefer to visualize this as a matrix
                           spatialMatrix: [
-                              e[0],
-                              e[4],
-                              e[8],
-                              e[12] * 100,
-                              e[1],
-                              e[5],
-                              e[9],
-                              e[13] * 100,
-                              e[2],
-                              e[6],
-                              e[10],
-                              e[14] * 100,
-                              e[3],
-                              e[7],
-                              e[11],
-                              e[15],
+                              e[0], e[4], e[8],  e[12] * 100,
+                              e[1], e[5], e[9],  e[13] * 100,
+                              e[2], e[6], e[10], e[14] * 100,
+                              e[3], e[7], e[11], e[15],
                           ],
                           // biome-ignore-end format: We would prefer to visualize this as a matrix
                       })
