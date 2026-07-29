@@ -17,7 +17,12 @@ const TRIANGLE_THRESHOLD = 2000
 //
 // Bottom rungs exist for hardware like screws. Some of these parts have measured over 100k triangles
 // regardless of how small they are so it's worth waking down to 0.03mm to avoid skipping those meshes.
-const ERROR_BUDGETS_M = [0.0005, 0.00025, 0.000125, 0.0000625, 0.00003125]
+//
+// The bottommost rung (0.0156mm) is glTF-specific headroom: Onshape's glTF exporter tessellates
+// denser than its STL exporter, so precision-detail parts (small ball bearings, PCB-like boards) can
+// still be well outside MAX_VOLUME_DEVIATION at 0.03mm. Confirmed via why-rejected.mjs that these
+// parts converge exactly one rung down instead of needing a different budgeting model.
+const ERROR_BUDGETS_M = [0.0005, 0.00025, 0.000125, 0.0000625, 0.00003125, 0.000015625]
 // ...but never spend more error than this fraction of the part's own bounding-box diagonal, so a
 // 5mm spacer isn't handed a budget the size of itself.
 const RELATIVE_BUDGET_CAP = 0.01
