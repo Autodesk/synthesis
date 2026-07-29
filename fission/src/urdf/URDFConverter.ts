@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid"
 import { mirabuf } from "@/proto/mirabuf"
 import { parseGLTF } from "./GLTFParser"
+import { decimateMesh, readyMeshDecimation } from "./MeshDecimation"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
 import { URDF_IMPORT_TAG } from "./URDFUserData"
@@ -503,7 +504,10 @@ function parseMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): Parsed
     }
 
     const ext = meshPath.split(".").pop()?.toLowerCase()
-    if (ext === "stl") return parseSTL(data)
+    // Decimation is scoped to STL for now: STL's per-triangle (non-shared) vertices are what was
+    // validated against, and STL's UV is always an all-zero placeholder so there's no real UV data
+    // to lose. OBJ/glTF sources may carry real shared indices/UV and aren't touched here.
+    if (ext === "stl") return decimateMesh(parseSTL(data))
     if (ext === "obj") return parseOBJ(data)
     if (ext === "gltf") return parseGLTF(data, meshPath, meshFiles)
     console.warn(`[URDF] Unsupported mesh format: .${ext} (${meshPath}) — link will have no geometry`)
@@ -639,6 +643,92 @@ function isCylindricalPhantom(link: URDFLink, parentJoint: URDFJoint): boolean {
     )
 }
 
+// FNV-1a over the raw bytes backing a typed array. Used only to bucket candidates for interning -
+// every hash hit is still verified with a byte-exact comparison before two arrays are treated as
+// the same object, so a hash collision can only cost a cache miss, never an incorrect merge.
+function hashTypedArrayBytes(view: ArrayBufferView): number {
+    const bytes = new Uint8Array(view.buffer, view.byteOffset, view.byteLength)
+    let h = 0x811c9dc5
+    for (let i = 0; i < bytes.length; i++) {
+        h ^= bytes[i]
+        h = Math.imul(h, 0x01000193)
+    }
+    return h >>> 0
+}
+
+function typedArraysEqual(a: ArrayBufferView, b: ArrayBufferView): boolean {
+    if (a.byteLength !== b.byteLength) return false
+    const ab = new Uint8Array(a.buffer, a.byteOffset, a.byteLength)
+    const bb = new Uint8Array(b.buffer, b.byteOffset, b.byteLength)
+    for (let i = 0; i < ab.length; i++) if (ab[i] !== bb[i]) return false
+    return true
+}
+
+// Baked body geometry can't be shared across links via a PartDefinition reference the way whole
+// duplicate links can be (see linkGeometrySignature): a collapsed Onshape sub-assembly link bakes
+// each of its parts' true world/robot-space position directly into that part's vertices, so two
+// occurrences of "the same bearing" mounted at two different points on the robot produce genuinely
+// different vertex arrays. But some pieces of a baked body ARE guaranteed identical regardless of
+// position, and every consumer (protobuf encode, MirabufInstance, PhysicsSystem) only ever reads
+// these arrays - none of them mutate or hold onto a reference beyond copying out of it - so it's
+// safe for many Body objects to point at the exact same backing array instead of each allocating
+// their own copy:
+//   - indices: STL has no shared-vertex concept, so `indices` is always the trivial [0..N-1]
+//     sequence for a given triangle count, completely independent of the mesh's identity/position.
+//   - uv: STLParser always returns an all-zero placeholder (no real STL UV data), so for a given
+//     vertex count the "uv" content is always identical - always N zeros - regardless of source.
+//   - verts/normals: not position-independent in general, but two bodies anywhere in the assembly
+//     occasionally do end up byte-identical (e.g. identical sub-parts at the same relative offset
+//     within otherwise-unmergeable collapsed links). Interned as a bonus, not the primary win.
+// Content is still verified byte-exact before sharing (see hashTypedArrayBytes/typedArraysEqual) -
+// this only shares an existing allocation for content already proven identical, it never changes
+// what data ends up in the assembly.
+class GeometryInterner {
+    private _indicesByHash = new Map<string, { source: Uint32Array; interned: number[] }[]>()
+    private _zeroUvByLength = new Map<number, Float32Array>()
+    private _vertNormByHash = new Map<string, { verts: Float32Array; normals: Float32Array }[]>()
+
+    internIndices(indices: Uint32Array): number[] {
+        const key = `${indices.length}_${hashTypedArrayBytes(indices)}`
+        const bucket = this._indicesByHash.get(key)
+        if (bucket) {
+            for (const candidate of bucket) {
+                if (typedArraysEqual(candidate.source, indices)) return candidate.interned
+            }
+        }
+        const interned = Array.from(indices)
+        const list = bucket ?? []
+        list.push({ source: indices, interned })
+        this._indicesByHash.set(key, list)
+        return interned
+    }
+
+    internZeroUv(vertexCount: number): Float32Array {
+        const cached = this._zeroUvByLength.get(vertexCount)
+        if (cached) return cached
+        const fresh = new Float32Array(vertexCount * 2)
+        this._zeroUvByLength.set(vertexCount, fresh)
+        return fresh
+    }
+
+    internVertsNormals(verts: Float32Array, normals: Float32Array): { verts: Float32Array; normals: Float32Array } {
+        const key = `${verts.length}_${hashTypedArrayBytes(verts)}_${hashTypedArrayBytes(normals)}`
+        const bucket = this._vertNormByHash.get(key)
+        if (bucket) {
+            for (const candidate of bucket) {
+                if (typedArraysEqual(candidate.verts, verts) && typedArraysEqual(candidate.normals, normals)) {
+                    return candidate
+                }
+            }
+        }
+        const entry = { verts, normals }
+        const list = bucket ?? []
+        list.push(entry)
+        this._vertNormByHash.set(key, list)
+        return entry
+    }
+}
+
 function buildLinkBody(
     link: URDFLink,
     visual: URDFVisual,
@@ -646,6 +736,7 @@ function buildLinkBody(
     meshFiles: Map<string, Uint8Array>,
     robotSpaceVisuals: boolean,
     meshCache: Map<string, ParsedMesh | null>,
+    geometryInterner: GeometryInterner,
     linkGlobalTransform?: URDFTransform
 ): mirabuf.IBody | null {
     if (!visual.visualMeshPath) return null
@@ -667,7 +758,9 @@ function buildLinkBody(
         scaled[i + 2] = -rv[i + 1] * sz
     }
     const yupNormals = toYup(inLinkFrame.normals)
-    const uv = inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Float32Array((scaled.length / 3) * 2)
+    const vertexCount = scaled.length / 3
+    const uv = inLinkFrame.uv.length > 0 ? inLinkFrame.uv : geometryInterner.internZeroUv(vertexCount)
+    const interned = geometryInterner.internVertsNormals(scaled, yupNormals)
 
     // mirabuf.IMesh types these fields as `number[]`, but every consumer (encode, MirabufInstance,
     // PhysicsSystem) only ever reads .length/indexed access, so keeping verts/normals/uv as Float32Array
@@ -677,10 +770,10 @@ function buildLinkBody(
         info: { GUID: `${link.name}_body_${index}`, name: `${link.name}_body_${index}` },
         triangleMesh: {
             mesh: {
-                verts: scaled as unknown as number[],
-                normals: yupNormals as unknown as number[],
+                verts: interned.verts as unknown as number[],
+                normals: interned.normals as unknown as number[],
                 uv: uv as unknown as number[],
-                indices: Array.from(inLinkFrame.indices),
+                indices: geometryInterner.internIndices(inLinkFrame.indices),
             },
         },
         appearanceOverride: visual.materialName ?? undefined,
@@ -722,6 +815,7 @@ async function buildParts(
     const meshCache = new Map<string, ParsedMesh | null>()
     // Maps a link's geometry signature to the link name whose PartDefinition already covers it.
     const definitionBySignature = new Map<string, string>()
+    const geometryInterner = new GeometryInterner()
 
     const linksPerProgressBarStep = Math.ceil(links.length / 10)
     const progressBarIncrement = (URDFImportProgressBar.BUILD_PARTS - URDFImportProgressBar.LOAD_MESHES) / 10
@@ -747,7 +841,16 @@ async function buildParts(
         } else {
             const bodies = link.visuals
                 .map((visual, index) =>
-                    buildLinkBody(link, visual, index, meshFiles, robotSpaceVisuals, meshCache, globalTransform)
+                    buildLinkBody(
+                        link,
+                        visual,
+                        index,
+                        meshFiles,
+                        robotSpaceVisuals,
+                        meshCache,
+                        geometryInterner,
+                        globalTransform
+                    )
                 )
                 .filter((body): body is mirabuf.IBody => body !== null)
 
@@ -899,6 +1002,8 @@ export async function convertURDF(
     meshFiles: Map<string, Uint8Array>,
     progressHandle: ProgressHandle
 ): Promise<mirabuf.Assembly> {
+    await readyMeshDecimation()
+
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
     const parseError = doc.querySelector("parsererror")
     if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
