@@ -226,6 +226,34 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
 
 type GraphicsPreset = "low" | "medium" | "high" | "custom"
 
+const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
+    return (
+        a.fancyShadows === b.fancyShadows &&
+        a.maxFar === b.maxFar &&
+        a.cascades === b.cascades &&
+        a.shadowMapSize === b.shadowMapSize &&
+        a.antiAliasing === b.antiAliasing
+    )
+}
+
+const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
+    const lowPrefs = lowGraphicsPreferences()
+    if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
+        return "low"
+    }
+
+    const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
+        { key: "medium", prefs: mediumGraphicsPreferences() },
+        { key: "high", prefs: highGraphicsPreferences() },
+    ]
+
+    for (const p of presets) {
+        if (prefsEqual(prefs, p.prefs)) return p.key
+    }
+
+    return "custom"
+}
+
 const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [reload, setReload] = useState<boolean>(false)
     const [selectedGraphicsPreset, setSelectedGraphicsPreset] = useState<GraphicsPreset>("custom")
@@ -237,34 +265,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [cascades, setCascades] = useState<number>(PreferencesSystem.getGraphicsPreferences().cascades)
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
-
-    const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
-        return (
-            a.fancyShadows === b.fancyShadows &&
-            a.maxFar === b.maxFar &&
-            a.cascades === b.cascades &&
-            a.shadowMapSize === b.shadowMapSize &&
-            a.antiAliasing === b.antiAliasing
-        )
-    }
-
-    const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
-        const lowPrefs = lowGraphicsPreferences()
-        if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
-            return "low"
-        }
-
-        const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
-            { key: "medium", prefs: mediumGraphicsPreferences() },
-            { key: "high", prefs: highGraphicsPreferences() },
-        ]
-
-        for (const p of presets) {
-            if (prefsEqual(prefs, p.prefs)) return p.key
-        }
-
-        return "custom"
-    }
 
     const applyGraphicsPreferencesLocally = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
         setLightIntensity(prefs.lightIntensity)
@@ -450,16 +450,25 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
         secondaryColor,
         blueAllianceColor,
         redAllianceColor,
+        topBarColor,
+        surfaceColor,
+        topBarTextColor,
         setPrimaryColor,
         setSecondaryColor,
         setBlueAllianceColor,
         setRedAllianceColor,
+        setTopBarColor,
+        setSurfaceColor,
+        setTopBarTextColor,
     } = useThemeContext()
 
     const [tempPrimary, setTempPrimary] = useState(primaryColor)
     const [tempSecondary, setTempSecondary] = useState(secondaryColor)
     const [tempBlue, setTempBlue] = useState(blueAllianceColor)
     const [tempRed, setTempRed] = useState(redAllianceColor)
+    const [tempTopBar, setTempTopBar] = useState(topBarColor)
+    const [tempSurface, setTempSurface] = useState(surfaceColor)
+    const [tempTopBarText, setTempTopBarText] = useState(topBarTextColor)
 
     // Create actions object and notify parent
     useEffect(() => {
@@ -469,12 +478,18 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
                 setSecondaryColor(tempSecondary)
                 setBlueAllianceColor(tempBlue)
                 setRedAllianceColor(tempRed)
+                setTopBarColor(tempTopBar)
+                setSurfaceColor(tempSurface)
+                setTopBarTextColor(tempTopBarText)
             },
             reset: () => {
                 setTempPrimary(primaryColor)
                 setTempSecondary(secondaryColor)
                 setTempBlue(blueAllianceColor)
                 setTempRed(redAllianceColor)
+                setTempTopBar(topBarColor)
+                setTempSurface(surfaceColor)
+                setTempTopBarText(topBarTextColor)
             },
         }
         onActionsChange?.(actions)
@@ -483,15 +498,24 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
         tempSecondary,
         tempBlue,
         tempRed,
+        tempTopBar,
+        tempSurface,
+        tempTopBarText,
         primaryColor,
         secondaryColor,
         blueAllianceColor,
         redAllianceColor,
+        topBarColor,
+        surfaceColor,
+        topBarTextColor,
         onActionsChange,
         setBlueAllianceColor,
         setPrimaryColor,
         setRedAllianceColor,
         setSecondaryColor,
+        setTopBarColor,
+        setSurfaceColor,
+        setTopBarTextColor,
     ])
 
     return (
@@ -501,6 +525,9 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
             <ColorEditor label="Secondary Color" color={tempSecondary} setColor={setTempSecondary} />
             <ColorEditor label="Blue Alliance" color={tempBlue} setColor={setTempBlue} />
             <ColorEditor label="Red Alliance" color={tempRed} setColor={setTempRed} />
+            <ColorEditor label="Top Bar" color={tempTopBar} setColor={setTempTopBar} />
+            <ColorEditor label="Surface" color={tempSurface} setColor={setTempSurface} />
+            <ColorEditor label="Top Bar Text" color={tempTopBarText} setColor={setTempTopBarText} />
             <Button
                 startIcon={<SynthesisIcons.DICE />}
                 onClick={() => {
@@ -516,6 +543,9 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
                     setTempSecondary("#ce93d8")
                     setTempBlue("#0066b3")
                     setTempRed("#ed1c24")
+                    setTempTopBar("#3d4352")
+                    setTempSurface("#2a3340")
+                    setTempTopBarText("#b5bcca")
                 }}
             >
                 Reset
@@ -526,6 +556,9 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
                     setSecondaryColor(tempSecondary)
                     setBlueAllianceColor(tempBlue)
                     setRedAllianceColor(tempRed)
+                    setTopBarColor(tempTopBar)
+                    setSurfaceColor(tempSurface)
+                    setTopBarTextColor(tempTopBarText)
                 }}
             >
                 Apply

@@ -56,13 +56,16 @@ class SynthesisBrain extends Brain {
     public get behaviors(): Behavior[] {
         return this._behaviors
     }
+    public override get brainType() {
+        return "synthesis" as const
+    }
 
     // Tracks the number of each specific mirabuf file spawned
     public static numberRobotsSpawned: { [key: string]: number } = {}
 
     /** @returns {string} The name of the input scheme attached to this brain. */
     public get inputSchemeName(): string {
-        const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
+        const scheme = InputSystem.getBrainIndexSchemeMapping(this._brainIndex)
         if (scheme == undefined) return "Not Configured"
 
         return scheme.schemeName
@@ -130,12 +133,8 @@ class SynthesisBrain extends Brain {
         }
     }
 
-    /**
-     * @param assembly
-     * @param driveType
-     */
     public constructor(assembly: MirabufSceneObject) {
-        super(assembly.mechanism, "synthesis")
+        super(assembly.mechanism)
         this._assembly = assembly
         this._simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)!
 

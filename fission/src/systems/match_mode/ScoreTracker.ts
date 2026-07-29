@@ -5,22 +5,22 @@ import World from "@/systems/World.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 
 export default class ScoreTracker {
-    private static _redScore: number = 0
-    private static _blueScore: number = 0
-    private static _perRobotScore: Map<MirabufSceneObject, number>
+    private _redScore: number = 0
+    private _blueScore: number = 0
+    private _perRobotScore: Map<MirabufSceneObject, number> = new Map()
 
-    public static get redScore() {
+    public get redScore() {
         return this._redScore
     }
-    public static get blueScore() {
+    public get blueScore() {
         return this._blueScore
     }
 
-    public static get perRobotScore(): ReadonlyMap<MirabufSceneObject, number> {
+    public get perRobotScore(): ReadonlyMap<MirabufSceneObject, number> {
         return this._perRobotScore
     }
 
-    public static resetScores(): void {
+    public resetScores(): void {
         this._redScore = 0
         this._blueScore = 0
         this._perRobotScore = new Map()
@@ -28,12 +28,12 @@ export default class ScoreTracker {
         this.notifyChange()
     }
 
-    public static addPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
+    public addPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
         const currentRobotScore = this._perRobotScore.get(robot) ?? 0
         this._perRobotScore.set(robot, currentRobotScore + scoreToAdd)
     }
 
-    public static addPoints(alliance: Alliance, points: number, notify: boolean = true) {
+    public addPoints(alliance: Alliance, points: number, notify: boolean = true) {
         if (alliance == "red") {
             this._redScore += points
         } else {
@@ -44,11 +44,11 @@ export default class ScoreTracker {
         }
     }
 
-    private static notifyChange() {
+    private notifyChange() {
         EventSystem.dispatch("ScoreChangedEvent", { red: this.redScore, blue: this.blueScore })
     }
 
-    public static robotPenalty(
+    public robotPenalty(
         robot: MirabufSceneObject,
         penaltyPoints: number,
         penaltyInfo: string,
