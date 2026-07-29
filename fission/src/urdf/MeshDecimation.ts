@@ -634,9 +634,7 @@ function buildShadingData({ verts, indices, uv }: Welded): ParsedMesh {
 /**
  * Reduces an over-tessellated mesh under a bounded geometric error budget. Returns the input
  * mesh unchanged if it is already small, if decimation isn't available, if the source isn't a clean
- * closed manifold, or if no budget on the ladder produces a result that survives validation - the
- * ladder is calibrated against STL tessellation density, so a denser glTF/OBJ export of the same
- * part is more likely to fall through every rung and come back untouched (safe, just less reduction).
+ * closed manifold, or if no budget on the ladder produces a result that survives validation.
  */
 export function decimateMesh(mesh: ParsedMesh): ParsedMesh {
     const triangleCount = mesh.indices.length / 3
