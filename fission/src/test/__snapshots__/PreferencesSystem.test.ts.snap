@@ -3,7 +3,9 @@
 exports[`Preferences System Global Values > Clearing preferences > default user preferences 1`] = `
 {
   "InputSchemes": [],
-  "MultiplayerClientID": "",
+  "MultiplayerHost": "",
+  "MultiplayerPort": 2610,
+  "MultiplayerSecure": true,
   "MultiplayerUsername": "",
   "MuteAllSound": false,
   "PitchSensitivity": 10,
@@ -30,7 +32,9 @@ exports[`Preferences System Global Values > Clearing preferences > default user 
 exports[`Preferences System Global Values > Reset to default if undefined > default user preferences 1`] = `
 {
   "InputSchemes": [],
-  "MultiplayerClientID": "",
+  "MultiplayerHost": "",
+  "MultiplayerPort": 2610,
+  "MultiplayerSecure": true,
   "MultiplayerUsername": "",
   "MuteAllSound": false,
   "PitchSensitivity": 10,
@@ -57,7 +61,9 @@ exports[`Preferences System Global Values > Reset to default if undefined > defa
 exports[`Preferences System Global Values > Setting without saving > default user preferences 1`] = `
 {
   "InputSchemes": [],
-  "MultiplayerClientID": "",
+  "MultiplayerHost": "",
+  "MultiplayerPort": 2610,
+  "MultiplayerSecure": true,
   "MultiplayerUsername": "",
   "MuteAllSound": false,
   "PitchSensitivity": 10,
