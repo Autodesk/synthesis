@@ -10,6 +10,7 @@
 //! The admin can select a user with the arrows and kick them with `k` (after a confirmation),
 //! and lock or unlock the focused room with `l` to control whether new clients may join.
 
+use crate::panic::set_panic_hook_to_cleanup_terminal;
 use crate::room::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
 use crate::util::trim_uuid;
 
@@ -45,6 +46,7 @@ const COLOR_PALETTE_SIZE: usize = 6;
 
 pub fn start_tui_thread(state: &Arc<Mutex<State>>) {
     let tui_state_handle = state.clone();
+    set_panic_hook_to_cleanup_terminal();
 
     // On an OS thread because crossterm (and thus ratatui) will block on user input
     // So it wouldn't play nice with tokio's runtime, which expects yielding

@@ -4,6 +4,7 @@ mod config;
 mod logging;
 mod messaging;
 mod model;
+mod panic;
 mod prefixed;
 mod room;
 mod tui;
@@ -33,6 +34,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if let Some(config_file) = config.config_file.clone() {
         parse_config_file(config_file, &mut config);
     }
+
     if config.port.is_none() {
         config.port = Some(DEFAULT_PORT);
     }
@@ -43,7 +45,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let port = config.port.unwrap();
 
     // `listener` will be used regardless of the security level specified
-    let Ok(listener) = TcpListener::bind(format!("127.0.0.1:{}", port)).await else {
+    let Ok(listener) = TcpListener::bind(format!("127.0.0.1:{port}")).await else {
         eprintln!("Could not create TCP listener (the port is likely in use)");
         std::process::exit(1)
     };
@@ -51,6 +53,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if !config.headless {
         start_tui_thread(&state);
     }
+
     if let Some(room_id) = config.permanent_room {
         state.lock().unwrap().new_permanent_room(room_id);
     }
