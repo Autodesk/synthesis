@@ -2,9 +2,7 @@ import { Stack, Tooltip } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { FaUnlink } from "react-icons/fa"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
@@ -14,6 +12,7 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { Button, Spacer } from "@/ui/components/StyledComponents"
 import { buildJointConfigGroups, type JointConfigGroup } from "../jointConfigGroups"
 import SubsystemRowInterface from "./SubsystemRowInterface"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
 class JointGroupSelectionOption extends SelectMenuOption {
     group: JointConfigGroup
@@ -48,15 +47,12 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
     hasChild,
 }) => {
     const [selectable, setSelectable] = useState(false)
-    const [hasParent, setHasParent] = useState(false)
     useEffect(() => {
         setSelectable(
             lookingForParent !== undefined && lookingForParent !== behavior && behavior.parentJointIndex === undefined
         )
     }, [lookingForParent, behavior])
-    useEffect(() => {
-        setHasParent(behavior.parentJointIndex !== undefined)
-    })
+    const hasParent = behavior.parentJointIndex !== undefined
 
     return (
         <Stack direction="row" textAlign="center" gap={1} key={elementKey}>
@@ -113,10 +109,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
 function sortBehaviors(behaviors: SequentialBehaviorPreferences[]): SequentialBehaviorPreferences[] {
     behaviors.sort((a, b) => a.jointIndex - b.jointIndex)
 
-    const sortedBehaviors: SequentialBehaviorPreferences[] = []
-    behaviors.forEach(b => {
-        if (b.parentJointIndex === undefined) sortedBehaviors.push(b)
-    })
+    const sortedBehaviors: SequentialBehaviorPreferences[] = behaviors.filter(b => b.parentJointIndex === undefined)
 
     for (let i = behaviors.length - 1; i >= 0; i--) {
         const b = behaviors[i]
@@ -129,25 +122,32 @@ function sortBehaviors(behaviors: SequentialBehaviorPreferences[]): SequentialBe
     return sortedBehaviors
 }
 
-interface ConfigureJointsProps {
-    selectedRobot: MirabufSceneObject
-}
-
-const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobot }) => {
+const ConfigureJointsInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, registerCleanupFunction }) => {
     const [selectedGroup, setSelectedGroup] = useState<JointGroupSelectionOption | undefined>(undefined)
 
     const behaviors = useMemo<SequentialBehaviorPreferences[]>(
         () =>
-            PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
-            (selectedRobot.brain as SynthesisBrain).behaviors
+            selectedAssembly.robotPreferences.sequentialConfig ??
+            (selectedAssembly.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
-        [selectedRobot.assemblyName, selectedRobot.brain]
+        [selectedAssembly]
     )
 
+    // Covers both sections below: motor config mutates `unstickForce` and the
+    // `inverted` flags inside `sequentialConfig`, sequencing mutates `parentJointIndex`.
+    useEffect(() => {
+        const originalPrefs = structuredClone(selectedAssembly.robotPreferences.sequentialConfig)
+        const originalUnstickForce = selectedAssembly.robotPreferences.unstickForce
+        registerCleanupFunction(undefined, () => {
+            selectedAssembly.robotPreferences.sequentialConfig = originalPrefs
+            selectedAssembly.robotPreferences.unstickForce = originalUnstickForce
+        })
+    }, [registerCleanupFunction, selectedAssembly])
+
     const options = useMemo(
-        () => buildJointConfigGroups(selectedRobot, behaviors).map(g => new JointGroupSelectionOption(g)),
-        [selectedRobot, behaviors]
+        () => buildJointConfigGroups(selectedAssembly, behaviors).map(g => new JointGroupSelectionOption(g)),
+        [selectedAssembly, behaviors]
     )
 
     // reusing the joint names from the config groups
@@ -170,8 +170,8 @@ const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobo
     )
 
     const [seqBehaviors, setSeqBehaviors] = useState<SequentialBehaviorPreferences[]>(
-        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
-            (selectedRobot.brain as SynthesisBrain).behaviors
+        selectedAssembly.robotPreferences.sequentialConfig ??
+            (selectedAssembly.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))
     )
@@ -183,10 +183,10 @@ const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobo
     }, false)
 
     const saveEvent = useCallback(() => {
-        if (selectedRobot === undefined || seqBehaviors === undefined) return
-        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = seqBehaviors
-        PreferencesSystem.savePreferences()
-    }, [seqBehaviors, selectedRobot])
+        if (selectedAssembly === undefined || seqBehaviors === undefined) return
+        selectedAssembly.robotPreferences.sequentialConfig = seqBehaviors
+        selectedAssembly.savePreferences()
+    }, [seqBehaviors, selectedAssembly])
 
     useEffect(() => {
         return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
@@ -202,17 +202,17 @@ const ConfigureJointsInterface: React.FC<ConfigureJointsProps> = ({ selectedRobo
                 options={options}
                 onOptionSelected={val => {
                     if (val !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                    setSelectedGroup(val as JointGroupSelectionOption)
+                    setSelectedGroup(val)
                 }}
                 defaultHeaderText="Select a Joint"
             />
             {selectedGroup !== undefined && (
                 <SubsystemRowInterface
-                    robot={selectedRobot}
+                    robot={selectedAssembly}
                     group={selectedGroup.group}
                     saveBehaviors={() => {
-                        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
-                        PreferencesSystem.savePreferences()
+                        selectedAssembly.robotPreferences.sequentialConfig = behaviors
+                        selectedAssembly.savePreferences()
                     }}
                 />
             )}

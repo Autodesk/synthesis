@@ -4,7 +4,6 @@ import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { InputSchemeUseType } from "@/systems/input/InputTypes"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -43,7 +42,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             targetAssembly.alliance = alliance
             targetAssembly.station = station
-            ScoreTracker.addPerRobotScore(targetAssembly, 0)
+            World.scoreTracker.addPerRobotScore(targetAssembly, 0)
 
             const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
@@ -147,7 +146,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     parent={targetAssembly}
                     onAccept={() => {
                         closeFinish()
-                        closePanel(panel!.id, CloseType.Accept)
+                        closePanel(panel!.id, CloseType.ACCEPT)
                     }}
                     onCancel={closeDelete}
                 />

@@ -1,4 +1,3 @@
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import World from "@/systems/World"
 import MatchMode from "./MatchMode"
 
@@ -36,7 +35,7 @@ class RobotDimensionTracker {
 
             if (this._maxHeight !== -1 && dimensions.height > this._maxHeight + BUFFER_HEIGHT) {
                 if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
-                    ScoreTracker.robotPenalty(robot, this._heightLimitPenalty, "Height Expansion Limit")
+                    World.scoreTracker.robotPenalty(robot, this._heightLimitPenalty, "Height Expansion Limit")
                 }
                 this._robotLastFramePenalty.set(robot.id, true)
                 return
@@ -49,7 +48,7 @@ class RobotDimensionTracker {
                     dimensions.depth > startingRobotSize.depth + this._sideMaxExtension + SIDE_BUFFER)
             ) {
                 if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
-                    ScoreTracker.robotPenalty(robot, this._sideExtensionPenalty, "Side Expansion Limit")
+                    World.scoreTracker.robotPenalty(robot, this._sideExtensionPenalty, "Side Expansion Limit")
                 }
                 this._robotLastFramePenalty.set(robot.id, true)
                 return

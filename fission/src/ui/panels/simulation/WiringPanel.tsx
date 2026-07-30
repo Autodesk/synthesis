@@ -425,8 +425,8 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             return miraObj
         }
         addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
-        // closePanel(panel!.id, CloseType.Cancel)
-    }, [])
+        // closePanel(panel!.id, CloseType.CANCEL)
+    }, [addToast])
 
     useEffect(() => {
         if (!selectedAssembly) return
@@ -463,8 +463,8 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     }, [selectedAssembly])
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Wiring Panel" }, { onBeforeAccept: save })
-    }, [save])
+        configureScreen(panel!, { title: "Wiring Panel", acceptText: "Apply" }, { onBeforeAccept: save })
+    }, [configureScreen, panel, save])
 
     return (
         <>
