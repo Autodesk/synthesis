@@ -17,10 +17,15 @@ The `--no-tls-verify` flag is to tell Cloudflare to accept the self-signed certi
 
 After running the command, you should see a URL printed to your terminal. Copy just the domain portion of the url (without the `https://` prefix) and use it as the host in the Synthesis client.
 
+
 ![img.png](img/tunnel-screenshot.png)
 
 > [!NOTE]
 > Regardless of your local server port, clients should use port `443` to access the proxied server.
+
+### Troubleshooting
+If you see repeated "Failed to dial a quic connection" errors in the terminal where the cloudflared process is running, your network may be blocking QUIC traffic. Try adding  `--protocol http2` to the end of your command to solve this.
+
 
 
 
