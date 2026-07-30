@@ -1,9 +1,12 @@
+import * as THREE from "three"
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
 import MecanumDriveDiagnostics from "@/systems/simulation/behavior/synthesis/drive/MecanumDriveDiagnostics.ts"
+import type { MecanumFrame } from "@/systems/simulation/behavior/synthesis/drive/MecanumLayout.ts"
 import type WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import type WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
+import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions.ts"
 
 /** Angle between a mecanum wheel's plane and its roller axles. */
 export const ROLLER_ANGLE = Math.PI / 4
@@ -40,6 +43,9 @@ const COURSE_HOLD_LIMIT = 0.5
  */
 const AT_REST_SPEED = 0.05
 const AT_REST_YAW_RATE = 0.05
+
+/** Field-oriented drive is defined about the world's vertical, not the chassis'. */
+const WORLD_UP = new THREE.Vector3(0, 1, 0)
 
 /**
  * One driven mecanum wheel: the tire plus the geometry the kinematics needs.
@@ -78,11 +84,27 @@ export interface MecanumModule {
 }
 
 /**
- * Robot-relative mecanum drive.
+ * Field-oriented mecanum drive.
  *
  * Wheels are driven kinematically through {@link WheelDriver}, exactly like skid-steer and swerve,
- * and no wheel mesh spins. Conventions match the swerve inputs it reuses: +forward is the robot's
- * nose, +strafe is left, +turn is counter-clockwise.
+ * and no wheel mesh spins. Conventions match the swerve inputs it reuses: +forward and +strafe are
+ * forward and left *on the field*, and +turn is counter-clockwise.
+ *
+ * ## Field orientation
+ *
+ * Like {@link SwerveDriveBehavior}, the translation stick points somewhere on the field rather than
+ * somewhere on the robot: "forward" is whichever way the robot's nose was facing when the drivetrain
+ * was configured, or when the driver last pressed `swerveResetFieldForward`, and it keeps meaning
+ * that no matter which way the chassis ends up pointing. The stick is rotated into the chassis frame
+ * by the measured heading in {@link MecanumDriveBehavior.toChassisFrame}; everything below it — the
+ * mix and both correction loops — is unchanged and still works entirely in the chassis frame.
+ *
+ * This is the one place mecanum benefits more than swerve does. A swerve module points where it is
+ * told regardless of the chassis, but a mecanum robot's push directions are welded to its wheels, so
+ * any yaw it picks up — including the parasitic yaw described below — rotates the direction the
+ * driver's stick means. Measuring heading each tick puts that back.
+ *
+ * Without a chassis body there is nothing to measure, so the command is left robot-relative.
  *
  * ## The mix
  *
@@ -140,8 +162,16 @@ class MecanumDriveBehavior extends DriveBehavior {
         return this._modules.map(m => m.wheel)
     }
 
-    /** Chassis body, read for its yaw rate. Without one the drive is open-loop. */
+    /** Chassis body, read for its heading and yaw rate. Without one the drive is open-loop. */
     private readonly _chassis?: Jolt.Body
+    /** Robot-local axes the modules were laid out against. */
+    private readonly _frame: MecanumFrame
+    /**
+     * Horizontal world direction the driver's +forward means, unit length.
+     *
+     * Set to the chassis' spawn heading and re-zeroed by `swerveResetFieldForward`, matching swerve.
+     */
+    private _fieldForward: THREE.Vector3
     /** Accumulated normalized yaw-rate error driving the integral term. */
     private _yawErrorIntegral = 0
     /** Accumulated normalized cross-track error driving its integral term. */
@@ -160,6 +190,7 @@ class MecanumDriveBehavior extends DriveBehavior {
         wheelStimuli: WheelRotationStimulus[],
         brainIndex: number,
         assemblyId: string,
+        frame: MecanumFrame,
         chassis?: Jolt.Body
     ) {
         super(
@@ -170,6 +201,12 @@ class MecanumDriveBehavior extends DriveBehavior {
         this._modules = modules
         this._brainIndex = brainIndex
         this._chassis = chassis
+        this._frame = frame
+
+        // Zero field-oriented drive to the robot's spawn heading so "forward" starts out as the
+        // robot's nose. Falls back to world +Z if there is no chassis body to read.
+        this._fieldForward = new THREE.Vector3(0, 0, 1)
+        this.resetFieldForward()
 
         // Full stick should saturate exactly one tire and no more, so both limits are set by
         // whichever wheel runs out of speed first. Translation is the same limit on both axes
@@ -185,7 +222,7 @@ class MecanumDriveBehavior extends DriveBehavior {
 
         this._maxTranslationSpeed = speedLimit(m => Math.max(Math.abs(m.pushX), Math.abs(m.pushY)))
         this._maxTurnRate = speedLimit(m => MecanumDriveBehavior.turnCoefficient(m))
-        this._diagnostics = new MecanumDriveDiagnostics(modules, assemblyId)
+        this._diagnostics = new MecanumDriveDiagnostics(modules, assemblyId, frame)
     }
 
     /** Contact-patch speed along this tire's push direction per rad/s of chassis yaw. */
@@ -198,45 +235,77 @@ class MecanumDriveBehavior extends DriveBehavior {
     }
 
     /**
-     * How the chassis is actually moving, in its own frame.
+     * Where the chassis is pointing and how it is actually moving, in its own frame.
      *
-     * Resolved against the chassis' own axes rather than the world's so everything still reads
-     * correctly on a ramp. Jolt hands back reused static temporaries here, so every component is
-     * read immediately and nothing is destroyed.
+     * Velocity is resolved against the chassis' own axes rather than the world's so the correction
+     * loops still read correctly on a ramp; the heading the field-oriented rotation needs comes from
+     * `nose`. Both come from {@link MecanumFrame}, not a fixed +Z, because which local axis is the
+     * nose depends on where the robot was imported from. Jolt hands back reused static temporaries
+     * here, so each one is copied into a THREE type immediately and none of them is destroyed.
      */
-    private chassisMotion(): { yawRate: number; forwardSpeed: number; leftSpeed: number } | undefined {
+    private chassisState():
+        | { nose: THREE.Vector3; yawRate: number; forwardSpeed: number; leftSpeed: number }
+        | undefined {
         if (!this._chassis) return undefined
 
-        const rotation = this._chassis.GetRotation()
-        const qx = rotation.GetX()
-        const qy = rotation.GetY()
-        const qz = rotation.GetZ()
-        const qw = rotation.GetW()
+        const rotation = convertJoltQuatToThreeQuaternion(this._chassis.GetRotation())
+        const nose = this._frame.localNose.clone().applyQuaternion(rotation)
+        const left = this._frame.localLeft.clone().applyQuaternion(rotation)
+        // The chassis' own up, which yaw rate is measured about: local +Y, up in every robot frame.
+        const up = new THREE.Vector3(0, 1, 0).applyQuaternion(rotation)
 
-        // Columns of the rotation matrix: the chassis' local left (+X), up (+Y) and nose (+Z) axes
-        // expressed in world space.
-        const leftX = 1 - 2 * (qy * qy + qz * qz)
-        const leftY = 2 * (qx * qy + qw * qz)
-        const leftZ = 2 * (qx * qz - qw * qy)
-        const upX = 2 * (qx * qy - qw * qz)
-        const upY = 1 - 2 * (qx * qx + qz * qz)
-        const upZ = 2 * (qy * qz + qw * qx)
-        const noseX = 2 * (qx * qz + qw * qy)
-        const noseY = 2 * (qy * qz - qw * qx)
-        const noseZ = 1 - 2 * (qx * qx + qy * qy)
-
-        const omega = this._chassis.GetAngularVelocity()
-        const yawRate = omega.GetX() * upX + omega.GetY() * upY + omega.GetZ() * upZ
-
-        const velocity = this._chassis.GetLinearVelocity()
-        const vx = velocity.GetX()
-        const vy = velocity.GetY()
-        const vz = velocity.GetZ()
+        const omega = convertJoltVec3ToThreeVector3(this._chassis.GetAngularVelocity(), false)
+        const velocity = convertJoltVec3ToThreeVector3(this._chassis.GetLinearVelocity(), false)
 
         return {
-            yawRate,
-            forwardSpeed: vx * noseX + vy * noseY + vz * noseZ,
-            leftSpeed: vx * leftX + vy * leftY + vz * leftZ,
+            nose,
+            yawRate: omega.dot(up),
+            forwardSpeed: velocity.dot(nose),
+            leftSpeed: velocity.dot(left),
+        }
+    }
+
+    /**
+     * Re-zeroes field-oriented drive to the direction the chassis is facing right now.
+     *
+     * Bound to `swerveResetFieldForward`, the same input swerve uses. A no-op while the chassis has
+     * no horizontal heading to read — tipped exactly onto its nose, or no body at all — so the
+     * previous reference survives instead of collapsing to something arbitrary.
+     */
+    public resetFieldForward(): void {
+        const nose = this.chassisState()?.nose
+        if (!nose) return
+
+        const heading = nose.projectOnPlane(WORLD_UP)
+        if (heading.lengthSq() < 1e-6) return
+        this._fieldForward = heading.normalize()
+    }
+
+    /**
+     * Rotates a field-frame translation command into the chassis frame.
+     *
+     * @param forward Command along field forward, -1..1.
+     * @param strafe Command along field left, -1..1.
+     * @param nose The chassis' nose direction in world space.
+     * @returns the same command expressed nose-ward and left-ward, for the mix to consume.
+     */
+    private toChassisFrame(forward: number, strafe: number, nose: THREE.Vector3): { forward: number; strafe: number } {
+        const heading = nose.clone().projectOnPlane(WORLD_UP)
+        // Pointing straight up or down: no heading to rotate by, so the command stays robot-relative
+        // for the tick rather than snapping to an arbitrary direction.
+        if (heading.lengthSq() < 1e-6) return { forward, strafe }
+
+        // Angle from field forward to the nose, counter-clockwise about world up. Field left is
+        // up x forward, which is +X for the +Z-nose frame, matching the modules' left-positive y.
+        const fieldLeft = new THREE.Vector3().crossVectors(WORLD_UP, this._fieldForward)
+        const angle = Math.atan2(fieldLeft.dot(heading), this._fieldForward.dot(heading))
+
+        // Rotate the command by -angle: the chassis frame is the field frame turned by +angle.
+        const cos = Math.cos(angle)
+        const sin = Math.sin(angle)
+        return {
+            forward: forward * cos + strafe * sin,
+            strafe: -forward * sin + strafe * cos,
         }
     }
 
@@ -363,13 +432,23 @@ class MecanumDriveBehavior extends DriveBehavior {
 
     public update(dt: number): void {
         // Reuses the swerve inputs; mecanum has the same 3-DOF command shape. Deadband here rather
-        // than inside driveSpeeds so the threshold is applied to the raw -1..1 stick value.
-        const forward = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveForward", this._brainIndex))
-        const strafe = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveStrafe", this._brainIndex))
+        // than inside driveSpeeds so the threshold is applied to the raw -1..1 stick value, before
+        // the field-oriented rotation mixes the two translation axes together.
+        const fieldForward = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveForward", this._brainIndex))
+        const fieldStrafe = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveStrafe", this._brainIndex))
         const turn = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveTurn", this._brainIndex))
 
-        const commanded = forward !== 0 || strafe !== 0 || turn !== 0
-        const motion = this.chassisMotion()
+        if (InputSystem.getInput("swerveResetFieldForward", this._brainIndex)) this.resetFieldForward()
+
+        const commanded = fieldForward !== 0 || fieldStrafe !== 0 || turn !== 0
+        const motion = this.chassisState()
+
+        // Rotation preserves the command's magnitude, so every check and limit below is unaffected
+        // by which way the robot happens to be facing.
+        const { forward, strafe } = motion
+            ? this.toChassisFrame(fieldForward, fieldStrafe, motion.nose)
+            : { forward: fieldForward, strafe: fieldStrafe }
+
         const atRest =
             !motion ||
             (Math.hypot(motion.forwardSpeed, motion.leftSpeed) < AT_REST_SPEED &&
@@ -400,7 +479,13 @@ class MecanumDriveBehavior extends DriveBehavior {
             correcting ? this.holdHeading(turn, motion.yawRate, dt) : turn
         )
 
-        this._diagnostics.sample(dt, { forward, strafe, turn }, targets)
+        // The chassis-frame command is what the wheels were actually given, so that is what the
+        // capture compares against chassis-frame velocity; the driver's field command goes alongside
+        // it, because the two only agree while the robot faces field forward.
+        this._diagnostics.sample(dt, { forward, strafe, turn }, targets, {
+            forward: fieldForward,
+            strafe: fieldStrafe,
+        })
     }
 }
 

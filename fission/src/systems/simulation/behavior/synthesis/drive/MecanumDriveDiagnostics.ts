@@ -1,6 +1,7 @@
 import * as THREE from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { MecanumModule } from "@/systems/simulation/behavior/synthesis/drive/MecanumDriveBehavior.ts"
+import type { MecanumFrame } from "@/systems/simulation/behavior/synthesis/drive/MecanumLayout.ts"
 import World from "@/systems/World.ts"
 import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions.ts"
 
@@ -36,7 +37,7 @@ const MIN_EPISODE_TIME = 0.3
 /** Matches the behavior's own input deadband so logged commands agree with commanded targets. */
 const DEADBAND = 0.1
 
-const DEBUG_MECANUM_DEFAULT = true
+const DEBUG_MECANUM_DEFAULT = false
 
 interface WheelAccumulator {
     target: number
@@ -82,14 +83,16 @@ class MecanumDriveDiagnostics {
     private readonly _modules: MecanumModule[]
     private readonly _labels: string[]
     private readonly _assemblyId: string
+    private readonly _frame: MecanumFrame
 
     private _sampleTimer = 0
     private _episode?: Episode
     private _loggedConfiguration = false
 
-    public constructor(modules: MecanumModule[], assemblyId: string) {
+    public constructor(modules: MecanumModule[], assemblyId: string, frame: MecanumFrame) {
         this._modules = modules
         this._assemblyId = assemblyId
+        this._frame = frame
         this._labels = MecanumDriveDiagnostics.labelModules(modules)
     }
 
@@ -141,9 +144,10 @@ class MecanumDriveDiagnostics {
         const rotation = convertJoltQuatToThreeQuaternion(body.GetRotation())
         return {
             position: convertJoltVec3ToThreeVector3(body.GetCenterOfMassPosition(), false),
-            // Same robot-local convention the behavior mixes against: +Z nose, +X left, +Y up.
-            forward: new THREE.Vector3(0, 0, 1).applyQuaternion(rotation),
-            left: new THREE.Vector3(1, 0, 0).applyQuaternion(rotation),
+            // The same robot-local axes the behavior mixes against, which depend on where the robot
+            // was imported from; +Y is up either way.
+            forward: this._frame.localNose.clone().applyQuaternion(rotation),
+            left: this._frame.localLeft.clone().applyQuaternion(rotation),
             up: new THREE.Vector3(0, 1, 0).applyQuaternion(rotation),
             velocity: convertJoltVec3ToThreeVector3(body.GetLinearVelocity(), false),
             angularVelocity: convertJoltVec3ToThreeVector3(body.GetAngularVelocity(), false),
@@ -189,8 +193,16 @@ class MecanumDriveDiagnostics {
      * @param dt Seconds since the previous tick.
      * @param command The deadbanded, normalized chassis command (-1..1 per axis).
      * @param targets Per-module wheel target, index-aligned with the modules array.
+     * @param fieldCommand The driver's field-frame translation command, before it was rotated into
+     * the chassis frame. Logged next to the chassis-frame command so a field-oriented rotation that
+     * has drifted is visible as a mismatch between the two.
      */
-    public sample(dt: number, command: { forward: number; strafe: number; turn: number }, targets: number[]): void {
+    public sample(
+        dt: number,
+        command: { forward: number; strafe: number; turn: number },
+        targets: number[],
+        fieldCommand?: { forward: number; strafe: number }
+    ): void {
         if (!MecanumDriveDiagnostics._enabled || dt <= 0) return
 
         const chassis = this.chassisState()
@@ -277,8 +289,11 @@ class MecanumDriveDiagnostics {
             return `${num(deg, 1)}`.padEnd(5)
         }
 
+        const field = fieldCommand ? `field(f=${num(fieldCommand.forward)} s=${num(fieldCommand.strafe)}) ` : ""
+
         console.log(
             `[Mecanum] cmd(f=${num(command.forward)} s=${num(command.strafe)} t=${num(command.turn)}) ` +
+                field +
                 `vel(fwd=${num(forwardVel)} left=${num(leftVel)} |v|=${chassis.velocity.length().toFixed(2)}) ` +
                 `yaw=${num(yawRate, 1)}deg/s\n` +
                 states

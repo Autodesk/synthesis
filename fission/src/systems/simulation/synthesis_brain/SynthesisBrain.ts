@@ -331,6 +331,7 @@ class SynthesisBrain extends Brain {
             wheelStimuli,
             this._brainIndex,
             this._assembly.assemblyId,
+            layout.frame,
             chassisBody
         )
     }

@@ -286,7 +286,7 @@ class DefaultInputs {
             case DriveType.TANK:
                 driveInputs = [AxisInput.unbound("tankLeft"), AxisInput.unbound("tankRight")]
                 break
-            // Mecanum reuses the swerve axes, but it drives robot-relative so it has no
+            // Mecanum reuses the swerve axes and is field-oriented the same way, so it has the same
             // field-forward heading to reset.
             case DriveType.SWERVE:
             case DriveType.MECANUM:
@@ -295,7 +295,7 @@ class DefaultInputs {
                     AxisInput.unbound("swerveStrafe"),
                     AxisInput.unbound("swerveTurn"),
                 ]
-                if (drivetype === DriveType.SWERVE) extraButtons.push(ButtonInput.unbound("swerveResetFieldForward"))
+                extraButtons.push(ButtonInput.unbound("swerveResetFieldForward"))
                 break
         }
         return {
