@@ -11,7 +11,7 @@ import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from 
 export const ROLLER_ANGLE = Math.PI / 4
 
 /**
- * Turn command added per unit of normalized yaw-rate error. "How hard should we try and hold 
+ * Turn command added per unit of normalized yaw-rate error. "How hard should we try and hold
  * the desired turn rate/target?"
  *
  * High enough to cancel most of the parasitic yaw a saturated tire set produces immediately, low
@@ -73,7 +73,7 @@ export interface MecanumModule {
 
 /**
  * Field-oriented mecanum drive.
- * 
+ *
  * Rather than use a four-corner formula (`FL = x - y - z`, and so on), we solve the
  * kinematics directly. A mecanum tire can only push along its roller normal `n`, and it free-slides
  * perpendicular to it, so the one thing it constrains is the speed of its own contact patch along
@@ -84,7 +84,7 @@ export interface MecanumModule {
  * which is what makes the commands mutually consistent: no tire is asked to scrub against another.
  * This is prefered as it will hold for six wheels, uneven wheelbases, mixed wheel radii, and wheels
  * that aren't at corners at all.
- * 
+ *
  * This only works if each tire can actually slide along its roller axle instead of just pushing
  * straight ahead. {@link WheelDriver.configureMecanumRoller} sets that up. Skip it and the
  * diagonal pushes cancel out, so strafing doesn't happen.
@@ -100,7 +100,7 @@ export interface MecanumModule {
  * robot does with a gyro. {@link MecanumDriveBehavior.holdHeading} removes rotation the driver
  * didn't ask for; {@link MecanumDriveBehavior.holdCourse} removes the sideways drift left over
  * after that. Forward speed stays open-loop, so the robot can still be pushed around.
- * 
+ *
  * If Jolt ever solves multiple VehicleConstraints on one body simultaneously instead of sequentially,
  * this imbalance, and the tuning below, should be re-measured; the hold-loop gains are tuned against
  * today's solver behavior.

@@ -231,7 +231,7 @@ class WheelDriver extends Driver {
      * at half travel under gravity (static deflection is `g / (2*pi*f)^2`). The attachment point
      * moves up by that same half-travel, so the robot's resting ride height is unchanged and the
      * anti-levitation tuning is preserved.
-     * 
+     *
      * It may be reasonable to use this more generally in the future, not just for mecanum drive.
      * See SYNTH-301 for more info.
      *
