@@ -43,8 +43,7 @@ pub fn build_tls_config(cert_directory: &PathBuf) -> Result<ServerConfig, Box<dy
 /// Writes a self-signed certificate and keypair to `path` if one isn't already present.
 fn ensure_certificate(path: &PathBuf) -> Result<(), Box<dyn Error>> {
     if !fs::exists(path)? {
-        println!("{}", path.to_str().unwrap());
-        fs::create_dir(path)?;
+        fs::create_dir_all(path)?;
     }
 
     if fs::exists(path.join("cert.pem"))? {
