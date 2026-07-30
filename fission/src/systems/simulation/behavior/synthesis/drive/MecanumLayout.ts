@@ -4,7 +4,6 @@ import { mecanumSuspensionTravel } from "@/systems/simulation/driver/WheelDriver
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type { MecanumModule } from "./MecanumDriveBehavior.ts"
 import { ROLLER_ANGLE } from "./MecanumDriveBehavior.ts"
-import { mecanumDebugEnabled } from "./MecanumDriveDiagnostics.ts"
 
 /**
  * Wheels closer together than this along the chassis' forward axis count as the same row.
@@ -155,29 +154,4 @@ function assignRows(forwardOffsets: number[]): number[] {
 export function applyMecanumTires(layout: MecanumLayout): void {
     const travel = mecanumSuspensionTravel(layout.modules.map(m => m.wheel.debugState().radius))
     layout.modules.forEach(m => m.wheel.configureMecanumRoller(m.steerAngle, travel))
-}
-
-/**
- * Dumps the geometry a layout was derived from.
- *
- * The role assignment is geometry-derived and invisible at runtime, so a mis-grouped row or a
- * flipped axis shows up here, not in the per-tick log.
- */
-export function logMecanumLayout(layout: MecanumLayout): void {
-    if (!mecanumDebugEnabled()) return
-
-    console.log(
-        `[Mecanum] geometry: ${layout.modules.length} wheels, lateralAxis=` +
-            `${layout.useLateralZ ? "-Z (URDF)" : "+X (Fusion)"} ` +
-            `imbalance(x=${layout.imbalanceX} z=${layout.imbalanceZ})\n` +
-            layout.modules
-                .map(
-                    (m, i) =>
-                        `  wheel[${i}] ${(m.wheel.info?.name ?? "-").padEnd(22)} ` +
-                        `fwd=${m.x.toFixed(3)} left=${m.y.toFixed(3)} row=${m.row} ` +
-                        `steer=${((m.steerAngle * 180) / Math.PI).toFixed(0)}deg ` +
-                        `maxSurfaceSpeed=${m.maxSurfaceSpeed.toFixed(2)}m/s`
-                )
-                .join("\n")
-    )
 }

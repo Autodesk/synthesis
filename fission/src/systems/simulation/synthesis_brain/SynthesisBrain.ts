@@ -6,11 +6,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import type { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
 import MecanumDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/MecanumDriveBehavior.ts"
-import {
-    applyMecanumTires,
-    logMecanumLayout,
-    resolveMecanumLayout,
-} from "@/systems/simulation/behavior/synthesis/drive/MecanumLayout.ts"
+import { applyMecanumTires, resolveMecanumLayout } from "@/systems/simulation/behavior/synthesis/drive/MecanumLayout.ts"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
 import SwerveDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SwerveDriveBehavior.ts"
 import World from "@/systems/World"
@@ -323,16 +319,8 @@ class SynthesisBrain extends Brain {
 
         const layout = resolveMecanumLayout(wheelDrivers, chassisRotation)
         applyMecanumTires(layout)
-        logMecanumLayout(layout)
 
-        return new MecanumDriveBehavior(
-            layout.modules,
-            wheelStimuli,
-            this._brainIndex,
-            this._assembly.assemblyId,
-            layout.frame,
-            chassisBody
-        )
+        return new MecanumDriveBehavior(layout.modules, wheelStimuli, this._brainIndex, layout.frame, chassisBody)
     }
 
     /**

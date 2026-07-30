@@ -2,7 +2,6 @@ import * as THREE from "three"
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import InputSystem from "@/systems/input/InputSystem.ts"
 import { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
-import MecanumDriveDiagnostics from "@/systems/simulation/behavior/synthesis/drive/MecanumDriveDiagnostics.ts"
 import type { MecanumFrame } from "@/systems/simulation/behavior/synthesis/drive/MecanumLayout.ts"
 import type WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import type WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
@@ -109,7 +108,6 @@ export interface MecanumModule {
 class MecanumDriveBehavior extends DriveBehavior {
     private readonly _modules: MecanumModule[]
     private readonly _brainIndex: number
-    private readonly _diagnostics: MecanumDriveDiagnostics
 
     private readonly _maxTranslationSpeed: number // m/s
     private readonly _maxTurnRate: number // rad/s
@@ -134,7 +132,6 @@ class MecanumDriveBehavior extends DriveBehavior {
         modules: MecanumModule[],
         wheelStimuli: WheelRotationStimulus[],
         brainIndex: number,
-        assemblyId: string,
         frame: MecanumFrame,
         chassis?: Jolt.Body
     ) {
@@ -167,7 +164,6 @@ class MecanumDriveBehavior extends DriveBehavior {
 
         this._maxTranslationSpeed = speedLimit(m => Math.max(Math.abs(m.pushX), Math.abs(m.pushY)))
         this._maxTurnRate = speedLimit(m => MecanumDriveBehavior.turnCoefficient(m))
-        this._diagnostics = new MecanumDriveDiagnostics(modules, assemblyId, frame)
     }
 
     /** Contact-patch speed along this tire's push direction per rad/s of chassis yaw. */
@@ -334,14 +330,13 @@ class MecanumDriveBehavior extends DriveBehavior {
      * @param forward Nose-ward chassis command, -1..1, already deadbanded.
      * @param strafe Left-ward chassis command, -1..1, already deadbanded.
      * @param turn Counter-clockwise chassis command, -1..1, already deadbanded.
-     * @returns the target written to each wheel, index-aligned with the modules array.
      */
-    private driveSpeeds(forward: number, strafe: number, turn: number): number[] {
+    private driveSpeeds(forward: number, strafe: number, turn: number): void {
         if (forward === 0 && strafe === 0 && turn === 0) {
             this._modules.forEach(m => {
                 m.wheel.accelerationDirection = 0
             })
-            return this._modules.map(() => 0)
+            return
         }
 
         const vx = forward * this._maxTranslationSpeed
@@ -361,12 +356,9 @@ class MecanumDriveBehavior extends DriveBehavior {
         // A combined command can outrun a tire that either axis alone would not. Scaling the whole
         // set keeps the ratios, and the ratios are what make the wheels agree on one chassis motion.
         const scale = peak > 1 ? 1 / peak : 1
-        const scaled = targets.map(t => t * scale)
         this._modules.forEach((m, i) => {
-            m.wheel.accelerationDirection = scaled[i]
+            m.wheel.accelerationDirection = targets[i] * scale
         })
-
-        return scaled
     }
 
     public update(dt: number): void {
@@ -406,19 +398,7 @@ class MecanumDriveBehavior extends DriveBehavior {
         const course = correcting && commanded ? this.holdCourse(forward, strafe, motion, dt) : { forward, strafe }
         if (!commanded) this._crossTrackIntegral = 0
 
-        const targets = this.driveSpeeds(
-            course.forward,
-            course.strafe,
-            correcting ? this.holdHeading(turn, motion.yawRate, dt) : turn
-        )
-
-        // The chassis-frame command is what the wheels were actually given, so that is what the
-        // capture compares against chassis-frame velocity; the driver's field command goes alongside
-        // it, because the two only agree while the robot faces field forward.
-        this._diagnostics.sample(dt, { forward, strafe, turn }, targets, {
-            forward: fieldForward,
-            strafe: fieldStrafe,
-        })
+        this.driveSpeeds(course.forward, course.strafe, correcting ? this.holdHeading(turn, motion.yawRate, dt) : turn)
     }
 }
 
