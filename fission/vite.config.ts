@@ -6,7 +6,7 @@ import * as path from "path"
 import { loadEnv } from "vite"
 import glsl from "vite-plugin-glsl"
 
-import {defineConfig, TestProjectInlineConfiguration, type ViteUserConfig} from "vitest/config"
+import { defineConfig, TestProjectInlineConfiguration, type ViteUserConfig } from "vitest/config"
 
 const serverPort = 3000
 const dockerServerPort = 80
@@ -92,7 +92,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
         { find: "@", replacement: path.resolve(__dirname, "src") },
     ]
 
-    const fissionProject:TestProjectInlineConfiguration = {
+    const fissionProject: TestProjectInlineConfiguration = {
         extends: true,
         test: {
             name: "fission",
@@ -186,7 +186,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
                       "github-actions",
                       "default",
                       {
-                          onTestRunEnd(_modules , unhandled , reason) {
+                          onTestRunEnd(_modules, unhandled, reason) {
                               if (reason === "passed" && unhandled.length === 0) {
                                   console.error("GH ACTIONS VITEST PASSED")
                               } else {
