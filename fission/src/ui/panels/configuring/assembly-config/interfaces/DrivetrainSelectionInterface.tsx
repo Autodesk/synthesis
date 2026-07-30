@@ -1,21 +1,39 @@
 import { FormControl, InputLabel, MenuItem } from "@mui/material"
 import { useState } from "react"
 import { Select } from "@/ui/components/StyledComponents"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import { useEffect } from "react"
+import InputSystem from "@/systems/input/InputSystem.ts"
 
-interface DrivetrainSelectionProps {
-    selectedAssembly: MirabufSceneObject
-}
-
-const DrivetrainSelectionInterface: React.FC<DrivetrainSelectionProps> = ({ selectedAssembly }) => {
+const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
+}) => {
     const [driveType, setDriveType] = useState<DriveType>(
         (selectedAssembly.brain as SynthesisBrain | undefined)?.driveType ?? DriveType.ARCADE
     )
 
+    useEffect(() => {
+        const brain = selectedAssembly.brain
+        if (!brain?.isSynthesis()) {
+            return
+        }
+        const originalDriveBehavior = brain.driveType
+        const originalScheme = InputSystem.getBrainIndexSchemeMapping(brain.brainIndex)
+        registerCleanupFunction(undefined, () => {
+            brain.configureDriveBehavior(originalDriveBehavior)
+            if (originalScheme != null) {
+                InputSystem.setBrainIndexSchemeMapping(brain.brainIndex, originalScheme)
+            } else {
+                InputSchemeManager.applyCompatibleScheme(brain.brainIndex)
+            }
+            EventSystem.dispatch("InputSchemeChanged", {})
+        })
+    }, [registerCleanupFunction, selectedAssembly])
     return (
         <>
             <FormControl fullWidth>
@@ -25,17 +43,19 @@ const DrivetrainSelectionInterface: React.FC<DrivetrainSelectionProps> = ({ sele
                     label="Drivetrain Type"
                     value={driveType}
                     onChange={e => {
-                        if (selectedAssembly.brain?.brainType == "synthesis") {
-                            const brain = selectedAssembly.brain as SynthesisBrain
-                            setDriveType(brain.configureDriveBehavior(e.target.value as DriveType))
+                        if (selectedAssembly.brain?.isSynthesis()) {
+                            const appliedDriveType = selectedAssembly.brain.configureDriveBehavior(
+                                e.target.value as DriveType
+                            )
+                            setDriveType(appliedDriveType)
 
-                            InputSchemeManager.applyCompatibleScheme(brain.brainIndex)
-                            EventSystem.dispatch("InputSchemeChanged", { panelId: undefined })
+                            InputSchemeManager.applyCompatibleScheme(selectedAssembly.brain.brainIndex)
+                            EventSystem.dispatch("InputSchemeChanged", {})
                         }
                     }}
                 >
                     {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
-                        <MenuItem key={`drivetrain-type-${dt}`} value={dt}>
+                        <MenuItem key={dt} value={dt}>
                             {dt}
                         </MenuItem>
                     ))}

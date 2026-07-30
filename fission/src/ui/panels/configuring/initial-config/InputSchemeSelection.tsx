@@ -9,6 +9,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
 import { PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
 
 interface SchemeSelectorProps {
     scheme: InputScheme
@@ -31,7 +32,9 @@ const SchemeSelector: React.FC<SchemeSelectorProps> = ({
     disabled = false,
     onSelect,
 }): ReactElement | null => {
-    if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
+    const isTouch = useIsTouchDevice()
+
+    if (scheme.usesTouchControls && !isTouch) return null
     return (
         <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
             <Stack

@@ -21,6 +21,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const [secondaryColor, setSecondaryColor] = useState(themeOptions.secondary?.main ?? "#ce93d8")
     const [blueAllianceColor, setBlueAllianceColor] = useState(themeOptions.blueAlliance?.main ?? "#0066b3")
     const [redAllianceColor, setRedAllianceColor] = useState(themeOptions.redAlliance?.main ?? "#ed1c24")
+    const [topBarColor, setTopBarColor] = useState(themeOptions.topBar?.main ?? "#3D4352")
+    const [surfaceColor, setSurfaceColor] = useState(themeOptions.surface?.main ?? "#2A3340")
+    const [topBarTextColor, setTopBarTextColor] = useState(themeOptions.topBarText?.main ?? "#BFC5CE")
 
     useEffect(() => {
         localStorage.setItem("theme", JSON.stringify(themeOptions))
@@ -87,9 +90,27 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                     },
                     name: "blueAlliance",
                 }),
+                topBar: t.palette.augmentColor({
+                    color: {
+                        main: topBarColor,
+                    },
+                    name: "topBar",
+                }),
+                surface: t.palette.augmentColor({
+                    color: {
+                        main: surfaceColor,
+                    },
+                    name: "surface",
+                }),
+                topBarText: t.palette.augmentColor({
+                    color: {
+                        main: topBarTextColor,
+                    },
+                    name: "topBarText",
+                }),
             },
         })
-    }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
+    }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor, topBarColor, surfaceColor, topBarTextColor])
 
     useEffect(() => {
         setThemeOptions(themeOptions => ({
@@ -106,8 +127,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
             redAlliance: {
                 main: redAllianceColor,
             },
+            topBar: {
+                main: topBarColor,
+            },
+            surface: {
+                main: surfaceColor,
+            },
+            topBarText: {
+                main: topBarTextColor,
+            },
         }))
-    }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor])
+    }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor, topBarColor, surfaceColor, topBarTextColor])
 
     const themeContextValue = useMemo(
         () => ({
@@ -119,8 +149,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
             setBlueAllianceColor,
             redAllianceColor,
             setRedAllianceColor,
+            topBarColor,
+            setTopBarColor,
+            surfaceColor,
+            setSurfaceColor,
+            topBarTextColor,
+            setTopBarTextColor,
         }),
-        [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor]
+        [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor, topBarColor, surfaceColor, topBarTextColor]
     )
 
     return (
