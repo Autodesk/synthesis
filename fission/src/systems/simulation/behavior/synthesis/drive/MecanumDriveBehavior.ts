@@ -123,6 +123,9 @@ class MecanumDriveBehavior extends DriveBehavior {
 
     private _fieldForward: THREE.Vector3
 
+    /** When true, stick input drives relative to the chassis nose instead of a fixed field heading. */
+    public robotCentric: boolean
+
     private _yawErrorIntegral = 0
     private _crossTrackIntegral = 0
 
@@ -133,7 +136,8 @@ class MecanumDriveBehavior extends DriveBehavior {
         wheelStimuli: WheelRotationStimulus[],
         brainIndex: number,
         frame: MecanumFrame,
-        chassis?: Jolt.Body
+        chassis?: Jolt.Body,
+        robotCentric = false
     ) {
         super(
             modules.map(m => m.wheel),
@@ -144,6 +148,7 @@ class MecanumDriveBehavior extends DriveBehavior {
         this._brainIndex = brainIndex
         this._chassis = chassis
         this._frame = frame
+        this.robotCentric = robotCentric
 
         // Zero field-oriented drive to the robot's spawn heading so "forward" starts out as the
         // robot's nose. Falls back to world +Z if there is no chassis body to read.
@@ -374,10 +379,12 @@ class MecanumDriveBehavior extends DriveBehavior {
         const motion = this.chassisState()
 
         // Rotation preserves the command's magnitude, so every check and limit below is unaffected
-        // by which way the robot happens to be facing.
-        const { forward, strafe } = motion
-            ? this.toChassisFrame(fieldForward, fieldStrafe, motion.nose)
-            : { forward: fieldForward, strafe: fieldStrafe }
+        // by which way the robot happens to be facing. Robot-centric drive skips the rotation
+        // entirely: the stick's forward/strafe axes are already the chassis' nose/left axes.
+        const { forward, strafe } =
+            motion && !this.robotCentric
+                ? this.toChassisFrame(fieldForward, fieldStrafe, motion.nose)
+                : { forward: fieldForward, strafe: fieldStrafe }
 
         const atRest =
             !motion ||

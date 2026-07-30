@@ -44,6 +44,7 @@ class SynthesisBrain extends Brain {
     private _brainIndex: number
     private _assembly: MirabufSceneObject
     public driveType: DriveType = DriveType.ARCADE
+    public mecanumRobotCentric: boolean = false
 
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
@@ -99,6 +100,13 @@ class SynthesisBrain extends Brain {
             return
         }
         existing.isArcade = driveType == DriveType.ARCADE
+    }
+
+    /** Toggles robot-centric mecanum drive without rebuilding the drivetrain. */
+    public setMecanumRobotCentric(robotCentric: boolean): void {
+        this.mecanumRobotCentric = robotCentric
+        const mecanum = this._behaviors.find(b => b instanceof MecanumDriveBehavior) as MecanumDriveBehavior | undefined
+        if (mecanum) mecanum.robotCentric = robotCentric
     }
 
     public resetSwerveOrientation(): void {
@@ -321,7 +329,14 @@ class SynthesisBrain extends Brain {
         const layout = resolveMecanumLayout(wheelDrivers, chassisRotation)
         applyMecanumTires(layout)
 
-        return new MecanumDriveBehavior(layout.modules, wheelStimuli, this._brainIndex, layout.frame, chassisBody)
+        return new MecanumDriveBehavior(
+            layout.modules,
+            wheelStimuli,
+            this._brainIndex,
+            layout.frame,
+            chassisBody,
+            this.mecanumRobotCentric
+        )
     }
 
     /**
