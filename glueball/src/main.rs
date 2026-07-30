@@ -12,7 +12,7 @@ mod util;
 
 use crate::cert::build_tls_config;
 use crate::config::{CliConfig, config_or_default, parse_config_file};
-use crate::logging::EventType;
+use crate::logging::{EventType, LogDestination, Logger, MAX_LOG_LINES, print_global, print_room};
 use crate::messaging::handle_connection;
 use crate::room::State;
 use crate::tui::start_tui_thread;
@@ -21,11 +21,26 @@ use std::error::Error;
 use std::sync::{Arc, Mutex};
 
 use tokio::net::TcpListener;
+use tokio::sync::mpsc;
 use tokio_rustls::TlsAcceptor;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let state = Arc::new(Mutex::new(State::new()));
+    // Setup logging
+    // In my mind, this is the best way to handling an interface that could be sending message to a
+    // tui running on a different OS thread or just printing them
+
+    // Always use the logging chanel
+    let (logging_tx, mut logging_rx) =
+        mpsc::channel::<(String, EventType, LogDestination)>(MAX_LOG_LINES);
+
+    // Only use the `logger` in tui mode
+    // `logger` will be jointly owned by the main thread and the tui thread
+    // Tokio tasks will pass their log messages down the logging channel
+    // instead of having to take a lock to log
+    let logger = Arc::new(Mutex::new(Logger::new(MAX_LOG_LINES)));
+
+    let state = Arc::new(Mutex::new(State::new(logging_tx.clone())));
 
     // Parse and create defaults for the application configuration
     let mut config: CliConfig = argh::from_env();
@@ -40,8 +55,36 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::process::exit(1)
     };
 
-    if !config.headless {
-        start_tui_thread(&state);
+    if config.headless {
+        // Read the logging channel and immediantly print result
+        tokio::spawn(async move {
+            loop {
+                let Some((message, kind, log_destination)) = logging_rx.recv().await else {
+                    break;
+                };
+
+                match log_destination {
+                    LogDestination::Global => print_global(&message, &kind),
+                    LogDestination::Room(id) => print_room(&message, &kind, &id),
+                }
+            }
+        });
+    } else {
+        start_tui_thread(&state, &logger);
+
+        // Read the logging channel and write every message to the `logger`
+        tokio::spawn(async move {
+            loop {
+                let Some((message, kind, log_destination)) = logging_rx.recv().await else {
+                    break;
+                };
+
+                match log_destination {
+                    LogDestination::Global => logger.lock().unwrap().push_global(message, kind),
+                    LogDestination::Room(id) => logger.lock().unwrap().push_room(message, kind, id),
+                }
+            }
+        });
     }
 
     if let Some(room_id) = config.permanent_room {
@@ -50,7 +93,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if !config.secure {
         while let Ok((stream, addr)) = listener.accept().await {
-            tokio::spawn(handle_connection(state.clone(), stream, addr));
+            tokio::spawn(handle_connection(
+                state.clone(),
+                stream,
+                addr,
+                logging_tx.clone(),
+            ));
         }
 
         return Ok(());
@@ -60,17 +108,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let tls_config = build_tls_config(&cert_dir)?;
     let acceptor = TlsAcceptor::from(Arc::new(tls_config));
 
-    info_lock!(state, "Server listening on port {} (secure)", port);
+    info_global!(logging_tx, "Server listening on port {} (secure)", port);
 
     while let Ok((stream, addr)) = listener.accept().await {
         let acceptor = acceptor.clone();
         let state = state.clone();
 
         // TLS handshake happens in task to avoid being held up by a slow client
+        let logging_tx = logging_tx.clone();
         tokio::spawn(async move {
             match acceptor.accept(stream).await {
-                Ok(tls_stream) => handle_connection(state, tls_stream, addr).await,
-                Err(e) => error_lock!(state, "Secure connection with client failed {}", e),
+                Ok(tls_stream) => handle_connection(state, tls_stream, addr, logging_tx).await,
+                Err(e) => {
+                    error_global!(logging_tx, "Secure connection with client failed {}", e);
+                }
             }
         });
     }

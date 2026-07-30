@@ -1,8 +1,9 @@
-use crate::{EventType, room::State};
+use crate::EventType;
+use crate::logging::LogDestination;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, ReadBuf};
+use tokio::sync::mpsc::Sender;
 
 use std::net::SocketAddr;
-use std::sync::{Arc, Mutex};
 use std::task::{Context, Poll};
 use std::{io::Cursor, pin::Pin};
 
@@ -70,9 +71,9 @@ pub enum ConnectionStatus<S> {
 }
 
 pub async fn into_prefixed_or_respond<S>(
-    state: Arc<Mutex<State>>,
     mut raw_stream: S,
     addr: SocketAddr,
+    logging_tx: Sender<(String, EventType, LogDestination)>,
 ) -> ConnectionStatus<S>
 where
     S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
@@ -86,7 +87,7 @@ where
         Ok(0) => return ConnectionStatus::HungUp,
         Ok(n) => n,
         Err(e) => {
-            error_lock!(state, "Failed to read from {addr}: {e}");
+            error_global!(logging_tx, "Failed to read from {addr}: {e}");
             return ConnectionStatus::Error;
         }
     };

@@ -10,10 +10,12 @@
 //! The admin can select a user with the arrows and kick them with `k` (after a confirmation),
 //! and lock or unlock the focused room with `l` to control whether new clients may join.
 
+use crate::logging::{self, LogSnapshot, Logger, RoomLogs};
 use crate::panic::set_panic_hook_to_cleanup_terminal;
 use crate::room::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
 use crate::util::trim_uuid;
 
+use std::collections::VecDeque;
 use std::fmt::Write;
 use std::sync::{Arc, Mutex};
 use std::{io, time::Duration};
@@ -44,14 +46,19 @@ const COLOR_PALETTE: &[Color] = &[
 ];
 const COLOR_PALETTE_SIZE: usize = 6;
 
-pub fn start_tui_thread(state: &Arc<Mutex<State>>) {
+pub fn start_tui_thread(state: &Arc<Mutex<State>>, logger: &Arc<Mutex<Logger>>) {
+    {
+        state.lock().unwrap().set_tui();
+    }
+
     let tui_state_handle = state.clone();
+    let tui_logger_handle = logger.clone();
     set_panic_hook_to_cleanup_terminal();
 
     // On an OS thread because crossterm (and thus ratatui) will block on user input
     // So it wouldn't play nice with tokio's runtime, which expects yielding
     thread::spawn(move || {
-        if let Err(e) = run(tui_state_handle) {
+        if let Err(e) = run(tui_state_handle, &tui_logger_handle) {
             eprintln!("TUI error: {e}");
         }
 
@@ -59,21 +66,26 @@ pub fn start_tui_thread(state: &Arc<Mutex<State>>) {
     });
 }
 
-fn run(state: Arc<Mutex<State>>) -> io::Result<()> {
+fn run(state: Arc<Mutex<State>>, logger: &Arc<Mutex<Logger>>) -> io::Result<()> {
     let mut terminal = ratatui::init();
-    let result = run_app(&mut terminal, state);
+    let result = run_app(&mut terminal, state, logger);
     ratatui::restore();
     result
 }
 
-fn run_app(terminal: &mut DefaultTerminal, state: Arc<Mutex<State>>) -> io::Result<()> {
+fn run_app(
+    terminal: &mut DefaultTerminal,
+    state: Arc<Mutex<State>>,
+    logger: &Arc<Mutex<Logger>>,
+) -> io::Result<()> {
     let mut app = App::new(state);
 
     loop {
-        let snapshot = app.state.lock().unwrap().snapshot();
-        app.sync(&snapshot);
+        let logger_snapshot = logger.lock().unwrap().snapshot();
+        let state_snapshot = app.state.lock().unwrap().snapshot();
+        app.sync(&state_snapshot);
 
-        terminal.draw(|frame| ui(frame, &app, &snapshot))?;
+        terminal.draw(|frame| ui(frame, &app, &state_snapshot, &logger_snapshot))?;
 
         // Poll so the view refreshes with live activity even without input.
         if event::poll(Duration::from_millis(250))?
@@ -118,6 +130,7 @@ impl App {
             selected_user: 0,
             pending_kick: None,
             should_quit: false,
+
             tab_count: 1,
             panels_on_tab: 0,
             focused_members: Vec::new(),
@@ -205,7 +218,7 @@ impl App {
     }
 }
 
-fn ui(frame: &mut Frame, app: &App, snapshot: &Snapshot) {
+fn ui(frame: &mut Frame, app: &App, snapshot: &Snapshot, log_snapshot: &LogSnapshot) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
@@ -222,8 +235,8 @@ fn ui(frame: &mut Frame, app: &App, snapshot: &Snapshot) {
         .split(chunks[1]);
 
     render_tabs(frame, chunks[0], app, snapshot);
-    render_body(frame, middle[0], app, snapshot);
-    render_system_log(frame, middle[1], snapshot);
+    render_body(frame, middle[0], app, snapshot, &log_snapshot.1);
+    render_system_log(frame, middle[1], &log_snapshot.0);
     render_status(frame, chunks[2]);
 
     if let Some(uid) = app.pending_kick {
@@ -262,7 +275,13 @@ fn render_tabs(frame: &mut Frame, area: Rect, app: &App, snapshot: &Snapshot) {
     frame.render_widget(tabs, area);
 }
 
-fn render_body(frame: &mut Frame, area: Rect, app: &App, snapshot: &Snapshot) {
+fn render_body(
+    frame: &mut Frame,
+    area: Rect,
+    app: &App,
+    snapshot: &Snapshot,
+    room_logs: &RoomLogs,
+) {
     if snapshot.rooms.is_empty() {
         let placeholder = Paragraph::new("No active rooms.\nWaiting for a client to create one…")
             .alignment(Alignment::Center)
@@ -282,7 +301,8 @@ fn render_body(frame: &mut Frame, area: Rect, app: &App, snapshot: &Snapshot) {
         match snapshot.rooms.get(base + slot) {
             Some(room) => {
                 let focused = slot == app.focused_panel;
-                render_room_panel(frame, col, room, focused, app.selected_user);
+                let room_log = room_logs.get(&room.id).expect("No log created for room");
+                render_room_panel(frame, col, room, room_log, focused, app.selected_user);
             }
             None => {
                 frame.render_widget(Block::bordered().title(" (empty) "), col);
@@ -295,6 +315,7 @@ fn render_room_panel(
     frame: &mut Frame,
     area: Rect,
     room: &RoomSnapshot,
+    logs: &VecDeque<logging::Event>,
     focused: bool,
     cursor: usize,
 ) {
@@ -333,7 +354,7 @@ fn render_room_panel(
         .split(inner);
 
     render_users(frame, rows[0], room, focused, cursor);
-    render_logs(frame, rows[1], room);
+    render_logs(frame, rows[1], logs);
 }
 
 fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: bool, cursor: usize) {
@@ -374,14 +395,11 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
     }
 }
 
-fn render_logs(frame: &mut Frame, area: Rect, room: &RoomSnapshot) {
+fn render_logs(frame: &mut Frame, area: Rect, logs: &VecDeque<logging::Event>) {
     // Show the newest lines that fit (area height minus the two border rows).
     let visible = area.height.saturating_sub(2) as usize;
-    let start = room.logs.len().saturating_sub(visible);
-    let text: Vec<Line> = room.logs[start..]
-        .iter()
-        .map(|event| Line::from(event.clone()))
-        .collect();
+    let start = logs.len().saturating_sub(visible);
+    let text: Vec<Line> = logs.iter().skip(start).map(Line::from).collect();
 
     let logs = Paragraph::new(text)
         .block(Block::bordered().title(" Logs "))
@@ -390,13 +408,10 @@ fn render_logs(frame: &mut Frame, area: Rect, room: &RoomSnapshot) {
     frame.render_widget(logs, area);
 }
 
-fn render_system_log(frame: &mut Frame, area: Rect, snapshot: &Snapshot) {
+fn render_system_log(frame: &mut Frame, area: Rect, global_log: &VecDeque<logging::Event>) {
     let visible = area.height.saturating_sub(2) as usize;
-    let start = snapshot.system_log.len().saturating_sub(visible);
-    let text: Vec<Line> = snapshot.system_log[start..]
-        .iter()
-        .map(|l| Line::from(l.clone()))
-        .collect();
+    let start = global_log.len().saturating_sub(visible);
+    let text: Vec<Line> = global_log.iter().skip(start).map(Line::from).collect();
 
     let panel = Paragraph::new(text)
         .block(Block::bordered().title(" System "))

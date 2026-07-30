@@ -1,16 +1,15 @@
-use crate::logging::{Event, EventType};
+use crate::logging::{EventType, LogDestination};
 use crate::model::{MessagePrefix, RoomInfo, ServerToClientMessage};
 use crate::util::serialize_and_prefix;
 
 use rand::RngExt;
-use std::collections::{HashMap, VecDeque};
-use tokio::sync::mpsc;
+use std::collections::HashMap;
+use tokio::sync::mpsc::{self, Sender};
 use tokio_tungstenite::tungstenite::Message;
 use uuid::Uuid;
 
 /// Maximum number of log lines retained in each log (both per-room and system logs)
 /// Oldest lines are dropped once the buffer is full.
-const MAX_LOG_LINES: usize = 500;
 const VALID_ROOM_ID_CHARACTERS: [char; 36] = valid_room_id_characters();
 const MAX_ROOM_COUNT: u8 = 32;
 
@@ -19,15 +18,18 @@ pub struct State {
     rooms: RoomMap,
     /// Server-wide events not tied to a specific room
     /// (e.g. connections, handshakes, failed joins)
-    system_log: VecDeque<Event>,
+    headless: bool,
+
+    log_tx: Sender<(String, EventType, LogDestination)>,
 }
 
 impl State {
-    pub fn new() -> Self {
+    pub fn new(log_tx: Sender<(String, EventType, LogDestination)>) -> Self {
         Self {
             users: HashMap::new(),
             rooms: RoomMap::new(),
-            system_log: VecDeque::new(),
+            headless: true,
+            log_tx,
         }
     }
 
@@ -35,11 +37,11 @@ impl State {
         &mut self,
         tx: ClientSender,
         room_id: Option<RoomId>,
-        name: String,
+        name: &str,
     ) -> Option<(ClientId, RoomId)> {
         match room_id {
             None if self.room_count() == MAX_ROOM_COUNT => None,
-            None => Some(self.add_room_and_host(name, tx)),
+            None => Some(self.add_room_and_host(name.to_string(), tx)),
             Some(room_id) => self
                 .add_client_to_room(name, tx, &room_id)
                 .map(|client_id| (client_id, room_id)),
@@ -47,7 +49,7 @@ impl State {
     }
 
     pub fn get_client_tx(&mut self, client_id: &ClientId) -> Option<ClientSender> {
-        let room = self.get_room_of_client(client_id).map(|a| a.1)?;
+        let room = self.get_room_of_client_mut(client_id).map(|a| a.1)?;
         room.get_sender(client_id)
     }
 
@@ -57,16 +59,20 @@ impl State {
         host_tx: ClientSender,
     ) -> (ClientId, RoomId) {
         let host_id = Uuid::new_v4();
-        let mut room = Room {
+        let room = Room {
             members: vec![Client::new(host_id, host_name, host_tx)],
             host: Some(host_id),
             locked: false,
             permanent: false,
-            logs: VecDeque::new(),
         };
 
         let room_id = generate_6_digit_code();
-        info!(room, "Host {host_id} created room {room_id}");
+        let client_name = room.get_client_name(&host_id);
+        info_room!(
+            self.log_tx,
+            room_id,
+            "{client_name} [H] created room {room_id}",
+        );
 
         self.users.insert(host_id, room_id.clone());
         self.rooms.map.insert(room_id.clone(), room);
@@ -76,14 +82,14 @@ impl State {
 
     pub fn add_client_to_room(
         &mut self,
-        client_name: String,
+        client_name: &str,
         client_tx: ClientSender,
         room_id: &RoomId,
     ) -> Option<ClientId> {
         let client_id = Uuid::new_v4();
         let Some(room) = self.rooms.map.get_mut(room_id) else {
-            warn!(
-                self,
+            warn_global!(
+                self.log_tx,
                 "Attempted to add {client_id} into non-existant room {room_id}"
             );
             return None;
@@ -93,44 +99,49 @@ impl State {
             return None;
         }
 
-        let client = Client::new(client_id, client_name, client_tx);
+        let client = Client::new(client_id, client_name.to_string(), client_tx);
         room.members.push(client);
         self.users.insert(client_id, room_id.clone());
 
         if room.host.is_none() {
-            info!(room, "{client_id} became host of {room_id}");
+            info_room!(self.log_tx, room_id, "{client_name} became host of room",);
             room.host = Some(client_id);
         }
 
-        info!(room, "{client_id} joined room {room_id}");
+        info_room!(self.log_tx, room_id, "{client_name} joined room",);
 
         Some(client_id)
     }
 
     pub fn remove_client(&mut self, client_id: ClientId) {
-        let Some((room_id, room)) = self.get_room_of_client(&client_id) else {
-            warn!(
-                self,
+        let log_tx = self.log_tx.clone();
+
+        let Some((room_id, room)) = self.get_room_of_client_mut(&client_id) else {
+            warn_global!(
+                log_tx,
                 "Attempted to remove {client_id} from room that does not exist"
             );
             return;
         };
 
-        info!(room, "{client_id} left");
-        if room.remove_client(&client_id) == RoomStatus::Closed {
+        let client_name = room.get_client_name(&client_id);
+
+        if room.remove_client(&client_id, &log_tx) == RoomStatus::Closed {
             self.rooms
                 .map
                 .remove(&room_id)
                 .expect("Failed to remove room");
         }
 
+        info_room!(log_tx, room_id, "{client_name} left",);
+
         self.users.remove(&client_id);
     }
 
     pub fn new_permanent_room(&mut self, room_id: RoomId) {
         if !is_valid_room_id(&room_id) {
-            error!(
-                self,
+            error_global!(
+                self.log_tx,
                 "Invalid permanent room id: {room_id}, must be 6 characters and each character must match `[0-9A-Z]`"
             );
             return;
@@ -141,14 +152,13 @@ impl State {
             host: None,
             locked: false,
             permanent: true,
-            logs: VecDeque::new(),
         };
         self.rooms.map.insert(room_id, room);
     }
 
-    pub fn get_room_of_client(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
+    pub fn get_room_of_client_mut(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
         let Some(room_id) = self.users.get(client_id) else {
-            warn!(self, "Attempted to get client that does not exist");
+            warn_global!(self.log_tx, "Attempted to get client that does not exist");
             return None;
         };
 
@@ -158,7 +168,7 @@ impl State {
     }
 
     pub fn get_senders_from_user_room(&mut self, client_id: ClientId) -> Vec<ClientSender> {
-        self.get_room_of_client(&client_id)
+        self.get_room_of_client_mut(&client_id)
             .map(|a| a.1)
             .map_or_else(Vec::new, |room| room.get_senders(Some(&client_id)))
     }
@@ -171,16 +181,16 @@ impl State {
         let locked = room.locked;
 
         if locked {
-            info!(room, "Room {room_id} locked");
+            info_room!(self.log_tx, room_id, "Room Locked");
         } else {
-            info!(room, "Room {room_id} unlocked");
+            info_room!(self.log_tx, room_id, "Room Unlocked");
         }
 
         Some(locked)
     }
 
     pub fn kick(&mut self, client_id: ClientId) {
-        let Some(room) = self.get_room_of_client(&client_id).map(|a| a.1) else {
+        let Some((room_id, room)) = self.get_room_of_client_mut(&client_id) else {
             return;
         };
 
@@ -193,7 +203,9 @@ impl State {
 
         room.tell_room_client_left_blocking(&client_id);
 
-        info!(room, "Kicked {client_id}");
+        let client_name = room.get_client_name(&client_id);
+        info_room!(self.log_tx, room_id, "Kicked {client_name}");
+
         self.remove_client(client_id);
     }
 
@@ -221,16 +233,6 @@ impl State {
         u8::try_from(self.rooms.map.len()).expect("Too many rooms")
     }
 
-    /// Record a server-wide event
-    pub fn log_generic(&mut self, msg: &str, kind: EventType) {
-        let event = Event {
-            kind,
-            message: format!("{}  {msg}", timestamp()),
-        };
-
-        push_capped(&mut self.system_log, event);
-    }
-
     /// Takes a snapshot of the application state so the TUI
     /// doesn't hold a lock on it
     pub fn snapshot(&self) -> Snapshot {
@@ -247,16 +249,16 @@ impl State {
                     .iter()
                     .map(|client| (client.id, client.name.clone()))
                     .collect(),
-                logs: room.logs.iter().cloned().collect(),
             })
             .collect();
 
         rooms.sort_by_key(|r| r.id.clone());
 
-        Snapshot {
-            rooms,
-            system_log: self.system_log.iter().cloned().collect(),
-        }
+        Snapshot { rooms }
+    }
+
+    pub const fn set_tui(&mut self) {
+        self.headless = false;
     }
 }
 
@@ -329,11 +331,18 @@ pub struct Room {
     locked: bool,
     /// Whether the room closes when it has no players
     permanent: bool,
-    /// Recent activity for this room, newest last. Capped at [`MAX_LOG_LINES`].
-    logs: VecDeque<Event>,
 }
 
 impl Room {
+    pub fn get_client_name(&self, client_id: &ClientId) -> String {
+        let client = self
+            .members
+            .iter()
+            .find(|user| user.id == *client_id)
+            .expect("Client not in room");
+
+        client.name.clone()
+    }
     pub fn get_senders(&self, exclude: Option<&ClientId>) -> Vec<ClientSender> {
         self.members
             .iter()
@@ -349,14 +358,6 @@ impl Room {
             .map(|client| client.tx.clone())
     }
 
-    fn log_generic(&mut self, msg: &str, kind: EventType) {
-        let event = Event {
-            kind,
-            message: format!("{}  {msg}", timestamp()),
-        };
-        push_capped(&mut self.logs, event);
-    }
-
     pub fn tell_room_client_left_blocking(&self, client_id: &ClientId) {
         // Send message toa ll other clients telling them `client_id` has been kicked
         let message = ServerToClientMessage::Kick {
@@ -369,14 +370,21 @@ impl Room {
         }
     }
 
-    pub fn remove_client(&mut self, client_id: &ClientId) -> RoomStatus {
+    pub fn remove_client(
+        &mut self,
+        client_id: &ClientId,
+        logging_tx: &Sender<(String, EventType, LogDestination)>,
+    ) -> RoomStatus {
         let Some(idx) = self
             .members
             .iter()
             .map(|client| client.id)
             .position(|id| id == *client_id)
         else {
-            warn!(self, "Attempted to remove client from room they are not in");
+            warn_global!(
+                logging_tx,
+                "Attempted to remove client from room they are not in"
+            );
             return RoomStatus::Open;
         };
 
@@ -409,7 +417,6 @@ impl Client {
 /// An immutable, cloned view of server state for rendering.
 pub struct Snapshot {
     pub rooms: Vec<RoomSnapshot>,
-    pub system_log: Box<[Event]>,
 }
 
 pub struct RoomSnapshot {
@@ -417,16 +424,4 @@ pub struct RoomSnapshot {
     pub host: Option<ClientId>,
     pub locked: bool,
     pub members: Vec<(ClientId, String)>,
-    pub logs: Vec<Event>,
-}
-
-fn push_capped<T>(buf: &mut VecDeque<T>, line: T) {
-    buf.push_back(line);
-    while buf.len() > MAX_LOG_LINES {
-        buf.pop_front();
-    }
-}
-
-fn timestamp() -> String {
-    chrono::Local::now().format("%H:%M:%S").to_string()
 }

@@ -1,4 +1,5 @@
 use crate::EventType;
+use crate::logging::LogDestination;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
 use crate::room::{ClientId, ClientSender, State};
@@ -6,7 +7,7 @@ use crate::util::{deserialize_messagepack, serialize_and_prefix, trim_uuid};
 
 use bytes::Bytes;
 use tokio::io::{AsyncRead, AsyncWrite};
-use tokio::sync::mpsc;
+use tokio::sync::mpsc::{self, Sender};
 use tokio::time::timeout;
 use tokio_tungstenite::{WebSocketStream, tungstenite::Message};
 
@@ -20,12 +21,16 @@ type WsStream<S> = WebSocketStream<Prefixed<S>>;
 
 const TIMEOUT: Duration = Duration::from_secs(30);
 
-pub async fn handle_connection<S>(state: Arc<Mutex<State>>, raw_stream: S, addr: SocketAddr)
-where
+pub async fn handle_connection<S>(
+    state: Arc<Mutex<State>>,
+    raw_stream: S,
+    addr: SocketAddr,
+    logging_tx: Sender<(String, EventType, LogDestination)>,
+) where
     S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
 {
     let ConnectionStatus::Ws(stream) =
-        into_prefixed_or_respond(state.clone(), raw_stream, addr).await
+        into_prefixed_or_respond(raw_stream, addr, logging_tx.clone()).await
     else {
         return;
     };
@@ -33,12 +38,12 @@ where
     let ws_stream = match tokio_tungstenite::accept_async(stream).await {
         Ok(ws_stream) => ws_stream,
         Err(e) => {
-            error_lock!(state, "Websocket handshake with {addr} failed: {e}");
+            error_global!(logging_tx, "Websocket handshake with {addr} failed: {e}");
             return;
         }
     };
 
-    info_lock!(state, "WS connection established with {addr}");
+    info_global!(logging_tx, "WS connection established with {addr}");
 
     // Each client gets an mpsc channel
     // Other client threads on the server can write to it
@@ -51,8 +56,15 @@ where
     // n+1..m. Any number of messages that will be forwarded to every other client in their room
     let (mut write, mut read) = ws_stream.split();
 
-    let Some(client_id) =
-        wait_for_initialization(state.clone(), &mut read, &mut write, tx.clone(), addr).await
+    let Some(client_id) = wait_for_initialization(
+        state.clone(),
+        &mut read,
+        &mut write,
+        tx.clone(),
+        addr,
+        logging_tx.clone(),
+    )
+    .await
     else {
         return;
     };
@@ -72,19 +84,19 @@ where
 
         // If it's a timeout error, we print such
         if result.is_err() {
-            warn_lock!(state, "{} timed out", trim_uuid(&client_id));
+            warn_global!(logging_tx, "{} timed out", trim_uuid(&client_id));
         }
 
         // If it's anything but a correct response, we disconnect
         let Ok(Some(Ok(message))) = result else { break };
 
-        if !handle_client_message(message, state.clone(), client_id).await {
+        if !handle_client_message(message, state.clone(), client_id, logging_tx.clone()).await {
             // We don't break here, to avoid double closing the connection
             return;
         }
     }
 
-    handle_client_close(client_id, &state).await;
+    handle_client_close(client_id, &state, logging_tx).await;
 }
 
 /// Waits for and handles messages from the client that are intended for the server.
@@ -104,12 +116,13 @@ async fn wait_for_initialization<S>(
     write: &mut SplitSink<WsStream<S>, Message>,
     tx: ClientSender,
     addr: SocketAddr,
+    logging_tx: Sender<(String, EventType, LogDestination)>,
 ) -> Option<ClientId>
 where
     S: SynthesisStream,
 {
     loop {
-        match parse_first_message(state.clone(), read, addr).await {
+        match parse_first_message(read, addr, logging_tx.clone()).await {
             Some(ClientToServerMessage::RequestRooms) => {
                 handle_room_list_request(state.clone(), write).await;
             }
@@ -120,7 +133,7 @@ where
                 let (client_id, room_id) = {
                     // The lock is relinquished at the end of this expression
                     let mut guard = state.lock().unwrap();
-                    match guard.initialize_client_in_room(tx, room_id, name) {
+                    match guard.initialize_client_in_room(tx, room_id, &name) {
                         Some(info) => info,
                         None => return None,
                     }
@@ -133,7 +146,7 @@ where
                 let message = serialize_and_prefix(response, MessagePrefix::Server);
 
                 if write.send(message).await.is_err() {
-                    error_lock!(state, "Failed to send back initial response");
+                    error_global!(logging_tx, "Failed to send back initial response");
 
                     return None;
                 }
@@ -141,7 +154,10 @@ where
                 break Some(client_id);
             }
             Some(ClientToServerMessage::Ping { timestamp: _ }) => {
-                error_lock!(state, "Received ping from client during initialization");
+                error_global!(
+                    logging_tx,
+                    "Received ping from client during initialization"
+                );
                 return None;
             }
             None => return None,
@@ -150,24 +166,24 @@ where
 }
 
 async fn parse_first_message<S>(
-    state: Arc<Mutex<State>>,
     read: &mut SplitStream<WebSocketStream<Prefixed<S>>>,
     addr: SocketAddr,
+    logging_tx: Sender<(String, EventType, LogDestination)>,
 ) -> Option<ClientToServerMessage>
 where
     S: SynthesisStream,
 {
     // Parse initial message, then user in correct room
     let Some(Ok(Message::Binary(message_data))) = read.next().await else {
-        warn_lock!(
-            state,
+        warn_global!(
+            logging_tx,
             "Client disconnected before handshake (probably a test)"
         );
         return None;
     };
 
     let Ok(message) = deserialize_messagepack::<ClientToServerMessage>(&message_data[1..]) else {
-        error_lock!(state, "{addr} sent an invalid initial message");
+        error_global!(logging_tx, "{addr} sent an invalid initial message");
         return None;
     };
 
@@ -194,11 +210,12 @@ async fn handle_client_message(
     message: Message,
     state: Arc<Mutex<State>>,
     client_id: ClientId,
+    logging_tx: Sender<(String, EventType, LogDestination)>,
 ) -> bool {
     match message {
         Message::Binary(ref bytes) => {
             if bytes[0] == MessagePrefix::Server as u8 {
-                handle_client_ping(bytes, &client_id, &state).await;
+                handle_client_ping(bytes, &client_id, &state, logging_tx).await;
                 return true;
             }
 
@@ -218,19 +235,24 @@ async fn handle_client_message(
         }
 
         Message::Close(_) => {
-            handle_client_close(client_id, &state).await;
+            handle_client_close(client_id, &state, logging_tx).await;
             false
         }
         _ => todo!("Handle ws protocol ping/pong and text messagaes"),
     }
 }
 
-async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Mutex<State>>) {
+async fn handle_client_ping(
+    bytes: &Bytes,
+    client_id: &ClientId,
+    state: &Arc<Mutex<State>>,
+    logging_tx: Sender<(String, EventType, LogDestination)>,
+) {
     let Ok(ClientToServerMessage::Ping { timestamp }) =
         deserialize_messagepack::<ClientToServerMessage>(&bytes[1..])
     else {
-        error_lock!(
-            state,
+        error_global!(
+            logging_tx,
             "Got invalid client to server message while client was in room"
         );
         return;
@@ -244,8 +266,8 @@ async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Mut
     let tx = {
         let mut guard = state.lock().unwrap();
         let Some(tx) = guard.get_client_tx(client_id) else {
-            error!(
-                guard,
+            error_global!(
+                logging_tx,
                 "Received client-server message from client not in room"
             );
             return;
@@ -258,7 +280,11 @@ async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Mut
     let _ = tx.send(message).await;
 }
 
-async fn handle_client_close(client_id: ClientId, state: &Arc<Mutex<State>>) {
+async fn handle_client_close(
+    client_id: ClientId,
+    state: &Arc<Mutex<State>>,
+    logging_tx: Sender<(String, EventType, LogDestination)>,
+) {
     // Send message toa ll other clients telling them `client_id` has been kicked
     let message = ServerToClientMessage::Kick {
         client_id: client_id.to_string(),
@@ -267,15 +293,17 @@ async fn handle_client_close(client_id: ClientId, state: &Arc<Mutex<State>>) {
 
     let senders = {
         let mut guard = state.lock().unwrap();
-        warn!(guard, "Connection with {client_id} closed");
 
-        let Some(room) = guard.get_room_of_client(&client_id).map(|a| a.1) else {
-            error!(
-                guard,
+        let Some(room) = guard.get_room_of_client_mut(&client_id).map(|a| a.1) else {
+            error_global!(
+                logging_tx,
                 "Client attempted to leave when they were not in a room "
             );
             return;
         };
+
+        let client_name = room.get_client_name(&client_id);
+        warn_global!(logging_tx, "Connection with {client_name} closed");
 
         let senders = room.get_senders(Some(&client_id));
         guard.remove_client(client_id);

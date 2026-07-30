@@ -103,15 +103,11 @@ where
 }
 
 pub fn config_or_default(config: &CliConfig) -> (PathBuf, u32) {
-    let mut cert_dir = config.cert_dir.clone().unwrap();
-    let mut port = config.port.unwrap();
-
-    if config.port.is_none() {
-        port = DEFAULT_PORT;
-    }
-    if config.cert_dir.is_none() {
-        cert_dir = certification_directory();
-    }
+    let mut cert_dir = config
+        .cert_dir
+        .clone()
+        .unwrap_or_else(certification_directory);
+    let port = config.port.unwrap_or(DEFAULT_PORT);
 
     tilde_expansion(&mut cert_dir);
 
