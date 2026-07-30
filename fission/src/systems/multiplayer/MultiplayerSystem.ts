@@ -82,19 +82,11 @@ class MultiplayerSystem {
         }).then(res => {
             if (res) {
                 this.client.onServerMessage = async msg => {
-                    console.group(`Incoming server message: ${msg.type}`)
                     await this.handleServerMessage(msg)
-                    console.groupEnd()
                 }
 
                 this.client.onPeerMessage = async msg => {
-                    if (msg.type != "update") {
-                        console.group(`Incoming peer message: ${msg.type}`)
-                    }
                     await this.handlePeerMessage(msg)
-                    if (msg.type != "update") {
-                        console.groupEnd()
-                    }
                 }
                 this.client.onClose = () => {
                     globalAddToast("error", "Multiplayer disconnected")
@@ -137,6 +129,7 @@ class MultiplayerSystem {
     }
 
     async handleServerMessage(message: ServerToClientMessage) {
+        console.debug(`Incoming server message ${message.type}`)
         switch (message.type) {
             case "sendinfo":
                 this.roomId = message.room_id
@@ -192,12 +185,7 @@ class MultiplayerSystem {
         message.recipientId = peerID
         message.timestamp ??= Date.now()
         message.clientId = this.clientId
-        if (message.type != "update") {
-            console.group(`Sending Message: ${message.type}`)
-            console.debug(message)
-            console.groupEnd()
-        }
-        return this.client.sendPeer(message as MessageWithTimestamp)
+        this.client.sendPeer(message as MessageWithTimestamp)
     }
 
     async introduceSelf(requestIntroductions: boolean, peerID?: string) {
@@ -211,6 +199,7 @@ class MultiplayerSystem {
             },
             peerID
         )
+        this.registerExistingSceneObjects()
         for (const obj of this.getOwnObjects()) {
             this.send(
                 {
@@ -260,11 +249,23 @@ class MultiplayerSystem {
     registerOwnSceneObject(objectId: LocalSceneObjectId) {
         const list = this.clientToObjectMap.get(this.clientId)
         this.setSceneObjectIdMapping(this.clientId, objectId as RemoteSceneObjectId, objectId)
+        if (list?.includes(objectId)) {
+            return
+        }
         if (list != null) {
             list.push(objectId)
         } else {
             this.clientToObjectMap.set(this.clientId, [objectId])
         }
+    }
+
+    registerExistingSceneObjects() {
+        const objects = World.sceneRenderer.mirabufSceneObjects.getAll()
+        objects.forEach(object => {
+            if (object.isOwnObject) {
+                this.registerOwnSceneObject(object.id as LocalSceneObjectId)
+            }
+        })
     }
 
     unregisterOwnSceneObject(objectId: LocalSceneObjectId) {

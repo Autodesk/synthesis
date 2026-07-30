@@ -59,6 +59,7 @@ class MultiplayerWebsocket {
             const data = msg.slice(1).stream()
             const decoded = (await this._decoder.decodeAsync(data)) as ServerToClientMessage | MessageWithTimestamp
             const isServer = headerByte == SERVER_PREFIX
+            if (decoded.type != "update") console.debug("Recieving", isServer ? "server" : "client", decoded)
             if (isServer) {
                 this.onServerMessage?.(decoded as ServerToClientMessage)
             } else {
@@ -84,7 +85,7 @@ class MultiplayerWebsocket {
     }
 
     private send(prefix: number, msg: MessageWithTimestamp | ClientToServerMessage): void {
-        console.log("Sending", msg)
+        if (msg.type != "update") console.debug("Sending", msg)
         const encoded = this._encoder.encodeSharedRef(msg)
         this._prefixBuf[0] = prefix
         return this._ws.send(new Blob([this._prefixBuf, encoded]))
