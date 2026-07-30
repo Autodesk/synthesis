@@ -3,6 +3,7 @@ import { useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Label from "./Label"
+import { SynthesisIcons } from "@/components/StyledComponents.tsx"
 import type { SceneOverlayTag } from "./SceneOverlayEvents"
 import ViewCube from "./ViewCube"
 
@@ -20,7 +21,11 @@ const SceneOverlay: React.FC = () => {
         if (isDisabled) return <></> // if the overlay is disabled, return nothing
 
         return [...tagMap.values()].map(x => (
-            <div
+            <Stack
+                className={"sceneOverlayTag"}
+                direction="row"
+                alignItems={"center"}
+                gap={1}
                 key={x.id}
                 style={{
                     position: "absolute",
@@ -34,8 +39,9 @@ const SceneOverlay: React.FC = () => {
                     color: "white",
                 }}
             >
+                {!x.isOwn() && <SynthesisIcons.PEOPLE size={"1.25rem"} />}
                 <Label size="md">{x.text()}</Label>
-            </div>
+            </Stack>
         ))
     }, [])
 

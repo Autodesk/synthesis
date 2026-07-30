@@ -24,7 +24,12 @@ export class SceneOverlayTag {
     }
 
     /** Create a new tag */
-    public constructor(text: () => string, position?: PixelSpaceCoord, color?: Alliance) {
+    public constructor(
+        text: () => string,
+        public isOwn: () => boolean,
+        position?: PixelSpaceCoord,
+        color?: Alliance
+    ) {
         this._id = nextTagId++
 
         this.text = text
