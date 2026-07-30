@@ -67,7 +67,7 @@ type SubsystemRowProps = {
 
 const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, saveBehaviors }) => {
     const [unstickForce, setUnstickForce] = useState<number>(robot.robotPreferences.unstickForce)
-
+    const [invertMotor, setInvertMotor] = useState<boolean>(group.sequential?.inverted ?? false)
     return (
         <>
             <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
@@ -78,25 +78,28 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, save
                     {group.sequential && (
                         <Checkbox
                             label="Invert Motor"
-                            checked={group.sequential.inverted}
+                            checked={invertMotor}
                             onClick={checked => {
                                 group.sequential!.inverted = checked
+                                setInvertMotor(checked)
                                 saveBehaviors?.()
                             }}
                         />
                     )}
-                    <StatefulSlider
-                        min={0}
-                        max={15000}
-                        defaultValue={unstickForce}
-                        label="Unstick Force"
-                        onChange={(value: number | number[]) => {
-                            setUnstickForce(value as number)
-                            robot.robotPreferences.unstickForce = value as number
-                            robot.savePreferences()
-                        }}
-                        step={100}
-                    />
+                    {group.id == "drivetrain" && (
+                        <StatefulSlider
+                            min={0}
+                            max={15000}
+                            defaultValue={unstickForce}
+                            label="Unstick Force"
+                            onChange={(value: number | number[]) => {
+                                setUnstickForce(value as number)
+                                robot.robotPreferences.unstickForce = value as number
+                                robot.savePreferences()
+                            }}
+                            step={100}
+                        />
+                    )}
                 </Stack>
             </Stack>
             <Divider />
