@@ -102,8 +102,9 @@ class MecanumDriveDiagnostics {
      * Duplicate roles get an index suffix so a 6-wheel robot's rows stay distinguishable.
      */
     private static labelModules(modules: MecanumModule[]): string[] {
+        const lastRow = Math.max(...modules.map(m => m.row))
         const raw = modules.map(m => {
-            const end = m.forwardSign > 0 ? "F" : m.forwardSign < 0 ? "R" : "C"
+            const end = m.row === 0 ? "F" : m.row === lastRow ? "R" : "M"
             return `${end}${m.leftSign > 0 ? "L" : "R"}`
         })
         const counts = new Map<string, number>()
@@ -165,14 +166,15 @@ class MecanumDriveDiagnostics {
         this._loggedConfiguration = true
 
         console.log(
-            `[Mecanum] configured ${this._modules.length} driven corners\n` +
+            `[Mecanum] configured ${this._modules.length} driven wheels\n` +
                 this._modules
                     .map((m, i) => {
                         const state = m.wheel.debugState()
                         return (
-                            `  ${this._labels[i].padEnd(4)} fwdSign=${num(m.forwardSign, 0)} ` +
-                            `leftSign=${num(m.leftSign, 0)} momentArm=${m.momentArm.toFixed(3)} ` +
-                            `reversed=${state.reversed} maxVel=${m.wheel.maxVelocity.toFixed(1)} ` +
+                            `  ${this._labels[i].padEnd(4)} at(fwd=${num(m.x, 3)} left=${num(m.y, 3)}) ` +
+                            `steer=${num((m.steerAngle * 180) / Math.PI, 0)}deg ` +
+                            `maxSurfaceSpeed=${m.maxSurfaceSpeed.toFixed(2)}m/s ` +
+                            `reversed=${state.reversed} ` +
                             `friction(long=${state.longitudinalFriction.toFixed(2)} ` +
                             `lat=${state.lateralFriction.toFixed(2)})`
                         )
