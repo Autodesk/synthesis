@@ -2,6 +2,7 @@ import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { readJoltVec3 } from "@/util/TypeConversions"
 import { type NoraNumber, NoraTypes } from "../Nora"
 import type { SimType } from "../wpilib_brain/WPILibTypes"
 import Driver, { type DriverID } from "./Driver"
@@ -29,7 +30,7 @@ const DEFAULT_LATERAL_FRICTION_CURVE: readonly [number, number][] = [
 ]
 
 /**
- * Baseline suspension travel a mecanum tire gets, metres. See {@link WheelDriver.setSuspensionTravel}.
+ * Baseline suspension travel a mecanum tire gets in metres.
  *
  * Small enough to stay well inside a wheel's radius on any plausible robot, so the chassis never
  * visibly squats, and large enough that the load a tire carries varies smoothly with chassis pose
@@ -40,20 +41,17 @@ const MECANUM_SUSPENSION_TRAVEL = 0.02
 /** Near-critical, so the chassis settles without bouncing between wheels. */
 const MECANUM_SUSPENSION_DAMPING = 1.0
 /** Matches the world gravity PhysicsSystem installs; used to size the suspension spring. */
-const GRAVITY = 9.8
+const GRAVITY = 9.8 // m/s^2
 
 /**
  * Suspension travel that lets every wheel of a drivetrain reach the ground.
  *
- * Mecanum needs all its wheels loaded — a wheel in the air contributes no force at all, and the
- * remaining wheels' diagonal pushes then don't cancel. A drop-centre chassis defeats that outright:
- * its middle wheels are deliberately larger, so on a flat floor the corners hang in the air. On the
- * stock 2024 KitBot the corners sit three centimetres clear and carry nothing.
+ * Mecanum needs all its wheels to be weight bearing. A wheel in the air contributes no force at all,
+ * and the remaining wheels' diagonal pushes then don't cancel.
  *
  * Suspension travel is what a real robot uses to close that gap, so the travel is sized to span it:
  * twice the spread in wheel radius, on top of the baseline, which leaves every wheel somewhere
- * inside its stroke rather than pinned at an end. A drivetrain with uniform wheels — the common
- * case — just gets the baseline.
+ * inside its stroke rather than pinned at an end. A drivetrain with uniform wheels just gets the baseline.
  *
  * @param radii Every mecanum wheel's radius on this robot, metres.
  */
@@ -126,13 +124,13 @@ class WheelDriver extends Driver {
 
         // Captured before anything can rotate it; the URDF import path overrides these defaults.
         const settings = this._wheel.GetSettings()
-        this._restForward = WheelDriver.readVec3(settings.get_mWheelForward())
-        this._steeringAxis = WheelDriver.readVec3(settings.get_mSteeringAxis())
+        this._restForward = readJoltVec3(settings.get_mWheelForward())
+        this._steeringAxis = readJoltVec3(settings.get_mSteeringAxis())
 
         const spring = settings.get_mSuspensionSpring()
         this._restSuspension = {
-            position: WheelDriver.readVec3(settings.get_mPosition()),
-            direction: WheelDriver.readVec3(settings.get_mSuspensionDirection()),
+            position: readJoltVec3(settings.get_mPosition()),
+            direction: readJoltVec3(settings.get_mSuspensionDirection()),
             minLength: settings.get_mSuspensionMinLength(),
             maxLength: settings.get_mSuspensionMaxLength(),
             frequency: spring.get_mFrequency(),
@@ -140,18 +138,13 @@ class WheelDriver extends Driver {
         }
     }
 
-    /** Copies a Jolt getter's reused static temporary, which must not be destroyed. */
-    private static readVec3(v: Jolt.Vec3): THREE.Vector3 {
-        return new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ())
-    }
-
     /**
      * Rewrites this tire's slip-vs-friction curves.
      *
      * The curves, not the `mCombined*Friction` scalars, are the only durable way to change a
      * tire's grip. `WheelWV::Update` recomputes both scalars from these curves at the top of every
-     * physics step (`sqrt(curve(slip) * contactBodyFriction)`), so a scalar written from here is
-     * gone before the solver ever reads it. An empty curve evaluates to 0, i.e. no grip at all.
+     * physics step, so a scalar written from here is gone before the solver ever reads it.
+     * An empty curve evaluates to 0, i.e. no grip at all.
      *
      * @param longitudinal Points for the rolling axis, or undefined for no grip.
      * @param lateral Points for the sideways axis, or undefined for no grip.
@@ -166,7 +159,6 @@ class WheelDriver extends Driver {
         const write = (points: readonly [number, number][] | undefined, apply: (c: Jolt.LinearCurve) => void) => {
             curve.Clear()
             points?.forEach(([slip, friction]) => curve.AddPoint(slip, friction))
-            // set_ copies the curve into the settings struct, so the temporary stays ours to free.
             apply(curve)
         }
 
@@ -179,16 +171,12 @@ class WheelDriver extends Driver {
     /** Points this wheel's rolling direction along `forward`, expressed in chassis-local space. */
     private setWheelForward(forward: THREE.Vector3): void {
         const vec = new JOLT.Vec3(forward.x, forward.y, forward.z)
-        // set_ copies into the settings struct, so the argument stays ours to free.
         this._wheel.GetSettings().set_mWheelForward(vec)
         JOLT.destroy(vec)
     }
 
     /**
      * Restores a plain gripping tire: full friction on both axes, pointed straight ahead.
-     *
-     * Undoes {@link WheelDriver.configureMecanumRoller}. Mecanum is the only drivetrain that
-     * applies it, and nothing else clears it.
      */
     public resetTire(): void {
         this.setFrictionCurves(DEFAULT_LONGITUDINAL_FRICTION_CURVE, DEFAULT_LATERAL_FRICTION_CURVE)
@@ -234,7 +222,7 @@ class WheelDriver extends Driver {
      * rests on a statically indeterminate set of rigid struts: the solver is free to put the load
      * almost anywhere, and it picks a badly twisted distribution that also flickers in and out of
      * contact. Skid-steer shrugs that off because every tire pushes the same direction, but mecanum
-     * cannot — its wheels only cancel each other's sideways push when they carry comparable load,
+     * cannot. Its wheels only cancel each other's sideways push when they carry comparable load,
      * so a twisted load distribution turns "drive forward" into "drive diagonally".
      *
      * Real travel makes the load distribution determinate: each tire's share follows its
@@ -243,6 +231,9 @@ class WheelDriver extends Driver {
      * at half travel under gravity (static deflection is `g / (2*pi*f)^2`). The attachment point
      * moves up by that same half-travel, so the robot's resting ride height is unchanged and the
      * anti-levitation tuning is preserved.
+     * 
+     * It may be reasonable to use this more generally in the future, not just for mecanum drive.
+     * See SYNTH-301 for more info.
      *
      * @param travel Total suspension travel in metres.
      */
@@ -257,12 +248,11 @@ class WheelDriver extends Driver {
         spring.set_mMode(JOLT.ESpringMode_FrequencyAndDamping)
         spring.set_mFrequency(Math.sqrt(GRAVITY / staticDeflection) / (2 * Math.PI))
         spring.set_mDamping(MECANUM_SUSPENSION_DAMPING)
-        // set_ copies the spring into the settings struct, so the temporary stays ours to free.
         settings.set_mSuspensionSpring(spring)
         JOLT.destroy(spring)
 
         // The wheel now hangs `staticDeflection` lower at rest, so lift its mount by the same
-        // amount to leave the contact patch — and the chassis — where they already were.
+        // amount to leave the contact patch, and the chassis, where they already were.
         this.setSuspensionPosition(
             this._restSuspension.position.clone().addScaledVector(this._restSuspension.direction, -staticDeflection)
         )
@@ -291,36 +281,8 @@ class WheelDriver extends Driver {
         JOLT.destroy(vec)
     }
 
-    /**
-     * Snapshot of this wheel's tire state for drivetrain diagnostics.
-     *
-     * `contactLongitudinal` is the world-space direction Jolt will actually push this tire along.
-     * It is the ground truth for whether a roller angle reached the physics, as opposed to merely
-     * being stored; everything else here only reports what was asked for. Zero-length when the
-     * tire is airborne, since Jolt only recomputes the basis on contact.
-     *
-     * Jolt hands back a reused static temporary for the vector, so it is copied and not destroyed.
-     * Every other read is a scalar.
-     */
-    public debugState() {
-        return {
-            reversed: this._reversed,
-            targetVelocity: this._targetVelocity(),
-            angularVelocity: this._wheel.GetAngularVelocity(),
-            steerAngle: this._wheel.GetSteerAngle(),
-            contactLongitudinal: WheelDriver.readVec3(this._wheel.GetContactLongitudinal()),
-            hasContact: this._wheel.HasContact(),
-            suspensionLength: this._wheel.GetSuspensionLength(),
-            /** Normal-force impulse the suspension applied this step; the tire's load. */
-            suspensionLambda: this._wheel.GetSuspensionLambda(),
-            radius: this._wheel.GetSettings().get_mRadius(),
-            longitudinalSlip: this._wheel.get_mLongitudinalSlip(),
-            lateralSlip: this._wheel.get_mLateralSlip(),
-            longitudinalLambda: this._wheel.GetLongitudinalLambda(),
-            lateralLambda: this._wheel.GetLateralLambda(),
-            lateralFriction: this._wheel.get_mCombinedLateralFriction(),
-            longitudinalFriction: this._wheel.get_mCombinedLongitudinalFriction(),
-        }
+    public get radius(): number {
+        return this._wheel.GetSettings().get_mRadius()
     }
 
     public update(_: number): void {
@@ -332,9 +294,11 @@ class WheelDriver extends Driver {
     public getReceiverType(): NoraTypes {
         return NoraTypes.NUMBER
     }
+
     public setReceiverValue(val: NoraNumber): void {
         this.accelerationDirection = val
     }
+
     public displayName(): string {
         return `${this.info?.name ?? "-"} [Wheel]`
     }

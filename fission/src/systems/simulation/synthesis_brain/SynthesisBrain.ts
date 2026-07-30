@@ -113,7 +113,7 @@ class SynthesisBrain extends Brain {
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (this._assembly.mechanism.controllable) {
             // A previous mecanum configuration may have left wheels steered or free-rolling.
-            // Restore every tire before rebuilding; mecanum re-applies what it needs.
+            // Restore every tire before rebuilding.
             this.wheelDrivers().forEach(w => w.resetTire())
 
             // In swerve mode, detect the azimuth hinges up front so they can drive the modules and
@@ -136,6 +136,7 @@ class SynthesisBrain extends Brain {
             } else {
                 driveBehavior = this.createSkidSteerDriveBehavior(this.driveType === DriveType.ARCADE)
             }
+
             this._behaviors.push(driveBehavior)
 
             this.configureArmBehaviors(useSwerve ? swerveInfo.hinges : [])

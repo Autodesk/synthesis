@@ -118,7 +118,7 @@ export function resolveMecanumLayout(wheelDrivers: WheelDriver[], chassisRotatio
             pushX: Math.cos(steerAngle),
             pushY: Math.sin(steerAngle),
             steerAngle,
-            maxSurfaceSpeed: wheel.debugState().radius * wheel.maxVelocity,
+            maxSurfaceSpeed: wheel.radius * wheel.maxVelocity,
             row: rows[i],
             leftSign,
         }
@@ -152,6 +152,6 @@ function assignRows(forwardOffsets: number[]): number[] {
  * is the exact opposite of a mecanum wheel. Without this the mix produces no lateral motion at all.
  */
 export function applyMecanumTires(layout: MecanumLayout): void {
-    const travel = mecanumSuspensionTravel(layout.modules.map(m => m.wheel.debugState().radius))
+    const travel = mecanumSuspensionTravel(layout.modules.map(m => m.wheel.radius))
     layout.modules.forEach(m => m.wheel.configureMecanumRoller(m.steerAngle, travel))
 }
