@@ -7,6 +7,8 @@ use argh::FromArgs;
 use directories::ProjectDirs;
 use toml::{Table, Value};
 
+use crate::util::tilde_expansion;
+
 pub const DEFAULT_PORT: u32 = 2610;
 
 pub fn certification_directory() -> PathBuf {
@@ -98,4 +100,20 @@ where
     {
         old_config.permanent_room = Some(room_id.clone());
     }
+}
+
+pub fn config_or_default(config: &CliConfig) -> (PathBuf, u32) {
+    let mut cert_dir = config.cert_dir.clone().unwrap();
+    let mut port = config.port.unwrap();
+
+    if config.port.is_none() {
+        port = DEFAULT_PORT;
+    }
+    if config.cert_dir.is_none() {
+        cert_dir = certification_directory();
+    }
+
+    tilde_expansion(&mut cert_dir);
+
+    (cert_dir, port)
 }
