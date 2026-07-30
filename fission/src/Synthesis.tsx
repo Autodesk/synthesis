@@ -15,7 +15,6 @@ import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import PortraitOverlay from "./ui/components/PortraitOverlay.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
-import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
@@ -23,7 +22,7 @@ import CommandPalette from "@/ui/components/CommandPalette.tsx"
 import { TourProvider } from "./ui/tour/TourProvider.tsx"
 import TourOverlay from "./ui/tour/TourOverlay.tsx"
 
-function Synthesis() {
+const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
     const mainLoopHandle = useRef(0)
@@ -40,6 +39,7 @@ function Synthesis() {
 
         mainLoop()
     }
+
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
         if (urlParams.has("code")) {
@@ -90,7 +90,6 @@ function Synthesis() {
                                 <UIRenderer />
                                 <CommandPalette />
                                 <ProgressNotifications key={"progress-notifications"} />
-                                <WPILibConnectionStatus />
                                 <DragModeIndicator />
                                 <PortraitOverlay />
                                 <TourOverlay />

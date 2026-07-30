@@ -7,30 +7,39 @@ import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
 import { deobf } from "@/util/Utility"
-import { useUIContext } from "../helpers/UIProviderHelpers"
-import APSManagementModal from "../modals/APSManagementModal"
-import SettingsModal from "../modals/configuring/SettingsModal"
-import CameraSelectionPanel from "../panels/configuring/CameraSelectionPanel"
-import DeveloperToolPanel from "../panels/DeveloperToolPanel"
-import DebugPanel from "../panels/DebugPanel"
-import LibraryModal from "../modals/mirabuf/LibraryModal"
-import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
-import { IconButton, SynthesisIcons } from "./StyledComponents"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import APSManagementModal from "@/modals/APSManagementModal"
+import SettingsModal from "@/modals/configuring/SettingsModal"
+import CameraSelectionPanel from "@/panels/configuring/CameraSelectionPanel"
+import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
+import DebugPanel from "@/panels/DebugPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
+import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
+import CodesimControls from "@/ui/components/topbar/CodesimControls"
+import CodeConnectionIndicator from "@/ui/components/topbar/CodeConnectionIndicator"
+import ConfigureControls from "@/ui/components/topbar/ConfigureControls"
+import GameplayControls from "@/ui/components/topbar/GameplayControls"
+import ModeDropdown from "@/ui/components/topbar/ModeDropdown"
+import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
+import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX, TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
+import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
+import { useAssemblySelection } from "@/ui/components/topbar/UseConfigureAssembly"
+import UserIcon from "@/ui/components/UserIcon"
+import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 import { useTourAnchor } from "@/ui/tour/useTourAnchor"
-import ConfigureControls from "./topbar/ConfigureControls"
-import GameplayControls from "./topbar/GameplayControls"
-import ModeDropdown from "./topbar/ModeDropdown"
-import { TOP_BAR_HEIGHT, TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
-import { TopBarIcon } from "./topbar/TopBarIcons"
-import UserIcon from "./UserIcon"
 
 const TopBar: React.FC = () => {
-    const { openModal, openPanel, addToast } = useUIContext()
+    const { openModal, openPanel, togglePanel, addToast } = useUIContext()
     const { appMode } = useStateContext()
     const isTouchDevice = useIsTouchDevice()
+    const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
 
     const addAssemblyRef = useTourAnchor("add-assembly")
     const modeDropdownRef = useTourAnchor("mode-dropdown")
+    // AssemblySelect moved up from ConfigureControls in the MainHUD redesign, so its tour anchor lives here now.
+    const assemblySelectRef = useTourAnchor("configure-assembly-select")
 
     setAddToast(addToast)
     setOpenPanel(openPanel)
@@ -41,7 +50,7 @@ const TopBar: React.FC = () => {
     const [modeMenuOpen, setModeMenuOpen] = useState(false)
 
     useEffect(() => {
-        // biome-ignore-start lint/suspicious/noExplicitAny: allow any
+        // biome-ignore-start lint/suspicious/noExplicitAny: allow any for window and document access
         try {
             const k: string[] = deobf("NmM2ZjYzNjE2YzUzNzQ2ZjcyNjE2NzY1MmU3NDY4NjU2ZDY1").split(String.fromCharCode(46))
             const v = JSON.parse((window as any)[k[0]][k[1]])[deobf("NjM2ZjZmNmM0ZDZmNjQ2NQ==")]
@@ -105,105 +114,91 @@ const TopBar: React.FC = () => {
                         />
                     </Box>
                 </Tooltip>
-                <Tooltip title="Add Assembly">
-                    <IconButton
-                        ref={addAssemblyRef}
-                        size="medium"
-                        disableRipple
-                        sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() => openModal(LibraryModal, undefined)}
-                    >
-                        <TopBarIcon name="add" size={30} />
-                    </IconButton>
-                </Tooltip>
 
-                {/* Divider line */}
-                <Box sx={{ width: "2px", height: 28, bgcolor: "topBarText.main", opacity: 0.4 }} />
+                <TopBarButton
+                    label="Add Assembly"
+                    icon={<TopBarIcon name="add" size={30} />}
+                    onClick={() => openModal(LibraryModal, undefined)}
+                    anchorRef={addAssemblyRef}
+                />
 
-                {appMode === "Configure" && <ConfigureControls />}
+                <Box sx={TOP_BAR_DIVIDER_SX} />
+
+                {(appMode === "Configure" || appMode === "Codesim") && (
+                    <Box ref={assemblySelectRef} component="span" sx={{ display: "inline-flex" }}>
+                        <AssemblySelect
+                            assemblies={assemblies}
+                            selectedAssembly={selectedAssembly}
+                            onSelect={selectAssemblyById}
+                            sx={{ borderRadius: 1, height: 34, minWidth: 195, fontSize: 12 }}
+                        />
+                    </Box>
+                )}
+
+                {appMode === "Configure" && <ConfigureControls selectedAssembly={selectedAssembly} />}
+                {appMode === "Codesim" && <CodesimControls selectedAssembly={selectedAssembly} />}
                 {appMode === "Gameplay" && <GameplayControls />}
-
                 <Box flexGrow={1} />
 
-                {import.meta.env.DEV && (
+                {hasSimBrain() && (
                     <>
-                        <Tooltip title="Developer Tool">
-                            <IconButton
-                                size="medium"
-                                disableRipple
-                                sx={TOP_BAR_ICON_BUTTON_SX}
-                                onClick={() => openPanel(DeveloperToolPanel, undefined)}
-                            >
-                                {/* Box sets the em-square so the icon scales to 26 px;
-                                    color inherits from TOP_BAR_ICON_BUTTON_SX → topBarText.main */}
-                                <Box sx={{ fontSize: 26, display: "flex" }}>
-                                    <SynthesisIcons.CODE_SQUARE />
-                                </Box>
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Debug Tools">
-                            <IconButton
-                                size="medium"
-                                disableRipple
-                                sx={TOP_BAR_ICON_BUTTON_SX}
-                                onClick={() => openPanel(DebugPanel, undefined)}
-                            >
-                                <Box sx={{ fontSize: 26, display: "flex" }}>
-                                    <SynthesisIcons.BUG />
-                                </Box>
-                            </IconButton>
-                        </Tooltip>
+                        <CodeConnectionIndicator />
+                        <Box sx={TOP_BAR_DIVIDER_SX} />
                     </>
                 )}
 
+                {import.meta.env.DEV && (
+                    <>
+                        <TopBarButton
+                            label="Developer Tool"
+                            icon={
+                                <Box sx={TOP_BAR_GLYPH_SX}>
+                                    <SynthesisIcons.CODE_SQUARE />
+                                </Box>
+                            }
+                            onClick={() => togglePanel(DeveloperToolPanel, undefined)}
+                        />
+                        <TopBarButton
+                            label="Debug Tools"
+                            icon={
+                                <Box sx={TOP_BAR_GLYPH_SX}>
+                                    <SynthesisIcons.BUG />
+                                </Box>
+                            }
+                            onClick={() => togglePanel(DebugPanel, undefined)}
+                        />
+                    </>
+                )}
                 {isTouchDevice && (
-                    <Tooltip title="Toggle Joysticks">
-                        <IconButton
-                            size="medium"
-                            disableRipple
-                            sx={TOP_BAR_ICON_BUTTON_SX}
-                            onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
-                        >
-                            <Box sx={{ fontSize: 26, display: "flex" }}>
+                    <TopBarButton
+                        label="Toggle Joysticks"
+                        icon={
+                            <Box sx={TOP_BAR_GLYPH_SX}>
                                 <SynthesisIcons.GAMEPAD />
                             </Box>
-                        </IconButton>
-                    </Tooltip>
+                        }
+                        onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
+                    />
                 )}
-
-                <Tooltip title="Configure Camera">
-                    <IconButton
-                        size="medium"
-                        disableRipple
-                        sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() => openPanel(CameraSelectionPanel, undefined)}
-                    >
-                        <Box sx={{ fontSize: 26, display: "flex" }}>
+                <TopBarButton
+                    label="Configure Camera"
+                    icon={
+                        <Box sx={TOP_BAR_GLYPH_SX}>
                             <SynthesisIcons.CAMERA />
                         </Box>
-                    </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Settings">
-                    <IconButton
-                        size="medium"
-                        disableRipple
-                        sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
-                    >
-                        <TopBarIcon name="settings" size={30} />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={userInfo ? "Account" : "Login"}>
-                    <IconButton
-                        size="medium"
-                        disableRipple
-                        sx={TOP_BAR_ICON_BUTTON_SX}
-                        onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
-                    >
-                        {userInfo ? <UserIcon className="h-6 rounded-full" /> : <TopBarIcon name="login" size={30} />}
-                    </IconButton>
-                </Tooltip>
+                    }
+                    onClick={() => togglePanel(CameraSelectionPanel, undefined)}
+                />
+                <TopBarButton
+                    label="Settings"
+                    icon={<TopBarIcon name="settings" size={30} />}
+                    onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
+                />
+                <TopBarButton
+                    label={userInfo ? "Account" : "Login"}
+                    icon={userInfo ? <UserIcon className="h-6 rounded-full" /> : <TopBarIcon name="login" size={30} />}
+                    onClick={() => (userInfo ? openModal(APSManagementModal, undefined) : APS.requestAuthCode())}
+                />
             </Stack>
         </Box>
     )

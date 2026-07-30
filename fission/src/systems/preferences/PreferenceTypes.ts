@@ -64,7 +64,7 @@ export function defaultUserPreferences(): UserPreferences {
         RenderProtectedZones: true,
         InputSchemes: [],
         RenderSceneTags: true,
-        RenderScoreboard: true,
+        RenderScoreboard: false,
         SubsystemGravity: false,
         TouchControls: false,
         SimAutoReconnect: false,

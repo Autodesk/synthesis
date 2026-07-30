@@ -12,7 +12,7 @@ export const DESKTOP_MIN_WIDTH = 1000
 export function useIsMobile(): boolean {
     const isTouch = useIsTouchDevice()
     const isPhoneSized = useMediaQuery("(max-width: 600px), (max-height: 600px)", { noSsr: true })
-    // minus 0.02 makes max width mean strictly below 1000 so it still catch fractional widths like 999.5 from zoom or display scaling
+    // minus 0.02 so exactly 1000px still counts as desktop and dont flip to mobile
     const isTooNarrowForTopBar = useMediaQuery(`(max-width: ${DESKTOP_MIN_WIDTH - 0.02}px)`, { noSsr: true })
     return (isTouch && isPhoneSized) || isTooNarrowForTopBar
 }

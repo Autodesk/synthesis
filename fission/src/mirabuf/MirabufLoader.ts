@@ -3,6 +3,7 @@ import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
+import { MiraType } from "@/mirabuf/MiraType"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
@@ -224,6 +225,12 @@ class MirabufCachingService {
             console.warn("Caching failed", e)
             return undefined
         }
+    }
+
+    public static async cacheRemoteAndReturn(fetchLocation: string, miraType: MiraType) {
+        const cacheInfo = await this.cacheRemote(fetchLocation, miraType)
+        if (cacheInfo?.hash == null) return
+        return await this.get(cacheInfo.hash)
     }
 
     public static async cacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
@@ -463,9 +470,6 @@ class MirabufCachingService {
     }
 }
 
-export enum MiraType {
-    ROBOT = 1,
-    FIELD,
-}
+export { MiraType }
 
 export default MirabufCachingService

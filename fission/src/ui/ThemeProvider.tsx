@@ -113,7 +113,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor, topBarColor, surfaceColor, topBarTextColor])
 
     useEffect(() => {
-        setThemeOptions({
+        setThemeOptions(themeOptions => ({
             ...themeOptions,
             primary: {
                 main: primaryColor,
@@ -136,7 +136,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
             topBarText: {
                 main: topBarTextColor,
             },
-        })
+        }))
     }, [primaryColor, secondaryColor, blueAllianceColor, redAllianceColor, topBarColor, surfaceColor, topBarTextColor])
 
     const themeContextValue = useMemo(

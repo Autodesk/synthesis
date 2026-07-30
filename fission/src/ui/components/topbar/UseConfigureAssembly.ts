@@ -3,11 +3,10 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { ConfigMode, type ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import type { TopBarIconName } from "./TopBarIcons"
+import type { TopBarIconName } from "@/ui/components/topbar/TopBarIcons"
 
 export type ConfigureButton = { name: TopBarIconName; label: string; mode: ConfigMode }
 
@@ -25,75 +24,72 @@ export const FIELD_CONFIGURE_BUTTONS: ConfigureButton[] = [
     { name: "cfg-7", label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
 ]
 
-export function useConfigureAssembly() {
-    const { selectedConfigAssembly, setSelectedConfigAssembly } = useStateContext()
-    const { openPanel, addToast } = useUIContext()
-    const [assemblies, setAssemblies] = useState<MirabufSceneObject[]>([])
+const readSpawned = (): MirabufSceneObject[] => (World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getAll() : [])
 
-    // robot configure button set is shown by default
-    const isField = selectedConfigAssembly?.miraType === MiraType.FIELD
-    const configurationType: ConfigurationType = isField ? "FIELDS" : "ROBOTS"
-    const configureButtons = isField ? FIELD_CONFIGURE_BUTTONS : ROBOT_CONFIGURE_BUTTONS
-
-    const openConfig = useCallback(
-        (mode: ConfigMode) => {
-            if (!selectedConfigAssembly) {
-                addToast("warning", "No Assembly Selected", "Select an assembly to configure first.")
-                return
-            }
-            openPanel(ConfigurePanel, {
-                selectedAssembly: selectedConfigAssembly,
-                configMode: mode,
-                configurationType,
-            })
-        },
-        [selectedConfigAssembly, addToast, openPanel, configurationType]
-    )
-
-    const update = useCallback(() => {
-        setAssemblies(World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getAll() : [])
-    }, [])
+/** owns spawned assembly list in topbar */
+export function useAssemblySelection() {
+    const [assemblies, setAssemblies] = useState<MirabufSceneObject[]>(readSpawned)
+    const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
 
     useEffect(() => {
-        update()
-        // On spawn a new assembly is set as the actively configuring item
-        const onChange = (assembly: MirabufSceneObject | null) => {
-            update()
-            if (assembly) setSelectedConfigAssembly(assembly)
+        // `spawned` is the assembly just added / null when one removed
+        const sync = (spawned?: MirabufSceneObject | null) => {
+            const current = readSpawned()
+            setAssemblies(current)
+
+            // a newly spawned assembly becomes the selection
+            setSelectedAssembly(prev => spawned ?? (prev && current.some(a => a.id === prev.id) ? prev : undefined))
         }
-        const unsubChange = EventSystem.listen("MirabufObjectChangeEvent", onChange)
-        const unsubSaved = EventSystem.listen("ConfigurationSavedEvent", update)
+
+        const unsubChange = EventSystem.listen("MirabufObjectChangeEvent", sync)
+        const unsubSaved = EventSystem.listen("ConfigurationSavedEvent", () => sync())
         return () => {
             unsubChange()
             unsubSaved()
         }
-    }, [update, setSelectedConfigAssembly])
-
-    // Drop the selection if its assembly is no longer spawned.
-    useEffect(() => {
-        if (selectedConfigAssembly && !assemblies.some(a => a.id === selectedConfigAssembly.id)) {
-            setSelectedConfigAssembly(undefined)
-        }
-    }, [assemblies, selectedConfigAssembly, setSelectedConfigAssembly])
-
-    const selectedValue =
-        selectedConfigAssembly && assemblies.some(a => a.id === selectedConfigAssembly.id)
-            ? selectedConfigAssembly.id.toString()
-            : ""
+    }, [])
 
     const selectAssemblyById = useCallback(
-        (id: string) => setSelectedConfigAssembly(assemblies.find(a => a.id.toString() === id)),
-        [assemblies, setSelectedConfigAssembly]
+        (id: string) => setSelectedAssembly(assemblies.find(a => a.id.toString() === id)),
+        [assemblies]
+    )
+
+    return { assemblies, selectedAssembly, selectAssemblyById }
+}
+
+/** gets configure options avaiable for selected assembly */
+export function useConfigureAssembly(selectedAssembly?: MirabufSceneObject) {
+    const { togglePanel, addToast } = useUIContext()
+
+    // robot configure button set is shown by default
+    const isField = selectedAssembly?.miraType === MiraType.FIELD
+    const configurationType: ConfigurationType = isField ? "FIELDS" : "ROBOTS"
+    const configureButtons = isField ? FIELD_CONFIGURE_BUTTONS : ROBOT_CONFIGURE_BUTTONS
+
+    // simulation only available when wpilib brain is enabled
+    const isWpilibBrain = selectedAssembly?.brain?.isWPILib() ?? false
+
+    const openConfig = useCallback(
+        (mode: ConfigMode) => {
+            if (!selectedAssembly) {
+                addToast("warning", "No Assembly Selected", "Select an assembly to configure first.")
+                return
+            }
+            togglePanel(
+                ConfigurePanel,
+                { selectedAssembly, configMode: mode, configurationType },
+                // only close on a repeat click of the same button - a different config mode re-opens the panel
+                open => open.configMode === mode && open.selectedAssembly?.id === selectedAssembly.id
+            )
+        },
+        [selectedAssembly, addToast, togglePanel, configurationType]
     )
 
     return {
-        assemblies,
-        selectedConfigAssembly,
         isField,
+        isWpilibBrain,
         configurationType,
         configureButtons,
         openConfig,
-        selectedValue,
-        selectAssemblyById,
     }
 }

@@ -126,7 +126,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
     useEffect(() => {
         configureScreen(panel!, { title: "Developer Tool", hideAccept: true, cancelText: "Close" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     return (
         <>
@@ -134,7 +134,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 options={World.sceneRenderer.mirabufSceneObjects
                     .getAll()
                     .map(obj => new AssemblySelectionOption(obj.descriptiveName, obj))}
-                onOptionSelected={val => setActiveObj((val as AssemblySelectionOption)?.assemblyObject)}
+                onOptionSelected={val => setActiveObj(val?.assemblyObject)}
                 defaultHeaderText={`Select an object`}
                 noOptionsText={`Nothing spawned!`}
             />

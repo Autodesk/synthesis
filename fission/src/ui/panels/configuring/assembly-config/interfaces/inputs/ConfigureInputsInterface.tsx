@@ -6,13 +6,12 @@ import InputSystem from "@/systems/input/InputSystem"
 import type { InputScheme } from "@/systems/input/InputTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
-import type { ConfigurePanelCustomProps } from "../../ConfigurePanel"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
+import type { ConfigurationSubpanelProps } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
 /** If a scheme is assigned to a robot, find the name of that robot */
 const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
@@ -34,7 +33,10 @@ class SchemeSelectionOption extends SelectMenuOption {
     }
 }
 
-const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
+const ConfigureInputsInterface: React.FC<Pick<ConfigurationSubpanelProps, "registerCleanupFunction" | "panel">> = ({
+    panel,
+    registerCleanupFunction,
+}) => {
     const { openModal, closePanel } = useUIContext()
     const { selectedScheme: currentSelectedScheme, setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
 
@@ -43,7 +45,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
 
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes(panel?.id)
-    }, [])
+    }, [panel?.id])
 
     const handleSchemeChange = useCallback(() => {
         const newSchemes = InputSchemeManager.allInputSchemes
@@ -53,11 +55,11 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
         if (selectedScheme && !newSchemes.includes(selectedScheme)) {
             if (panel) {
                 setTimeout(() => {
-                    closePanel(panel.id, CloseType.Overwrite)
+                    closePanel(panel.id, CloseType.OVERWRITE)
                 }, 0)
             }
         }
-    }, [panel])
+    }, [panel, selectedScheme, closePanel])
 
     useEffect(() => {
         const unsubscribeConfig = EventSystem.listen("ConfigurationSavedEvent", saveEvent)
@@ -68,7 +70,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
             unsubscribeConfig()
             unsubscribeInput()
         }
-    }, [saveEvent, handleSchemeChange])
+    }, [saveEvent, handleSchemeChange, setGlobalSelectedScheme])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()
@@ -83,7 +85,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                 <SelectMenu
                     options={[...schemeOptionMap.values()]}
                     onOptionSelected={val => {
-                        setSelectedScheme((val as SchemeSelectionOption)?.scheme)
+                        setSelectedScheme(val?.scheme)
                         if (val == undefined) {
                             EventSystem.dispatch("ConfigurationSavedEvent")
                         }
@@ -133,6 +135,7 @@ const ConfigureInputsInterface: React.FC<PanelImplProps<void, ConfigurePanelCust
                 <ConfigureSchemeInterface
                     selectedScheme={selectedScheme}
                     panelId={panel?.id}
+                    registerCleanupFunction={registerCleanupFunction}
                     onBack={() => setSelectedScheme(undefined)}
                 />
             )}
