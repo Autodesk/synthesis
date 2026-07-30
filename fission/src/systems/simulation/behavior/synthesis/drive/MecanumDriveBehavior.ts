@@ -12,48 +12,36 @@ import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from 
 export const ROLLER_ANGLE = Math.PI / 4
 
 /**
- * Turn command added per unit of normalized yaw-rate error. See {@link MecanumDriveBehavior}.
+ * Turn command added per unit of normalized yaw-rate error. "How hard should we try and hold 
+ * the desired turn rate/target?"
  *
  * High enough to cancel most of the parasitic yaw a saturated tire set produces immediately, low
  * enough that the correction itself doesn't ring at the rate the wheels can change speed.
  */
 const YAW_HOLD_GAIN = 4.0
+
 /**
  * Turn command added per unit-second of accumulated error.
  *
  * The parasitic yaw is close to a constant disturbance for as long as a maneuver lasts, which is
  * exactly what proportional control alone cannot remove: it settles wherever the correction
- * balances the disturbance, leaving a standing error. The integral term is what actually drives
- * that to zero, within a few tenths of a second of the stick moving.
+ * balances the disturbance, leaving a standing error. Use this value to drive that to zero.
  */
 const YAW_HOLD_INTEGRAL_GAIN = 45.0
+
 /** Ceiling on the correction, so holding heading can never consume the whole drivetrain. */
 const YAW_HOLD_LIMIT = 1.0
 
-/** Same three constants for the cross-track loop. See {@link MecanumDriveBehavior.holdCourse}. */
 const COURSE_HOLD_GAIN = 2.0
 const COURSE_HOLD_INTEGRAL_GAIN = 10.0
 const COURSE_HOLD_LIMIT = 0.5
 
-/**
- * Below these the robot counts as stopped and corrections switch off entirely, m/s and rad/s.
- *
- * Loose enough that the loops let go promptly instead of hunting around zero, tight enough that the
- * robot is genuinely at rest by the time they do.
- */
-const AT_REST_SPEED = 0.05
-const AT_REST_YAW_RATE = 0.05
+const AT_REST_SPEED = 0.05 // m/s
+const AT_REST_YAW_RATE = 0.05 // rad/s
 
 /** Field-oriented drive is defined about the world's vertical, not the chassis'. */
 const WORLD_UP = new THREE.Vector3(0, 1, 0)
 
-/**
- * One driven mecanum wheel: the tire plus the geometry the kinematics needs.
- *
- * Everything here is in the chassis frame with +x forward and +y left, which is what
- * {@link MecanumDriveBehavior} mixes in. A wheel is fully described by where it sits and which way
- * its rollers push; nothing else about the chassis matters.
- */
 export interface MecanumModule {
     wheel: WheelDriver
 
@@ -66,7 +54,7 @@ export interface MecanumModule {
      * Unit direction this tire pushes the chassis along, chassis frame.
      *
      * This is the roller-normal, 45 degrees off the wheel plane, *not* the wheel's rolling
-     * direction. {@link WheelDriver.configureMecanumRoller} is what points the tire along it.
+     * direction.
      */
     pushX: number
     pushY: number
@@ -79,84 +67,52 @@ export interface MecanumModule {
 
     /** Row this wheel sits in, front (0) to rear. Roller handedness alternates by row. */
     row: number
-    /** +1 for a left-side wheel, -1 for a right-side wheel. */
+
+    /** +1 for left-side, -1 for right-side. */
     leftSign: number
 }
 
 /**
  * Field-oriented mecanum drive.
- *
- * Wheels are driven kinematically through {@link WheelDriver}, exactly like skid-steer and swerve,
- * and no wheel mesh spins. Conventions match the swerve inputs it reuses: +forward and +strafe are
- * forward and left *on the field*, and +turn is counter-clockwise.
- *
- * ## Field orientation
- *
- * Like {@link SwerveDriveBehavior}, the translation stick points somewhere on the field rather than
- * somewhere on the robot: "forward" is whichever way the robot's nose was facing when the drivetrain
- * was configured, or when the driver last pressed `swerveResetFieldForward`, and it keeps meaning
- * that no matter which way the chassis ends up pointing. The stick is rotated into the chassis frame
- * by the measured heading in {@link MecanumDriveBehavior.toChassisFrame}; everything below it — the
- * mix and both correction loops — is unchanged and still works entirely in the chassis frame.
- *
- * This is the one place mecanum benefits more than swerve does. A swerve module points where it is
- * told regardless of the chassis, but a mecanum robot's push directions are welded to its wheels, so
- * any yaw it picks up — including the parasitic yaw described below — rotates the direction the
- * driver's stick means. Measuring heading each tick puts that back.
- *
- * Without a chassis body there is nothing to measure, so the command is left robot-relative.
- *
- * ## The mix
- *
- * Rather than the WPILib four-corner formula (`FL = x - y - z`, and so on), this solves the
+ * 
+ * Rather than use a four-corner formula (`FL = x - y - z`, and so on), we solve the
  * kinematics directly. A mecanum tire can only push along its roller normal `n`, and it free-slides
  * perpendicular to it, so the one thing it constrains is the speed of its own contact patch along
  * `n`. For a chassis moving at `(vx, vy)` and yawing at `w`, the patch under a wheel at `(x, y)`
  * moves at `(vx - w*y, vy + w*x)`, so the speed that tire must produce is
  *
- * ```
- * s = (vx - w*y) * nx + (vy + w*x) * ny
- *   = vx*nx + vy*ny + w*(x*ny - y*nx)
- * ```
- *
  * Every wheel gets exactly the speed the requested chassis motion implies at its own contact patch,
  * which is what makes the commands mutually consistent: no tire is asked to scrub against another.
- * For four wheels at the corners of a rectangle with the usual alternating rollers this reduces to
- * the WPILib formula, but unlike that formula it also holds for six wheels, uneven wheelbases,
- * mixed wheel radii, and wheels that aren't at corners at all — none of which are unusual in an
- * imported CAD robot.
+ * This is prefered as it will hold for six wheels, uneven wheelbases, mixed wheel radii, and wheels
+ * that aren't at corners at all.
+ * 
+ * This only works if each tire can actually slide along its roller axle instead of just pushing
+ * straight ahead. {@link WheelDriver.configureMecanumRoller} sets that up. Skip it and the
+ * diagonal pushes cancel out, so strafing doesn't happen.
  *
- * That mix only produces the motion it describes if each tire can actually push along its roller
- * axle rather than straight ahead, which {@link WheelDriver.configureMecanumRoller} arranges at
- * configuration time. Without it the diagonal pairs cancel and strafing is impossible.
+ * It's also only exact while no tire is slipping. A slipping tire delivers friction times
+ * whatever load it's carrying, not the speed it was told, so the wheels stop agreeing on one
+ * motion. Mecanum feels this worse than skid-steer because every push is diagonal, and the
+ * sideways halves only cancel if opposite wheels carry similar load; which they often don't
+ * here, since each wheel is its own `VehicleConstraint` and the solver settles them one at a
+ * time, so load ends up split by solve order more than physics.
  *
- * ## Driving where you point it
- *
- * The mix above is exact only while no tire is slipping. Once a tire saturates, the force it
- * actually delivers is its friction times the load it happens to carry, not what it was told, so
- * the wheels stop agreeing on one chassis motion. Mecanum feels this far more than skid-steer:
- * every tire pushes diagonally, and the sideways halves of those pushes only cancel when opposite
- * wheels carry comparable load. In this sim they routinely do not — each wheel is a separate
- * single-wheel `VehicleConstraint` on the same chassis, and the solver visits them in sequence, so
- * how the robot's weight gets divided up is largely an artifact of that ordering. Measured on a
- * six-wheel robot with its mass dead-centre, one front wheel carried two and a half times its
- * mirror, which was worth eighty degrees of unasked-for rotation over a metre and a half of driving.
- *
- * So the mix is corrected against what the chassis is really doing, which is what a real mecanum
- * robot does with a gyro and for the same reason. Two loops, both described where they are
- * implemented: {@link MecanumDriveBehavior.holdHeading} takes out rotation the driver didn't ask
- * for, and {@link MecanumDriveBehavior.holdCourse} takes out the sideways creep that survives it.
- * Speed along the commanded direction stays open-loop, so the robot can still be shoved around.
+ * So we correct the mix against the chassis's actual measured motion, same as a real mecanum
+ * robot does with a gyro. {@link MecanumDriveBehavior.holdHeading} removes rotation the driver
+ * didn't ask for; {@link MecanumDriveBehavior.holdCourse} removes the sideways drift left over
+ * after that. Forward speed stays open-loop, so the robot can still be pushed around.
+ * 
+ * If Jolt ever solves multiple VehicleConstraints on one body simultaneously instead of sequentially,
+ * this imbalance, and the tuning below, should be re-measured; the hold-loop gains are tuned against
+ * today's solver behavior.
  */
 class MecanumDriveBehavior extends DriveBehavior {
     private readonly _modules: MecanumModule[]
     private readonly _brainIndex: number
     private readonly _diagnostics: MecanumDriveDiagnostics
 
-    /** Chassis speed at which the first tire saturates on a pure translation command, m/s. */
-    private readonly _maxTranslationSpeed: number
-    /** Yaw rate at which the first tire saturates on a pure turn command, rad/s. */
-    private readonly _maxTurnRate: number
+    private readonly _maxTranslationSpeed: number // m/s
+    private readonly _maxTurnRate: number // rad/s
 
     public get wheels(): WheelDriver[] {
         return this._modules.map(m => m.wheel)
@@ -166,23 +122,12 @@ class MecanumDriveBehavior extends DriveBehavior {
     private readonly _chassis?: Jolt.Body
     /** Robot-local axes the modules were laid out against. */
     private readonly _frame: MecanumFrame
-    /**
-     * Horizontal world direction the driver's +forward means, unit length.
-     *
-     * Set to the chassis' spawn heading and re-zeroed by `swerveResetFieldForward`, matching swerve.
-     */
+
     private _fieldForward: THREE.Vector3
-    /** Accumulated normalized yaw-rate error driving the integral term. */
+
     private _yawErrorIntegral = 0
-    /** Accumulated normalized cross-track error driving its integral term. */
     private _crossTrackIntegral = 0
-    /**
-     * Whether the robot is still coming to rest from a command of its own.
-     *
-     * Distinguishes "the driver let go and we're still rolling" from "we were parked and something
-     * hit us". The first is the drivetrain's own business to finish cleanly; the second is not
-     * something it should fight.
-     */
+
     private _settling = false
 
     public constructor(
@@ -240,8 +185,7 @@ class MecanumDriveBehavior extends DriveBehavior {
      * Velocity is resolved against the chassis' own axes rather than the world's so the correction
      * loops still read correctly on a ramp; the heading the field-oriented rotation needs comes from
      * `nose`. Both come from {@link MecanumFrame}, not a fixed +Z, because which local axis is the
-     * nose depends on where the robot was imported from. Jolt hands back reused static temporaries
-     * here, so each one is copied into a THREE type immediately and none of them is destroyed.
+     * nose depends on where the robot was imported from.
      */
     private chassisState():
         | { nose: THREE.Vector3; yawRate: number; forwardSpeed: number; leftSpeed: number }
@@ -267,10 +211,6 @@ class MecanumDriveBehavior extends DriveBehavior {
 
     /**
      * Re-zeroes field-oriented drive to the direction the chassis is facing right now.
-     *
-     * Bound to `swerveResetFieldForward`, the same input swerve uses. A no-op while the chassis has
-     * no horizontal heading to read — tipped exactly onto its nose, or no body at all — so the
-     * previous reference survives instead of collapsing to something arbitrary.
      */
     public resetFieldForward(): void {
         const nose = this.chassisState()?.nose
@@ -342,8 +282,7 @@ class MecanumDriveBehavior extends DriveBehavior {
      *
      * Nulling yaw removes most of the damage an uneven load split does, but not all of it: the
      * sideways halves of the wheels' diagonal pushes still fail to cancel exactly, so the robot
-     * creeps sideways while pointing the right way. Reversing the six-wheel test robot slid fifteen
-     * percent of its travel sideways with its heading already held.
+     * creeps sideways while pointing the right way.
      *
      * Only the component *across* the commanded direction is corrected. Speed along the command
      * stays open-loop, so this makes the robot go where it is pointed without turning the
@@ -431,9 +370,8 @@ class MecanumDriveBehavior extends DriveBehavior {
     }
 
     public update(dt: number): void {
-        // Reuses the swerve inputs; mecanum has the same 3-DOF command shape. Deadband here rather
-        // than inside driveSpeeds so the threshold is applied to the raw -1..1 stick value, before
-        // the field-oriented rotation mixes the two translation axes together.
+        // Deadband here rather than inside driveSpeeds so the threshold is applied to the raw -1..1
+        // stick value, before the field-oriented rotation mixes the two translation axes together.
         const fieldForward = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveForward", this._brainIndex))
         const fieldStrafe = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveStrafe", this._brainIndex))
         const turn = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveTurn", this._brainIndex))
@@ -454,11 +392,6 @@ class MecanumDriveBehavior extends DriveBehavior {
             (Math.hypot(motion.forwardSpeed, motion.leftSpeed) < AT_REST_SPEED &&
                 Math.abs(motion.yawRate) < AT_REST_YAW_RATE)
 
-        // Letting go of the stick doesn't end the maneuver — the wheels are now being told to stop
-        // a chassis that still has momentum, and they brake with the same lopsided grip they drove
-        // with, only reversed. Left uncorrected that is worth tens of degrees of twist on the way
-        // to a standstill, which reads as the robot slewing after the driver has already let go. So
-        // the heading loop keeps running until the robot is actually stopped.
         if (commanded) this._settling = true
         else if (atRest) this._settling = false
 

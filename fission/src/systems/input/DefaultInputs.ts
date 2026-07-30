@@ -213,7 +213,6 @@ class DefaultInputs {
             customized: false,
             usesGamepad: false,
             usesTouchControls: false,
-            // Mecanum takes the same 3-DOF command as swerve and reuses these same inputs.
             supportedDrivetrains: [DriveType.SWERVE, DriveType.MECANUM],
             inputs: [
                 AxisInput.onKeyboard("swerveForward", "KeyW", "KeyS"),
@@ -286,8 +285,6 @@ class DefaultInputs {
             case DriveType.TANK:
                 driveInputs = [AxisInput.unbound("tankLeft"), AxisInput.unbound("tankRight")]
                 break
-            // Mecanum reuses the swerve axes and is field-oriented the same way, so it has the same
-            // field-forward heading to reset.
             case DriveType.SWERVE:
             case DriveType.MECANUM:
                 driveInputs = [
