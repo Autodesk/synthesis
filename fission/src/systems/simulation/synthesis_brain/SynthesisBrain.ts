@@ -5,11 +5,16 @@ import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import type { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
+import MecanumDriveBehavior, {
+    type MecanumModule,
+    mecanumRollerSteerAngle,
+} from "@/systems/simulation/behavior/synthesis/drive/MecanumDriveBehavior.ts"
+import { mecanumDebugEnabled } from "@/systems/simulation/behavior/synthesis/drive/MecanumDriveDiagnostics.ts"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
 import SwerveDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SwerveDriveBehavior.ts"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
+import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
 import Brain from "../Brain"
 import type Behavior from "../behavior/Behavior"
 import { DriveType } from "../behavior/Behavior"
@@ -36,6 +41,14 @@ class SynthesisBrain extends Brain {
      * azimuth hinge. Ported verbatim from the original Unity swerve detection (0.05).
      */
     private static readonly SWERVE_AXIS_TOLERANCE = 0.05
+
+    /** Quadrant roles used to pick the four driven mecanum corners: `[forwardSign, leftSign]`. */
+    private static readonly MECANUM_CORNERS: [number, number][] = [
+        [1, 1],
+        [1, -1],
+        [-1, 1],
+        [-1, -1],
+    ]
 
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
@@ -74,12 +87,15 @@ class SynthesisBrain extends Brain {
     }
 
     public configureDriveBehavior(driveType: DriveType) {
-        const wasSwerve = this.driveType === DriveType.SWERVE
+        const previousType = this.driveType
         this.driveType = driveType
 
         // Transitioning into or out of swerve requires a full rebuild so that the
         // azimuth (steering) hinges are correctly excluded from / restored to arm control.
-        if (driveType === DriveType.SWERVE || wasSwerve) {
+        // Mecanum needs one too: it zeroes tire friction on the wheels it doesn't drive,
+        // and configure() is what restores that friction on the way back out.
+        const needsRebuild = (type: DriveType) => type === DriveType.SWERVE || type === DriveType.MECANUM
+        if (needsRebuild(driveType) || needsRebuild(previousType)) {
             this.configure()
             return
         }
@@ -104,6 +120,10 @@ class SynthesisBrain extends Brain {
         this._currentJointIndex = 1
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (this._assembly.mechanism.controllable) {
+            // A previous mecanum configuration may have left wheels steered or free-rolling.
+            // Restore every tire before rebuilding; mecanum re-applies what it needs.
+            this.wheelDrivers().forEach(w => w.resetTire())
+
             // In swerve mode, detect the azimuth hinges up front so they can drive the modules and
             // be excluded from arm behaviors. Fall back to arcade if detection fails.
             const swerveInfo =
@@ -116,11 +136,15 @@ class SynthesisBrain extends Brain {
                 console.warn("[Swerve] swerve detection failed for this robot; falling back to arcade drive.")
             }
 
-            this._behaviors.push(
-                useSwerve
-                    ? this.createSwerveDriveBehavior(swerveInfo.hinges)
-                    : this.createSkidSteerDriveBehavior(this.driveType === DriveType.ARCADE)
-            )
+            let driveBehavior: DriveBehavior
+            if (useSwerve) {
+                driveBehavior = this.createSwerveDriveBehavior(swerveInfo.hinges)
+            } else if (this.driveType === DriveType.MECANUM) {
+                driveBehavior = this.createMecanumDriveBehavior()
+            } else {
+                driveBehavior = this.createSkidSteerDriveBehavior(this.driveType === DriveType.ARCADE)
+            }
+            this._behaviors.push(driveBehavior)
 
             this.configureArmBehaviors(useSwerve ? swerveInfo.hinges : [])
             this.configureElevatorBehaviors()
@@ -195,6 +219,11 @@ class SynthesisBrain extends Brain {
 
     public clearControls(): void {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
+    }
+
+    /** @returns every wheel driver on this assembly. */
+    private wheelDrivers(): WheelDriver[] {
+        return this._simLayer.drivers.filter(driver => driver instanceof WheelDriver) as WheelDriver[]
     }
 
     /** Creates and returns a configured skid-steer (tank/arcade) drive behavior. */
@@ -273,6 +302,159 @@ class SynthesisBrain extends Brain {
             rightStimuli,
             this._brainIndex,
             isArcade
+        )
+    }
+
+    /**
+     * Creates and returns a configured mecanum drive behavior.
+     *
+     * Mecanum is treated as a pure kinematic mixing scheme over whatever wheels the robot has,
+     * so unlike swerve there is no detection step and no dependency on wheel geometry from CAD.
+     *
+     * Roles come from each wheel's position relative to the wheel centroid, projected onto the
+     * chassis' lateral and forward axes. Which robot-local axis is lateral is decided with the
+     * same X-vs-Z balance heuristic {@link SynthesisBrain.createSkidSteerDriveBehavior} uses,
+     * because Fusion 360 and URDF imports disagree about it.
+     *
+     * Robots with more than four wheels drive off the four extreme corners only; every other
+     * wheel gets its tire friction zeroed so it free-rolls instead of scrubbing.
+     */
+    private createMecanumDriveBehavior(): DriveBehavior {
+        const wheelDrivers = this.wheelDrivers()
+        const wheelStimuli: WheelRotationStimulus[] = this._simLayer.stimuli.filter(
+            stimulus => stimulus instanceof WheelRotationStimulus
+        ) as WheelRotationStimulus[]
+
+        if (wheelDrivers.length === 0) {
+            console.error("Cannot configure mecanum drivetrain (0 wheels). Falling back to arcade.")
+            return this.createSkidSteerDriveBehavior(true)
+        }
+
+        const rootBodyId = this._mechanism.getBodyByNodeId(this._mechanism.rootBody)
+        const chassisBody = rootBodyId ? World.physicsSystem.getBody(rootBodyId) : undefined
+        const chassisRotation = chassisBody
+            ? convertJoltQuatToThreeQuaternion(chassisBody.GetRotation())
+            : new THREE.Quaternion()
+
+        // Synthesis' robot-local frame is right-handed with +Y up, so +Z is the nose and +X is left.
+        const localLeft = new THREE.Vector3(1, 0, 0).applyQuaternion(chassisRotation)
+        const localNose = new THREE.Vector3(0, 0, 1).applyQuaternion(chassisRotation)
+
+        const wheelPositions = wheelDrivers.map(w => {
+            const forward = new JOLT.Vec3(1, 0, 0)
+            const up = new JOLT.Vec3(0, 1, 0)
+            // GetWheelWorldTransform and GetTranslation hand back reused static temporaries;
+            // only the two arguments are ours to free.
+            const translation = w.constraint.GetWheelWorldTransform(0, forward, up).GetTranslation()
+            const pos = new THREE.Vector3(translation.GetX(), translation.GetY(), translation.GetZ())
+            JOLT.destroy(forward)
+            JOLT.destroy(up)
+            return pos
+        })
+
+        const centroid = wheelPositions
+            .reduce((sum, p) => sum.add(p), new THREE.Vector3())
+            .divideScalar(wheelPositions.length)
+        const offsets = wheelPositions.map(p => p.clone().sub(centroid))
+        const alongX = offsets.map(o => o.dot(localLeft))
+        const alongZ = offsets.map(o => o.dot(localNose))
+
+        const imbalance = (values: number[]) =>
+            Math.abs(values.filter(v => v >= 0).length - values.filter(v => v < 0).length)
+
+        // Use Z as the lateral axis when it gives the more balanced split (URDF robots); fall back
+        // to X (Fusion 360 robots). URDF's usual +Y-left convention converts to -Z-left here, and
+        // the remaining horizontal axis is the nose direction for that same handedness.
+        const useLateralZ = imbalance(alongZ) < imbalance(alongX)
+        const leftOffsets = useLateralZ ? alongZ.map(v => -v) : alongX
+        const forwardOffsets = useLateralZ ? alongX : alongZ
+
+        const roles = new Map<number, { forwardSign: number; leftSign: number }>()
+        if (wheelDrivers.length > 4) {
+            // Hand each quadrant the unclaimed wheel furthest out along that diagonal. The four
+            // winners are the geometric corners; middle wheels of a 6-wheel chassis never win.
+            for (const [forwardSign, leftSign] of SynthesisBrain.MECANUM_CORNERS) {
+                let best = -1
+                let bestScore = Number.NEGATIVE_INFINITY
+                for (let i = 0; i < wheelDrivers.length; i++) {
+                    if (roles.has(i)) continue
+                    const score = forwardSign * forwardOffsets[i] + leftSign * leftOffsets[i]
+                    if (score > bestScore) {
+                        bestScore = score
+                        best = i
+                    }
+                }
+                if (best >= 0) roles.set(best, { forwardSign, leftSign })
+            }
+        } else {
+            // Four or fewer wheels: every wheel drives, taking its role from its own position.
+            // A wheel on the lateral centerline gets forwardSign 0 and simply drops out of strafing.
+            for (let i = 0; i < wheelDrivers.length; i++) {
+                roles.set(i, {
+                    forwardSign: Math.sign(forwardOffsets[i]),
+                    leftSign: Math.sign(leftOffsets[i]) || 1,
+                })
+            }
+        }
+
+        const drivenIndices = [...roles.keys()]
+        const armOf = (i: number) => Math.abs(forwardOffsets[i]) + Math.abs(leftOffsets[i])
+        const meanArm = drivenIndices.reduce((sum, i) => sum + armOf(i), 0) / drivenIndices.length
+        const armScale = meanArm > 0 ? 1 / meanArm : 1
+
+        const modules: MecanumModule[] = drivenIndices.map(i => ({
+            wheel: wheelDrivers[i],
+            forwardSign: roles.get(i)!.forwardSign,
+            leftSign: roles.get(i)!.leftSign,
+            momentArm: armOf(i) * armScale,
+        }))
+
+        // Each driven corner emulates its rollers with a steered, laterally frictionless tire;
+        // the mixing formula produces no lateral motion at all without it. Excluded wheels would
+        // otherwise fight the corners, so they lose grip entirely and free-roll.
+        wheelDrivers.forEach((w, i) => {
+            const role = roles.get(i)
+            if (!role) {
+                w.disableGroundFriction()
+                return
+            }
+            const steerAngle = mecanumRollerSteerAngle(role.forwardSign, role.leftSign)
+            if (steerAngle === 0) w.resetTire()
+            else w.configureMecanumRoller(steerAngle)
+        })
+
+        if (mecanumDebugEnabled()) {
+            // The role assignment is geometry-derived and invisible at runtime, so dump the inputs
+            // it was derived from: a mis-picked corner or a flipped axis shows up here, not in the
+            // per-tick log.
+            console.log(
+                `[Mecanum] geometry: ${wheelDrivers.length} wheels, lateralAxis=` +
+                    `${useLateralZ ? "-Z (URDF)" : "+X (Fusion)"} ` +
+                    `imbalance(x=${imbalance(alongX)} z=${imbalance(alongZ)}) ` +
+                    `meanArm=${meanArm.toFixed(3)}\n` +
+                    wheelDrivers
+                        .map((w, i) => {
+                            const role = roles.get(i)
+                            return (
+                                `  wheel[${i}] ${(w.info?.name ?? "-").padEnd(22)} ` +
+                                `fwdOffset=${forwardOffsets[i].toFixed(3)} ` +
+                                `leftOffset=${leftOffsets[i].toFixed(3)} ` +
+                                `height=${offsets[i].y.toFixed(3)} ` +
+                                (role
+                                    ? `driven fwdSign=${role.forwardSign} leftSign=${role.leftSign} ` +
+                                      `momentArm=${(armOf(i) * armScale).toFixed(3)}`
+                                    : "EXCLUDED (friction zeroed)")
+                            )
+                        })
+                        .join("\n")
+            )
+        }
+
+        return new MecanumDriveBehavior(
+            modules,
+            drivenIndices.map(i => wheelStimuli[i]).filter(s => s != undefined),
+            this._brainIndex,
+            this._assembly.assemblyId
         )
     }
 

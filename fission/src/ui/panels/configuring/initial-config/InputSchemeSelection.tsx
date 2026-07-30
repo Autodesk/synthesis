@@ -126,7 +126,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                         EventSystem.dispatch("InputSchemeChanged", { panelId })
                     }}
                 >
-                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
+                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE, DriveType.MECANUM].map(dt => (
                         <MenuItem key={dt} value={dt}>
                             {dt}
                         </MenuItem>
