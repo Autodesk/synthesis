@@ -6,7 +6,12 @@ import * as path from "path"
 import { loadEnv } from "vite"
 import glsl from "vite-plugin-glsl"
 
-import { defineConfig, TestProjectInlineConfiguration, type ViteUserConfig } from "vitest/config"
+import {
+    defineConfig,
+    TestProjectConfiguration,
+    type TestProjectInlineConfiguration,
+    type ViteUserConfig,
+} from "vitest/config"
 
 const serverPort = 3000
 const dockerServerPort = 80
@@ -204,7 +209,10 @@ export default defineConfig(({ mode }): ViteUserConfig => {
                 exclude: ["src/test/**", "src/proto/**"],
                 reportOnFailure: true,
             },
-            projects: [fissionProject, ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject as any] : [])],
+            projects: [
+                fissionProject,
+                ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject as TestProjectConfiguration] : []),
+            ],
         },
         build: {
             target: "esnext",
