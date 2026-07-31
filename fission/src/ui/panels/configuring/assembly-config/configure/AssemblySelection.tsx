@@ -80,7 +80,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     return (
         <SelectMenu
             options={options}
-            onOptionSelected={val => onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)}
+            onOptionSelected={val => onAssemblySelected(val?.assemblyObject)}
             defaultHeaderText={`Select a ${configurationType === "ROBOTS" ? "Robot" : "Field"}`}
             onDelete={val => {
                 onStageDelete(val)

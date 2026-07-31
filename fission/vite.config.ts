@@ -81,41 +81,22 @@ export default defineConfig(async ({ mode }) => {
               changeOrigin: true,
               secure: true,
           }
-    return {
-        plugins: plugins,
-        publicDir: "./public",
-        resolve: {
-            alias: [
-                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
-                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
-                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
-                { find: "@", replacement: path.resolve(__dirname, "src") },
-            ],
-        },
-        define: {
-            GIT_COMMIT: JSON.stringify(await getCommitHash()),
-        },
+    const baseAliases = [
+        { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+        { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+        { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+        { find: "@", replacement: path.resolve(__dirname, "src") },
+    ]
+
+    const fissionProject = {
+        extends: true,
         test: {
+            name: "fission",
             setupFiles: ["src/test/TestSetup.browser.ts"],
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
             environment: "jsdom",
-            reporters: process.env.GITHUB_ACTIONS
-                ? [
-                      "github-actions",
-                      "default",
-                      {
-                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
-                              if (reason === "passed" && unhandled.length === 0) {
-                                  console.error("GH ACTIONS VITEST PASSED")
-                              } else {
-                                  console.error(unhandled)
-                              }
-                          },
-                      },
-                  ]
-                : ["default"],
             browser: {
                 enabled: true,
                 provider: "playwright",
@@ -132,6 +113,85 @@ export default defineConfig(async ({ mode }) => {
                     },
                 ],
             },
+        },
+    }
+
+    // `bun run test:asan`
+    const fissionAsanProject = {
+        extends: true,
+        resolve: {
+            alias: [
+                ...baseAliases,
+                {
+                    find: /^@synthesis\.adsk\/jolt-physics(\/wasm-compat)?$/,
+                    replacement: process.env.JOLT_ASAN_DIST,
+                },
+            ],
+        },
+        test: {
+            name: "fission-asan",
+            setupFiles: ["src/test/TestSetup.browser.ts"],
+            globalSetup: ["src/test/TestSetup.server.ts"],
+            testTimeout: 10000,
+            globals: true,
+            environment: "jsdom",
+            browser: {
+                enabled: true,
+                provider: "playwright",
+                instances: [
+                    {
+                        name: "chromium",
+                        browser: "chromium",
+                        headless: true,
+                    },
+                ],
+            },
+        },
+    }
+
+    return {
+        plugins: plugins,
+        publicDir: "./public",
+        resolve: {
+            alias: baseAliases,
+        },
+        define: {
+            GIT_COMMIT: JSON.stringify(await getCommitHash()),
+        },
+        // Pre-bundle every react-icons subpath the app imports. Listing
+        // them here bundles them up front so no reload happens once tests
+        // start.
+        optimizeDeps: {
+            include: [
+                "react-icons/ai",
+                "react-icons/bi",
+                "react-icons/bs",
+                "react-icons/fa",
+                "react-icons/fa6",
+                "react-icons/gi",
+                "react-icons/gr",
+                "react-icons/hi",
+                "react-icons/io",
+                "react-icons/io5",
+                "react-icons/md",
+            ],
+        },
+        test: {
+            reporters: process.env.GITHUB_ACTIONS
+                ? [
+                      "github-actions",
+                      "default",
+                      {
+                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
+                              if (reason === "passed" && unhandled.length === 0) {
+                                  console.error("GH ACTIONS VITEST PASSED")
+                              } else {
+                                  console.error(unhandled)
+                              }
+                          },
+                      },
+                  ]
+                : ["default"],
             coverage: {
                 provider: "istanbul",
                 reporter: ["text", "html"] as const,
@@ -140,6 +200,7 @@ export default defineConfig(async ({ mode }) => {
                 exclude: ["src/test/**", "src/proto/**"],
                 reportOnFailure: true,
             },
+            projects: [fissionProject, ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject] : [])],
         },
         build: {
             target: "esnext",
