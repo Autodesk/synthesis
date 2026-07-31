@@ -331,7 +331,7 @@ export class SimConfig {
             this.addHandle(config, handle)
             robotIONode.sources.push(handle.id)
         })
-        getAccelDevices().forEach(([id, data]) => {
+        getAccelDevices().forEach(([id]) => {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
@@ -340,7 +340,7 @@ export class SimConfig {
                 originId: id,
 
                 displayName: displayNameSensor(id, "Accel"),
-                enabled: data.get("<init") === true,
+                enabled: true,
 
                 many: hasNoraAverageFunc(receiverTypeMap[SimType.ACCELEROMETER]!),
                 isSource: false,
@@ -348,7 +348,7 @@ export class SimConfig {
             this.addHandle(config, handle)
             robotIONode.targets.push(handle.id)
         })
-        getGyroDevices().forEach(([id, data]) => {
+        getGyroDevices().forEach(([id]) => {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
@@ -357,7 +357,7 @@ export class SimConfig {
                 originId: id,
 
                 displayName: displayNameSensor(id, "Gyro"),
-                enabled: data.get("<init") === true,
+                enabled: true,
 
                 many: hasNoraAverageFunc(receiverTypeMap[SimType.GYRO]!),
                 isSource: false,
