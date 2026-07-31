@@ -1,5 +1,8 @@
 export const TOP_BAR_HEIGHT = 48
 
+export const TOP_BAR_GAP = 1.5
+export const TOP_BAR_GAP_PX = 12
+
 export const TOP_BAR_ICON_BUTTON_SX = {
     color: "topBarText.main",
     "&:hover": { backgroundColor: "transparent" },
