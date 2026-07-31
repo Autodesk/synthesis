@@ -1,10 +1,8 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import type { KeyCode } from "@/systems/input/KeyboardTypes"
-import World from "@/systems/World"
 import Brain from "../Brain"
 import type Driver from "../driver/Driver"
-import type { SimulationLayer } from "../SimulationSystem"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./FTCState"
 import { DCMOTOR_POWER, type DeviceData, SimType, type WSMessage, worker } from "./FTCTypes"
 
@@ -91,7 +89,6 @@ const GAMEPAD_BUTTON = {
  * tree either).
  */
 class FTCBrain extends Brain {
-    private _simLayer: SimulationLayer
     private _assembly: MirabufSceneObject
     private _motorWiring = new Map<string, Driver[]>()
 
@@ -115,7 +112,6 @@ class FTCBrain extends Brain {
         super(assembly.mechanism)
 
         this._assembly = assembly
-        this._simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
     }
 
     public addMotorWiring(deviceName: string, driver: Driver) {
@@ -130,7 +126,7 @@ class FTCBrain extends Brain {
         this._motorWiring.delete(deviceName)
     }
 
-    public update(deltaT: number): void {
+    public update(_deltaT: number): void {
         this.pushGamepadState()
 
         const motorData = getSimMap()?.get(SimType.DC_MOTOR)

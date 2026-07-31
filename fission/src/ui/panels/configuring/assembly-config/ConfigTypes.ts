@@ -115,7 +115,11 @@ export const wpilibRobotConfigModes = [
 ]
 export const ftcRobotConfigModes = [
     ...baseRobotConfigModes,
-    new ConfigModeSelectionOption("Simulation", ConfigMode.SIM, "Configure the FTC simulation settings for this robot."),
+    new ConfigModeSelectionOption(
+        "Simulation",
+        ConfigMode.SIM,
+        "Configure the FTC simulation settings for this robot."
+    ),
 ]
 
 export const fieldConfigModes = [
