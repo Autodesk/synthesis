@@ -10,14 +10,21 @@ import type Input from "@/systems/input/inputs/Input"
 import Label from "@/ui/components/Label"
 import { Button, IconButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import EditInputInterface from "./EditInputInterface"
+import type { CleanupRegisterFunction } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
     panelId?: string
+    registerCleanupFunction: CleanupRegisterFunction
     onBack?: () => void
 }
 
-const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme, panelId, onBack }) => {
+const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
+    selectedScheme,
+    panelId,
+    onBack,
+    registerCleanupFunction,
+}) => {
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
@@ -25,6 +32,21 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme,
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes(panelId)
     }, [panelId])
+
+    useEffect(() => {
+        const originalScheme: Partial<InputScheme> | undefined = structuredClone(selectedScheme)
+        registerCleanupFunction(undefined, () => {
+            if (originalScheme == null || selectedScheme == null || originalScheme.inputs == null) return
+
+            // Can't assign inputs like other proeprties because they are classes and won't properly rehydrate
+            selectedScheme.inputs.forEach((input, i) => Object.assign(input, originalScheme.inputs![i]))
+            delete originalScheme.inputs
+
+            Object.assign(selectedScheme, originalScheme)
+
+            EventSystem.dispatch("InputSchemeChanged", {})
+        })
+    }, [registerCleanupFunction, selectedScheme])
 
     useEffect(() => {
         return EventSystem.listen("ConfigurationSavedEvent", saveEvent)

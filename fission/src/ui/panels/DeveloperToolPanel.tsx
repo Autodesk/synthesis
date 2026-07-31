@@ -5,13 +5,23 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import FieldMiraEditor, { devtoolHandlers, type SynthesisDevtoolKey } from "../../mirabuf/FieldMiraEditor"
-import { globalAddToast } from "../components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { Button } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import SelectMenu from "@/components/SelectMenu.tsx"
 import { AssemblySelectionOption } from "@/panels/configuring/assembly-config/configure/AssemblySelection.tsx"
 import { tryParse } from "@/util/Utility.ts"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register command: Open Developer Tool Panel (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "open-developer-tool-panel",
+    label: "Open Developer Tool Panel",
+    description: "Open the Developer Tool panel.",
+    keywords: ["panel", "developer", "devtool"],
+    perform: () => import("./DeveloperToolPanel").then(m => globalOpenPanel(m.default, undefined)),
+})
 
 const devtoolKeys = Object.keys(devtoolHandlers) as SynthesisDevtoolKey[]
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
@@ -124,7 +134,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 options={World.sceneRenderer.mirabufSceneObjects
                     .getAll()
                     .map(obj => new AssemblySelectionOption(obj.descriptiveName, obj))}
-                onOptionSelected={val => setActiveObj((val as AssemblySelectionOption)?.assemblyObject)}
+                onOptionSelected={val => setActiveObj(val?.assemblyObject)}
                 defaultHeaderText={`Select an object`}
                 noOptionsText={`Nothing spawned!`}
             />

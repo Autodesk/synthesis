@@ -19,11 +19,7 @@ const MultiplayerStartModal: React.FC<ModalImplProps<void, MultiplayerStartMenuC
     const { startWorldCallback } = modal!.props.custom
 
     useLayoutEffect(() => {
-        configureScreen(
-            modal!,
-            { title: "Start Multiplayer", hideAccept: true, hideCancel: true, allowClickAway: false },
-            {}
-        )
+        configureScreen(modal!, { title: "Start Multiplayer", hideAccept: true, allowClickAway: false }, {})
     }, [configureScreen, modal])
 
     return (

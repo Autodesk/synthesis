@@ -1,35 +1,34 @@
 import { Divider } from "@mui/material"
-import type React from "react"
-import { useState } from "react"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { useEffect, useMemo, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
 import ProtectedZoneConfigInterface from "./ProtectedZoneConfigInterface"
 import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
-const saveProtectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
-    if (!zones || !field) return
-
-    const fieldPrefs = field.fieldPreferences
-    if (fieldPrefs) fieldPrefs.protectedZones = zones
-
-    field.savePreferences()
-    field.updateProtectedZones()
-}
-
-interface ConfigureZonesProps {
-    selectedField: MirabufSceneObject
-    initialZones: ProtectedZonePreferences[]
-}
-
-const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selectedField, initialZones }) => {
+const ConfigureProtectedZonesInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
+}) => {
     const [selectedZone, setSelectedZone] = useState<ProtectedZonePreferences | undefined>(undefined)
+
+    const initialZones = useMemo(() => selectedAssembly.fieldPreferences?.protectedZones ?? [], [selectedAssembly])
+    useEffect(() => {
+        const initial = structuredClone(initialZones)
+        registerCleanupFunction(undefined, () => {
+            const prefs = selectedAssembly.fieldPreferences
+            if (prefs == null) return
+
+            prefs.protectedZones = initial
+            selectedAssembly.updateProtectedZones()
+        })
+    }, [registerCleanupFunction, initialZones, selectedAssembly])
 
     if (selectedZone === undefined)
         return (
             <ManageProtectedZonesInterface
-                selectedField={selectedField}
+                selectedField={selectedAssembly}
                 initialZones={initialZones}
                 selectZone={setSelectedZone}
             />
@@ -47,10 +46,10 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
             />
             <Divider />
             <ProtectedZoneConfigInterface
-                selectedField={selectedField}
+                selectedField={selectedAssembly}
                 selectedZone={selectedZone}
                 saveAllZones={() => {
-                    saveProtectedZones(selectedField.fieldPreferences?.protectedZones, selectedField)
+                    selectedAssembly.updateProtectedZones()
                 }}
             />
         </>
