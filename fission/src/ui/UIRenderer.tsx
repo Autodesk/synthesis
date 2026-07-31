@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { Panel } from "@/components/Panel"
 import { Modal } from "./components/Modal"
 import Scoreboard from "./components/Scoreboard"
@@ -17,6 +17,7 @@ export const UIRenderer: React.FC = () => {
         PreferencesSystem.getUserPreference("RenderScoreboard")
     )
     const [inMatchMode, setInMatchMode] = useState(MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX)
+    const [hasUserToggled, setHasUserToggled] = useState(false)
 
     useEffect(() => {
         const removeMatchStateListener = EventSystem.listen("MatchStateChangedEvent", info => {
@@ -33,9 +34,22 @@ export const UIRenderer: React.FC = () => {
         }
     }, [])
 
-    // Gameplay mode always shows the scoreboard; leaving it reverts to the
-    // user's RenderScoreboard preference (match mode still forces it on).
-    const showScoreboard = appMode === "Gameplay" || prefRenderScoreboard || inMatchMode
+    const showScoreboard = hasUserToggled
+        ? prefRenderScoreboard
+        : appMode === "Gameplay" || prefRenderScoreboard || inMatchMode
+
+    const showScoreboardRef = useRef(showScoreboard)
+    showScoreboardRef.current = showScoreboard
+
+    useEffect(
+        () =>
+            EventSystem.listen("ToggleScoreboardEvent", () => {
+                setHasUserToggled(true)
+                PreferencesSystem.setUserPreference("RenderScoreboard", !showScoreboardRef.current)
+                PreferencesSystem.savePreferences()
+            }),
+        []
+    )
 
     return (
         <>

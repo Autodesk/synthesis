@@ -48,6 +48,8 @@ interface EventDataMap {
     ToggleTouchControlsVisibilityEvent: never
     SetTouchControlsVisibilityEvent: boolean
 
+    ToggleScoreboardEvent: never
+
     DragModeToggled: { enabled: boolean }
 
     CameraModeChangedEvent: { mode: string }
