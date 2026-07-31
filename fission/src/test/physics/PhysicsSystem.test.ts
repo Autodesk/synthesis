@@ -788,6 +788,15 @@ describe("Game Piece Sleeping", () => {
         system.destroy()
     })
 
+    /** Steps the system until `body` sleeps, returning the step it slept on, or -1 if it never did. */
+    function stepUntilAsleep(body: Jolt.Body, maxSteps: number): number {
+        for (let i = 0; i < maxSteps; i++) {
+            system.update(1 / 60)
+            if (!body.IsActive()) return i
+        }
+        return -1
+    }
+
     test("Game piece is allowed to sleep", () => {
         expect(spawnFromParser(true).GetAllowSleeping()).toBe(true)
     })
@@ -796,18 +805,30 @@ describe("Game Piece Sleeping", () => {
         expect(spawnFromParser(false).GetAllowSleeping()).toBe(false)
     })
 
-    test("Game piece resting on the floor falls asleep", () => {
-        const floor = system.createBox(new THREE.Vector3(5, 0.5, 5), undefined, new THREE.Vector3(0, -1, 0), undefined)
-        system.addBodyToSystem(floor.GetID(), false)
+    test("Game piece spawns inactive", () => {
+        expect(spawnFromParser(true).IsActive()).toBe(false)
+    })
 
+    test("Non game piece spawns active", () => {
+        expect(spawnFromParser(false).IsActive()).toBe(true)
+    })
+
+    test("Game piece falls asleep once it settles", () => {
         const body = spawnFromParser(true)
+
+        // Game pieces originally spawn inactive at origin and MirabufSceneobject is what moves
+        // them to their rightful place.
+        system.setBodyPosition(body.GetID(), new JOLT.RVec3(0, 1, 0))
         expect(body.IsActive()).toBe(true)
 
-        // 4 seconds of fixed timestep: enough to drop, settle, and exceed Jolt's 0.5s sleep timer
-        for (let i = 0; i < 240; i++) {
-            system.update(1 / 60)
-        }
+        // settling is pretty slow (sphere takes 300 steps to sleep; 5 seconds)
+        expect(stepUntilAsleep(body, 900)).toBeGreaterThanOrEqual(0)
+    })
 
-        expect(body.IsActive()).toBe(false)
+    test("Non game piece never sleeps even at rest", () => {
+        const body = spawnFromParser(false)
+        system.setBodyPosition(body.GetID(), new JOLT.RVec3(0, 1, 0))
+
+        expect(stepUntilAsleep(body, 900)).toBe(-1)
     })
 })

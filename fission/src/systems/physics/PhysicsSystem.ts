@@ -193,6 +193,7 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.GetPhysicsSettings().mDeterministicSimulation = false
         this._joltPhysSystem.GetPhysicsSettings().mSpeculativeContactDistance = 0.06
         this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
+        this._joltPhysSystem.GetPhysicsSettings().mTimeBeforeSleep = 0.2
 
         const ground = this.createBox(
             new THREE.Vector3(7.5, 0.1, 7.5),
@@ -1096,7 +1097,6 @@ class PhysicsSystem extends WorldSystem {
                 }
 
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
-                this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
 
                 // Game pieces are allowed to sleep, but are inactive by default
                 // they are placed at their initial position by their `MirabufSceneObject`
