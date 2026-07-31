@@ -8,7 +8,9 @@ const HOST = "wss://localhost:2610/"
 
 vi.mock("@/systems/scene/SceneRenderer.ts", () => {
     return {
-        default: vi.fn(),
+        default: vi.fn().mockReturnValue({
+            removeAllSceneObjects: vi.fn(),
+        }),
     }
 })
 
