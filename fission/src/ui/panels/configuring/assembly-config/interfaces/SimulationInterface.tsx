@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import FTCBrain from "@/systems/simulation/ftc_brain/FTCBrain"
+import { getIsConnected as getFTCIsConnected } from "@/systems/simulation/ftc_brain/FTCState"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -22,6 +23,12 @@ export default function SimulationInterface({
 }: SimulationInterfaceProps & PanelImplProps<void, ConfigurePanelCustomProps>) {
     const { openPanel, closePanel, openModal } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
+    const [ftcConnected, setFtcConnected] = useState<boolean>(false)
+
+    useEffect(() => {
+        const handle = setInterval(() => setFtcConnected(getFTCIsConnected()), 500)
+        return () => clearInterval(handle)
+    }, [])
 
     return (
         <>
@@ -33,15 +40,17 @@ export default function SimulationInterface({
                     setAutoReconnect(!autoReconnect)
                 }}
             />
-            <Button
-                className="self-center"
-                onClick={() => {
-                    setSpotlightAssembly(selectedAssembly)
-                    openPanel(WiringPanel, undefined, panel)
-                }}
-            >
-                Wiring Panel
-            </Button>
+            {!(selectedAssembly.brain instanceof FTCBrain && ftcConnected) && (
+                <Button
+                    className="self-center"
+                    onClick={() => {
+                        setSpotlightAssembly(selectedAssembly)
+                        openPanel(WiringPanel, undefined, panel)
+                    }}
+                >
+                    Wiring Panel
+                </Button>
+            )}
             <Button
                 className="self-center"
                 onClick={() => {
