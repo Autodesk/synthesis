@@ -4,20 +4,14 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
-import type {
-    ClientAndLatencyInfo,
-    ClientInfo,
-    LocalSceneObjectId,
-    Message,
-    MessageWithTimestamp,
-    RemoteSceneObjectId,
-} from "./MultiplayerTypes.ts"
+import type { ClientAndLatencyInfo, ClientInfo, Message, MessageWithTimestamp } from "./MultiplayerTypes.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
 import { consolePrefixer } from "console-prefixer"
 import type MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import { hashBuffer } from "@/util/Utility.ts"
 import { mirabuf } from "@/proto/mirabuf"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -36,9 +30,8 @@ class MultiplayerSystem {
     private _initializationPromise: Promise<boolean>
 
     public readonly clientToInfoMap: Map<string, ClientAndLatencyInfo> = new Map()
-    public readonly clientToObjectMap: Map<string, LocalSceneObjectId[]> = new Map()
+    public readonly clientToObjectMap: Map<string, SceneObjectId[]> = new Map()
     public readonly clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map() // Each Map is: peerBodyId -> clientBodyId
-    public readonly clientToSceneObjectIdMap: Map<string, Map<RemoteSceneObjectId, LocalSceneObjectId>> = new Map() // Each Map is: peerObjectId -> clientObjectId
 
     private _info: ClientInfo = {} as ClientInfo
     private _onDestroyHooks: (() => void)[] = []
@@ -205,7 +198,7 @@ class MultiplayerSystem {
                 {
                     type: "newObject",
                     data: {
-                        sceneObjectKey: obj.id as RemoteSceneObjectId,
+                        sceneObjectKey: obj.id,
                         assemblyHash: await hashBuffer(
                             mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
                         ),
@@ -246,9 +239,8 @@ class MultiplayerSystem {
             .filter(obj => obj instanceof MirabufSceneObject)
     }
 
-    registerOwnSceneObject(objectId: LocalSceneObjectId) {
+    registerOwnSceneObject(objectId: SceneObjectId) {
         const list = this.clientToObjectMap.get(this.clientId)
-        this.setSceneObjectIdMapping(this.clientId, objectId as RemoteSceneObjectId, objectId)
         if (list?.includes(objectId)) {
             return
         }
@@ -263,12 +255,12 @@ class MultiplayerSystem {
         const objects = World.sceneRenderer.mirabufSceneObjects.getAll()
         objects.forEach(object => {
             if (object.isOwnObject) {
-                this.registerOwnSceneObject(object.id as LocalSceneObjectId)
+                this.registerOwnSceneObject(object.id)
             }
         })
     }
 
-    unregisterOwnSceneObject(objectId: LocalSceneObjectId) {
+    unregisterOwnSceneObject(objectId: SceneObjectId) {
         const list = this.clientToObjectMap.get(this.clientId)
         if (!list) return
         const index = list.indexOf(objectId)
@@ -281,8 +273,6 @@ class MultiplayerSystem {
         this.clientToObjectMap.get(clientId)?.forEach(obj => {
             World.sceneRenderer.removeSceneObject(obj)
         })
-
-        this.clientToSceneObjectIdMap.delete(clientId)
         this.clientToInfoMap.delete(clientId)
         this.clientToObjectMap.delete(clientId)
         this.clientToBodyMap.delete(clientId)
@@ -328,19 +318,6 @@ class MultiplayerSystem {
         this._onDestroyHooks.forEach(hook => {
             hook()
         })
-    }
-
-    public convertSceneObjectId(peerId: string, objectId: RemoteSceneObjectId): LocalSceneObjectId {
-        return this.clientToSceneObjectIdMap.get(peerId)?.get(objectId) ?? (-1 as LocalSceneObjectId)
-    }
-
-    public setSceneObjectIdMapping(peerId: string, remoteId: RemoteSceneObjectId, localId: LocalSceneObjectId) {
-        let peerMap = World.multiplayerSystem?.clientToSceneObjectIdMap.get(peerId)
-        if (peerMap == null) {
-            peerMap = new Map()
-            World.multiplayerSystem?.clientToSceneObjectIdMap.set(peerId, peerMap)
-        }
-        peerMap.set(remoteId, localId)
     }
 }
 

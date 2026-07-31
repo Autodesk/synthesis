@@ -14,8 +14,6 @@ export type Message = Omit<MessageWithTimestamp, "timestamp" | "clientId"> & Par
 
 // biome-ignore-start lint/style/useNamingConvention: Otherwise types are same
 export type EncodedAssembly = Uint8Array & { __: "encodedassembly" }
-export type RemoteSceneObjectId = number & { __: "remotesceneobject" | "sceneobjectkey" }
-export type LocalSceneObjectId = number & { __: "localsceneobject" | "sceneobjectkey" }
 // biome-ignore-end lint/style/useNamingConvention: Otherwise types are same
 
 export type ClientInfo = {

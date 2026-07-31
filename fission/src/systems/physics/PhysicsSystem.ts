@@ -15,7 +15,7 @@ import {
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { LocalSceneObjectId, Message } from "../multiplayer/MultiplayerTypes.ts"
+import type { Message } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
@@ -42,6 +42,7 @@ import {
     isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
 
@@ -1736,7 +1737,7 @@ class PhysicsSystem extends WorldSystem {
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
                 World.multiplayerSystem
                     ?.getOwnSceneObjectIDs()
-                    .includes(this.bodyToMiraSceneObject(body)?.id as LocalSceneObjectId)) ??
+                    .includes(this.bodyToMiraSceneObject(body)?.id ?? ("" as SceneObjectId))) ??
             false
         )
     }

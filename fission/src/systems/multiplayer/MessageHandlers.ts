@@ -19,14 +19,11 @@ import type {
     NewObjectBody,
     UpdateObjectData,
 } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
-import type {
-    EncodedAssembly,
-    LocalSceneObjectId,
-    RemoteSceneObjectId,
-} from "@/systems/multiplayer/MultiplayerTypes.ts"
+import type { EncodedAssembly } from "@/systems/multiplayer/MultiplayerTypes.ts"
 
 import type MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 export const peerMessageHandlers = {
     info: handleInfoMessage,
@@ -46,7 +43,7 @@ export const peerMessageHandlers = {
 }
 
 const pendingOperations: (() => void)[] = []
-const progressHandles: Map<number, ProgressHandle> = new Map()
+const progressHandles: Map<SceneObjectId, ProgressHandle> = new Map()
 
 async function handleMatchModeStateMessage(data: MatchModeStateBody) {
     console.log(data)
@@ -83,9 +80,7 @@ function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp
     clientToUpdateMap.set(peerId, timestamp)
 
     data.forEach(({ sceneObjectKey, gamePiecesControlled, bodies }) => {
-        const sceneObject = World.sceneRenderer.sceneObjects.get(
-            World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
-        )
+        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
         if (sceneObject == null) {
             console.warn(
                 `Multiplayer SceneObject: ${sceneObjectKey} not found in sceneObjects map. Multiplayer SceneObjects must be initialized before being updated.`
@@ -214,10 +209,7 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string) {
     const localSceneObjectKey = World.sceneRenderer.registerSceneObject(object)
     console.log("linking object", data.sceneObjectKey, "->", localSceneObjectKey)
 
-    World.multiplayerSystem?.setSceneObjectIdMapping(peerId, data.sceneObjectKey, localSceneObjectKey)
-
-    clientToObjectMap.get(peerId)?.push(object.id as LocalSceneObjectId) ||
-        clientToObjectMap.set(peerId, [object.id as LocalSceneObjectId])
+    clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
 
     // Sets bodyMap
     const clientBodyIds = object.getAllBodyIds()
@@ -265,31 +257,28 @@ async function handleNeedAssemblyMessage(data: NeedAssemblyBody, peerId: string)
     )
 }
 
-export function handleDeleteObjectMessage(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
+export function handleDeleteObjectMessage(sceneObjectKey: SceneObjectId, peerId: string) {
     if (!World.multiplayerSystem) return
     const clientToObjectMap = World.multiplayerSystem.clientToObjectMap
-    const localKey = World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
 
-    const peerClient = [...clientToObjectMap.entries()].find(([_id, keys]) => keys.includes(localKey))
+    const peerClient = [...clientToObjectMap.entries()].find(([_id, keys]) => keys.includes(sceneObjectKey))
     if (peerClient != null) {
         const keys = clientToObjectMap.get(peerClient[0])
-        const index = keys?.indexOf(World.multiplayerSystem.convertSceneObjectId(peerId, sceneObjectKey)) ?? -1
+        const index = keys?.indexOf(sceneObjectKey) ?? -1
         if (index != -1) {
             keys?.splice(index)
         }
     }
 
-    if (!World.sceneRenderer.sceneObjects.has(localKey)) {
+    if (!World.sceneRenderer.sceneObjects.has(sceneObjectKey)) {
         pendingOperations.push(() => handleDeleteObjectMessage(sceneObjectKey, peerId))
     }
 
-    World.sceneRenderer.removeSceneObject(localKey)
+    World.sceneRenderer.removeSceneObject(sceneObjectKey)
 }
 
 function handleConfigureObjectMessage(data: ConfigureObjectBody, peerId: string) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(
-        World.multiplayerSystem!.convertSceneObjectId(peerId, data.sceneObjectKey)
-    )
+    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
     if (sceneObject instanceof MirabufSceneObject) {
         if (sceneObject.isOwnObject) {
             console.warn("received config for own object")
@@ -302,10 +291,8 @@ function handleConfigureObjectMessage(data: ConfigureObjectBody, peerId: string)
     }
 }
 
-function handleDisableObjectPhysicsMessage(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(
-        World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
-    )
+function handleDisableObjectPhysicsMessage(sceneObjectKey: SceneObjectId, peerId: string) {
+    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
     if (sceneObject instanceof MirabufSceneObject) {
         if (sceneObject.isOwnObject) {
             console.warn("received disable for own object")
@@ -317,10 +304,8 @@ function handleDisableObjectPhysicsMessage(sceneObjectKey: RemoteSceneObjectId, 
     }
 }
 
-function handleEnableObjectPhysicsMessage(sceneObjectKey: RemoteSceneObjectId, peerId: string) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(
-        World.multiplayerSystem!.convertSceneObjectId(peerId, sceneObjectKey)
-    )
+function handleEnableObjectPhysicsMessage(sceneObjectKey: SceneObjectId, peerId: string) {
+    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
     if (sceneObject instanceof MirabufSceneObject) {
         if (sceneObject.isOwnObject) {
             console.warn("received enablephysics for own object")
@@ -333,9 +318,7 @@ function handleEnableObjectPhysicsMessage(sceneObjectKey: RemoteSceneObjectId, p
 }
 
 function handleMatchModePenaltyMessage(data: MatchModePenaltyBody, peerId: string) {
-    const obj = World.sceneRenderer.sceneObjects.get(
-        World.multiplayerSystem!.convertSceneObjectId(peerId, data.objectId)
-    )
+    const obj = World.sceneRenderer.sceneObjects.get(data.objectId)
     if (!(obj instanceof MirabufSceneObject)) {
         console.warn("can't handle penalty for object", data.objectId, obj)
         pendingOperations.push(() => handleMatchModePenaltyMessage(data, peerId))

@@ -10,12 +10,7 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import { getTargetControls } from "@/systems/scene/CameraControls.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import { consolePrefixer } from "console-prefixer"
-import type {
-    EncodedAssembly,
-    LocalSceneObjectId,
-    Message,
-    RemoteSceneObjectId,
-} from "@/systems/multiplayer/MultiplayerTypes.ts"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/MultiplayerTypes.ts"
 
 const console = consolePrefixer({
     defaultPrefix: {
@@ -509,7 +504,7 @@ export async function spawnCachedMira(
                         type: "newObject",
                         timestamp: Date.now(),
                         data: {
-                            sceneObjectKey: mirabufSceneObject.id as RemoteSceneObjectId,
+                            sceneObjectKey: mirabufSceneObject.id,
                             assembly: encodedAssembly,
                             assemblyHash: info.hash,
                             miraType: info.miraType,
@@ -518,7 +513,7 @@ export async function spawnCachedMira(
                         },
                     }
                     await World.multiplayerSystem?.broadcast(message)
-                    World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id as LocalSceneObjectId)
+                    World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
                 }
 
                 if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {

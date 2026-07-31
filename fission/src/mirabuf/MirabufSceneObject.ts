@@ -1,12 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
-import type {
-    FieldConfiguration,
-    LocalSceneObjectId,
-    RemoteSceneObjectId,
-    RobotConfiguration,
-} from "@/systems/multiplayer/MultiplayerTypes.ts"
+import type { FieldConfiguration, RobotConfiguration } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
@@ -65,6 +60,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
 import type { UpdateObjectData } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const DEBUG_BODIES = false
 
@@ -79,7 +75,7 @@ interface RnDebugMeshes {
  * last spawned in, however, systems (such as the configuration UI) can elect
  * assemblies to be in the spotlight when moving from interface to interface.
  */
-let spotlightAssembly: number | undefined
+let spotlightAssembly: SceneObjectId | undefined
 
 export function setSpotlightAssembly(assembly: MirabufSceneObject) {
     spotlightAssembly = assembly.id
@@ -87,7 +83,9 @@ export function setSpotlightAssembly(assembly: MirabufSceneObject) {
 
 // TODO: If nothing is in the spotlight, select last entry before defaulting to undefined
 export function getSpotlightAssembly(): MirabufSceneObject | undefined {
-    return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
+    return spotlightAssembly != null
+        ? (World.sceneRenderer.sceneObjects.get(spotlightAssembly) as MirabufSceneObject)
+        : undefined
 }
 
 type MinMax = { min: number; max: number }
@@ -711,7 +709,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     private removeSceneObjects(objs: SceneObject[]) {
-        objs.filter(obj => obj.id != -1).forEach(obj => World.sceneRenderer.removeSceneObject(obj.id))
+        objs.forEach(obj => World.sceneRenderer.removeSceneObject(obj.id))
         objs.length = 0
     }
 
@@ -723,7 +721,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (zoneObject == null) return
 
         World.sceneRenderer.removeSceneObject(zoneObject.id)
-        zoneObject.id = -1
     }
 
     public removeProtectedZoneObject(zone: ProtectedZonePreferences) {
@@ -734,7 +731,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (zoneObject == null) return
 
         World.sceneRenderer.removeSceneObject(zoneObject.id)
-        zoneObject.id = -1
     }
 
     /**
@@ -1026,7 +1022,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         await World.multiplayerSystem.broadcast({
             type: "configureObject",
             data: {
-                sceneObjectKey: this.id as RemoteSceneObjectId,
+                sceneObjectKey: this.id,
                 objectConfigurationData: data,
             },
         })
@@ -1140,8 +1136,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public enablePhysics() {
-        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id as LocalSceneObjectId)) {
-            World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id as RemoteSceneObjectId })
+        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
+            World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id })
         }
 
         this._physicsLayerReserve = new LayerReserve()
@@ -1157,8 +1153,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public disablePhysics() {
         if (!this.hasPhysics()) return
-        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id as LocalSceneObjectId)) {
-            World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id as RemoteSceneObjectId })
+        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
+            World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id })
         }
 
         this._physicsLayerReserve?.release()
@@ -1346,7 +1342,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             .filter(n => n != null)
 
         return {
-            sceneObjectKey: this.id as RemoteSceneObjectId,
+            sceneObjectKey: this.id,
             gamePiecesControlled,
             bodies,
         }
