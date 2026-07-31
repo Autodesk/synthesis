@@ -7,11 +7,12 @@ type TopBarButtonProps = {
     label: string
     icon: React.ReactNode
     disabledTooltip?: string
+    active?: boolean
     onClick: () => void
 }
 
 /** component for all buttons located on topbar */
-export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disabledTooltip, onClick }) => {
+export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disabledTooltip, active, onClick }) => {
     const disabled = disabledTooltip !== undefined
 
     return (
@@ -21,7 +22,16 @@ export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disable
                     size="medium"
                     disableRipple
                     disabled={disabled}
-                    sx={{ ...TOP_BAR_ICON_BUTTON_SX, ...(disabled && { opacity: 0.4 }) }}
+                    aria-pressed={active}
+                    sx={{
+                        ...TOP_BAR_ICON_BUTTON_SX,
+                        ...(disabled && { opacity: 0.4 }),
+                        ...(active && {
+                            bgcolor: "rgba(255, 255, 255, 0.16)",
+                            borderRadius: 1,
+                            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.24)" },
+                        }),
+                    }}
                     onClick={onClick}
                 >
                     {icon}

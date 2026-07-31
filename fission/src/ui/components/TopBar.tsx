@@ -30,6 +30,8 @@ import { useAssemblySelection } from "@/ui/components/topbar/UseConfigureAssembl
 import UserIcon from "@/ui/components/UserIcon"
 import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 
+const TUTORIALS_URL = "https://synthesis.autodesk.com/tutorials"
+
 const TopBar: React.FC = () => {
     const { openModal, openPanel, togglePanel, addToast } = useUIContext()
     const { appMode } = useStateContext()
@@ -43,6 +45,9 @@ const TopBar: React.FC = () => {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
     const [modeHovered, setModeHovered] = useState(false)
     const [modeMenuOpen, setModeMenuOpen] = useState(false)
+    const [dragModeEnabled, setDragModeEnabled] = useState(World.isAlive && World.dragModeSystem.enabled)
+
+    useEffect(() => EventSystem.listen("DragModeToggled", ({ enabled }) => setDragModeEnabled(enabled)), [])
 
     useEffect(() => {
         // biome-ignore-start lint/suspicious/noExplicitAny: allow any for window and document access
@@ -174,6 +179,16 @@ const TopBar: React.FC = () => {
                     />
                 )}
                 <TopBarButton
+                    label={dragModeEnabled ? "Disable Drag Mode" : "Drag Mode"}
+                    active={dragModeEnabled}
+                    icon={
+                        <Box sx={TOP_BAR_GLYPH_SX}>
+                            <SynthesisIcons.HAND />
+                        </Box>
+                    }
+                    onClick={() => EventSystem.dispatch("DragModeToggled", { enabled: !dragModeEnabled })}
+                />
+                <TopBarButton
                     label="Configure Camera"
                     icon={
                         <Box sx={TOP_BAR_GLYPH_SX}>
@@ -186,6 +201,15 @@ const TopBar: React.FC = () => {
                     label="Settings"
                     icon={<TopBarIcon name="settings" size={30} />}
                     onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
+                />
+                <TopBarButton
+                    label="Tutorials"
+                    icon={
+                        <Box sx={TOP_BAR_GLYPH_SX}>
+                            <SynthesisIcons.QUESTION />
+                        </Box>
+                    }
+                    onClick={() => window.open(TUTORIALS_URL, "_blank", "noopener,noreferrer")}
                 />
                 <TopBarButton
                     label={userInfo ? "Account" : "Login"}
