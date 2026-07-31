@@ -8,18 +8,25 @@ import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
 import Scene from "@/components/Scene.tsx"
 import MultiplayerStartModal from "@/modals/MultiplayerStartModal.tsx"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
+import {
+    getIsConnected as getFTCIsConnected,
+    hasSimBrain as hasFTCSimBrain,
+} from "@/systems/simulation/ftc_brain/FTCState"
+import {
+    getIsConnected as getWPILibIsConnected,
+    hasSimBrain as hasWPILibSimBrain,
+} from "@/systems/simulation/wpilib_brain/WPILibState"
 import World from "@/systems/World.ts"
 import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
+import CodeSimConnectionStatus from "./ui/components/CodeSimConnectionStatus.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
 import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
-import FTCConnectionStatus from "./ui/components/FTCConnectionStatus.tsx"
 import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
-import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
@@ -115,8 +122,17 @@ const Synthesis = () => {
                             <UIRenderer />
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
-                            <WPILibConnectionStatus />
-                            <FTCConnectionStatus />
+                            <CodeSimConnectionStatus
+                                label="Code Connection"
+                                hasSimBrain={hasWPILibSimBrain}
+                                getIsConnected={getWPILibIsConnected}
+                            />
+                            <CodeSimConnectionStatus
+                                label="FTC Code Connection"
+                                className="top-14"
+                                hasSimBrain={hasFTCSimBrain}
+                                getIsConnected={getFTCIsConnected}
+                            />
                             <DragModeIndicator />
 
                             {!consentPopupDisable && (
