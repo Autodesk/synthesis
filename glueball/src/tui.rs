@@ -46,19 +46,18 @@ const COLOR_PALETTE: &[Color] = &[
 ];
 const COLOR_PALETTE_SIZE: usize = 6;
 
-pub fn start_tui_thread(state: &Arc<Mutex<State>>, logger: &Arc<Mutex<Logger>>) {
+pub fn start_tui_thread(state: &Arc<Mutex<State>>, logger: Arc<Mutex<Logger>>) {
     {
         state.lock().unwrap().set_tui();
     }
 
     let tui_state_handle = state.clone();
-    let tui_logger_handle = logger.clone();
     set_panic_hook_to_cleanup_terminal();
 
     // On an OS thread because crossterm (and thus ratatui) will block on user input
     // So it wouldn't play nice with tokio's runtime, which expects yielding
     thread::spawn(move || {
-        if let Err(e) = run(tui_state_handle, &tui_logger_handle) {
+        if let Err(e) = run(tui_state_handle, &logger) {
             eprintln!("TUI error: {e}");
         }
 

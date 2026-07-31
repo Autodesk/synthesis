@@ -5,6 +5,7 @@ use ratatui::{
     style::{Style, Stylize},
     text::Line,
 };
+use tokio::sync::mpsc::Receiver;
 
 use crate::room::RoomId;
 
@@ -158,4 +159,21 @@ impl Logger {
     pub fn snapshot(&self) -> LogSnapshot {
         (self.global_log.clone(), self.room_logs.clone())
     }
+}
+
+pub fn spawn_log_receiver<F>(
+    mut logging_rx: Receiver<(String, EventType, LogDestination)>,
+    handle_log: F,
+) where
+    F: Fn(String, EventType, LogDestination) + Send + 'static,
+{
+    tokio::spawn(async move {
+        loop {
+            let Some((message, kind, log_destination)) = logging_rx.recv().await else {
+                break;
+            };
+
+            handle_log(message, kind, log_destination)
+        }
+    });
 }

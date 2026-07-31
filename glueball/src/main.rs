@@ -12,7 +12,9 @@ mod util;
 
 use crate::cert::build_tls_config;
 use crate::config::{CliConfig, config_or_default, parse_config_file};
-use crate::logging::{EventType, LogDestination, Logger, MAX_LOG_LINES, print_global, print_room};
+use crate::logging::{
+    EventType, LogDestination, Logger, MAX_LOG_LINES, print_global, print_room, spawn_log_receiver,
+};
 use crate::messaging::handle_connection;
 use crate::room::State;
 use crate::tui::start_tui_thread;
@@ -31,7 +33,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // tui running on a different OS thread or just printing them
 
     // Always use the logging chanel
-    let (logging_tx, mut logging_rx) =
+    let (logging_tx, logging_rx) =
         mpsc::channel::<(String, EventType, LogDestination)>(MAX_LOG_LINES);
 
     // Only use the `logger` in tui mode
@@ -57,34 +59,28 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if config.headless {
         // Read the logging channel and immediantly print result
-        tokio::spawn(async move {
-            loop {
-                let Some((message, kind, log_destination)) = logging_rx.recv().await else {
-                    break;
-                };
-
+        let print_to_terminal =
+            |message: String, kind: EventType, log_destination: LogDestination| {
                 match log_destination {
                     LogDestination::Global => print_global(&message, &kind),
                     LogDestination::Room(id) => print_room(&message, &kind, &id),
                 }
-            }
-        });
+            };
+
+        spawn_log_receiver(logging_rx, print_to_terminal);
     } else {
-        start_tui_thread(&state, &logger);
+        start_tui_thread(&state, logger.clone());
 
         // Read the logging channel and write every message to the `logger`
-        tokio::spawn(async move {
-            loop {
-                let Some((message, kind, log_destination)) = logging_rx.recv().await else {
-                    break;
-                };
-
+        let send_to_logger =
+            move |message: String, kind: EventType, log_destination: LogDestination| {
                 match log_destination {
                     LogDestination::Global => logger.lock().unwrap().push_global(message, kind),
                     LogDestination::Room(id) => logger.lock().unwrap().push_room(message, kind, id),
                 }
-            }
-        });
+            };
+
+        spawn_log_receiver(logging_rx, send_to_logger);
     }
 
     if let Some(room_id) = config.permanent_room {
