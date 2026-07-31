@@ -148,7 +148,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                 .map(scheme => {
                     return (
                         <SchemeSelector
-                            key={`available-${scheme.scheme.schemeId}`}
+                            key={scheme.scheme.schemeId}
                             scheme={scheme.scheme}
                             panelId={panelId}
                             brainIndex={brainIndex}
@@ -161,7 +161,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                 ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
                 .map((scheme, i) => {
                     return (
-                        <div key={`conflict-${scheme.scheme.schemeId}`}>
+                        <div key={scheme.scheme.schemeId}>
                             {i == 0 && <Divider />}
                             <SchemeSelector
                                 scheme={scheme.scheme}
@@ -178,7 +178,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                 ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
                 .map((scheme, i) => {
                     return (
-                        <div key={`in-use-${scheme.scheme.schemeId}`}>
+                        <div key={scheme.scheme.schemeId}>
                             {i == 0 && <Divider />}
                             <SchemeSelector
                                 scheme={scheme.scheme}
