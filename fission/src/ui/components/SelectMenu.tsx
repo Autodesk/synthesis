@@ -19,10 +19,10 @@ export class SelectMenuOption {
     }
 }
 
-interface OptionCardProps {
-    value: SelectMenuOption
+interface OptionCardProps<OptionType extends SelectMenuOption> {
+    value: OptionType
     index: number
-    onSelected: (val: SelectMenuOption) => void
+    onSelected: (val: OptionType) => void
     onDelete?: () => void
     includeDelete: boolean
 }
@@ -38,7 +38,13 @@ interface OptionCardProps {
  *
  * @returns {JSX.Element} The rendered OptionCard component.
  */
-const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDelete, includeDelete }) => {
+const OptionCard = <OptionType extends SelectMenuOption>({
+    value,
+    index,
+    onSelected,
+    onDelete,
+    includeDelete,
+}: OptionCardProps<OptionType>): React.ReactElement => {
     return (
         <Stack
             direction="row"
@@ -86,19 +92,19 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
     )
 }
 
-interface SelectMenuProps {
-    options: SelectMenuOption[]
-    onOptionSelected: (val: SelectMenuOption | undefined) => void
+interface SelectMenuProps<OptionType extends SelectMenuOption> {
+    options: OptionType[]
+    onOptionSelected: (val: OptionType | undefined) => void
 
     // Function to return a default value
-    defaultSelectedOption?: SelectMenuOption | undefined
+    defaultSelectedOption?: OptionType | undefined
     defaultHeaderText: string
     noOptionsText?: string
     // TODO: indentation?: number
-    onDelete?: (val: SelectMenuOption) => void | undefined
+    onDelete?: (val: OptionType) => void | undefined
 
     // If false, this menu option will not have a delete button
-    deleteCondition?: (val: SelectMenuOption) => boolean
+    deleteCondition?: (val: OptionType) => boolean
     onAddClicked?: () => void
 }
 
@@ -116,7 +122,7 @@ interface SelectMenuProps {
  *
  * @returns {JSX.Element} The rendered SelectMenu component.
  */
-const SelectMenu: React.FC<SelectMenuProps> = ({
+const SelectMenu = <OptionType extends SelectMenuOption>({
     options,
     onOptionSelected,
     defaultSelectedOption,
@@ -125,7 +131,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     onDelete,
     deleteCondition,
     onAddClicked,
-}) => {
+}: SelectMenuProps<OptionType>): React.ReactElement => {
     const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(defaultSelectedOption)
 
     // I have no idea why, but this would actually update state to default selection.
