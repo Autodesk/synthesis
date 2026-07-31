@@ -37,6 +37,7 @@ import {
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
+import FTCBrain from "@/systems/simulation/ftc_brain/FTCBrain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
@@ -235,7 +236,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     this.nameOverride ??
                     (this._brain instanceof SynthesisBrain
                         ? this._brain.inputSchemeName
-                        : this._brain instanceof WPILibBrain
+                        : this._brain instanceof WPILibBrain || this._brain instanceof FTCBrain
                           ? "Magic"
                           : "Not Configured")
                 if (World.multiplayerSystem != null) {
