@@ -48,7 +48,7 @@ pub struct CliConfig {
     #[argh(
         switch,
         short = 's',
-        description = "whether to run the server through the WebSocketSecure protocol or not. self-signed PEM certficates will be automatically generated"
+        description = "whether to run the server through the WebSocketSecure protocol or not. self-signed PEM certificates will be automatically generated"
     )]
     pub secure: bool,
 

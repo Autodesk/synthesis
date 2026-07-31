@@ -1,13 +1,18 @@
-Usage: glueball [-p <port>] [-h] [-s] [-r <permanent-room>]
+Usage: glueball [--config-file <config-file>] [--cert-dir <cert-dir>] [-p <port>] [-h] [-s] [-r <permanent-room>]
 
 A Server for Facilitating Multiplayer Synthesis
 
 Options:
-  -p, --port        port to run server on
+  --config-file     configuration file for server. all flags passed in addition
+                    to this one will be overridden by the corresponding option
+                    in the specified config file
+  --cert-dir        directory in which to story the certificate files in secure
+                    mode
+  -p, --port        on which port to run the server
   -h, --headless    whether to run the application without or tui or with one
   -s, --secure      whether to run the server through the WebSocketSecure
-                    protocol or not. self-signed PEM certficates will be
-                    automatically generated into the `./secrets/` directory
+                    protocol or not. self-signed PEM certificates will be
+                    automatically generated
   -r, --permanent-room
                     initially populate the server with a room that will persist
                     even when no users occupy it. value must be a six digit
