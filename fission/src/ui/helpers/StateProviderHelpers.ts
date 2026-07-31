@@ -9,6 +9,7 @@ export interface StateProviderProps {
 export interface AppState {
     // ConfigureInputs stuff
     selectedScheme?: InputScheme
+    // setSelectedScheme will handle updating schemeId and customized
     setSelectedScheme: (_scheme: InputScheme | undefined) => void
     // Top bar mode selector
     appMode: AppMode

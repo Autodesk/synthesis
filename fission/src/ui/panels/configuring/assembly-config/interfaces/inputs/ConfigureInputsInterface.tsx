@@ -38,9 +38,8 @@ const ConfigureInputsInterface: React.FC<Pick<ConfigurationSubpanelProps, "regis
     registerCleanupFunction,
 }) => {
     const { openModal, closePanel } = useUIContext()
-    const { selectedScheme: currentSelectedScheme, setSelectedScheme: setGlobalSelectedScheme } = useStateContext()
+    const { selectedScheme, setSelectedScheme } = useStateContext()
 
-    const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(currentSelectedScheme)
     const [schemes, setSchemes] = useState<InputScheme[]>(InputSchemeManager.allInputSchemes)
 
     const saveEvent = useCallback(() => {
@@ -66,11 +65,10 @@ const ConfigureInputsInterface: React.FC<Pick<ConfigurationSubpanelProps, "regis
         const unsubscribeInput = EventSystem.listen("InputSchemeChanged", handleSchemeChange)
         return () => {
             setSelectedScheme(undefined)
-            setGlobalSelectedScheme(undefined)
             unsubscribeConfig()
             unsubscribeInput()
         }
-    }, [saveEvent, handleSchemeChange, setGlobalSelectedScheme])
+    }, [saveEvent, handleSchemeChange])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()
@@ -134,6 +132,7 @@ const ConfigureInputsInterface: React.FC<Pick<ConfigurationSubpanelProps, "regis
             ) : (
                 <ConfigureSchemeInterface
                     selectedScheme={selectedScheme}
+                    setSelectedScheme={setSelectedScheme}
                     panelId={panel?.id}
                     registerCleanupFunction={registerCleanupFunction}
                     onBack={() => setSelectedScheme(undefined)}
