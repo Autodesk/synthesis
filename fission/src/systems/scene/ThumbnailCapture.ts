@@ -41,7 +41,7 @@ export function canonicalCameraOffset(): THREE.Vector3 {
     return new THREE.Vector3(0, 0, 1).applyEuler(new THREE.Euler(THUMBNAIL_PHI, THUMBNAIL_THETA, 0, "YXZ"))
 }
 
-function boxCorners(box: THREE.Box3): THREE.Vector3[] {
+export function boxCorners(box: THREE.Box3): THREE.Vector3[] {
     const corners: THREE.Vector3[] = []
     for (let i = 0; i < 8; i++) {
         corners.push(
@@ -90,6 +90,16 @@ export function computeThumbnailFraming(bounds: THREE.Box3 | readonly THREE.Vect
     return { position: toCamera.multiplyScalar(distance).add(center), lookAt: center }
 }
 
+/** square camera */
+export function createThumbnailCamera(framing: ThumbnailFraming): THREE.PerspectiveCamera {
+    const cameraDistance = framing.position.distanceTo(framing.lookAt)
+    const camera = new THREE.PerspectiveCamera(THUMBNAIL_FOV_Y_DEGREES, 1, Math.min(0.1, cameraDistance / 10), 2000)
+    camera.position.copy(framing.position)
+    camera.lookAt(framing.lookAt)
+    camera.updateMatrixWorld()
+    return camera
+}
+
 function computeTargetBounds(targets: readonly THREE.Object3D[]): THREE.Box3 {
     const bounds = new THREE.Box3()
     const targetBox = new THREE.Box3()
@@ -126,11 +136,7 @@ export async function captureSceneThumbnail(props: ThumbnailCaptureProps): Promi
     const framing = computeThumbnailFraming(framingPoints?.length ? framingPoints : computeTargetBounds(targets))
     if (!framing) return undefined
 
-    const cameraDistance = framing.position.distanceTo(framing.lookAt)
-    const camera = new THREE.PerspectiveCamera(THUMBNAIL_FOV_Y_DEGREES, 1, Math.min(0.1, cameraDistance / 10), 2000)
-    camera.position.copy(framing.position)
-    camera.lookAt(framing.lookAt)
-    camera.updateMatrixWorld()
+    const camera = createThumbnailCamera(framing)
 
     const renderSize = THUMBNAIL_SIZE * CAPTURE_SUPERSAMPLE
     const pixels = new Uint8Array(renderSize * renderSize * 4)

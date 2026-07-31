@@ -362,7 +362,7 @@ class MirabufCachingService {
         return this._cacheMap.getAll(miraType)
     }
 
-    // is mirabuf file cached under `hash`?
+    /** is assembly retrievable / not in memory */
     public static has(hash: string): boolean {
         return this._cacheMap.get(hash) != null
     }
