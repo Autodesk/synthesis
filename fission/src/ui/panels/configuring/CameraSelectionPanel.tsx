@@ -18,6 +18,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { MenuItem } from "@mui/material"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 CommandRegistry.get().registerCommand({
     id: "open-camera-config",
@@ -27,7 +28,7 @@ CommandRegistry.get().registerCommand({
     perform: () => import("./CameraSelectionPanel").then(m => globalOpenPanel(m.default, undefined)),
 })
 
-const UNFOCUSED_ID = -1
+const UNFOCUSED_ID = "unfocused" as SceneObjectId
 const CENTER_POINT_INDEX = -1
 
 function getSceneObjects(): MirabufSceneObject[] {
@@ -90,7 +91,7 @@ const FieldViewSettings: React.FC = () => {
         const selected = getFieldViewControls()?.selectedPoint
         return selected ? getCameraPoints().indexOf(selected) : CENTER_POINT_INDEX
     })
-    const [focusedRobotId, setFocusedRobotId] = useState<number>(
+    const [focusedRobotId, setFocusedRobotId] = useState<SceneObjectId>(
         getFieldViewControls()?.focusedRobot?.id ?? UNFOCUSED_ID
     )
 
@@ -176,7 +177,7 @@ const FieldViewSettings: React.FC = () => {
                     <Select
                         value={focusedRobotId}
                         onChange={e => {
-                            const id = e.target.value as number
+                            const id = e.target.value as SceneObjectId
                             const robot = id === UNFOCUSED_ID ? undefined : robots.find(r => r.id === id)
                             setFocusedRobotId(id)
                             getFieldViewControls()?.focusRobot(robot)
@@ -200,7 +201,7 @@ const FieldViewSettings: React.FC = () => {
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
-    const [focusedId, setFocusedId] = useState<number>(() => {
+    const [focusedId, setFocusedId] = useState<SceneObjectId>(() => {
         const controls = World.sceneRenderer?.currentCameraControls
         if (controls instanceof CustomTargetControls) return controls.focusProvider?.id ?? UNFOCUSED_ID
         if (controls instanceof CustomFieldViewControls) {
@@ -264,7 +265,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     )
 
     // Selecting a target only updates state. The layout effect switches controls and assigns focus.
-    const onFocusChange = (id: number) => setFocusedId(id)
+    const onFocusChange = (id: SceneObjectId) => setFocusedId(id)
 
     const targetControls = getTargetControls()
 
@@ -274,7 +275,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                 <span className="text-xs opacity-70 select-none">Focus Target</span>
                 <Select
                     value={focusedId}
-                    onChange={e => onFocusChange(e.target.value as number)}
+                    onChange={e => onFocusChange(e.target.value as SceneObjectId)}
                     size="small"
                     fullWidth
                 >

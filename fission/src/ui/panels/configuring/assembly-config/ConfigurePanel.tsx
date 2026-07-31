@@ -38,6 +38,7 @@ import MetadataConfigInterface from "@/panels/configuring/assembly-config/interf
 import { FaArrowsRotate } from "react-icons/fa6"
 import MoveInterface from "@/panels/configuring/assembly-config/interfaces/MoveInterface.tsx"
 import ControlsConfigInterface from "@/panels/configuring/assembly-config/interfaces/ControlsConfigInterface.tsx"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -168,7 +169,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(initialSelectedAssembly)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(initialConfigMode)
     const [configurationType, setConfigurationType] = useState<ConfigurationType>(initialConfigurationType ?? "ROBOTS")
-    const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
+    const [pendingDeletes, setPendingDeletes] = useState<SceneObjectId[]>([])
 
     const [confirmCallbacks, setConfirmCallbacks] = useState<(() => void | Promise<void>)[]>([])
     const [cancelCallbacks, setCancelCallbacks] = useState<(() => void | Promise<void>)[]>([])
