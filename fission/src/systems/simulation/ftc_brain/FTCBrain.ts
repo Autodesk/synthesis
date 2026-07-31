@@ -108,8 +108,12 @@ class FTCBrain extends Brain {
         return this._motorWiring
     }
 
+    public override get brainType() {
+        return "ftc" as const
+    }
+
     constructor(assembly: MirabufSceneObject) {
-        super(assembly.mechanism, "ftc")
+        super(assembly.mechanism)
 
         this._assembly = assembly
         this._simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
