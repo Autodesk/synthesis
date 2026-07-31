@@ -429,7 +429,6 @@ class SceneRenderer extends WorldSystem {
 
     public removeSceneObject(id: SceneObjectId) {
         const obj = this._sceneObjects.get(id)
-
         if (!obj) return
 
         // If the object is a mirabuf object, remove the gizmo as well

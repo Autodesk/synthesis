@@ -29,6 +29,7 @@ import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsIn
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { Tab, Tabs } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
@@ -189,6 +190,14 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             setAccessedAssemblies(v => [...v, selectedAssembly])
         }
     }, [selectedAssembly])
+
+    useEffect(() => {
+        return EventSystem.listen("MatchStateChangedEvent", ({ mode }) => {
+            if (mode === MatchModeType.AUTONOMOUS) {
+                closePanel(panel!.id, CloseType.OVERWRITE)
+            }
+        })
+    }, [closePanel, panel])
 
     const onBeforeAccept = useCallback(async () => {
         for (const callback of confirmCallbacks) {
