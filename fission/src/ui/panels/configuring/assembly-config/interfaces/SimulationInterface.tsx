@@ -1,3 +1,4 @@
+import { Tooltip } from "@mui/material"
 import { useEffect, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
@@ -24,6 +25,7 @@ export default function SimulationInterface({
     const { openPanel, closePanel, openModal } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
     const [ftcConnected, setFtcConnected] = useState<boolean>(false)
+    const ftcActive = selectedAssembly.brain instanceof FTCBrain && ftcConnected
 
     useEffect(() => {
         const handle = setInterval(() => setFtcConnected(getFTCIsConnected()), 500)
@@ -40,7 +42,7 @@ export default function SimulationInterface({
                     setAutoReconnect(!autoReconnect)
                 }}
             />
-            {!(selectedAssembly.brain instanceof FTCBrain && ftcConnected) && (
+            {!ftcActive && (
                 <Button
                     className="self-center"
                     onClick={() => {
@@ -51,15 +53,20 @@ export default function SimulationInterface({
                     Wiring Panel
                 </Button>
             )}
-            <Button
-                className="self-center"
-                onClick={() => {
-                    openPanel(AutoTestPanel, undefined, panel)
-                    if (panel) closePanel(panel.id, CloseType.OVERWRITE)
-                }}
-            >
-                Auto Testing
-            </Button>
+            <Tooltip title={ftcActive ? "Not currently implemented for FTC CodeSim" : ""}>
+                <span className="self-center">
+                    <Button
+                        className="self-center"
+                        disabled={ftcActive}
+                        onClick={() => {
+                            openPanel(AutoTestPanel, undefined, panel)
+                            if (panel) closePanel(panel.id, CloseType.OVERWRITE)
+                        }}
+                    >
+                        Auto Testing
+                    </Button>
+                </span>
+            </Tooltip>
             {selectedAssembly.brain instanceof FTCBrain && (
                 <Button className="self-center" onClick={() => openModal(FTCCreateDeviceModal, undefined)}>
                     Configure FTC Devices
