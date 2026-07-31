@@ -11,7 +11,9 @@ import {
 import World from "@/systems/World"
 import { unzipMira } from "@/util/Utility"
 
-const ASSEMBLY_THUMBNAIL_FIELD_NUMBER = 8
+const ASSEMBLY_THUMBNAIL_TAG = Reader.create(
+    mirabuf.Assembly.encode(new mirabuf.Assembly({ thumbnail: new mirabuf.Thumbnail() })).finish()
+).uint32()
 
 const thumbnailsByAssemblyHash = new Map<string, Promise<Blob | undefined>>()
 
@@ -74,11 +76,12 @@ async function readCachedThumbnail(hash: string): Promise<Blob | undefined> {
     })
 }
 
+/** Pulls only the thumbnail out of an encoded assembly. */
 function decodeThumbnailField(assemblyBuffer: Uint8Array): mirabuf.Thumbnail | undefined {
     const reader = Reader.create(assemblyBuffer)
     while (reader.pos < reader.len) {
         const tag = reader.uint32()
-        if (tag >>> 3 === ASSEMBLY_THUMBNAIL_FIELD_NUMBER) return mirabuf.Thumbnail.decode(reader, reader.uint32())
+        if (tag === ASSEMBLY_THUMBNAIL_TAG) return mirabuf.Thumbnail.decode(reader, reader.uint32())
         reader.skipType(tag & 7)
     }
     return undefined
