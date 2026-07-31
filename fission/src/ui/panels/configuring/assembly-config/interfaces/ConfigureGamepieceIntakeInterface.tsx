@@ -21,6 +21,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -210,18 +211,16 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
     }, [selectedAssembly])
 
     useEffect(() => {
-        // World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-
-        // Hide the visual indicator when entering configuration mode
         if (selectedAssembly) {
+            selectedAssembly.disablePhysics()
+            // Hide the visual indicator when entering configuration mode
             selectedAssembly.setIntakeVisualIndicatorVisible(false)
         }
 
         return () => {
-            // World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-
-            // Show the visual indicator when exiting configuration mode
             if (selectedAssembly) {
+                selectedAssembly.enablePhysics()
+                // Show the visual indicator when exiting configuration mode
                 selectedAssembly.setIntakeVisualIndicatorVisible(true)
             }
         }

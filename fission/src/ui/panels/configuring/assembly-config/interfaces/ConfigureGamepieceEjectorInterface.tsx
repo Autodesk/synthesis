@@ -182,13 +182,13 @@ const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly])
 
-    // useEffect(() => {
-    //     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-    //
-    //     return () => {
-    //         World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-    //     }
-    // }, [])
+    useEffect(() => {
+        if (selectedAssembly) selectedAssembly.disablePhysics()
+
+        return () => {
+            if (selectedAssembly) selectedAssembly.enablePhysics()
+        }
+    }, [selectedAssembly])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
