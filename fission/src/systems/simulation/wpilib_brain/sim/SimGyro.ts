@@ -1,9 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
-import * as THREE from "three"
-import type Mechanism from "@/systems/physics/Mechanism"
-import World from "@/systems/World"
-import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
-import { SimInput } from "../SimInput"
 import { SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
 import type { SimReceiver } from "../SimDataFlow"
@@ -50,64 +44,5 @@ export default class SimGyro {
                 SimGyro.setRateZ(device, rz)
             },
         }
-    }
-}
-
-export class SimGyroInput extends SimInput {
-    private _robot: Mechanism
-    private _joltID?: Jolt.BodyID
-    private _joltBody?: Jolt.Body
-
-    private _offset = { x: 0, y: 0, z: 0 }
-    private _accumulated = { x: 0, y: 0, z: 0 }
-    private _lastWritten = { x: 0, y: 0, z: 0 }
-
-    private static readonly ANGLE_FIELD = { x: ">angle_x", y: ">angle_z", z: ">angle_y" } as const
-
-    constructor(device: string, robot: Mechanism) {
-        super(device)
-        this._robot = robot
-        this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
-
-        if (this._joltID) this._joltBody = World.physicsSystem.getBody(this._joltID)!
-    }
-
-    private getBodyAngularVelocity(): THREE.Vector3 {
-        if (!this._joltBody) return new THREE.Vector3(0, 0, 0)
-
-        const worldOmega = convertJoltVec3ToThreeVector3(this._joltBody.GetAngularVelocity(), false)
-        const rot = convertJoltQuatToThreeQuaternion(this._joltBody.GetRotation(), false)
-        return worldOmega.applyQuaternion(rot.invert())
-    }
-
-    private integrateAngle(axis: "x" | "y" | "z", rate: number, deltaT: number): number {
-        this._accumulated[axis] += rate * deltaT
-
-        const external = SimGeneric.getUnsafe<number>(SimType.GYRO, this._device, SimGyroInput.ANGLE_FIELD[axis])
-        if (external !== undefined && external !== this._lastWritten[axis]) {
-            this._offset[axis] = this._accumulated[axis] - external
-        }
-
-        const angle = this._accumulated[axis] - this._offset[axis]
-        this._lastWritten[axis] = angle
-        return angle
-    }
-
-    public update(deltaT: number) {
-        if (!this._joltBody) return
-
-        const omega = this.getBodyAngularVelocity()
-
-        // WPILib uses deg and deg/s
-        const rateX = THREE.MathUtils.radToDeg(omega.x)
-        const rateY = THREE.MathUtils.radToDeg(omega.y)
-        const rateZ = THREE.MathUtils.radToDeg(omega.z)
-
-        SimGyro.setAngleX(this._device, this.integrateAngle("x", rateX, deltaT))
-        SimGyro.setAngleY(this._device, this.integrateAngle("y", rateY, deltaT))
-        SimGyro.setAngleZ(this._device, this.integrateAngle("z", rateZ, deltaT))
-        SimGyro.setRateX(this._device, rateX)
-        SimGyro.setRateY(this._device, rateY)
-        SimGyro.setRateZ(this._device, rateZ)
     }
 }

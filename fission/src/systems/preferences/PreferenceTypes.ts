@@ -145,6 +145,18 @@ export type EjectorPreferences = {
     ejectOrder: "FIFO" | "LIFO"
 }
 
+/** Inertial sim sensors are joint-independent; position matters only for accel (lever-arm) and mount rotation. */
+export type SensorType = "gyro" | "accel"
+
+export type SensorPreferences = {
+    name: string
+    sensorType: SensorType
+    /** WPILib device this sensor feeds, e.g. "SYN AHRS[0]". */
+    device: string
+    parentNode: string | undefined
+    deltaTransformation: number[]
+}
+
 /** The behavior types that can be sequenced. */
 export type BehaviorType = "Elevator" | "Arm"
 
@@ -171,6 +183,7 @@ export type RobotPreferences = {
     motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    sensors: SensorPreferences[]
     driveVelocity: number
     driveAcceleration: number
     unstickForce: number
@@ -259,6 +272,7 @@ export function defaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
             ejectOrder: "FIFO",
         },
+        sensors: [],
         driveVelocity: 0,
         driveAcceleration: 0,
         unstickForce: 8000,

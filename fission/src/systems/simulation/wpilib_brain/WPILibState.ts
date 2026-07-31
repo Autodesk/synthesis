@@ -63,7 +63,7 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.SOLENOID]: undefined,
     [SimType.CAN_ENCODER]: NoraTypes.NUMBER2,
     [SimType.GYRO]: NoraTypes.NUMBER6,
-    [SimType.ACCELEROMETER]: NoraTypes.NUMBER3,
+    [SimType.ACCELEROMETER]: NoraTypes.NUMBER6, // accel xyz + vel xyz; matches SimAccel.genReceiver
     [SimType.DIO]: NoraTypes.NUMBER, // ?
     [SimType.AI]: NoraTypes.NUMBER,
     [SimType.AO]: undefined,

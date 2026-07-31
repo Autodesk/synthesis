@@ -22,6 +22,7 @@ import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
 import ConfigureJointsInterface from "./interfaces/ConfigureJointsInterface"
+import ConfigureSensorsInterface from "./interfaces/sensors/ConfigureSensorsInterface"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
@@ -145,6 +146,7 @@ const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
     [ConfigMode.JOINTS]: ConfigureJointsInterface,
     [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface,
     [ConfigMode.INTAKE]: ConfigureGamepiecePickupInterface,
+    [ConfigMode.SENSORS]: ConfigureSensorsInterface,
     [ConfigMode.CONTROLS]: ControlsConfigInterface,
     [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
     [ConfigMode.PROTECTED_ZONES]: ConfigureProtectedZonesInterface,

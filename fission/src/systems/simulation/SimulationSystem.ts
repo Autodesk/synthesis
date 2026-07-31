@@ -1,3 +1,4 @@
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import World from "@/systems/World.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import type Mechanism from "../physics/Mechanism"
@@ -10,12 +11,13 @@ import HingeDriver from "./driver/HingeDriver"
 import IntakeDriver from "./driver/IntakeDriver"
 import SliderDriver from "./driver/SliderDriver"
 import WheelDriver from "./driver/WheelDriver"
-import ChassisStimulus from "./stimulus/ChassisStimulus"
 import HingeStimulus from "./stimulus/HingeStimulus"
 import SliderStimulus from "./stimulus/SliderStimulus"
 import type Stimulus from "./stimulus/Stimulus"
 import { makeStimulusID, StimulusType } from "./stimulus/Stimulus"
 import WheelRotationStimulus from "./stimulus/WheelStimulus"
+import GyroStimulus from "./stimulus/GyroStimulus"
+import AccelStimulus from "./stimulus/AccelStimulus"
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
@@ -103,13 +105,6 @@ class SimulationLayer {
             }
         })
 
-        const chassisStim = new ChassisStimulus(
-            { type: StimulusType.STIM_CHASSIS_ACCEL, guid: "CHASSIS_GUID" },
-            mechanism.nodeToBody.get(mechanism.rootBody)!,
-            { GUID: "CHASSIS_GUID", name: "Chassis" }
-        )
-        this._stimuli.set(JSON.stringify(chassisStim.id), chassisStim)
-
         if (assembly) {
             const intakeDriv = new IntakeDriver({ type: DriverType.INTAKE, guid: "INTAKE_GUID" }, assembly, {
                 GUID: "INTAKE_GUID",
@@ -121,9 +116,51 @@ class SimulationLayer {
             })
             this._drivers.set(JSON.stringify(ejectorDriv.id), ejectorDriv)
             this._drivers.set(JSON.stringify(intakeDriv.id), intakeDriv)
+
+            this.buildSensorStimuli(assembly)
         } else {
             console.debug("No Assembly found with given mechanism, skipping intake and ejector...")
         }
+    }
+
+    private buildSensorStimuli(assembly: MirabufSceneObject) {
+        assembly.robotPreferences.sensors.forEach((sensor, i) => {
+            const body = this._mechanism.nodeToBody.get(sensor.parentNode ?? this._mechanism.rootBody)!
+            const guid = `SENSOR_${i}_GUID`
+            const info = { GUID: guid, name: sensor.name }
+            let stim: Stimulus
+            switch (sensor.sensorType) {
+                case "gyro":
+                    stim = new GyroStimulus(
+                        { type: StimulusType.STIM_GYRO, guid },
+                        body,
+                        sensor.deltaTransformation,
+                        sensor.device,
+                        info
+                    )
+                    break
+                case "accel":
+                    stim = new AccelStimulus(
+                        { type: StimulusType.STIM_ACCEL, guid },
+                        body,
+                        sensor.deltaTransformation,
+                        info
+                    )
+                    break
+            }
+            this._stimuli.set(JSON.stringify(stim.id), stim)
+        })
+    }
+
+    public refreshSensors() {
+        this._stimuli.forEach((stim, key) => {
+            if (stim.id.type === StimulusType.STIM_GYRO || stim.id.type === StimulusType.STIM_ACCEL) {
+                this._stimuli.delete(key)
+            }
+        })
+
+        const assembly = World.sceneRenderer.mirabufSceneObjects.findWhere(obj => obj.mechanism == this._mechanism)
+        if (assembly) this.buildSensorStimuli(assembly)
     }
 
     public update(deltaT: number) {

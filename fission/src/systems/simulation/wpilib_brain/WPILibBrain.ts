@@ -8,10 +8,8 @@ import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import { type SimFlow, validate } from "./SimDataFlow"
 import type { SimInput } from "./SimInput"
 import { SimAnalogOutput, SimDigitalOutput, type SimOutput } from "./SimOutput"
-import { SimAccelInput } from "./sim/SimAccel"
 import { SimAnalogInput } from "./sim/SimAI"
 import { SimDigitalInput } from "./sim/SimDIO"
-import { SimGyroInput } from "./sim/SimGyro"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
 import { type DeviceData, type SimType, type WSMessage, worker } from "./WPILibTypes"
 import SimDriverStation from "./sim/SimDriverStation"
@@ -103,9 +101,6 @@ class WPILibBrain extends Brain {
             return
         }
 
-        // TODO: make these configurable
-        this.addSimInput(new SimGyroInput("SYN AHRS[0]", this._mechanism))
-        this.addSimInput(new SimAccelInput("SYN AHRS[0]", this._mechanism))
         this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
         this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
         this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
@@ -169,14 +164,14 @@ class WPILibBrain extends Brain {
 
     public enable(): void {
         setSimBrain(this)
-        // worker.getValue().postMessage({ command: "enable", reconnect: RECONNECT })
+        worker.getValue().postMessage({ command: "enable", reconnect: true })
     }
 
     public disable(): void {
         if (getSimBrain() == this) {
             setSimBrain(undefined)
         }
-        // worker.getValue().postMessage({ command: "disable" })
+        worker.getValue().postMessage({ command: "disable" })
     }
 }
 

@@ -57,6 +57,7 @@ export enum ConfigMode {
     JOINTS,
     EJECTOR,
     INTAKE,
+    SENSORS,
     CONTROLS,
     SCORING_ZONES,
     PROTECTED_ZONES,
@@ -79,6 +80,12 @@ const baseRobotConfigModes = [
         "Intake",
         ConfigMode.INTAKE,
         "Configure the robot’s intake position and parent node for picking up game pieces."
+    ),
+
+    new ConfigModeSelectionOption(
+        "Sensors",
+        ConfigMode.SENSORS,
+        "Place sensors on your robot"
     ),
 
     new ConfigModeSelectionOption(

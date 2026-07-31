@@ -5,7 +5,8 @@ import type { NoraType, NoraTypes } from "../Nora"
 import type { SimSupplier } from "../wpilib_brain/SimDataFlow"
 
 export enum StimulusType {
-    STIM_CHASSIS_ACCEL = "Stim_ChassisAccel",
+    STIM_ACCEL = "Stim_Accel",
+    STIM_GYRO = "Stim_Gyro",
     STIM_ENCODER = "Stim_Encoder",
     STIM_UNKNOWN = "Stim_Unknown",
 }

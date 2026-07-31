@@ -124,6 +124,10 @@ export function getAccelDevices(): [string, Map<string, string | boolean | numbe
     return [...(getSimMap()?.get(SimType.ACCELEROMETER)?.entries() ?? [])]
 }
 
+export function getGyroDevices(): [string, Map<string, string | boolean | number>][] {
+    return [...(getSimMap()?.get(SimType.GYRO)?.entries() ?? [])]
+}
+
 export function getDIODevices(): [string, Map<string, string | boolean | number>][] {
     return [...(getSimMap()?.get(SimType.DIO)?.entries() ?? [])]
 }
@@ -139,14 +143,14 @@ function displayNamePWM(id: string) {
     return `PWM [${id}]`
 }
 
-function displayNameAccel(id: string) {
+function displayNameSensor(id: string, label: string) {
     if (id.startsWith("BuiltIn")) {
-        return "Accel [Built In]"
+        return `${label} [Built In]`
     }
     const a = id.indexOf("[")
     const b = id.indexOf("]")
     if (a === -1 || b === -1 || b - a < 2) return id
-    return `Accel [${id.substring(0, a)} - ${id.substring(a + 1, b)}]`
+    return `${label} [${id.substring(0, a)} - ${id.substring(a + 1, b)}]`
 }
 
 // TODO
@@ -335,10 +339,27 @@ export class SimConfig {
                 originType: SimType.ACCELEROMETER,
                 originId: id,
 
-                displayName: displayNameAccel(id),
+                displayName: displayNameSensor(id, "Accel"),
                 enabled: data.get("<init") === true,
 
                 many: hasNoraAverageFunc(receiverTypeMap[SimType.ACCELEROMETER]!),
+                isSource: false,
+            }
+            this.addHandle(config, handle)
+            robotIONode.targets.push(handle.id)
+        })
+        getGyroDevices().forEach(([id, data]) => {
+            const handle: HandleInfo = {
+                id: "",
+                nodeId: NODE_ID_ROBOT_IO,
+                noraType: receiverTypeMap[SimType.GYRO]!,
+                originType: SimType.GYRO,
+                originId: id,
+
+                displayName: displayNameSensor(id, "Gyro"),
+                enabled: data.get("<init") === true,
+
+                many: hasNoraAverageFunc(receiverTypeMap[SimType.GYRO]!),
                 isSource: false,
             }
             this.addHandle(config, handle)
