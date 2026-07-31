@@ -1,8 +1,7 @@
 import { Mutex } from "async-mutex"
 
-// Mirrors WPILibWSWorker.ts exactly (same connect/reconnect/send protocol),
-// pointed at OpModeRunner's embedded WS server instead of halsim_ws, on a
-// distinct port/path so both sim kinds can run side by side.
+// Connects to OpModeRunner's embedded WS server on its own port/path so it
+// can run alongside other sim kinds without conflict.
 
 let socket: WebSocket | undefined = undefined
 

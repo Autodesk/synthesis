@@ -11,12 +11,10 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 /**
- * Fission-facing half of FTC codesim. Mirrors the existing WPILib HALSim WS
- * integration (fission/src/systems/simulation/wpilib_brain): the robot code
- * process is the WS *server*, Fission's browser worker is the *client*.
- * Same {type, device, data} JSON message shape as WPILibTypes.WSMessage, on
- * a distinct path/port (/ftcsimws, default 3301) so both sim kinds can run
- * side by side without colliding with halsim_ws's :3300/wpilibws.
+ * Fission-facing half of FTC codesim. The robot code process is the WS
+ * *server*, Fission's browser worker is the *client*. Sends {type, device,
+ * data} JSON messages on a distinct path/port (/ftcsimws, default 3301) so
+ * it can run alongside other sim kinds without colliding.
  */
 public class FTCWsBridge extends WebSocketServer {
     public static final int DEFAULT_PORT = 3301;

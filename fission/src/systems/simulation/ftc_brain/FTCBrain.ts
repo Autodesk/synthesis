@@ -80,16 +80,15 @@ const GAMEPAD_BUTTON = {
 }
 
 /**
- * FTC counterpart to WPILibBrain. Only handles what SyntheSimFTC's shim
- * implements today: DcMotorSimple power (harness -> mechanism, one-directional,
- * no encoder feedback yet) and gamepad1 axes/buttons (Fission -> harness).
+ * Handles DcMotorSimple power (harness -> mechanism, one-directional, no
+ * encoder feedback yet) and gamepad1 axes/buttons (Fission -> harness).
  *
  * Wiring (FTC device name -> Driver) is set via addMotorWiring, called from
  * FTCCreateDeviceModal. It is session-only, not persisted through
- * assembly.simConfigData the way WPILibBrain's saved config is -- see
- * project_ftc_codesim_scope_decisions memory for why (there's no on-disk
- * robot config to round-trip against in the first place, real FTC hardware
- * config never lives in the team's source tree either).
+ * assembly.simConfigData -- see project_ftc_codesim_scope_decisions memory
+ * for why (there's no on-disk robot config to round-trip against in the
+ * first place, real FTC hardware config never lives in the team's source
+ * tree either).
  */
 class FTCBrain extends Brain {
     private _simLayer: SimulationLayer

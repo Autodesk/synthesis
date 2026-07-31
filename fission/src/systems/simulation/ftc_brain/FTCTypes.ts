@@ -7,9 +7,8 @@ export type DeviceData = Map<string, number | boolean | string>
 export type SimMap = Map<SimType, Map<DeviceName, DeviceData>>
 
 /**
- * Mirrors WPILibTypes.SimType, trimmed to what the FTC shim (SyntheSimFTC)
- * actually implements today: DcMotorSimple power out, Gamepad axes/buttons
- * in. Widen alongside the shim (Servo, CRServo, IMU, ...), not ahead of it.
+ * DcMotorSimple power out, Gamepad axes/buttons in. Widen alongside the
+ * FTC shim (Servo, CRServo, IMU, ...), not ahead of it.
  */
 export enum SimType {
     DC_MOTOR = "DcMotor",
