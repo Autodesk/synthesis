@@ -1,6 +1,7 @@
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { MultiplayerInitProps } from "@/modals/multiplayer/MultiplayerStartModal.tsx"
+import World from "@/systems/World.ts"
 
 /**
  * Shared `startWorldCallback` for {MultiplayerStartModal}, used by both the
@@ -10,5 +11,6 @@ import type { MultiplayerInitProps } from "@/modals/multiplayer/MultiplayerStart
 export async function startMultiplayerWorld(info: MultiplayerInitProps): Promise<boolean> {
     PreferencesSystem.setUserPreference("MultiplayerUsername", info.displayName)
     PreferencesSystem.savePreferences()
+    World.reset()
     return await MultiplayerSystem.setup(info.ws, info.displayName)
 }

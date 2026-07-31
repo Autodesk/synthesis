@@ -323,11 +323,11 @@ class MultiplayerSystem {
 
     public destroy() {
         this.client.close()
-        this.clientToSceneObjectIdMap.clear()
+        World.setMultiplayerSystem(undefined)
+        World.reset()
         this._onDestroyHooks.forEach(hook => {
             hook()
         })
-        World.setMultiplayerSystem(undefined)
     }
 
     public convertSceneObjectId(peerId: string, objectId: RemoteSceneObjectId): LocalSceneObjectId {

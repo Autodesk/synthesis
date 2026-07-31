@@ -113,6 +113,11 @@ class World {
         }
     }
 
+    public static reset() {
+        this._instance?._sceneRenderer.removeAllSceneObjects()
+        this._instance?._scoreTracker.resetScores()
+    }
+
     public static initWorld() {
         if (this._instance == null) {
             this._instance = new World()
