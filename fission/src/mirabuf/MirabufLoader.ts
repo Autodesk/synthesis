@@ -471,6 +471,10 @@ export async function spawnCachedMira(
 ) {
     // If spawning a field, then remove all other fields
     if (info.miraType === MiraType.FIELD) {
+        if (World.multiplayerSystem != null && World.sceneRenderer.mirabufSceneObjects.getField() != null) {
+            globalAddToast("warning", "Cannot spawn a second field!")
+            return
+        }
         World.sceneRenderer.removeAllFields()
     }
 
@@ -512,7 +516,7 @@ export async function spawnCachedMira(
                             bodyIds: mirabufSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
                         },
                     }
-                    await World.multiplayerSystem?.broadcast(message)
+                    World.multiplayerSystem?.broadcast(message)
                     World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
                 }
 

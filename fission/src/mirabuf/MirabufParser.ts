@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import { convertMirabufTransformToThreeMatrix } from "@/util/TypeConversions"
 
 export type RigidNodeId = string

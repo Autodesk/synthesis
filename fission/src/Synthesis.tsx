@@ -2,8 +2,8 @@ import { AnimatePresence } from "framer-motion"
 import { SnackbarProvider } from "notistack"
 import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
-import MainHUD from "@/components/MainHUD"
-import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
+import MainHUD from "@/components/overlays/MainHUD.tsx"
+import MultiplayerHUD from "@/components/overlays/MultiplayerHUD.tsx"
 import Scene from "@/components/Scene.tsx"
 import MultiplayerStartModal from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 import World from "@/systems/World.ts"
@@ -11,10 +11,10 @@ import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
-import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
-import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import SceneOverlay from "./ui/components/SceneOverlay.tsx"
-import PortraitOverlay from "./ui/components/PortraitOverlay.tsx"
+import DragModeIndicator from "@/components/overlays/DragModeIndicator.tsx"
+import ProgressNotifications from "@/components/ProgressNotification.tsx"
+import SceneOverlay from "@/components/overlays/SceneOverlay.tsx"
+import PortraitOverlay from "@/components/overlays/PortraitOverlay.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
@@ -24,6 +24,7 @@ import SessionStorage, { applyAutoToast } from "@/util/SessionStorage.ts"
 import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld.ts"
+import { Stack } from "@mui/material"
 
 const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
@@ -103,12 +104,14 @@ const Synthesis = () => {
                             <TouchControls />
                             <SceneOverlay />
                             <ContextMenu />
-                            <MultiplayerHUD />
                             <MainHUD key={"main-hud"} />
                             <UIRenderer />
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
-                            <DragModeIndicator />
+                            <Stack direction={"column"} gap={1} position={"absolute"} bottom={0} left={0}>
+                                <DragModeIndicator />
+                                <MultiplayerHUD />
+                            </Stack>
                             <PortraitOverlay />
 
                             {!consentPopupDisable && (

@@ -1,5 +1,5 @@
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
-import MirabufCachingService from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
@@ -150,7 +150,23 @@ function handleCollisionMessage() {
     return // TODO Expand on this logic
 }
 
-async function handleNewObjectMessage(data: NewObjectBody, peerId: string) {
+async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: number) {
+    if (data.miraType == MiraType.FIELD && World.multiplayerSystem?.fieldTransferLock != null) {
+        if (World.multiplayerSystem.fieldTransferLock.ts < ts) {
+            console.warn("Ignoring assembly", { peerId, sceneObjectKey: data.sceneObjectKey })
+            return
+        } else {
+            const object = World.multiplayerSystem.fieldTransferLock.id
+            const deleteObject = () => {
+                if (!World.sceneRenderer.sceneObjects.has(object)) {
+                    pendingOperations.push(() => deleteObject())
+                } else {
+                    World.sceneRenderer.removeSceneObject(object)
+                }
+            }
+            deleteObject()
+        }
+    }
     const handle =
         progressHandles.get(data.sceneObjectKey) ??
         new ProgressHandle(
@@ -219,7 +235,6 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string) {
     data.bodyIds.forEach((id, i) => bodyMap.set(id, clientBodyIds[i]))
 
     handle.done("Loaded")
-
     // Run all messages that arrived before the assembly fully spawned
     const len = pendingOperations.length
     pendingOperations.forEach(op => {
@@ -241,7 +256,7 @@ async function handleNeedAssemblyMessage(data: NeedAssemblyBody, peerId: string)
     const encodedAssembly = new Uint8Array(buffer) as EncodedAssembly
 
     const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
-    await World.multiplayerSystem?.send(
+    World.multiplayerSystem?.send(
         {
             type: "newObject",
             data: {

@@ -17,7 +17,7 @@ import {
 } from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
+import type { PixelSpaceCoord } from "@/components/overlays/SceneOverlayEvents.ts"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { rayCastForRigidBody } from "@/util/RaycastUtils"

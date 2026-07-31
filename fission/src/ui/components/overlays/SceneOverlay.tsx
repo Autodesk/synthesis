@@ -1,11 +1,11 @@
 import { Stack } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import Label from "./Label"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
+import Label from "../Label.tsx"
 import { SynthesisIcons } from "@/components/StyledComponents.tsx"
-import type { SceneOverlayTag } from "./SceneOverlayEvents"
-import ViewCube from "./ViewCube"
+import type { SceneOverlayTag } from "./SceneOverlayEvents.ts"
+import ViewCube from "../ViewCube.tsx"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 

@@ -40,6 +40,8 @@ class MultiplayerSystem {
     private _lastPingTs: number = 0
     private _hasPendingPing: boolean = false
 
+    public fieldTransferLock?: { ts: number; id: SceneObjectId }
+
     public static async setup(ws: MultiplayerWebsocket, displayName: string): Promise<boolean> {
         console.group("Multiplayer initialization")
         const system = new MultiplayerSystem(ws, displayName)
@@ -178,6 +180,9 @@ class MultiplayerSystem {
         message.recipientId = peerID
         message.timestamp ??= Date.now()
         message.clientId = this.clientId
+        if (message.type == "newObject" && message.data.miraType == MiraType.FIELD) {
+            this.fieldTransferLock = { ts: message.timestamp, id: message.data.sceneObjectKey }
+        }
         this.client.sendPeer(message as MessageWithTimestamp)
     }
 
@@ -192,7 +197,6 @@ class MultiplayerSystem {
             },
             peerID
         )
-        this.registerExistingSceneObjects()
         for (const obj of this.getOwnObjects()) {
             this.send(
                 {

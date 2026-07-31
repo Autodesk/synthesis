@@ -1,6 +1,6 @@
 import { Box, Stack, Typography, useMediaQuery } from "@mui/material"
 import type React from "react"
-import { useIsMobile } from "@/ui/helpers/useIsMobile"
+import { useIsMobile } from "@/ui/helpers/useIsMobile.ts"
 
 /**
  * Full-screen overlay shown when a mobile device is held in portrait orientation.

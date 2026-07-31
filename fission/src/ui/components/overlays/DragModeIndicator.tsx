@@ -1,9 +1,9 @@
 import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
-import { globalAddToast } from "./GlobalUIControls"
-import Label from "./Label"
-import { SynthesisIcons } from "./StyledComponents"
+import { globalAddToast } from "../GlobalUIControls.ts"
+import Label from "../Label.tsx"
+import { SynthesisIcons } from "../StyledComponents.tsx"
 
 const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
@@ -19,7 +19,7 @@ const DragModeIndicator: React.FC = () => {
 
     return enabled ? (
         <Stack
-            className="select-none absolute left-1 bottom-1 py-2 px-4 rounded-lg gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            className="select-none py-2 px-4 rounded-lg gap-2 m-1 cursor-pointer hover:opacity-80 transition-opacity"
             direction="row"
             onClick={handleClick}
             sx={{

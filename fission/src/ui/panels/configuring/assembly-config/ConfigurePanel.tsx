@@ -40,6 +40,7 @@ import { FaArrowsRotate } from "react-icons/fa6"
 import MoveInterface from "@/panels/configuring/assembly-config/interfaces/MoveInterface.tsx"
 import ControlsConfigInterface from "@/panels/configuring/assembly-config/interfaces/ControlsConfigInterface.tsx"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import Label from "@/components/Label.tsx"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -143,6 +144,7 @@ export interface ConfigurePanelCustomProps {
     configMode?: ConfigMode
     configurationType?: ConfigurationType
 }
+
 const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
     [ConfigMode.JOINTS]: ConfigureJointsInterface,
     [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface,
@@ -312,44 +314,54 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         pendingDeletes={pendingDeletes}
                     />
                     {selectedAssembly !== undefined && (
-                        <ConfigModeSelection
-                            modes={modes}
-                            configMode={configMode}
-                            onModeSelected={mode => {
-                                if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                                setConfigMode(mode)
-                            }}
-                        />
-                    )}
-                    {ConfigSubPanel != null && (
-                        <ConfigSubPanel
-                            panel={panel!}
-                            selectedAssembly={selectedAssembly!}
-                            hasMadeChanges={hasMadeChanges}
-                            registerCleanupFunction={registerCleanupFunctions}
-                        />
-                    )}
-                    {configMode === undefined && selectedAssembly !== undefined && (
                         <>
-                            <Spacer height={16} />
-                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
-                            <Spacer height={16} />
-                            <Button
-                                className={"w-full"}
-                                color={"warning"}
-                                onClick={() => {
-                                    closePanel(panel!.id, CloseType.ACCEPT)
-                                    selectedAssembly.resetPreferences()
-                                    globalAddToast(
-                                        "info",
-                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
-                                    )
-                                }}
-                            >
-                                Reset
-                                <Spacer width={5} />
-                                <FaArrowsRotate />
-                            </Button>
+                            {!selectedAssembly.isOwnObject ? (
+                                <Label size={"sm"}>Cannot configure someone else's object</Label>
+                            ) : (
+                                <>
+                                    <ConfigModeSelection
+                                        modes={modes}
+                                        configMode={configMode}
+                                        onModeSelected={mode => {
+                                            if (configMode !== undefined)
+                                                EventSystem.dispatch("ConfigurationSavedEvent")
+                                            setConfigMode(mode)
+                                        }}
+                                    />
+
+                                    {ConfigSubPanel != null && (
+                                        <ConfigSubPanel
+                                            panel={panel!}
+                                            selectedAssembly={selectedAssembly!}
+                                            hasMadeChanges={hasMadeChanges}
+                                            registerCleanupFunction={registerCleanupFunctions}
+                                        />
+                                    )}
+                                    {configMode === undefined && (
+                                        <>
+                                            <Spacer height={16} />
+                                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                                            <Spacer height={16} />
+                                            <Button
+                                                className={"w-full"}
+                                                color={"warning"}
+                                                onClick={() => {
+                                                    closePanel(panel!.id, CloseType.ACCEPT)
+                                                    selectedAssembly.resetPreferences()
+                                                    globalAddToast(
+                                                        "info",
+                                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
+                                                    )
+                                                }}
+                                            >
+                                                Reset
+                                                <Spacer width={5} />
+                                                <FaArrowsRotate />
+                                            </Button>
+                                        </>
+                                    )}
+                                </>
+                            )}
                         </>
                     )}
                 </>

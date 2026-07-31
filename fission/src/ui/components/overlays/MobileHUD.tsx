@@ -2,22 +2,22 @@ import { Box, Drawer, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { FaBars } from "react-icons/fa6"
-import APS from "@/aps/APS"
+import APS from "@/aps/APS.ts"
 import EventSystem from "@/systems/EventSystem.ts"
-import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import APSManagementModal from "../modals/APSManagementModal"
-import SettingsModal from "../modals/configuring/SettingsModal"
-import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
-import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
-import { globalOpenModal, setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
-import { IconButton, SynthesisIcons } from "./StyledComponents"
-import { AssemblySelect } from "./topbar/AssemblySelect"
-import { HUDMenuButton } from "./topbar/HUDMenuButton"
-import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
-import { TopBarIcon } from "./topbar/TopBarIcons"
-import { useAssemblySelection, useConfigureAssembly } from "./topbar/UseConfigureAssembly"
-import UserIcon from "./UserIcon"
+import { useIsTouchDevice } from "@/ui/helpers/useIsMobile.ts"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
+import APSManagementModal from "@/modals/APSManagementModal.tsx"
+import SettingsModal from "@/modals/configuring/SettingsModal.tsx"
+import type { ConfigurationType } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import ImportMirabufPanel from "@/panels/mirabuf/ImportMirabufPanel.tsx"
+import { globalOpenModal, setAddToast, setOpenModal, setOpenPanel } from "../GlobalUIControls.ts"
+import { IconButton, SynthesisIcons } from "../StyledComponents.tsx"
+import { AssemblySelect } from "../topbar/AssemblySelect.tsx"
+import { HUDMenuButton } from "../topbar/HUDMenuButton.tsx"
+import { TOP_BAR_ICON_BUTTON_SX } from "../topbar/TopBarConfig.ts"
+import { TopBarIcon } from "../topbar/TopBarIcons.tsx"
+import { useAssemblySelection, useConfigureAssembly } from "../topbar/UseConfigureAssembly.ts"
+import UserIcon from "../UserIcon.tsx"
 import MultiplayerStartModal from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 
 const DRAWER_SX = {
@@ -43,7 +43,7 @@ const MobileHUD: React.FC = () => {
     const isTouchDevice = useIsTouchDevice()
 
     const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
-    const { configureButtons, openConfig } = useConfigureAssembly(selectedAssembly)
+    const { configureButtons, openConfig, disabledMessage } = useConfigureAssembly(selectedAssembly)
 
     useEffect(() => EventSystem.listen("APSUserInfoUpdate", () => setUserInfo(APS.userInfo)), [])
 
@@ -144,8 +144,8 @@ const MobileHUD: React.FC = () => {
                         key={label}
                         label={label}
                         iconName={name}
-                        disabled={!selectedAssembly}
-                        disabledTooltip="Spawn an assembly first"
+                        disabled={disabledMessage != null}
+                        disabledTooltip={disabledMessage}
                         onClick={() => {
                             openConfig(mode)
                             if (selectedAssembly) closeDrawer()

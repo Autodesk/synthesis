@@ -55,9 +55,9 @@ const MultiplayerHUD: React.FC = () => {
         roomCode != null && (
             <Stack
                 direction="column"
-                position="fixed"
-                left={0}
-                bottom={0}
+                // position="fixed"
+                // left={0}
+                // bottom={0}
                 sx={theme => ({
                     bgcolor: `color-mix(in srgb, ${theme.palette.background.paper}, transparent 40%)`,
                     color: theme.palette.text.primary,
