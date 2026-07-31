@@ -1,0 +1,9 @@
+/*
+ * Settings for SyntheSimFTC -- standalone Gradle project, same convention as
+ * the sibling SyntheSimJava project (each simulation library builds/publishes
+ * independently rather than as part of one root multi-project build).
+ */
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}

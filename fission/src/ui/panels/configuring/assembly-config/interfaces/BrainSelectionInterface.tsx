@@ -1,6 +1,7 @@
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { BrainType } from "@/systems/simulation/Brain"
+import FTCBrain from "@/systems/simulation/ftc_brain/FTCBrain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
@@ -26,6 +27,9 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
                     case "wpilib":
                         selectedAssembly.brain = new WPILibBrain(selectedAssembly)
                         break
+                    case "ftc":
+                        selectedAssembly.brain = new FTCBrain(selectedAssembly)
+                        break
                     default:
                         return
                 }
@@ -37,6 +41,7 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
         >
             <ToggleButton value={"synthesis"}>Synthesis Brain</ToggleButton>
             <ToggleButton value={"wpilib"}>WPILib Brain</ToggleButton>
+            <ToggleButton value={"ftc"}>FTC Brain</ToggleButton>
         </ToggleButtonGroup>
     )
 }

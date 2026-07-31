@@ -392,11 +392,11 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         "Set the robot's alliance color for matches. (red or blue)"
                     ),
                     new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the asset's metadata"),
-                    selectedAssembly?.brain?.brainType === "wpilib"
+                    selectedAssembly?.brain?.brainType === "wpilib" || selectedAssembly?.brain?.brainType === "ftc"
                         ? new ConfigModeSelectionOption(
                               "Simulation",
                               ConfigMode.SIM,
-                              "Configure the WPILib simulation settings for this robot."
+                              "Configure the simulation settings for this robot."
                           )
                         : new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS, "Set your controller scheme."),
                 ]

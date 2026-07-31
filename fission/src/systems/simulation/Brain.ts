@@ -1,6 +1,6 @@
 import type Mechanism from "../physics/Mechanism"
 
-export type BrainType = "synthesis" | "wpilib" | "unknown"
+export type BrainType = "synthesis" | "wpilib" | "ftc" | "unknown"
 
 abstract class Brain {
     protected _mechanism: Mechanism

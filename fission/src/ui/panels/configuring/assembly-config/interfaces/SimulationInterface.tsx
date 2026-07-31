@@ -1,11 +1,13 @@
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import FTCBrain from "@/systems/simulation/ftc_brain/FTCBrain"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Checkbox from "@/ui/components/Checkbox"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { Button } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import FTCCreateDeviceModal from "@/ui/modals/configuring/ftc-config/FTCCreateDeviceModal"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import WiringPanel from "@/ui/panels/simulation/WiringPanel"
 import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
@@ -18,7 +20,7 @@ export default function SimulationInterface({
     selectedAssembly,
     panel,
 }: SimulationInterfaceProps & PanelImplProps<void, ConfigurePanelCustomProps>) {
-    const { openPanel, closePanel } = useUIContext()
+    const { openPanel, closePanel, openModal } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
 
     return (
@@ -49,6 +51,11 @@ export default function SimulationInterface({
             >
                 Auto Testing
             </Button>
+            {selectedAssembly.brain instanceof FTCBrain && (
+                <Button className="self-center" onClick={() => openModal(FTCCreateDeviceModal, undefined)}>
+                    Configure FTC Devices
+                </Button>
+            )}
         </>
     )
 }

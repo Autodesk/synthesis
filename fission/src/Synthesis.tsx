@@ -14,6 +14,7 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
 import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
+import FTCConnectionStatus from "./ui/components/FTCConnectionStatus.tsx"
 import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
@@ -115,6 +116,7 @@ const Synthesis = () => {
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
                             <WPILibConnectionStatus />
+                            <FTCConnectionStatus />
                             <DragModeIndicator />
 
                             {!consentPopupDisable && (
