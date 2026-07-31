@@ -23,39 +23,39 @@ pub fn certification_directory() -> PathBuf {
 pub struct CliConfig {
     #[argh(
         option,
-        description = "configuration file for server. all flags passed in addition to this one will be overridden by the corresponding option in the specified config file"
+        description = "path to configuration file. additional command-line flags will override options set in the config file"
     )]
     pub config_file: Option<PathBuf>,
 
     #[argh(
         option,
-        description = "directory in which to story the certificate files in secure mode"
+        description = "directory in which to store certificates and key files (only for --secure mode)"
     )]
     pub cert_dir: Option<PathBuf>,
 
-    // This doesn't have a default because otherwise we wouldn't be able to have it take precidence
+    // This doesn't have a default because otherwise we wouldn't be able to have it take precedence
     // over the file config analog of this argument properly
-    #[argh(option, short = 'p', description = "on which port to run the server")]
+    #[argh(option, short = 'p', description = "port to listen on")]
     pub port: Option<u32>,
 
     #[argh(
         switch,
         short = 'h',
-        description = "whether to run the application without or tui or with one"
+        description = "show a text console instead of the interactive TUI"
     )]
     pub headless: bool,
 
     #[argh(
         switch,
         short = 's',
-        description = "whether to run the server through the WebSocketSecure protocol or not. self-signed PEM certificates will be automatically generated"
+        description = "encrypt websocket traffic using TLS. self-signed PEM certificates will be automatically generated"
     )]
     pub secure: bool,
 
     #[argh(
         option,
         short = 'r',
-        description = "initially populate the server with a room that will persist even when no users occupy it. value must be a six digit string consisting only of valid base-10 digits and uppercase characters"
+        description = "create a persistent room with this code that is always available. code must be a six-character string consisting only of valid base-10 digits and uppercase characters"
     )]
     pub permanent_room: Option<String>,
 }
