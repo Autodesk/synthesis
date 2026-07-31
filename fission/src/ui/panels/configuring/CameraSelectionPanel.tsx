@@ -28,7 +28,6 @@ CommandRegistry.get().registerCommand({
     perform: () => import("./CameraSelectionPanel").then(m => globalOpenPanel(m.default, undefined)),
 })
 
-const UNFOCUSED_ID = "unfocused" as SceneObjectId
 const CENTER_POINT_INDEX = -1
 
 function getSceneObjects(): MirabufSceneObject[] {
@@ -91,8 +90,8 @@ const FieldViewSettings: React.FC = () => {
         const selected = getFieldViewControls()?.selectedPoint
         return selected ? getCameraPoints().indexOf(selected) : CENTER_POINT_INDEX
     })
-    const [focusedRobotId, setFocusedRobotId] = useState<SceneObjectId>(
-        getFieldViewControls()?.focusedRobot?.id ?? UNFOCUSED_ID
+    const [focusedRobotId, setFocusedRobotId] = useState<SceneObjectId | null>(
+        getFieldViewControls()?.focusedRobot?.id ?? null
     )
 
     // TODO: this is very bad react, we should not be updating this every re-render
@@ -112,9 +111,9 @@ const FieldViewSettings: React.FC = () => {
                 const freshRobots = World.sceneRenderer.mirabufSceneObjects.getRobots()
                 setRobots(freshRobots)
                 setFocusedRobotId(prev => {
-                    if (prev !== UNFOCUSED_ID && !freshRobots.find(r => r.id === prev)) {
+                    if (prev !== null && !freshRobots.find(r => r.id === prev)) {
                         getFieldViewControls()?.focusRobot(undefined)
-                        return UNFOCUSED_ID
+                        return null
                     }
                     return prev
                 })
@@ -128,7 +127,7 @@ const FieldViewSettings: React.FC = () => {
         () =>
             EventSystem.listen("CameraViewChangedEvent", ({ point, focusedRobotId }) => {
                 setActivePointIndex(point ? getCameraPoints().indexOf(point) : CENTER_POINT_INDEX)
-                setFocusedRobotId(focusedRobotId ?? UNFOCUSED_ID)
+                setFocusedRobotId(focusedRobotId ?? null)
             }),
         []
     )
@@ -142,7 +141,7 @@ const FieldViewSettings: React.FC = () => {
                 if (field) tc.focusProvider = field
             }
             setActivePointIndex(CENTER_POINT_INDEX)
-            setFocusedRobotId(UNFOCUSED_ID)
+            setFocusedRobotId(null)
         } else {
             const point = points[index]
             const field = World.sceneRenderer.mirabufSceneObjects.getField()
@@ -178,14 +177,14 @@ const FieldViewSettings: React.FC = () => {
                         value={focusedRobotId}
                         onChange={e => {
                             const id = e.target.value as SceneObjectId
-                            const robot = id === UNFOCUSED_ID ? undefined : robots.find(r => r.id === id)
+                            const robot = id == null ? undefined : robots.find(r => r.id === id)
                             setFocusedRobotId(id)
                             getFieldViewControls()?.focusRobot(robot)
                         }}
                         size="small"
                         fullWidth
                     >
-                        <MenuItem value={UNFOCUSED_ID}>None</MenuItem>
+                        <MenuItem value={undefined}>None</MenuItem>
                         {robots.map(r => (
                             <MenuItem key={r.id} value={r.id}>
                                 {r.descriptiveName}
@@ -201,13 +200,13 @@ const FieldViewSettings: React.FC = () => {
 const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
-    const [focusedId, setFocusedId] = useState<SceneObjectId>(() => {
+    const [focusedId, setFocusedId] = useState<SceneObjectId | null>(() => {
         const controls = World.sceneRenderer?.currentCameraControls
-        if (controls instanceof CustomTargetControls) return controls.focusProvider?.id ?? UNFOCUSED_ID
+        if (controls instanceof CustomTargetControls) return controls.focusProvider?.id ?? null
         if (controls instanceof CustomFieldViewControls) {
-            return World.sceneRenderer.mirabufSceneObjects.getField()?.id ?? UNFOCUSED_ID
+            return World.sceneRenderer.mirabufSceneObjects.getField()?.id ?? null
         }
-        return UNFOCUSED_ID
+        return null
     })
     const [sceneObjects, setSceneObjects] = useState<MirabufSceneObject[]>(getSceneObjects)
     const [controlsType, setControlsType] = useState<CameraControlsType>(
@@ -248,7 +247,7 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     useEffect(
         () =>
             EventSystem.listen("CameraFocusChangedEvent", ({ focusProvider }) => {
-                setFocusedId(focusProvider?.id ?? UNFOCUSED_ID)
+                setFocusedId(focusProvider?.id ?? null)
             }),
         []
     )
@@ -259,13 +258,13 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             EventSystem.listen("MirabufObjectChangeEvent", () => {
                 const objects = getSceneObjects()
                 setSceneObjects(objects)
-                setFocusedId(prev => (objects.some(o => o.id === prev) ? prev : UNFOCUSED_ID))
+                setFocusedId(prev => (objects.some(o => o.id === prev) ? prev : null))
             }),
         []
     )
 
     // Selecting a target only updates state. The layout effect switches controls and assigns focus.
-    const onFocusChange = (id: SceneObjectId) => setFocusedId(id)
+    const onFocusChange = (id: SceneObjectId | null) => setFocusedId(id)
 
     const targetControls = getTargetControls()
 
@@ -275,11 +274,11 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                 <span className="text-xs opacity-70 select-none">Focus Target</span>
                 <Select
                     value={focusedId}
-                    onChange={e => onFocusChange(e.target.value as SceneObjectId)}
+                    onChange={e => onFocusChange((e.target.value ?? null) as SceneObjectId | null)}
                     size="small"
                     fullWidth
                 >
-                    <MenuItem value={UNFOCUSED_ID}>None</MenuItem>
+                    <MenuItem value={undefined}>None</MenuItem>
                     {sceneObjects.map(t => (
                         <MenuItem key={t.id} value={t.id}>
                             {t.miraType === MiraType.ROBOT ? t.descriptiveName : t.assemblyName}
