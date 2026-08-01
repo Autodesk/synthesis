@@ -2,8 +2,10 @@ import type * as THREE from "three"
 import EventSystem from "@/systems/EventSystem"
 import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import MixAndMatchBuild from "./MixAndMatchBuild"
+import { writeSessionToAssembly } from "./MixAndMatchDocument"
 import { componentWorldTransform, mateFacesTransform, relativeOffsetBetween } from "./MixAndMatchPlacement"
 import MixAndMatchScene from "./MixAndMatchScene"
 import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMatchTypes"
@@ -148,6 +150,36 @@ class MixAndMatchMode {
 
         build.delete(componentId)
         await this.sync()
+    }
+
+    /**
+     * Turns the build into an ordinary simulated robot: welds become fixed constraints, physics comes
+     * back on, and the parts are handed off to the scene as they are.
+     *
+     * @returns Whether the build was finished. Refused while scrubbed or while nothing is placed.
+     */
+    public static async finish(): Promise<boolean> {
+        const [build, scene] = this.require()
+        if (!build || !scene) return false
+
+        if (build.isScrubbed) {
+            globalAddToast("warning", "Rolled Back", "Resume from the playhead before finishing.")
+            return false
+        }
+        if (build.state.components.size === 0) {
+            globalAddToast("warning", "Nothing to Finish", "Add at least one part first.")
+            return false
+        }
+
+        // Stamped before the scene is torn down so a re-opened robot can replay this exact build.
+        const assembly = scene.rootAssembly(build.state)
+        if (assembly) writeSessionToAssembly(assembly, build.session)
+
+        const welds = scene.bakeWelds(build.state)
+        this.exit(true)
+        globalAddToast("info", "Build Finished", `${welds} weld${welds === 1 ? "" : "s"} applied`)
+
+        return true
     }
 
     /** Moves the timeline playhead. Scrubbing is a preview; it never edits the timeline. */

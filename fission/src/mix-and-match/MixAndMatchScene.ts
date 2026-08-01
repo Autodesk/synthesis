@@ -2,12 +2,14 @@ import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { createMirabuf, type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import type { mirabuf } from "@/proto/mirabuf"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertArrayToThreeMatrix4, convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import { componentWorldTransform, moveComponentBy, setComponentWorldTransform } from "./MixAndMatchPlacement"
-import { subtreeOf, type TimelineState } from "./MixAndMatchTimeline"
+import { subtreeOf, type TimelineState, weldPairs } from "./MixAndMatchTimeline"
 import type { ComponentId, LibraryPartRef, TransformArray } from "./MixAndMatchTypes"
 import PartLibrary from "./PartLibrary"
 
@@ -203,6 +205,40 @@ class MixAndMatchScene {
     }
 
     /**
+     * Turns the recorded welds into real fixed constraints between the components' root bodies.
+     *
+     * The constraint locks whatever relative pose the two parts are actually sitting in, which is the
+     * offset recorded at weld time unless the user has since repositioned the child on purpose.
+     *
+     * @param   state Timeline state to bake. Welds naming a missing component are skipped.
+     * @returns How many welds were baked.
+     */
+    public bakeWelds(state: TimelineState): number {
+        let baked = 0
+
+        weldPairs(state).forEach(({ parentId, childId }) => {
+            const parentBodyId = this.rootBodyOf(parentId)
+            const childBodyId = this.rootBodyOf(childId)
+            const parentBody = parentBodyId ? World.physicsSystem.getBody(parentBodyId) : undefined
+            const childBody = childBodyId ? World.physicsSystem.getBody(childBodyId) : undefined
+
+            if (!parentBody || !childBody) {
+                console.warn(`Skipping weld ${childId} -> ${parentId}: missing root body`)
+                return
+            }
+
+            const settings = new JOLT.FixedConstraintSettings()
+            settings.mSpace = JOLT.EConstraintSpace_WorldSpace
+            settings.mAutoDetectPoint = true
+
+            World.physicsSystem.createConstraint(settings, parentBody, childBody)
+            baked++
+        })
+
+        return baked
+    }
+
+    /**
      * Tears the build down.
      *
      * @param keepComponents Leave the spawned assemblies in the scene, for handing a finished build
@@ -222,6 +258,19 @@ class MixAndMatchScene {
 
         this._components.clear()
         this._componentBySceneObject.clear()
+    }
+
+    /**
+     * The assembly to save a finished build as.
+     *
+     * Welds form a tree, so the root of that tree is the natural stand-in for the whole robot; without
+     * any welds it's simply the first part placed.
+     */
+    public rootAssembly(state: TimelineState): mirabuf.Assembly | undefined {
+        const rootId = [...state.components.values()].find(component => !component.weld)?.id
+        const component = rootId ? this._components.get(rootId) : undefined
+
+        return component?.mirabufInstance.parser.assembly
     }
 
     private configure(component: MirabufSceneObject) {
