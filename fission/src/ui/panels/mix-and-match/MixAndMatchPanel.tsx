@@ -24,9 +24,11 @@ import {
     ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
+import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { rayCastMesh } from "@/util/RaycastUtils"
+import MixAndMatchTimelinePanel from "./MixAndMatchTimelinePanel"
 
 const GIZMO_SIZE = 1.5
 
@@ -40,7 +42,7 @@ function partName(libraryPartRef: string): string {
 }
 
 const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { configureScreen, openModal } = useUIContext()
+    const { configureScreen, closePanel, openModal } = useUIContext()
 
     const [, bumpRevision] = useReducer((x: number) => x + 1, 0)
     const [selected, setSelected] = useState<ComponentId | undefined>(undefined)
@@ -54,10 +56,19 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         configureScreen(panel!, { title: "Mix and Match", hideAccept: true, cancelText: "Close Build" }, {})
     }, [configureScreen, panel])
 
+    // Kept in a ref so the mount effect can close the timeline without re-running when the panel list
+    // changes underneath it.
+    const closePanelRef = useRef(closePanel)
+    closePanelRef.current = closePanel
+
     useEffect(() => {
         MixAndMatchMode.enter().then(bumpRevision).catch(console.error)
+        const timelineId = globalOpenPanel(MixAndMatchTimelinePanel, undefined)
 
-        return () => MixAndMatchMode.exit()
+        return () => {
+            if (timelineId) closePanelRef.current(timelineId, CloseType.CANCEL)
+            MixAndMatchMode.exit()
+        }
     }, [])
 
     useEffect(() => EventSystem.listen("MixAndMatchStateChangedEvent", bumpRevision), [])
@@ -67,6 +78,10 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const placed = [...(build?.state.components.values() ?? [])]
     const library = PartLibrary.list()
     const selectedComponent = selected ? scene?.get(selected) : undefined
+
+    // Rolled back into history: the timeline shows a past state, so editing is paused until the user
+    // explicitly resumes from the playhead. See the Timeline panel.
+    const scrubbed = build?.isScrubbed ?? false
 
     useEffect(() => {
         if (selected && !MixAndMatchMode.build?.state.components.has(selected)) setSelected(undefined)
@@ -198,6 +213,7 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                                 {part.cached ? part.name : `${part.name} (download)`}
                             </Label>
                             <AddButton
+                                disabled={scrubbed}
                                 onClick={() =>
                                     MixAndMatchMode.spawnPart(part.ref)
                                         .then(componentId => componentId && setSelected(componentId))
@@ -258,7 +274,10 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                             : "A part has one weld at a time. Welding it again replaces the old one."}
                     </Label>
                     <Spacer height={10} />
-                    <Button disabled={!weldChild || !weldParent || weldChild === weldParent} onClick={applyWeld}>
+                    <Button
+                        disabled={scrubbed || !weldChild || !weldParent || weldChild === weldParent}
+                        onClick={applyWeld}
+                    >
                         Weld
                     </Button>
                 </AccordionDetails>
@@ -270,35 +289,41 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         <Label size="md">Placement</Label>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <TransformGizmoControl
-                            key={`mix-and-match-gizmo-${selected}`}
-                            size={GIZMO_SIZE}
-                            gizmoRef={gizmoRef}
-                            parent={selectedComponent}
-                            defaultMode="translate"
-                            scaleDisabled={true}
-                        />
-                        <Spacer height={10} />
-                        <Stack direction="row" gap={1} alignItems="center">
-                            <Label size="sm">
-                                {pickStep === "idle" && "Snap flush against"}
-                                {pickStep === "source" && "Click a face on this part…"}
-                                {pickStep === "target" && "Click a face on the part to snap against…"}
-                            </Label>
-                            <Button
-                                onClick={() => {
-                                    if (pickStep === "idle") {
-                                        setPickStep("source")
-                                    } else {
-                                        cancelSnapPick()
-                                    }
-                                }}
-                            >
-                                {pickStep === "idle" ? "Snap to Face" : "Cancel"}
-                            </Button>
-                        </Stack>
-                        <Spacer height={10} />
-                        <NegativeButton onClick={confirmDelete}>Delete Part</NegativeButton>
+                        {scrubbed ? (
+                            <Label size="sm">Rolled back — resume from the playhead to keep editing</Label>
+                        ) : (
+                            <>
+                                <TransformGizmoControl
+                                    key={`mix-and-match-gizmo-${selected}`}
+                                    size={GIZMO_SIZE}
+                                    gizmoRef={gizmoRef}
+                                    parent={selectedComponent}
+                                    defaultMode="translate"
+                                    scaleDisabled={true}
+                                />
+                                <Spacer height={10} />
+                                <Stack direction="row" gap={1} alignItems="center">
+                                    <Label size="sm">
+                                        {pickStep === "idle" && "Snap flush against"}
+                                        {pickStep === "source" && "Click a face on this part…"}
+                                        {pickStep === "target" && "Click a face on the part to snap against…"}
+                                    </Label>
+                                    <Button
+                                        onClick={() => {
+                                            if (pickStep === "idle") {
+                                                setPickStep("source")
+                                            } else {
+                                                cancelSnapPick()
+                                            }
+                                        }}
+                                    >
+                                        {pickStep === "idle" ? "Snap to Face" : "Cancel"}
+                                    </Button>
+                                </Stack>
+                                <Spacer height={10} />
+                                <NegativeButton onClick={confirmDelete}>Delete Part</NegativeButton>
+                            </>
+                        )}
                     </AccordionDetails>
                 </Accordion>
             )}
