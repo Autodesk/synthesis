@@ -42,6 +42,9 @@ interface EventDataMap {
     SimMapUpdateEvent: { internalUpdate: boolean }
     RobotCamerasChangeEvent: never
 
+    // Mix and Match
+    MixAndMatchStateChangedEvent: never
+
     // Context Menu
     ContextSupplierEvent: { data: ContextData; mousePosition: [number, number] }
 
