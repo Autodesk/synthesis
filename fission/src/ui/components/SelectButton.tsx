@@ -28,9 +28,19 @@ type SelectButtonProps = {
     onSelect?: (value: Jolt.Body) => boolean
     className?: string
     value?: string
+    labelText?: string
+    tooltipText?: string
 }
 
-const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, onSelect, className }) => {
+const SelectButton: React.FC<SelectButtonProps> = ({
+    value,
+    color,
+    placeholder,
+    onSelect,
+    className,
+    labelText,
+    tooltipText,
+}) => {
     const [selecting, setSelecting] = useState<boolean>(false)
     const timeoutRef = useRef<NodeJS.Timeout>()
 
@@ -70,8 +80,11 @@ const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, 
     return (
         <Stack direction="row">
             <LabelWithTooltip
-                labelText="Select parent node"
-                tooltipText="Select the parent node for this object to follow. Click the button below, then click a part of the robot or field."
+                labelText={labelText ?? "Select parent node"}
+                tooltipText={
+                    tooltipText ??
+                    "Select the parent node for this object to follow. Click the button below, then click a part of the robot or field."
+                }
             />
             <Button
                 sx={{ bgcolor: color }}

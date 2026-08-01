@@ -1,3 +1,4 @@
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import { Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
@@ -10,6 +11,7 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import SelectButton from "@/ui/components/SelectButton"
 import {
     Accordion,
     AccordionDetails,
@@ -45,6 +47,8 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [selected, setSelected] = useState<ComponentId | undefined>(undefined)
     const [pickStep, setPickStep] = useState<SnapPickStep>("idle")
     const [sourceFace, setSourceFace] = useState<PickedFace | undefined>(undefined)
+    const [weldChild, setWeldChild] = useState<ComponentId | undefined>(undefined)
+    const [weldParent, setWeldParent] = useState<ComponentId | undefined>(undefined)
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => {
@@ -144,6 +148,30 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         cancelSnapPick()
     }, [selected, cancelSnapPick])
 
+    const pickComponent = useCallback((assign: (componentId: ComponentId) => void) => {
+        return (body: Jolt.Body) => {
+            const componentId = MixAndMatchMode.scene?.componentIdOfBody(body.GetID())
+            if (!componentId) return false
+
+            assign(componentId)
+
+            return true
+        }
+    }, [])
+
+    const applyWeld = useCallback(() => {
+        if (!weldChild || !weldParent) return
+
+        MixAndMatchMode.weld(weldParent, weldChild)
+            .then(welded => {
+                if (!welded) return
+
+                setWeldChild(undefined)
+                setWeldParent(undefined)
+            })
+            .catch(console.error)
+    }, [weldChild, weldParent])
+
     const confirmDelete = useCallback(() => {
         if (!selected) return
 
@@ -198,10 +226,43 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         {placed.map(component => (
                             <ToggleButton key={component.id} value={component.id}>
                                 {`${partName(component.libraryPartRef)} · ${component.id}`}
+                                {component.weld ? ` → ${component.weld.parentId}` : ""}
                             </ToggleButton>
                         ))}
                     </ToggleButtonGroup>
                     {selected && <NegativeButton onClick={confirmDelete}>Delete Part</NegativeButton>}
+                </AccordionDetails>
+            </Accordion>
+
+            <Accordion defaultExpanded={placed.length > 1}>
+                <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
+                    <Label size="md">Weld</Label>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <SelectButton
+                        labelText="Part to attach"
+                        tooltipText="Click any piece of the part you want to attach. It resolves to the whole part, not the piece you clicked."
+                        placeholder="Click a part"
+                        value={weldChild}
+                        onSelect={pickComponent(setWeldChild)}
+                    />
+                    <SelectButton
+                        labelText="Attach to"
+                        tooltipText="Click any piece of the part to attach it to."
+                        placeholder="Click a part"
+                        value={weldParent}
+                        onSelect={pickComponent(setWeldParent)}
+                    />
+                    <Spacer height={10} />
+                    <Label size="sm">
+                        {weldChild && weldParent && weldChild === weldParent
+                            ? "Pick two different parts"
+                            : "A part has one weld at a time. Welding it again replaces the old one."}
+                    </Label>
+                    <Spacer height={10} />
+                    <Button disabled={!weldChild || !weldParent || weldChild === weldParent} onClick={applyWeld}>
+                        Weld
+                    </Button>
                 </AccordionDetails>
             </Accordion>
 
