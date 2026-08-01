@@ -60,6 +60,35 @@ class WeldFollower extends SceneObject {
 }
 
 /**
+ * Holds a finished build's shared robot layer until every part of that build is gone.
+ *
+ * The build outlives the {@link MixAndMatchScene} that assembled it, so something has to keep the
+ * layer reserved for as long as the robot exists, and hand it back once the robot doesn't.
+ */
+class LayerKeeper extends SceneObject {
+    private _reserve: LayerReserve
+    private _watched: MirabufSceneObject[]
+
+    public constructor(reserve: LayerReserve, watched: MirabufSceneObject[]) {
+        super()
+        this._reserve = reserve
+        this._watched = watched
+    }
+
+    public setup(): void {}
+
+    public update(): void {
+        if (this._watched.some(component => World.sceneRenderer.sceneObjects.has(component.id))) return
+
+        World.sceneRenderer.removeSceneObject(this.id)
+    }
+
+    public dispose(): void {
+        this._reserve.release()
+    }
+}
+
+/**
  * Owns the live scene objects behind a build and keeps them matching the timeline state.
  *
  * Each placed part stays its own independent assembly, parser and mechanism, exactly like a robot and
@@ -73,6 +102,7 @@ class MixAndMatchScene {
     private _state: TimelineState = { components: new Map() }
     private _pending: Promise<void> = Promise.resolve()
     private _spawnCount = 0
+    private _disposed = false
 
     /**
      * One robot layer for the whole build. Every component shares it, so parts of the same robot
@@ -244,12 +274,14 @@ class MixAndMatchScene {
      *                       off to normal simulation instead of throwing it away.
      */
     public dispose(keepComponents: boolean) {
+        this._disposed = true
         World.sceneRenderer.removeSceneObject(this._weldFollowerId)
 
         if (keepComponents) {
             // The build is now one robot made of many bodies, so it keeps the shared layer it was
-            // assembled on rather than handing it back to the pool.
+            // assembled on. A keeper hands the layer back once every part of the robot is gone.
             this._components.forEach(component => component.enablePhysics())
+            World.sceneRenderer.registerSceneObject(new LayerKeeper(this._layerReserve, [...this._components.values()]))
         } else {
             ;[...this._components.keys()].forEach(componentId => this.remove(componentId))
             this._layerReserve.release()
@@ -305,6 +337,10 @@ class MixAndMatchScene {
     }
 
     private async reconcile(state: TimelineState) {
+        // A reconcile can still be queued when the mode is torn down; spawning into a disposed scene
+        // would strand assemblies nothing owns.
+        if (this._disposed) return
+
         this._state = state
 
         ;[...this._components.keys()]
@@ -312,6 +348,8 @@ class MixAndMatchScene {
             .forEach(componentId => this.remove(componentId))
 
         for (const [componentId, componentState] of state.components) {
+            if (this._disposed) return
+
             const ref = this.resolveRef(componentState)
 
             // A resize swaps in a different assembly, so the old one is torn down and replaced. The

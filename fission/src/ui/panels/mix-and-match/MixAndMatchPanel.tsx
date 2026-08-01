@@ -55,7 +55,7 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Mix and Match", hideAccept: true, cancelText: "Close Build" }, {})
+        configureScreen(panel!, { title: "Mix and Match", hideAccept: true, cancelText: "Discard Build" }, {})
     }, [configureScreen, panel])
 
     // Kept in a ref so the mount effect can close the timeline without re-running when the panel list
