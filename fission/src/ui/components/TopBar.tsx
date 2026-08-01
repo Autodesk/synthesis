@@ -15,6 +15,7 @@ import CameraSelectionPanel from "@/panels/configuring/CameraSelectionPanel"
 import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import MixAndMatchPanel from "@/ui/panels/mix-and-match/MixAndMatchPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
@@ -115,6 +116,16 @@ const TopBar: React.FC = () => {
                     onClick={() =>
                         togglePanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
                     }
+                />
+
+                <TopBarButton
+                    label="Mix and Match"
+                    icon={
+                        <Box sx={TOP_BAR_GLYPH_SX}>
+                            <SynthesisIcons.SCREWDRIVER_WRENCH />
+                        </Box>
+                    }
+                    onClick={() => togglePanel(MixAndMatchPanel, undefined)}
                 />
 
                 <Box sx={TOP_BAR_DIVIDER_SX} />
