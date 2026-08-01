@@ -84,6 +84,29 @@ describe("Mix and Match Build", () => {
         expect(build.marker).toBe(2)
     })
 
+    test("Re-Entry Restores The Exact State, Not An Equivalent One", () => {
+        const build = new MixAndMatchBuild()
+        const frame = build.spawn("frame", ORIGIN)
+        const podA = build.spawn("pod", translation(1, 0, 0))
+        const podB = build.spawn("pod", translation(-1, 0, 0))
+        build.weld(frame, podA, translation(1, 0, 0))
+        build.weld(frame, podB, translation(-1, 0, 0))
+        build.resize(frame, "28x28")
+        build.move(frame, translation(0, 0.5, 0))
+        build.delete(podB)
+
+        const resumed = new MixAndMatchBuild(parseSession(serializeSession(build.session))!)
+
+        expect(resumed.timeline).toEqual(build.timeline)
+        expect([...resumed.state.components.keys()]).toEqual([...build.state.components.keys()])
+        resumed.state.components.forEach((component, id) => {
+            expect(component).toEqual(build.state.components.get(id))
+        })
+        // The pods rode along with the frame's move rather than being left behind.
+        expect(resumed.state.components.get(podA)!.transform).toEqual(translation(1, 0.5, 0))
+        expect(resumed.state.components.get(frame)!.sizeOption).toBe("28x28")
+    })
+
     test("Resumes From A Serialized Session", () => {
         const build = new MixAndMatchBuild()
         const frame = build.spawn("frame", ORIGIN)

@@ -590,7 +590,14 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    private createConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
+    /**
+     * Creates a constraint from already-built settings and registers it with the physics system.
+     *
+     * @param constraintSettings Settings to build from. Destroyed by this function.
+     * @param bodyA              First body. Not destroyed by this function.
+     * @param bodyB              Second body. Not destroyed by this function.
+     */
+    public createConstraint(constraintSettings: GenericConstraintSettings, bodyA: Jolt.Body, bodyB: Jolt.Body) {
         const constraint = constraintSettings.Create(bodyA, bodyB)
         this._constraints.push(constraint)
         this._joltPhysSystem.AddConstraint(constraint)
