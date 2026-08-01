@@ -6,11 +6,11 @@ import type { mirabuf } from "@/proto/mirabuf"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
-import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertArrayToThreeMatrix4, convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import { componentWorldTransform, moveComponentBy, setComponentWorldTransform } from "./MixAndMatchPlacement"
 import { subtreeOf, type ComponentState, type TimelineState, weldPairs } from "./MixAndMatchTimeline"
 import type { ComponentId, LibraryPartRef, TransformArray } from "./MixAndMatchTypes"
+import { weldBodies } from "./MixAndMatchWeld"
 import PartLibrary from "./PartLibrary"
 
 /** Freshly spawned parts are staged on a grid so they don't land inside each other. */
@@ -230,11 +230,7 @@ class MixAndMatchScene {
                 return
             }
 
-            const settings = new JOLT.FixedConstraintSettings()
-            settings.mSpace = JOLT.EConstraintSpace_WorldSpace
-            settings.mAutoDetectPoint = true
-
-            World.physicsSystem.createConstraint(settings, parentBody, childBody)
+            weldBodies(parentBody, childBody)
             baked++
         })
 
