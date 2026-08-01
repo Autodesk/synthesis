@@ -310,6 +310,19 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Moves a body onto a different object layer.
+     *
+     * Used to gather the separately spawned parts of one mix-and-match robot onto a single robot
+     * layer, so they don't collide with each other once welded together.
+     *
+     * @param bodyId Body to move. Not destroyed by this function.
+     * @param layer  Object layer to move it to.
+     */
+    public setBodyObjectLayer(bodyId: Jolt.BodyID, layer: number) {
+        this._joltBodyInterface.SetObjectLayer(bodyId, layer)
+    }
+
+    /**
      * TEMPORARY
      * Create a box.
      *

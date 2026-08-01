@@ -1,0 +1,251 @@
+import type Jolt from "@synthesis.adsk/jolt-physics"
+import * as THREE from "three"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { createMirabuf, type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import SceneObject from "@/systems/scene/SceneObject"
+import World from "@/systems/World"
+import { convertArrayToThreeMatrix4, convertThreeMatrix4ToArray } from "@/util/TypeConversions"
+import { componentWorldTransform, moveComponentBy, setComponentWorldTransform } from "./MixAndMatchPlacement"
+import { subtreeOf, type TimelineState } from "./MixAndMatchTimeline"
+import type { ComponentId, LibraryPartRef, TransformArray } from "./MixAndMatchTypes"
+import PartLibrary from "./PartLibrary"
+
+/** Freshly spawned parts are staged on a grid so they don't land inside each other. */
+const STAGING_STEP_METERS = 1.0
+const STAGING_ROW_LENGTH = 4
+
+/**
+ * Keeps welded groups rigid while a part is being dragged.
+ *
+ * The transform gizmo only knows about the one assembly it's attached to, so without this a frame
+ * would slide out from under its welded pods and only snap back together on release.
+ */
+class WeldFollower extends SceneObject {
+    private _scene: MixAndMatchScene
+    private _lastDragged: Map<ComponentId, THREE.Matrix4> = new Map()
+
+    public constructor(scene: MixAndMatchScene) {
+        super()
+        this._scene = scene
+    }
+
+    public setup(): void {}
+
+    public update(): void {
+        this._scene.components.forEach((component, componentId) => {
+            if (!World.sceneRenderer.gizmosOnMirabuf.get(component.id)?.isDragging) {
+                this._lastDragged.delete(componentId)
+                return
+            }
+
+            const current = componentWorldTransform(component)
+            const previous = this._lastDragged.get(componentId)
+            this._lastDragged.set(componentId, current)
+            if (!previous) return
+
+            const delta = current.clone().multiply(previous.invert())
+            this._scene.descendantsOf(componentId).forEach(descendantId => {
+                const descendant = this._scene.components.get(descendantId)
+                if (descendant) moveComponentBy(descendant, delta)
+            })
+        })
+    }
+
+    public dispose(): void {
+        this._lastDragged.clear()
+    }
+}
+
+/**
+ * Owns the live scene objects behind a build and keeps them matching the timeline state.
+ *
+ * Each placed part stays its own independent assembly, parser and mechanism, exactly like a robot and
+ * a field already coexist today. Nothing here merges mira documents.
+ */
+class MixAndMatchScene {
+    private _components: Map<ComponentId, MirabufSceneObject> = new Map()
+    private _componentBySceneObject: Map<number, ComponentId> = new Map()
+    private _state: TimelineState = { components: new Map() }
+    private _pending: Promise<void> = Promise.resolve()
+    private _spawnCount = 0
+
+    /**
+     * One robot layer for the whole build. Every component shares it, so parts of the same robot
+     * never collide with each other and a build isn't capped at the size of the robot layer pool.
+     */
+    private _layerReserve: LayerReserve = new LayerReserve()
+
+    private _weldFollower: WeldFollower
+    private _weldFollowerId: number
+
+    public get components(): ReadonlyMap<ComponentId, MirabufSceneObject> {
+        return this._components
+    }
+
+    public constructor() {
+        this._weldFollower = new WeldFollower(this)
+        this._weldFollowerId = World.sceneRenderer.registerSceneObject(this._weldFollower)
+    }
+
+    public get(componentId: ComponentId): MirabufSceneObject | undefined {
+        return this._components.get(componentId)
+    }
+
+    /** Resolves a clicked body to the component that owns it, whichever rigid node was actually hit. */
+    public componentIdOfBody(bodyId: Jolt.BodyID): ComponentId | undefined {
+        const associate = World.physicsSystem.getBodyAssociation(bodyId) as RigidNodeAssociate | undefined
+        if (!associate?.sceneObject) return undefined
+
+        return this._componentBySceneObject.get(associate.sceneObject.id)
+    }
+
+    /** The root body of a component, which is the body every weld anchors to. */
+    public rootBodyOf(componentId: ComponentId): Jolt.BodyID | undefined {
+        return this._components.get(componentId)?.getRootNodeId()
+    }
+
+    public descendantsOf(componentId: ComponentId): ComponentId[] {
+        return subtreeOf(this._state.components, componentId).filter(id => id !== componentId)
+    }
+
+    /**
+     * Loads a library part into the scene and stages it clear of what's already there.
+     *
+     * The assembly is created before it has a component id so the spawn entry can record where it
+     * actually landed instead of a placeholder that a follow-up move has to correct.
+     *
+     * @returns The scene object and the world transform it landed at, or undefined if the part
+     *          couldn't be loaded.
+     */
+    public async stage(
+        libraryPartRef: LibraryPartRef
+    ): Promise<{ component: MirabufSceneObject; transform: TransformArray } | undefined> {
+        const assembly = await PartLibrary.load(libraryPartRef)
+        if (!assembly) {
+            console.error(`Could not load library part ${libraryPartRef}`)
+            return undefined
+        }
+
+        const component = await createMirabuf(libraryPartRef, assembly)
+        if (!component) {
+            console.error(`Could not build a scene object for library part ${libraryPartRef}`)
+            return undefined
+        }
+
+        World.sceneRenderer.registerSceneObject(component)
+        this.configure(component)
+
+        const slot = this._spawnCount++
+        moveComponentBy(
+            component,
+            new THREE.Matrix4().makeTranslation(
+                (slot % STAGING_ROW_LENGTH) * STAGING_STEP_METERS,
+                0,
+                Math.floor(slot / STAGING_ROW_LENGTH) * STAGING_STEP_METERS
+            )
+        )
+
+        return { component, transform: [...convertThreeMatrix4ToArray(componentWorldTransform(component))] }
+    }
+
+    public bind(componentId: ComponentId, component: MirabufSceneObject) {
+        this._components.set(componentId, component)
+        this._componentBySceneObject.set(component.id, componentId)
+    }
+
+    /** Moves a component and everything welded onto it by the same world delta. */
+    public moveTree(componentId: ComponentId, delta: THREE.Matrix4) {
+        const component = this._components.get(componentId)
+        if (!component) return
+
+        moveComponentBy(component, delta)
+        this.descendantsOf(componentId).forEach(descendantId => {
+            const descendant = this._components.get(descendantId)
+            if (descendant) moveComponentBy(descendant, delta)
+        })
+    }
+
+    /**
+     * Brings the scene in line with a timeline state: spawns components that appeared, drops ones that
+     * went away, and re-places everything that moved.
+     *
+     * Calls are serialized, so scrubbing quickly can't interleave two reconciles.
+     */
+    public applyState(state: TimelineState): Promise<void> {
+        this._pending = this._pending.then(() => this.reconcile(state)).catch(console.error)
+        return this._pending
+    }
+
+    public remove(componentId: ComponentId) {
+        const component = this._components.get(componentId)
+        if (!component) return
+
+        this._componentBySceneObject.delete(component.id)
+        this._components.delete(componentId)
+        World.sceneRenderer.removeSceneObject(component.id)
+    }
+
+    /**
+     * Tears the build down.
+     *
+     * @param keepComponents Leave the spawned assemblies in the scene, for handing a finished build
+     *                       off to normal simulation instead of throwing it away.
+     */
+    public dispose(keepComponents: boolean) {
+        World.sceneRenderer.removeSceneObject(this._weldFollowerId)
+
+        if (keepComponents) {
+            // The build is now one robot made of many bodies, so it keeps the shared layer it was
+            // assembled on rather than handing it back to the pool.
+            this._components.forEach(component => component.enablePhysics())
+        } else {
+            ;[...this._components.keys()].forEach(componentId => this.remove(componentId))
+            this._layerReserve.release()
+        }
+
+        this._components.clear()
+        this._componentBySceneObject.clear()
+    }
+
+    private configure(component: MirabufSceneObject) {
+        // Components are placed, not driven. A brain per part would hand out an input scheme per part
+        // and fight the user for the keyboard while they build.
+        component.brain = undefined
+
+        component.getAllBodyIds().forEach(bodyId => {
+            World.physicsSystem.setBodyObjectLayer(bodyId, this._layerReserve.layer)
+        })
+        component.mechanism.ghostBodies.forEach(bodyId => {
+            World.physicsSystem.setBodyObjectLayer(bodyId, this._layerReserve.layer)
+        })
+        component.mechanism.layerReserve?.release()
+
+        component.disablePhysics()
+    }
+
+    private async reconcile(state: TimelineState) {
+        this._state = state
+
+        ;[...this._components.keys()]
+            .filter(componentId => !state.components.has(componentId))
+            .forEach(componentId => this.remove(componentId))
+
+        for (const [componentId, componentState] of state.components) {
+            if (!this._components.has(componentId)) {
+                const staged = await this.stage(componentState.libraryPartRef)
+                if (staged) this.bind(componentId, staged.component)
+            }
+
+            const component = this._components.get(componentId)
+            if (!component) continue
+
+            setComponentWorldTransform(component, convertArrayToThreeMatrix4(componentState.transform))
+            // Re-asserted every sync: attaching and then dropping a transform gizmo re-enables physics
+            // on its parent, and build mode wants collision off for the whole session.
+            component.disablePhysics()
+        }
+    }
+}
+
+export default MixAndMatchScene
