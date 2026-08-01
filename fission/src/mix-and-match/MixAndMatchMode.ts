@@ -4,7 +4,7 @@ import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import MixAndMatchBuild from "./MixAndMatchBuild"
-import { componentWorldTransform, mateFacesTransform } from "./MixAndMatchPlacement"
+import { componentWorldTransform, mateFacesTransform, relativeOffsetBetween } from "./MixAndMatchPlacement"
 import MixAndMatchScene from "./MixAndMatchScene"
 import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMatchTypes"
 
@@ -137,6 +137,31 @@ class MixAndMatchMode {
     /** Snaps the scene back to the last committed timeline state, undoing any uncommitted preview move. */
     public static async discardPreview() {
         await this.sync()
+    }
+
+    /**
+     * Welds `childId` onto `parentId`.
+     *
+     * The recorded offset is between the two components' root bodies — the parts their own miras
+     * declare as `"grounded"` — so clicking a swerve module's wheel anchors the weld at the module's
+     * mount plate, never at the wheel.
+     *
+     * Everything welded here is rigid. Joints authored inside a library part are untouched: an
+     * elevator keeps its slides, a swerve pod keeps its steer and drive.
+     *
+     * @returns Whether the weld was recorded.
+     */
+    public static async weld(parentId: ComponentId, childId: ComponentId): Promise<boolean> {
+        const [build, scene] = this.require()
+        const parent = scene?.get(parentId)
+        const child = scene?.get(childId)
+        if (!build || !parent || !child) return false
+
+        const relativeOffset = relativeOffsetBetween(componentWorldTransform(parent), componentWorldTransform(child))
+        const welded = build.weld(parentId, childId, [...convertThreeMatrix4ToArray(relativeOffset)])
+        await this.sync()
+
+        return welded
     }
 
     public static async deleteComponent(componentId: ComponentId) {
