@@ -121,6 +121,19 @@ class MixAndMatchBuild {
     }
 
     /**
+     * Drops everything after the playhead so building can carry on from here.
+     *
+     * Scrubbing on its own never edits the timeline, so this is the one explicit place history is
+     * discarded. Confirm with the user first; {@link discardedByNextEdit} says how much goes.
+     */
+    public truncateToMarker() {
+        if (!this.isScrubbed) return
+
+        this._session.timeline.length = this._marker
+        this.refresh()
+    }
+
+    /**
      * Appends an entry, discarding anything after the playhead first. Callers that can strand history
      * should check {@link discardedByNextEdit} and confirm with the user beforehand.
      */

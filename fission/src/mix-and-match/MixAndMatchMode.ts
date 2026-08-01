@@ -182,6 +182,18 @@ class MixAndMatchMode {
         await this.sync()
     }
 
+    /**
+     * Discards the steps after the playhead so the user can keep building from where they rolled back
+     * to. Editing is blocked while scrubbed, so this is the only way history is ever lost.
+     */
+    public static async resumeHere() {
+        const [build] = this.require()
+        if (!build) return
+
+        build.truncateToMarker()
+        await this.sync()
+    }
+
     private static require(): [MixAndMatchBuild | undefined, MixAndMatchScene | undefined] {
         if (!this._build || !this._scene) console.warn("Mix and match operation attempted outside of build mode")
 
