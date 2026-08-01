@@ -17,7 +17,9 @@ import {
     AccordionSummary,
     AddButton,
     Button,
+    EditButton,
     NegativeButton,
+    PositiveButton,
     Spacer,
     SynthesisIcons,
     ToggleButton,
@@ -78,6 +80,8 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const placed = [...(build?.state.components.values() ?? [])]
     const library = PartLibrary.list()
     const selectedComponent = selected ? scene?.get(selected) : undefined
+    const selectedState = selected ? build?.state.components.get(selected) : undefined
+    const sizes = selectedState ? PartLibrary.sizesFor(selectedState.libraryPartRef) : []
 
     // Rolled back into history: the timeline shows a past state, so editing is paused until the user
     // explicitly resumes from the playhead. See the Timeline panel.
@@ -199,6 +203,42 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         })
     }, [openModal, panel, selected])
 
+    const confirmResume = useCallback(
+        (libraryPartRef: string) => {
+            const resume = () => MixAndMatchMode.resumeFrom(libraryPartRef).catch(console.error)
+            if ((MixAndMatchMode.build?.timeline.length ?? 0) === 0) {
+                resume()
+                return
+            }
+
+            openModal(ConfirmModal, { message: "Open this saved build? The build in progress is discarded." }, panel, {
+                title: "Open Saved Build",
+                acceptText: "Open",
+                onAccept: () => {
+                    setSelected(undefined)
+                    resume()
+                },
+            })
+        },
+        [openModal, panel]
+    )
+
+    const confirmFinish = useCallback(() => {
+        openModal(
+            ConfirmModal,
+            { message: "Finish the build? Welds become fixed constraints and physics is turned back on." },
+            panel,
+            {
+                title: "Finish Build",
+                acceptText: "Finish",
+                onAccept: () =>
+                    MixAndMatchMode.finish()
+                        .then(finished => finished && closePanelRef.current(panel!.id, CloseType.CANCEL))
+                        .catch(console.error),
+            }
+        )
+    }, [openModal, panel])
+
     return (
         <Stack direction="column" gap={1} className="overflow-y-auto" minWidth="20rem">
             <Accordion defaultExpanded>
@@ -212,14 +252,20 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                             <Label size="sm" className="text-wrap break-all">
                                 {part.cached ? part.name : `${part.name} (download)`}
                             </Label>
-                            <AddButton
-                                disabled={scrubbed}
-                                onClick={() =>
-                                    MixAndMatchMode.spawnPart(part.ref)
-                                        .then(componentId => componentId && setSelected(componentId))
-                                        .catch(console.error)
-                                }
-                            />
+                            <Stack direction="row" alignItems="center">
+                                <EditButton
+                                    title="Open a build saved in this file"
+                                    onClick={() => confirmResume(part.ref)}
+                                />
+                                <AddButton
+                                    disabled={scrubbed}
+                                    onClick={() =>
+                                        MixAndMatchMode.spawnPart(part.ref)
+                                            .then(componentId => componentId && setSelected(componentId))
+                                            .catch(console.error)
+                                    }
+                                />
+                            </Stack>
                         </Stack>
                     ))}
                 </AccordionDetails>
@@ -321,12 +367,43 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                                     </Button>
                                 </Stack>
                                 <Spacer height={10} />
+                                <Label size="sm">Size</Label>
+                                {sizes.length === 0 ? (
+                                    <Label size="sm">This part is only made in one size</Label>
+                                ) : (
+                                    <ToggleButtonGroup
+                                        exclusive
+                                        value={selectedState?.sizeOption ?? null}
+                                        onChange={(_, value) =>
+                                            value && MixAndMatchMode.resize(selected!, value).catch(console.error)
+                                        }
+                                    >
+                                        {sizes.map(size => (
+                                            <ToggleButton key={size.id} value={size.id}>
+                                                {size.label}
+                                            </ToggleButton>
+                                        ))}
+                                    </ToggleButtonGroup>
+                                )}
+                                <Spacer height={10} />
                                 <NegativeButton onClick={confirmDelete}>Delete Part</NegativeButton>
                             </>
                         )}
                     </AccordionDetails>
                 </Accordion>
             )}
+
+            <Stack direction="row" gap={1} justifyContent="center">
+                <PositiveButton disabled={scrubbed || placed.length === 0} onClick={confirmFinish}>
+                    Finish Build
+                </PositiveButton>
+                <Button
+                    disabled={placed.length === 0}
+                    onClick={() => MixAndMatchMode.exportBuild().catch(console.error)}
+                >
+                    Save as .mira
+                </Button>
+            </Stack>
         </Stack>
     )
 }
