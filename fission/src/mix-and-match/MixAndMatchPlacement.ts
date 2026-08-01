@@ -106,6 +106,22 @@ export function setComponentWorldTransform(component: MirabufSceneObject, target
 }
 
 /**
+ * Offset of a child's root relative to its parent's root, which is what a weld records.
+ *
+ * Let W be the child's world transform, R the parent's, and L the child expressed in the parent's
+ * frame: W = R L, so L = R^-1 W. Same premultiply/invert pattern as
+ * `ConfigureGamepiecePickupInterface.save()` uses to pin a configured point to a body.
+ */
+export function relativeOffsetBetween(parentWorld: THREE.Matrix4, childWorld: THREE.Matrix4): THREE.Matrix4 {
+    return childWorld.clone().premultiply(parentWorld.clone().invert())
+}
+
+/** Inverse of {@link relativeOffsetBetween}: W = R L. */
+export function applyRelativeOffset(parentWorld: THREE.Matrix4, relativeOffset: THREE.Matrix4): THREE.Matrix4 {
+    return relativeOffset.clone().premultiply(parentWorld)
+}
+
+/**
  * Rigid transform that rotates and slides `moving` so a picked point on it lands on a picked point of
  * `target`, with its surface normal there facing the opposite of `target`'s normal — i.e. the two
  * picked faces end up flush and facing each other, not just the two bounding boxes.
