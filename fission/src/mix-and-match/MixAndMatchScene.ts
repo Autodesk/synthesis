@@ -2,12 +2,14 @@ import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { createMirabuf, type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import type { mirabuf } from "@/proto/mirabuf"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertArrayToThreeMatrix4, convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import { componentWorldTransform, moveComponentBy, setComponentWorldTransform } from "./MixAndMatchPlacement"
-import { subtreeOf, type TimelineState } from "./MixAndMatchTimeline"
+import { subtreeOf, type ComponentState, type TimelineState, weldPairs } from "./MixAndMatchTimeline"
 import type { ComponentId, LibraryPartRef, TransformArray } from "./MixAndMatchTypes"
 import PartLibrary from "./PartLibrary"
 
@@ -66,6 +68,8 @@ class WeldFollower extends SceneObject {
 class MixAndMatchScene {
     private _components: Map<ComponentId, MirabufSceneObject> = new Map()
     private _componentBySceneObject: Map<number, ComponentId> = new Map()
+    /** Which library part each live component was actually built from, which a resize changes. */
+    private _componentRef: Map<ComponentId, LibraryPartRef> = new Map()
     private _state: TimelineState = { components: new Map() }
     private _pending: Promise<void> = Promise.resolve()
     private _spawnCount = 0
@@ -199,7 +203,42 @@ class MixAndMatchScene {
 
         this._componentBySceneObject.delete(component.id)
         this._components.delete(componentId)
+        this._componentRef.delete(componentId)
         World.sceneRenderer.removeSceneObject(component.id)
+    }
+
+    /**
+     * Turns the recorded welds into real fixed constraints between the components' root bodies.
+     *
+     * The constraint locks whatever relative pose the two parts are actually sitting in, which is the
+     * offset recorded at weld time unless the user has since repositioned the child on purpose.
+     *
+     * @param   state Timeline state to bake. Welds naming a missing component are skipped.
+     * @returns How many welds were baked.
+     */
+    public bakeWelds(state: TimelineState): number {
+        let baked = 0
+
+        weldPairs(state).forEach(({ parentId, childId }) => {
+            const parentBodyId = this.rootBodyOf(parentId)
+            const childBodyId = this.rootBodyOf(childId)
+            const parentBody = parentBodyId ? World.physicsSystem.getBody(parentBodyId) : undefined
+            const childBody = childBodyId ? World.physicsSystem.getBody(childBodyId) : undefined
+
+            if (!parentBody || !childBody) {
+                console.warn(`Skipping weld ${childId} -> ${parentId}: missing root body`)
+                return
+            }
+
+            const settings = new JOLT.FixedConstraintSettings()
+            settings.mSpace = JOLT.EConstraintSpace_WorldSpace
+            settings.mAutoDetectPoint = true
+
+            World.physicsSystem.createConstraint(settings, parentBody, childBody)
+            baked++
+        })
+
+        return baked
     }
 
     /**
@@ -222,6 +261,20 @@ class MixAndMatchScene {
 
         this._components.clear()
         this._componentBySceneObject.clear()
+        this._componentRef.clear()
+    }
+
+    /**
+     * The assembly to save a finished build as.
+     *
+     * Welds form a tree, so the root of that tree is the natural stand-in for the whole robot; without
+     * any welds it's simply the first part placed.
+     */
+    public rootAssembly(state: TimelineState): mirabuf.Assembly | undefined {
+        const rootId = [...state.components.values()].find(component => !component.weld)?.id
+        const component = rootId ? this._components.get(rootId) : undefined
+
+        return component?.mirabufInstance.parser.assembly
     }
 
     private configure(component: MirabufSceneObject) {
@@ -240,6 +293,21 @@ class MixAndMatchScene {
         component.disablePhysics()
     }
 
+    /**
+     * The library part a component should actually be built from, which is a size variant when one has
+     * been picked and the part it was spawned from otherwise.
+     */
+    private resolveRef(componentState: ComponentState): LibraryPartRef {
+        if (!componentState.sizeOption) return componentState.libraryPartRef
+
+        const size = PartLibrary.sizesFor(componentState.libraryPartRef).find(
+            option => option.id === componentState.sizeOption
+        )
+        if (!size) console.warn(`Unknown size ${componentState.sizeOption} for ${componentState.libraryPartRef}`)
+
+        return size?.partRef ?? componentState.libraryPartRef
+    }
+
     private async reconcile(state: TimelineState) {
         this._state = state
 
@@ -248,9 +316,21 @@ class MixAndMatchScene {
             .forEach(componentId => this.remove(componentId))
 
         for (const [componentId, componentState] of state.components) {
+            const ref = this.resolveRef(componentState)
+
+            // A resize swaps in a different assembly, so the old one is torn down and replaced. The
+            // component is put back at the same root transform, which leaves welded neighbours where
+            // they are; any gap the new size opens up is not auto-corrected.
+            if (this._components.has(componentId) && this._componentRef.get(componentId) !== ref) {
+                this.remove(componentId)
+            }
+
             if (!this._components.has(componentId)) {
-                const staged = await this.stage(componentState.libraryPartRef)
-                if (staged) this.bind(componentId, staged.component)
+                const staged = await this.stage(ref)
+                if (staged) {
+                    this.bind(componentId, staged.component)
+                    this._componentRef.set(componentId, ref)
+                }
             }
 
             const component = this._components.get(componentId)

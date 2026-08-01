@@ -1,9 +1,14 @@
 import * as THREE from "three"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import { mirabuf } from "@/proto/mirabuf"
 import EventSystem from "@/systems/EventSystem"
 import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
+import { downloadBlob } from "@/util/Utility"
 import MixAndMatchBuild from "./MixAndMatchBuild"
+import { readSessionFromAssembly, writeSessionToAssembly } from "./MixAndMatchDocument"
 import {
     componentWorldBounds,
     componentWorldTransform,
@@ -13,6 +18,7 @@ import {
 } from "./MixAndMatchPlacement"
 import MixAndMatchScene from "./MixAndMatchScene"
 import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMatchTypes"
+import PartLibrary from "./PartLibrary"
 
 /**
  * Lifecycle and user-facing operations for mix-and-match build mode.
@@ -171,6 +177,96 @@ class MixAndMatchMode {
 
         build.delete(componentId)
         await this.sync()
+    }
+
+    /**
+     * Swaps a component for one of the discrete sizes its library part declares.
+     *
+     * The component keeps its root transform, so already-welded neighbours stay where the user put
+     * them. A gap opened up by a smaller size is left alone rather than silently closed.
+     */
+    public static async resize(componentId: ComponentId, sizeOption: string) {
+        const [build] = this.require()
+        if (!build) return
+
+        build.resize(componentId, sizeOption)
+        await this.sync()
+    }
+
+    /**
+     * Turns the build into an ordinary simulated robot: welds become fixed constraints, physics comes
+     * back on, and the parts are handed off to the scene as they are.
+     *
+     * @returns Whether the build was finished. Refused while scrubbed or while nothing is placed.
+     */
+    public static async finish(): Promise<boolean> {
+        const [build, scene] = this.require()
+        if (!build || !scene) return false
+
+        if (build.isScrubbed) {
+            globalAddToast("warning", "Rolled Back", "Resume from the playhead before finishing.")
+            return false
+        }
+        if (build.state.components.size === 0) {
+            globalAddToast("warning", "Nothing to Finish", "Add at least one part first.")
+            return false
+        }
+
+        // Stamped before the scene is torn down so a re-opened robot can replay this exact build.
+        const assembly = scene.rootAssembly(build.state)
+        if (assembly) writeSessionToAssembly(assembly, build.session)
+
+        const welds = scene.bakeWelds(build.state)
+        this.exit(true)
+        globalAddToast("info", "Build Finished", `${welds} weld${welds === 1 ? "" : "s"} applied`)
+
+        return true
+    }
+
+    /**
+     * Saves the finished build as an ordinary mira robot, tagged with the session so it can be
+     * re-opened for editing. Every other consumer sees a normal robot file.
+     */
+    public static async exportBuild(): Promise<boolean> {
+        const [build, scene] = this.require()
+        if (!build || !scene) return false
+
+        const assembly = scene.rootAssembly(build.state)
+        if (!assembly || !writeSessionToAssembly(assembly, build.session)) {
+            globalAddToast("error", "Export Failed", "No assembly to save.")
+            return false
+        }
+
+        const name = assembly.info?.name ?? "Mix and Match Robot"
+        const encoded = mirabuf.Assembly.encode(assembly).finish()
+        downloadBlob(`${name}.mira`, encoded.buffer as ArrayBuffer)
+
+        // Cached as well so the saved build shows up in the part library, ready to be re-opened.
+        await MirabufCachingService.storeAssemblyInCache(assembly, { miraType: MiraType.ROBOT, name })
+        globalAddToast("info", "Exported", `Saved ${name}.mira`)
+
+        return true
+    }
+
+    /**
+     * Re-opens a saved build. Replays the whole timeline rather than reconstructing something
+     * equivalent, so the user gets back exactly the state they left.
+     *
+     * @returns Whether the file carried a build to resume.
+     */
+    public static async resumeFrom(libraryPartRef: LibraryPartRef): Promise<boolean> {
+        const assembly = await PartLibrary.load(libraryPartRef)
+        const session = assembly ? readSessionFromAssembly(assembly) : undefined
+
+        if (!session) {
+            globalAddToast("warning", "Not a Build", "That file has no mix and match build saved in it.")
+            return false
+        }
+
+        this.exit()
+        await this.enter(session)
+
+        return true
     }
 
     /** Moves the timeline playhead. Scrubbing is a preview; it never edits the timeline. */

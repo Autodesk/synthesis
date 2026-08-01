@@ -38,6 +38,9 @@ function stripExtension(name: string): string {
 }
 
 class PartLibrary {
+    /** Sizes read off each part as it was loaded, so resolving a size swap doesn't re-decode a mira. */
+    private static _sizes: Map<LibraryPartRef, PartSizeOption[]> = new Map()
+
     /** Everything spawnable right now, cached assets first. */
     public static list(): LibraryPart[] {
         const cached = MirabufCachingService.getAll(MiraType.ROBOT).map<LibraryPart>(info => ({
@@ -81,7 +84,15 @@ class PartLibrary {
             }
         }
 
-        return await MirabufCachingService.get(ref)
+        const assembly = await MirabufCachingService.get(ref)
+        if (assembly) this._sizes.set(ref, this.sizesOf(assembly))
+
+        return assembly
+    }
+
+    /** @returns The sizes of an already-loaded part. Empty until the part has been loaded once. */
+    public static sizesFor(ref: LibraryPartRef): PartSizeOption[] {
+        return this._sizes.get(ref) ?? []
     }
 
     /** @returns The discrete sizes a part declares, or an empty list when it isn't resizable. */
