@@ -4,7 +4,6 @@ import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { InputSchemeUseType } from "@/systems/input/InputTypes"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -15,17 +14,15 @@ import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
-    const { setSelectedScheme, setUnconfirmedImport } = useStateContext()
-    const { openModal, openPanel, configureScreen, closePanel } = useUIContext()
+    const { setSelectedScheme } = useStateContext()
+    const { configureScreen, closePanel } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -43,7 +40,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             targetAssembly.alliance = alliance
             targetAssembly.station = station
-            ScoreTracker.addPerRobotScore(targetAssembly, 0)
+            World.scoreTracker.addPerRobotScore(targetAssembly, 0)
 
             const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
@@ -72,22 +69,23 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     }, [targetAssembly])
 
     useEffect(() => {
-        setUnconfirmedImport(true)
-
         configureScreen(
             panel!,
-            { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
+            {
+                title: "Assembly Setup",
+                acceptText: "Finish",
+                cancelText: "Remove",
+                blocking: true,
+                blockingMessage: "Finish Assembly Setup first!",
+            },
             {
                 onBeforeAccept: () => {
                     closeFinish()
                 },
                 onCancel: () => closeDelete(),
-                onClose: () => {
-                    setUnconfirmedImport(false)
-                },
             }
         )
-    }, [closeFinish, closeDelete, configureScreen, panel, setUnconfirmedImport])
+    }, [closeFinish, closeDelete, configureScreen, panel])
 
     return (
         <Stack gap={2}>
@@ -146,19 +144,13 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     parent={targetAssembly}
                     onAccept={() => {
                         closeFinish()
-                        closePanel(panel!.id, CloseType.Accept)
+                        closePanel(panel!.id, CloseType.ACCEPT)
                     }}
                     onCancel={closeDelete}
                 />
             )}
             {brainIndex !== undefined && (
-                <InputSchemeSelection
-                    brainIndex={brainIndex}
-                    onSelect={() => {}}
-                    onEdit={() => openPanel(ConfigurePanel, { configurationType: "INPUTS" }, panel)}
-                    onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
-                    panelId={panel?.id}
-                />
+                <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
             )}
         </Stack>
     )

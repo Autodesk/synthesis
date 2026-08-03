@@ -1,7 +1,5 @@
-import EventSystem from "@/systems/EventSystem.ts"
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
-import Joystick from "../scene/Joystick"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { InputName, InputScheme, ModifierState } from "./InputTypes"
@@ -14,8 +12,6 @@ const LOG_GAMEPAD_EVENTS = false
  *  It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.
  */
 class InputSystem extends WorldSystem {
-    private _unsubscribeTouchControls: () => void
-
     public static currentModifierState: ModifierState
 
     /** The keys currently being pressed. */
@@ -27,18 +23,26 @@ class InputSystem extends WorldSystem {
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
 
-    private static _leftJoystick: Joystick
-    private static _rightJoystick: Joystick
+    /** Normalized joystick positions (-1 to 1) set by TouchControls component via react-joystick-component */
+    private static _leftJoystickPos: { x: number; y: number } = { x: 0, y: 0 }
+    private static _rightJoystickPos: { x: number; y: number } = { x: 0, y: 0 }
 
     /** Maps a brain index to an input scheme. */
-    public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+    private static _brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+
+    public static get brainIndexSchemeMap() {
+        return this._brainIndexSchemeMap
+    }
 
     public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
-        InputSystem.brainIndexSchemeMap.set(index, scheme)
+        this.brainIndexSchemeMap.set(index, scheme)
         World.analyticsSystem?.event("Scheme Applied", {
             isCustomized: scheme.customized,
             schemeName: scheme.schemeName,
         })
+    }
+    public static getBrainIndexSchemeMapping(index: number): InputScheme | undefined {
+        return this.brainIndexSchemeMap.get(index)
     }
 
     // Janky solution to centralize escape key closing logic, first in the list is higher priority, returning true consumes the keypress
@@ -49,6 +53,16 @@ class InputSystem extends WorldSystem {
      */
     public static setCommandPaletteOpen(isOpen: boolean) {
         InputSystem._isCommandPaletteOpen = isOpen
+    }
+
+    /** Called by TouchControls component to update the left joystick position. Values are normalized (-1 to 1) */
+    public static setLeftJoystick(x: number, y: number) {
+        InputSystem._leftJoystickPos = { x, y }
+    }
+
+    /** Called by TouchControls component to update the right joystick position. Values are normalized (-1 to 1) */
+    public static setRightJoystick(x: number, y: number) {
+        InputSystem._rightJoystickPos = { x, y }
     }
 
     constructor() {
@@ -66,17 +80,6 @@ class InputSystem extends WorldSystem {
 
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this)
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
-
-        this._unsubscribeTouchControls = EventSystem.listen("TouchControlsLoaded", () => {
-            InputSystem._leftJoystick = new Joystick(
-                document.getElementById("joystick-base-left")!,
-                document.getElementById("joystick-stick-left")!
-            )
-            InputSystem._rightJoystick = new Joystick(
-                document.getElementById("joystick-base-right")!,
-                document.getElementById("joystick-stick-right")!
-            )
-        })
 
         // Initialize an event that's triggered when the user exits/enters the page
         document.addEventListener("visibilitychange", () => {
@@ -116,7 +119,6 @@ class InputSystem extends WorldSystem {
         document.removeEventListener("keyup", this.handleKeyUp)
         window.removeEventListener("gamepadconnected", this.gamepadConnected)
         window.removeEventListener("gamepaddisconnected", this.gamepadDisconnected)
-        this._unsubscribeTouchControls()
     }
 
     /** Called when any key is first pressed */
@@ -196,7 +198,7 @@ class InputSystem extends WorldSystem {
             return 0
         }
 
-        const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        const targetScheme = InputSystem.getBrainIndexSchemeMapping(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
 
@@ -252,16 +254,13 @@ class InputSystem extends WorldSystem {
         return button.pressed
     }
 
-    // Returns a number between -1 and 1 from the touch controls
+    /** Returns a number between -1 and 1 from the touch controls */
     public static getTouchControlsAxis(axisType: TouchControlsAxes): number {
-        let value: number
-
-        if (axisType === TouchControlsAxes.LEFT_Y) value = -InputSystem._leftJoystick.y
-        else if (axisType === TouchControlsAxes.RIGHT_X) value = InputSystem._rightJoystick.x
-        else if (axisType === TouchControlsAxes.RIGHT_Y) value = -InputSystem._rightJoystick.y
-        else value = InputSystem._leftJoystick.x
-
-        return value!
+        if (axisType === TouchControlsAxes.LEFT_X) return InputSystem._leftJoystickPos.x
+        if (axisType === TouchControlsAxes.LEFT_Y) return InputSystem._leftJoystickPos.y
+        if (axisType === TouchControlsAxes.RIGHT_X) return InputSystem._rightJoystickPos.x
+        if (axisType === TouchControlsAxes.RIGHT_Y) return InputSystem._rightJoystickPos.y
+        return 0
     }
 }
 

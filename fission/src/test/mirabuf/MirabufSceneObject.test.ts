@@ -1,28 +1,13 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
 import type IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufParser from "@/mirabuf/MirabufParser"
-import type Mechanism from "@/systems/physics/Mechanism"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import type MirabufInstance from "../../mirabuf/MirabufInstance"
-import MirabufInstanceClass from "../../mirabuf/MirabufInstance"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import { createBodyMock } from "../mocks/jolt"
 import { defaultRobotPreferences } from "@/systems/preferences/PreferenceTypes.ts"
+import PhysicsSystem from "@/systems/physics/PhysicsSystem.ts"
+import { getMiraInstance } from "@/test/GetAssets.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
-const mockPhysicsSystem = {
-    createMechanismFromParser: vi.fn(() => mockMechanism()),
-    setBodyAssociation: vi.fn(),
-    getBody: vi.fn(() => createBodyMock() as unknown),
-    enablePhysicsForBody: vi.fn(),
-    disablePhysicsForBody: vi.fn(),
-    removeBodyAssociation: vi.fn(),
-    destroyMechanism: vi.fn(),
-    setBodyPosition: vi.fn(),
-    setBodyRotation: vi.fn(),
-    setShape: vi.fn(),
-    createSensor: vi.fn(),
-}
 const mockSceneRenderer = {
     sceneObjects: new Map(),
     scene: { add: vi.fn(), remove: vi.fn() },
@@ -43,10 +28,12 @@ const mockSimulationSystem = {
     unregisterMechanism: vi.fn(),
 }
 
+const physicsSystem = new PhysicsSystem()
+
 vi.mock("@/systems/World", () => ({
     default: {
         get physicsSystem() {
-            return mockPhysicsSystem
+            return physicsSystem
         },
         get sceneRenderer() {
             return mockSceneRenderer
@@ -85,42 +72,8 @@ vi.mock("@/systems/simulation/wpilib_brain/WPILibBrain", () => ({
     default: vi.fn(() => ({ loadSimConfig: vi.fn() })),
 }))
 
-function mockMechanism(): Mechanism {
-    return {
-        rootBody: "root",
-        nodeToBody: new Map([["root", mockBodyId()]]),
-        constraints: [],
-        stepListeners: [],
-        controllable: true,
-        ghostBodies: [],
-        layerReserve: { release: vi.fn() },
-        getBodyByNodeId: vi.fn(() => mockBodyId()),
-        addConstraint: vi.fn(),
-        addStepListener: vi.fn(),
-        disablePhysics: vi.fn(),
-    } as unknown as Mechanism
-}
-
 function mockBodyId() {
     return { GetIndex: () => 0, GetIndexAndSequenceNumber: () => 0 }
-}
-
-function mockMirabufInstance(): MirabufInstance {
-    return {
-        parser: {
-            assembly: { dynamic: true, info: { name: "TestAssembly" } },
-            rootNode: "root",
-            rigidNodes: new Map([
-                ["root", { id: "root", parts: new Set(), isDynamic: true, isGamePiece: false, mass: 1 }],
-            ]),
-            globalTransforms: new Map(),
-        },
-        addToScene: vi.fn(),
-        dispose: vi.fn(),
-        meshes: new Map(),
-        batches: [],
-        materials: new Map(),
-    } as unknown as MirabufInstance
 }
 
 function setPrivate<T>(obj: T, key: string, value: unknown) {
@@ -128,38 +81,30 @@ function setPrivate<T>(obj: T, key: string, value: unknown) {
 }
 
 describe("MirabufSceneObject", () => {
-    const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
-
     let instance: MirabufSceneObject
     let mirabufInstance: MirabufInstance
     let progressHandle: ProgressHandle | undefined
-
-    beforeEach(() => {
+    beforeAll(async () => {
+        mirabufInstance = (await getMiraInstance("DOZER"))!
+    })
+    beforeEach(async () => {
         vi.clearAllMocks()
-        mirabufInstance = mockMirabufInstance()
+
         progressHandle = undefined
         instance = new MirabufSceneObject(mirabufInstance, progressHandle)
 
-        console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
+        mockConsole()
+        vi.spyOn(physicsSystem, "destroyMechanism")
     })
 
     afterEach(() => {
-        vi.clearAllMocks()
-        console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
+        vi.restoreAllMocks()
     })
 
     test("Setup calls AddToScene, SetBodyAssociation, RegisterMechanism, and sets brain", () => {
         instance.setup()
-        expect(mirabufInstance.addToScene).toHaveBeenCalled()
+
+        expect(mockSceneRenderer.registerSceneObject).toHaveBeenCalled()
         expect(instance.brain).toBeDefined()
     })
 
@@ -177,7 +122,7 @@ describe("MirabufSceneObject", () => {
         instance.dispose()
 
         expect(mockSceneRenderer.removeSceneObject).toHaveBeenCalled()
-        expect(mockPhysicsSystem.destroyMechanism).toHaveBeenCalled()
+        expect(physicsSystem.destroyMechanism).toHaveBeenCalled()
     })
 
     test("activeEjectables returns correct body IDs", () => {
@@ -206,23 +151,8 @@ describe("MirabufSceneObject", () => {
 })
 
 describe("MirabufSceneObject - Real Systems Integration", () => {
-    test("getDimensions returns proper values for Dozer robot", async context => {
-        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT)
-
-        if (!cacheInfo) {
-            context.skip()
-            return
-        }
-
-        const assembly = await MirabufCachingService.get(cacheInfo.hash)
-
-        if (!assembly) {
-            context.skip()
-            return
-        }
-
-        const parser = new MirabufParser(assembly!)
-        const mirabufInstance = new MirabufInstanceClass(parser)
+    test("getDimensions returns proper values for Dozer robot", async () => {
+        const mirabufInstance = (await getMiraInstance("DOZER"))!
 
         mirabufInstance.batches.forEach(batch => {
             batch.computeBoundingBox()
@@ -236,23 +166,8 @@ describe("MirabufSceneObject - Real Systems Integration", () => {
         expect(originalDimensions.height).toBeCloseTo(0.48, 0)
         expect(originalDimensions.depth).toBeCloseTo(0.9, 0)
     })
-    test("Ejector and Intake are configured for Dozer", async context => {
-        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer v11.mira", MiraType.ROBOT)
-
-        if (!cacheInfo) {
-            context.skip()
-            return
-        }
-
-        const assembly = await MirabufCachingService.get(cacheInfo.hash)
-
-        if (!assembly) {
-            context.skip()
-            return
-        }
-
-        const parser = new MirabufParser(assembly!)
-        const mirabufInstance = new MirabufInstanceClass(parser)
+    test("Ejector and Intake are configured for Dozer", async () => {
+        const mirabufInstance = (await getMiraInstance("DOZER"))!
 
         const dozerSceneObject = new MirabufSceneObject(mirabufInstance, undefined)
         expect(dozerSceneObject.intakePreferences).not.toEqual(defaultRobotPreferences().intake)

@@ -1,8 +1,9 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -37,25 +38,12 @@ vi.mock("@/systems/World", () => ({
 }))
 
 describe("IntakeSensorSceneObject", () => {
-    const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
-
     beforeEach(() => {
-        vi.clearAllMocks()
-        console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
+        mockConsole()
     })
 
     afterEach(() => {
-        vi.clearAllMocks()
-        console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
+        vi.restoreAllMocks()
     })
 
     test("Setup creates sensor", () => {

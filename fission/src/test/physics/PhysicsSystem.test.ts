@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import { afterEach, assert, beforeEach, describe, expect, test } from "vitest"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate"
@@ -25,7 +25,7 @@ describe("Physics Sanity Checks", () => {
 
         const shapeResult = system.createConvexHull(points)
 
-        assert(shapeResult.HasError() == false, shapeResult.GetError().c_str())
+        assert(shapeResult.HasError() == false, shapeResult.HasError() ? shapeResult.GetError().c_str() : undefined)
         expect(shapeResult.IsValid()).toBe(true)
 
         const shape = shapeResult.Get()
@@ -41,7 +41,7 @@ describe("Physics Sanity Checks", () => {
 
         const shapeResult = system.createConvexHull(points)
 
-        assert(shapeResult.HasError() == false, shapeResult.GetError().c_str())
+        assert(shapeResult.HasError() == false, shapeResult.HasError() ? shapeResult.GetError().c_str() : undefined)
         expect(shapeResult.IsValid()).toBe(true)
 
         const shape = shapeResult.Get()
@@ -66,7 +66,7 @@ describe("Physics Sanity Checks", () => {
         const density = 2.5
         const shapeResult = system.createConvexHull(points, density)
 
-        assert(shapeResult.HasError() == false, shapeResult.GetError().c_str())
+        assert(shapeResult.HasError() == false, shapeResult.HasError() ? shapeResult.GetError().c_str() : undefined)
         expect(shapeResult.IsValid()).toBe(true)
 
         const shape = shapeResult.Get()

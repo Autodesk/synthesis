@@ -20,9 +20,9 @@ function createMockSceneObject(miraType: MiraType, position: THREE.Vector3): Mir
     const object = Object.create(MirabufSceneObject.prototype) as MirabufSceneObject
     vi.spyOn(object, "miraType", "get").mockReturnValue(miraType)
     const withPositionTransform = object as unknown as {
-        getPositionTransform: (vec?: THREE.Vector3) => THREE.Vector3
+        getXZPositionTransform: (vec?: THREE.Vector3) => THREE.Vector3
     }
-    withPositionTransform.getPositionTransform = vi
+    withPositionTransform.getXZPositionTransform = vi
         .fn()
         .mockImplementation((vec: THREE.Vector3 = new THREE.Vector3()) => vec.copy(position))
     return object
@@ -199,7 +199,7 @@ describe("CustomFieldViewControls", () => {
             })
 
             expect(World.sceneRenderer.setCameraControls).toHaveBeenCalledWith("Target")
-            expect(targetControls.mode).toBe(CameraMode.Follow)
+            expect(targetControls.mode).toBe(CameraMode.FOLLOW)
             expect(targetControls.focusProvider).toBeUndefined()
             expect(camera.position.distanceTo(positionBeforeHandoff)).toBeLessThan(1)
 

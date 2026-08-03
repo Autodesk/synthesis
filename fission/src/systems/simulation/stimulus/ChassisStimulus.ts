@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import { type NoraNumber3, NoraTypes } from "../Nora"
@@ -25,7 +25,7 @@ class ChassisStimulus extends Stimulus {
         super(id, info)
 
         this._body = World.physicsSystem.getBody(bodyId)!
-        this._mass = this._body.GetShape().GetMassProperties().mMass
+        this._mass = 1 / this._body.GetMotionProperties().GetInverseMass()
     }
 
     public update(_: number): void {}

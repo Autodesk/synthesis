@@ -88,8 +88,12 @@ class WPILibBrain extends Brain {
         return this._assembly.assemblyId
     }
 
+    public override get brainType() {
+        return "wpilib" as const
+    }
+
     constructor(assembly: MirabufSceneObject) {
-        super(assembly.mechanism, "wpilib")
+        super(assembly.mechanism)
 
         this._assembly = assembly
 
@@ -99,8 +103,9 @@ class WPILibBrain extends Brain {
             return
         }
 
-        this.addSimInput(new SimGyroInput("Test Gyro[1]", this._mechanism))
-        this.addSimInput(new SimAccelInput("ADXL362[4]", this._mechanism))
+        // TODO: make these configurable
+        this.addSimInput(new SimGyroInput("SYN AHRS[0]", this._mechanism))
+        this.addSimInput(new SimAccelInput("SYN AHRS[0]", this._mechanism))
         this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
         this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
         this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
@@ -109,7 +114,7 @@ class WPILibBrain extends Brain {
         this.loadSimConfig()
 
         World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
-            if (v.brain?.brainType == "wpilib") {
+            if (v.brain?.isWPILib()) {
                 v.brain = new SynthesisBrain(v)
             }
         })

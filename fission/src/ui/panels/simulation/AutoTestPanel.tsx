@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import { TextField } from "@mui/material"
 import { Stack, styled } from "@mui/system"
 import type React from "react"
@@ -297,13 +297,13 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
-        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
+        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.isWPILib() ?? false),
         []
     )
 
     useEffect(() => {
         configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)

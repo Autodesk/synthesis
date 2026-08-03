@@ -1,4 +1,4 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
 import type {
@@ -38,15 +38,14 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { type ProgressHandle, URDFImportProgressBar } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -64,9 +63,8 @@ import MirabufCachingService, { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { hexStringToUint8Array } from "@/util/Utility.ts"
+import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -90,6 +88,13 @@ export function setSpotlightAssembly(assembly: MirabufSceneObject) {
 // TODO: If nothing is in the spotlight, select last entry before defaulting to undefined
 export function getSpotlightAssembly(): MirabufSceneObject | undefined {
     return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
+}
+
+type MinMax = { min: number; max: number }
+type AxisVertices = {
+    x: MinMax
+    y: MinMax
+    z: MinMax
 }
 
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
@@ -118,12 +123,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public intakeActive = false
     public ejectorActive = false
 
-    private multiplayerOwningClientId?: string
+    private _multiplayerOwningClientId?: string
 
     private _lastEjectableToastTime = 0
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
     private _collisionUnsubscriber?: () => void
+
+    private _furthestVertices?: AxisVertices = undefined
+    private _unrotatedRootNodeToCenterPositionTranslation?: Jolt.Vec3 = undefined
 
     public get scoringZones(): Readonly<ScoringZoneSceneObject[]> {
         return this._scoringZones
@@ -151,8 +159,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get multiplayerOwnerName(): string | undefined {
-        if (this.multiplayerOwningClientId == null) return undefined
-        return World.multiplayerSystem?._clientToInfoMap?.get(this.multiplayerOwningClientId)?.displayName
+        if (this._multiplayerOwningClientId == null) return undefined
+        return World.multiplayerSystem?._clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
     }
 
     get simConfigData() {
@@ -168,7 +176,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     get isOwnObject() {
-        return this.multiplayerOwningClientId == undefined
+        return this._multiplayerOwningClientId == undefined
     }
 
     public get activeEjectables(): Jolt.BodyID[] {
@@ -194,7 +202,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get descriptiveName(): string {
-        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
+        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? (this.brain instanceof SynthesisBrain ? this.brain.inputSchemeName : "Magic")}] ` : ""}${this.assemblyName}`
     }
 
     public get assemblyName() {
@@ -208,10 +216,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
         super()
         this.mirabufInstance = mirabufInstance
-        this.multiplayerOwningClientId = multiplayerOwnerId
+        this._multiplayerOwningClientId = multiplayerOwnerId
         this.loadPreferences()
 
-        progressHandle?.update("Creating mechanism...", 0.9)
+        progressHandle?.update("Creating scene object...", 0.9)
 
         this.mechanism = World.physicsSystem.createMechanismFromParser(this.mirabufInstance.parser)
         if (this.mechanism.layerReserve) this._physicsLayerReserve = this.mechanism.layerReserve
@@ -223,11 +231,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._nameTag = new SceneOverlayTag(() => {
                 const name =
                     this.nameOverride ??
-                    (this._brain instanceof SynthesisBrain
+                    (this._brain?.isSynthesis()
                         ? this._brain.inputSchemeName
-                        : this._brain instanceof WPILibBrain
+                        : this._brain?.isWPILib()
                           ? "Magic"
-                          : "Not Configured")
+                          : "Not Configured!")
                 if (World.multiplayerSystem != null) {
                     return `${name} (${this.alliance === "red" ? "R" : this.alliance === "blue" ? "B" : "..."}${this.station ?? ""})`
                 }
@@ -302,20 +310,24 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             simLayer.setBrain(this._brain)
         }
 
-        // Intake
-        this.updateIntakeSensor()
-        this.updateScoringZones()
-        this.updateProtectedZones()
-
         if (this.isOwnObject) {
             setSpotlightAssembly(this)
         }
 
         this.updateBatches()
 
-        this._basePositionTransform = this.getPositionTransform()
+        this._basePositionTransform = this.getXZPositionTransform()
+
+        if (this.miraType === MiraType.ROBOT) {
+            this.computeFurthestVertices()
+            this.computeUnrotatedRootNodeToCenterPositionTranslation()
+        }
 
         this.moveToSpawnLocation()
+
+        this.updateIntakeSensor()
+        this.updateScoringZones()
+        this.updateProtectedZones()
 
         const targetControls = getTargetControls()
         if (targetControls && this.isOwnObject && (this.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
@@ -326,13 +338,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     // Centered in x-z plane, bottom surface of object
-    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
+    public getXZPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
         const box = this.computeBoundingBox()
 
         const transform = box.getCenter(vec)
         transform.setY(box.min.y)
 
         return transform
+    }
+
+    public getPositionTransform(vec: THREE.Vector3 = new THREE.Vector3()): THREE.Vector3 {
+        const box = this.computeBoundingBox()
+        return box.getCenter(vec)
     }
 
     public moveToSpawnLocation() {
@@ -356,7 +373,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // Mutates referencePos in place (Box3.getCenter side effect) so setObjectPosition can offset
         // this spawn location by the field's own transform instead of treating it as a world-space position.
-        field?.getPositionTransform(referencePos)
+        field?.getXZPositionTransform(referencePos)
 
         return pos
     }
@@ -425,7 +442,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public dispose(): void {
         this.mirabufInstance.dispose(World.sceneRenderer.scene)
 
-        if (this._brain && this._brain instanceof SynthesisBrain) {
+        if (this._brain?.isSynthesis()) {
             this._brain.clearControls()
         }
 
@@ -637,13 +654,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         if (!this.ejectorPreferences.parentNode) {
-            console.log(bodyId)
             const now = Date.now()
             if (
                 (!World.multiplayerSystem || World.multiplayerSystem?.getOwnRobots().includes(this)) &&
                 now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS
             ) {
-                console.log(`Configure an ejector first.`)
+                console.warn(`Configure an ejector first.`)
                 globalAddToast("info", "Configure Ejector", "Configure an ejector first.")
                 this._lastEjectableToastTime = now
             }
@@ -666,28 +682,25 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return true
     }
 
-    public updateScoringZones(render?: boolean) {
+    public updateScoringZones() {
         this.removeSceneObjects(this._scoringZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.scoringZones) return
-        render ??= PreferencesSystem.getUserPreference("RenderScoringZones")
 
         for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
-            const newZone = new ScoringZoneSceneObject(this, i, render)
-
+            const newZone = new ScoringZoneSceneObject(this, i)
             this._scoringZones.push(newZone)
             World.sceneRenderer.registerSceneObject(newZone)
         }
     }
 
-    public updateProtectedZones(render?: boolean) {
+    public updateProtectedZones() {
         this.removeSceneObjects(this._protectedZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.protectedZones) return
-        render ??= PreferencesSystem.getUserPreference("RenderProtectedZones")
 
         for (let i = 0; i < this._fieldPreferences.protectedZones.length; i++) {
-            const newZone = new ProtectedZoneSceneObject(this, i, render)
+            const newZone = new ProtectedZoneSceneObject(this, i)
 
             this._protectedZones.push(newZone)
             World.sceneRenderer.registerSceneObject(newZone)
@@ -750,6 +763,151 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             height: size.y,
             depth: size.z,
         }
+    }
+
+    /**
+     * @returns The transformation matrix which corresponds to the reverse of the current spacial rotation of the root node of this scene object, relative to the origin
+     */
+    private getInverseRotationOfBody(): Jolt.Mat44 {
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+        return rootBody.GetWorldTransform().GetRotation().Inversed()
+    }
+
+    /**
+     * Computes the six furthest vertices along the x, y, and z axes respectively. Stores its result in `this._furthestVertices`
+     *
+     * `this._furthestVertices` is guaranteed to be defined after calling this function
+     *
+     * The vertices calculated by this function should remain valid as the robot moves through the world
+     * However, if the robot modifies its dimensionality in some way(e.g. by extending an arm), this function should be called again to have accurate results.
+     */
+    private computeFurthestVertices(): void {
+        this._furthestVertices = {
+            x: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
+            y: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
+            z: { min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY },
+        }
+
+        const inverseRotation = this.getInverseRotationOfBody()
+
+        const biggest = JOLT.AABox.prototype.sBiggest()
+        const scale = new JOLT.Vec3(1, 1, 1)
+        const identity = JOLT.Quat.prototype.sIdentity()
+
+        this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
+            const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
+            if (!bodyId) return
+
+            const body = World.physicsSystem.getBody(bodyId)!
+            const bodyTransform = body.GetWorldTransform()
+
+            const vertexTransform = bodyTransform.MulMat44(inverseRotation)
+
+            const shape = body.GetShape()
+            const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
+            const vertices = new Float32Array(
+                JOLT.HEAP32.buffer,
+                triangleContext.GetVerticesData(),
+                triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
+            )
+
+            const vertex = new JOLT.Vec3()
+            for (let i = 0; i < vertices.length; i += 3) {
+                vertex.Set(vertices[i], vertices[i + 1], vertices[i + 2])
+                // Transform the vertex into the position it would occupy if the robot were axis aligned
+                const transformedVertex = vertexTransform.MulVec3(vertex)
+
+                const transX = transformedVertex.GetX()
+                const transY = transformedVertex.GetY()
+                const transZ = transformedVertex.GetZ()
+
+                // Compute maximum vertex along each axis
+                const oldX = this._furthestVertices!.x
+                const oldY = this._furthestVertices!.y
+                const oldZ = this._furthestVertices!.z
+
+                oldX.min = Math.min(oldX.min, transX)
+                oldY.min = Math.min(oldY.min, transY)
+                oldZ.min = Math.min(oldZ.min, transZ)
+
+                oldX.max = Math.max(oldX.max, transX)
+                oldY.max = Math.max(oldY.max, transY)
+                oldZ.max = Math.max(oldZ.max, transZ)
+
+                JOLT.destroy(transformedVertex)
+            }
+
+            JOLT.destroy(vertexTransform)
+            JOLT.destroy(triangleContext)
+
+            JOLT.destroy(vertex)
+        })
+
+        JOLT.destroy(inverseRotation)
+
+        JOLT.destroy(scale)
+        JOLT.destroy(biggest)
+        JOLT.destroy(identity)
+
+        const mins = [this._furthestVertices.x.min, this._furthestVertices.y.min, this._furthestVertices.z.min]
+        const maxes = [this._furthestVertices.x.max, this._furthestVertices.y.max, this._furthestVertices.z.max]
+        if (mins.some(m => m === Number.POSITIVE_INFINITY) || maxes.some(m => m === Number.NEGATIVE_INFINITY)) {
+            console.warn("Failed to compute furthest vertices")
+        }
+    }
+
+    /**
+     * Calculates the vector between the center of the axis-aligned bounding box around the mirabuf object and the position of the root body.
+     *
+     * The resultant vector is placed in `this._unrotatedRootNodeToCenterPositionTranslation`
+     *
+     * Call this whenever we need to update that translation for reasons besides the robot rotating (e.g. on setup or whenever the dimensions of the robot change)
+     *
+     * WARNING This requires the robot to be axis-aligned initially. This may not always be true.
+     */
+    private computeUnrotatedRootNodeToCenterPositionTranslation() {
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+
+        const rootNodeTransform = convertJoltRVec3ToJoltVec3(rootBody.GetPosition())
+        const alignedPosition = convertThreeVector3ToJoltVec3(this.getPositionTransform())
+
+        this._unrotatedRootNodeToCenterPositionTranslation = copyVec3(alignedPosition.SubVec3(rootNodeTransform))
+    }
+
+    /**
+     * Gets the tightest fitting oriented bounding box around the robot, centered at the robot's origin.
+     *
+     * In order for this function to be up-to-date, both the function `this.computeFurthestVertices` and `this.computeUnrotatedRootNodeToCenterPositionTranslation` must have been called since the last time the dimensions of the robot changed.
+     *
+     * This should basically only be on setup, and whenever a non-wheel robot joint moves.
+     *
+     * @returns The aforementioned bounding box
+     */
+    public getOrientedBoundingBox(): Jolt.OrientedBox {
+        // Get dimensions of scene object along each axis
+        const axesVertices = [this._furthestVertices!.x, this._furthestVertices!.y, this._furthestVertices!.z]
+        const axisHalfExtents = axesVertices.map(({ min, max }) => Math.abs(max - min) / 2) as [number, number, number]
+
+        const halfExtent = new JOLT.Vec3(...axisHalfExtents)
+
+        // Get root body transformation
+        const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
+        // NOTE Do not destroy
+        const rotation = rootBody.GetRotation()
+
+        // We rotate our vector by the rotation of the root body, otherwise any rotation will mess with the translation
+        const offset = rotation.MulVec3(this._unrotatedRootNodeToCenterPositionTranslation!)
+
+        // Finally, we just offset the root node to get the true center
+        const position = convertJoltRVec3ToJoltVec3(rootBody.GetPosition().Add(offset))
+        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position)
+
+        const orientedBoundingBox = new JOLT.OrientedBox(transform, halfExtent)
+
+        JOLT.destroy(transform)
+        JOLT.destroy(halfExtent)
+
+        return orientedBoundingBox
     }
 
     /**
@@ -1003,8 +1161,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return rootBody.IsActive() && !rootBody.IsSensor()
     }
 
-    public getRootNodeId(): Jolt.BodyID | undefined {
+    public getRootNodeId(): Jolt.BodyID {
         return this.mechanism.getBodyByNodeId(this.mechanism.rootBody)!
+    }
+
+    public getRootBody(): Jolt.Body {
+        return World.physicsSystem.getBody(this.getRootNodeId())!
     }
 
     public loadFocusTransform(mat: THREE.Matrix4) {
@@ -1033,9 +1195,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomTargetControls) {
         const modes = [
-            { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
-            { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
-            { mode: CameraMode.Face, name: "Camera: Face Robot" },
+            { mode: CameraMode.FOLLOW, name: "Camera: Follow Robot" },
+            { mode: CameraMode.LOCKED, name: "Camera: Lock to Robot" },
+            { mode: CameraMode.FACE, name: "Camera: Face Robot" },
         ]
 
         modes
@@ -1052,7 +1214,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getSupplierData(): ContextData {
         const data: ContextData = {
-            title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
+            title: this.miraType == MiraType.ROBOT ? `${this.descriptiveName}` : "Field",
             items: [],
         }
 
@@ -1078,14 +1240,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 type: "panel",
             }
         )
-
-        if (this.brain?.brainType == "wpilib") {
-            data.items.push({
-                name: "Auto Testing",
-                screen: AutoTestPanel,
-                type: "panel",
-            })
-        }
 
         if (World.sceneRenderer.currentCameraControls.controlsType == "Target") {
             const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
@@ -1219,7 +1373,12 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), progressHandle, multiplayerOwnerId)
+    const mirabufInstance = new MirabufInstance(parser)
+
+    progressHandle?.update("Created Mirabuf Instance", URDFImportProgressBar.MIRABUF_INSTANCE)
+    await yieldToMain()
+
+    return new MirabufSceneObject(mirabufInstance, progressHandle, multiplayerOwnerId)
 }
 
 async function migrateUUID(parser: MirabufParser, hash: string) {
