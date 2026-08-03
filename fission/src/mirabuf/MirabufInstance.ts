@@ -93,8 +93,8 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
 class MirabufInstance {
     private _mirabufParser: MirabufParser
     private _materials: Map<string, THREE.Material>
-    private _meshes: Map<MirabufPartInstanceGUID, Array<[THREE.BatchedMesh, number]>>
-    private _batches: Array<THREE.BatchedMesh>
+    private _meshes: Map<MirabufPartInstanceGUID, [THREE.BatchedMesh, number][]>
+    private _batches: THREE.BatchedMesh[]
 
     public get parser() {
         return this._mirabufParser
@@ -172,7 +172,7 @@ class MirabufInstance {
             maxIndices: number
         }
 
-        const batchMap = new Map<THREE.Material, Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>>()
+        const batchMap = new Map<THREE.Material, Map<string, [mirabuf.IBody, mirabuf.IPartInstance[]]>>()
         const countMap = new Map<THREE.Material, BatchCounts>()
 
         // Filter all instances by first material, then body
@@ -192,7 +192,7 @@ class MirabufInstance {
 
                 let materialBodyMap = batchMap.get(material)
                 if (!materialBodyMap) {
-                    materialBodyMap = new Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>()
+                    materialBodyMap = new Map<string, [mirabuf.IBody, mirabuf.IPartInstance[]]>()
                     batchMap.set(material, materialBodyMap)
                 }
 
