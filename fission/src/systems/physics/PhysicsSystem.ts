@@ -906,6 +906,8 @@ class PhysicsSystem extends WorldSystem {
             return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
         })()
 
+        const gamepieceBodies: Jolt.BodyID[] = []
+
         const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
         const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
@@ -1130,6 +1132,10 @@ class PhysicsSystem extends WorldSystem {
                 this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
 
+                if (rn.isGamePiece) {
+                    gamepieceBodies.push(body.GetID())
+                }
+
                 if (appliedSphereCollider) {
                     body.GetMotionProperties().SetAngularDamping(SPHERE_GP_ANGULAR_DAMPING)
                     body.GetMotionProperties().SetLinearDamping(SPHERE_GP_LINEAR_DAMPING)
@@ -1144,7 +1150,9 @@ class PhysicsSystem extends WorldSystem {
             // Cleanup
             JOLT.destroy(compoundShapeSettings)
         })
-
+        setTimeout(() => {
+            gamepieceBodies.forEach(body => this._joltBodyInterface.DeactivateBody(body))
+        })
         return rnToBodies
     }
 
