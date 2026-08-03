@@ -72,6 +72,7 @@
         "useAsConstAssertion": "error",
         "useComponentExportOnlyModules": "warn",
         "useImportType": "warn",
+        "useConsistentArrayType": "error",
         "useNamingConvention": {
           "level": "error",
           "options": {

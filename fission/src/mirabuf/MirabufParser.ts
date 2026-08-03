@@ -26,7 +26,7 @@ class MirabufParser {
     private _nodeNameCounter: number = 0
 
     private _assembly: mirabuf.Assembly
-    private _errors: Array<ParseError>
+    private _errors: ParseError[]
     private _directedGraph: Graph
     private _rootNode: string
 
@@ -34,7 +34,7 @@ class MirabufParser {
     private _designHierarchyRoot: mirabuf.INode = new mirabuf.Node()
 
     protected _partToNodeMap: Map<string, RigidNode> = new Map()
-    protected _rigidNodes: Array<RigidNode> = []
+    protected _rigidNodes: RigidNode[] = []
     private _globalTransforms: Map<string, THREE.Matrix4>
 
     private _groundedNode: RigidNode | undefined

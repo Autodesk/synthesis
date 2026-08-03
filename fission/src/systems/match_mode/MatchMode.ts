@@ -130,7 +130,7 @@ class MatchMode {
     }
 
     async start(broadcast = true, useSpawnPositions: boolean) {
-        const startTime = Date.now() + 500 + (World.multiplayerSystem?.latencyMS ?? 0)
+        const startTime = Date.now() + 300 // Accounts for time it takes for robots to move to start positions and settle, and for multiplayer state to sync
         if (broadcast && World.multiplayerSystem) {
             World.multiplayerSystem.broadcast({
                 type: "matchModeState",
@@ -149,12 +149,13 @@ class MatchMode {
             World.getOwnRobots().forEach(obj => obj.moveToSpawnLocation())
         }
 
-        this.autonomousModeStart()
         World.scoreTracker.resetScores()
         RobotDimensionTracker.matchStart()
 
         const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
         World.analyticsSystem?.event("Match Start", matchEvent)
+
+        this.runForNext(0, false).then(() => this.autonomousModeStart())
     }
 
     matchEnded() {
