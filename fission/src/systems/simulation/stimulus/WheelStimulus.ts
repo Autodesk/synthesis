@@ -1,6 +1,6 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
-import { type NoraNumber2, NoraTypes } from "../Nora"
+import { type NoraValue, NoraTypes } from "../Nora"
 import EncoderStimulus from "./EncoderStimulus"
 import type { StimulusID } from "./Stimulus"
 
@@ -50,7 +50,7 @@ class WheelRotationStimulus extends EncoderStimulus {
     public getSupplierType(): NoraTypes {
         return NoraTypes.NUMBER2
     }
-    public getSupplierValue(): NoraNumber2 {
+    public getSupplierValue(): NoraValue<2> {
         return [this.positionValue, this.velocityValue]
     }
     public displayName(): string {

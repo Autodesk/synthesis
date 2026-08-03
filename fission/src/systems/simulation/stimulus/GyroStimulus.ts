@@ -7,24 +7,17 @@ import {
     convertJoltQuatToThreeQuaternion,
     convertJoltVec3ToThreeVector3,
 } from "@/util/TypeConversions"
-import { type NoraNumber6, NoraTypes } from "../Nora"
+import { type NoraValue, NoraTypes } from "../Nora"
 import { SimType } from "../wpilib_brain/WPILibTypes"
 import SimGeneric from "../wpilib_brain/sim/SimGeneric"
 import Stimulus, { type StimulusID } from "./Stimulus"
 
-/**
- * Supplies gyro angle + rate for a sensor mounted at a given orientation on a body.
- *
- * A gyro reads identically anywhere on one rigid body, so only the mount *rotation*
- * (from deltaTransformation) matters here; translation is ignored. Migrated from the
- * former hardcoded `SimGyroInput`.
- */
 class GyroStimulus extends Stimulus {
     private _body: Jolt.Body
     private _mountRotation: THREE.Quaternion
     private _device: string
 
-    // WPILib uses deg and deg/s. Order matches the GYRO receiver: angle x/y/z, rate x/y/z.
+    // WPILib uses deg and deg/s
     private _angle = { x: 0, y: 0, z: 0 }
     private _rate = { x: 0, y: 0, z: 0 }
 
@@ -51,7 +44,7 @@ class GyroStimulus extends Stimulus {
         this._mountRotation = rot
     }
 
-    /** Body angular velocity expressed in the sensor's mount frame. */
+    /** Body angular velocity in the sensor's mount frame. */
     private mountAngularVelocity(): THREE.Vector3 {
         const worldOmega = convertJoltVec3ToThreeVector3(this._body.GetAngularVelocity(), false)
         const bodyRot = convertJoltQuatToThreeQuaternion(this._body.GetRotation(), false)
@@ -61,7 +54,6 @@ class GyroStimulus extends Stimulus {
     private integrateAngle(axis: "x" | "y" | "z", rate: number, deltaT: number): number {
         this._accumulated[axis] += rate * deltaT
 
-        // honor robot-code gyro resets written to the wired device
         const external = SimGeneric.getUnsafe<number>(SimType.GYRO, this._device, GyroStimulus.ANGLE_FIELD[axis])
         if (external !== undefined && external !== this._lastWritten[axis]) {
             this._offset[axis] = this._accumulated[axis] - external
@@ -85,9 +77,9 @@ class GyroStimulus extends Stimulus {
     }
 
     public getSupplierType(): NoraTypes {
-        return NoraTypes.NUMBER6
+        return NoraTypes.GYRO
     }
-    public getSupplierValue(): NoraNumber6 {
+    public getSupplierValue(): NoraValue<6> {
         return [this._angle.x, this._angle.y, this._angle.z, this._rate.x, this._rate.y, this._rate.z]
     }
     public displayName(): string {

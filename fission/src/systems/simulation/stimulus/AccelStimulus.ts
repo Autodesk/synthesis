@@ -7,16 +7,9 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltVec3ToThreeVector3,
 } from "@/util/TypeConversions"
-import { type NoraNumber6, NoraTypes } from "../Nora"
+import { type NoraValue, NoraTypes } from "../Nora"
 import Stimulus, { type StimulusID } from "./Stimulus"
 
-/**
- * Supplies accelerometer specific-force + velocity for a sensor mounted at an offset on a body.
- *
- * Unlike a gyro, a linear accelerometer is position-dependent: the mount's offset r from the
- * body center of mass adds the lever-arm terms `α×r + ω×(ω×r)`. Migrated from the former
- * hardcoded `SimAccelInput` and extended for arbitrary mount placement.
- */
 class AccelStimulus extends Stimulus {
     private _body: Jolt.Body
     private _delta: THREE.Matrix4
@@ -27,7 +20,6 @@ class AccelStimulus extends Stimulus {
     private _prevVel = new THREE.Vector3()
     private _prevOmega = new THREE.Vector3()
 
-    // Order matches the ACCELEROMETER receiver: accel x/y/z (mount frame), vel x/y/z (world).
     private _accel = new THREE.Vector3()
     private _vel = new THREE.Vector3()
 
@@ -38,7 +30,9 @@ class AccelStimulus extends Stimulus {
         this._delta = convertArrayToThreeMatrix4(deltaTransformation)
     }
 
-    /** World-space mount position and rotation from delta * bodyWorldTransform. */
+    /**
+     * World-space mount position and rotation.
+     */
     private mountFrame(): { position: THREE.Vector3; rotation: THREE.Quaternion } {
         const world = this._delta.clone().premultiply(convertJoltMat44ToThreeMatrix4(this._body.GetWorldTransform()))
         const position = new THREE.Vector3()
@@ -55,14 +49,12 @@ class AccelStimulus extends Stimulus {
         const com = convertJoltVec3ToThreeVector3(this._body.GetCenterOfMassPosition(), false)
         const r = mountPos.clone().sub(com)
 
-        // velocity of the mount point: v_com + ω × r
         this._vel = velCom.clone().add(omega.clone().cross(r))
 
         if (deltaT > 0) {
             const accelCom = velCom.clone().sub(this._prevVel).divideScalar(deltaT)
             const alpha = omega.clone().sub(this._prevOmega).divideScalar(deltaT)
 
-            // a_point = a_com + α × r + ω × (ω × r)
             const accelPoint = accelCom.add(alpha.cross(r)).add(omega.clone().cross(omega.clone().cross(r)))
 
             const specificForce = accelPoint.sub(AccelStimulus.GRAVITY).divideScalar(AccelStimulus.GRAVITY_MAGNITUDE)
@@ -74,9 +66,9 @@ class AccelStimulus extends Stimulus {
     }
 
     public getSupplierType(): NoraTypes {
-        return NoraTypes.NUMBER6
+        return NoraTypes.ACCEL
     }
-    public getSupplierValue(): NoraNumber6 {
+    public getSupplierValue(): NoraValue<6> {
         return [this._accel.x, this._accel.y, this._accel.z, this._vel.x, this._vel.y, this._vel.z]
     }
     public displayName(): string {

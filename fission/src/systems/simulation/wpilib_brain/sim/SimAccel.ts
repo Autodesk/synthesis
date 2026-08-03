@@ -1,4 +1,4 @@
-import type { NoraNumber6 } from "../../Nora"
+import type { NoraValue } from "../../Nora"
 import type { SimReceiver } from "../SimDataFlow"
 import { receiverTypeMap } from "../WPILibState"
 import { SimType } from "../WPILibTypes"
@@ -35,7 +35,7 @@ export default class SimAccel {
     public static genReceiver(device: string): SimReceiver {
         return {
             getReceiverType: () => receiverTypeMap[SimType.ACCELEROMETER]!,
-            setReceiverValue: ([x, y, z, vx, vy, vz]: NoraNumber6) => {
+            setReceiverValue: ([x, y, z, vx, vy, vz]: NoraValue<6>) => {
                 SimAccel.setX(device, x)
                 SimAccel.setY(device, y)
                 SimAccel.setZ(device, z)

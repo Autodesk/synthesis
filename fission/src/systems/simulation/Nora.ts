@@ -8,50 +8,52 @@
  * with the averaging function setup I have below.
  */
 
+// type is "<unit>:<shape>", but absent unit means only shape determines connection viability
+// (e.g., NUMBER3 can be connected to any 3-arity type)
 export enum NoraTypes {
     NUMBER = "num",
     NUMBER2 = "(num,num)",
     NUMBER3 = "(num,num,num)",
     NUMBER6 = "(num,num,num,num,num,num)",
+    GYRO = "gyro:(num,num,num,num,num,num)",
+    ACCEL = "accel:(num,num,num,num,num,num)",
     UNKNOWN = "unknown",
 }
 
+function shapeOf(type: NoraTypes): string {
+    const i = type.indexOf(":")
+    return i === -1 ? type : type.substring(i + 1)
+}
+
+type Tuple<N extends number, T, R extends T[] = []> = R["length"] extends N ? R : Tuple<N, T, [...R, T]>
+
 export type NoraNumber = number
-export type NoraNumber2 = [NoraNumber, NoraNumber]
-export type NoraNumber3 = [NoraNumber, NoraNumber, NoraNumber]
-export type NoraNumber6 = [NoraNumber, NoraNumber, NoraNumber, NoraNumber, NoraNumber, NoraNumber]
+export type NoraValue<N extends number, T = number> = N extends 1 ? T : Tuple<N, T>
 export type NoraUnknown = unknown
 
-export type NoraType = NoraNumber | NoraNumber2 | NoraNumber3 | NoraNumber6 | NoraUnknown
-
-// Needed?
-// export function constructNoraType(...types: NoraTypes[]): NoraTypes {
-//     return `[${types.join(",")}]` as NoraTypes
-// }
+export type NoraType = NoraValue<1> | NoraValue<2> | NoraValue<3> | NoraValue<6> | NoraUnknown
 
 export function deconstructNoraType(type: NoraTypes): NoraTypes[] | undefined {
-    if (type.charAt(0) != "(" || type.charAt(type.length - 1) != ")") return undefined
-    return type.substring(1, type.length - 1).split(",") as NoraTypes[]
+    const shape = shapeOf(type)
+    if (shape.charAt(0) != "(" || shape.charAt(shape.length - 1) != ")") return undefined
+    return shape.substring(1, shape.length - 1).split(",") as NoraTypes[]
 }
 
 export function isNoraDeconstructable(type: NoraTypes): boolean {
-    return type.charAt(0) == "(" && type.charAt(type.length - 1) == ")"
+    const shape = shapeOf(type)
+    return shape.charAt(0) == "(" && shape.charAt(shape.length - 1) == ")"
 }
 
-const averageFuncMap: { [k in NoraTypes]: ((...many: NoraType[]) => NoraType) | undefined } = {
+const averageFuncMap: { [shape: string]: ((...many: NoraType[]) => NoraType) | undefined } = {
     [NoraTypes.NUMBER]: function (...many: NoraType[]): NoraType {
         return many.reduce<NoraNumber>((prev, next) => prev + (next as NoraNumber), 0)
     },
-    [NoraTypes.NUMBER2]: undefined,
-    [NoraTypes.NUMBER3]: undefined,
-    [NoraTypes.NUMBER6]: undefined,
-    [NoraTypes.UNKNOWN]: undefined,
 }
 
 export function noraAverageFunc(type: NoraTypes): ((...many: NoraType[]) => NoraType) | undefined {
-    return averageFuncMap[type]
+    return averageFuncMap[shapeOf(type)]
 }
 
 export function hasNoraAverageFunc(type: NoraTypes): boolean {
-    return averageFuncMap[type] != undefined
+    return averageFuncMap[shapeOf(type)] != undefined
 }

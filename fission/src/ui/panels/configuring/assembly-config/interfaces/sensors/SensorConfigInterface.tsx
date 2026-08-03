@@ -19,7 +19,6 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 
-/** delta L such that gizmoWorld W = L * bodyWorld R, i.e. L = W R^(-1). See intake/zone configs. */
 function computeDeltaFromGizmo(
     robot: MirabufSceneObject,
     gizmo: GizmoSceneObject,
@@ -44,7 +43,6 @@ function computeDeltaFromGizmo(
 export type SensorConfigProps = {
     selectedRobot: MirabufSceneObject
     selectedSensor: SensorPreferences
-    /** Persist the sensor list after this sensor's fields are updated. */
     saveAllSensors: () => void
 }
 

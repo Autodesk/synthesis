@@ -1,4 +1,4 @@
-import type { NoraNumber2 } from "../../Nora"
+import type { NoraValue } from "../../Nora"
 import type EncoderStimulus from "../../stimulus/EncoderStimulus"
 import type { SimReceiver } from "../SimDataFlow"
 import { SimInput } from "../SimInput"
@@ -20,7 +20,7 @@ export default class SimCANEncoder {
     public static genReceiver(device: string): SimReceiver {
         return {
             getReceiverType: () => receiverTypeMap[SimType.CAN_ENCODER]!,
-            setReceiverValue: ([count, rate]: NoraNumber2) => {
+            setReceiverValue: ([count, rate]: NoraValue<2>) => {
                 SimCANEncoder.setPosition(device, count)
                 SimCANEncoder.setVelocity(device, rate)
             },

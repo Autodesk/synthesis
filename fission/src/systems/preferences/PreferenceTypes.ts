@@ -145,7 +145,6 @@ export type EjectorPreferences = {
     ejectOrder: "FIFO" | "LIFO"
 }
 
-/** Inertial sim sensors are joint-independent; position matters only for accel (lever-arm) and mount rotation. */
 export type SensorType = "gyro" | "accel"
 
 export type SensorPreferences = {

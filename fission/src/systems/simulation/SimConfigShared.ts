@@ -1,4 +1,5 @@
 import type { XYPosition } from "@xyflow/react"
+import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type Driver from "@/systems/simulation/driver/Driver"
 import type { DriverType } from "@/systems/simulation/driver/Driver"
@@ -17,6 +18,7 @@ import { getSimMap, receiverTypeMap, supplierTypeMap } from "@/systems/simulatio
 import World from "@/systems/World"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
 import { random } from "@/util/Random"
+import { hashBuffer } from "@/util/Utility"
 import SimAccel from "./wpilib_brain/sim/SimAccel"
 import SimCANEncoder from "./wpilib_brain/sim/SimCANEncoder"
 import SimCANMotor from "./wpilib_brain/sim/SimCANMotor"
@@ -24,13 +26,15 @@ import SimPWM from "./wpilib_brain/sim/SimPWM"
 import { SimType } from "./wpilib_brain/WPILibTypes"
 import SimGyro from "./wpilib_brain/sim/SimGyro"
 
-export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
-    [NoraTypes.NUMBER]: "#5f60ff",
-    [NoraTypes.NUMBER2]: "#2bc275",
-    [NoraTypes.NUMBER3]: "#ffc21a",
-    [NoraTypes.NUMBER6]: "#ff6f1a",
-    [NoraTypes.UNKNOWN]: "#bebebe",
-}
+export const NORA_TYPES_COLORS = Object.fromEntries(
+    await Promise.all(
+        Object.values(NoraTypes).map(async t => {
+            const hash = await hashBuffer(new TextEncoder().encode(t).buffer as ArrayBuffer)
+            const hue = (parseInt(hash.slice(0, 6), 16) % 360) / 360
+            return [t, `#${new THREE.Color().setHSL(hue, 0.7, 0.6).getHexString()}`]
+        })
+    )
+) as { [k in NoraTypes]: string }
 
 let id = 0
 export function genId(): number {

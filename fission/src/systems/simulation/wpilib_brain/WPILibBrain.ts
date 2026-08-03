@@ -1,15 +1,12 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import { random } from "@/util/Random"
 import Brain from "../Brain"
 import { SimConfig } from "../SimConfigShared"
 import type { SimulationLayer } from "../SimulationSystem"
 import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import { type SimFlow, validate } from "./SimDataFlow"
 import type { SimInput } from "./SimInput"
-import { SimAnalogOutput, SimDigitalOutput, type SimOutput } from "./SimOutput"
-import { SimAnalogInput } from "./sim/SimAI"
-import { SimDigitalInput } from "./sim/SimDIO"
+import type { SimOutput } from "./SimOutput"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
 import { type DeviceData, type SimType, type WSMessage, worker } from "./WPILibTypes"
 import SimDriverStation from "./sim/SimDriverStation"
@@ -101,10 +98,11 @@ class WPILibBrain extends Brain {
             return
         }
 
-        this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
-        this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
-        this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
-        this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
+        // TODO: support these
+        // this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
+        // this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
+        // this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
+        // this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
 
         this.loadSimConfig()
 
