@@ -150,6 +150,7 @@ class PhysicsSystem extends WorldSystem {
     private _constraints: Jolt.Constraint[]
     // Sphere game-piece bodies that get the resting-stiction pass each step (see update()).
     private _sphereGamePieceBodies: Jolt.BodyID[] = []
+    private _gamepiecesToFreeze: Jolt.BodyID[] = []
 
     private _physicsEventQueue: SynthesisEvent<
         "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
@@ -298,6 +299,13 @@ class PhysicsSystem extends WorldSystem {
 
     public isBodyAdded(bodyId: Jolt.BodyID) {
         return this._joltBodyInterface.IsAdded(bodyId)
+    }
+
+    public deactivateGamepieces() {
+        this._gamepiecesToFreeze.forEach(body => {
+            this._joltBodyInterface.DeactivateBody(body)
+        })
+        this._gamepiecesToFreeze = []
     }
 
     /**
@@ -906,8 +914,6 @@ class PhysicsSystem extends WorldSystem {
             return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
         })()
 
-        const gamepieceBodies: Jolt.BodyID[] = []
-
         const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
         const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
@@ -1133,7 +1139,7 @@ class PhysicsSystem extends WorldSystem {
                 body.SetRestitution(0.4)
 
                 if (rn.isGamePiece) {
-                    gamepieceBodies.push(body.GetID())
+                    this._gamepiecesToFreeze.push(body.GetID())
                 }
 
                 if (appliedSphereCollider) {
@@ -1149,9 +1155,6 @@ class PhysicsSystem extends WorldSystem {
 
             // Cleanup
             JOLT.destroy(compoundShapeSettings)
-        })
-        setTimeout(() => {
-            gamepieceBodies.forEach(body => this._joltBodyInterface.DeactivateBody(body))
         })
         return rnToBodies
     }
