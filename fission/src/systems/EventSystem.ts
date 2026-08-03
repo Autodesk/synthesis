@@ -50,6 +50,7 @@ interface EventDataMap {
 
     ToggleScoreboardEvent: never
 
+    SetDragModeEvent: { enabled: boolean }
     DragModeToggled: { enabled: boolean }
 
     CameraModeChangedEvent: { mode: string }

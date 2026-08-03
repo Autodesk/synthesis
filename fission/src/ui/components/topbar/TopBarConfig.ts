@@ -1,12 +1,22 @@
 export const TOP_BAR_HEIGHT = 48
 
+const MUI_SPACING_UNIT_PX = 8
+
 export const TOP_BAR_GAP = 1.5
-export const TOP_BAR_GAP_PX = 12
+export const TOP_BAR_GAP_PX = TOP_BAR_GAP * MUI_SPACING_UNIT_PX
 
 export const TOP_BAR_ICON_BUTTON_SX = {
     color: "topBarText.main",
     "&:hover": { backgroundColor: "transparent" },
     "&:focus, &:focus-visible": { outline: "none" },
+} as const
+
+const tintedWithButtonColor = (percent: number) => `color-mix(in srgb, currentColor ${percent}%, transparent)`
+
+export const TOP_BAR_ICON_BUTTON_ACTIVE_SX = {
+    borderRadius: 1,
+    backgroundColor: tintedWithButtonColor(16),
+    "&:hover": { backgroundColor: tintedWithButtonColor(24) },
 } as const
 
 // making react-icon glyph consistent with buttons

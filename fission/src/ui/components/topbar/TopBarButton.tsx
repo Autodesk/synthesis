@@ -1,7 +1,7 @@
 import { Tooltip } from "@mui/material"
 import type React from "react"
 import { IconButton } from "@/ui/components/StyledComponents"
-import { TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
+import { TOP_BAR_ICON_BUTTON_ACTIVE_SX, TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
 
 type TopBarButtonProps = {
     label: string
@@ -26,11 +26,7 @@ export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disable
                     sx={{
                         ...TOP_BAR_ICON_BUTTON_SX,
                         ...(disabled && { opacity: 0.4 }),
-                        ...(active && {
-                            bgcolor: "rgba(255, 255, 255, 0.16)",
-                            borderRadius: 1,
-                            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.24)" },
-                        }),
+                        ...(active && TOP_BAR_ICON_BUTTON_ACTIVE_SX),
                     }}
                     onClick={onClick}
                 >

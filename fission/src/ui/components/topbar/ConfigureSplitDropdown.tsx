@@ -13,7 +13,6 @@ type ConfigEntry = { key: string; icon: React.ReactNode; label: string; mode: Co
 
 const MENU_ONLY_CONFIGS: Omit<ConfigEntry, "key">[] = [
     { label: "Metadata", mode: ConfigMode.METADATA, icon: <SynthesisIcons.METADATA /> },
-    { label: "Move", mode: ConfigMode.MOVE, icon: <SynthesisIcons.MOVE /> },
     { label: "Brain", mode: ConfigMode.BRAIN, icon: <SynthesisIcons.BRAIN /> },
 ]
 

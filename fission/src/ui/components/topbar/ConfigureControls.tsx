@@ -1,8 +1,8 @@
 import { Box } from "@mui/material"
 import type React from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import CollapsibleGroup, { type CollapsibleItem } from "@/ui/components/topbar/CollapsibleGroup"
+import { ConfigMode } from "@/panels/configuring/assembly-config/ConfigTypes"
+import { CollapsibleGroup, type CollapsibleItem } from "@/ui/components/topbar/CollapsibleGroup"
 import ConfigureSplitDropdown from "@/ui/components/topbar/ConfigureSplitDropdown"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
@@ -33,7 +33,7 @@ const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = (
                 <TopBarButton
                     label="Move"
                     icon={
-                        <Box sx={{ ...TOP_BAR_GLYPH_SX, fontSize: 22 }}>
+                        <Box sx={TOP_BAR_GLYPH_SX}>
                             <SynthesisIcons.MOVE />
                         </Box>
                     }

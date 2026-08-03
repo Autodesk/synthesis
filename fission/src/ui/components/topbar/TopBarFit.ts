@@ -1,18 +1,21 @@
 import type React from "react"
 import { createContext, useContext } from "react"
 
-export const TOP_BAR_FIT_SLACK = 8
+const SUBPIXEL_SLACK_PX = 8
 
 export function computeVisibleCount(budget: number, widths: readonly number[], gap: number): number {
+    const spendable = budget - SUBPIXEL_SLACK_PX
+
     let used = 0
     for (let i = 0; i < widths.length; i++) {
         used += widths[i] + gap
-        if (used > budget) return i
+        if (used > spendable) return i
     }
     return widths.length
 }
 
 export interface TopBarFitValue {
+    rowRef: React.RefObject<HTMLElement | null>
     spacerRef: React.RefObject<HTMLElement | null>
     resizeTick: number
 }

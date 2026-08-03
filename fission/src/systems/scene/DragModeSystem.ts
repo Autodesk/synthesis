@@ -86,7 +86,7 @@ class DragModeSystem extends WorldSystem {
                 this.handleWheelDuringDrag(event)
             }
         }
-        this._unsubscriber = EventSystem.listen("DragModeToggled", ({ enabled }) => {
+        this._unsubscriber = EventSystem.listen("SetDragModeEvent", ({ enabled }) => {
             this.enabled = enabled
         })
     }

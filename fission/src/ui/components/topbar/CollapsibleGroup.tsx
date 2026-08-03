@@ -1,8 +1,8 @@
-import { Box, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
 import type React from "react"
 import { Fragment, useLayoutEffect, useRef, useState } from "react"
 import { TOP_BAR_GAP, TOP_BAR_GAP_PX } from "@/ui/components/topbar/TopBarConfig"
-import { computeVisibleCount, TOP_BAR_FIT_SLACK, useTopBarFit } from "@/ui/components/topbar/TopBarFit"
+import { computeVisibleCount, useTopBarFit } from "@/ui/components/topbar/TopBarFit"
 
 export interface CollapsibleItem {
     key: string
@@ -10,62 +10,61 @@ export interface CollapsibleItem {
 }
 
 interface CollapsibleGroupProps {
-    items: CollapsibleItem[]
+    items: readonly CollapsibleItem[]
     always?: React.ReactNode
 }
 
-const MEASURE_LAYER_SX = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: 0,
-    height: 0,
-    overflow: "hidden",
-    visibility: "hidden",
-    pointerEvents: "none",
-} as const
+const GROUP_SX = { flexShrink: 0, "& > *": { flexShrink: 0 } } as const
 
-const MEASURE_ROW_SX = { display: "flex", width: "max-content" } as const
+const KEY_SEPARATOR = "\u0000"
 
-const CollapsibleGroup: React.FC<CollapsibleGroupProps> = ({ items, always }) => {
+export const CollapsibleGroup: React.FC<CollapsibleGroupProps> = ({ items, always }) => {
     const fit = useTopBarFit()
-    const measureRef = useRef<HTMLDivElement>(null)
+    const groupRef = useRef<HTMLDivElement>(null)
+    const widthsRef = useRef<readonly number[]>([])
 
-    const [visibleCount, setVisibleCount] = useState(fit ? 0 : items.length)
+    const itemCount = items.length
+    const itemsKey = items.map(item => item.key).join(KEY_SEPARATOR)
 
-    const itemsKey = items.map(item => item.key).join(" ")
+    const [fitted, setFitted] = useState({ itemsKey, visibleCount: itemCount })
+    if (fitted.itemsKey !== itemsKey) {
+        widthsRef.current = []
+        setFitted({ itemsKey, visibleCount: itemCount })
+    }
+    const visibleCount = fitted.itemsKey === itemsKey ? fitted.visibleCount : itemCount
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: deliberate re-measure triggers
     useLayoutEffect(() => {
+        const group = groupRef.current
+        if (!group) return
+
+        if (widthsRef.current.length !== itemCount) {
+            if (group.children.length < itemCount) return
+
+            widthsRef.current = Array.from(group.children)
+                .slice(0, itemCount)
+                .map(child => (child as HTMLElement).offsetWidth)
+        }
+
+        const row = fit?.rowRef.current
         const spacer = fit?.spacerRef.current
-        const measure = measureRef.current
-        if (!spacer || !measure) return
+        if (!row || !spacer) return
 
-        const widths = Array.from(measure.children, child => (child as HTMLElement).offsetWidth)
-
+        const widths = widthsRef.current
         const usedByItems = widths.slice(0, visibleCount).reduce((total, width) => total + width + TOP_BAR_GAP_PX, 0)
-        const room = spacer.offsetWidth + usedByItems
+        const overflow = Math.max(0, row.scrollWidth - row.clientWidth)
+        const budget = usedByItems + spacer.offsetWidth - overflow
 
-        setVisibleCount(computeVisibleCount(room - TOP_BAR_FIT_SLACK, widths, TOP_BAR_GAP_PX))
-    }, [fit?.resizeTick, fit?.spacerRef, itemsKey, visibleCount])
+        const nextCount = computeVisibleCount(budget, widths, TOP_BAR_GAP_PX)
+        setFitted(prev => (prev.visibleCount === nextCount ? prev : { itemsKey, visibleCount: nextCount }))
+    }, [fit, itemCount, itemsKey, visibleCount])
 
     return (
-        <Stack direction="row" alignItems="center" gap={TOP_BAR_GAP} sx={{ position: "relative", flexShrink: 0 }}>
+        <Stack ref={groupRef} direction="row" alignItems="center" gap={TOP_BAR_GAP} sx={GROUP_SX}>
             {items.slice(0, visibleCount).map(item => (
                 <Fragment key={item.key}>{item.node}</Fragment>
             ))}
 
             {always}
-
-            <Box aria-hidden sx={MEASURE_LAYER_SX}>
-                <Box ref={measureRef} sx={MEASURE_ROW_SX}>
-                    {items.map(item => (
-                        <Fragment key={item.key}>{item.node}</Fragment>
-                    ))}
-                </Box>
-            </Box>
         </Stack>
     )
 }
-
-export default CollapsibleGroup

@@ -191,7 +191,7 @@ const TopBar: React.FC = () => {
                                 <SynthesisIcons.HAND />
                             </Box>
                         }
-                        onClick={() => EventSystem.dispatch("DragModeToggled", { enabled: !dragModeEnabled })}
+                        onClick={() => EventSystem.dispatch("SetDragModeEvent", { enabled: !dragModeEnabled })}
                     />
                     <TopBarButton
                         label="Configure Camera"

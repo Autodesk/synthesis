@@ -20,7 +20,7 @@ export const TopBarFitProvider: React.FC<TopBarFitProviderProps> = ({ rowRef, sp
         return () => observer.disconnect()
     }, [rowRef])
 
-    const value = useMemo(() => ({ spacerRef, resizeTick }), [spacerRef, resizeTick])
+    const value = useMemo(() => ({ rowRef, spacerRef, resizeTick }), [rowRef, spacerRef, resizeTick])
 
     return <TopBarFitContext.Provider value={value}>{children}</TopBarFitContext.Provider>
 }

@@ -103,9 +103,18 @@ describe("DragModeSystem Integration Tests", () => {
         test("should handle disable drag mode event", () => {
             dragModeSystem.enabled = true
 
-            EventSystem.dispatch("DragModeToggled", { enabled: false })
+            EventSystem.dispatch("SetDragModeEvent", { enabled: false })
 
             expect(dragModeSystem.enabled).toBe(false)
+        })
+
+        test("does not re-enter its own command handler when it announces a change", () => {
+            const commandSpy = vi.fn<SynthesisEventListener<"SetDragModeEvent">>()
+            EventSystem.listen("SetDragModeEvent", commandSpy)
+
+            dragModeSystem.enabled = true
+
+            expect(commandSpy).not.toHaveBeenCalled()
         })
     })
 
@@ -117,7 +126,7 @@ describe("DragModeSystem Integration Tests", () => {
             dragModeSystem.destroy()
 
             expect(dragModeSystem.enabled).toBe(false)
-            expect(removeEventListenerSpy).toHaveBeenCalledWith("DragModeToggled", expect.any(Function))
+            expect(removeEventListenerSpy).toHaveBeenCalledWith("SetDragModeEvent", expect.any(Function))
 
             removeEventListenerSpy.mockRestore()
         })
