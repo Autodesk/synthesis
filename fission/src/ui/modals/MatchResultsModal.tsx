@@ -40,12 +40,12 @@ const getPerRobotScores = (): { redRobotScores: Entry[]; blueRobotScores: Entry[
     return { redRobotScores, blueRobotScores }
 }
 
-const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }>(({ winnerColor, fontSize }) => ({
+const LabelStyled = styled(Typography)<{ color: string; fontSize: string }>(({ color, fontSize }) => ({
     fontWeight: 700,
     fontSize: fontSize,
     margin: "0pt",
     marginTop: "0.5rem",
-    color: winnerColor,
+    color: color,
 }))
 
 const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
@@ -70,7 +70,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
 
     return (
         <Stack direction={"column"}>
-            <LabelStyled winnerColor={color} fontSize="1.5rem">
+            <LabelStyled color={color} fontSize="1.5rem">
                 {message}
             </LabelStyled>
             <Divider sx={{ my: "1rem" }} />
@@ -87,7 +87,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                 ))}
             </Stack>
             <Divider sx={{ my: "0.5rem" }} />
-            <LabelStyled winnerColor={primaryColor} fontSize="1.25rem" mb={1}>
+            <LabelStyled color={primaryColor} fontSize="1.25rem" mb={1}>
                 Robot Score Contributions
             </LabelStyled>
             <Stack direction={"row"} justifyContent={"space-between"} gap={2}>
@@ -121,7 +121,7 @@ interface RobotContributionProps {
 const RobotContributions: React.FC<RobotContributionProps> = ({ allianceColor, scores, label }) => {
     return (
         <Stack direction={"column"}>
-            <LabelStyled winnerColor={allianceColor} fontSize="1rem">
+            <LabelStyled color={allianceColor} fontSize="1rem">
                 {label}
             </LabelStyled>
             <div className="flex flex-col">
