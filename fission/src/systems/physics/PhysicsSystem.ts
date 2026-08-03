@@ -22,7 +22,7 @@ import WorldSystem from "../WorldSystem"
 import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import {
     inferURDFAutoWheelBasis,
@@ -1481,11 +1481,11 @@ class PhysicsSystem extends WorldSystem {
                         return
                     }
 
-                    const touchedBodies = clientSceneObject.mechanism.touchedObjects
+                    const touchedObjects = clientSceneObject.mechanism.touchedObjects
 
                     const message: Message = {
                         type: "update",
-                        data: [clientSceneObject, ...touchedBodies].map(object => object.getUpdateData()),
+                        data: [clientSceneObject, ...touchedObjects].map(object => object.getUpdateData()),
                     }
                     World.multiplayerSystem?.broadcast(message)
 
@@ -1500,13 +1500,15 @@ class PhysicsSystem extends WorldSystem {
         this._physicsEventQueue = []
     }
 
-    public getBodyUpdateData(body: Jolt.Body): Omit<PhysicsBodyData, "rigidNodeId"> {
+    public getBodyUpdateData(body: Jolt.Body): PhysicsBodyData {
+        const rigidNodeId = (<RigidNodeAssociate>World.physicsSystem.getBodyAssociation(body.GetID())).rigidNodeId
         const linearVelocity = body.GetLinearVelocity()
         const angularVelocity = body.GetAngularVelocity()
         const position = body.GetPosition()
         const rotation = body.GetRotation()
 
         return {
+            rigidNodeId,
             linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
             angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
             positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,

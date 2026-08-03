@@ -1327,10 +1327,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         )
 
         const bodies = this.getAllBodies()
-            .map(body => {
-                const data = World.physicsSystem.getBodyUpdateData(body) as PhysicsBodyData
-                data.rigidNodeId = this.id
-            })
+            .map(body => World.physicsSystem.getBodyUpdateData(body))
             .filter(n => n != null)
 
         return {
