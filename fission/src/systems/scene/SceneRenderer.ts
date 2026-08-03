@@ -403,8 +403,8 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(obj: T): SceneObjectId {
-        const id = uuidv4() as SceneObjectId
+    public registerSceneObject<T extends SceneObject>(obj: T, id?: SceneObjectId): SceneObjectId {
+        id ??= uuidv4() as SceneObjectId
 
         obj.id = id
         this._sceneObjects.set(id, obj)

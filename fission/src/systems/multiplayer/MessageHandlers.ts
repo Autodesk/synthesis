@@ -222,7 +222,7 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
     object.nameOverride = clientToInfoMap.get(peerId)?.displayName ?? peerId
 
     console.log("Registering object", object, data)
-    const localSceneObjectKey = World.sceneRenderer.registerSceneObject(object)
+    const localSceneObjectKey = World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
     console.log("linking object", data.sceneObjectKey, "->", localSceneObjectKey)
 
     clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
