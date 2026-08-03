@@ -11,6 +11,6 @@ import World from "@/systems/World.ts"
 export async function startMultiplayerWorld(info: MultiplayerInitProps): Promise<boolean> {
     PreferencesSystem.setUserPreference("MultiplayerUsername", info.displayName)
     PreferencesSystem.savePreferences()
-    World.reset()
+    World.reset(info.keepAssets ? "all" : "none")
     return await MultiplayerSystem.setup(info.ws, info.displayName)
 }

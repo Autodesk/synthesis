@@ -58,7 +58,7 @@ const Synthesis = () => {
                 `ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`
             )
             MultiplayerWebsocket.init(room || null, name, ws)
-            setTimeout(() => startMultiplayerWorld({ displayName: name, ws }))
+            setTimeout(() => startMultiplayerWorld({ displayName: name, ws, keepAssets: false }))
         }
 
         applyAutoToast()

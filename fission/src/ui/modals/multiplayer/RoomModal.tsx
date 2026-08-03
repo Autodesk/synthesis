@@ -67,7 +67,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
     }, [url])
 
     const validate = useCallback(
-        (room?: string): MultiplayerInitProps | undefined => {
+        (room: string | undefined, keepAssets: boolean): MultiplayerInitProps | undefined => {
             if (name.length <= 3) {
                 globalAddToast("warning", "Invalid Username", "Must be at least 3 characters")
                 usernameRef.current?.querySelector("input")?.focus()
@@ -83,14 +83,15 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
             return {
                 displayName: name,
                 ws: MultiplayerWebsocket.init(room ?? null, name, wsRef.current ?? new MultiplayerWebsocket(url)),
+                keepAssets: keepAssets ?? false,
             }
         },
         [name, url]
     )
 
     const joinRoom = useCallback(
-        async (roomId?: string) => {
-            const initData = validate(roomId)
+        async (roomId: string | undefined, keepAssets: boolean) => {
+            const initData = validate(roomId, keepAssets)
             if (initData == null) return
 
             const success = await withTimeout(startMultiplayerWorld(initData), "Multiplayer connect timed out")
@@ -157,7 +158,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
                                     disabled={room.locked}
                                     variant={"outlined"}
                                     color={"primary"}
-                                    onClick={() => joinRoom(room.id)}
+                                    onClick={() => joinRoom(room.id, false)}
                                 >
                                     {room.locked ? "Locked" : "Join"}
                                 </Button>
@@ -168,8 +169,15 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
             ))}
             <Tooltip title={"Create a new room"} placement="right" arrow>
                 <Box display={"flex"}>
-                    <Button color="primary" onClick={() => joinRoom(undefined)} className="w-full my-1">
-                        Create Room
+                    <Button color="primary" onClick={() => joinRoom(undefined, false)} className="w-full my-1">
+                        New Room
+                    </Button>
+                </Box>
+            </Tooltip>
+            <Tooltip title={"Create a new room and keep existing assets"} placement="right" arrow>
+                <Box display={"flex"}>
+                    <Button color="primary" onClick={() => joinRoom(undefined, true)} className="w-full my-1">
+                        Convert to Room
                     </Button>
                 </Box>
             </Tooltip>

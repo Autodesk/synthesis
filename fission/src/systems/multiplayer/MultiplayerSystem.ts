@@ -88,6 +88,7 @@ class MultiplayerSystem {
                     this.destroy()
                     EventSystem.dispatch("MultiplayerStateJoinRoom")
                 }
+                this.registerExistingSceneObjects()
             }
             return res
         })
@@ -197,6 +198,7 @@ class MultiplayerSystem {
             },
             peerID
         )
+        console.warn("INTRODUCING SELF", this.getOwnObjects())
         for (const obj of this.getOwnObjects()) {
             this.send(
                 {
@@ -246,6 +248,7 @@ class MultiplayerSystem {
     registerOwnSceneObject(objectId: SceneObjectId) {
         const list = this.clientToObjectMap.get(this.clientId)
         if (list?.includes(objectId)) {
+            console.warn("Already has", objectId)
             return
         }
         if (list != null) {
@@ -253,11 +256,14 @@ class MultiplayerSystem {
         } else {
             this.clientToObjectMap.set(this.clientId, [objectId])
         }
+        console.warn(this.getOwnObjects())
     }
 
     registerExistingSceneObjects() {
         const objects = World.sceneRenderer.mirabufSceneObjects.getAll()
+        console.warn("EXISTING", objects)
         objects.forEach(object => {
+            console.warn("Checking", object.id)
             if (object.isOwnObject) {
                 this.registerOwnSceneObject(object.id)
             }
@@ -318,7 +324,7 @@ class MultiplayerSystem {
     public destroy() {
         this.client.close()
         World.setMultiplayerSystem(undefined)
-        World.reset()
+        World.reset("own")
         this._onDestroyHooks.forEach(hook => {
             hook()
         })

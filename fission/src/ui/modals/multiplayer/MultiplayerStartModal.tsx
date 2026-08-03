@@ -12,6 +12,7 @@ import { Button } from "@/components/StyledComponents.tsx"
 export interface MultiplayerInitProps {
     displayName: string
     ws: MultiplayerWebsocket
+    keepAssets: boolean
 }
 
 const MultiplayerStartModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
