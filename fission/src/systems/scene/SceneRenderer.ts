@@ -434,7 +434,10 @@ class SceneRenderer extends WorldSystem {
         // If the object is a mirabuf object, remove the gizmo as well
         if (obj instanceof MirabufSceneObject) {
             const objGizmo = this._gizmosOnMirabuf.get(id)
-            if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
+            if (this._gizmosOnMirabuf.delete(id)) {
+                this._sceneObjects.delete(objGizmo!.id)
+                objGizmo!.dispose()
+            }
 
             World?.multiplayerSystem?.broadcast({
                 type: "deleteObject",
