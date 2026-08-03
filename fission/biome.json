@@ -73,6 +73,7 @@
         "useComponentExportOnlyModules": "warn",
         "useImportType": "warn",
         "useConsistentCurlyBraces": "error",
+        "useConsistentArrayType": "error",
         "useNamingConvention": {
           "level": "error",
           "options": {
