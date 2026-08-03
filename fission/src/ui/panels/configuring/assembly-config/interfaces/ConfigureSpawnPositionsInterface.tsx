@@ -1,12 +1,14 @@
 import { Box, Stack, TextField } from "@mui/material"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     ALLIANCES,
     type Alliance,
+    defaultFieldPreferences,
     type FieldPreferences,
     type SpawnLocation,
     STATIONS,
@@ -168,28 +170,34 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, location, onSave }) 
     )
 }
 
-interface ConfigureSpawnPositionsProps {
-    selectedField: MirabufSceneObject
-    initialLocations: SpawnLocations
-}
-
-const ConfigureSpawnPositionsInterface: React.FC<ConfigureSpawnPositionsProps> = ({
-    selectedField,
-    initialLocations,
+const ConfigureSpawnPositionsInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
 }) => {
-    const [locations, setLocations] = useState<SpawnLocations>(initialLocations)
+    const [locations, setLocations] = useState<SpawnLocations>(
+        selectedAssembly.fieldPreferences?.spawnLocations ?? defaultFieldPreferences().spawnLocations
+    )
     const [editSlot, setEditSlot] = useState<SpawnSlot | undefined>(undefined)
+
+    useEffect(() => {
+        const initial = structuredClone(selectedAssembly.fieldPreferences!.spawnLocations)
+        registerCleanupFunction(undefined, () => {
+            const prefs = selectedAssembly.fieldPreferences
+            if (prefs == null) return
+            prefs.spawnLocations = initial
+        })
+    }, [registerCleanupFunction, selectedAssembly])
 
     const updateLocation = useCallback(
         (slot: SpawnSlot, updated: SpawnLocation) => {
             setLocations(prev => {
                 const next = setSpawnLocation(prev, slot.path, updated)
                 next.hasConfiguredLocations = true
-                persist(next, selectedField)
+                persist(next, selectedAssembly)
                 return next
             })
         },
-        [selectedField]
+        [selectedAssembly]
     )
 
     if (editSlot !== undefined) {
@@ -204,7 +212,7 @@ const ConfigureSpawnPositionsInterface: React.FC<ConfigureSpawnPositionsProps> =
                     }}
                 />
                 <EditView
-                    selectedField={selectedField}
+                    selectedField={selectedAssembly}
                     location={getSpawnLocation(locations, editSlot.path)}
                     onSave={updated => updateLocation(editSlot, updated)}
                 />
@@ -212,7 +220,7 @@ const ConfigureSpawnPositionsInterface: React.FC<ConfigureSpawnPositionsProps> =
         )
     }
 
-    return <ListView selectedField={selectedField} locations={locations} onEdit={setEditSlot} />
+    return <ListView selectedField={selectedAssembly} locations={locations} onEdit={setEditSlot} />
 }
 
 export default ConfigureSpawnPositionsInterface

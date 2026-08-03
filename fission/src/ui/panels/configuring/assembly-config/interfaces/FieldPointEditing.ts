@@ -18,7 +18,7 @@ export function useFieldRelativeGizmoPosition(
 
     const postGizmoCreation = useCallback(
         (gizmo: GizmoSceneObject) => {
-            const fieldRef = selectedField.getPositionTransform(new THREE.Vector3())
+            const fieldRef = selectedField.getXZPositionTransform(new THREE.Vector3())
             gizmo.obj.position.set(fieldRef.x + pos[0], fieldRef.y + pos[1], fieldRef.z + pos[2])
         },
         [selectedField, pos]
@@ -28,7 +28,7 @@ export function useFieldRelativeGizmoPosition(
         if (!gizmoRef.current) return [pos[0], pos[1], pos[2]]
         gizmoRef.current.obj.updateWorldMatrix(true, false)
         const worldPos = gizmoRef.current.obj.getWorldPosition(new THREE.Vector3())
-        const fieldRef = selectedField.getPositionTransform(new THREE.Vector3())
+        const fieldRef = selectedField.getXZPositionTransform(new THREE.Vector3())
         return [worldPos.x - fieldRef.x, worldPos.y - fieldRef.y, worldPos.z - fieldRef.z]
     }, [selectedField, pos])
 

@@ -128,6 +128,11 @@ export const fieldConfigModes = [
         "Define and manage protected zones on the field where robots can not enter."
     ),
     new ConfigModeSelectionOption(
+        "Robot Spawn Positions",
+        ConfigMode.SPAWN_POSITIONS,
+        "Set where robots spawn for the default position and each alliance station."
+    ),
+    new ConfigModeSelectionOption(
         "Camera Positions",
         ConfigMode.CAMERA_POINTS,
         "Place and configure driver-station camera views for this field."
