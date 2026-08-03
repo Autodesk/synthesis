@@ -16,7 +16,11 @@ const GameplayControls: React.FC = () => {
 
     return (
         <Stack direction="row" alignItems="center" gap={1.5}>
-            <TopBarButton label="Start Match" icon={<TopBarIcon name="gp-2" size={30} />} onClick={openMatchMode} />
+            <TopBarButton
+                label="Match Configuration"
+                icon={<TopBarIcon name="gp-2" size={30} />}
+                onClick={openMatchMode}
+            />
             <TopBarButton
                 label="Open Multiplayer"
                 icon={<TopBarIcon name="gp-1" size={30} />}

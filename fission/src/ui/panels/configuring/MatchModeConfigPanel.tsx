@@ -2,6 +2,7 @@ import { Box, Divider } from "@mui/material"
 import { Stack } from "@mui/system"
 import type React from "react"
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import World from "@/systems/World.ts"
@@ -144,10 +145,11 @@ interface ItemCardProps {
     id: string
     name: string
     primaryOnClick: () => void
+    primaryDisabled?: boolean
     secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
+const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, primaryDisabled, secondaryOnClick }) => {
     return (
         <Stack
             direction="row"
@@ -172,7 +174,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
                         <SynthesisIcons.DELETE_LARGE />
                     </NegativeButton>
                 )}
-                <PositiveButton onClick={primaryOnClick}>
+                <PositiveButton onClick={primaryOnClick} disabled={primaryDisabled}>
                     <SynthesisIcons.PLAY_LARGE />
                 </PositiveButton>
             </Stack>
@@ -186,10 +188,22 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
     const [useSpawnPositions, setUseSpawnPositions] = useState(false)
     const [spawnPositionsConfigured, setSpawnPositionsConfigured] = useState(false)
+    const [isMatchRunning, setIsMatchRunning] = useState(() => MatchMode.getInstance().isMatchEnabled())
 
     useEffect(() => {
         configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, {})
     }, [configureScreen, panel])
+
+    useEffect(() => {
+        return EventSystem.listen("MatchStateChangedEvent", () => {
+            setIsMatchRunning(MatchMode.getInstance().isMatchEnabled())
+        })
+    }, [])
+
+    const abortMatch = () => {
+        MatchMode.getInstance().sandboxModeStart()
+        globalAddToast("info", "Match Mode Aborted")
+    }
 
     useEffect(() => {
         const loadConfigs = () => {
@@ -226,12 +240,13 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                         key={config.id}
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
+                        primaryDisabled={isMatchRunning}
                         primaryOnClick={async () => {
-                            if (MatchMode.getInstance().isMatchEnabled()) {
+                            if (isMatchRunning) {
                                 globalAddToast(
                                     "error",
                                     "Match Mode Already Running",
-                                    "You can't modify the match mode ruleset while a match is running"
+                                    "You can't start a new match while one is already running"
                                 )
                                 return
                             }
@@ -255,7 +270,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                     />
                 )
             }),
-        [matchModeConfigs, closePanel, useSpawnPositions, panel]
+        [matchModeConfigs, closePanel, useSpawnPositions, panel, isMatchRunning]
     )
 
     const fileUploadRef = useRef<HTMLInputElement>(null)
@@ -331,6 +346,20 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     return (
         <>
+            {isMatchRunning && (
+                <>
+                    <Box alignSelf={"center"} sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
+                        <Label size="sm" className="text-center mx-[5%]">
+                            A match is currently in progress
+                        </Label>
+                        <NegativeButton onClick={abortMatch}>
+                            <SynthesisIcons.STOP />
+                            Abort Match
+                        </NegativeButton>
+                    </Box>
+                    <Divider />
+                </>
+            )}
             <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                 {matchModeConfigs.length} Match Mode
                 {matchModeConfigs.length === 1 ? "" : "s"}
