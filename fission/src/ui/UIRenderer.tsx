@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Panel } from "@/components/Panel"
 import { Modal } from "./components/Modal"
 import Scoreboard from "./components/Scoreboard"
+import { isScoreboardVisible, toggleScoreboard } from "./helpers/ScoreboardVisibility"
 import { useStateContext } from "./helpers/StateProviderHelpers"
 import { useUIContext } from "./helpers/UIProviderHelpers"
 import MatchMode from "@/systems/match_mode/MatchMode"
@@ -10,14 +11,14 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import EventSystem from "@/systems/EventSystem"
 
 export const UIRenderer: React.FC = () => {
-    const { modal, panels } = useUIContext()
+    const { modal, panels, addToast } = useUIContext()
     const { appMode } = useStateContext()
 
-    const [prefRenderScoreboard, setPrefRenderScoreboard] = useState(
-        PreferencesSystem.getUserPreference("RenderScoreboard")
+    const [preference, setPreference] = useState(() => PreferencesSystem.getUserPreference("RenderScoreboard"))
+    const [preferenceSet, setPreferenceSet] = useState(() =>
+        PreferencesSystem.getUserPreference("ScoreboardPreferenceSet")
     )
     const [inMatchMode, setInMatchMode] = useState(MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX)
-    const [hasUserToggled, setHasUserToggled] = useState(false)
 
     useEffect(() => {
         const removeMatchStateListener = EventSystem.listen("MatchStateChangedEvent", info => {
@@ -25,30 +26,37 @@ export const UIRenderer: React.FC = () => {
         })
 
         const removePrefListener = PreferencesSystem.addPreferenceEventListener("RenderScoreboard", e => {
-            setPrefRenderScoreboard(e.prefValue)
+            setPreference(e.prefValue)
+        })
+
+        const removePrefSetListener = PreferencesSystem.addPreferenceEventListener("ScoreboardPreferenceSet", e => {
+            setPreferenceSet(e.prefValue)
         })
 
         return () => {
             removeMatchStateListener()
             removePrefListener()
+            removePrefSetListener()
         }
     }, [])
 
-    const showScoreboard = hasUserToggled
-        ? prefRenderScoreboard
-        : appMode === "Gameplay" || prefRenderScoreboard || inMatchMode
-
-    const showScoreboardRef = useRef(showScoreboard)
-    showScoreboardRef.current = showScoreboard
+    const suggestedByMode = appMode === "Gameplay" || inMatchMode
+    const showScoreboard = isScoreboardVisible({ preference, preferenceSet, suggestedByMode })
 
     useEffect(
         () =>
             EventSystem.listen("ToggleScoreboardEvent", () => {
-                setHasUserToggled(true)
-                PreferencesSystem.setUserPreference("RenderScoreboard", !showScoreboardRef.current)
+                const next = toggleScoreboard({ preference, preferenceSet, suggestedByMode })
+
+                PreferencesSystem.setUserPreference("RenderScoreboard", next.preference)
+                PreferencesSystem.setUserPreference("ScoreboardPreferenceSet", true)
                 PreferencesSystem.savePreferences()
+
+                if (next.announcePreference) {
+                    addToast("info", "Scoreboard", "Saved as a preference, so it now stays on until you turn it off.")
+                }
             }),
-        []
+        [preference, preferenceSet, suggestedByMode, addToast]
     )
 
     return (

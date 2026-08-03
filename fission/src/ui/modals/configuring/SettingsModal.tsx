@@ -195,10 +195,7 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
                 checked={PreferencesSystem.getUserPreference("RenderScoreboard")}
                 onClick={checked => {
                     writePreference("RenderScoreboard", checked)
-                    if (checked) {
-                        // TODO: figure out scoreboard - I think it should be its own component and not a panel
-                        // openPanel("scoreboard");
-                    }
+                    writePreference("ScoreboardPreferenceSet", true)
                 }}
             />
             <Checkbox

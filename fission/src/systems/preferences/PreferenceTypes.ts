@@ -20,6 +20,7 @@ export type UserPreferences = {
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
     RenderScoreboard: boolean
+    ScoreboardPreferenceSet: boolean
     SubsystemGravity: boolean
     TouchControls: boolean
     SimAutoReconnect: boolean
@@ -64,6 +65,7 @@ export function defaultUserPreferences(): UserPreferences {
         InputSchemes: [],
         RenderSceneTags: true,
         RenderScoreboard: false,
+        ScoreboardPreferenceSet: false,
         SubsystemGravity: false,
         TouchControls: false,
         SimAutoReconnect: false,
