@@ -59,7 +59,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
-import type { PhysicsBodyData, UpdateObjectData } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
+import type { UpdateObjectData } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const DEBUG_BODIES = false

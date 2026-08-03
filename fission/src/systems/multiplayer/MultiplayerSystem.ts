@@ -35,6 +35,8 @@ class MultiplayerSystem {
     private _onDestroyHooks: (() => void)[] = []
 
     private _lastRTT: number = -1
+    // Positive if client clock ahead, negative if server clock ahead
+    private _clientTimeDeltaMS: number = 0
     private _lastPingTs: number = 0
     private _hasPendingPing: boolean = false
 
@@ -138,7 +140,8 @@ class MultiplayerSystem {
                 this.removePeer(message.client_id)
                 break
             case "pong":
-                this._lastRTT = Date.now() - message.timestamp
+                this._lastRTT = Date.now() - message.client_send_ts
+                this._clientTimeDeltaMS = Date.now() - this._lastRTT / 2 - message.server_ts
                 this._hasPendingPing = false
                 this.send({
                     type: "latencyInfo",
@@ -315,6 +318,13 @@ class MultiplayerSystem {
             return -1
         }
         return this._lastRTT / 2
+    }
+
+    public toServerTime(time: number) {
+        return time - this._clientTimeDeltaMS
+    }
+    public fromServerTime(time: number) {
+        return time + this._clientTimeDeltaMS
     }
 
     public destroy() {

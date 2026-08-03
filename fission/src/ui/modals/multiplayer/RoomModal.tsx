@@ -68,7 +68,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
 
     const validate = useCallback(
         (room: string | undefined, keepAssets: boolean): MultiplayerInitProps | undefined => {
-            if (name.length <= 3) {
+            if (name.length < 3) {
                 globalAddToast("warning", "Invalid Username", "Must be at least 3 characters")
                 usernameRef.current?.querySelector("input")?.focus()
                 return

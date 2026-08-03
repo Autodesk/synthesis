@@ -26,7 +26,7 @@ import type { EncodedAssembly } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import type MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
-import Jolt from "@synthesis.adsk/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import { isDefined } from "@/util/Utility"
 
 export const peerMessageHandlers = {
@@ -53,7 +53,11 @@ const progressHandles: Map<SceneObjectId, ProgressHandle> = new Map()
 async function handleMatchModeStateMessage(data: MatchModeStateBody) {
     if (data.event == "start") {
         MatchMode.getInstance().setMatchModeConfig(data.config)
-        await MatchMode.getInstance().start(false, data.moveRobots)
+        await MatchMode.getInstance().start(
+            World.multiplayerSystem!.fromServerTime(data.startTime),
+            false,
+            data.moveRobots
+        )
     }
     if (data.event == "cancel") {
         MatchMode.getInstance().sandboxModeStart()

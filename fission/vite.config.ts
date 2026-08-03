@@ -8,7 +8,7 @@ import glsl from "vite-plugin-glsl"
 
 import {
     defineConfig,
-    TestProjectConfiguration,
+    type TestProjectConfiguration,
     type TestProjectInlineConfiguration,
     type ViteUserConfig,
 } from "vitest/config"

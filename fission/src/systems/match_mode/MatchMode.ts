@@ -95,7 +95,7 @@ class MatchMode {
             ) {
                 this.endgameStart()
             }
-        }, 200)
+        }, 100)
 
         const remainingTime = this._startTime + this._timeUsed - Date.now() + duration * 1000
         return new Promise<void>(res => setTimeout(res, remainingTime)).finally(() => {
@@ -129,8 +129,8 @@ class MatchMode {
         this._endgame = true
     }
 
-    async start(broadcast = true, useSpawnPositions: boolean) {
-        const startTime = Date.now() + 300 // Accounts for time it takes for robots to move to start positions and settle, and for multiplayer state to sync
+    async start(startTime: number | null, broadcast: boolean, useSpawnPositions: boolean) {
+        startTime ??= Date.now() + 300 // Accounts for time it takes for robots to move to start positions and settle, and for multiplayer state to sync
         if (broadcast && World.multiplayerSystem) {
             World.multiplayerSystem.broadcast({
                 type: "matchModeState",
@@ -138,7 +138,7 @@ class MatchMode {
                     event: "start",
                     config: this._matchModeConfig,
                     moveRobots: useSpawnPositions,
-                    startTime: startTime,
+                    startTime: World.multiplayerSystem.toServerTime(startTime),
                 },
             })
         }
