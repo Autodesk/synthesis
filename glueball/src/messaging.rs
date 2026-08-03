@@ -7,6 +7,7 @@ use crate::{EventType, lock};
 
 use anyhow::{Result, bail};
 use bytes::Bytes;
+use chrono::Utc;
 use futures_util::stream::{SplitSink, SplitStream};
 use futures_util::{SinkExt, StreamExt};
 use tokio::io::{AsyncRead, AsyncWrite};
@@ -258,7 +259,12 @@ async fn handle_client_ping(
         return;
     };
 
-    let message = ServerToClientMessage::Pong { timestamp };
+    let current_server_timestamp = Utc::now().timestamp_millis() as u64;
+
+    let message = ServerToClientMessage::Pong {
+        last_ping_timestamp: timestamp,
+        current_server_timestamp,
+    };
     let message = serialize_and_prefix(message, MessagePrefix::Server);
 
     // Scope hack to avoid holding the guard while sending a message

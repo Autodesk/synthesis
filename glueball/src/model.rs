@@ -29,10 +29,20 @@ pub struct RoomInfo {
 #[serde(tag = "type", rename_all = "lowercase")]
 #[ts(export)]
 pub enum ServerToClientMessage {
-    Kick { client_id: String },
-    RoomList { rooms: Vec<RoomInfo> },
-    SendInfo { room_id: RoomId, client_id: String },
-    Pong { timestamp: u64 },
+    Kick {
+        client_id: String,
+    },
+    RoomList {
+        rooms: Vec<RoomInfo>,
+    },
+    SendInfo {
+        room_id: RoomId,
+        client_id: String,
+    },
+    Pong {
+        last_ping_timestamp: u64,
+        current_server_timestamp: u64,
+    },
 }
 
 /// The second least significant bit deserves love too
