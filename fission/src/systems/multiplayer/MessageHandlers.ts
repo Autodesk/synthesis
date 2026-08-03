@@ -51,7 +51,6 @@ const pendingOperations: (() => void)[] = []
 const progressHandles: Map<SceneObjectId, ProgressHandle> = new Map()
 
 async function handleMatchModeStateMessage(data: MatchModeStateBody) {
-    console.log(data)
     if (data.event == "start") {
         MatchMode.getInstance().setMatchModeConfig(data.config)
         await MatchMode.getInstance().start(false, data.moveRobots)

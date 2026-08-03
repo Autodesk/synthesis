@@ -48,6 +48,7 @@ export type MatchModeStateBody =
           event: "start"
           config: MatchModeConfig
           moveRobots: boolean
+          startTime: number
       }
     | { event: "cancel" }
 
