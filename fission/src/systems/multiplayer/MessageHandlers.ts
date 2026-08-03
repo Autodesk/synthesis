@@ -51,17 +51,21 @@ const pendingOperations: (() => void)[] = []
 const progressHandles: Map<SceneObjectId, ProgressHandle> = new Map()
 
 async function handleMatchModeStateMessage(data: MatchModeStateBody) {
-    if (data.event == "start") {
-        MatchMode.getInstance().setMatchModeConfig(data.config)
-        await MatchMode.getInstance().start(
-            World.multiplayerSystem!.fromServerTime(data.startTime),
-            false,
-            data.moveRobots
-        )
-    }
-    if (data.event == "cancel") {
-        MatchMode.getInstance().sandboxModeStart()
-        globalAddToast("info", "Match Mode Cancelled")
+    switch (data.event) {
+        case "start": {
+            MatchMode.getInstance().setMatchModeConfig(data.config)
+            await MatchMode.getInstance().start(
+                World.multiplayerSystem!.fromServerTime(data.startTime),
+                false,
+                data.moveRobots
+            )
+            break
+        }
+        case "cancel": {
+            MatchMode.getInstance().sandboxModeStart()
+            globalAddToast("info", "Match Mode Cancelled")
+            break
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-import type { AddToastFn, OpenModalFn, OpenPanelFn } from "../helpers/UIProviderHelpers"
+import type { AddToastFn, CloseModalFn, OpenModalFn, OpenPanelFn } from "../helpers/UIProviderHelpers"
 
 /**
  * This is where all the global references to the Global UI controls are located.
@@ -7,6 +7,7 @@ import type { AddToastFn, OpenModalFn, OpenPanelFn } from "../helpers/UIProvider
 export let globalAddToast: AddToastFn = () => {}
 export let globalOpenPanel: OpenPanelFn = () => ""
 export let globalOpenModal: OpenModalFn = () => ""
+export let globalCloseModal: CloseModalFn = () => {}
 
 export function setAddToast(func: typeof globalAddToast) {
     globalAddToast = func
@@ -16,4 +17,8 @@ export function setOpenPanel(func: typeof globalOpenPanel) {
 }
 export function setOpenModal(func: typeof globalOpenModal) {
     globalOpenModal = func
+}
+
+export function setCloseModal(func: typeof globalCloseModal) {
+    globalCloseModal = func
 }

@@ -8,7 +8,7 @@ import type {
     RobotConfiguration,
 } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 
 export interface MessageType {
     info: InfoBody

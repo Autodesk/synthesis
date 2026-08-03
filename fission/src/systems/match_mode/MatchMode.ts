@@ -5,7 +5,7 @@ import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import EventSystem from "@/systems/EventSystem.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
 import World from "@/systems/World.ts"
-import { globalOpenModal } from "@/ui/components/GlobalUIControls"
+import { globalCloseModal, globalOpenModal } from "@/ui/components/GlobalUIControls"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { createMatchEventFromConfig } from "./MatchModeAnalyticsUtils"
@@ -14,6 +14,7 @@ import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { CloseType } from "@/ui/helpers/UIProviderHelpers.ts"
 
 // Register command: Toggle Match Mode
 CommandRegistry.get().registerCommand({
@@ -46,6 +47,8 @@ class MatchMode {
     private _startTime: number = 0
     private _timeUsed: number = 0
     private _intervalId: number | null = null
+
+    private _resultsModalId: string | null = null
 
     // Match Mode Config
     private _matchModeConfig: MatchModeConfig = DefaultMatchModeConfigs.fallbackValues()
@@ -130,6 +133,11 @@ class MatchMode {
     }
 
     async start(startTime: number | null, broadcast: boolean, useSpawnPositions: boolean) {
+        if (this._resultsModalId) {
+            globalCloseModal(CloseType.ACCEPT, this._resultsModalId)
+            this._resultsModalId = null
+        }
+
         startTime ??= Date.now() + 300 // Accounts for time it takes for robots to move to start positions and settle, and for multiplayer state to sync
         if (broadcast && World.multiplayerSystem) {
             World.multiplayerSystem.broadcast({
@@ -164,7 +172,14 @@ class MatchMode {
 
         const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
         World.analyticsSystem?.event("Match End", matchEvent)
-        globalOpenModal(MatchResultsModal, undefined)
+        this._resultsModalId = globalOpenModal(MatchResultsModal, undefined)
+    }
+
+    closeResultsModal() {
+        if (this._resultsModalId) {
+            globalCloseModal(CloseType.ACCEPT, this._resultsModalId)
+            this._resultsModalId = null
+        }
     }
 
     sandboxModeStart() {
