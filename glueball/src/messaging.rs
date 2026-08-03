@@ -1,4 +1,4 @@
-use crate::logging::LogDestination;
+use crate::logging::{LogDestination, LogSender};
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
 use crate::room::{ClientId, ClientSender, State};
@@ -11,11 +11,12 @@ use chrono::Utc;
 use futures_util::stream::{SplitSink, SplitStream};
 use futures_util::{SinkExt, StreamExt};
 use tokio::io::{AsyncRead, AsyncWrite};
-use tokio::sync::mpsc::{self, Sender};
+use tokio::sync::mpsc::{self};
 use tokio::time::timeout;
 use tokio_tungstenite::{WebSocketStream, tungstenite::Message};
 
 use std::net::SocketAddr;
+use std::ops;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -27,7 +28,7 @@ pub async fn handle_connection<S>(
     state: Arc<Mutex<State>>,
     raw_stream: S,
     addr: SocketAddr,
-    logging_tx: Sender<(String, EventType, LogDestination)>,
+    logging_tx: LogSender,
 ) where
     S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
 {
@@ -74,7 +75,7 @@ pub async fn handle_connection<S>(
     // This task listens for messages to the channel and sends them down the sink to the client
     tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
-            if write.send(msg.clone()).await.is_err() {
+            if write.send(msg).await.is_err() {
                 break;
             }
         }
@@ -92,7 +93,10 @@ pub async fn handle_connection<S>(
         // If it's anything but a correct response, we disconnect
         let Ok(Some(Ok(message))) = result else { break };
 
-        if !handle_client_message(message, state.clone(), client_id, logging_tx.clone()).await {
+        let message_result =
+            handle_client_message(message, state.clone(), client_id, logging_tx.clone()).await;
+
+        if message_result.is_break() {
             // We don't break here, to avoid double closing the connection
             return;
         }
@@ -118,7 +122,7 @@ async fn wait_for_initialization<S>(
     write: &mut SplitSink<WsStream<S>, Message>,
     tx: ClientSender,
     addr: SocketAddr,
-    logging_tx: Sender<(String, EventType, LogDestination)>,
+    logging_tx: LogSender,
 ) -> Option<ClientId>
 where
     S: SynthesisStream,
@@ -170,7 +174,7 @@ where
 async fn parse_first_message<S>(
     read: &mut SplitStream<WebSocketStream<Prefixed<S>>>,
     addr: SocketAddr,
-    logging_tx: Sender<(String, EventType, LogDestination)>,
+    logging_tx: LogSender,
 ) -> Option<ClientToServerMessage>
 where
     S: SynthesisStream,
@@ -212,32 +216,30 @@ async fn handle_client_message(
     message: Message,
     state: Arc<Mutex<State>>,
     client_id: ClientId,
-    logging_tx: Sender<(String, EventType, LogDestination)>,
-) -> bool {
+    logging_tx: LogSender,
+) -> ops::ControlFlow<(), ()> {
     match message {
         Message::Binary(ref bytes) => {
             if bytes[0] == MessagePrefix::Server as u8 {
                 handle_client_ping(bytes, &client_id, &state, logging_tx).await;
-                return true;
+                return ops::ControlFlow::Continue(());
             }
 
-            assert_eq!(bytes[0], MessagePrefix::Client as u8);
             // If we're here, that means the message has a client-client prefix
             // which we want anyway, so there's no need to prefix the message
             // we can just forward it!
-
             let senders: Vec<ClientSender> = { lock!(state).get_senders_from_user_room(client_id) };
 
-            for tx in senders {
-                tx.send(message.clone()).await.ok();
-            }
+            let tasks = senders.iter().map(|tx| tx.send(message.clone()));
+            let _ = futures_util::future::join_all(tasks).await;
 
-            true
+            ops::ControlFlow::Continue(())
         }
 
         Message::Close(_) => {
             let _ = handle_client_close(client_id, &state, logging_tx).await;
-            false
+
+            ops::ControlFlow::Break(())
         }
         _ => todo!("Handle ws protocol ping/pong and text messagaes"),
     }
@@ -247,7 +249,7 @@ async fn handle_client_ping(
     bytes: &Bytes,
     client_id: &ClientId,
     state: &Arc<Mutex<State>>,
-    logging_tx: Sender<(String, EventType, LogDestination)>,
+    logging_tx: LogSender,
 ) {
     let Ok(ClientToServerMessage::Ping { timestamp }) =
         deserialize_messagepack::<ClientToServerMessage>(&bytes[1..])
@@ -259,7 +261,9 @@ async fn handle_client_ping(
         return;
     };
 
-    let current_server_timestamp = Utc::now().timestamp_millis() as u64;
+    #[allow(clippy::expect_used)]
+    let current_server_timestamp = u64::try_from(Utc::now().timestamp_millis())
+        .expect("Negative timestamps (before 1970) are invalid. Please fix your system clock.");
 
     let message = ServerToClientMessage::Pong {
         client_send_ts: timestamp,
@@ -287,7 +291,7 @@ async fn handle_client_ping(
 async fn handle_client_close(
     client_id: ClientId,
     state: &Arc<Mutex<State>>,
-    logging_tx: Sender<(String, EventType, LogDestination)>,
+    logging_tx: LogSender,
 ) -> Result<()> {
     // Send message toa ll other clients telling them `client_id` has been kicked
     let message = ServerToClientMessage::Kick {
@@ -298,7 +302,7 @@ async fn handle_client_close(
     let senders = {
         let mut guard = lock!(state);
 
-        let Some(room) = guard.get_room_of_client_mut(&client_id).map(|a| a.1) else {
+        let Some((_, room)) = guard.get_room_of_client_mut(&client_id) else {
             let err = "Client attempted to leave when they were not in a room ";
 
             error_global!(logging_tx, "{}", err);
@@ -308,15 +312,14 @@ async fn handle_client_close(
         let client_name = room.get_client_name(&client_id)?;
         warn_global!(logging_tx, "Connection with {client_name} closed");
 
-        let senders = room.get_senders(Some(&client_id));
+        let senders = room.get_senders(&client_id);
         guard.remove_client(client_id);
 
         senders
     };
 
-    for tx in senders {
-        let _ = tx.clone().send(message.clone()).await;
-    }
+    let tasks = senders.iter().map(|tx| tx.send(message.clone()));
+    let _ = futures_util::future::join_all(tasks).await;
 
     Ok(())
 }

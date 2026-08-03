@@ -1,11 +1,11 @@
-use crate::logging::{EventType, LogDestination};
+use crate::logging::{EventType, LogDestination, LogSender};
 use crate::model::{MessagePrefix, RoomInfo, ServerToClientMessage};
 use crate::util::serialize_and_prefix;
 
 use anyhow::{Result, bail};
 use rand::RngExt;
 use std::collections::HashMap;
-use tokio::sync::mpsc::{self, Sender};
+use tokio::sync::mpsc::{self};
 use tokio_tungstenite::tungstenite::Message;
 use uuid::Uuid;
 
@@ -21,14 +21,14 @@ pub struct State {
     /// (e.g. connections, handshakes, failed joins)
     headless: bool,
 
-    log_tx: Sender<(String, EventType, LogDestination)>,
+    log_tx: LogSender,
 }
 
 impl State {
-    pub fn new(log_tx: Sender<(String, EventType, LogDestination)>) -> Self {
+    pub fn new(log_tx: LogSender) -> Self {
         Self {
             users: HashMap::new(),
-            rooms: RoomMap::new(),
+            rooms: HashMap::new(),
             headless: true,
             log_tx,
         }
@@ -50,7 +50,7 @@ impl State {
     }
 
     pub fn get_client_tx(&mut self, client_id: &ClientId) -> Option<ClientSender> {
-        let room = self.get_room_of_client_mut(client_id).map(|a| a.1)?;
+        let (_, room) = self.get_room_of_client_mut(client_id)?;
         room.get_sender(client_id)
     }
 
@@ -67,7 +67,13 @@ impl State {
             permanent: false,
         };
 
-        let room_id = generate_6_digit_code();
+        let room_id = loop {
+            let code = generate_6_digit_code();
+            if !self.rooms.contains_key(&code) {
+                break code;
+            }
+        };
+
         let client_name = room.get_client_name(&host_id)?;
         info_room!(
             self.log_tx,
@@ -76,7 +82,7 @@ impl State {
         );
 
         self.users.insert(host_id, room_id.clone());
-        self.rooms.map.insert(room_id.clone(), room);
+        self.rooms.insert(room_id.clone(), room);
 
         Ok((host_id, room_id))
     }
@@ -88,7 +94,7 @@ impl State {
         room_id: &RoomId,
     ) -> Option<ClientId> {
         let client_id = Uuid::new_v4();
-        let Some(room) = self.rooms.map.get_mut(room_id) else {
+        let Some(room) = self.rooms.get_mut(room_id) else {
             warn_global!(
                 self.log_tx,
                 "Attempted to add {client_id} into non-existant room {room_id}"
@@ -136,7 +142,7 @@ impl State {
 
         // TODO Clippy likes this but I don't
         if room.remove_client(&client_id, &log_tx) == RoomStatus::Closed
-            && self.rooms.map.remove(&room_id).is_none()
+            && self.rooms.remove(&room_id).is_none()
         {
             warn_global!(
                 log_tx,
@@ -164,7 +170,7 @@ impl State {
             locked: false,
             permanent: true,
         };
-        self.rooms.map.insert(room_id, room);
+        self.rooms.insert(room_id, room);
     }
 
     pub fn get_room_of_client_mut(&mut self, client_id: &ClientId) -> Option<(RoomId, &mut Room)> {
@@ -173,21 +179,23 @@ impl State {
             return None;
         };
 
-        let room = self.rooms.map.get_mut(room_id)?;
+        let room = self.rooms.get_mut(room_id)?;
 
         Some((room_id.clone(), room))
     }
 
     pub fn get_senders_from_user_room(&mut self, client_id: ClientId) -> Vec<ClientSender> {
-        self.get_room_of_client_mut(&client_id)
-            .map(|a| a.1)
-            .map_or_else(Vec::new, |room| room.get_senders(Some(&client_id)))
+        let Some((_, room)) = self.get_room_of_client_mut(&client_id) else {
+            return Vec::new();
+        };
+
+        room.get_senders(&client_id)
     }
 
     /// Flips whether new clients can join `room_id`.
     /// Returns the new locked state, or `None` if the room does not exist.
     pub fn toggle_room_lock(&mut self, room_id: &RoomId) -> Option<bool> {
-        let room = self.rooms.map.get_mut(room_id)?;
+        let room = self.rooms.get_mut(room_id)?;
         room.locked = !room.locked;
         let locked = room.locked;
 
@@ -200,6 +208,12 @@ impl State {
         Some(locked)
     }
 
+    /// WARNING
+    /// DO NOT CALL FROM TOKIO RUNTIME
+    ///
+    /// TODO
+    /// Refactor to be sent down a channel from the tui, as this function should not be callable
+    /// from tokio since it calls a blocking function  
     pub fn kick(&mut self, client_id: ClientId) {
         let Some((room_id, room)) = self.get_room_of_client_mut(&client_id) else {
             return;
@@ -229,7 +243,6 @@ impl State {
 
     pub fn list_rooms(&self) -> Vec<RoomInfo> {
         self.rooms
-            .map
             .iter()
             .map(|(id, room)| {
                 let host = room
@@ -248,7 +261,7 @@ impl State {
     }
 
     pub fn room_count(&self) -> usize {
-        self.rooms.map.len()
+        self.rooms.len()
     }
 
     /// Takes a snapshot of the application state so the TUI
@@ -256,7 +269,6 @@ impl State {
     pub fn snapshot(&self) -> Snapshot {
         let mut rooms: Vec<RoomSnapshot> = self
             .rooms
-            .map
             .iter()
             .map(|(id, room)| RoomSnapshot {
                 id: id.clone(),
@@ -270,7 +282,7 @@ impl State {
             })
             .collect();
 
-        rooms.sort_by_key(|r| r.id.clone());
+        rooms.sort_by(|a, b| a.id.cmp(&b.id));
 
         Snapshot { rooms }
     }
@@ -281,7 +293,9 @@ impl State {
 }
 
 pub fn is_valid_room_id(s: &str) -> bool {
-    s.trim().len() == 6 && s.chars().all(|c| VALID_ROOM_ID_CHARACTERS.contains(&c))
+    s.trim().len() == 6
+        && s.chars()
+            .all(|c| c.is_ascii_digit() || c.is_ascii_uppercase())
 }
 
 const fn valid_room_id_characters() -> [char; 36] {
@@ -322,17 +336,7 @@ pub type ClientMap = HashMap<ClientId, RoomId>;
 pub type ClientSender = mpsc::Sender<Message>;
 
 pub type RoomId = String;
-pub struct RoomMap {
-    map: HashMap<RoomId, Room>,
-}
-
-impl RoomMap {
-    pub fn new() -> Self {
-        Self {
-            map: HashMap::new(),
-        }
-    }
-}
+pub type RoomMap = HashMap<RoomId, Room>;
 
 #[derive(PartialEq, Eq)]
 pub enum RoomStatus {
@@ -359,10 +363,10 @@ impl Room {
 
         Ok(client.name.clone())
     }
-    pub fn get_senders(&self, exclude: Option<&ClientId>) -> Vec<ClientSender> {
+    pub fn get_senders(&self, exclude: &ClientId) -> Vec<ClientSender> {
         self.members
             .iter()
-            .filter(|client| exclude != Some(&client.id))
+            .filter(|client| *exclude != client.id)
             .map(|client| client.tx.clone())
             .collect()
     }
@@ -381,16 +385,12 @@ impl Room {
         };
         let message = serialize_and_prefix(message, MessagePrefix::Server);
 
-        for tx in self.get_senders(Some(client_id)) {
+        for tx in self.get_senders(client_id) {
             let _ = tx.blocking_send(message.clone());
         }
     }
 
-    pub fn remove_client(
-        &mut self,
-        client_id: &ClientId,
-        logging_tx: &Sender<(String, EventType, LogDestination)>,
-    ) -> RoomStatus {
+    pub fn remove_client(&mut self, client_id: &ClientId, logging_tx: &LogSender) -> RoomStatus {
         let Some(idx) = self
             .members
             .iter()

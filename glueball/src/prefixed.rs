@@ -1,7 +1,6 @@
 use crate::EventType;
-use crate::logging::LogDestination;
+use crate::logging::{LogDestination, LogSender};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, ReadBuf};
-use tokio::sync::mpsc::Sender;
 
 use std::net::SocketAddr;
 use std::task::{Context, Poll};
@@ -76,7 +75,7 @@ pub enum ConnectionStatus<S> {
 pub async fn into_prefixed_or_respond<S>(
     mut raw_stream: S,
     addr: SocketAddr,
-    logging_tx: Sender<(String, EventType, LogDestination)>,
+    logging_tx: LogSender,
 ) -> ConnectionStatus<S>
 where
     S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
@@ -102,7 +101,7 @@ where
     // Respond to plain HTTP requests properly, rather than failing the handshake.
     let is_ws = message.contains("upgrade: websocket");
     if !is_ws {
-        let resp = if message[0..10] == *"get /cert " {
+        let resp = if message.starts_with("get /cert ") {
             let body = "<script>window.close()</script>You may now close this page.";
             format!(
                 "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",

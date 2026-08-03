@@ -5,7 +5,7 @@ use ratatui::{
     style::{Style, Stylize},
     text::Line,
 };
-use tokio::sync::mpsc::Receiver;
+use tokio::sync::mpsc::{Receiver, Sender};
 
 use crate::room::RoomId;
 
@@ -14,6 +14,7 @@ pub const MAX_LOG_LINES: usize = 500;
 pub type RoomLogs = HashMap<RoomId, VecDeque<Event>>;
 pub type GlobalLog = VecDeque<Event>;
 pub type LogSnapshot = (GlobalLog, RoomLogs);
+pub type LogSender = Sender<(String, EventType, LogDestination)>;
 
 #[macro_export]
 macro_rules! info_global {
@@ -32,7 +33,7 @@ macro_rules! warn_global {
 #[macro_export]
 macro_rules! error_global {
     ($log_tx:expr, $($arg:tt)*) => {
-        let _ = $log_tx.try_send((format!($($arg)*), EventType::Warning, LogDestination::Global));
+        let _ = $log_tx.try_send((format!($($arg)*), EventType::Error, LogDestination::Global));
     }
 }
 
@@ -48,7 +49,7 @@ macro_rules! info_room {
 #[macro_export]
 macro_rules! warn_room {
     ($log_tx:expr, $room_id:expr, $($arg:tt)*) => {{
-        let _ = $log_tx.try_send((format!($($arg)*), EventType::Warn, LogDestination::Room($room_id.clone())));
+        let _ = $log_tx.try_send((format!($($arg)*), EventType::Warning, LogDestination::Room($room_id.clone())));
     }};
 }
 
@@ -137,7 +138,7 @@ impl Logger {
     }
 
     pub fn push_global(&mut self, message: String, kind: EventType) {
-        if self.maximum_lines == self.global_log.len() + 1 {
+        if self.maximum_lines >= self.global_log.len() {
             self.global_log.pop_front();
         }
 

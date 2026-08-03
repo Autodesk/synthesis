@@ -17,7 +17,8 @@ macro_rules! lock {
 }
 
 pub fn trim_uuid(uuid: &Uuid) -> String {
-    uuid.to_string()[0..8].to_string()
+    let [a, b, c, d, ..] = uuid.as_bytes();
+    format!("{a:02x}{b:02x}{c:02x}{d:02x}")
 }
 
 pub fn tilde_expansion(path: &mut PathBuf) -> Result<()> {
@@ -61,7 +62,7 @@ where
 {
     #[allow(clippy::expect_used)]
     rmp_serde::to_vec_named(&message)
-        .expect("Serilization of message failed. This is a bug in Glueball")
+        .expect("Serilization of message failed. This is a bug in Glueball.")
 }
 
 pub fn deserialize_messagepack<'de, S>(data: &'de [u8]) -> Result<S, rmp_serde::decode::Error>

@@ -39,6 +39,7 @@ pub enum ServerToClientMessage {
 #[repr(u8)]
 pub enum MessagePrefix {
     // Indicates client-client communication
+    #[allow(dead_code)]
     Client = 0b0000_0001,
     // Indicates client-server communication
     Server = 0b0000_0011,
