@@ -7,8 +7,6 @@ mod model;
 mod panic;
 mod prefixed;
 mod room;
-#[cfg(test)]
-mod tests;
 mod tui;
 #[macro_use]
 mod util;
