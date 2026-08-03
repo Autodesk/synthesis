@@ -257,7 +257,7 @@ fn render_tabs(frame: &mut Frame, area: Rect, app: &App, snapshot: &Snapshot) {
             let base = t * ROOMS_PER_TAB;
             let mut label = format!("Room {}", snapshot.rooms[base].id);
             if let Some(r) = snapshot.rooms.get(base + 1) {
-                write!(&mut label, " / {}", r.id).expect("Failed to write to string");
+                let _ = write!(&mut label, " / {}", r.id);
             }
             Line::from(label)
         })

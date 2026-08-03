@@ -1,5 +1,6 @@
 use std::{env::home_dir, ops::Deref, path::PathBuf};
 
+use anyhow::{Result, bail};
 use serde::{Deserialize, Serialize};
 use tokio_tungstenite::tungstenite::Message;
 use uuid::Uuid;
@@ -19,13 +20,18 @@ pub fn trim_uuid(uuid: &Uuid) -> String {
     uuid.to_string()[0..8].to_string()
 }
 
-pub fn tilde_expansion(path: &mut PathBuf) {
+pub fn tilde_expansion(path: &mut PathBuf) -> Result<()> {
     let Ok(suffix) = path.strip_prefix("~/") else {
-        return;
+        return Ok(());
     };
 
-    let home_dir = home_dir().expect("Could not find your home dir");
+    let Some(home_dir) = home_dir() else {
+        bail!("Could not find your home dir");
+    };
+
     *path = home_dir.join(suffix);
+
+    Ok(())
 }
 
 pub fn serialize_and_prefix<M>(message: M, prefix: MessagePrefix) -> Message
@@ -53,7 +59,9 @@ fn serialize_messagepack<M>(message: M) -> Vec<u8>
 where
     M: Serialize,
 {
-    rmp_serde::to_vec_named(&message).expect("Could not serialize message")
+    #[allow(clippy::expect_used)]
+    rmp_serde::to_vec_named(&message)
+        .expect("Serilization of message failed. This is a bug in Glueball")
 }
 
 pub fn deserialize_messagepack<'de, S>(data: &'de [u8]) -> Result<S, rmp_serde::decode::Error>

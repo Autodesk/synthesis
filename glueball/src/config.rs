@@ -117,7 +117,7 @@ pub fn config_or_default(config: &CliConfig) -> Result<(PathBuf, u32)> {
         .unwrap_or(certification_directory()?);
     let port = config.port.unwrap_or(DEFAULT_PORT);
 
-    tilde_expansion(&mut cert_dir);
+    tilde_expansion(&mut cert_dir)?;
 
     Ok((cert_dir, port))
 }
