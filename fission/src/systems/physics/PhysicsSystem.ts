@@ -43,6 +43,7 @@ import {
     setAxes,
 } from "./ConstraintSettingsUtilities"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import { PhysicsBodyData } from "../multiplayer/MultiplayerMessageTypes.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
 
@@ -1471,10 +1472,10 @@ class PhysicsSystem extends WorldSystem {
                 World.multiplayerSystem.broadcast(message)
             } else {
                 // If there's no collision, then we can just deal with our own scene objects and send their positions over
-                World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
-                    const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)
+                World.multiplayerSystem.getOwnRobots().forEach(clientSceneObject => {
+                    const clientSceneObjectId = clientSceneObject.id
 
-                    if (clientSceneObject == null || !(clientSceneObject instanceof MirabufSceneObject)) {
+                    if (!(clientSceneObject instanceof MirabufSceneObject)) {
                         console.warn("Could not find multiplayer robot") // happens when you delete
                         World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
                         return
@@ -1497,6 +1498,20 @@ class PhysicsSystem extends WorldSystem {
 
         this._physicsEventQueue.forEach(x => x.dispatch())
         this._physicsEventQueue = []
+    }
+
+    public getBodyUpdateData(body: Jolt.Body): Omit<PhysicsBodyData, "rigidNodeId"> {
+        const linearVelocity = body.GetLinearVelocity()
+        const angularVelocity = body.GetAngularVelocity()
+        const position = body.GetPosition()
+        const rotation = body.GetRotation()
+
+        return {
+            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+        }
     }
 
     private onSameLayer(body1: Jolt.BodyID, body2: Jolt.BodyID): boolean {

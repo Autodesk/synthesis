@@ -136,6 +136,10 @@ export async function withTimeout(promise: Promise<boolean>, timeoutMessage: str
     })
 }
 
+export function isDefined<T>(item: T | undefined): item is T {
+    return item !== undefined
+}
+
 export type RecursivePartial<T> = {
     [P in keyof T]?: T[P] extends (infer U)[]
         ? RecursivePartial<U>[]

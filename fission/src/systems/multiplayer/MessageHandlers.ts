@@ -17,17 +17,22 @@ import type {
     MessageType,
     NeedAssemblyBody,
     NewObjectBody,
+    PhysicsBodyData,
     UpdateObjectData,
+    UpdatePhysicsBodyData,
 } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
 import type { EncodedAssembly } from "@/systems/multiplayer/MultiplayerTypes.ts"
 
 import type MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import Jolt from "@synthesis.adsk/jolt-physics"
+import { isDefined } from "@/util/Utility"
 
 export const peerMessageHandlers = {
     info: handleInfoMessage,
     update: handleUpdateMessage,
+    updatePhysicsBody: handleUpdatePhysicsBody,
     collision: handleCollisionMessage,
     newObject: handleNewObjectMessage,
     needAssembly: handleNeedAssemblyMessage,
@@ -70,7 +75,7 @@ async function handleInfoMessage(this: MultiplayerSystem, { info, introduceSelf 
 const clientToUpdateMap = new Map<string, number>()
 
 function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp: number) {
-    const bodyMap = World.multiplayerSystem?.clientToBodyMap.get(peerId)!
+    // const bodyMap = World.multiplayerSystem?.clientToBodyMap.get(peerId)!
 
     const lastTimestamp = clientToUpdateMap.get(peerId)
     if (lastTimestamp != null && lastTimestamp > timestamp) {
@@ -92,13 +97,17 @@ function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp
         }
 
         // Add all the ejectables that are in activeEjectables but not gamePiecesControlled
+        const gamePiecesControlledBodies = gamePiecesControlled
+            .map(rnId => sceneObject.mechanism.getBodyByNodeId(rnId)?.GetIndexAndSequenceNumber())
+            .filter(isDefined)
+
         sceneObject.activeEjectables
-            .filter(id => !gamePiecesControlled.includes(id.GetIndexAndSequenceNumber()))
+            .filter(id => !gamePiecesControlledBodies.includes(id.GetIndexAndSequenceNumber()))
             // We're not ejecting the actual game piece here, but the robots should be configured to eject in the same order so it's fine
             .forEach(_ => sceneObject.eject())
 
         // Add all the ejectables that are in gamePiecesControlled but not activeEjectables
-        gamePiecesControlled
+        gamePiecesControlledBodies
             .filter(id => !sceneObject.activeEjectables.map(n => n.GetIndexAndSequenceNumber()).includes(id))
             .forEach(id => {
                 const bodyId = new JOLT.BodyID(id)
@@ -106,44 +115,54 @@ function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp
             })
 
         // Sets the physics data for each body in the assembly
-        bodies
-            .map(({ bodyId, linearVelocityStr, angularVelocityStr, positionStr, rotationStr }) => {
-                const newBodyId = bodyMap.get(bodyId)
-                if (newBodyId == null) {
-                    console.error(`BodyId: ${bodyId} sent by ${peerId} does not exist in bodyMap`)
-                    return
-                }
-                return {
-                    bodyId: newBodyId,
-                    linearVelocityStr,
-                    angularVelocityStr,
-                    positionStr,
-                    rotationStr,
-                }
-            })
-            .filter(data => data != null)
-            .forEach(({ bodyId, linearVelocityStr, angularVelocityStr, positionStr, rotationStr }) => {
-                const lin: { x: number; y: number; z: number } = JSON.parse(linearVelocityStr)
-                const ang: { x: number; y: number; z: number } = JSON.parse(angularVelocityStr)
-                const pos: { x: number; y: number; z: number } = JSON.parse(positionStr)
-                const rot: { x: number; y: number; z: number; w: number } = JSON.parse(rotationStr)
+        bodies.forEach(({ rigidNodeId, ...physicsData }) => {
+            const bodyId = sceneObject.mechanism.getBodyByNodeId(rigidNodeId)
+            if (bodyId == null) {
+                console.error(`BodyId: ${bodyId} sent by ${peerId} does not exist in bodyMap`)
+                return
+            }
 
-                const linearVelocity = new JOLT.Vec3(lin.x, lin.y, lin.z)
-                const angularVelocity = new JOLT.Vec3(ang.x, ang.y, ang.z)
-                const position = new JOLT.RVec3(pos.x, pos.y, pos.z)
-                const rotation = new JOLT.Quat(rot.x, rot.y, rot.z, rot.w)
-
-                const clientBody = World.physicsSystem.getBody(bodyId)
-                if (!clientBody) {
-                    console.error(`Body ${bodyId} on Scene Object ${sceneObject.assemblyName} not found`)
-                    return
-                }
-
-                clientBody.SetLinearVelocity(linearVelocity)
-                clientBody.SetAngularVelocity(angularVelocity)
-                World.physicsSystem.setBodyPositionAndRotation(bodyId, position, rotation)
-            })
+            applyPhysicsBodyData(bodyId, physicsData)
+        })
     })
+}
+
+function handleUpdatePhysicsBody(data: UpdatePhysicsBodyData, peerId: string, _timestamp: number) {
+    // We only want to send it through the mapping if it's not a game piece we own
+
+    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectId) as MirabufSceneObject
+    // undefined
+    console.log(`SceneObject ${sceneObject}`)
+    console.log(`mechanism ${sceneObject.mechanism}`)
+    const bodyId = sceneObject.mechanism.getBodyByNodeId(data.rigidNodeId)
+    if (bodyId == null) {
+        console.error(`BodyId: ${bodyId} sent by ${peerId} does not exist in bodyMap`)
+        return
+    }
+
+    applyPhysicsBodyData(bodyId, data)
+}
+
+function applyPhysicsBodyData(bodyId: Jolt.BodyID, data: Omit<PhysicsBodyData, "rigidNodeId">) {
+    const lin: { x: number; y: number; z: number } = JSON.parse(data.linearVelocityStr)
+    const ang: { x: number; y: number; z: number } = JSON.parse(data.angularVelocityStr)
+    const pos: { x: number; y: number; z: number } = JSON.parse(data.positionStr)
+    const rot: { x: number; y: number; z: number; w: number } = JSON.parse(data.rotationStr)
+
+    const linearVelocity = new JOLT.Vec3(lin.x, lin.y, lin.z)
+    const angularVelocity = new JOLT.Vec3(ang.x, ang.y, ang.z)
+    const position = new JOLT.RVec3(pos.x, pos.y, pos.z)
+    const rotation = new JOLT.Quat(rot.x, rot.y, rot.z, rot.w)
+
+    const clientBody = World.physicsSystem.getBody(bodyId)
+    if (!clientBody) {
+        console.error(`Body ${bodyId} not found`)
+        return
+    }
+
+    clientBody.SetLinearVelocity(linearVelocity)
+    clientBody.SetAngularVelocity(angularVelocity)
+    World.physicsSystem.setBodyPositionAndRotation(bodyId, position, rotation)
 }
 
 function handleCollisionMessage() {
@@ -153,7 +172,7 @@ function handleCollisionMessage() {
 async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: number) {
     if (data.miraType == MiraType.FIELD && World.multiplayerSystem?.fieldTransferLock != null) {
         if (World.multiplayerSystem.fieldTransferLock.ts < ts) {
-            console.warn("Ignoring assembly", { peerId, sceneObjectKey: data.sceneObjectKey })
+            console.warn("Ignoring assembly", { peerId, sceneObjectKey: data.sceneObjectId })
             return
         } else {
             const object = World.multiplayerSystem.fieldTransferLock.id
@@ -168,12 +187,12 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
         }
     }
     const handle =
-        progressHandles.get(data.sceneObjectKey) ??
+        progressHandles.get(data.sceneObjectId) ??
         new ProgressHandle(
             "Asset from " + (World.multiplayerSystem?.clientToInfoMap.get(peerId)?.displayName ?? peerId)
         )
     handle.update("Finding Assembly", 0.05)
-    progressHandles.set(data.sceneObjectKey, handle)
+    progressHandles.set(data.sceneObjectId, handle)
     let assembly: mirabuf.Assembly | undefined
     if (data.assembly) {
         handle.update("Loading Assembly", 0.2)
@@ -198,7 +217,7 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
         World.multiplayerSystem?.send(
             {
                 type: "needAssembly",
-                data: { assemblyHash: data.assemblyHash, sceneObjectKey: data.sceneObjectKey },
+                data: { assemblyHash: data.assemblyHash, sceneObjectId: data.sceneObjectId },
             },
             peerId
         )
@@ -210,29 +229,17 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
 
     const clientToObjectMap = World.multiplayerSystem?.clientToObjectMap
     const clientToInfoMap = World.multiplayerSystem?.clientToInfoMap
-    let bodyMap = World.multiplayerSystem?.clientToBodyMap.get(peerId)
     if (clientToInfoMap == null || clientToObjectMap == null) return
-    // Initialize bodyMap for this peer if it doesn't exist
-    if (bodyMap == null) {
-        World.multiplayerSystem?.clientToBodyMap.set(peerId, new Map())
-        bodyMap = World.multiplayerSystem?.clientToBodyMap.get(peerId)!
-    }
 
+    // Use the same UUID as the peer
+    object.id = data.sceneObjectId
     object.setPreferenceData(data.initialPreferences)
     object.nameOverride = clientToInfoMap.get(peerId)?.displayName ?? peerId
 
     console.log("Registering object", object, data)
-    const localSceneObjectKey = World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
-    console.log("linking object", data.sceneObjectKey, "->", localSceneObjectKey)
+    World.sceneRenderer.registerSceneObject(object, data.sceneObjectId)
 
     clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
-
-    // Sets bodyMap
-    const clientBodyIds = object.getAllBodyIds()
-    if (data.bodyIds.length !== clientBodyIds.length) {
-        console.error("Body ID mismatch!", data.bodyIds, clientBodyIds)
-    }
-    data.bodyIds.forEach((id, i) => bodyMap.set(id, clientBodyIds[i]))
 
     handle.done("Loaded")
     // Run all messages that arrived before the assembly fully spawned
@@ -244,7 +251,7 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
 }
 
 async function handleNeedAssemblyMessage(data: NeedAssemblyBody, peerId: string) {
-    const sceneObjectKey = data.sceneObjectKey
+    const sceneObjectKey = data.sceneObjectId
 
     const assembly = await MirabufCachingService.getEncoded(data.assemblyHash)
     if (!assembly) {
@@ -255,17 +262,16 @@ async function handleNeedAssemblyMessage(data: NeedAssemblyBody, peerId: string)
 
     const encodedAssembly = new Uint8Array(buffer) as EncodedAssembly
 
-    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)! as MirabufSceneObject
+    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)! as MirabufSceneObject
     World.multiplayerSystem?.send(
         {
             type: "newObject",
             data: {
-                sceneObjectKey,
+                sceneObjectId: sceneObjectKey,
                 assembly: encodedAssembly,
                 assemblyHash: info!.hash,
                 miraType: info!.miraType,
                 initialPreferences: sceneObject.getPreferenceData(),
-                bodyIds: sceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
             },
         },
         peerId
@@ -293,7 +299,7 @@ export function handleDeleteObjectMessage(sceneObjectKey: SceneObjectId, peerId:
 }
 
 function handleConfigureObjectMessage(data: ConfigureObjectBody, peerId: string) {
-    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
+    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectId)
     if (sceneObject instanceof MirabufSceneObject) {
         if (sceneObject.isOwnObject) {
             console.warn("received config for own object")

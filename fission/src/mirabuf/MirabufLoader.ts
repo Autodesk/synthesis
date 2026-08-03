@@ -508,12 +508,11 @@ export async function spawnCachedMira(
                         type: "newObject",
                         timestamp: Date.now(),
                         data: {
-                            sceneObjectKey: mirabufSceneObject.id,
+                            sceneObjectId: mirabufSceneObject.id,
                             assembly: encodedAssembly,
                             assemblyHash: info.hash,
                             miraType: info.miraType,
                             initialPreferences: mirabufSceneObject.getPreferenceData(),
-                            bodyIds: mirabufSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
                         },
                     }
                     World.multiplayerSystem?.broadcast(message)

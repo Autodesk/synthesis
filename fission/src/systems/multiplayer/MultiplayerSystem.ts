@@ -1,4 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -30,8 +29,7 @@ class MultiplayerSystem {
     private _initializationPromise: Promise<boolean>
 
     public readonly clientToInfoMap: Map<string, ClientAndLatencyInfo> = new Map()
-    public readonly clientToObjectMap: Map<string, SceneObjectId[]> = new Map()
-    public readonly clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map() // Each Map is: peerBodyId -> clientBodyId
+    public readonly clientToObjectMap: Map<string, SceneObjectId[]> = new Map() // indicates ownership over objects
 
     private _info: ClientInfo = {} as ClientInfo
     private _onDestroyHooks: (() => void)[] = []
@@ -182,7 +180,7 @@ class MultiplayerSystem {
         message.timestamp ??= Date.now()
         message.clientId = this.clientId
         if (message.type == "newObject" && message.data.miraType == MiraType.FIELD) {
-            this.fieldTransferLock = { ts: message.timestamp, id: message.data.sceneObjectKey }
+            this.fieldTransferLock = { ts: message.timestamp, id: message.data.sceneObjectId }
         }
         this.client.sendPeer(message as MessageWithTimestamp)
     }
@@ -204,13 +202,12 @@ class MultiplayerSystem {
                 {
                     type: "newObject",
                     data: {
-                        sceneObjectKey: obj.id,
+                        sceneObjectId: obj.id,
                         assemblyHash: await hashBuffer(
                             mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
                         ),
                         miraType: obj.miraType,
                         initialPreferences: obj.getPreferenceData(),
-                        bodyIds: obj.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
                     },
                 },
                 peerID
@@ -218,7 +215,7 @@ class MultiplayerSystem {
         }
     }
 
-    getOwnSceneObjectIDs() {
+    getOwnSceneObjectIDs(): SceneObjectId[] {
         return this.clientToObjectMap.get(this.clientId) ?? []
     }
 
@@ -285,7 +282,6 @@ class MultiplayerSystem {
         })
         this.clientToInfoMap.delete(clientId)
         this.clientToObjectMap.delete(clientId)
-        this.clientToBodyMap.delete(clientId)
 
         EventSystem.dispatch("MultiplayerStatePeerChange")
         globalAddToast(

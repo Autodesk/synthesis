@@ -8,10 +8,19 @@ import type {
     RobotConfiguration,
 } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
 
 export interface MessageType {
     info: InfoBody
     update: UpdateBody
+    /**
+     * Used for sending updates of specific physics bodies
+     * Important for dragging pieces because no robots touch them and no game piece asset support
+     *
+     * WARNING:
+     * When game piece asset support is merged, this should be reverted to use `UpdateObjectData`
+     */
+    updatePhysicsBody: UpdatePhysicsBodyData
     collision: CollisionBody // just a comprehensive list instead
     newObject: NewObjectBody
     needAssembly: NeedAssemblyBody
@@ -43,21 +52,20 @@ export type MatchModeStateBody =
     | { event: "cancel" }
 
 export type NewObjectBody = {
-    sceneObjectKey: SceneObjectId
+    sceneObjectId: SceneObjectId
     assembly?: EncodedAssembly
     assemblyHash: string
     miraType: MiraType
     initialPreferences: RobotConfiguration | FieldConfiguration
-    bodyIds: number[] // Jolt.BodyID.GetSequenceAndIndexNumber() (used for creating the bodyMap)
 }
 
 export type ConfigureObjectBody = {
-    sceneObjectKey: SceneObjectId
+    sceneObjectId: SceneObjectId
     objectConfigurationData: RobotConfiguration | FieldConfiguration
 }
 
 export type NeedAssemblyBody = {
-    sceneObjectKey: SceneObjectId
+    sceneObjectId: SceneObjectId
     assemblyHash: string
 }
 
@@ -65,15 +73,21 @@ export type UpdateBody = UpdateObjectData[]
 export type CollisionBody = UpdateObjectData[]
 export type UpdateObjectData = {
     sceneObjectKey: SceneObjectId
-    gamePiecesControlled: number[] // BodyID
+    gamePiecesControlled: RigidNodeId[] // rnIds within the field, since there's only one
+    bodies: PhysicsBodyData[]
+}
+
+export type UpdatePhysicsBodyData = {
+    sceneObjectId: SceneObjectId
+} & PhysicsBodyData
+
+export type PhysicsBodyData = {
+    rigidNodeId: RigidNodeId // rnIds are relative to their scene object, so be sure to send the id for that too
     // {x, y, z, w?}
-    bodies: {
-        bodyId: number // BodyID
-        linearVelocityStr: string
-        angularVelocityStr: string
-        positionStr: string
-        rotationStr: string
-    }[]
+    linearVelocityStr: string
+    angularVelocityStr: string
+    positionStr: string
+    rotationStr: string
 }
 
 export type LatencyInfoBody = { latencyMS: number }

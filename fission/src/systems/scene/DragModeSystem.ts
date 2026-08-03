@@ -1,4 +1,5 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
+import { type Message } from "@/systems/multiplayer/MultiplayerTypes"
 import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -17,6 +18,8 @@ import {
     type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import { SceneObjectId } from "./SceneRenderer"
 
 interface DragTarget {
     bodyId: Jolt.BodyID
@@ -25,6 +28,9 @@ interface DragTarget {
     mass: number
     dragDepth: number
     physicsDisabled: boolean
+    isGamePiece: boolean
+    rn: RigidNodeId
+    sceneObjectId: SceneObjectId
 }
 
 class DragModeSystem extends WorldSystem {
@@ -217,25 +223,47 @@ class DragModeSystem extends WorldSystem {
 
         const target = this.findDragTarget(interaction.position)
         if (target) {
-            this.startDragging(target.bodyId, interaction.position, target.hitPoint)
+            this.startDragging(
+                target.bodyId,
+                interaction.position,
+                target.hitPoint,
+                target.isGamePiece,
+                target.rn,
+                target.sceneObjectId
+            )
         } else {
             this._originalInteractionStart?.(interaction)
         }
     }
 
-    private findDragTarget(mousePos: [number, number]): { bodyId: Jolt.BodyID; hitPoint: THREE.Vector3 } | undefined {
+    private findDragTarget(mousePos: [number, number]):
+        | {
+              bodyId: Jolt.BodyID
+              hitPoint: THREE.Vector3
+              isGamePiece: boolean
+              rn: RigidNodeId
+              sceneObjectId: SceneObjectId
+          }
+        | undefined {
         const result = rayCastForRigidBody(mousePos)
         if (!result || !this.isDraggable(result.association)) return undefined
-        return { bodyId: result.bodyId, hitPoint: result.hitPoint }
+        const isGamePiece = result.association.isGamePiece
+        const rn = result.association.rigidNodeId
+        return {
+            bodyId: result.bodyId,
+            hitPoint: result.hitPoint,
+            isGamePiece,
+            rn,
+            sceneObjectId: result.association.sceneObject.id,
+        }
     }
 
     private isDraggable(association: RigidNodeAssociate): boolean {
         // I think this is the fastest way of doing this, since we only do the linear search if there's a multiplayer system
         const isRobot = association.sceneObject.miraType == MiraType.ROBOT
-        const isOwnRobot =
-            !World.multiplayerSystem || !World.multiplayerSystem.getRemoteRobots().includes(association.sceneObject)
+        const isOwnRobot = association.sceneObject.multiplayerOwnerName == undefined
 
-        return (isRobot && isOwnRobot) || association.isGamePiece
+        return association.isGamePiece || (isRobot && isOwnRobot)
     }
 
     private onInteractionMove(interaction: InteractionMove): void {
@@ -260,7 +288,14 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    private startDragging(bodyId: Jolt.BodyID, mousePos: [number, number], hitPoint: THREE.Vector3): void {
+    private startDragging(
+        bodyId: Jolt.BodyID,
+        mousePos: [number, number],
+        hitPoint: THREE.Vector3,
+        isGamePiece: boolean,
+        rn: RigidNodeId,
+        sceneObjectId: SceneObjectId
+    ): void {
         const body = World.physicsSystem.getBody(bodyId)
         if (!body) return
 
@@ -296,6 +331,9 @@ class DragModeSystem extends WorldSystem {
             mass: mass,
             dragDepth: dragDepth,
             physicsDisabled: isRobot,
+            isGamePiece,
+            rn,
+            sceneObjectId,
         }
 
         this._isDragging = true
@@ -517,6 +555,18 @@ class DragModeSystem extends WorldSystem {
             body.AddForce(brakingForce)
         }
         body.SetAngularVelocity(new JOLT.Vec3())
+
+        if (World.multiplayerSystem && this._dragTarget.isGamePiece) {
+            const message: Message = {
+                type: "updatePhysicsBody",
+                data: {
+                    sceneObjectId: this._dragTarget.sceneObjectId,
+                    ...World.physicsSystem.getBodyUpdateData(body),
+                    rigidNodeId: this._dragTarget.rn,
+                },
+            }
+            World.multiplayerSystem.broadcast(message)
+        }
     }
 
     private handleWheelDuringDrag(event: WheelEvent): void {

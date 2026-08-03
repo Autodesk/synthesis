@@ -300,7 +300,10 @@ fn render_body(
         match snapshot.rooms.get(base + slot) {
             Some(room) => {
                 let focused = slot == app.focused_panel;
-                let room_log = room_logs.get(&room.id).expect("No log created for room");
+
+                let fallback = VecDeque::new();
+                let room_log = room_logs.get(&room.id).unwrap_or(&fallback);
+
                 render_room_panel(frame, col, room, room_log, focused, app.selected_user);
             }
             None => {

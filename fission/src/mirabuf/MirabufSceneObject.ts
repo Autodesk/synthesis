@@ -59,7 +59,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
-import type { UpdateObjectData } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
+import type { PhysicsBodyData, UpdateObjectData } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const DEBUG_BODIES = false
@@ -1019,10 +1019,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public async sendPreferences() {
         if (!World.multiplayerSystem) return
         const data = this.getPreferenceData()
-        await World.multiplayerSystem.broadcast({
+        World.multiplayerSystem.broadcast({
             type: "configureObject",
             data: {
-                sceneObjectKey: this.id,
+                sceneObjectId: this.id,
                 objectConfigurationData: data,
             },
         })
@@ -1322,22 +1322,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public getUpdateData(): UpdateObjectData {
-        const gamePiecesControlled: number[] = this.activeEjectables.map(bodyId => bodyId.GetIndexAndSequenceNumber())
+        const gamePiecesControlled: RigidNodeId[] = this.activeEjectables.map(
+            bodyId => (<RigidNodeAssociate>World.physicsSystem.getBodyAssociation(bodyId)).rigidNodeId
+        )
 
         const bodies = this.getAllBodies()
             .map(body => {
-                const linearVelocity = body.GetLinearVelocity()
-                const angularVelocity = body.GetAngularVelocity()
-                const position = body.GetPosition()
-                const rotation = body.GetRotation()
-
-                return {
-                    bodyId: body.GetID().GetIndexAndSequenceNumber(),
-                    linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
-                    angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
-                    positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
-                    rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
-                }
+                const data = World.physicsSystem.getBodyUpdateData(body) as PhysicsBodyData
+                data.rigidNodeId = this.id
             })
             .filter(n => n != null)
 
