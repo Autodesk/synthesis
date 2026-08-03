@@ -6,6 +6,15 @@ use uuid::Uuid;
 
 use crate::model::MessagePrefix;
 
+#[macro_export]
+macro_rules! lock {
+    ($mutex:expr) => {
+        $mutex
+            .lock()
+            .expect("Poisoned Mutex (panic on another thread). Aborting.")
+    };
+}
+
 pub fn trim_uuid(uuid: &Uuid) -> String {
     uuid.to_string()[0..8].to_string()
 }

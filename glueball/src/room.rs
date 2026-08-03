@@ -2,6 +2,7 @@ use crate::logging::{EventType, LogDestination};
 use crate::model::{MessagePrefix, RoomInfo, ServerToClientMessage};
 use crate::util::serialize_and_prefix;
 
+use anyhow::{Result, bail};
 use rand::RngExt;
 use std::collections::HashMap;
 use tokio::sync::mpsc::{self, Sender};
@@ -11,7 +12,7 @@ use uuid::Uuid;
 /// Maximum number of log lines retained in each log (both per-room and system logs)
 /// Oldest lines are dropped once the buffer is full.
 const VALID_ROOM_ID_CHARACTERS: [char; 36] = valid_room_id_characters();
-const MAX_ROOM_COUNT: u8 = 32;
+const MAX_ROOM_COUNT: usize = 32;
 
 pub struct State {
     users: ClientMap,
@@ -41,7 +42,7 @@ impl State {
     ) -> Option<(ClientId, RoomId)> {
         match room_id {
             None if self.room_count() == MAX_ROOM_COUNT => None,
-            None => Some(self.add_room_and_host(name.to_string(), tx)),
+            None => Some(self.add_room_and_host(name.to_string(), tx).ok()?),
             Some(room_id) => self
                 .add_client_to_room(name, tx, &room_id)
                 .map(|client_id| (client_id, room_id)),
@@ -57,7 +58,7 @@ impl State {
         &mut self,
         host_name: String,
         host_tx: ClientSender,
-    ) -> (ClientId, RoomId) {
+    ) -> Result<(ClientId, RoomId)> {
         let host_id = Uuid::new_v4();
         let room = Room {
             members: vec![Client::new(host_id, host_name, host_tx)],
@@ -67,7 +68,7 @@ impl State {
         };
 
         let room_id = generate_6_digit_code();
-        let client_name = room.get_client_name(&host_id);
+        let client_name = room.get_client_name(&host_id)?;
         info_room!(
             self.log_tx,
             room_id,
@@ -77,7 +78,7 @@ impl State {
         self.users.insert(host_id, room_id.clone());
         self.rooms.map.insert(room_id.clone(), room);
 
-        (host_id, room_id)
+        Ok((host_id, room_id))
     }
 
     pub fn add_client_to_room(
@@ -124,13 +125,23 @@ impl State {
             return;
         };
 
-        let client_name = room.get_client_name(&client_id);
+        let Ok(client_name) = room.get_client_name(&client_id) else {
+            warn_global!(
+                log_tx,
+                "Attempted to remove {client_id} from room they are not in"
+            );
 
-        if room.remove_client(&client_id, &log_tx) == RoomStatus::Closed {
-            self.rooms
-                .map
-                .remove(&room_id)
-                .expect("Failed to remove room");
+            return;
+        };
+
+        // TODO Clippy likes this but I don't
+        if room.remove_client(&client_id, &log_tx) == RoomStatus::Closed
+            && self.rooms.map.remove(&room_id).is_none()
+        {
+            warn_global!(
+                log_tx,
+                "Attempetd to remove {client_id} from room that does not exist"
+            );
         }
 
         info_room!(log_tx, room_id, "{client_name} left",);
@@ -203,7 +214,14 @@ impl State {
 
         room.tell_room_client_left_blocking(&client_id);
 
-        let client_name = room.get_client_name(&client_id);
+        let Ok(client_name) = room.get_client_name(&client_id) else {
+            warn_global!(
+                self.log_tx,
+                "Attempted to remove {client_id} from room they were not in"
+            );
+
+            return;
+        };
         info_room!(self.log_tx, room_id, "Kicked {client_name}");
 
         self.remove_client(client_id);
@@ -229,8 +247,8 @@ impl State {
             .collect()
     }
 
-    pub fn room_count(&self) -> u8 {
-        u8::try_from(self.rooms.map.len()).expect("Too many rooms")
+    pub fn room_count(&self) -> usize {
+        self.rooms.map.len()
     }
 
     /// Takes a snapshot of the application state so the TUI
@@ -334,14 +352,12 @@ pub struct Room {
 }
 
 impl Room {
-    pub fn get_client_name(&self, client_id: &ClientId) -> String {
-        let client = self
-            .members
-            .iter()
-            .find(|user| user.id == *client_id)
-            .expect("Client not in room");
+    pub fn get_client_name(&self, client_id: &ClientId) -> Result<String> {
+        let Some(client) = self.members.iter().find(|user| user.id == *client_id) else {
+            bail!("Client not in room");
+        };
 
-        client.name.clone()
+        Ok(client.name.clone())
     }
     pub fn get_senders(&self, exclude: Option<&ClientId>) -> Vec<ClientSender> {
         self.members

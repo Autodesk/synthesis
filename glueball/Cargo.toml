@@ -8,6 +8,7 @@ repository = "https://github.com/Autodesk/synthesis"
 readme = "README.md"
 
 [dependencies]
+anyhow = "1.0.104"
 argh = "0.1.19"
 bytes = "1.12.1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
@@ -37,4 +38,6 @@ perf          = { level = "deny", priority = -1 }
 style         = { level = "deny", priority = -1 }
 pedantic      = { level = "deny", priority = -1 }
 nursery       = { level = "deny", priority = -1 }
-# unwrap_used   = "deny"
+
+unwrap_used   = "deny"
+expect_used = "deny"

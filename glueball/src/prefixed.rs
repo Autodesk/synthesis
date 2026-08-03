@@ -30,14 +30,17 @@ impl<S: AsyncRead + Unpin> AsyncRead for Prefixed<S> {
         cx: &mut Context<'_>,
         buf: &mut ReadBuf<'_>,
     ) -> Poll<std::io::Result<()>> {
+        #[allow(clippy::expect_used)]
         let pos = usize::try_from(self.prefix.position()).expect("32-bit machines not supported");
         let data = self.prefix.get_ref();
+
         if pos < data.len() {
             let n = (data.len() - pos).min(buf.remaining());
             buf.put_slice(&data[pos..pos + n]);
             self.prefix.set_position((pos + n) as u64);
             return Poll::Ready(Ok(()));
         }
+
         Pin::new(&mut self.inner).poll_read(cx, buf)
     }
 }

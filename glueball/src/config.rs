@@ -3,6 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use anyhow::{Result, bail};
 use argh::FromArgs;
 use directories::ProjectDirs;
 use toml::{Table, Value};
@@ -11,11 +12,13 @@ use crate::util::tilde_expansion;
 
 pub const DEFAULT_PORT: u32 = 2610;
 
-pub fn certification_directory() -> PathBuf {
-    ProjectDirs::from("com", "Autodesk", "synthesis-glueball")
-        .expect("Could not find certificate directory")
-        .data_dir()
-        .join("secrets")
+pub fn certification_directory() -> Result<PathBuf> {
+    let dir = match ProjectDirs::from("com", "Autodesk", "synthesis-glueball") {
+        Some(dirs) => dirs.data_dir().join("secrets"),
+        None => bail!("Cound not find certificate directory"),
+    };
+
+    Ok(dir)
 }
 
 #[derive(FromArgs)]
@@ -60,14 +63,17 @@ pub struct CliConfig {
     pub permanent_room: Option<String>,
 }
 
-pub fn parse_config_file<P>(path: P, old_config: &mut CliConfig)
+pub fn parse_config_file<P>(path: P, old_config: &mut CliConfig) -> Result<()>
 where
     P: AsRef<Path>,
 {
-    let config = read_to_string(path).expect("Error: config file not found ");
-    let table = config
-        .parse::<Table>()
-        .expect("Error: config file not valid toml");
+    let Ok(config) = read_to_string(&path) else {
+        bail!("Config file not found");
+    };
+
+    let Ok(table) = config.parse::<Table>() else {
+        bail!("Config file not valid TOML")
+    };
     old_config.config_file = None;
 
     if let Some(Value::String(path)) = &table.get("cert-dir")
@@ -100,16 +106,18 @@ where
     {
         old_config.permanent_room = Some(room_id.clone());
     }
+
+    Ok(())
 }
 
-pub fn config_or_default(config: &CliConfig) -> (PathBuf, u32) {
+pub fn config_or_default(config: &CliConfig) -> Result<(PathBuf, u32)> {
     let mut cert_dir = config
         .cert_dir
         .clone()
-        .unwrap_or_else(certification_directory);
+        .unwrap_or(certification_directory()?);
     let port = config.port.unwrap_or(DEFAULT_PORT);
 
     tilde_expansion(&mut cert_dir);
 
-    (cert_dir, port)
+    Ok((cert_dir, port))
 }

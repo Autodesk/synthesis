@@ -1,18 +1,19 @@
-use crate::EventType;
 use crate::logging::LogDestination;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
 use crate::room::{ClientId, ClientSender, State};
 use crate::util::{deserialize_messagepack, serialize_and_prefix, trim_uuid};
+use crate::{EventType, lock};
 
+use anyhow::{Result, bail};
 use bytes::Bytes;
+use futures_util::stream::{SplitSink, SplitStream};
+use futures_util::{SinkExt, StreamExt};
 use tokio::io::{AsyncRead, AsyncWrite};
 use tokio::sync::mpsc::{self, Sender};
 use tokio::time::timeout;
 use tokio_tungstenite::{WebSocketStream, tungstenite::Message};
 
-use futures_util::stream::{SplitSink, SplitStream};
-use futures_util::{SinkExt, StreamExt};
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -96,7 +97,7 @@ pub async fn handle_connection<S>(
         }
     }
 
-    handle_client_close(client_id, &state, logging_tx).await;
+    let _ = handle_client_close(client_id, &state, logging_tx).await;
 }
 
 /// Waits for and handles messages from the client that are intended for the server.
@@ -132,8 +133,8 @@ where
             Some(ClientToServerMessage::InitializeConnection { room_id, name }) => {
                 let (client_id, room_id) = {
                     // The lock is relinquished at the end of this expression
-                    let mut guard = state.lock().unwrap();
-                    match guard.initialize_client_in_room(tx, room_id, &name) {
+                    let info = lock!(state).initialize_client_in_room(tx, room_id, &name);
+                    match info {
                         Some(info) => info,
                         None => return None,
                     }
@@ -198,7 +199,7 @@ async fn handle_room_list_request<S>(
 {
     let message = {
         ServerToClientMessage::RoomList {
-            rooms: state.lock().unwrap().list_rooms(),
+            rooms: lock!(state).list_rooms(),
         }
     };
     let message = serialize_and_prefix(message, MessagePrefix::Server);
@@ -224,8 +225,7 @@ async fn handle_client_message(
             // which we want anyway, so there's no need to prefix the message
             // we can just forward it!
 
-            let senders: Vec<ClientSender> =
-                { state.lock().unwrap().get_senders_from_user_room(client_id) };
+            let senders: Vec<ClientSender> = { lock!(state).get_senders_from_user_room(client_id) };
 
             for tx in senders {
                 tx.send(message.clone()).await.ok();
@@ -235,7 +235,7 @@ async fn handle_client_message(
         }
 
         Message::Close(_) => {
-            handle_client_close(client_id, &state, logging_tx).await;
+            let _ = handle_client_close(client_id, &state, logging_tx).await;
             false
         }
         _ => todo!("Handle ws protocol ping/pong and text messagaes"),
@@ -264,15 +264,13 @@ async fn handle_client_ping(
     // Scope hack to avoid holding the guard while sending a message
     // Because Mutex locks are not Send
     let tx = {
-        let mut guard = state.lock().unwrap();
-        let Some(tx) = guard.get_client_tx(client_id) else {
+        let Some(tx) = lock!(state).get_client_tx(client_id) else {
             error_global!(
                 logging_tx,
                 "Received client-server message from client not in room"
             );
             return;
         };
-        drop(guard);
 
         tx
     };
@@ -284,7 +282,7 @@ async fn handle_client_close(
     client_id: ClientId,
     state: &Arc<Mutex<State>>,
     logging_tx: Sender<(String, EventType, LogDestination)>,
-) {
+) -> Result<()> {
     // Send message toa ll other clients telling them `client_id` has been kicked
     let message = ServerToClientMessage::Kick {
         client_id: client_id.to_string(),
@@ -292,17 +290,16 @@ async fn handle_client_close(
     let message = serialize_and_prefix(message, MessagePrefix::Server);
 
     let senders = {
-        let mut guard = state.lock().unwrap();
+        let mut guard = lock!(state);
 
         let Some(room) = guard.get_room_of_client_mut(&client_id).map(|a| a.1) else {
-            error_global!(
-                logging_tx,
-                "Client attempted to leave when they were not in a room "
-            );
-            return;
+            let err = "Client attempted to leave when they were not in a room ";
+
+            error_global!(logging_tx, "{}", err);
+            bail!(err);
         };
 
-        let client_name = room.get_client_name(&client_id);
+        let client_name = room.get_client_name(&client_id)?;
         warn_global!(logging_tx, "Connection with {client_name} closed");
 
         let senders = room.get_senders(Some(&client_id));
@@ -314,4 +311,6 @@ async fn handle_client_close(
     for tx in senders {
         let _ = tx.clone().send(message.clone()).await;
     }
+
+    Ok(())
 }

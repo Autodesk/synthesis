@@ -7,7 +7,10 @@ mod model;
 mod panic;
 mod prefixed;
 mod room;
+#[cfg(test)]
+mod tests;
 mod tui;
+#[macro_use]
 mod util;
 
 use crate::cert::build_tls_config;
@@ -19,15 +22,17 @@ use crate::messaging::handle_connection;
 use crate::room::State;
 use crate::tui::start_tui_thread;
 
-use std::error::Error;
 use std::sync::{Arc, Mutex};
 
+use anyhow::{Result, bail};
 use tokio::net::TcpListener;
 use tokio::sync::mpsc;
 use tokio_rustls::TlsAcceptor;
 
+const _: () = assert!(std::mem::size_of::<usize>() >= std::mem::size_of::<u64>());
+
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() -> Result<()> {
     // Setup logging
     // In my mind, this is the best way to handling an interface that could be sending message to a
     // tui running on a different OS thread or just printing them
@@ -47,14 +52,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Parse and create defaults for the application configuration
     let mut config: CliConfig = argh::from_env();
     if let Some(config_file) = config.config_file.clone() {
-        parse_config_file(config_file, &mut config);
+        parse_config_file(config_file, &mut config)?;
     }
-    let (cert_dir, port) = config_or_default(&config);
+    let (cert_dir, port) = config_or_default(&config)?;
 
     // `listener` will be used regardless of the security level specified
     let Ok(listener) = TcpListener::bind(format!("127.0.0.1:{port}")).await else {
-        eprintln!("Could not create TCP listener (the port is likely in use)");
-        std::process::exit(1)
+        bail!("Could not create TCP listener (the port is likely in use)");
     };
 
     if config.headless {
@@ -75,8 +79,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let send_to_logger =
             move |message: String, kind: EventType, log_destination: LogDestination| {
                 match log_destination {
-                    LogDestination::Global => logger.lock().unwrap().push_global(message, kind),
-                    LogDestination::Room(id) => logger.lock().unwrap().push_room(message, kind, id),
+                    LogDestination::Global => lock!(logger).push_global(message, kind),
+                    LogDestination::Room(id) => lock!(logger).push_room(message, kind, id),
                 }
             };
 
@@ -84,7 +88,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     if let Some(room_id) = config.permanent_room {
-        state.lock().unwrap().new_permanent_room(room_id);
+        lock!(state).new_permanent_room(room_id);
     }
 
     if !config.secure {

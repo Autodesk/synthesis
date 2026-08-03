@@ -173,7 +173,7 @@ pub fn spawn_log_receiver<F>(
                 break;
             };
 
-            handle_log(message, kind, log_destination)
+            handle_log(message, kind, log_destination);
         }
     });
 }

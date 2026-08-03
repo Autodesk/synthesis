@@ -10,6 +10,7 @@
 //! The admin can select a user with the arrows and kick them with `k` (after a confirmation),
 //! and lock or unlock the focused room with `l` to control whether new clients may join.
 
+use crate::lock;
 use crate::logging::{self, LogSnapshot, Logger, RoomLogs};
 use crate::panic::set_panic_hook_to_cleanup_terminal;
 use crate::room::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
@@ -48,7 +49,7 @@ const COLOR_PALETTE_SIZE: usize = 6;
 
 pub fn start_tui_thread(state: &Arc<Mutex<State>>, logger: Arc<Mutex<Logger>>) {
     {
-        state.lock().unwrap().set_tui();
+        lock!(state).set_tui();
     }
 
     let tui_state_handle = state.clone();
@@ -80,8 +81,8 @@ fn run_app(
     let mut app = App::new(state);
 
     loop {
-        let logger_snapshot = logger.lock().unwrap().snapshot();
-        let state_snapshot = app.state.lock().unwrap().snapshot();
+        let logger_snapshot = lock!(logger).snapshot();
+        let state_snapshot = lock!(app.state).snapshot();
         app.sync(&state_snapshot);
 
         terminal.draw(|frame| ui(frame, &app, &state_snapshot, &logger_snapshot))?;
@@ -177,7 +178,7 @@ impl App {
             match code {
                 KeyCode::Char('y' | 'Y') => {
                     if let Some(user_id) = self.pending_kick.take() {
-                        self.state.lock().unwrap().kick(user_id);
+                        lock!(self.state).kick(user_id);
                         self.selected_user = self.selected_user.saturating_sub(1);
                     }
                 }
@@ -209,7 +210,7 @@ impl App {
             }
             KeyCode::Char('l') => {
                 if let Some(room_id) = &self.focused_room {
-                    self.state.lock().unwrap().toggle_room_lock(room_id);
+                    lock!(self.state).toggle_room_lock(room_id);
                 }
             }
             _ => {}

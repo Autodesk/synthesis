@@ -1,10 +1,10 @@
 use std::{
-    error::Error,
     fs::{self, File},
     io::BufReader,
     path::PathBuf,
 };
 
+use anyhow::{Result, bail};
 use rcgen::{CertifiedKey, generate_simple_self_signed};
 use tokio_rustls::rustls::{
     ServerConfig,
@@ -13,25 +13,23 @@ use tokio_rustls::rustls::{
 
 /// Creates a TLS config for the server
 /// Generates a certificate if one does not exist
-pub fn build_tls_config(cert_directory: &PathBuf) -> Result<ServerConfig, Box<dyn Error>> {
+pub fn build_tls_config(cert_directory: &PathBuf) -> Result<ServerConfig> {
     ensure_certificate(cert_directory)?;
 
     let mut cert_reader = BufReader::new(File::open(cert_directory.join("cert.pem"))?);
     let cert_chain: Vec<CertificateDer> =
         rustls_pemfile::certs(&mut cert_reader).collect::<Result<_, _>>()?;
 
-    let mut key_reader = BufReader::new(File::open(cert_directory.join("key.pem"))?);
-    let key = rustls_pemfile::pkcs8_private_keys(&mut key_reader)
-        .next()
-        .ok_or_else(|| {
-            format!(
-                "Invalid PKCS#8 private key found in {}",
-                cert_directory
-                    .join("key.pem")
-                    .to_str()
-                    .expect("Certificate file pathh must be unicode")
-            )
-        })??;
+    let key_path = cert_directory.join("key.pem");
+    let mut key_reader = BufReader::new(File::open(&key_path)?);
+
+    let Some(Ok(key)) = rustls_pemfile::pkcs8_private_keys(&mut key_reader).next() else {
+        let Some(path) = key_path.to_str() else {
+            bail!("Certificate file must be unicode");
+        };
+
+        bail!("Invalid PKCS#8 private key found in {path}");
+    };
 
     let config = ServerConfig::builder()
         .with_no_client_auth()
@@ -41,7 +39,7 @@ pub fn build_tls_config(cert_directory: &PathBuf) -> Result<ServerConfig, Box<dy
 }
 
 /// Writes a self-signed certificate and keypair to `path` if one isn't already present.
-fn ensure_certificate(path: &PathBuf) -> Result<(), Box<dyn Error>> {
+fn ensure_certificate(path: &PathBuf) -> Result<()> {
     if !fs::exists(path)? {
         fs::create_dir_all(path)?;
     }
