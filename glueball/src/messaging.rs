@@ -262,8 +262,8 @@ async fn handle_client_ping(
     let current_server_timestamp = Utc::now().timestamp_millis() as u64;
 
     let message = ServerToClientMessage::Pong {
-        last_ping_timestamp: timestamp,
-        current_server_timestamp,
+        client_send_ts: timestamp,
+        server_ts: current_server_timestamp,
     };
     let message = serialize_and_prefix(message, MessagePrefix::Server);
 
