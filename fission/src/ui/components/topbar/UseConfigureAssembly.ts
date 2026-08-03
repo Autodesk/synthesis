@@ -3,6 +3,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { ConfigMode, type ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
@@ -23,6 +24,12 @@ export const FIELD_CONFIGURE_BUTTONS: ConfigureButton[] = [
     { name: "cfg-8", label: "Scoring Zones", mode: ConfigMode.SCORING_ZONES },
     { name: "cfg-7", label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
 ]
+
+export const MOVE_CONFIGURE_BUTTON = {
+    Icon: SynthesisIcons.MOVE,
+    label: "Move",
+    mode: ConfigMode.MOVE,
+} as const
 
 const readSpawned = (): MirabufSceneObject[] => (World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getAll() : [])
 

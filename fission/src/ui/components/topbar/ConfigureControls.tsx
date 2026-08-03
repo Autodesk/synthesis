@@ -1,14 +1,12 @@
 import { Box } from "@mui/material"
 import type React from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { ConfigMode } from "@/panels/configuring/assembly-config/ConfigTypes"
 import { CollapsibleGroup, type CollapsibleItem } from "@/ui/components/topbar/CollapsibleGroup"
 import ConfigureSplitDropdown from "@/ui/components/topbar/ConfigureSplitDropdown"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
-import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
+import { MOVE_CONFIGURE_BUTTON, useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
     const { configureButtons, openConfig } = useConfigureAssembly(selectedAssembly)
@@ -28,17 +26,17 @@ const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = (
             ),
         })),
         {
-            key: "Move",
+            key: MOVE_CONFIGURE_BUTTON.label,
             node: (
                 <TopBarButton
-                    label="Move"
+                    label={MOVE_CONFIGURE_BUTTON.label}
                     icon={
                         <Box sx={TOP_BAR_GLYPH_SX}>
-                            <SynthesisIcons.MOVE />
+                            <MOVE_CONFIGURE_BUTTON.Icon />
                         </Box>
                     }
                     disabledTooltip={disabledTooltip}
-                    onClick={() => openConfig(ConfigMode.MOVE)}
+                    onClick={() => openConfig(MOVE_CONFIGURE_BUTTON.mode)}
                 />
             ),
         },

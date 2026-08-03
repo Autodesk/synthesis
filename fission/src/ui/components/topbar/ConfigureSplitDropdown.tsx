@@ -7,7 +7,7 @@ import { ConfigMode } from "@/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/panels/configuring/assembly-config/ConfigurePanel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
-import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
+import { MOVE_CONFIGURE_BUTTON, useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 type ConfigEntry = { key: string; icon: React.ReactNode; label: string; mode: ConfigMode }
 
@@ -35,6 +35,16 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }
             label,
             mode,
         })),
+        {
+            key: MOVE_CONFIGURE_BUTTON.label,
+            icon: (
+                <MenuIcon>
+                    <MOVE_CONFIGURE_BUTTON.Icon />
+                </MenuIcon>
+            ),
+            label: MOVE_CONFIGURE_BUTTON.label,
+            mode: MOVE_CONFIGURE_BUTTON.mode,
+        },
         ...menuOnlyConfigs.map(({ label, mode, icon }) => ({
             key: label,
             icon: <MenuIcon>{icon}</MenuIcon>,
