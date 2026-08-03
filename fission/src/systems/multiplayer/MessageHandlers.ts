@@ -96,23 +96,28 @@ function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp
             return
         }
 
-        // Add all the ejectables that are in activeEjectables but not gamePiecesControlled
-        const gamePiecesControlledBodies = gamePiecesControlled
-            .map(rnId => sceneObject.mechanism.getBodyByNodeId(rnId)?.GetIndexAndSequenceNumber())
-            .filter(isDefined)
+        const fieldSceneObject = World.sceneRenderer.mirabufSceneObjects.getField()
+        if (fieldSceneObject) {
+            // Add all the ejectables that are in activeEjectables but not gamePiecesControlled
+            const gamePiecesControlledBodies = gamePiecesControlled
+                .map(rnId => fieldSceneObject.mechanism.getBodyByNodeId(rnId)?.GetIndexAndSequenceNumber())
+                .filter(isDefined)
 
-        sceneObject.activeEjectables
-            .filter(id => !gamePiecesControlledBodies.includes(id.GetIndexAndSequenceNumber()))
-            // We're not ejecting the actual game piece here, but the robots should be configured to eject in the same order so it's fine
-            .forEach(_ => sceneObject.eject())
+            const activeEjectables = sceneObject.activeEjectables.map(id => id.GetIndexAndSequenceNumber())
 
-        // Add all the ejectables that are in gamePiecesControlled but not activeEjectables
-        gamePiecesControlledBodies
-            .filter(id => !sceneObject.activeEjectables.map(n => n.GetIndexAndSequenceNumber()).includes(id))
-            .forEach(id => {
-                const bodyId = new JOLT.BodyID(id)
-                return sceneObject.setEjectable(bodyId)
-            })
+            activeEjectables
+                .filter(idx => !gamePiecesControlledBodies.includes(idx))
+                // We're not ejecting the specific game piece here, but the robots should be configured to eject in the same order so it's fine
+                .forEach(_ => sceneObject.eject())
+
+            // Add all the ejectables that are in gamePiecesControlled but not activeEjectables
+            gamePiecesControlledBodies
+                .filter(idx => !activeEjectables.includes(idx))
+                .forEach(idx => {
+                    const bodyId = new JOLT.BodyID(idx)
+                    return sceneObject.setEjectable(bodyId)
+                })
+        }
 
         // Sets the physics data for each body in the assembly
         bodies.forEach(({ rigidNodeId, ...physicsData }) => {
