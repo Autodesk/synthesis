@@ -51,7 +51,7 @@ export interface ConfigurationSubpanelProps {
     /**
      * Passed from ConfigurePanel, allows panels to forbid proceeding (e.g., if the config is invalid)
      */
-    setDisableAccept: React.Dispatch<React.SetStateAction<boolean>>,
+    setDisableAccept: React.Dispatch<React.SetStateAction<boolean>>
     panel: UIScreen<void, ConfigurePanelCustomProps>
 }
 

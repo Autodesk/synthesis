@@ -247,7 +247,12 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     useEffect(() => {
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: hasMadeChanges ? "Revert" : "Cancel", disableAccept },
+            {
+                title: "Configure Assets",
+                acceptText: "Save",
+                cancelText: hasMadeChanges ? "Revert" : "Cancel",
+                disableAccept,
+            },
             { onBeforeAccept, onCancel, onClose }
         )
     }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges, disableAccept])

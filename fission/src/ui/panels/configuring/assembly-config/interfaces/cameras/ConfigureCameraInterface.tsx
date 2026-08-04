@@ -50,7 +50,11 @@ const ConfigureCameraInterface: ConfigurationSubpanelComponent = ({
                         }}
                     />
                     <Divider />
-                    <CameraConfigInterface camera={selectedCamera} selectedRobot={selectedAssembly} setDisableAccept={setDisableAccept} />
+                    <CameraConfigInterface
+                        camera={selectedCamera}
+                        selectedRobot={selectedAssembly}
+                        setDisableAccept={setDisableAccept}
+                    />
                 </>
             ) : (
                 <Stack gap={2}>
