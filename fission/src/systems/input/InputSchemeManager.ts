@@ -170,7 +170,10 @@ class InputSchemeManager {
 
         allSchemes.forEach(scheme => {
             if (scheme.usesGamepad) {
-                if (candidateSlot != null && (gamepadSlotsByScheme.get(scheme.schemeName)?.has(candidateSlot) ?? false)) {
+                if (
+                    candidateSlot != null &&
+                    (gamepadSlotsByScheme.get(scheme.schemeName)?.has(candidateSlot) ?? false)
+                ) {
                     result[scheme.schemeName] ??= { scheme, status: InputSchemeUseType.IN_USE }
                     return
                 }
