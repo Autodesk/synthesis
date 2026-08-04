@@ -166,7 +166,7 @@ describe("DragModeSystem Integration Tests", () => {
                 cleanup: () => {
                     physicsSystem.getBodyAssociation = originalGetBodyAssociation
                     physicsSystem.rayCast = originalRayCast
-                    physicsSystem.destroyBodyIds(bodyId)
+                    physicsSystem.destroyBodiesById(bodyId)
                     shape.Release()
                 },
             }

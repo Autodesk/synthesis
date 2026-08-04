@@ -331,7 +331,6 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(size)
 
         const body = this.createBody(shape, mass, position, rotation)
-        this._bodies.push(body.GetID())
 
         return body
     }
@@ -374,6 +373,9 @@ class PhysicsSystem extends WorldSystem {
         return body
     }
 
+    /**
+     * Only used in testing
+     */
     public addBodyToSystem(bodyId: Jolt.BodyID, shouldActivate: boolean) {
         this._joltBodyInterface.AddBody(
             bodyId,
@@ -906,6 +908,9 @@ class PhysicsSystem extends WorldSystem {
 
         const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
 
+        const newBodies = new JOLT.ArrayBodyID()
+        const newInactiveBodies = new JOLT.ArrayBodyID()
+
         const massMod = (() => {
             let assemblyMass = 0
             nonPhysicsNodes.forEach(x => {
@@ -1110,12 +1115,13 @@ class PhysicsSystem extends WorldSystem {
                 // Game pieces are allowed to sleep, but are inactive by default
                 // they are placed at their initial position by their `MirabufSceneObject`
                 // which activates them.
-                this._joltBodyInterface.AddBody(
-                    body.GetID(),
-                    rn.isGamePiece ? JOLT.EActivation_DontActivate : JOLT.EActivation_Activate
-                )
                 if (!rn.isGamePiece) body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
+                if (rn.isGamePiece) {
+                    newInactiveBodies.push_back(body.GetID())
+                } else {
+                    newBodies.push_back(body.GetID())
+                }
 
                 // Set Friction Here
                 let staticFriction = 0.0
@@ -1157,6 +1163,23 @@ class PhysicsSystem extends WorldSystem {
             // Cleanup
             JOLT.destroy(compoundShapeSettings)
         })
+
+        if (newBodies.size() > 0) {
+            const data = newBodies.data()
+            const size = newBodies.size()
+            const addState = this._joltBodyInterface.AddBodiesPrepare(data, size)
+            this._joltBodyInterface.AddBodiesFinalize(data, size, addState, JOLT.EActivation_Activate)
+        }
+        JOLT.destroy(newBodies)
+
+        if (newInactiveBodies.size() > 0) {
+            const data = newInactiveBodies.data()
+            const size = newInactiveBodies.size()
+            const addState = this._joltBodyInterface.AddBodiesPrepare(data, size)
+            this._joltBodyInterface.AddBodiesFinalize(data, size, addState, JOLT.EActivation_DontActivate)
+        }
+        JOLT.destroy(newInactiveBodies)
+
         return rnToBodies
     }
 
@@ -1368,26 +1391,37 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Destroys bodies.
+     * Destroys all given bodies and removes them from the physics system.
      *
-     * @param bodies  Bodies to destroy.
+     * @param bodies Bodies to destroy and remove.
      */
     public destroyBodies(...bodies: Jolt.Body[]) {
-        this.unregisterSphereGamePieceBodies(bodies.map(x => x.GetID()))
-        bodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x.GetID())
-            this._joltBodyInterface.DestroyBody(x.GetID())
-        })
+        this.destroyBodiesById(...bodies.map(body => body.GetID()))
     }
 
-    public destroyBodyIds(...bodies: Jolt.BodyID[]) {
+    public destroyBodiesById(...bodies: Jolt.BodyID[]) {
         this.unregisterSphereGamePieceBodies(bodies)
-        bodies.forEach(x => {
-            if (this.isBodyAdded(x)) {
-                this._joltBodyInterface.RemoveBody(x)
-                this._joltBodyInterface.DestroyBody(x)
-            }
-        })
+
+        // There shouldn't be duplicate bodies, but there have been in the past and likely will be in the future
+        // Because removing duplicates will cause a crash, it's better to be robust here and filter duplicates
+        const ids = new JOLT.ArrayBodyID()
+        ids.reserve(bodies.length)
+
+        const seen = new Set<number>()
+        bodies
+            .filter(id => this.isBodyAdded(id))
+            .map(id => [id, id.GetIndexAndSequenceNumber()] as [Jolt.BodyID, number])
+            .filter(body => !seen.has(body[1]))
+            .forEach(([id, sequenceIdx]) => {
+                ids.push_back(id)
+                seen.add(sequenceIdx)
+            })
+
+        if (ids.size() > 0) {
+            this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
+            this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
+        }
+        JOLT.destroy(ids)
     }
 
     public destroyMechanism(mech: Mechanism) {
@@ -1397,15 +1431,8 @@ class PhysicsSystem extends WorldSystem {
         mech.constraints.forEach(x => {
             this._joltPhysSystem.RemoveConstraint(x.primaryConstraint)
         })
-        this.unregisterSphereGamePieceBodies([...mech.nodeToBody.values()])
-        mech.nodeToBody.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x)
-            this._joltBodyInterface.DestroyBody(x)
-        })
-        mech.ghostBodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x)
-            this._joltBodyInterface.DestroyBody(x)
-        })
+
+        this.destroyBodiesById(...mech.nodeToBody.values(), ...mech.ghostBodies)
     }
 
     private unregisterSphereGamePieceBodies(bodies: Jolt.BodyID[]) {
@@ -1525,7 +1552,7 @@ class PhysicsSystem extends WorldSystem {
         this._constraints = []
 
         // Destroy Jolt Bodies.
-        this.destroyBodyIds(...this._bodies)
+        this.destroyBodiesById(...this._bodies)
         this._bodies = []
         this._sphereGamePieceBodies = []
 
@@ -1577,7 +1604,6 @@ class PhysicsSystem extends WorldSystem {
         }
 
         const body = this.createBody(shape.Get(), undefined, undefined, undefined)
-        this._bodies.push(body.GetID())
         body.SetIsSensor(true)
 
         if (destroy) JOLT.destroy(shapeSettings)
