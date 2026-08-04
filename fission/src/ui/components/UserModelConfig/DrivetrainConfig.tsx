@@ -3,8 +3,9 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
+import type { SubpanelProps } from "@/components/UserModelConfig/ModelConfigPanel.tsx"
 
-const WheelAssignment: React.FC = () => {
+const DrivetrainConfig: React.FC<SubpanelProps> = () => {
     const [driveReversed, setDriveReversed] = useState<boolean>(false)
 
     useEffect(() => {
@@ -27,4 +28,4 @@ const WheelAssignment: React.FC = () => {
     )
 }
 
-export default WheelAssignment
+export default DrivetrainConfig

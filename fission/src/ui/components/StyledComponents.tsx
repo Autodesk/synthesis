@@ -359,6 +359,18 @@ export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipTo
     }
 )
 
+interface TooltipButtonProps extends ButtonProps {
+    tooltip?: string
+}
+
+export const TooltipButton = React.forwardRef<HTMLButtonElement, TooltipButtonProps>(({ tooltip, ...props }, ref) => {
+    return (
+        <Tooltip title={tooltip}>
+            <MuiButton ref={ref} {...props} />
+        </Tooltip>
+    )
+})
+
 interface LabelWithTooltipProps {
     labelText: string
     tooltipText: string
