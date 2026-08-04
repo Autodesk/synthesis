@@ -1,0 +1,82 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Preferences System Global Values > Clearing preferences > default user preferences 1`] = `
+{
+  "InputSchemes": [],
+  "MultiplayerClientID": "",
+  "MultiplayerUsername": "",
+  "MuteAllSound": false,
+  "PitchSensitivity": 10,
+  "RenderProtectedZones": true,
+  "RenderSceneTags": true,
+  "RenderScoreboard": false,
+  "RenderScoringZones": true,
+  "ReportAnalytics": false,
+  "SFXVolume": 25,
+  "ScenePanSensitivity": 1,
+  "SceneRotationSensitivity": 0.5,
+  "ShowCenterOfMassIndicators": false,
+  "ShowViewCube": true,
+  "SimAutoReconnect": false,
+  "SubsystemGravity": false,
+  "TouchControls": false,
+  "UseMetric": false,
+  "ViewCubeRotationSensitivity": 0.025,
+  "YawSensitivity": 3,
+  "ZoomSensitivity": 15,
+}
+`;
+
+exports[`Preferences System Global Values > Reset to default if undefined > default user preferences 1`] = `
+{
+  "InputSchemes": [],
+  "MultiplayerClientID": "",
+  "MultiplayerUsername": "",
+  "MuteAllSound": false,
+  "PitchSensitivity": 10,
+  "RenderProtectedZones": true,
+  "RenderSceneTags": true,
+  "RenderScoreboard": false,
+  "RenderScoringZones": true,
+  "ReportAnalytics": false,
+  "SFXVolume": 25,
+  "ScenePanSensitivity": 1,
+  "SceneRotationSensitivity": 0.5,
+  "ShowCenterOfMassIndicators": false,
+  "ShowViewCube": true,
+  "SimAutoReconnect": false,
+  "SubsystemGravity": false,
+  "TouchControls": false,
+  "UseMetric": false,
+  "ViewCubeRotationSensitivity": 0.025,
+  "YawSensitivity": 3,
+  "ZoomSensitivity": 15,
+}
+`;
+
+exports[`Preferences System Global Values > Setting without saving > default user preferences 1`] = `
+{
+  "InputSchemes": [],
+  "MultiplayerClientID": "",
+  "MultiplayerUsername": "",
+  "MuteAllSound": false,
+  "PitchSensitivity": 10,
+  "RenderProtectedZones": true,
+  "RenderSceneTags": true,
+  "RenderScoreboard": false,
+  "RenderScoringZones": true,
+  "ReportAnalytics": false,
+  "SFXVolume": 25,
+  "ScenePanSensitivity": 1,
+  "SceneRotationSensitivity": 0.5,
+  "ShowCenterOfMassIndicators": false,
+  "ShowViewCube": true,
+  "SimAutoReconnect": false,
+  "SubsystemGravity": false,
+  "TouchControls": false,
+  "UseMetric": false,
+  "ViewCubeRotationSensitivity": 0.025,
+  "YawSensitivity": 3,
+  "ZoomSensitivity": 15,
+}
+`;

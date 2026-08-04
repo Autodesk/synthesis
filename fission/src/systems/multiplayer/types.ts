@@ -3,6 +3,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { MatchModeConfig } from "@/panels/configuring/MatchModeConfigPanel.tsx"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes.ts"
 import type PhysicsSystem from "../physics/PhysicsSystem"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 export interface MessageType {
     info: ClientInfo
@@ -10,10 +11,10 @@ export interface MessageType {
     collision: UpdateObjectData[] // just a comprehensive list instead
     newObject: InitObjectData
     needAssembly: AssemblyRequestData
-    deleteObject: RemoteSceneObjectId // sceneObjectKey
+    deleteObject: SceneObjectId // sceneObjectKey
     configureObject: ObjectPreferences // sceneObjectKey
-    disableObjectPhysics: RemoteSceneObjectId // sceneObjectKey
-    enableObjectPhysics: RemoteSceneObjectId // sceneObjectKey
+    disableObjectPhysics: SceneObjectId // sceneObjectKey
+    enableObjectPhysics: SceneObjectId // sceneObjectKey
     ping: PingData
     pong: PingData
     matchModeState: MatchModeStateData
@@ -21,7 +22,7 @@ export interface MessageType {
 }
 
 export interface MatchModePenalty {
-    objectId: RemoteSceneObjectId
+    objectId: SceneObjectId
     points: number
     description: string
 }
@@ -38,9 +39,9 @@ export type MessageWithTimestamp = {
 }[keyof MessageType]
 export type Message = Omit<MessageWithTimestamp, "timestamp"> & Partial<Pick<MessageWithTimestamp, "timestamp">>
 
+// biome-ignore-start lint/style/useNamingConvention: used for type safety
 export type EncodedAssembly = Uint8Array & { __: "encodedassembly" }
-export type RemoteSceneObjectId = number & { __: "remotesceneobject" | "sceneobjectkey" }
-export type LocalSceneObjectId = number & { __: "localsceneobject" | "sceneobjectkey" }
+// biome-ignore-end lint/style/useNamingConvention: used for type safety
 
 export type ClientInfo = {
     displayName: string
@@ -50,7 +51,7 @@ export type ClientInfo = {
 }
 
 export type InitObjectData = {
-    sceneObjectKey: RemoteSceneObjectId
+    sceneObjectKey: SceneObjectId
     assembly?: EncodedAssembly
     assemblyHash: string
     miraType: MiraType
@@ -68,17 +69,17 @@ export type FieldConfiguration = {
     fieldPreferences: string // FieldPreferences
 }
 export type ObjectPreferences = {
-    sceneObjectKey: RemoteSceneObjectId
+    sceneObjectKey: SceneObjectId
     objectConfigurationData: RobotConfiguration | FieldConfiguration
 }
 
 export type AssemblyRequestData = {
-    sceneObjectKey: RemoteSceneObjectId
+    sceneObjectKey: SceneObjectId
     assemblyHash: string
 }
 
 export type UpdateObjectData = {
-    sceneObjectKey: RemoteSceneObjectId
+    sceneObjectKey: SceneObjectId
     gamePiecesControlled: number[] // BodyID
     // {x, y, z, w?}
     bodies: {

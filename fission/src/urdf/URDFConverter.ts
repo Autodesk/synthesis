@@ -1,9 +1,12 @@
 import { v4 as uuidv4 } from "uuid"
 import { mirabuf } from "@/proto/mirabuf"
 import { parseGLTF } from "./GLTFParser"
+import { decimateMesh, readyMeshDecimation } from "./MeshDecimation"
 import { parseOBJ } from "./OBJParser"
 import { parseSTL, type ParsedMesh } from "./STLParser"
 import { URDF_IMPORT_TAG } from "./URDFUserData"
+import { type ProgressHandle, URDFImportProgressBar } from "@/components/ProgressNotificationData.ts"
+import { yieldToMain } from "@/util/Utility.ts"
 
 // URDF uses Z-up (ROS convention). Synthesis/Three.js uses Y-up.
 // Frame change matrix: Rx(-90°) = [[1,0,0],[0,0,1],[0,-1,0]]
@@ -501,9 +504,9 @@ function parseMesh(meshPath: string, meshFiles: Map<string, Uint8Array>): Parsed
     }
 
     const ext = meshPath.split(".").pop()?.toLowerCase()
-    if (ext === "stl") return parseSTL(data)
-    if (ext === "obj") return parseOBJ(data)
-    if (ext === "gltf") return parseGLTF(data, meshPath, meshFiles)
+    if (ext === "stl") return decimateMesh(parseSTL(data))
+    if (ext === "obj") return decimateMesh(parseOBJ(data))
+    if (ext === "gltf") return decimateMesh(parseGLTF(data, meshPath, meshFiles))
     console.warn(`[URDF] Unsupported mesh format: .${ext} (${meshPath}) — link will have no geometry`)
     return null
 }
@@ -637,6 +640,78 @@ function isCylindricalPhantom(link: URDFLink, parentJoint: URDFJoint): boolean {
     )
 }
 
+// FNV-1a over raw bytes. Buckets candidates for interning.
+// 0x811c9dc5 / 0x01000193: standard FNV-1a 32-bit offset basis / prime.
+// https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+function hashTypedArrayBytes(view: ArrayBufferView): number {
+    const bytes = new Uint8Array(view.buffer, view.byteOffset, view.byteLength)
+    let h = 0x811c9dc5
+    for (let i = 0; i < bytes.length; i++) {
+        h ^= bytes[i]
+        h = Math.imul(h, 0x01000193)
+    }
+    return h >>> 0
+}
+
+function typedArraysEqual(a: ArrayBufferView, b: ArrayBufferView): boolean {
+    if (a.byteLength !== b.byteLength) return false
+    const ab = new Uint8Array(a.buffer, a.byteOffset, a.byteLength)
+    const bb = new Uint8Array(b.buffer, b.byteOffset, b.byteLength)
+    for (let i = 0; i < ab.length; i++) if (ab[i] !== bb[i]) return false
+    return true
+}
+
+// Baked geometry bakes world-space position into vertices, so identical parts at different
+// positions produce different arrays; can't dedupe by reference alone. But some fields are
+// position-independent and safe to share across Body objects.
+class GeometryInterner {
+    private _indicesByHash = new Map<string, { source: Uint32Array; interned: number[] }[]>()
+    private _zeroUvByLength = new Map<number, Float32Array>()
+    private _vertNormByHash = new Map<string, { verts: Float32Array; normals: Float32Array }[]>()
+
+    internIndices(indices: Uint32Array): number[] {
+        const key = `${indices.length}_${hashTypedArrayBytes(indices)}`
+        const bucket = this._indicesByHash.get(key)
+        if (bucket) {
+            for (const candidate of bucket) {
+                if (typedArraysEqual(candidate.source, indices)) return candidate.interned
+            }
+        }
+
+        const interned = Array.from(indices)
+        const list = bucket ?? []
+        list.push({ source: indices, interned })
+        this._indicesByHash.set(key, list)
+        return interned
+    }
+
+    internZeroUv(vertexCount: number): Float32Array {
+        const cached = this._zeroUvByLength.get(vertexCount)
+        if (cached) return cached
+        const fresh = new Float32Array(vertexCount * 2)
+        this._zeroUvByLength.set(vertexCount, fresh)
+        return fresh
+    }
+
+    internVertsNormals(verts: Float32Array, normals: Float32Array): { verts: Float32Array; normals: Float32Array } {
+        const key = `${verts.length}_${hashTypedArrayBytes(verts)}_${hashTypedArrayBytes(normals)}`
+        const bucket = this._vertNormByHash.get(key)
+        if (bucket) {
+            for (const candidate of bucket) {
+                if (typedArraysEqual(candidate.verts, verts) && typedArraysEqual(candidate.normals, normals)) {
+                    return candidate
+                }
+            }
+        }
+
+        const entry = { verts, normals }
+        const list = bucket ?? []
+        list.push(entry)
+        this._vertNormByHash.set(key, list)
+        return entry
+    }
+}
+
 function buildLinkBody(
     link: URDFLink,
     visual: URDFVisual,
@@ -644,6 +719,7 @@ function buildLinkBody(
     meshFiles: Map<string, Uint8Array>,
     robotSpaceVisuals: boolean,
     meshCache: Map<string, ParsedMesh | null>,
+    geometryInterner: GeometryInterner,
     linkGlobalTransform?: URDFTransform
 ): mirabuf.IBody | null {
     if (!visual.visualMeshPath) return null
@@ -665,69 +741,146 @@ function buildLinkBody(
         scaled[i + 2] = -rv[i + 1] * sz
     }
     const yupNormals = toYup(inLinkFrame.normals)
-    const uv = inLinkFrame.uv.length > 0 ? inLinkFrame.uv : new Float32Array((scaled.length / 3) * 2)
+    const vertexCount = scaled.length / 3
+    const uv = inLinkFrame.uv.length > 0 ? inLinkFrame.uv : geometryInterner.internZeroUv(vertexCount)
+    const interned = geometryInterner.internVertsNormals(scaled, yupNormals)
 
-    // mirabuf.IMesh (protobuf-generated) requires plain number[]
     return {
         info: { GUID: `${link.name}_body_${index}`, name: `${link.name}_body_${index}` },
         triangleMesh: {
             mesh: {
-                verts: Array.from(scaled),
-                normals: Array.from(yupNormals),
-                uv: Array.from(uv),
-                indices: Array.from(inLinkFrame.indices),
+                verts: interned.verts as unknown as number[],
+                normals: interned.normals as unknown as number[],
+                uv: uv as unknown as number[],
+                indices: geometryInterner.internIndices(inLinkFrame.indices),
             },
         },
         appearanceOverride: visual.materialName ?? undefined,
     }
 }
 
-function buildParts(
+// Vendored parts routinely reuse the same fastener/hardware mesh dozens of times.
+// Avoid a full baked copy of each identical mesh. Reuse bype-identical body geometry
+// whereever possible.
+function linkGeometrySignature(link: URDFLink): string {
+    const visualSig = link.visuals
+        .map(
+            v =>
+                `${v.visualMeshPath ?? ""}|${v.visualMeshScale.join(",")}|${v.visualOriginXYZ.join(",")}|${v.visualOriginRPY.join(",")}|${v.materialName ?? ""}`
+        )
+        .join(";")
+    return `${link.mass}|${link.comXYZ.join(",")}|${visualSig}`
+}
+
+function resolvePartDefinition(
+    link: URDFLink,
+    globalTransform: URDFTransform | undefined,
+    meshFiles: Map<string, Uint8Array>,
+    meshCache: Map<string, ParsedMesh | null>,
+    geometryInterner: GeometryInterner,
+    definitionBySignature: Map<string, string>,
+    partDefinitions: Record<string, mirabuf.IPartDefinition>
+): string {
+    const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles, meshCache)
+    const signature = robotSpaceVisuals ? null : linkGeometrySignature(link)
+    const reusedDefinitionName = signature ? definitionBySignature.get(signature) : undefined
+    if (reusedDefinitionName) return reusedDefinitionName
+
+    const bodies = link.visuals
+        .map((visual, index) =>
+            buildLinkBody(
+                link,
+                visual,
+                index,
+                meshFiles,
+                robotSpaceVisuals,
+                meshCache,
+                geometryInterner,
+                globalTransform
+            )
+        )
+        .filter((body): body is mirabuf.IBody => body !== null)
+
+    partDefinitions[link.name] = {
+        info: { GUID: link.name, name: link.name, version: 1 },
+        physicalData: {
+            mass: link.mass,
+            com: positionToYup(link.comXYZ[0], link.comXYZ[1], link.comXYZ[2]),
+        },
+        baseTransform: { spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
+        bodies,
+    }
+
+    if (signature) definitionBySignature.set(signature, link.name)
+    return link.name
+}
+
+function buildPartInstance(
+    link: URDFLink,
+    rootLink: URDFLink,
+    parentJoint: Map<string, URDFJoint>,
+    partDefinitionReference: string
+): mirabuf.IPartInstance {
+    const pj = parentJoint.get(link.name)
+    const spatialMatrix =
+        link === rootLink
+            ? ROOT_SPATIAL_MATRIX
+            : pj
+              ? originToSpatialMatrix(pj.originXYZ, pj.originRPY)
+              : ROOT_SPATIAL_MATRIX
+
+    return {
+        info: { GUID: link.name, name: link.name, version: 1 },
+        partDefinitionReference,
+        transform: { spatialMatrix },
+        appearance: link.visuals[0]?.materialName ?? undefined,
+    }
+}
+
+async function buildParts(
     links: URDFLink[],
     rootLink: URDFLink,
     joints: URDFJoint[],
-    meshFiles: Map<string, Uint8Array>
-): { partDefinitions: Record<string, mirabuf.IPartDefinition>; partInstances: Record<string, mirabuf.IPartInstance> } {
+    meshFiles: Map<string, Uint8Array>,
+    progressHandle: ProgressHandle
+): Promise<{
+    partDefinitions: Record<string, mirabuf.IPartDefinition>
+    partInstances: Record<string, mirabuf.IPartInstance>
+}> {
     const partDefinitions: Record<string, mirabuf.IPartDefinition> = {}
     const partInstances: Record<string, mirabuf.IPartInstance> = {}
     const parentJoint = new Map<string, URDFJoint>(joints.map(j => [j.child, j]))
     const globalTransforms = buildGlobalLinkTransforms(joints, rootLink.name)
     const meshCache = new Map<string, ParsedMesh | null>()
 
+    // Maps a link's geometry signature to the link name whose PartDefinition already covers it.
+    const definitionBySignature = new Map<string, string>()
+    const geometryInterner = new GeometryInterner()
+
+    const linksPerProgressBarStep = Math.ceil(links.length / 10)
+    const progressBarIncrement = (URDFImportProgressBar.BUILD_PARTS - URDFImportProgressBar.LOAD_MESHES) / 10
+    let progress = URDFImportProgressBar.LOAD_MESHES
+    let i = 0
+
     for (const link of links) {
+        i++
+        if (i % linksPerProgressBarStep === 0) {
+            progress += progressBarIncrement
+            progressHandle.update(`Building Parts (${i}/${links.length})`, progress)
+            await yieldToMain()
+        }
+
         const globalTransform = globalTransforms.get(link.name)
-        const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(link, globalTransform, meshFiles, meshCache)
-
-        const bodies = link.visuals
-            .map((visual, index) =>
-                buildLinkBody(link, visual, index, meshFiles, robotSpaceVisuals, meshCache, globalTransform)
-            )
-            .filter((body): body is mirabuf.IBody => body !== null)
-
-        partDefinitions[link.name] = {
-            info: { GUID: link.name, name: link.name, version: 1 },
-            physicalData: {
-                mass: link.mass,
-                com: positionToYup(link.comXYZ[0], link.comXYZ[1], link.comXYZ[2]),
-            },
-            baseTransform: { spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] },
-            bodies,
-        }
-
-        const pj = parentJoint.get(link.name)
-        const spatialMatrix =
-            link === rootLink
-                ? ROOT_SPATIAL_MATRIX
-                : pj
-                  ? originToSpatialMatrix(pj.originXYZ, pj.originRPY)
-                  : ROOT_SPATIAL_MATRIX
-
-        partInstances[link.name] = {
-            info: { GUID: link.name, name: link.name, version: 1 },
-            partDefinitionReference: link.name,
-            transform: { spatialMatrix },
-            appearance: link.visuals[0]?.materialName ?? undefined,
-        }
+        const partDefinitionReference = resolvePartDefinition(
+            link,
+            globalTransform,
+            meshFiles,
+            meshCache,
+            geometryInterner,
+            definitionBySignature,
+            partDefinitions
+        )
+        partInstances[link.name] = buildPartInstance(link, rootLink, parentJoint, partDefinitionReference)
     }
 
     return { partDefinitions, partInstances }
@@ -844,20 +997,25 @@ function buildJoints(
     return { jointDefinitions, jointInstances }
 }
 
-export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>): mirabuf.Assembly {
-    const doc = new DOMParser().parseFromString(urdfText, "text/xml")
+export async function convertURDF(
+    urdfText: string,
+    meshFiles: Map<string, Uint8Array>,
+    progressHandle: ProgressHandle
+): Promise<mirabuf.Assembly> {
+    await readyMeshDecimation()
 
+    const doc = new DOMParser().parseFromString(urdfText, "text/xml")
     const parseError = doc.querySelector("parsererror")
     if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
 
     const robotName = doc.querySelector("robot")?.getAttribute("name") ?? "robot"
     const links = extractLinks(doc)
     const joints = extractJoints(doc)
+    await yieldToMain()
 
     if (links.length === 0) throw new Error("URDF contains no <link> elements")
 
     fillMissingMaterials(links)
-
     const childSet = new Set(joints.map(j => j.child))
     const rootLink = links.find(l => !childSet.has(l.name))
     if (!rootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
@@ -865,6 +1023,7 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
     // rigidGroups must be computed before physicsJoints — filtering depends on group membership.
     // Must be an array (not undefined): bandageRigidNodes calls .forEach on it directly.
     const { rigidGroups, linkToGroup } = buildRigidGroups(links, joints)
+    await yieldToMain()
 
     // Map each ungrouped link to itself so we can identify within-group joints.
     for (const link of links) {
@@ -880,16 +1039,25 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
 
     // buildParts uses original joints for transform computation — phantom links still need
     // their correct spatial matrices derived from their original parent joints.
-    const { partDefinitions, partInstances } = buildParts(links, rootLink, joints, meshFiles)
+    const { partDefinitions, partInstances } = await buildParts(links, rootLink, joints, meshFiles, progressHandle)
+    progressHandle?.update("Built Parts", URDFImportProgressBar.BUILD_PARTS)
+    await yieldToMain()
 
     const appearances = buildAppearances(links, doc)
+    await yieldToMain()
+
     const jointFrames = buildGlobalJointFrames(joints, rootLink.name)
+    await yieldToMain()
+
     const { jointDefinitions, jointInstances } = buildJoints(physicsJoints, rootLink, jointFrames)
+    await yieldToMain()
 
     // The design hierarchy must stay complete even when physics joints are filtered out.
     // MirabufParser builds _partToNodeMap by walking this tree, and rigidGroups may still
     // reference links connected by filtered fixed/loop-closure joints.
     const hierarchy = buildDesignHierarchy(joints, rootLink.name)
+    progressHandle?.update("Built design hierarchy", URDFImportProgressBar.BUILD_HIERARCHY)
+    await yieldToMain()
 
     return mirabuf.Assembly.create({
         info: { GUID: uuidv4(), name: robotName, version: 5 },
@@ -897,10 +1065,7 @@ export function convertURDF(urdfText: string, meshFiles: Map<string, Uint8Array>
         designHierarchy: hierarchy,
         data: {
             parts: { partDefinitions, partInstances, userData: { data: { [URDF_IMPORT_TAG]: "true" } } },
-            // motorDefinitions must be an object: PhysicsSystem.ts:375 indexes it before any null-check
             joints: { jointDefinitions, jointInstances, rigidGroups, motorDefinitions: {} },
-            // appearances must be an object (not undefined/null): loadMaterials calls Object.entries on it
-            // physicalMaterials must be an object (not undefined), an empty map is fine here
             materials: { appearances, physicalMaterials: {} },
         },
     })

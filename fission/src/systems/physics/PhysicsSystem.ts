@@ -15,7 +15,7 @@ import {
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { LocalSceneObjectId, Message } from "../multiplayer/types"
+import type { Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
@@ -42,6 +42,7 @@ import {
     isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
 
@@ -146,10 +147,10 @@ class PhysicsSystem extends WorldSystem {
     private _joltInterface: Jolt.JoltInterface
     private _joltPhysSystem: Jolt.PhysicsSystem
     private _joltBodyInterface: Jolt.BodyInterface
-    private _bodies: Array<Jolt.BodyID>
-    private _constraints: Array<Jolt.Constraint>
+    private _bodies: Jolt.BodyID[]
+    private _constraints: Jolt.Constraint[]
     // Sphere game-piece bodies that get the resting-stiction pass each step (see update()).
-    private _sphereGamePieceBodies: Array<Jolt.BodyID> = []
+    private _sphereGamePieceBodies: Jolt.BodyID[] = []
 
     private _physicsEventQueue: SynthesisEvent<
         "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
@@ -1045,6 +1046,7 @@ class PhysicsSystem extends WorldSystem {
 
                 let shape = shapeResult.Get()
                 let appliedSphereCollider = false
+                let massOverride: number | undefined
 
                 if (rn.isDynamic) {
                     if (rn.isGamePiece) {
@@ -1066,10 +1068,9 @@ class PhysicsSystem extends WorldSystem {
                             appliedSphereCollider = true
                         }
 
-                        const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
-                        shape.GetMassProperties().mMass = mass
+                        massOverride = totalMass == 0.0 ? undefined : Math.min(totalMass, MAX_GP_MASS)
                     } else {
-                        shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass * massMod
+                        massOverride = totalMass == 0.0 ? undefined : totalMass * massMod
                     }
                 }
 
@@ -1082,6 +1083,12 @@ class PhysicsSystem extends WorldSystem {
                     rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
                     rnLayer
                 )
+
+                if (massOverride !== undefined) {
+                    bodySettings.mOverrideMassProperties = JOLT.EOverrideMassProperties_CalculateInertia
+                    bodySettings.mMassPropertiesOverride.mMass = massOverride
+                }
+
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
                 body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
@@ -1726,7 +1733,7 @@ class PhysicsSystem extends WorldSystem {
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
                 World.multiplayerSystem
                     ?.getOwnSceneObjectIDs()
-                    .includes(this.bodyToMiraSceneObject(body)?.id as LocalSceneObjectId)) ??
+                    .includes(this.bodyToMiraSceneObject(body)?.id ?? ("" as SceneObjectId))) ??
             false
         )
     }

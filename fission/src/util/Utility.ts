@@ -93,3 +93,17 @@ export function downloadBlob(filename: string, data: BlobPart): void {
 export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
     return new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
 }
+
+/**
+ * Returns a promise that will resolve in the next event loop iteration.
+ * Useful in long, blocking functions to allow the UI to update
+ */
+export const yieldToMain = () => new Promise<void>(resolve => setTimeout(resolve, 0))
+
+export type RecursivePartial<T> = {
+    [P in keyof T]?: T[P] extends (infer U)[]
+        ? RecursivePartial<U>[]
+        : T[P] extends object | undefined
+          ? RecursivePartial<T[P]>
+          : T[P]
+}
