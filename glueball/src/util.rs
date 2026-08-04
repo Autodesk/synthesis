@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use tokio_tungstenite::tungstenite::Message;
 use uuid::Uuid;
 
-use crate::model::MessagePrefix;
+use crate::model::{MessagePrefix, ServerToClientMessage};
 
 #[macro_export]
 macro_rules! lock {
@@ -33,6 +33,10 @@ pub fn tilde_expansion(path: &mut PathBuf) -> Result<()> {
     *path = home_dir.join(suffix);
 
     Ok(())
+}
+
+pub fn server_sent_msg(message: ServerToClientMessage) -> Message {
+    serialize_and_prefix(message, MessagePrefix::Server)
 }
 
 pub fn serialize_and_prefix<M>(message: M, prefix: MessagePrefix) -> Message

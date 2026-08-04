@@ -1,6 +1,6 @@
 use crate::logging::{EventType, LogDestination, LogSender};
-use crate::model::{MessagePrefix, RoomInfo, ServerToClientMessage};
-use crate::util::serialize_and_prefix;
+use crate::model::{RoomInfo, ServerToClientMessage};
+use crate::util::server_sent_msg;
 
 use anyhow::{Result, bail};
 use rand::RngExt;
@@ -380,10 +380,9 @@ impl Room {
 
     pub fn tell_room_client_left_blocking(&self, client_id: &ClientId) {
         // Send message toa ll other clients telling them `client_id` has been kicked
-        let message = ServerToClientMessage::Kick {
+        let message = server_sent_msg(ServerToClientMessage::Kick {
             client_id: client_id.to_string(),
-        };
-        let message = serialize_and_prefix(message, MessagePrefix::Server);
+        });
 
         for tx in self.get_senders(client_id) {
             let _ = tx.blocking_send(message.clone());
@@ -440,4 +439,173 @@ pub struct RoomSnapshot {
     pub host: Option<ClientId>,
     pub locked: bool,
     pub members: Vec<(ClientId, String)>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{ClientSender, MAX_ROOM_COUNT, State, is_valid_room_id};
+    use crate::logging::LogSender;
+    use tokio::sync::mpsc;
+
+    fn log_tx() -> LogSender {
+        let (tx, _rx) = mpsc::channel(64);
+        tx
+    }
+
+    fn client_tx() -> ClientSender {
+        let (tx, _rx) = mpsc::channel(64);
+        tx
+    }
+
+    #[test]
+    fn create_room_adds_host() {
+        let mut state = State::new(log_tx());
+        state
+            .add_room_and_host("Alice".to_string(), client_tx())
+            .unwrap();
+        assert_eq!(state.room_count(), 1);
+
+        let rooms = state.list_rooms();
+        assert_eq!(rooms[0].host.as_deref(), Some("Alice"));
+        assert!(!rooms[0].locked);
+    }
+
+    #[test]
+    fn join_existing_room() {
+        let mut state = State::new(log_tx());
+        let (_, room_id) = state
+            .add_room_and_host("Alice".to_string(), client_tx())
+            .unwrap();
+
+        assert!(
+            state
+                .add_client_to_room("Bob", client_tx(), &room_id)
+                .is_some()
+        );
+        assert_eq!(state.room_count(), 1);
+    }
+
+    #[test]
+    fn join_nonexistent_room_returns_none() {
+        let mut state = State::new(log_tx());
+        assert!(
+            state
+                .add_client_to_room("Bob", client_tx(), &"ZZZZZZ".to_string())
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn join_locked_room_returns_none() {
+        let mut state = State::new(log_tx());
+        let (_, room_id) = state
+            .add_room_and_host("Alice".to_string(), client_tx())
+            .unwrap();
+        state.toggle_room_lock(&room_id);
+
+        assert!(
+            state
+                .add_client_to_room("Bob", client_tx(), &room_id)
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn last_client_leaving_closes_room() {
+        let mut state = State::new(log_tx());
+        let (client_id, _) = state
+            .add_room_and_host("Alice".to_string(), client_tx())
+            .unwrap();
+        state.remove_client(client_id);
+
+        assert_eq!(state.room_count(), 0);
+    }
+
+    #[test]
+    fn host_leaving_transfers_to_next_member() {
+        let mut state = State::new(log_tx());
+        let (host_id, room_id) = state
+            .add_room_and_host("Alice".to_string(), client_tx())
+            .unwrap();
+
+        state
+            .add_client_to_room("Bob", client_tx(), &room_id)
+            .unwrap();
+        state.remove_client(host_id);
+
+        assert_eq!(state.room_count(), 1);
+    }
+
+    #[test]
+    fn permanent_room_stays_open_when_empty() {
+        let mut state = State::new(log_tx());
+
+        let room_id = "PERM01".to_string();
+        state.new_permanent_room(room_id.clone());
+
+        let client_id = state
+            .add_client_to_room("Alice", client_tx(), &room_id)
+            .unwrap();
+        state.remove_client(client_id);
+
+        assert_eq!(state.room_count(), 1);
+    }
+
+    #[test]
+    fn list_rooms_shows_host_and_lock_status() {
+        let mut state = State::new(log_tx());
+        assert!(state.list_rooms().is_empty());
+
+        let (_, room_id) = state
+            .add_room_and_host("Alice".to_string(), client_tx())
+            .unwrap();
+        state.toggle_room_lock(&room_id);
+        let rooms = state.list_rooms();
+
+        assert_eq!(rooms.len(), 1);
+        assert_eq!(rooms[0].host.as_deref(), Some("Alice"));
+        assert!(rooms[0].locked);
+    }
+
+    #[test]
+    fn toggle_lock_flips_state() {
+        let mut state = State::new(log_tx());
+        let (_, room_id) = state
+            .add_room_and_host("Alice".to_string(), client_tx())
+            .unwrap();
+
+        assert_eq!(state.toggle_room_lock(&room_id), Some(true));
+        assert_eq!(state.toggle_room_lock(&room_id), Some(false));
+    }
+
+    #[test]
+    fn max_rooms_prevents_new_room() {
+        let mut state = State::new(log_tx());
+        for i in 0..MAX_ROOM_COUNT {
+            state
+                .add_room_and_host(format!("Client{i}"), client_tx())
+                .unwrap();
+        }
+
+        assert!(
+            state
+                .initialize_client_in_room(client_tx(), None, "overflow")
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn valid_room_id_accepts_alphanumeric_uppercase() {
+        assert!(is_valid_room_id("AZA1EA"));
+        assert!(is_valid_room_id("000000"));
+        assert!(is_valid_room_id("ZZZZZZ"));
+    }
+
+    #[test]
+    fn valid_room_id_rejects_wrong_length_or_lowercase() {
+        assert!(!is_valid_room_id("ERIC"));
+        assert!(!is_valid_room_id("ALINA"));
+        assert!(!is_valid_room_id("abc123"));
+        assert!(!is_valid_room_id(""));
+    }
 }

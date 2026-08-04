@@ -2,7 +2,7 @@ use crate::logging::{LogDestination, LogSender};
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
 use crate::room::{ClientId, ClientSender, State};
-use crate::util::{deserialize_messagepack, serialize_and_prefix, trim_uuid};
+use crate::util::{deserialize_messagepack, server_sent_msg, trim_uuid};
 use crate::{EventType, lock};
 
 use anyhow::{Result, bail};
@@ -145,11 +145,10 @@ where
                     }
                 };
 
-                let response = ServerToClientMessage::SendInfo {
+                let message = server_sent_msg(ServerToClientMessage::SendInfo {
                     room_id,
                     client_id: client_id.to_string(),
-                };
-                let message = serialize_and_prefix(response, MessagePrefix::Server);
+                });
 
                 if write.send(message).await.is_err() {
                     error_global!(logging_tx, "Failed to send back initial response");
@@ -202,12 +201,9 @@ async fn handle_room_list_request<S>(
 ) where
     S: SynthesisStream,
 {
-    let message = {
-        ServerToClientMessage::RoomList {
-            rooms: lock!(state).list_rooms(),
-        }
-    };
-    let message = serialize_and_prefix(message, MessagePrefix::Server);
+    let message = server_sent_msg(ServerToClientMessage::RoomList {
+        rooms: lock!(state).list_rooms(),
+    });
 
     write.send(message).await.ok();
 }
@@ -265,11 +261,10 @@ async fn handle_client_ping(
     let current_server_timestamp = u64::try_from(Utc::now().timestamp_millis())
         .expect("Negative timestamps (before 1970) are invalid. Please fix your system clock.");
 
-    let message = ServerToClientMessage::Pong {
+    let message = server_sent_msg(ServerToClientMessage::Pong {
         client_send_ts: timestamp,
         server_ts: current_server_timestamp,
-    };
-    let message = serialize_and_prefix(message, MessagePrefix::Server);
+    });
 
     // Scope hack to avoid holding the guard while sending a message
     // Because Mutex locks are not Send
@@ -294,10 +289,9 @@ async fn handle_client_close(
     logging_tx: LogSender,
 ) -> Result<()> {
     // Send message toa ll other clients telling them `client_id` has been kicked
-    let message = ServerToClientMessage::Kick {
+    let message = server_sent_msg(ServerToClientMessage::Kick {
         client_id: client_id.to_string(),
-    };
-    let message = serialize_and_prefix(message, MessagePrefix::Server);
+    });
 
     let senders = {
         let mut guard = lock!(state);

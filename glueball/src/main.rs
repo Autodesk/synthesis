@@ -7,6 +7,8 @@ mod model;
 mod panic;
 mod prefixed;
 mod room;
+#[cfg(test)]
+mod tests;
 mod tui;
 #[macro_use]
 mod util;
@@ -26,8 +28,6 @@ use anyhow::{Result, bail};
 use tokio::net::TcpListener;
 use tokio::sync::mpsc;
 use tokio_rustls::TlsAcceptor;
-
-const _: () = assert!(std::mem::size_of::<usize>() >= std::mem::size_of::<u64>());
 
 #[tokio::main]
 async fn main() -> Result<()> {
