@@ -2,7 +2,7 @@ import { Box, MenuItem, Stack } from "@mui/material"
 import type React from "react"
 import { SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { SCOREBOARD_MODE_LABELS } from "@/ui/helpers/ScoreboardVisibility"
+import { SCOREBOARD_GLYPH_SX, SCOREBOARD_MODE_LABELS } from "@/ui/helpers/ScoreboardVisibility"
 import { useScoreboard } from "@/ui/helpers/useScoreboard"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import MultiplayerStartModal from "@/ui/modals/MultiplayerStartModal"
@@ -10,7 +10,6 @@ import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld"
 import SplitButtonDropdown from "@/ui/components/SplitButtonDropdown"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
-import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 
 const MENU_ICON_SIZE = 18
@@ -18,15 +17,17 @@ const MENU_ICON_SIZE = 18
 const ScoreboardSplitDropdown: React.FC = () => {
     const { mode, visible, setMode, toggle } = useScoreboard()
 
+    const ScoreboardGlyph = visible ? SynthesisIcons.SCOREBOARD : SynthesisIcons.SCOREBOARD_HIDDEN
+
     return (
         <SplitButtonDropdown
             icon={
-                <Box sx={TOP_BAR_GLYPH_SX}>
-                    <SynthesisIcons.SCOREBOARD />
+                <Box sx={SCOREBOARD_GLYPH_SX[mode]}>
+                    <ScoreboardGlyph />
                 </Box>
             }
             iconTooltip={visible ? "Hide Scoreboard" : "Show Scoreboard"}
-            caretTooltip="Scoreboard visibility"
+            caretTooltip={`Scoreboard visibility: ${SCOREBOARD_MODE_LABELS[mode]}`}
             onIconClick={toggle}
         >
             {SCOREBOARD_MODES.map(option => (
