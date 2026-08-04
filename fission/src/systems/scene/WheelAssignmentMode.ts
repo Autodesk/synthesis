@@ -1,8 +1,7 @@
 import * as THREE from "three"
 import { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { applyWheelAssignments, type WheelAssignment } from "@/mirabuf/WheelJointBuilder"
+import type { WheelAssignment } from "@/mirabuf/WheelJointBuilder"
 import EventSystem from "@/systems/EventSystem.ts"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
@@ -307,37 +306,27 @@ class WheelAssignmentMode extends WorldSystem {
         return
     }
 
-    /** Mutates each affected assembly and fully rebuilds its MirabufSceneObject. */
-    public async apply(): Promise<void> {
-        if (this.pendingWheels.size === 0) return
-
-        // Clear before rebuild destroys the hovered mesh's batches.
-        this.clearHover()
-
-        const bySceneObject = new Map<MirabufSceneObject, WheelAssignment[]>()
+    /** Pending assignments grouped by scene id, for a combined apply alongside other modes. */
+    public collectPendingBySceneId(): Map<number, WheelAssignment[]> {
+        const bySceneId = new Map<number, WheelAssignment[]>()
         for (const { sceneObject, assignment } of this.pendingWheels.values()) {
-            const list = bySceneObject.get(sceneObject)
+            const list = bySceneId.get(sceneObject.id)
             if (list) list.push(assignment)
-            else bySceneObject.set(sceneObject, [assignment])
+            else bySceneId.set(sceneObject.id, [assignment])
         }
+        return bySceneId
+    }
 
-        for (const [sceneObject, assignments] of bySceneObject) {
-            const assembly = sceneObject.mirabufInstance.parser.assembly
-            applyWheelAssignments(assembly, assignments)
+    /** Post-rebuild bookkeeping: mismatch check/toast, clear pending, refresh the stale pick index. */
+    public finishApply(
+        assignmentsBySceneId: Map<number, WheelAssignment[]>,
+        rebuiltBySceneId: Map<number, MirabufSceneObject>
+    ): void {
+        let hadMismatch = false
+        for (const [sceneId, assignments] of assignmentsBySceneId) {
+            const parser = rebuiltBySceneId.get(sceneId)?.mirabufInstance.parser
+            if (!parser) continue
 
-            const sceneId = sceneObject.id
-            World.sceneRenderer.removeSceneObject(sceneId)
-
-            const rebuilt = await createMirabuf(assembly.info!.GUID!, assembly)
-            if (!rebuilt) {
-                globalAddToast("error", "Wheel Assignment", "Failed to rebuild assembly after applying wheel joints.")
-                continue
-            }
-            World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
-
-            const parser = rebuilt.mirabufInstance.parser
-
-            let hadMismatch = false
             for (const assignment of assignments) {
                 const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
                 const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
@@ -345,13 +334,13 @@ class WheelAssignmentMode extends WorldSystem {
                 if (wheelNode.id !== parentNode.id) continue
                 hadMismatch = true
             }
-
-            if (hadMismatch) {
-                globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
-            }
         }
+
+        if (hadMismatch) {
+            globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
+        }
+
         this.pendingWheels.clear()
-        globalAddToast("success", "Wheel Assignment", "Applied wheel joints and rebuilt the affected assembly.")
 
         // Rebuilt assemblies got new batches/instance ids; refresh the stale pick index.
         if (this._enabled) this.rebuildPickIndex()

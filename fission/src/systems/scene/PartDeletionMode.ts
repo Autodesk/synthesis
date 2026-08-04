@@ -1,8 +1,6 @@
 import * as THREE from "three"
 import { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { applyPartDeletions } from "@/mirabuf/PartDeletionBuilder"
 import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import World from "../World"
@@ -239,44 +237,22 @@ class PartDeletionMode extends WorldSystem {
         })
     }
 
-    /** Mutates each affected assembly and fully rebuilds its MirabufSceneObject. */
-    public async apply(): Promise<void> {
-        if (this.pendingDeletions.size === 0) return
-
-        // Clear before rebuild destroys the hovered mesh's batches.
-        this.clearHover()
-
+    /** Pending deletions grouped by scene id, for a combined apply alongside other modes. */
+    public collectPendingBySceneId(): Map<number, string[]> {
         const bySceneId = new Map<number, string[]>()
         for (const { sceneId, guid } of this.pendingDeletions.values()) {
             const list = bySceneId.get(sceneId)
             if (list) list.push(guid)
             else bySceneId.set(sceneId, [guid])
         }
+        return bySceneId
+    }
 
-        for (const [sceneId, guids] of bySceneId) {
-            // Re-resolve by id rather than trusting a cached reference: another apply() (e.g. wheel
-            // assignment) earlier in the same flow may have already rebuilt this scene object.
-            const sceneObject = World.sceneRenderer.sceneObjects.get(sceneId) as MirabufSceneObject | undefined
-            if (!sceneObject) continue
-
-            const assembly = sceneObject.mirabufInstance.parser.assembly
-            applyPartDeletions(assembly, guids)
-
-            World.sceneRenderer.removeSceneObject(sceneId)
-
-            const rebuilt = await createMirabuf(assembly.info!.GUID!, assembly)
-            if (!rebuilt) {
-                globalAddToast("error", "Delete Parts", "Failed to rebuild assembly after deleting parts.")
-                continue
-            }
-            World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
-        }
-
-        // The scene objects were rebuilt out from under the tracked highlights; nothing left to un-tint.
+    /** Post-rebuild bookkeeping: the scene objects were rebuilt out from under the tracked
+     *  highlights, so there's nothing left to un-tint -- clear silently and refresh the pick index. */
+    public finishApply(): void {
         this.pendingDeletions.clearSilently()
-        globalAddToast("success", "Delete Parts", "Deleted the selected parts and rebuilt the affected assembly.")
 
-        // Rebuilt assemblies got new batches/instance ids; refresh the stale pick index.
         if (this._enabled) this.rebuildPickIndex()
     }
 }
