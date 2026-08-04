@@ -1,7 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
-import type { FieldConfiguration, RobotConfiguration } from "@/systems/multiplayer/MultiplayerTypes.ts"
+import type { FieldConfiguration, RobotConfiguration } from "@/systems/multiplayer/MultiplayerTypes"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
@@ -1155,6 +1155,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public disablePhysics() {
         if (!this.hasPhysics()) return
+
         if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
             World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id })
         }

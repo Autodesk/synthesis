@@ -8,9 +8,9 @@ import InitialConfigPanel from "@/panels/configuring/initial-config/InitialConfi
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import { getTargetControls } from "@/systems/scene/CameraControls.ts"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/MultiplayerTypes"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import { consolePrefixer } from "console-prefixer"
-import type { EncodedAssembly, Message } from "@/systems/multiplayer/MultiplayerTypes.ts"
 
 const console = consolePrefixer({
     defaultPrefix: {

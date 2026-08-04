@@ -6,8 +6,6 @@ import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MatchMode from "../match_mode/MatchMode"
 import World from "../World"
-
-import EventSystem from "@/systems/EventSystem.ts"
 import type {
     ConfigureObjectBody,
     InfoBody,
@@ -21,13 +19,13 @@ import type {
     UpdateObjectData,
     UpdatePhysicsBodyData,
 } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
-import type { EncodedAssembly } from "@/systems/multiplayer/MultiplayerTypes.ts"
-
 import type MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import { isDefined } from "@/util/Utility"
+import EventSystem from "@/systems/EventSystem.ts"
+import { EncodedAssembly } from "./MultiplayerTypes"
 
 export const peerMessageHandlers = {
     info: handleInfoMessage,
