@@ -22,7 +22,7 @@ import { getTargetControls } from "@/systems/scene/CameraControls"
 import { hashBuffer, hexStringToUint8Array } from "@/util/Utility.ts"
 import { ProgressHandle, URDFImportProgressBar } from "@/components/ProgressNotificationData.ts"
 import { v4 as uuidV4 } from "uuid"
-import WheelAssignmentPanel from "@/components/WheelAssignmentPanel.tsx"
+import ModelConfigPanel from "@/components/UserModelConfig/ModelConfigPanel.tsx"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -117,7 +117,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     finalizeSceneObject(mirabufSceneObject)
                     if (!foundDrivetrain) {
                         await new Promise<void>(resolve => {
-                            openPanel(WheelAssignmentPanel, undefined, modal, {
+                            openPanel(ModelConfigPanel, undefined, modal, {
                                 onClose: () => {
                                     resolve()
                                 },

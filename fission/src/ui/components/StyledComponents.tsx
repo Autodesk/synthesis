@@ -1,5 +1,5 @@
 import InfoIcon from "@mui/icons-material/Info"
-import { forwardRef } from "react"
+import { forwardRef, useCallback, useState } from "react"
 import {
     Box,
     type ButtonProps,
@@ -108,6 +108,7 @@ export class SynthesisIcons {
     public static readonly MICROCHIP = FaMicrochip
     public static readonly CODE_CONNECTION = MdCode
     public static readonly NO_CODE_CONNECTION = MdCodeOff
+    public static readonly REFRESH = BiRefresh
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })
@@ -152,6 +153,23 @@ export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, 
         <MuiButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
             {children}
         </MuiButton>
+    )
+}
+
+export const ProgressButton: React.FC<
+    ButtonProps & { onClick: () => Promise<void>; refreshLabel: React.ReactNode }
+> = ({ children, refreshLabel, onClick, disabled, ...props }) => {
+    const [inProgress, setInProgress] = useState(false)
+
+    const onClickReal = useCallback(async () => {
+        setInProgress(true)
+        await onClick()
+        setInProgress(false)
+    }, [onClick])
+    return (
+        <Button onClick={onClickReal} {...props} disabled={disabled || inProgress}>
+            {inProgress ? refreshLabel : children}
+        </Button>
     )
 }
 
