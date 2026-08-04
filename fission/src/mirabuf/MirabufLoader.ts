@@ -513,7 +513,7 @@ export async function spawnCachedMira(
                 }
 
                 progressHandle.done()
-
+                World.physicsSystem.deactivateGamepieces()
                 if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                     globalOpenPanel(InitialConfigPanel, undefined)
                 }
