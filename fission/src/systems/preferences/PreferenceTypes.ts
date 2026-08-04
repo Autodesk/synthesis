@@ -151,6 +151,31 @@ export type EjectorPreferences = {
     ejectOrder: "FIFO" | "LIFO"
 }
 
+// name/id must match the robot code's UsbCamera args, key `"<name>[<id>]"`
+export type CameraPreferences = {
+    name: string
+    id: number
+    deltaTransformation: number[]
+    parentNode: string | undefined
+    fovDegrees: number
+    resolutionWidth: number
+    resolutionHeight: number
+    fps: number
+}
+
+export function defaultCameraPreferences(id: number): CameraPreferences {
+    return {
+        name: `USB Camera ${id}`,
+        id: id,
+        deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        parentNode: undefined,
+        fovDegrees: 60,
+        resolutionWidth: 640,
+        resolutionHeight: 480,
+        fps: 30,
+    }
+}
+
 /** The behavior types that can be sequenced. */
 export type BehaviorType = "Elevator" | "Arm"
 
@@ -177,6 +202,7 @@ export type RobotPreferences = {
     motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    cameras: CameraPreferences[]
     driveVelocity: number
     driveAcceleration: number
     unstickForce: number
@@ -265,6 +291,7 @@ export function defaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
             ejectOrder: "FIFO",
         },
+        cameras: [],
         driveVelocity: 0,
         driveAcceleration: 0,
         unstickForce: 8000,

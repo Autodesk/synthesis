@@ -1,5 +1,5 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
-import * as THREE from "three"
+import type * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { readJoltVec3 } from "@/util/TypeConversions"

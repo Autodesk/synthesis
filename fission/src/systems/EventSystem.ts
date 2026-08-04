@@ -40,6 +40,7 @@ interface EventDataMap {
 
     // Code Sim
     SimMapUpdateEvent: { internalUpdate: boolean }
+    RobotCamerasChangeEvent: never
 
     // Context Menu
     ContextSupplierEvent: { data: ContextData; mousePosition: [number, number] }

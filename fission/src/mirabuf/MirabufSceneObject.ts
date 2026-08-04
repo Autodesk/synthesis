@@ -13,6 +13,7 @@ import {
     defaultFieldPreferences,
     defaultFieldSpawnLocation,
     defaultRobotPreferences,
+    type CameraPreferences,
     type EjectorPreferences,
     type FieldPreferences,
     type IntakePreferences,
@@ -40,6 +41,8 @@ import { type ProgressHandle, URDFImportProgressBar } from "@/components/Progres
 import { SceneOverlayTag } from "@/components/overlays/SceneOverlayEvents.ts"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import CameraPreviewPanel from "@/ui/panels/simulation/CameraPreviewPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -54,6 +57,7 @@ import FieldMiraEditor from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
 import MirabufCachingService, { MiraType } from "./MirabufLoader"
+import RobotCameraSceneObject from "./RobotCameraSceneObject"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
@@ -111,6 +115,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _ejectables: EjectableSceneObject[] = []
     private _intakeSensor?: IntakeSensorSceneObject
+    private _cameras: RobotCameraSceneObject[] = []
     private _scoringZones: ScoringZoneSceneObject[] = []
     private _protectedZones: ProtectedZoneSceneObject[] = []
 
@@ -154,6 +159,17 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public set ejectorPreferences(val: EjectorPreferences) {
         this.robotPreferences.ejector = val
+    }
+
+    public get cameraPreferences(): CameraPreferences[] {
+        return this.robotPreferences.cameras
+    }
+    public set cameraPreferences(val: CameraPreferences[]) {
+        this.robotPreferences.cameras = val
+    }
+
+    public get cameras(): Readonly<RobotCameraSceneObject[]> {
+        return this._cameras
     }
 
     public get multiplayerOwnerName(): string | undefined {
@@ -311,6 +327,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             simLayer.setBrain(this._brain)
         }
 
+        // Intake
+        this.updateIntakeSensor()
+        this.updateCameras()
+        this.updateScoringZones()
+        this.updateProtectedZones()
+
         if (this.isOwnObject) {
             setSpotlightAssembly(this)
         }
@@ -464,6 +486,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.sceneRenderer.removeSceneObject(this._intakeSensor.id)
             this._intakeSensor = undefined
         }
+
+        this._cameras.forEach(c => World.sceneRenderer.removeSceneObject(c.id))
+        this._cameras = []
+
+        EventSystem.dispatch("RobotCamerasChangeEvent")
 
         this._scoringZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
         this._scoringZones.length = 0
@@ -641,6 +668,21 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._intakeSensor = new IntakeSensorSceneObject(this)
             World.sceneRenderer.registerSceneObject(this._intakeSensor)
         }
+    }
+
+    public updateCameras() {
+        this._cameras.forEach(c => World.sceneRenderer.removeSceneObject(c.id))
+        this._cameras = []
+
+        if (this.miraType !== MiraType.ROBOT) return
+
+        this._cameras = this.cameraPreferences?.map(camPref => {
+            const camera = new RobotCameraSceneObject(this, camPref)
+            World.sceneRenderer.registerSceneObject(camera)
+            return camera
+        })
+
+        EventSystem.dispatch("RobotCamerasChangeEvent")
     }
 
     public setIntakeVisualIndicatorVisible(visible: boolean) {
@@ -1130,6 +1172,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.updateScoringZones()
         this.updateProtectedZones()
         this.updateIntakeSensor()
+        this.updateCameras()
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {
@@ -1252,6 +1295,25 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 type: "panel",
             }
         )
+
+        if (this.brain?.brainType == "wpilib") {
+            data.items.push({
+                name: "Auto Testing",
+                screen: AutoTestPanel,
+                type: "panel",
+            })
+        }
+
+        if (this.miraType === MiraType.ROBOT && this._cameras.length > 0) {
+            data.items.push({
+                name: "Camera Preview",
+                screen: CameraPreviewPanel,
+                type: "panel",
+                customProps: {
+                    selectedAssembly: this,
+                },
+            })
+        }
 
         if (World.sceneRenderer.currentCameraControls.controlsType == "Target") {
             const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls

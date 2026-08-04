@@ -420,6 +420,11 @@ class DragModeSystem extends WorldSystem {
             return
         }
 
+        // keeping the dragged body awake so drag forces take effect even if body is sleeping
+        if (!this._dragTarget.physicsDisabled && !body.IsActive()) {
+            World.physicsSystem.activateBody(this._dragTarget.bodyId)
+        }
+
         const currentPos = body.GetPosition()
         const currentPosition = new THREE.Vector3(currentPos.GetX(), currentPos.GetY(), currentPos.GetZ())
         const currentRotation = body.GetRotation()

@@ -37,6 +37,7 @@ import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControl
 import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
 import MetadataConfigInterface from "@/panels/configuring/assembly-config/interfaces/MetadataConfigInterface.tsx"
 import { FaArrowsRotate } from "react-icons/fa6"
+import ConfigureCameraInterface from "./interfaces/cameras/ConfigureCameraInterface"
 import MoveInterface from "@/panels/configuring/assembly-config/interfaces/MoveInterface.tsx"
 import ControlsConfigInterface from "@/panels/configuring/assembly-config/interfaces/ControlsConfigInterface.tsx"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
@@ -148,6 +149,7 @@ export interface ConfigurePanelCustomProps {
 const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
     [ConfigMode.JOINTS]: ConfigureJointsInterface,
     [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface,
+    [ConfigMode.CAMERA]: ConfigureCameraInterface,
     [ConfigMode.INTAKE]: ConfigureGamepiecePickupInterface,
     [ConfigMode.CONTROLS]: ControlsConfigInterface,
     [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
@@ -177,6 +179,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const [confirmCallbacks, setConfirmCallbacks] = useState<(() => void | Promise<void>)[]>([])
     const [cancelCallbacks, setCancelCallbacks] = useState<(() => void | Promise<void>)[]>([])
     const [accessedAssemblies, setAccessedAssemblies] = useState<MirabufSceneObject[]>([])
+
+    const [disableAccept, setDisableAccept] = useState<boolean>(false)
 
     const registerCleanupFunctions: CleanupRegisterFunction = useCallback((applyFunc?, revertFunc?) => {
         if (applyFunc) {
@@ -254,10 +258,15 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     useEffect(() => {
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: hasMadeChanges ? "Revert" : "Cancel" },
+            {
+                title: "Configure Assets",
+                acceptText: "Save",
+                cancelText: hasMadeChanges ? "Revert" : "Cancel",
+                disableAccept,
+            },
             { onBeforeAccept, onCancel, onClose }
         )
-    }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges])
+    }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges, disableAccept])
 
     const modes = useMemo(() => {
         if (configurationType == "FIELDS") {
@@ -314,6 +323,25 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         pendingDeletes={pendingDeletes}
                     />
                     {selectedAssembly !== undefined && (
+                        <ConfigModeSelection
+                            modes={modes}
+                            configMode={configMode}
+                            onModeSelected={mode => {
+                                if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
+                                setConfigMode(mode)
+                            }}
+                        />
+                    )}
+                    {ConfigSubPanel != null && (
+                        <ConfigSubPanel
+                            panel={panel!}
+                            selectedAssembly={selectedAssembly!}
+                            hasMadeChanges={hasMadeChanges}
+                            setDisableAccept={setDisableAccept}
+                            registerCleanupFunction={registerCleanupFunctions}
+                        />
+                    )}
+                    {configMode === undefined && selectedAssembly !== undefined && (
                         <>
                             {!selectedAssembly.isOwnObject ? (
                                 <Label size={"sm"}>Cannot configure someone else's object</Label>
@@ -333,6 +361,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                                         <ConfigSubPanel
                                             panel={panel!}
                                             selectedAssembly={selectedAssembly!}
+                                            setDisableAccept={setDisableAccept}
                                             hasMadeChanges={hasMadeChanges}
                                             registerCleanupFunction={registerCleanupFunctions}
                                         />
