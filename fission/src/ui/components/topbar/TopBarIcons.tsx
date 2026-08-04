@@ -60,6 +60,7 @@ export const TOP_BAR_ICONS = {
     "cfg-8": "cfg-scoring-zones.svg",
     "gp-1": "gp-multiplayer.svg",
     "gp-2": "gp-match-mode.svg",
+    "gp-2-abort": "gp-match-mode-abort.svg",
 } as const
 
 export type TopBarIconName = keyof typeof TOP_BAR_ICONS
