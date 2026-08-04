@@ -25,11 +25,6 @@ import javax.tools.ToolProvider;
  * classloads the result, finds the @TeleOp LinearOpMode by reflection (same
  * discovery mechanism the real SDK uses on-device), and drives its lifecycle
  * off Fission WS connect/disconnect events.
- *
- * This is the "quick mode" compile path (see project_ftc_codesim_scope_decisions
- * memory) -- fine for SDK-only code like ExampleDozerArcadeDrive, not a substitute
- * for the Gradle-project/dependency-substitution path real multi-library
- * TeamCode projects need.
  */
 public class OpModeRunner {
     public static void main(String[] args) throws Exception {

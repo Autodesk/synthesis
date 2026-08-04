@@ -1,7 +1,5 @@
 /*
- * Settings for SyntheSimFTC -- standalone Gradle project, same convention as
- * the sibling SyntheSimJava project (each simulation library builds/publishes
- * independently rather than as part of one root multi-project build).
+ * Settings for SyntheSimFTC.
  */
 
 plugins {

@@ -1,11 +1,7 @@
 package com.qualcomm.robotcore.eventloop.opmode;
 
 /**
- * Clean-room shim of the real FTC SDK class. waitForStart/opModeIsActive/
- * idle/isStopRequested/runOpMode are verified byte-identical in the real SDK
- * across RobotCore 7.0.0 -> 11.1.0 (javap diff), so this is the most
- * load-bearing class in the shim -- it's the one piece guaranteed not to
- * drift out from under real team code.
+ * Clean-room shim of the real FTC SDK class.
  *
  * isStarted/stopRequested are package-private and driven by
  * {@link OpModeManagerBridge}, which stands in for the real SDK's internal
@@ -17,8 +13,7 @@ public abstract class LinearOpMode extends OpMode {
      * controller I/O has latency ours doesn't. Without this, an opmode with
      * no idle()/sleep of its own (e.g. ExampleDozerArcadeDrive) spins effectively
      * unthrottled and floods the Fission WS connection with a power update
-     * every microsecond -- confirmed via the OpModeRunner smoke test before
-     * this was added (1.7MB of traffic in ~5 seconds for 4 motors).
+     * every microsecond.
      */
     private static final long LOOP_PERIOD_MILLIS = 10;
 

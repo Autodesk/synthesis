@@ -1,11 +1,7 @@
 package com.qualcomm.robotcore.hardware;
 
 /**
- * Clean-room shim of the real FTC SDK class, trimmed to the fields real
- * teleop code actually reads (confirmed stable/untouched across RobotCore
- * 7.0.0 -> 11.1.0 via javap: a/b/x/y, stick axes, triggers, dpad, bumpers).
- * LED effects, edge-detection helpers (aWasPressed, etc.) and trigger
- * thresholds are newer additive SDK surface, intentionally not included yet.
+ * Clean-room shim of the real FTC SDK class.
  */
 public class Gamepad {
     public volatile float left_stick_x;

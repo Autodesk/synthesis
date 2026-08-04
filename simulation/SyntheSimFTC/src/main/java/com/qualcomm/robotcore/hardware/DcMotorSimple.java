@@ -1,8 +1,7 @@
 package com.qualcomm.robotcore.hardware;
 
 /**
- * Clean-room shim of the real FTC SDK interface (verified byte-identical
- * across RobotCore 7.0.0 -> 11.1.0 via javap).
+ * Clean-room shim of the real FTC SDK interface.
  */
 public interface DcMotorSimple extends HardwareDevice {
     enum Direction {

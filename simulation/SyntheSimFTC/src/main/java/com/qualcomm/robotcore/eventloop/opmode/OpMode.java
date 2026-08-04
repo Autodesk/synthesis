@@ -5,9 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
- * Clean-room shim of the real FTC SDK class, trimmed to LinearOpMode support
- * (no init()/loop() iterative-OpMode path yet -- not needed for the teleop
- * MVP, real signatures for those left out rather than stubbed).
+ * Clean-room shim of the real FTC SDK class.
  */
 public abstract class OpMode {
     public HardwareMap hardwareMap;

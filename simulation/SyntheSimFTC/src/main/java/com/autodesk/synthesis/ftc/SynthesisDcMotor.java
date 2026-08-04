@@ -5,15 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 
 /**
  * Backs every DcMotor/DcMotorEx/DcMotorSimple request for a given
- * hardwareMap device name -- HardwareMap caches by name only, so a file
- * requesting DcMotorEx and another requesting DcMotorSimple for the same
- * config name get the same instance, matching real FTC HardwareMap
- * semantics where the underlying device is one physical motor regardless of
- * which interface level team code asks for.
- *
- * Only implements DcMotorSimple for now (setPower/setDirection) -- that's
- * the full surface ExampleDozerArcadeDrive touches. Widen to DcMotorEx (encoder,
- * velocity, PIDF) is a separate, larger unit of work, not bundled in here.
+ * hardwareMap device name.
  */
 public class SynthesisDcMotor implements DcMotorSimple {
     private final String deviceName;
