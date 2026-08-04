@@ -1,7 +1,7 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { NoraTypes } from "../Nora"
 import type WPILibBrain from "./WPILibBrain"
-import { type SimMap, SimType, worker } from "./WPILibTypes"
+import { DEFAULT_WS_URL, type SimMap, SimType, worker } from "./WPILibTypes"
 
 export const simMaps = new Map<string, SimMap>()
 
@@ -15,6 +15,7 @@ export function setSimBrain(brain: WPILibBrain | undefined) {
     if (simBrain)
         worker.getValue().postMessage({
             command: "enable",
+            url: DEFAULT_WS_URL,
             reconnect: PreferencesSystem.getUserPreference("SimAutoReconnect"),
         })
 }

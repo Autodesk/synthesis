@@ -1,5 +1,7 @@
 import Lazy from "@/util/Lazy.ts"
-import FTCWSWorker from "./FTCWSWorker?worker"
+import WSWorker from "../shared/WSWorker?worker"
+
+export const DEFAULT_WS_URL = "ws://localhost:3301/ftcsimws"
 
 export type DeviceName = string
 export type DeviceData = Map<string, number | boolean | string>
@@ -24,4 +26,4 @@ export type WSMessage = {
 // FTCWsBridge.sendMotorPower's payload key (com.autodesk.synthesis.ftc.FTCWsBridge)
 export const DCMOTOR_POWER = "power"
 
-export const worker: Lazy<Worker> = new Lazy<Worker>(() => new FTCWSWorker())
+export const worker: Lazy<Worker> = new Lazy<Worker>(() => new WSWorker())

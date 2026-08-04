@@ -1,5 +1,5 @@
 import type FTCBrain from "./FTCBrain"
-import { type SimMap, worker } from "./FTCTypes"
+import { DEFAULT_WS_URL, type SimMap, worker } from "./FTCTypes"
 
 export const simMaps = new Map<string, SimMap>()
 
@@ -10,7 +10,7 @@ export function setSimBrain(brain: FTCBrain | undefined) {
     }
     if (simBrain) worker.getValue().postMessage({ command: "disable" })
     simBrain = brain
-    if (simBrain) worker.getValue().postMessage({ command: "enable", reconnect: true })
+    if (simBrain) worker.getValue().postMessage({ command: "enable", url: DEFAULT_WS_URL, reconnect: true })
 }
 
 export function getSimBrain() {

@@ -57,8 +57,6 @@ function updateSimMap(type: SimType, device: string, updateData: DeviceData) {
     Object.entries(updateData).forEach(([key, value]) => currentData!.set(key, value))
 }
 
-// Standard W3C Gamepad indices (Xbox-style), matching what InputSystem.getGamepadAxis/
-// isGamepadButtonPressed already assume elsewhere in the codebase.
 const GAMEPAD_AXIS = { LEFT_X: 0, LEFT_Y: 1, RIGHT_X: 2, RIGHT_Y: 3 }
 const GAMEPAD_BUTTON = {
     A: 0,
@@ -77,17 +75,6 @@ const GAMEPAD_BUTTON = {
     DPAD_RIGHT: 15,
 }
 
-/**
- * Handles DcMotorSimple power (harness -> mechanism, one-directional, no
- * encoder feedback yet) and gamepad1 axes/buttons (Fission -> harness).
- *
- * Wiring (FTC device name -> Driver) is set via addMotorWiring, called from
- * FTCCreateDeviceModal. It is session-only, not persisted through
- * assembly.simConfigData -- see project_ftc_codesim_scope_decisions memory
- * for why (there's no on-disk robot config to round-trip against in the
- * first place, real FTC hardware config never lives in the team's source
- * tree either).
- */
 class FTCBrain extends Brain {
     private _assembly: MirabufSceneObject
     private _motorWiring = new Map<string, Driver[]>()
@@ -170,12 +157,6 @@ class FTCBrain extends Brain {
         }
     }
 
-    // No physical gamepad connected -- emulate gamepad1's sticks off the keyboard so
-    // OnBotJava-style OpModes are still drivable. WASD matches the codebase's existing
-    // arcade-drive keyboard convention (see DefaultInputs.ts): W/S drive the left stick's
-    // Y axis, A/D drive the right stick's X axis. Up = -1/down = +1 mirrors the W3C
-    // Gamepad axis convention real sticks report, so OpMode code doesn't need to special-case
-    // keyboard vs. physical input.
     private readKeyboardGamepad() {
         const axis = (positiveKey: KeyCode, negativeKey: KeyCode) =>
             (InputSystem.isKeyPressed(positiveKey) ? 1 : 0) - (InputSystem.isKeyPressed(negativeKey) ? 1 : 0)

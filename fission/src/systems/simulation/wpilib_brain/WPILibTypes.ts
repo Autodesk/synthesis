@@ -1,5 +1,7 @@
 import Lazy from "@/util/Lazy.ts"
-import WPILibWSWorker from "./WPILibWSWorker?worker"
+import WSWorker from "../shared/WSWorker?worker"
+
+export const DEFAULT_WS_URL = "ws://localhost:3300/wpilibws"
 
 export type DeviceName = string
 export type DeviceData = Map<string, number | boolean | string>
@@ -55,4 +57,4 @@ export const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 export const CANENCODER_POSITION = ">position"
 export const CANENCODER_VELOCITY = ">velocity"
 
-export const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
+export const worker: Lazy<Worker> = new Lazy<Worker>(() => new WSWorker())
