@@ -278,9 +278,18 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(zero)
     }
 
+    public activateBody(bodyId: Jolt.BodyID) {
+        if (!this.isBodyAdded(bodyId)) return
+
+        this._joltBodyInterface.ActivateBody(bodyId)
+
+        this.getBody(bodyId)!.SetIsSensor(false)
+    }
+
     /**
      * Enables physics for a single body
      *
+     * @param [layer=LAYER_GENERAL_DYNAMIC] the original layer of the body
      * @param bodyId
      */
     public enablePhysicsForBody(bodyId: Jolt.BodyID, layer: number = LAYER_GENERAL_DYNAMIC) {

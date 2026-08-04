@@ -1143,7 +1143,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id })
         }
 
-        this._physicsLayerReserve = new LayerReserve()
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.physicsSystem.enablePhysicsForBody(
                 this.mechanism.getBodyByNodeId(rn.id)!,
