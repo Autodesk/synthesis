@@ -51,7 +51,7 @@ function getPartLocalVertices(object: THREE.Object3D, instanceId: number): THREE
     return points
 }
 
-interface PendingAssignment {
+export interface WheelSelection {
     sceneObject: MirabufSceneObject
     highlight: PartHighlight
     assignment: WheelAssignment
@@ -81,8 +81,9 @@ interface PickIndexEntry {
 
 /** Interaction mode: click a wheel's rim to fit a joint axis, using the assembly's grounded part as parent. */
 class WheelAssignmentMode extends WorldSystem {
+    public pendingWheels: HighlightMap = new HighlightMap(() => toKey(this._hover))
+
     private _enabled = false
-    private _pending: HighlightMap = new HighlightMap(() => toKey(this._hover))
 
     private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
     private _pointerMoveListener: ((e: PointerEvent) => void) | undefined
@@ -109,7 +110,7 @@ class WheelAssignmentMode extends WorldSystem {
     }
 
     public get pendingCount(): number {
-        return this._pending.size
+        return this.pendingWheels.size
     }
 
     public get driveReversed(): boolean {
@@ -226,17 +227,22 @@ class WheelAssignmentMode extends WorldSystem {
         }
 
         const mesh = pick.object as THREE.BatchedMesh
-        if (toKey(this._hover) === toKey({ mesh, instanceId: pick.instanceId })) return
-
-        this.clearHover()
-        mesh.setColorAt(pick.instanceId, HOVER_HIGHLIGHT_COLOR)
-        this._hover = { mesh, instanceId: pick.instanceId }
+        this.setHover({ mesh, instanceId: pick.instanceId })
     }
 
-    private clearHover(): void {
+    public setHover(hover: PartHighlight) {
+        if (toKey(this._hover) === toKey(hover)) return
+
+        this.clearHover()
+
+        hover.mesh.setColorAt(hover.instanceId, HOVER_HIGHLIGHT_COLOR)
+        this._hover = hover
+    }
+
+    public clearHover(): void {
         if (!this._hover) return
 
-        const isSelected = this._pending.hasHighlight(toKey(this._hover))
+        const isSelected = this.pendingWheels.hasHighlight(toKey(this._hover))
 
         this._hover.mesh.setColorAt(
             this._hover.instanceId,
@@ -260,8 +266,8 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        if (this._pending.hasPart(pick.guid)) {
-            this._pending.removePart(pick.guid)
+        if (this.pendingWheels.hasPart(pick.guid)) {
+            this.pendingWheels.removePart(pick.guid)
             return
         }
 
@@ -290,7 +296,7 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        this._pending.addPart(pick.guid, {
+        this.pendingWheels.addPart(pick.guid, {
             sceneObject: pick.sceneObject,
             highlight: {
                 instanceId: pick.instanceId,
@@ -303,13 +309,13 @@ class WheelAssignmentMode extends WorldSystem {
 
     /** Mutates each affected assembly and fully rebuilds its MirabufSceneObject. */
     public async apply(): Promise<void> {
-        if (this._pending.size === 0) return
+        if (this.pendingWheels.size === 0) return
 
         // Clear before rebuild destroys the hovered mesh's batches.
         this.clearHover()
 
         const bySceneObject = new Map<MirabufSceneObject, WheelAssignment[]>()
-        for (const { sceneObject, assignment } of this._pending.values()) {
+        for (const { sceneObject, assignment } of this.pendingWheels.values()) {
             const list = bySceneObject.get(sceneObject)
             if (list) list.push(assignment)
             else bySceneObject.set(sceneObject, [assignment])
@@ -344,7 +350,7 @@ class WheelAssignmentMode extends WorldSystem {
                 globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
             }
         }
-        this._pending.clear()
+        this.pendingWheels.clear()
         globalAddToast("success", "Wheel Assignment", "Applied wheel joints and rebuilt the affected assembly.")
 
         // Rebuilt assemblies got new batches/instance ids; refresh the stale pick index.
@@ -364,7 +370,7 @@ function toKey(a?: PartHighlight): HighlightKey | undefined {
 }
 
 class HighlightMap {
-    private _map: Map<string, PendingAssignment> = new Map()
+    private _map: Map<string, WheelSelection> = new Map()
     private _hoverMap: Set<HighlightKey> = new Set()
     public constructor(private _getHoverKey: () => HighlightKey | undefined) {}
 
@@ -393,7 +399,7 @@ class HighlightMap {
         return this._hoverMap.has(key)
     }
 
-    addPart(guid: string, assignment: PendingAssignment): void {
+    addPart(guid: string, assignment: WheelSelection): void {
         this._map.set(guid, assignment)
 
         const { highlight } = assignment
@@ -417,6 +423,6 @@ class HighlightMap {
     }
 
     dispatchUpdate() {
-        EventSystem.dispatch("WheelAssignmentPendingCountChanged", { count: this.size })
+        EventSystem.dispatch("WheelAssignmentSelectionChanged", { wheels: [...this._map.values()] })
     }
 }
