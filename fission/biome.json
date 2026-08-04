@@ -274,6 +274,9 @@
     },
     {
       "includes": ["src/proto/**/*", "src/systems/multiplayer/bindings/*"],
+      "formatter": {
+        "enabled": false
+      },
       "linter": {
         "enabled": false
       }
