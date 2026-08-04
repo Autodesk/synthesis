@@ -46,6 +46,7 @@ class MatchMode {
     private _startTime: number = 0
     private _timeUsed: number = 0
     private _intervalId: number | null = null
+    private _cancelHandler: (() => void) | null = null
 
     // Match Mode Config
     private _matchModeConfig: MatchModeConfig = DefaultMatchModeConfigs.fallbackValues()
@@ -72,6 +73,11 @@ class MatchMode {
         return this._matchModeConfig
     }
 
+    /**
+     * Waits for the specified duration in match time to pass, accounting for delays from prior loop cycles. Resolves when the time has elapsed, rejects if cancelled.
+     * @param duration The duration, in seconds, of the phase
+     * @param updateTimeLeft Whether to dispatch scoreboard update events
+     */
     async runForNext(duration: number, updateTimeLeft: boolean = true) {
         if (this._intervalId !== null) {
             console.warn("Timer already running")
@@ -98,7 +104,10 @@ class MatchMode {
         }, 200)
 
         const remainingTime = this._startTime + this._timeUsed - Date.now() + duration * 1000
-        return new Promise<void>(res => setTimeout(res, remainingTime)).finally(() => {
+        return new Promise((res, reject) => {
+            setTimeout(res, remainingTime)
+            this._cancelHandler = () => reject("Cancelled")
+        }).finally(() => {
             this._timeUsed += duration * 1000
             clearInterval(this._intervalId as number)
             this._intervalId = null
@@ -108,18 +117,24 @@ class MatchMode {
     autonomousModeStart() {
         void SoundPlayer.getInstance().play(MatchStart)
         this.setMatchModeType(MatchModeType.AUTONOMOUS)
-        this.runForNext(this._matchModeConfig.autonomousTime).then(() => this.autonomousModeEnd())
+        this.runForNext(this._matchModeConfig.autonomousTime)
+            .then(() => this.autonomousModeEnd())
+            .catch(() => {})
     }
 
     autonomousModeEnd() {
         void SoundPlayer.getInstance().play(MatchEnd)
-        this.runForNext(3, false).then(() => this.teleopModeStart()) // Delay between autonomous and teleop modes
+        this.runForNext(3, false) // Delay between autonomous and teleop modes
+            .then(() => this.teleopModeStart())
+            .catch(() => {})
     }
 
     teleopModeStart() {
         void SoundPlayer.getInstance().play(MatchResume)
         this.setMatchModeType(MatchModeType.TELEOP)
-        this.runForNext(this._matchModeConfig.teleopTime).then(() => this.matchEnded())
+        this.runForNext(this._matchModeConfig.teleopTime)
+            .then(() => this.matchEnded())
+            .catch(() => {})
     }
 
     endgameStart() {
@@ -142,6 +157,8 @@ class MatchMode {
             })
         }
 
+        this.reset()
+
         this._startTime = startTime
 
         if (useSpawnPositions) {
@@ -154,7 +171,9 @@ class MatchMode {
         const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
         World.analyticsSystem?.event("Match Start", matchEvent)
 
-        this.runForNext(0, false).then(() => this.autonomousModeStart())
+        this.runForNext(0, false)
+            .then(() => this.autonomousModeStart())
+            .catch(() => {})
     }
 
     matchEnded() {
@@ -166,13 +185,18 @@ class MatchMode {
         globalOpenModal(MatchResultsModal, undefined)
     }
 
-    sandboxModeStart() {
-        this.setMatchModeType(MatchModeType.SANDBOX)
+    reset() {
         clearInterval(this._intervalId as number)
         this._startTime = 0
         this._timeUsed = 0
+        this._endgame = false
+        this._cancelHandler?.()
         EventSystem.dispatch("TimeChangedEvent", { time: 0 })
         World.scoreTracker.resetScores()
+    }
+    sandboxModeStart() {
+        this.setMatchModeType(MatchModeType.SANDBOX)
+        this.reset()
     }
 
     isMatchEnabled(): boolean {
