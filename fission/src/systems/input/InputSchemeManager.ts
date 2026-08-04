@@ -117,7 +117,7 @@ class InputSchemeManager {
      * Keyboard/touch schemes remain fully in-use once bound to any robot, and still conflict on shared keys.
      *
      * @param candidateBrainIndex - The brain being configured, excluded from its own in-use calculation.
-     * @param candidateSlot - The controller slot the candidate robot would use; drives the gamepad in-use rule.
+     * @param candidateSlot - The controller slot the candidate robot would use; drives the gamepad rules.
      */
     private static computeAvailableSchemes(
         candidateBrainIndex?: number,
@@ -125,18 +125,34 @@ class InputSchemeManager {
     ): InputSchemeAvailability[] {
         const allSchemes = this.allInputSchemes
 
+        const isGamepadKey = (key: KeyDescriptor) => key != null && key.includes("gamepad")
+        const record = (map: Map<KeyDescriptor, string[]>, key: KeyDescriptor, schemeName: string) => {
+            const entry = map.get(key)
+            if (entry != null) entry.push(schemeName)
+            else map.set(key, [schemeName])
+        }
+
         const usedKeyMap = new Map<KeyDescriptor, string[]>()
+        const gamepadUsedKeyMap = new Map<KeyDescriptor, string[]>()
         // Controller slots each gamepad layout is already assigned to on other robots.
         const gamepadSlotsByScheme = new Map<string, Set<number>>()
         const result: Record<string, InputSchemeAvailability> = {}
 
         for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap) {
+            if (brainIndex === candidateBrainIndex) continue
+
             if (scheme.usesGamepad) {
-                // A robot only occupies a gamepad layout on the specific controller slot it's assigned to.
-                if (brainIndex === candidateBrainIndex) continue
+                const slot = InputSystem.getPlayerSlot(brainIndex)
                 const slots = gamepadSlotsByScheme.get(scheme.schemeName) ?? new Set<number>()
-                slots.add(InputSystem.getPlayerSlot(brainIndex))
+                slots.add(slot)
                 gamepadSlotsByScheme.set(scheme.schemeName, slots)
+
+                scheme.inputs.forEach(input =>
+                    input
+                        .keysUsed(slot)
+                        .filter(isGamepadKey)
+                        .forEach(key => record(gamepadUsedKeyMap, key, scheme.schemeName))
+                )
                 continue
             }
 
@@ -144,48 +160,54 @@ class InputSchemeManager {
                 scheme,
                 status: InputSchemeUseType.IN_USE,
             }
-            scheme?.inputs?.forEach(input => {
+            scheme?.inputs?.forEach(input =>
                 input
                     .keysUsed()
-                    .filter(key => key != null)
-                    .forEach(key => {
-                        const entry = usedKeyMap.get(key)
-                        if (entry != null) {
-                            entry.push(scheme.schemeName)
-                        } else {
-                            usedKeyMap.set(key, [scheme.schemeName])
-                        }
-                    })
-            })
+                    .filter(key => key != null && !isGamepadKey(key))
+                    .forEach(key => record(usedKeyMap, key, scheme.schemeName))
+            )
         }
 
         allSchemes.forEach(scheme => {
             if (scheme.usesGamepad) {
-                // In-use only if the controller slot we'd assign is already running this same layout.
-                const slotTaken =
-                    candidateSlot != null && (gamepadSlotsByScheme.get(scheme.schemeName)?.has(candidateSlot) ?? false)
-                result[scheme.schemeName] ??= {
-                    scheme,
-                    status: slotTaken ? InputSchemeUseType.IN_USE : InputSchemeUseType.AVAILABLE,
+                if (candidateSlot != null && (gamepadSlotsByScheme.get(scheme.schemeName)?.has(candidateSlot) ?? false)) {
+                    result[scheme.schemeName] ??= { scheme, status: InputSchemeUseType.IN_USE }
+                    return
                 }
+                const conflictingSchemes =
+                    candidateSlot == null
+                        ? []
+                        : scheme.inputs.flatMap(input =>
+                              input
+                                  .keysUsed(candidateSlot)
+                                  .filter(isGamepadKey)
+                                  .flatMap(key => gamepadUsedKeyMap.get(key) ?? [])
+                          )
+                result[scheme.schemeName] ??=
+                    conflictingSchemes.length > 0
+                        ? {
+                              scheme,
+                              status: InputSchemeUseType.CONFLICT,
+                              conflictingSchemeNames: [...new Set(conflictingSchemes)].join(", "),
+                          }
+                        : { scheme, status: InputSchemeUseType.AVAILABLE }
                 return
             }
 
             const conflictingSchemes = scheme.inputs.flatMap(input =>
-                input.keysUsed().flatMap(key => usedKeyMap.get(key) ?? [])
+                input
+                    .keysUsed()
+                    .filter(key => key != null && !isGamepadKey(key))
+                    .flatMap(key => usedKeyMap.get(key) ?? [])
             )
-            if (conflictingSchemes.length > 0) {
-                result[scheme.schemeName] ??= {
-                    scheme,
-                    status: InputSchemeUseType.CONFLICT,
-                    conflictingSchemeNames: [...new Set(conflictingSchemes)].join(", "),
-                }
-            } else {
-                result[scheme.schemeName] ??= {
-                    scheme,
-                    status: InputSchemeUseType.AVAILABLE,
-                }
-            }
+            result[scheme.schemeName] ??=
+                conflictingSchemes.length > 0
+                    ? {
+                          scheme,
+                          status: InputSchemeUseType.CONFLICT,
+                          conflictingSchemeNames: [...new Set(conflictingSchemes)].join(", "),
+                      }
+                    : { scheme, status: InputSchemeUseType.AVAILABLE }
         })
         return Object.values(result)
     }

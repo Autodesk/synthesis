@@ -207,7 +207,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                     </FormControl>
                     {/** Live readout of which controllers are supplying input, to identify them */}
                     <Label size="sm" className="text-center mt-[4pt] mx-[5%]">
-                        {`Current Controller Input: ${
+                        {`Current Input: ${
                             activeControllers.length > 0
                                 ? activeControllers.map(slot => `Controller ${slot + 1}`).join(", ")
                                 : "None"
