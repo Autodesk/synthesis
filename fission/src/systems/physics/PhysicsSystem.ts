@@ -151,6 +151,7 @@ class PhysicsSystem extends WorldSystem {
     private _constraints: Jolt.Constraint[]
     // Sphere game-piece bodies that get the resting-stiction pass each step (see update()).
     private _sphereGamePieceBodies: Jolt.BodyID[] = []
+    private _gamepiecesToFreeze: Jolt.BodyID[] = []
 
     private _physicsEventQueue: SynthesisEvent<
         "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
@@ -194,6 +195,7 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.GetPhysicsSettings().mDeterministicSimulation = false
         this._joltPhysSystem.GetPhysicsSettings().mSpeculativeContactDistance = 0.06
         this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
+        this._joltPhysSystem.GetPhysicsSettings().mTimeBeforeSleep = 0.2
 
         const ground = this.createBox(
             new THREE.Vector3(7.5, 0.1, 7.5),
@@ -285,8 +287,26 @@ class PhysicsSystem extends WorldSystem {
         this.getBody(bodyId)!.SetIsSensor(false)
     }
 
+    /**
+     * Wakes a sleeping body.
+     *
+     * @param bodyId
+     */
+    public activateBody(bodyId: Jolt.BodyID) {
+        if (!this.isBodyAdded(bodyId)) return
+
+        this._joltBodyInterface.ActivateBody(bodyId)
+    }
+
     public isBodyAdded(bodyId: Jolt.BodyID) {
         return this._joltBodyInterface.IsAdded(bodyId)
+    }
+
+    public deactivateGamepieces() {
+        this._gamepiecesToFreeze.forEach(body => {
+            this._joltBodyInterface.DeactivateBody(body)
+        })
+        this._gamepiecesToFreeze = []
     }
 
     /**
@@ -889,6 +909,7 @@ class PhysicsSystem extends WorldSystem {
         const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
 
         const newBodies = new JOLT.ArrayBodyID()
+        const newInactiveBodies = new JOLT.ArrayBodyID()
 
         const massMod = (() => {
             let assemblyMass = 0
@@ -1090,9 +1111,17 @@ class PhysicsSystem extends WorldSystem {
                 }
 
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
-                body.SetAllowSleeping(false)
+
+                // Game pieces are allowed to sleep, but are inactive by default
+                // they are placed at their initial position by their `MirabufSceneObject`
+                // which activates them.
+                if (!rn.isGamePiece) body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
-                newBodies.push_back(body.GetID())
+                if (rn.isGamePiece) {
+                    newInactiveBodies.push_back(body.GetID())
+                } else {
+                    newBodies.push_back(body.GetID())
+                }
 
                 // Set Friction Here
                 let staticFriction = 0.0
@@ -1116,6 +1145,10 @@ class PhysicsSystem extends WorldSystem {
                 this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
 
+                if (rn.isGamePiece) {
+                    this._gamepiecesToFreeze.push(body.GetID())
+                }
+
                 if (appliedSphereCollider) {
                     body.GetMotionProperties().SetAngularDamping(SPHERE_GP_ANGULAR_DAMPING)
                     body.GetMotionProperties().SetLinearDamping(SPHERE_GP_LINEAR_DAMPING)
@@ -1138,6 +1171,14 @@ class PhysicsSystem extends WorldSystem {
             this._joltBodyInterface.AddBodiesFinalize(data, size, addState, JOLT.EActivation_Activate)
         }
         JOLT.destroy(newBodies)
+
+        if (newInactiveBodies.size() > 0) {
+            const data = newInactiveBodies.data()
+            const size = newInactiveBodies.size()
+            const addState = this._joltBodyInterface.AddBodiesPrepare(data, size)
+            this._joltBodyInterface.AddBodiesFinalize(data, size, addState, JOLT.EActivation_DontActivate)
+        }
+        JOLT.destroy(newInactiveBodies)
 
         return rnToBodies
     }
@@ -1423,7 +1464,8 @@ class PhysicsSystem extends WorldSystem {
         const zero = new JOLT.Vec3(0, 0, 0)
         this._sphereGamePieceBodies.forEach(bodyId => {
             const body = this.getBody(bodyId)
-            if (!body) return
+            // Sleeping bodies are already at rest and shouldn't be touched
+            if (!body || !body.IsActive()) return
 
             const atRest =
                 body.GetLinearVelocity().Length() < SPHERE_GP_STICTION_LINEAR_SPEED &&

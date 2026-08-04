@@ -66,6 +66,11 @@ export function convertJoltVec3ToThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3, destr
     return new THREE.Vector3(x, y, z)
 }
 
+/** Copies a Jolt getter's reused static temporary to a THREE.Vector3 */
+export function readJoltVec3(v: Jolt.Vec3): THREE.Vector3 {
+    return new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ())
+}
+
 export function convertJoltQuatToThreeQuaternion(quat: Jolt.Quat, destroy: boolean = false) {
     const [x, y, z, w] = [quat.GetX(), quat.GetY(), quat.GetZ(), quat.GetW()]
     if (destroy) JOLT.destroy(quat)
