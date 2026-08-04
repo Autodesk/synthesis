@@ -4,7 +4,13 @@ import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import MixAndMatchBuild from "./MixAndMatchBuild"
-import { componentWorldBounds, componentWorldTransform, snapToFaceOffset } from "./MixAndMatchPlacement"
+import {
+    componentWorldBounds,
+    componentWorldTransform,
+    DEBUG_SNAP_TO_FACE,
+    mateFacesTransform,
+    snapToFaceOffset,
+} from "./MixAndMatchPlacement"
 import MixAndMatchScene from "./MixAndMatchScene"
 import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMatchTypes"
 
@@ -103,9 +109,73 @@ class MixAndMatchMode {
         if (!build || !scene || !component || !target || componentId === targetId) return
 
         const offset = snapToFaceOffset(componentWorldBounds(component), componentWorldBounds(target))
+        if (DEBUG_SNAP_TO_FACE) {
+            console.debug("[MixAndMatch] snapToFace", {
+                componentId,
+                targetId,
+                beforeTransform: componentWorldTransform(component).toArray(),
+                offset: offset.toArray(),
+            })
+        }
+
         scene.moveTree(componentId, new THREE.Matrix4().makeTranslation(offset.x, offset.y, offset.z))
 
         await this.commitPlacement(componentId)
+
+        if (DEBUG_SNAP_TO_FACE) {
+            console.debug("[MixAndMatch] snapToFace committed", {
+                componentId,
+                afterTransform: componentWorldTransform(component).toArray(),
+            })
+        }
+    }
+
+    /**
+     * Rotates and slides `componentId` so a face picked on it lands flush against a face picked on
+     * `targetId`, facing it. A one-shot alignment nudge: it forms no relationship between the two
+     * parts, and welding stays a separate explicit action.
+     *
+     * @param movingPoint  World-space point clicked on `componentId`.
+     * @param movingNormal World-space surface normal at `movingPoint`.
+     * @param targetPoint  World-space point clicked on `targetId`.
+     * @param targetNormal World-space surface normal at `targetPoint`.
+     */
+    public static async mateFaces(
+        componentId: ComponentId,
+        targetId: ComponentId,
+        movingPoint: THREE.Vector3,
+        movingNormal: THREE.Vector3,
+        targetPoint: THREE.Vector3,
+        targetNormal: THREE.Vector3
+    ) {
+        const [build, scene] = this.require()
+        const component = scene?.get(componentId)
+        const target = scene?.get(targetId)
+        if (!build || !scene || !component || !target || componentId === targetId) return
+
+        if (DEBUG_SNAP_TO_FACE) {
+            console.debug("[MixAndMatch] mateFaces", {
+                componentId,
+                targetId,
+                movingPoint: movingPoint.toArray(),
+                movingNormal: movingNormal.toArray(),
+                targetPoint: targetPoint.toArray(),
+                targetNormal: targetNormal.toArray(),
+                beforeTransform: componentWorldTransform(component).toArray(),
+            })
+        }
+
+        const delta = mateFacesTransform(movingPoint, movingNormal, targetPoint, targetNormal)
+        scene.moveTree(componentId, delta)
+
+        await this.commitPlacement(componentId)
+
+        if (DEBUG_SNAP_TO_FACE) {
+            console.debug("[MixAndMatch] mateFaces committed", {
+                componentId,
+                afterTransform: componentWorldTransform(component).toArray(),
+            })
+        }
     }
 
     public static async deleteComponent(componentId: ComponentId) {
