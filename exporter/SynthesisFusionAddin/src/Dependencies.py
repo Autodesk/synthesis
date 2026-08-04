@@ -84,7 +84,7 @@ def ensurePipInstalled(pythonFolder: str | os.PathLike[str], pythonExecutablePat
     # Fallback: download and run get-pip.py (curl ships with both modern Windows and macOS).
     pipInstallScriptPath = os.path.join(pythonFolder, "get-pip.py")
     if not os.path.exists(pipInstallScriptPath):
-        executeCommand("curl", "https://bootstrap.pypa.io/get-pip.py", "-o", pipInstallScriptPath)
+        executeCommand("curl", "-fsSL", "https://bootstrap.pypa.io/get-pip.py", "-o", pipInstallScriptPath)
 
     executeCommand(pythonExecutablePath, pipInstallScriptPath)
 
