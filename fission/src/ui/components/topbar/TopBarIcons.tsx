@@ -58,6 +58,7 @@ export const TOP_BAR_ICONS = {
     "cfg-6": "cfg-alliance.svg",
     "cfg-7": "cfg-protected-zones.svg",
     "cfg-8": "cfg-scoring-zones.svg",
+    "cfg-9": "cfg-camera-positions.svg",
     "gp-1": "gp-multiplayer.svg",
     "gp-2": "gp-match-mode.svg",
 } as const
