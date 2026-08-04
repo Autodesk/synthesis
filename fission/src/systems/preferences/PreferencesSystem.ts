@@ -1,3 +1,4 @@
+import { LEGACY_USER_PREFERENCE_KEYS, migrateUserPreferences, type StoredUserPreferences } from "./PreferenceMigrations"
 import {
     defaultFieldPreferences,
     defaultGraphicsPreferences,
@@ -176,21 +177,23 @@ class PreferencesSystem {
         }
 
         try {
-            const saved: Preferences & UserPreferences = JSON.parse(loadedPrefs)
+            const saved: Preferences & Record<string, unknown> = JSON.parse(loadedPrefs)
             saved[USER_PREFERENCE_KEY] ??= defaultUserPreferences()
-            const unmigratedKeys = Object.keys(defaultUserPreferences())
-                .filter(key => key in saved) // If the key is in the top level preferences, it hasn't been migrated
-                .map(key => key as UserPreference)
+            const unmigratedKeys = [...Object.keys(defaultUserPreferences()), ...LEGACY_USER_PREFERENCE_KEYS].filter(
+                key => key in saved // If the key is in the top level preferences, it hasn't been migrated
+            )
 
+            const userPreferences = saved[USER_PREFERENCE_KEY] as StoredUserPreferences
             unmigratedKeys.forEach(key => {
-                const userPreferences = saved[USER_PREFERENCE_KEY] as Record<UserPreference, unknown>
-                userPreferences[key] = saved[key]
+                userPreferences[key as keyof StoredUserPreferences] = saved[key]
 
                 delete saved[key]
             })
 
+            const valuesMigrated = migrateUserPreferences(userPreferences)
+
             this._preferences = saved
-            if (unmigratedKeys.length > 0) {
+            if (unmigratedKeys.length > 0 || valuesMigrated) {
                 this.savePreferences()
             }
         } catch (e) {

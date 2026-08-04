@@ -10,7 +10,8 @@ import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { Button, LabelWithTooltip, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { SCOREBOARD_MODE_LABELS } from "@/ui/helpers/ScoreboardVisibility"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
@@ -20,6 +21,8 @@ import {
     lowGraphicsPreferences,
     highGraphicsPreferences,
     type GraphicsPreferences,
+    SCOREBOARD_MODES,
+    type ScoreboardMode,
 } from "@/systems/preferences/PreferenceTypes"
 import { Select, MenuItem } from "@mui/material"
 
@@ -190,14 +193,24 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
                 onClick={checked => writePreference("RenderSceneTags", checked)}
                 tooltip="Name tags above robot."
             />
-            <Checkbox
-                label="Show Scoreboard"
-                checked={PreferencesSystem.getUserPreference("RenderScoreboard")}
-                onClick={checked => {
-                    writePreference("RenderScoreboard", checked)
-                    writePreference("ScoreboardPreferenceSet", true)
-                }}
-            />
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <LabelWithTooltip
+                    labelText="Scoreboard"
+                    tooltipText="Auto shows the scoreboard while you are in gameplay or a match is running."
+                />
+                <Select
+                    value={PreferencesSystem.getUserPreference("ScoreboardMode")}
+                    onChange={e => writePreference("ScoreboardMode", e.target.value as ScoreboardMode)}
+                    size="small"
+                    sx={{ width: 220, mr: 1.5 }}
+                >
+                    {SCOREBOARD_MODES.map(mode => (
+                        <MenuItem key={mode} value={mode}>
+                            {SCOREBOARD_MODE_LABELS[mode]}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </Stack>
             <Checkbox
                 label="Show Centers of Mass"
                 checked={PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")}

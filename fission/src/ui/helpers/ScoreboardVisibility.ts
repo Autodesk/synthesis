@@ -1,21 +1,15 @@
-export interface ScoreboardState {
-    preference: boolean
-    preferenceSet: boolean
-    suggestedByMode: boolean
+import type { ScoreboardMode } from "@/systems/preferences/PreferenceTypes"
+
+export const SCOREBOARD_MODE_LABELS: Record<ScoreboardMode, string> = {
+    auto: "Auto (during gameplay)",
+    on: "Always shown",
+    off: "Always hidden",
 }
 
-export interface ScoreboardToggle {
-    preference: boolean
-    announcePreference: boolean
+export function isScoreboardVisible(mode: ScoreboardMode, gameplayActive: boolean): boolean {
+    return mode === "on" || (mode === "auto" && gameplayActive)
 }
 
-export function isScoreboardVisible({ preference, preferenceSet, suggestedByMode }: ScoreboardState): boolean {
-    return preference || (!preferenceSet && suggestedByMode)
-}
-
-export function toggleScoreboard(state: ScoreboardState): ScoreboardToggle {
-    const visible = isScoreboardVisible(state)
-    const adoptingSuggestion = visible && !state.preference
-
-    return { preference: adoptingSuggestion || !visible, announcePreference: adoptingSuggestion }
+export function toggledScoreboardMode(mode: ScoreboardMode, gameplayActive: boolean): ScoreboardMode {
+    return isScoreboardVisible(mode, gameplayActive) ? "off" : "on"
 }
