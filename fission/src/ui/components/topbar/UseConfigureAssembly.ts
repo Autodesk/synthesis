@@ -31,6 +31,7 @@ export const FIELD_CONFIGURE_BUTTONS: ConfigureButton[] = [
     MOVE_CONFIGURE_BUTTON,
     { icon: { sprite: "cfg-8" }, label: "Scoring Zones", mode: ConfigMode.SCORING_ZONES },
     { icon: { sprite: "cfg-7" }, label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
+    { icon: { glyph: SynthesisIcons.CAMERA }, label: "Camera Positions", mode: ConfigMode.CAMERA_POINTS },
 ]
 
 const readSpawned = (): MirabufSceneObject[] => (World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getAll() : [])
