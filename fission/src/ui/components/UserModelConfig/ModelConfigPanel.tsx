@@ -7,11 +7,12 @@ import WheelAssignment from "@/components/UserModelConfig/WheelAssignment.tsx"
 import { Divider, Stack } from "@mui/material"
 import { Button, ProgressButton } from "@/components/StyledComponents.tsx"
 import DrivetrainConfig from "@/components/UserModelConfig/DrivetrainConfig.tsx"
+import DeleteParts from "@/components/UserModelConfig/DeleteParts.tsx"
 
 const screens: { title: string; component: React.ReactElement }[] = [
     { title: "Assign Wheels", component: <WheelAssignment /> },
     { title: "Drivetrain", component: <DrivetrainConfig /> },
-    { title: "Delete Parts", component: <></> },
+    { title: "Delete Parts", component: <DeleteParts /> },
 ]
 
 const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
@@ -50,7 +51,10 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         color="secondary"
                         refreshLabel={"Applying..."}
                         sx={{ px: 4, flexBasis: 1 }}
-                        onClick={() => World.wheelAssignmentMode.apply()}
+                        onClick={async () => {
+                            await World.wheelAssignmentMode.apply()
+                            await World.partDeletionMode.apply()
+                        }}
                     >
                         Apply
                     </ProgressButton>

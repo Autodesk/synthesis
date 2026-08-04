@@ -8,6 +8,7 @@ import type { CurrentContactData, OnContactValidateData } from "@/systems/physic
 import type TaskStatus from "@/util/TaskStatus.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { CameraPoint } from "@/systems/preferences/PreferenceTypes.ts"
+import type { PartDeletionSelection } from "@/systems/scene/PartDeletionMode.ts"
 import type { WheelSelection } from "@/systems/scene/WheelAssignmentMode.ts"
 
 interface EventDataMap {
@@ -52,6 +53,7 @@ interface EventDataMap {
     DragModeToggled: { enabled: boolean }
     WheelAssignmentSelectionChanged: { readonly wheels: WheelSelection[] }
     WheelAssignmentDriveReversedChanged: { reversed: boolean }
+    PartDeletionSelectionChanged: { readonly parts: PartDeletionSelection[] }
 
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }
