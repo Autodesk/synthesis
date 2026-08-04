@@ -8,10 +8,6 @@ export type DeviceData = Map<string, number | boolean | string>
 
 export type SimMap = Map<SimType, Map<DeviceName, DeviceData>>
 
-/**
- * DcMotorSimple power out, Gamepad axes/buttons in. Widen alongside the
- * FTC shim (Servo, CRServo, IMU, ...), not ahead of it.
- */
 export enum SimType {
     DC_MOTOR = "DcMotor",
     GAMEPAD = "Gamepad",
