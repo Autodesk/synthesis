@@ -54,9 +54,9 @@ pub async fn handle_connection<S>(
     let (tx, mut rx) = mpsc::channel::<Message>(64);
 
     // Order of messages sent from a new client to the server:
-    // 1-n. Any number of `RequestRooms` messages.
-    // n..n+1. An `InitializationMessage`, indicating whether the client wishes to create or join a room
-    // n+1..m. Any number of messages that will be forwarded to every other client in their room
+    // 1-n. Any number of `RequestRooms` messages -> server will return a list of rooms
+    // n..n+1. An `InitializationMessage`, indicating whether the client wishes to create or join a room -> server will return a room and client id
+    // n+1..m. Any number of messages that will be forwarded to every other client in their room -> server will not respond, instead forwarding
     let (mut write, mut read) = ws_stream.split();
 
     let Some(client_id) = wait_for_initialization(

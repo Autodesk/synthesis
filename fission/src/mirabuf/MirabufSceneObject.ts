@@ -684,12 +684,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public updateScoringZones() {
+        const savedPrevGPs = this._scoringZones.map(z => [...z.prevGamePieces])
+
         this.removeSceneObjects(this._scoringZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.scoringZones) return
 
         for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
             const newZone = new ScoringZoneSceneObject(this, i)
+            if (i < savedPrevGPs.length) newZone.prevGamePieces = savedPrevGPs[i]
             this._scoringZones.push(newZone)
             World.sceneRenderer.registerSceneObject(newZone)
         }
