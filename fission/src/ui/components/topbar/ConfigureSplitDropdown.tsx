@@ -6,21 +6,15 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { ConfigMode } from "@/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/panels/configuring/assembly-config/ConfigurePanel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
-import { MOVE_CONFIGURE_BUTTON, useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
+import { ConfigureIcon } from "@/ui/components/topbar/ConfigureIcon"
+import { type ConfigureButton, useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
-type ConfigEntry = { key: string; icon: React.ReactNode; label: string; mode: ConfigMode }
+const MENU_ICON_SIZE = 18
 
-const MENU_ONLY_CONFIGS: Omit<ConfigEntry, "key">[] = [
-    { label: "Metadata", mode: ConfigMode.METADATA, icon: <SynthesisIcons.METADATA /> },
-    { label: "Brain", mode: ConfigMode.BRAIN, icon: <SynthesisIcons.BRAIN /> },
+const MENU_ONLY_CONFIGS: ConfigureButton[] = [
+    { label: "Metadata", mode: ConfigMode.METADATA, icon: { glyph: SynthesisIcons.METADATA } },
+    { label: "Brain", mode: ConfigMode.BRAIN, icon: { glyph: SynthesisIcons.BRAIN } },
 ]
-
-const MenuIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <Box sx={{ width: 18, height: 18, fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {children}
-    </Box>
-)
 
 const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
     const { togglePanel } = useUIContext()
@@ -28,30 +22,7 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }
 
     const menuOnlyConfigs = isField ? MENU_ONLY_CONFIGS.filter(c => c.mode !== ConfigMode.BRAIN) : MENU_ONLY_CONFIGS
 
-    const entries: ConfigEntry[] = [
-        ...configureButtons.map(({ name, label, mode }) => ({
-            key: label,
-            icon: <TopBarIcon name={name} size={18} />,
-            label,
-            mode,
-        })),
-        {
-            key: MOVE_CONFIGURE_BUTTON.label,
-            icon: (
-                <MenuIcon>
-                    <MOVE_CONFIGURE_BUTTON.Icon />
-                </MenuIcon>
-            ),
-            label: MOVE_CONFIGURE_BUTTON.label,
-            mode: MOVE_CONFIGURE_BUTTON.mode,
-        },
-        ...menuOnlyConfigs.map(({ label, mode, icon }) => ({
-            key: label,
-            icon: <MenuIcon>{icon}</MenuIcon>,
-            label,
-            mode,
-        })),
-    ]
+    const entries: ConfigureButton[] = [...configureButtons, ...menuOnlyConfigs]
 
     return (
         <SplitButtonDropdown
@@ -64,10 +35,10 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }
             caretTooltip="Configure options"
             onIconClick={() => togglePanel(ConfigurePanel, { selectedAssembly, configurationType })}
         >
-            {entries.map(({ key, icon, label, mode }) => (
-                <MenuItem key={key} dense disabled={!selectedAssembly} onClick={() => openConfig(mode)}>
+            {entries.map(({ icon, label, mode }) => (
+                <MenuItem key={label} dense disabled={!selectedAssembly} onClick={() => openConfig(mode)}>
                     <Stack direction="row" alignItems="center" gap={1} sx={{ pointerEvents: "none" }}>
-                        {icon}
+                        <ConfigureIcon icon={icon} size={MENU_ICON_SIZE} />
                         {label}
                     </Stack>
                 </MenuItem>

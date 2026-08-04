@@ -15,7 +15,8 @@ import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
 import { AssemblySelect } from "./topbar/AssemblySelect"
-import { HUDMenuButton } from "./topbar/HUDMenuButton"
+import { ConfigureIcon } from "./topbar/ConfigureIcon"
+import { HUD_MENU_ICON_SIZE, HUDMenuButton } from "./topbar/HUDMenuButton"
 import { TOP_BAR_ICON_BUTTON_SX } from "./topbar/TopBarConfig"
 import { TopBarIcon } from "./topbar/TopBarIcons"
 import { useAssemblySelection, useConfigureAssembly } from "./topbar/UseConfigureAssembly"
@@ -140,11 +141,11 @@ const MobileHUD: React.FC = () => {
                     alignContent: "space-evenly",
                 }}
             >
-                {configureButtons.map(({ name, label, mode }) => (
+                {configureButtons.map(({ icon, label, mode }) => (
                     <HUDMenuButton
                         key={label}
                         label={label}
-                        iconName={name}
+                        icon={<ConfigureIcon icon={icon} size={HUD_MENU_ICON_SIZE} />}
                         disabled={!selectedAssembly}
                         disabledTooltip="Spawn an assembly first"
                         onClick={() => {
