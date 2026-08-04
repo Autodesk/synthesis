@@ -10,6 +10,10 @@ vi.mock("@/systems/scene/SceneRenderer.ts", () => {
     return {
         default: vi.fn().mockReturnValue({
             removeAllSceneObjects: vi.fn(),
+            mirabufSceneObjects: {
+                getAll: () => [],
+                getField: () => undefined,
+            },
         }),
     }
 })

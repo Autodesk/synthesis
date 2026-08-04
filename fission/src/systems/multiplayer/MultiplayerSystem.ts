@@ -260,6 +260,7 @@ class MultiplayerSystem {
     }
 
     registerExistingSceneObjects() {
+        console.log("testing", JSON.stringify(World.sceneRenderer.mirabufSceneObjects))
         const objects = World.sceneRenderer.mirabufSceneObjects.getAll()
         console.warn("EXISTING", objects)
         objects.forEach(object => {
