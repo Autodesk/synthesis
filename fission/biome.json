@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.6/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -26,7 +26,7 @@
       "react": "all"
     },
     "rules": {
-      "recommended": false,
+      "preset": "none",
       "complexity": {
         "noAdjacentSpacesInRegex": "error",
         "noBannedTypes": "error",
@@ -72,6 +72,7 @@
         "useAsConstAssertion": "error",
         "useComponentExportOnlyModules": "warn",
         "useImportType": "warn",
+        "useConsistentArrayType": "error",
         "useNamingConvention": {
           "level": "error",
           "options": {
@@ -238,7 +239,8 @@
         "noUnsafeNegation": "error",
         "noWith": "error",
         "useGetterReturn": "error",
-        "noTsIgnore": "error"
+        "noTsIgnore": "error",
+        "noArrayIndexKey": "warn"
       }
     },
     "includes": ["src/**/*.{ts,tsx,js,json}", "./*.{ts,js,json,html}"]
@@ -262,6 +264,11 @@
   "html": {
     "formatter": {
       "selfCloseVoidElements": "always"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "overrides": [

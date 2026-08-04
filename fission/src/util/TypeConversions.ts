@@ -16,14 +16,13 @@ export function convertThreeToJoltQuat(a: THREE.Euler | THREE.Quaternion | undef
 
 export function convertArrayToThreeMatrix4(arr: number[]) {
     // DO NOT ask me why retrieving and setting the same EXACT data is done is two DIFFERENT majors
-    // biome-ignore-start format: We would prefer to visualize this as a matrix
+    // biome-ignore format: We would prefer to visualize this as a matrix
     return new THREE.Matrix4(
         arr[0], arr[4], arr[8], arr[12],
         arr[1], arr[5], arr[9], arr[13],
         arr[2], arr[6], arr[10], arr[14],
         arr[3], arr[7], arr[11], arr[15]
     )
-    // biome-ignore-end format: We would prefer to visualize this as a matrix
 }
 
 export function convertThreeMatrix4ToArray(mat: THREE.Matrix4) {

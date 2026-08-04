@@ -15,7 +15,7 @@ import {
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { LocalSceneObjectId, Message } from "../multiplayer/types"
+import type { Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
@@ -42,6 +42,7 @@ import {
     isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
 
@@ -146,10 +147,10 @@ class PhysicsSystem extends WorldSystem {
     private _joltInterface: Jolt.JoltInterface
     private _joltPhysSystem: Jolt.PhysicsSystem
     private _joltBodyInterface: Jolt.BodyInterface
-    private _bodies: Array<Jolt.BodyID>
-    private _constraints: Array<Jolt.Constraint>
+    private _bodies: Jolt.BodyID[]
+    private _constraints: Jolt.Constraint[]
     // Sphere game-piece bodies that get the resting-stiction pass each step (see update()).
-    private _sphereGamePieceBodies: Array<Jolt.BodyID> = []
+    private _sphereGamePieceBodies: Jolt.BodyID[] = []
 
     private _physicsEventQueue: SynthesisEvent<
         "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
@@ -1717,7 +1718,7 @@ class PhysicsSystem extends WorldSystem {
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
                 World.multiplayerSystem
                     ?.getOwnSceneObjectIDs()
-                    .includes(this.bodyToMiraSceneObject(body)?.id as LocalSceneObjectId)) ??
+                    .includes(this.bodyToMiraSceneObject(body)?.id ?? ("" as SceneObjectId))) ??
             false
         )
     }
