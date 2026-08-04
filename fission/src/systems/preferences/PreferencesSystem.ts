@@ -103,8 +103,9 @@ class PreferencesSystem {
      * @param {boolean} isDefaultFavorite - Whether the asset is a built-in default favorite.
      */
     public static isFavoriteAsset(hash: string, isDefaultFavorite = false): boolean {
-        if (this.getUserPreference("FavoritedAssemblies").includes(hash)) return true
-        if (this.getUserPreference("UnfavoritedAssemblies").includes(hash)) return false
+        const status = this.getUserPreference("AssemblyFavoriteStatus")[hash]
+        if (status === "favorited") return true
+        if (status === "unfavorited") return false
         return isDefaultFavorite
     }
 
@@ -116,20 +117,16 @@ class PreferencesSystem {
      * @param {boolean} isDefaultFavorite - Whether the asset is a built-in default favorite.
      */
     public static setFavoriteAsset(hash: string, favorite: boolean, isDefaultFavorite = false) {
-        const favorited = new Set(this.getUserPreference("FavoritedAssemblies"))
-        const unfavorited = new Set(this.getUserPreference("UnfavoritedAssemblies"))
+        const status = { ...this.getUserPreference("AssemblyFavoriteStatus") }
 
-        if (favorite) {
-            favorited.add(hash)
-            unfavorited.delete(hash)
+        if (favorite === isDefaultFavorite) {
+            // Desired state already matches the default — no override needed.
+            delete status[hash]
         } else {
-            favorited.delete(hash)
-            if (isDefaultFavorite) unfavorited.add(hash)
-            else unfavorited.delete(hash)
+            status[hash] = favorite ? "favorited" : "unfavorited"
         }
 
-        this.setUserPreference("FavoritedAssemblies", [...favorited])
-        this.setUserPreference("UnfavoritedAssemblies", [...unfavorited])
+        this.setUserPreference("AssemblyFavoriteStatus", status)
         this.savePreferences()
     }
 

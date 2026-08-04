@@ -303,26 +303,22 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         [cachedInfos, manifestHashes]
     )
 
-    // Favorites are keyed by asset hash and persisted in preferences.
-    const [favorited, setFavorited] = useState<Set<string>>(
-        () => new Set(PreferencesSystem.getUserPreference("FavoritedAssemblies"))
-    )
-    const [unfavorited, setUnfavorited] = useState<Set<string>>(
-        () => new Set(PreferencesSystem.getUserPreference("UnfavoritedAssemblies"))
-    )
+    const [favoriteStatus, setFavoriteStatus] = useState(() => ({
+        ...PreferencesSystem.getUserPreference("AssemblyFavoriteStatus"),
+    }))
     const isFavorite = useCallback(
         (hash: string, defaultFavorite = false) => {
-            if (favorited.has(hash)) return true
-            if (unfavorited.has(hash)) return false
+            const status = favoriteStatus[hash]
+            if (status === "favorited") return true
+            if (status === "unfavorited") return false
             return defaultFavorite
         },
-        [favorited, unfavorited]
+        [favoriteStatus]
     )
     const toggleFavorite = useCallback(
         (hash: string, defaultFavorite = false) => {
             PreferencesSystem.setFavoriteAsset(hash, !isFavorite(hash, defaultFavorite), defaultFavorite)
-            setFavorited(new Set(PreferencesSystem.getUserPreference("FavoritedAssemblies")))
-            setUnfavorited(new Set(PreferencesSystem.getUserPreference("UnfavoritedAssemblies")))
+            setFavoriteStatus({ ...PreferencesSystem.getUserPreference("AssemblyFavoriteStatus") })
         },
         [isFavorite]
     )
@@ -335,23 +331,25 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     // saved (cached, non-default) assets belonging to the Favorites tab
     const favoriteSaved = useMemo(() => savedExtra.filter(info => isFavorite(info.hash)), [savedExtra, isFavorite])
 
+    const hasFavorites = favoriteManifest.length > 0 || favoriteSaved.length > 0
+
+    // Favorites is always the first tab, even when empty
     const years = useMemo<YearKey[]>(() => {
         const set = new Set<YearKey>()
         for (const asset of manifestAssets) set.add(yearOf(asset))
         if (savedExtra.length > 0) set.add(OTHER_YEAR)
         const numeric = [...set].filter((y): y is number => typeof y === "number").sort((a, b) => b - a)
-        const result: YearKey[] = [...numeric]
+        const result: YearKey[] = [FAVORITES_YEAR, ...numeric]
         if (set.has(OTHER_YEAR)) result.push(OTHER_YEAR)
-        if (favoriteManifest.length > 0 || favoriteSaved.length > 0) result.unshift(FAVORITES_YEAR)
         return result
-    }, [manifestAssets, savedExtra, favoriteManifest, favoriteSaved])
+    }, [manifestAssets, savedExtra])
 
     const [activeYear, setActiveYear] = useState<YearKey | undefined>(undefined)
     useEffect(() => {
-        if (years.length > 0 && (activeYear === undefined || !years.includes(activeYear))) {
-            setActiveYear(years[0])
-        }
-    }, [years, activeYear])
+        if (activeYear !== undefined && years.includes(activeYear)) return
+        const fallback = years.find(y => y !== FAVORITES_YEAR) ?? FAVORITES_YEAR
+        setActiveYear(hasFavorites ? FAVORITES_YEAR : fallback)
+    }, [years, activeYear, hasFavorites])
 
     const showFavorites = activeYear === FAVORITES_YEAR
     const showSaved = activeYear === OTHER_YEAR
@@ -480,7 +478,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                         ))}
                     </AssetCardGrid>
                 ) : (
-                    <Label size="sm">No Assets Found</Label>
+                    <Label size="sm">{showFavorites ? "No favorited assets yet!" : "No Assets Found"}</Label>
                 )}
 
                 {hasRemoteInYear && (

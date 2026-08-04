@@ -11,6 +11,8 @@ const map: ManifestFileType = { fields: [], private: [], robots: [] }
 
 const dirs = Object.keys(map) as (keyof typeof map)[]
 
+const DEFAULT_FAVORITE_NAMES = new Set<string>(["Dozer v11", "KitBot (2026)", "FRC Field 2026 v2"])
+
 /**
  * Derive the competition year from an asset's (normalized) name.
  * Prefers an explicitly parenthesized year (e.g. "KitBot (2024)"), otherwise
@@ -105,6 +107,7 @@ async function main() {
                 hash: updatedHash,
                 year: parseYear(name),
                 thumbnail: await extractThumbnail(assembly, dirname, name),
+                favorite: DEFAULT_FAVORITE_NAMES.has(name.replace(/\.mira$/, "")) || undefined,
             })
         }
     }

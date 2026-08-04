@@ -9,10 +9,6 @@ export type DefaultAssetInfo = Required<Pick<MirabufCacheInfo, "hash" | "remoteP
     defaultFavorite: boolean
 }
 
-const DEFAULT_FAVORITE_NAMES = new Set<string>(["Dozer v11", "KitBot (2026)", "FRC Field 2026 v2"])
-
-const isDefaultFavorite = (filename: string): boolean => DEFAULT_FAVORITE_NAMES.has(filename.replace(/\.mira$/, ""))
-
 class DefaultAssetLoader {
     private static _assets: DefaultAssetInfo[] = []
     private static _hasLoaded = false
@@ -45,7 +41,7 @@ class DefaultAssetLoader {
                     name: obj.filename,
                     year: obj.year,
                     thumbnail: obj.thumbnail ? `${baseUrl}/${dir}/${obj.thumbnail}` : undefined,
-                    defaultFavorite: isDefaultFavorite(obj.filename),
+                    defaultFavorite: obj.favorite ?? false,
                 })
             })
         })
