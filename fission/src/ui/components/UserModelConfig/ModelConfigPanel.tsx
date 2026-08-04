@@ -5,7 +5,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import World from "@/systems/World.ts"
 import WheelAssignment from "@/components/UserModelConfig/WheelAssignment.tsx"
 import { Divider, Stack } from "@mui/material"
-import { Button, ProgressButton } from "@/components/StyledComponents.tsx"
+import { Button, IconButton, ProgressButton, SynthesisIcons } from "@/components/StyledComponents.tsx"
 import DrivetrainConfig from "@/components/UserModelConfig/DrivetrainConfig.tsx"
 
 const screens: { title: string; component: React.ReactElement }[] = [
@@ -36,29 +36,37 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         <Stack gap={2}>
             {screenComponent}
             <Divider />
+            {screen == screens.length - 1 && (
+                <ProgressButton
+                    color="secondary"
+                    refreshLabel={"Applying..."}
+                    sx={{ px: 4, flexGrow: 2 }}
+                    onClick={() => World.wheelAssignmentMode.apply()}
+                >
+                    Apply
+                </ProgressButton>
+            )}
             <Stack direction={"row"} gap={1}>
                 <Button
+                    variant="outlined"
                     color="secondary"
-                    sx={{ px: 4, flexBasis: 1 }}
+                    size={"medium"}
+                    sx={{ px: 4 }}
                     disabled={screen == 0}
                     onClick={() => setScreen(screen - 1)}
                 >
-                    Back
+                    <SynthesisIcons.LEFT_ARROW_LARGE />
                 </Button>
-                {screen == screens.length - 1 ? (
-                    <ProgressButton
-                        color="secondary"
-                        refreshLabel={"Applying..."}
-                        sx={{ px: 4, flexBasis: 1 }}
-                        onClick={() => World.wheelAssignmentMode.apply()}
-                    >
-                        Apply
-                    </ProgressButton>
-                ) : (
-                    <Button color="secondary" sx={{ px: 4, flexBasis: 1 }} onClick={() => setScreen(screen + 1)}>
-                        Next
-                    </Button>
-                )}
+                <Button
+                    variant="outlined"
+                    size={"medium"}
+                    color="secondary"
+                    sx={{ px: 4 }}
+                    disabled={screen == screens.length - 1}
+                    onClick={() => setScreen(screen + 1)}
+                >
+                    <SynthesisIcons.RIGHT_ARROW_LARGE />
+                </Button>
             </Stack>
         </Stack>
     )
