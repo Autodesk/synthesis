@@ -49,7 +49,6 @@ interface EventDataMap {
     SetTouchControlsVisibilityEvent: boolean
 
     DragModeToggled: { enabled: boolean }
-    WheelAssignmentModeToggled: { enabled: boolean }
     WheelAssignmentPendingCountChanged: { count: number }
     WheelAssignmentDriveReversedChanged: { reversed: boolean }
 

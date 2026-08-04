@@ -283,15 +283,15 @@ function largestCollinearSet(points: Vec2[]): number[] {
     return best
 }
 
-export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
+export function detectAndTagWheels(assembly: mirabuf.Assembly): boolean {
     const jointDefs = assembly.data?.joints?.jointDefinitions as Record<string, mirabuf.joint.IJoint> | undefined
-    if (!jointDefs) return
+    if (!jointDefs) return false
 
     const candidates = extractCandidates(jointDefs)
-    if (candidates.length < 2) return
+    if (candidates.length < 2) return false
 
     const pairs = buildAxlePairs(candidates)
-    if (pairs.length === 0) return
+    if (pairs.length === 0) return false
 
     const groups = groupByDirection(pairs)
 
@@ -308,7 +308,7 @@ export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
 
     if (selected.length < 2) {
         console.error("No drivetrain found. Wheels will not be auto-assigned")
-        return
+        return false
     }
 
     for (const idx of selected) {
@@ -321,4 +321,5 @@ export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
             jDef.userData.data["wheelType"] = "0"
         }
     }
+    return true
 }

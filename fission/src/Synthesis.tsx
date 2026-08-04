@@ -89,7 +89,7 @@ const Synthesis = () => {
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
                             <DragModeIndicator />
-                            <WheelAssignmentDebugPanel />
+                            {/*<WheelAssignmentDebugPanel />*/}
                             <PortraitOverlay />
 
                             {!consentPopupDisable && (

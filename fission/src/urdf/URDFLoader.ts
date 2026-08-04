@@ -98,7 +98,7 @@ export async function loadURDF(
     buffer: ArrayBuffer,
     filename: string,
     progressHandle: ProgressHandle
-): Promise<mirabuf.Assembly> {
+): Promise<{ assembly: mirabuf.Assembly; foundDrivetrain: boolean }> {
     const ext = filename.split(".").pop()?.toLowerCase()
 
     if (ext === "urdf") {
@@ -121,10 +121,9 @@ export async function loadURDF(
         const assembly = await convertURDF(urdfText, meshFiles, progressHandle)
         await yieldToMain()
 
-        detectAndTagWheels(assembly)
+        const foundDrivetrain = detectAndTagWheels(assembly)
         applyConservativeURDFImport(assembly)
-
-        return assembly
+        return { assembly, foundDrivetrain }
     }
 
     throw new Error(`Unsupported file extension: .${ext ?? "unknown"}`)

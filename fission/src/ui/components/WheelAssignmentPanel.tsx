@@ -1,17 +1,18 @@
 import { Button, Stack } from "@mui/material"
-import { useEffect, useState } from "react"
+import type React from "react"
+import { useEffect, useId, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
-import Label from "./Label"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
+import type { PanelImplProps } from "@/components/Panel.tsx"
 
-/** Throwaway dev-only panel for testing manual wheel-joint placement. */
-const WheelAssignmentDebugPanel: React.FC = () => {
+const WheelAssignmentPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [enabled, setEnabled] = useState<boolean>(false)
     const [pendingCount, setPendingCount] = useState<number>(0)
     const [driveReversed, setDriveReversed] = useState<boolean>(false)
+    const { configureScreen } = useUIContext()
 
     useEffect(() => {
-        const unsubToggle = EventSystem.listen("WheelAssignmentModeToggled", ({ enabled }) => setEnabled(enabled))
         const unsubCount = EventSystem.listen("WheelAssignmentPendingCountChanged", ({ count }) =>
             setPendingCount(count)
         )
@@ -19,29 +20,34 @@ const WheelAssignmentDebugPanel: React.FC = () => {
             setDriveReversed(reversed)
         )
         return () => {
-            unsubToggle()
             unsubCount()
             unsubReversed()
         }
     }, [])
 
-    if (!import.meta.env.DEV) return null
+    const pauseHandle = useId()
+    useEffect(() => {
+        World.physicsSystem.holdPause(pauseHandle)
+        return () => {
+            World.physicsSystem.releasePause(pauseHandle)
+        }
+    }, [pauseHandle])
+
+    useEffect(() => {
+        World.wheelAssignmentMode.enabled = enabled
+    }, [enabled])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Assign Wheels", hideCancel: true, hideAccept: true }, {})
+    }, [configureScreen, panel])
 
     return (
-        <Stack
-            className="select-none absolute right-1 bottom-1 py-2 px-4 rounded-lg gap-2"
-            direction="column"
-            sx={{ bgcolor: "background.paper", boxShadow: 6 }}
-        >
-            <Label size="sm" color="text.primary">
-                Wheel Assignment (debug)
-            </Label>
+        <Stack gap={2} direction="column">
             <Stack direction="row" gap={1}>
                 <Button
-                    size="small"
                     variant={enabled ? "contained" : "outlined"}
                     onClick={() => {
-                        World.wheelAssignmentMode.enabled = !World.wheelAssignmentMode.enabled
+                        setEnabled(e => !e)
                     }}
                 >
                     {enabled ? "Stop Picking" : "Start Picking"}
@@ -70,4 +76,4 @@ const WheelAssignmentDebugPanel: React.FC = () => {
     )
 }
 
-export default WheelAssignmentDebugPanel
+export default WheelAssignmentPanel
