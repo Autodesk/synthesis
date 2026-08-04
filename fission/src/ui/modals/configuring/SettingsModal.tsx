@@ -242,7 +242,7 @@ const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
         return "low"
     }
 
-    const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
+    const presets: { key: GraphicsPreset; prefs: GraphicsPreferences }[] = [
         { key: "medium", prefs: mediumGraphicsPreferences() },
         { key: "high", prefs: highGraphicsPreferences() },
     ]

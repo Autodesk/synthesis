@@ -333,8 +333,8 @@ function castRay(
     tris: number[],
     verts: Float32Array,
     indices: Uint32Array
-): Array<[number, number]> {
-    const hits: Array<[number, number]> = []
+): [number, number][] {
+    const hits: [number, number][] = []
     for (const t of tris) {
         const a = indices[t * 3] * 3
         const b = indices[t * 3 + 1] * 3
@@ -369,7 +369,7 @@ function castRay(
 // A ray through a solid should alternate outside/inside/outside as it crosses the surface, so the
 // running enter/exit tally should stay within {0, 1} and return to 0. Anything else means the
 // surface crosses itself along this ray
-function isRayInconsistent(hits: Array<[number, number]>): boolean {
+function isRayInconsistent(hits: [number, number][]): boolean {
     hits.sort((x, y) => x[0] - y[0])
     let inside = 0
     for (const [, direction] of hits) {
