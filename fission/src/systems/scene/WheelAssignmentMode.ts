@@ -243,26 +243,28 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        this.handleWheelPick(interaction.position)
+        const claimedInteraction = this.handleWheelPick(interaction.position)
+        if (!claimedInteraction) {
+            this._originalInteractionStart?.(interaction)
+        }
     }
 
-    private handleWheelPick(mousePos: [number, number]): void {
+    private handleWheelPick(mousePos: [number, number]): boolean {
         const pick = this.pickPart(mousePos)
         if (!pick) {
-            globalAddToast("warning", "Wheel Assignment", "Click directly on a part's mesh.")
-            return
+            return false
         }
 
         const points = getPartLocalVertices(pick.object, pick.instanceId)
         if (!points || points.length === 0) {
             globalAddToast("warning", "Wheel Assignment", "Couldn't read this part's geometry.")
-            return
+            return true
         }
 
         const localAxisFit = computeWheelAxisFromCircleFit(points) ?? computeWheelAxisFromAABB(points)
         if (!localAxisFit) {
             globalAddToast("warning", "Wheel Assignment", "Couldn't derive a wheel axis from this part's geometry.")
-            return
+            return true
         }
 
         // Assembly-space transform, not the live scene matrix (which bakes in the physics body's world transform).
@@ -275,7 +277,7 @@ class WheelAssignmentMode extends WorldSystem {
         const parentPartGuid = groundedInstance.parts!.nodes!.at(0)!.value!
         if (parentPartGuid === pick.guid) {
             globalAddToast("warning", "Wheel Assignment", "This part is the assembly's grounded/root part.")
-            return
+            return true
         }
 
         this._pending.push({
@@ -289,6 +291,7 @@ class WheelAssignmentMode extends WorldSystem {
             "Wheel Assignment",
             `Wheel staged (${this._pending.length} pending). Pick the next wheel, or Apply.`
         )
+        return true
     }
 
     /** Mutates each affected assembly and fully rebuilds its MirabufSceneObject. */
