@@ -9,13 +9,14 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import type { ConfigurationType } from "../ConfigTypes"
 import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
 import EventSystem from "@/systems/EventSystem.ts"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 interface AssemblySelectionProps {
     configurationType: ConfigurationType
     onAssemblySelected: (assembly?: MirabufSceneObject) => void
     selectedAssembly?: MirabufSceneObject
     onStageDelete: (opt: SelectMenuOption) => void
-    pendingDeletes: number[]
+    pendingDeletes: SceneObjectId[]
 }
 
 export class AssemblySelectionOption extends SelectMenuOption {
