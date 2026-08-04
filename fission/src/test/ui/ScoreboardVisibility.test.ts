@@ -1,69 +1,59 @@
 import { describe, expect, test } from "vitest"
-import { isScoreboardVisible, type ScoreboardState, toggleScoreboard } from "@/ui/helpers/ScoreboardVisibility"
+import { SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
+import { isScoreboardVisible, SCOREBOARD_MODE_LABELS, toggledScoreboardMode } from "@/ui/helpers/ScoreboardVisibility"
 
-const UNTOUCHED: ScoreboardState = { preference: false, preferenceSet: false, suggestedByMode: false }
-
-const apply = (state: ScoreboardState): ScoreboardState => ({
-    ...state,
-    preference: toggleScoreboard(state).preference,
-    preferenceSet: true,
-})
+const GAMEPLAY_STATES = [false, true]
 
 describe("isScoreboardVisible", () => {
-    test("stays hidden outside gameplay until the user asks for it", () => {
-        expect(isScoreboardVisible(UNTOUCHED)).toBe(false)
-        expect(isScoreboardVisible({ ...UNTOUCHED, preference: true })).toBe(true)
+    test("auto follows gameplay", () => {
+        expect(isScoreboardVisible("auto", true)).toBe(true)
+        expect(isScoreboardVisible("auto", false)).toBe(false)
     })
 
-    test("shows during gameplay and match mode for a user who has never chosen", () => {
-        expect(isScoreboardVisible({ ...UNTOUCHED, suggestedByMode: true })).toBe(true)
-    })
-
-    test("lets an explicit choice override what the mode suggests", () => {
-        expect(isScoreboardVisible({ preference: false, preferenceSet: true, suggestedByMode: true })).toBe(false)
-        expect(isScoreboardVisible({ preference: true, preferenceSet: true, suggestedByMode: false })).toBe(true)
+    test("on and off ignore gameplay", () => {
+        for (const gameplayActive of GAMEPLAY_STATES) {
+            expect(isScoreboardVisible("on", gameplayActive)).toBe(true)
+            expect(isScoreboardVisible("off", gameplayActive)).toBe(false)
+        }
     })
 })
 
-describe("toggleScoreboard", () => {
-    test("the first press in gameplay keeps it visible and announces the saved preference", () => {
-        const gameplay = { ...UNTOUCHED, suggestedByMode: true }
-        expect(isScoreboardVisible(gameplay)).toBe(true)
+describe("toggledScoreboardMode", () => {
+    test("pins the scoreboard to the opposite of what is on screen", () => {
+        for (const mode of SCOREBOARD_MODES) {
+            for (const gameplayActive of GAMEPLAY_STATES) {
+                const toggled = toggledScoreboardMode(mode, gameplayActive)
 
-        const result = toggleScoreboard(gameplay)
-
-        expect(result).toEqual({ preference: true, announcePreference: true })
-        expect(isScoreboardVisible(apply(gameplay))).toBe(true)
-    })
-
-    test("presses after that flip visibility without announcing anything", () => {
-        let state = apply({ ...UNTOUCHED, suggestedByMode: true })
-
-        expect(toggleScoreboard(state).announcePreference).toBe(false)
-        state = apply(state)
-        expect(isScoreboardVisible(state)).toBe(false)
-
-        expect(toggleScoreboard(state).announcePreference).toBe(false)
-        state = apply(state)
-        expect(isScoreboardVisible(state)).toBe(true)
-    })
-
-    test("never announces when preference and visibility already agree", () => {
-        for (const preference of [false, true]) {
-            for (const suggestedByMode of [false, true]) {
-                const state = { preference, preferenceSet: true, suggestedByMode }
-                expect(toggleScoreboard(state).announcePreference).toBe(false)
-                expect(isScoreboardVisible(apply(state))).toBe(!preference)
+                expect(toggled).not.toBe("auto")
+                expect(isScoreboardVisible(toggled, gameplayActive)).toBe(!isScoreboardVisible(mode, gameplayActive))
             }
         }
     })
 
-    test("a choice made in gameplay survives a reload back into gameplay", () => {
-        const hidden = apply(apply({ ...UNTOUCHED, suggestedByMode: true }))
-        expect(hidden.preference).toBe(false)
+    test("a choice made in gameplay survives leaving and returning to it", () => {
+        const hidden = toggledScoreboardMode("auto", true)
 
-        const reloaded: ScoreboardState = { ...hidden, suggestedByMode: true }
+        expect(isScoreboardVisible(hidden, false)).toBe(false)
+        expect(isScoreboardVisible(hidden, true)).toBe(false)
+    })
 
-        expect(isScoreboardVisible(reloaded)).toBe(false)
+    test("toggling twice returns to the starting visibility", () => {
+        for (const mode of SCOREBOARD_MODES) {
+            for (const gameplayActive of GAMEPLAY_STATES) {
+                const once = toggledScoreboardMode(mode, gameplayActive)
+                const twice = toggledScoreboardMode(once, gameplayActive)
+
+                expect(isScoreboardVisible(twice, gameplayActive)).toBe(isScoreboardVisible(mode, gameplayActive))
+            }
+        }
+    })
+})
+
+describe("SCOREBOARD_MODE_LABELS", () => {
+    test("every mode is labeled distinctly", () => {
+        const labels = SCOREBOARD_MODES.map(mode => SCOREBOARD_MODE_LABELS[mode])
+
+        expect(labels.filter(label => label.length > 0)).toHaveLength(SCOREBOARD_MODES.length)
+        expect(new Set(labels).size).toBe(SCOREBOARD_MODES.length)
     })
 })

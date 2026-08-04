@@ -22,21 +22,25 @@ function captureUserPreferences(): UserPreferences {
     return Object.fromEntries(keys.map(key => [key, PreferencesSystem.getUserPreference(key)])) as UserPreferences
 }
 
+function readSavedUserPreferences(): Record<string, unknown> {
+    return JSON.parse(window.localStorage.getItem("Preferences") ?? "{}").User ?? {}
+}
+
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
         PreferencesSystem.setUserPreference("ZoomSensitivity", 7)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(7)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(false)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("ShowViewCube")).toBe(false)
     })
 
     test("Setting without saving", () => {
         PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", true)
+        PreferencesSystem.setUserPreference("ShowViewCube", true)
 
         window.localStorage.setItem("Preferences", "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
@@ -47,7 +51,7 @@ describe("Preferences System Global Values", () => {
     test("Reset to default if undefined", () => {
         PreferencesSystem.setUserPreference("ZoomSensitivity", undefined as unknown as number)
         PreferencesSystem.setUserPreference("RenderSceneTags", undefined as unknown as boolean)
-        PreferencesSystem.setUserPreference("RenderScoreboard", undefined as unknown as boolean)
+        PreferencesSystem.setUserPreference("ShowViewCube", undefined as unknown as boolean)
 
         expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
     })
@@ -55,27 +59,49 @@ describe("Preferences System Global Values", () => {
     test("Setting then saving", () => {
         PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", true)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         PreferencesSystem.savePreferences()
         PreferencesSystem.setUserPreference("ZoomSensitivity", 20)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", true)
+        PreferencesSystem.setUserPreference("ShowViewCube", true)
         PreferencesSystem.loadPreferences()
 
         expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(13)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("ShowViewCube")).toBe(false)
     })
 
     test("Clearing preferences", () => {
         PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", true)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         PreferencesSystem.clearPreferences()
 
         expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
+    })
+
+    test("Loading a scoreboard choice saved by an older build", () => {
+        window.localStorage.setItem(
+            "Preferences",
+            JSON.stringify({ User: { RenderScoreboard: true, ScoreboardPreferenceSet: true } })
+        )
+
+        PreferencesSystem.loadPreferences()
+
+        expect(PreferencesSystem.getUserPreference("ScoreboardMode")).toBe("on")
+        expect(readSavedUserPreferences()).not.toHaveProperty("RenderScoreboard")
+    })
+
+    test("Loading a scoreboard choice saved before preferences were nested", () => {
+        window.localStorage.setItem("Preferences", JSON.stringify({ RenderScoreboard: false, UseMetric: true }))
+
+        PreferencesSystem.loadPreferences()
+
+        expect(PreferencesSystem.getUserPreference("ScoreboardMode")).toBe("auto")
+        expect(PreferencesSystem.getUserPreference("UseMetric")).toBe(true)
+        expect(readSavedUserPreferences()).not.toHaveProperty("RenderScoreboard")
     })
 
     test("Graphics preferences", () => {
