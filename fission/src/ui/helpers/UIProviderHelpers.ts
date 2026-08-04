@@ -94,6 +94,11 @@ export type OpenPanelFn = <T, P>(
     parent?: UIScreen<any, any>,
     props?: Omit<PanelProps<P>, "type" | "configured" | "custom"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept">
 ) => string | null
+export type TogglePanelFn = <T, P>(
+    content: FunctionComponent<PanelImplProps<T, P>>,
+    customProps: P,
+    matchesOpen?: (openCustomProps: P) => boolean
+) => string | null
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: ReactNode[]) => void
@@ -116,6 +121,7 @@ export type UIContextProps = {
     panels: Panel<any, any>[]
     openModal: OpenModalFn
     openPanel: OpenPanelFn
+    togglePanel: TogglePanelFn
     closeModal: CloseModalFn
     closePanel: ClosePanelFn
     addToast: AddToastFn
@@ -133,6 +139,7 @@ export const UIContext = createContext<UIContextProps>({
         _parent,
         _props = { hideAccept: false, hideCancel: false, position: "center" }
     ) => "",
+    togglePanel: (_content, _customProps, _matchesOpen) => "",
     closeModal: _closeType => {},
     closePanel: (_id, _closeType) => {},
     addToast: (_variant, ..._msg) => "",
