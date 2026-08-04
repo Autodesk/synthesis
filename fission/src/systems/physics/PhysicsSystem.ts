@@ -278,6 +278,9 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(zero)
     }
 
+    /**
+     * Activate a body
+     */
     public activateBody(bodyId: Jolt.BodyID) {
         if (!this.isBodyAdded(bodyId)) return
 
