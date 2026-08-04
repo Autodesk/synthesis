@@ -26,7 +26,7 @@ import {
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
-import { rayCastForRigidBody } from "@/util/RaycastUtils"
+import { rayCastMesh } from "@/util/RaycastUtils"
 
 const GIZMO_SIZE = 1.5
 
@@ -96,22 +96,36 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         if (pickStep === "idle" || !selected) return
 
         const onClick = (e: MouseEvent) => {
-            const hit = rayCastForRigidBody([e.clientX, e.clientY])
-            const componentId = hit && MixAndMatchMode.scene?.componentIdOfBody(hit.bodyId)
+            const components = MixAndMatchMode.scene?.components
+            if (!components) return
+
+            // Raycast against the actual render mesh rather than physics colliders: colliders are
+            // convex hulls that can approximate a part's shape, so a hull-derived normal can point a
+            // different way than the visible surface the user is clicking on.
+            const batchToComponent = new Map<THREE.Object3D, ComponentId>()
+            const objects: THREE.Object3D[] = []
+            components.forEach((component, componentId) => {
+                component.mirabufInstance.batches.forEach(batch => {
+                    batchToComponent.set(batch, componentId)
+                    objects.push(batch)
+                })
+            })
+
+            const hit = rayCastMesh([e.clientX, e.clientY], objects)
+            const componentId = hit && batchToComponent.get(hit.object)
 
             if (DEBUG_SNAP_TO_FACE) {
                 console.debug("[MixAndMatch] face pick raycast", {
                     pickStep,
                     selected,
-                    bodyId: hit?.bodyId?.GetIndex?.(),
                     componentId,
-                    hitPoint: hit?.hitPoint.toArray(),
-                    hitNormal: hit?.hitNormal?.toArray(),
+                    hitPoint: hit?.point.toArray(),
+                    hitNormal: hit?.normal.toArray(),
                 })
             }
 
-            if (!hit || !componentId || !hit.hitNormal) {
-                if (DEBUG_SNAP_TO_FACE) console.debug("[MixAndMatch] face pick ignored: no hit, no component, or missing normal")
+            if (!hit || !componentId) {
+                if (DEBUG_SNAP_TO_FACE) console.debug("[MixAndMatch] face pick ignored: no hit or no component")
                 return
             }
 
@@ -125,12 +139,12 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                     return
                 }
 
-                setSourceFace({ point: hit.hitPoint, normal: hit.hitNormal })
+                setSourceFace({ point: hit.point, normal: hit.normal })
                 if (DEBUG_SNAP_TO_FACE)
                     console.debug("[MixAndMatch] source face picked", {
                         componentId,
-                        point: hit.hitPoint.toArray(),
-                        normal: hit.hitNormal.toArray(),
+                        point: hit.point.toArray(),
+                        normal: hit.normal.toArray(),
                     })
                 setPickStep("target")
                 return
@@ -149,11 +163,11 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             if (DEBUG_SNAP_TO_FACE)
                 console.debug("[MixAndMatch] target face picked", {
                     componentId,
-                    point: hit.hitPoint.toArray(),
-                    normal: hit.hitNormal.toArray(),
+                    point: hit.point.toArray(),
+                    normal: hit.normal.toArray(),
                 })
 
-            MixAndMatchMode.mateFaces(selected, componentId, sourceFace.point, sourceFace.normal, hit.hitPoint, hit.hitNormal)
+            MixAndMatchMode.mateFaces(selected, componentId, sourceFace.point, sourceFace.normal, hit.point, hit.normal)
                 .then(() => {
                     const component = MixAndMatchMode.scene?.get(selected)
                     if (component) gizmoRef.current?.setTransform(componentWorldTransform(component))
