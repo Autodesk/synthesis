@@ -298,17 +298,14 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         this.handlePick(pick)
     }
 
-    /** Validate `pick` and, if accepted, add it to `pending` -- implementations toast on rejection. */
     protected abstract handlePick(pick: PartPick): void
 
-    /** The grounded/root part -- shared by both modes' "can't touch the root" guard. */
     protected getGroundedRootPartGuid(sceneObject: MirabufSceneObject): string {
         const groundedInstance =
             sceneObject.mirabufInstance.parser.assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
         return groundedInstance.parts!.nodes!.at(0)!.value!
     }
 
-    /** Pending selections grouped by scene id and mapped to `K`, for a combined apply across modes. */
     public collectPendingBySceneId<K>(toEntry: (selection: T) => K): Map<number, K[]> {
         const bySceneId = new Map<number, K[]>()
         for (const selection of this.pending.values()) {
@@ -320,8 +317,6 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         return bySceneId
     }
 
-    /** Post-rebuild bookkeeping: the scene objects were rebuilt out from under the tracked highlights, so
-     *  there's nothing left to un-tint -- clear silently and refresh the now-stale pick index. */
     public finishApply(): void {
         this.pending.clearSilently()
 

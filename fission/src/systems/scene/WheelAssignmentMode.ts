@@ -56,7 +56,6 @@ class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
         super(SELECTED_HIGHLIGHT_COLOR, wheels => EventSystem.dispatch("WheelAssignmentSelectionChanged", { wheels }))
     }
 
-    /** Alias kept for existing call sites (WheelAssignment.tsx). */
     public get pendingWheels(): HighlightMap<WheelSelection> {
         return this.pending
     }

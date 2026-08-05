@@ -7,9 +7,7 @@ import World from "../World"
 
 /**
  * Applies pending wheel assignments and pending part deletions for every affected scene object in a
- * single pass: both mutations land on the same assembly before one teardown/rebuild, instead of one
- * rebuild per mode. If a part is both wheel-picked and delete-picked, deletion wins -- applyPartDeletions
- * prunes any joint (including ones applyWheelAssignments just added) that references a removed part.
+ * single pass, all within one teardown and build.
  */
 export async function applyModelConfigChanges(): Promise<void> {
     const wheelMode = World.wheelAssignmentMode
@@ -19,7 +17,6 @@ export async function applyModelConfigChanges(): Promise<void> {
     const deletionsBySceneId = deleteMode.collectPendingBySceneId(selection => selection.guid)
     if (assignmentsBySceneId.size === 0 && deletionsBySceneId.size === 0) return
 
-    // Clear before rebuild destroys the hovered/pending meshes' batches.
     wheelMode.clearHover()
     deleteMode.clearHover()
 
