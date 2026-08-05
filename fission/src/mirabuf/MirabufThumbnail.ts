@@ -78,13 +78,23 @@ async function readCachedThumbnail(hash: string): Promise<Blob | undefined> {
     })
 }
 
+/**
+ * stripping the message structure to only get the wiretype (which are the low 3 bits)
+ *
+ * See "Message Structure" in the protobuf encoding spec:
+ * https://protobuf.dev/programming-guides/encoding/#structure
+ */
+const WIRE_TYPE_MASK = 0b111
+
 /** Pulls only the thumbnail out of an encoded assembly. */
 function decodeThumbnailField(assemblyBuffer: Uint8Array): mirabuf.Thumbnail | undefined {
     const reader = Reader.create(assemblyBuffer)
     while (reader.pos < reader.len) {
         const tag = reader.uint32()
         if (tag === ASSEMBLY_THUMBNAIL_TAG) return mirabuf.Thumbnail.decode(reader, reader.uint32())
-        reader.skipType(tag & 7)
+
+        // not the thumbnail, so jumping past it instead of decoding
+        reader.skipType(tag & WIRE_TYPE_MASK)
     }
     return undefined
 }
