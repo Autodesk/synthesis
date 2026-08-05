@@ -1,6 +1,12 @@
 import type { SxProps, Theme } from "@mui/material"
+import { useCallback, useEffect, useState } from "react"
+import EventSystem from "@/systems/EventSystem"
+import MatchMode from "@/systems/match_mode/MatchMode"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import PreferencesSystem, { useUserPreference } from "@/systems/preferences/PreferencesSystem"
 import type { ScoreboardMode } from "@/systems/preferences/PreferenceTypes"
 import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
 export const SCOREBOARD_MODE_LABELS: Record<ScoreboardMode, string> = {
     auto: "Auto (during gameplay)",
@@ -22,4 +28,42 @@ export function isScoreboardVisible(mode: ScoreboardMode, gameplayActive: boolea
 
 export function toggledScoreboardMode(mode: ScoreboardMode, gameplayActive: boolean): ScoreboardMode {
     return isScoreboardVisible(mode, gameplayActive) ? "off" : "on"
+}
+
+export interface Scoreboard {
+    mode: ScoreboardMode
+    visible: boolean
+    setMode: (mode: ScoreboardMode) => void
+    toggle: () => void
+}
+
+export function useScoreboard(): Scoreboard {
+    const { appMode } = useStateContext()
+
+    const [mode, writeMode] = useUserPreference("ScoreboardMode")
+    const [inMatchMode, setInMatchMode] = useState(
+        () => MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX
+    )
+
+    useEffect(
+        () => EventSystem.listen("MatchStateChangedEvent", info => setInMatchMode(info.mode !== MatchModeType.SANDBOX)),
+        []
+    )
+
+    const gameplayActive = appMode === "Gameplay" || inMatchMode
+
+    const setMode = useCallback(
+        (next: ScoreboardMode) => {
+            writeMode(next)
+            PreferencesSystem.savePreferences()
+        },
+        [writeMode]
+    )
+
+    const toggle = useCallback(
+        () => setMode(toggledScoreboardMode(mode, gameplayActive)),
+        [setMode, mode, gameplayActive]
+    )
+
+    return { mode, visible: isScoreboardVisible(mode, gameplayActive), setMode, toggle }
 }

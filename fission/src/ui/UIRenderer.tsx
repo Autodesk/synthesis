@@ -2,7 +2,7 @@ import React from "react"
 import { Panel } from "@/components/Panel"
 import { Modal } from "./components/Modal"
 import Scoreboard from "./components/Scoreboard"
-import { useScoreboard } from "./helpers/useScoreboard"
+import { useScoreboard } from "./helpers/ScoreboardVisibility"
 import { useUIContext } from "./helpers/UIProviderHelpers"
 
 export const UIRenderer: React.FC = () => {
