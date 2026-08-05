@@ -1,6 +1,7 @@
 import { act, fireEvent, getByText, render, waitFor } from "@testing-library/react"
 import React from "react"
 import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { Panel } from "@/ui/components/Panel"
 import type { CloseType, PanelPosition, UIScreen } from "@/ui/helpers/UIProviderHelpers"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
@@ -18,7 +19,15 @@ describe("MatchModeConfigPanel", () => {
         // Clear local storage
         window.localStorage.setItem("match-mode-configs", JSON.stringify([]))
 
+        const defaultConfigs = await DefaultMatchModeConfigs.getConfigs()
+
         container = createTestContainer()
+        await waitFor(() =>
+            assert(
+                getMatchModeCount(container) === defaultConfigs.length,
+                `Default configs have not been rendered yet (expected ${defaultConfigs.length})`
+            )
+        )
     })
 
     afterEach(() => {
@@ -67,9 +76,7 @@ describe("MatchModeConfigPanel", () => {
         return 0
     }
 
-    async function testUploadMatchModeConfig(json: unknown, validJSON: boolean) {
-        const initialCount = getMatchModeCount(container)
-
+    async function uploadMatchModeConfig(container: HTMLElement, json: unknown) {
         const testJsonString = JSON.stringify(json)
         const testFile = new File([testJsonString], "test.json", { type: "application/json" })
 
@@ -86,14 +93,22 @@ describe("MatchModeConfigPanel", () => {
         await waitFor(() => assert(readSpy.mock.calls.length > 0, "File has not been read"))
         await readSpy.mock.results[0].value
         await act(async () => {})
-        const finalCount = getMatchModeCount(container)
+    }
+
+    async function testUploadMatchModeConfig(json: unknown, validJSON: boolean) {
+        const initialCount = getMatchModeCount(container)
+
+        await uploadMatchModeConfig(container, json)
 
         if (validJSON) {
-            assert(
-                finalCount === initialCount + 1,
-                `Expected count to increase from ${initialCount} to ${initialCount + 1}, but got ${finalCount}`
+            await waitFor(() =>
+                assert(
+                    getMatchModeCount(container) === initialCount + 1,
+                    `Expected count to increase from ${initialCount} to ${initialCount + 1}, but got ${getMatchModeCount(container)}`
+                )
             )
         } else {
+            const finalCount = getMatchModeCount(container)
             assert(finalCount === initialCount, `Expected count to remain ${initialCount}, but got ${finalCount}`)
         }
     }
@@ -104,6 +119,49 @@ describe("MatchModeConfigPanel", () => {
         const matchModeConfigButton = getByText(container, "Upload File")
         assert(matchModeConfigTitle != undefined)
         assert(matchModeConfigButton != undefined)
+    })
+
+    test("Shows default configs that arrive after the panel is opened", async () => {
+        const defaultConfigs = await DefaultMatchModeConfigs.getConfigs()
+
+        let releaseManifest: () => void = () => {}
+        const manifestHeld = new Promise<void>(resolve => {
+            releaseManifest = resolve
+        })
+        const realFetch = window.fetch.bind(window)
+        vi.spyOn(window, "fetch").mockImplementation(async (...args) => {
+            await manifestHeld
+            return realFetch(...args)
+        })
+        const reloaded = DefaultMatchModeConfigs.reload()
+
+        const lateContainer = createTestContainer()
+        try {
+            assert(getMatchModeCount(lateContainer) === 0, "Defaults should not be listed before the manifest lands")
+
+            await uploadMatchModeConfig(lateContainer, {
+                id: "uploaded-before-defaults",
+                name: "Uploaded Before Defaults",
+                autonomousTime: 10,
+                teleopTime: 20,
+                endgameTime: 10,
+            })
+            await waitFor(() => assert(getMatchModeCount(lateContainer) === 1))
+
+            releaseManifest()
+            await reloaded
+
+            await waitFor(() =>
+                assert(
+                    getMatchModeCount(lateContainer) === defaultConfigs.length + 1,
+                    `Expected ${defaultConfigs.length + 1} configs, but got ${getMatchModeCount(lateContainer)}`
+                )
+            )
+        } finally {
+            releaseManifest()
+            await reloaded
+            lateContainer.remove()
+        }
     })
 
     test("Upload Valid MatchModeConfig", async () => {
