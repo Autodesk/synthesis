@@ -11,6 +11,7 @@ import type MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocke
 import { hashBuffer } from "@/util/Utility.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import MatchMode from "../match_mode/MatchMode.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -43,11 +44,16 @@ class MultiplayerSystem {
     public fieldTransferLock?: { ts: number; id: SceneObjectId }
 
     public static async setup(ws: MultiplayerWebsocket, displayName: string): Promise<boolean> {
+        MatchMode.getInstance().sandboxModeStart()
+
         console.group("Multiplayer initialization")
+
         const system = new MultiplayerSystem(ws, displayName)
         const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
+
         console.groupEnd()
+
         return initResult
     }
 
