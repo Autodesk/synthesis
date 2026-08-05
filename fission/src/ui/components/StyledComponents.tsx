@@ -107,7 +107,6 @@ export class SynthesisIcons {
     public static readonly DROPDOWN_CARET = IoMdArrowDropdown
     public static readonly BRAIN = FaBrain
     public static readonly MOVE = FaArrowsUpDownLeftRight
-    public static readonly METADATA = FaTags
     public static readonly MICROCHIP = FaMicrochip
     public static readonly CODE_CONNECTION = MdCode
     public static readonly NO_CODE_CONNECTION = MdCodeOff
