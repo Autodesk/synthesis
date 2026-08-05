@@ -1438,7 +1438,6 @@ export async function createMirabuf(
     await yieldToMain()
 
     const sceneObject = new MirabufSceneObject(mirabufInstance, progressHandle, multiplayerOwnerId)
-    // TODO: urdf isn't cached yet
     sceneObject.assemblyHash = MirabufCachingService.has(hash) ? hash : undefined
     return sceneObject
 }

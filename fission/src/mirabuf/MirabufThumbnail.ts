@@ -37,14 +37,16 @@ async function recacheAssembly(target: MirabufSceneObject, thumbnail: Blob): Pro
     const previousHash = target.assemblyHash
     if (previousHash == null || !MirabufCachingService.has(previousHash)) return
 
-    await MirabufCachingService.remove(previousHash)
-    thumbnailsByAssemblyHash.delete(previousHash)
-
     const assembly = target.mirabufInstance.parser.assembly
     const info = await MirabufCachingService.storeAssemblyInCache(assembly, {
         miraType: assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD,
     })
     if (!info) return
+
+    if (info.hash !== previousHash) {
+        await MirabufCachingService.remove(previousHash)
+        thumbnailsByAssemblyHash.delete(previousHash)
+    }
 
     target.assemblyHash = info.hash
     thumbnailsByAssemblyHash.set(info.hash, Promise.resolve(thumbnail))
