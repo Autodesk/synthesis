@@ -50,7 +50,7 @@ function stripMeshGeometry(assemblyObj: Record<string, unknown>): void {
     if (!partDefinitions) return
 
     for (const def of Object.values(partDefinitions)) {
-        const bodies = def.bodies as Array<Record<string, unknown>> | undefined
+        const bodies = def.bodies as Record<string, unknown>[] | undefined
         for (const body of bodies ?? []) {
             const mesh = (body.triangleMesh as Record<string, unknown> | undefined)?.mesh as
                 | Record<string, unknown>
