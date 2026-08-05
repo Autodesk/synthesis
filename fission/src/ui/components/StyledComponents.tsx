@@ -48,6 +48,7 @@ import {
     FaTags,
     FaWrench,
     FaXmark,
+    FaArrowRight,
 } from "react-icons/fa6"
 import { FaHandPaper, FaUnlink } from "react-icons/fa"
 import { GiPerspectiveDiceSixFacesOne, GiSteeringWheel } from "react-icons/gi"
@@ -119,6 +120,7 @@ export class SynthesisIcons {
     public static readonly SELECT_LARGE = withDefaultProps(IoCheckmark, { size: "1.25rem" })
     public static readonly EDIT_LARGE = withDefaultProps(IoPencil, { size: "1.25rem" })
     public static readonly LEFT_ARROW_LARGE = withDefaultProps(FaArrowLeft, { size: "1.25rem" })
+    public static readonly RIGHT_ARROW_LARGE = withDefaultProps(FaArrowRight, { size: "1.25rem" })
     public static readonly BUG_LARGE = withDefaultProps(FaBug, { size: "1.25rem" })
     public static readonly XMARK_LARGE = withDefaultProps(FaXmark, { size: "1.25rem" })
     public static readonly XMARK_LARGE_HUD = withDefaultProps(FaXmark, { size: 23 })
@@ -356,6 +358,18 @@ export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipTo
         )
     }
 )
+
+interface TooltipButtonProps extends ButtonProps {
+    tooltip?: string
+}
+
+export const TooltipButton = React.forwardRef<HTMLButtonElement, TooltipButtonProps>(({ tooltip, ...props }, ref) => {
+    return (
+        <Tooltip title={tooltip}>
+            <MuiButton ref={ref} {...props} />
+        </Tooltip>
+    )
+})
 
 interface LabelWithTooltipProps {
     labelText: string

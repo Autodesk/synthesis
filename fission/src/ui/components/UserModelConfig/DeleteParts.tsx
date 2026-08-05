@@ -6,8 +6,9 @@ import World from "@/systems/World.ts"
 import type { PartDeletionSelection } from "@/systems/scene/PartDeletionMode.ts"
 import Label from "@/components/Label.tsx"
 import { RefreshButton } from "@/components/StyledComponents.tsx"
+import type { SubpanelProps } from "@/components/UserModelConfig/ModelConfigPanel.tsx"
 
-const DeleteParts: React.FC = () => {
+const DeleteParts: React.FC<SubpanelProps> = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
     const [pending, setPending] = useState<PartDeletionSelection[]>([
         ...World.partDeletionMode.pendingDeletions.values(),

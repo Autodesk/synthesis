@@ -5,22 +5,28 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import World from "@/systems/World.ts"
 import WheelAssignment from "@/components/UserModelConfig/WheelAssignment.tsx"
 import { Divider, Stack } from "@mui/material"
-import { Button, ProgressButton } from "@/components/StyledComponents.tsx"
+import { Button, ProgressButton, SynthesisIcons, TooltipButton } from "@/components/StyledComponents.tsx"
 import DrivetrainConfig from "@/components/UserModelConfig/DrivetrainConfig.tsx"
 import DeleteParts from "@/components/UserModelConfig/DeleteParts.tsx"
 import { applyModelConfigChanges } from "@/systems/scene/ApplyModelConfig.ts"
 
-const screens: { title: string; component: React.ReactElement }[] = [
-    { title: "Assign Wheels", component: <WheelAssignment /> },
-    { title: "Drivetrain", component: <DrivetrainConfig /> },
-    { title: "Delete Parts", component: <DeleteParts /> },
+export interface SubpanelProps {
+    setDisableNextMessage: (v: string | null) => void
+}
+
+const screens: { title: string; component: React.FC<SubpanelProps> }[] = [
+    { title: "Assign Wheels", component: WheelAssignment },
+    { title: "Drivetrain", component: DrivetrainConfig },
+    { title: "Delete Parts", component: DeleteParts },
 ]
 
 const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [screen, setScreen] = useState<number>(0)
+    const [disableNextMessage, setDisableNextMessage] = useState<string | null>(null)
+
     const title = useMemo(() => screens[screen].title, [screen])
-    const screenComponent = useMemo(() => screens[screen].component, [screen])
+    const ScreenComponent = useMemo(() => screens[screen].component, [screen])
 
     const pauseHandle = useId()
     useEffect(() => {
@@ -36,31 +42,40 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     return (
         <Stack gap={2}>
-            {screenComponent}
+            <ScreenComponent setDisableNextMessage={setDisableNextMessage} />
             <Divider />
+            {screen == screens.length - 1 && (
+                <ProgressButton
+                    color="secondary"
+                    refreshLabel={"Applying..."}
+                    sx={{ px: 4, flexGrow: 2 }}
+                    onClick={applyModelConfigChanges}
+                >
+                    Apply
+                </ProgressButton>
+            )}
             <Stack direction={"row"} gap={1}>
                 <Button
+                    variant="outlined"
                     color="secondary"
-                    sx={{ px: 4, flexBasis: 1 }}
+                    size={"medium"}
+                    sx={{ px: 4 }}
                     disabled={screen == 0}
                     onClick={() => setScreen(screen - 1)}
                 >
-                    Back
+                    <SynthesisIcons.LEFT_ARROW_LARGE />
                 </Button>
-                {screen == screens.length - 1 ? (
-                    <ProgressButton
-                        color="secondary"
-                        refreshLabel={"Applying..."}
-                        sx={{ px: 4, flexBasis: 1 }}
-                        onClick={applyModelConfigChanges}
-                    >
-                        Apply
-                    </ProgressButton>
-                ) : (
-                    <Button color="secondary" sx={{ px: 4, flexBasis: 1 }} onClick={() => setScreen(screen + 1)}>
-                        Next
-                    </Button>
-                )}
+                <TooltipButton
+                    variant="outlined"
+                    size={"medium"}
+                    color="secondary"
+                    sx={{ px: 4 }}
+                    tooltip={disableNextMessage ?? undefined}
+                    disabled={screen == screens.length - 1 || disableNextMessage != null}
+                    onClick={() => setScreen(screen + 1)}
+                >
+                    <SynthesisIcons.RIGHT_ARROW_LARGE />
+                </TooltipButton>
             </Stack>
         </Stack>
     )
