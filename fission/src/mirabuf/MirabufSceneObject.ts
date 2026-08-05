@@ -215,7 +215,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get descriptiveName(): string {
-        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? (this.brain instanceof SynthesisBrain ? this.brain.inputSchemeName : "Magic")}] ` : ""}${this.assemblyName}`
+        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? (this.brain instanceof SynthesisBrain ? this.brain.inputSchemeLabel : "Magic")}] ` : ""}${this.assemblyName}`
     }
 
     public get assemblyName() {
@@ -245,7 +245,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 const name =
                     this.nameOverride ??
                     (this._brain?.isSynthesis()
-                        ? this._brain.inputSchemeName
+                        ? this._brain.inputSchemeLabel
                         : this._brain?.isWPILib()
                           ? "Magic"
                           : "Not Configured!")
