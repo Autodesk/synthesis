@@ -1,9 +1,15 @@
-import { Box, Menu, type MenuProps, Stack, type SxProps, type Theme, Tooltip } from "@mui/material"
+import { Box, Menu, MenuItem, type MenuProps, Stack, type SxProps, type Theme, Tooltip } from "@mui/material"
 import type React from "react"
 import { useCallback, useState } from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { IconButton, type IconButtonSound, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { DROPDOWN_MENU_PROPS, TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
+import {
+    DROPDOWN_MENU_ICON_SIZE,
+    DROPDOWN_MENU_PROPS,
+    TOP_BAR_ICON_BUTTON_SX,
+} from "@/ui/components/topbar/TopBarConfig"
+
+const ICON_SLOT_SX = { display: "flex", width: DROPDOWN_MENU_ICON_SIZE, fontSize: DROPDOWN_MENU_ICON_SIZE } as const
 
 const HALF_SX = {
     ...TOP_BAR_ICON_BUTTON_SX,
@@ -40,10 +46,19 @@ const Half: React.FC<HalfProps> = ({ onClick, children, tooltip, disabled, ariaL
     return tooltip ? <Tooltip title={tooltip}>{wrapped}</Tooltip> : wrapped
 }
 
+export interface SplitButtonMenuItem {
+    key: string
+    label: string
+    icon?: React.ReactNode
+    selected?: boolean
+    disabled?: boolean
+    onSelect: () => void
+}
+
 interface SplitButtonDropdownProps {
     icon: React.ReactNode
     onIconClick: () => void
-    children: React.ReactNode
+    items: SplitButtonMenuItem[]
     iconTooltip?: string
     caretTooltip?: string
     iconDisabled?: boolean
@@ -55,7 +70,7 @@ interface SplitButtonDropdownProps {
 const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
     icon,
     onIconClick,
-    children,
+    items,
     iconTooltip,
     caretTooltip,
     iconDisabled,
@@ -66,14 +81,16 @@ const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
     const closeMenu = useCallback(() => setAnchorEl(null), [])
 
-    const onItemSelect = useCallback(
-        (e: React.MouseEvent) => {
-            if (!(e.target as HTMLElement).closest("[role='menuitem']")) return
+    const selectItem = useCallback(
+        (item: SplitButtonMenuItem) => {
             SoundPlayer.getInstance().playDropdownSound()
             closeMenu()
+            item.onSelect()
         },
         [closeMenu]
     )
+
+    const hasIconSlot = items.some(item => item.icon !== undefined || item.selected !== undefined)
 
     return (
         <>
@@ -98,13 +115,28 @@ const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={closeMenu}
-                onClick={onItemSelect}
                 anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                 transformOrigin={{ vertical: "top", horizontal: "left" }}
                 {...DROPDOWN_MENU_PROPS}
                 {...menuProps}
             >
-                {children}
+                {items.map(item => (
+                    <MenuItem
+                        key={item.key}
+                        dense
+                        disabled={item.disabled}
+                        selected={item.selected}
+                        onClick={() => selectItem(item)}
+                        sx={{ gap: 1 }}
+                    >
+                        {hasIconSlot && (
+                            <Box sx={ICON_SLOT_SX}>
+                                {item.icon ?? (item.selected ? <SynthesisIcons.CHECK /> : null)}
+                            </Box>
+                        )}
+                        {item.label}
+                    </MenuItem>
+                ))}
             </Menu>
         </>
     )

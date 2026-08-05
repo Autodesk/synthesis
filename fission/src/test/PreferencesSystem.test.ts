@@ -10,7 +10,10 @@ import {
     type RobotPreferences,
     type UserPreference,
     type UserPreferences,
+    USER_PREFERENCE_KEY,
 } from "@/systems/preferences/PreferenceTypes"
+
+const PREFERENCES_STORAGE_KEY = "Preferences"
 
 /**
  * Captures the full current user-preferences state by resolving every key
@@ -23,7 +26,8 @@ function captureUserPreferences(): UserPreferences {
 }
 
 function readSavedUserPreferences(): Record<string, unknown> {
-    return JSON.parse(window.localStorage.getItem("Preferences") ?? "{}").User ?? {}
+    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? "{}")
+    return saved[USER_PREFERENCE_KEY] ?? {}
 }
 
 describe("Preferences System Global Values", () => {
@@ -42,7 +46,7 @@ describe("Preferences System Global Values", () => {
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
         PreferencesSystem.setUserPreference("ShowViewCube", true)
 
-        window.localStorage.setItem("Preferences", "{}") // Clears local storage
+        window.localStorage.setItem(PREFERENCES_STORAGE_KEY, "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
 
         expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
@@ -84,8 +88,8 @@ describe("Preferences System Global Values", () => {
 
     test("Loading a scoreboard choice saved by an older build", () => {
         window.localStorage.setItem(
-            "Preferences",
-            JSON.stringify({ User: { RenderScoreboard: true, ScoreboardPreferenceSet: true } })
+            PREFERENCES_STORAGE_KEY,
+            JSON.stringify({ [USER_PREFERENCE_KEY]: { RenderScoreboard: true, ScoreboardPreferenceSet: true } })
         )
 
         PreferencesSystem.loadPreferences()
@@ -95,7 +99,10 @@ describe("Preferences System Global Values", () => {
     })
 
     test("Loading a scoreboard choice saved before preferences were nested", () => {
-        window.localStorage.setItem("Preferences", JSON.stringify({ RenderScoreboard: false, UseMetric: true }))
+        window.localStorage.setItem(
+            PREFERENCES_STORAGE_KEY,
+            JSON.stringify({ RenderScoreboard: false, UseMetric: true })
+        )
 
         PreferencesSystem.loadPreferences()
 

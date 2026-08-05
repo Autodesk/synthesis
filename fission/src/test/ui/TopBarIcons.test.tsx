@@ -1,8 +1,16 @@
 import { render } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
-import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
+import { TOP_BAR_ICON_NAMES, TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 
 describe("TopBarIcon", () => {
+    test("every declared icon name resolves to an svg file", () => {
+        for (const name of TOP_BAR_ICON_NAMES) {
+            const { container } = render(<TopBarIcon name={name} />)
+
+            expect(container.querySelector("svg"), `no svg rendered for "${name}"`).toBeInTheDocument()
+        }
+    })
+
     test("renders inline svg markup without img tags", () => {
         const { container } = render(<TopBarIcon name="settings" />)
 

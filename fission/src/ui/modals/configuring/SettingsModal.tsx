@@ -2,7 +2,7 @@ import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem, { useUserPreference } from "@/systems/preferences/PreferencesSystem"
 import type { UserPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
@@ -121,10 +121,7 @@ const GeneralTabSlider = ({
     label,
     ...props
 }: Omit<StatefulSliderProps, "defaultValue" | "onChange"> & { preference: TypedPreferenceKey<number> }) => {
-    const [pref, setPref] = useState(PreferencesSystem.getUserPreference(preference))
-    useEffect(() => {
-        PreferencesSystem.setUserPreference(preference, pref)
-    }, [pref])
+    const [pref, setPref] = useUserPreference(preference)
 
     return <StatefulSlider {...props} label={label} defaultValue={pref} onChange={setPref} />
 }
@@ -134,19 +131,13 @@ const GeneralTabCheckbox = ({
     label,
     ...props
 }: Omit<CheckboxProps, "checked" | "onClick"> & { preference: TypedPreferenceKey<boolean> }) => {
-    const [pref, setPref] = useState(PreferencesSystem.getUserPreference(preference))
-    useEffect(() => {
-        PreferencesSystem.setUserPreference(preference, pref)
-    }, [pref])
+    const [pref, setPref] = useUserPreference(preference)
 
     return <Checkbox {...props} label={label} checked={pref} onClick={setPref} />
 }
 
 const ScoreboardModeSetting = () => {
-    const [mode, setMode] = useState(PreferencesSystem.getUserPreference("ScoreboardMode"))
-    useEffect(() => {
-        PreferencesSystem.setUserPreference("ScoreboardMode", mode)
-    }, [mode])
+    const [mode, setMode] = useUserPreference("ScoreboardMode")
 
     return (
         <Stack direction="row" justifyContent="space-between" alignItems="center">

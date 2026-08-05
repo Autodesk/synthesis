@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from "react"
 import { LEGACY_USER_PREFERENCE_KEYS, migrateUserPreferences, type StoredUserPreferences } from "./PreferenceMigrations"
 import {
     defaultFieldPreferences,
@@ -179,21 +180,25 @@ class PreferencesSystem {
         try {
             const saved: Preferences & Record<string, unknown> = JSON.parse(loadedPrefs)
             saved[USER_PREFERENCE_KEY] ??= defaultUserPreferences()
-            const unmigratedKeys = [...Object.keys(defaultUserPreferences()), ...LEGACY_USER_PREFERENCE_KEYS].filter(
-                key => key in saved // If the key is in the top level preferences, it hasn't been migrated
-            )
-
             const userPreferences = saved[USER_PREFERENCE_KEY] as StoredUserPreferences
-            unmigratedKeys.forEach(key => {
-                userPreferences[key as keyof StoredUserPreferences] = saved[key]
+
+            const knownKeys: readonly (keyof StoredUserPreferences)[] = [
+                ...(Object.keys(defaultUserPreferences()) as UserPreference[]),
+                ...LEGACY_USER_PREFERENCE_KEYS,
+            ]
+            // If the key is in the top level preferences, it hasn't been migrated
+            const unnestedKeys = knownKeys.filter(key => key in saved)
+
+            for (const key of unnestedKeys) {
+                userPreferences[key] = saved[key]
 
                 delete saved[key]
-            })
+            }
 
             const valuesMigrated = migrateUserPreferences(userPreferences)
 
             this._preferences = saved
-            if (unmigratedKeys.length > 0 || valuesMigrated) {
+            if (unnestedKeys.length > 0 || valuesMigrated) {
                 this.savePreferences()
             }
         } catch (e) {
@@ -231,6 +236,18 @@ class PreferencesSystem {
         window.localStorage.removeItem(this._localStorageKey)
         this._preferences = {}
     }
+}
+
+export function useUserPreference<K extends UserPreference>(
+    key: K
+): [UserPreferences[K], (value: UserPreferences[K]) => void] {
+    const [value, setValue] = useState(() => PreferencesSystem.getUserPreference(key))
+
+    useEffect(() => PreferencesSystem.addPreferenceEventListener(key, e => setValue(e.prefValue)), [key])
+
+    const write = useCallback((next: UserPreferences[K]) => PreferencesSystem.setUserPreference(key, next), [key])
+
+    return [value, write]
 }
 
 export default PreferencesSystem

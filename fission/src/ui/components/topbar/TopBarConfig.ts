@@ -36,6 +36,8 @@ export const DROPDOWN_SELECT_SX = {
     "& .MuiSelect-icon": { color: "topBarText.main", right: 8, pointerEvents: "none" },
 } as const
 
+export const DROPDOWN_MENU_ICON_SIZE = 18
+
 export const DROPDOWN_MENU_PROPS = {
     marginThreshold: 8,
     slotProps: {

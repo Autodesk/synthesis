@@ -1,36 +1,36 @@
 import { describe, expect, test } from "vitest"
 import { migrateUserPreferences, type StoredUserPreferences } from "@/systems/preferences/PreferenceMigrations"
+import type { ScoreboardMode } from "@/systems/preferences/PreferenceTypes"
+
+const LEGACY_CASES: [boolean, boolean, ScoreboardMode][] = [
+    [true, true, "on"],
+    [true, false, "on"],
+    [false, true, "off"],
+    [false, false, "auto"],
+]
 
 describe("scoreboard mode migration", () => {
-    test("a scoreboard the user pinned on becomes the on mode", () => {
-        const stored: StoredUserPreferences = { RenderScoreboard: true, ScoreboardPreferenceSet: true }
+    test.each(LEGACY_CASES)(
+        "RenderScoreboard %s with ScoreboardPreferenceSet %s becomes the %s mode",
+        (renderScoreboard, scoreboardPreferenceSet, mode) => {
+            const stored: StoredUserPreferences = {
+                RenderScoreboard: renderScoreboard,
+                ScoreboardPreferenceSet: scoreboardPreferenceSet,
+            }
 
-        expect(migrateUserPreferences(stored)).toBe(true)
-        expect(stored).toEqual({ ScoreboardMode: "on" })
-    })
+            expect(migrateUserPreferences(stored)).toBe(true)
+            expect(stored).toEqual({ ScoreboardMode: mode })
+        }
+    )
 
-    test("a scoreboard the user turned off becomes the off mode", () => {
-        const stored: StoredUserPreferences = { RenderScoreboard: false, ScoreboardPreferenceSet: true }
-
-        expect(migrateUserPreferences(stored)).toBe(true)
-        expect(stored).toEqual({ ScoreboardMode: "off" })
-    })
-
-    test("a user who never chose becomes the auto mode", () => {
-        const stored: StoredUserPreferences = { RenderScoreboard: false, ScoreboardPreferenceSet: false }
-
-        expect(migrateUserPreferences(stored)).toBe(true)
-        expect(stored).toEqual({ ScoreboardMode: "auto" })
-    })
-
-    test("legacy keys left behind by a newer build do not overwrite its mode", () => {
+    test("an already migrated mode wins over the legacy keys beside it", () => {
         const stored: StoredUserPreferences = { ScoreboardMode: "off", RenderScoreboard: true }
 
         expect(migrateUserPreferences(stored)).toBe(true)
         expect(stored).toEqual({ ScoreboardMode: "off" })
     })
 
-    test("a hand edited mode is dropped so the default takes over", () => {
+    test("an unreadable mode is dropped so the default takes over", () => {
         const stored: StoredUserPreferences = { ScoreboardMode: "always", UseMetric: true }
 
         expect(migrateUserPreferences(stored)).toBe(true)

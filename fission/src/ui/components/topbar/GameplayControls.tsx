@@ -1,5 +1,6 @@
-import { Box, MenuItem, Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import type React from "react"
+import { useMemo } from "react"
 import { SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { SCOREBOARD_GLYPH_SX, SCOREBOARD_MODE_LABELS } from "@/ui/helpers/ScoreboardVisibility"
@@ -12,12 +13,21 @@ import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 
-const MENU_ICON_SIZE = 18
-
 const ScoreboardSplitDropdown: React.FC = () => {
     const { mode, visible, setMode, toggle } = useScoreboard()
 
     const ScoreboardGlyph = visible ? SynthesisIcons.SCOREBOARD : SynthesisIcons.SCOREBOARD_HIDDEN
+
+    const items = useMemo(
+        () =>
+            SCOREBOARD_MODES.map(option => ({
+                key: option,
+                label: SCOREBOARD_MODE_LABELS[option],
+                selected: option === mode,
+                onSelect: () => setMode(option),
+            })),
+        [mode, setMode]
+    )
 
     return (
         <SplitButtonDropdown
@@ -29,18 +39,8 @@ const ScoreboardSplitDropdown: React.FC = () => {
             iconTooltip={visible ? "Hide Scoreboard" : "Show Scoreboard"}
             caretTooltip={`Scoreboard visibility: ${SCOREBOARD_MODE_LABELS[mode]}`}
             onIconClick={toggle}
-        >
-            {SCOREBOARD_MODES.map(option => (
-                <MenuItem key={option} dense selected={option === mode} onClick={() => setMode(option)}>
-                    <Stack direction="row" alignItems="center" gap={1} sx={{ pointerEvents: "none" }}>
-                        <Box sx={{ display: "flex", width: MENU_ICON_SIZE, fontSize: MENU_ICON_SIZE }}>
-                            {option === mode && <SynthesisIcons.CHECK />}
-                        </Box>
-                        {SCOREBOARD_MODE_LABELS[option]}
-                    </Stack>
-                </MenuItem>
-            ))}
-        </SplitButtonDropdown>
+            items={items}
+        />
     )
 }
 
@@ -53,10 +53,14 @@ const GameplayControls: React.FC = () => {
 
     return (
         <Stack direction="row" alignItems="center" gap={1.5}>
-            <TopBarButton label="Start Match" icon={<TopBarIcon name="gp-2" size={30} />} onClick={openMatchMode} />
+            <TopBarButton
+                label="Start Match"
+                icon={<TopBarIcon name="gp-match-mode" size={30} />}
+                onClick={openMatchMode}
+            />
             <TopBarButton
                 label="Open Multiplayer"
-                icon={<TopBarIcon name="gp-1" size={30} />}
+                icon={<TopBarIcon name="gp-multiplayer" size={30} />}
                 onClick={openMultiplayer}
             />
             <ScoreboardSplitDropdown />

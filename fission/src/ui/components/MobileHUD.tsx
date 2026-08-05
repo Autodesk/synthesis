@@ -87,7 +87,11 @@ const MobileHUD: React.FC = () => {
 
                 <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />
 
-                <HUDMenuButton label="Multiplayer" iconName="gp-1" onClick={() => runAction(openMultiplayer)} />
+                <HUDMenuButton
+                    label="Multiplayer"
+                    iconName="gp-multiplayer"
+                    onClick={() => runAction(openMultiplayer)}
+                />
 
                 {isTouchDevice && (
                     <HUDMenuButton
