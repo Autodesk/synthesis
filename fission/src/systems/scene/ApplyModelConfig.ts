@@ -15,8 +15,8 @@ export async function applyModelConfigChanges(): Promise<void> {
     const wheelMode = World.wheelAssignmentMode
     const deleteMode = World.partDeletionMode
 
-    const assignmentsBySceneId = wheelMode.collectPendingBySceneId()
-    const deletionsBySceneId = deleteMode.collectPendingBySceneId()
+    const assignmentsBySceneId = wheelMode.collectPendingBySceneId(selection => selection.assignment)
+    const deletionsBySceneId = deleteMode.collectPendingBySceneId(selection => selection.guid)
     if (assignmentsBySceneId.size === 0 && deletionsBySceneId.size === 0) return
 
     // Clear before rebuild destroys the hovered/pending meshes' batches.
@@ -50,7 +50,8 @@ export async function applyModelConfigChanges(): Promise<void> {
         rebuiltBySceneId.set(sceneId, rebuilt)
     }
 
-    wheelMode.finishApply(assignmentsBySceneId, rebuiltBySceneId)
+    wheelMode.warnIfMismatched(assignmentsBySceneId, rebuiltBySceneId)
+    wheelMode.finishApply()
     deleteMode.finishApply()
 
     if (rebuildFailed) {

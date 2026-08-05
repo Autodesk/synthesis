@@ -1,5 +1,4 @@
 import * as THREE from "three"
-import { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { WheelAssignment } from "@/mirabuf/WheelJointBuilder"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -11,15 +10,7 @@ import {
     transformWheelAxis,
 } from "@/util/geometry/WheelAxisFit"
 import World from "../World"
-import WorldSystem from "../WorldSystem"
-import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
-
-interface PartPick {
-    sceneObject: MirabufSceneObject
-    guid: string
-    object: THREE.Object3D
-    instanceId: number
-}
+import PartPickingMode, { type HighlightMap, type PartPick, type PartSelection } from "./PartPickingMode"
 
 interface BatchedMeshRangeApi {
     getGeometryIdAt?: (instanceId: number) => number
@@ -50,85 +41,28 @@ function getPartLocalVertices(object: THREE.Object3D, instanceId: number): THREE
     return points
 }
 
-export interface WheelSelection {
-    sceneObject: MirabufSceneObject
-    highlight: PartHighlight
+export interface WheelSelection extends PartSelection {
     assignment: WheelAssignment
 }
 
-interface PartHighlight {
-    mesh: THREE.BatchedMesh
-    instanceId: number
-}
-
-/** Tint for the part under the cursor. */
-const HOVER_HIGHLIGHT_COLOR = new THREE.Color(1, 1, 0.1)
 /** Tint for selected parts */
 const SELECTED_HIGHLIGHT_COLOR = new THREE.Color(0, 1, 0)
 
-/** Default BatchedMesh instance color; used to un-tint. */
-const DEFAULT_INSTANCE_COLOR = new THREE.Color(1, 1, 1)
-
-/** Reused across picks to avoid reallocating. */
-const raycaster = new THREE.Raycaster()
-const ndc = new THREE.Vector2()
-
-interface PickIndexEntry {
-    sceneObject: MirabufSceneObject
-    guid: string
-}
-
 /** Interaction mode: click a wheel's rim to fit a joint axis, using the assembly's grounded part as parent. */
-class WheelAssignmentMode extends WorldSystem {
-    public pendingWheels: HighlightMap = new HighlightMap(() => toKey(this._hover))
-
-    private _enabled = false
-
-    private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
-    private _pointerMoveListener: ((e: PointerEvent) => void) | undefined
-    private _hover: PartHighlight | undefined
-    private _latestMousePos: [number, number] | undefined
-    private _lastProcessedMousePos: [number, number] | undefined
-
-    // Rebuilt on enable and after apply() to avoid rescanning every mesh entry per raycast.
-    private _candidateBatches: THREE.BatchedMesh[] = []
-    private _pickIndex = new Map<THREE.BatchedMesh, Map<number, PickIndexEntry>>()
-
+class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
     private _driveReversed = false
 
-    public get enabled(): boolean {
-        return this._enabled
+    public constructor() {
+        super(SELECTED_HIGHLIGHT_COLOR, wheels => EventSystem.dispatch("WheelAssignmentSelectionChanged", { wheels }))
     }
 
-    public set enabled(enabled: boolean) {
-        if (this._enabled === enabled) return
-        this._enabled = enabled
-
-        if (enabled) this.hookInteractionHandlers()
-        else this.unhookInteractionHandlers()
-    }
-
-    public get pendingCount(): number {
-        return this.pendingWheels.size
+    /** Alias kept for existing call sites (WheelAssignment.tsx). */
+    public get pendingWheels(): HighlightMap<WheelSelection> {
+        return this.pending
     }
 
     public get driveReversed(): boolean {
         return this._driveReversed
-    }
-
-    public update(_deltaT: number): void {
-        if (!this._enabled || !this._latestMousePos) return
-
-        const [x, y] = this._latestMousePos
-        const last = this._lastProcessedMousePos
-        if (last && last[0] === x && last[1] === y) return
-
-        this._lastProcessedMousePos = this._latestMousePos
-        this.updateHover(this._latestMousePos)
-    }
-
-    public destroy(): void {
-        this.enabled = false
     }
 
     public toggleReverseDrive(): void {
@@ -146,130 +80,7 @@ class WheelAssignmentMode extends WorldSystem {
         EventSystem.dispatch("WheelAssignmentDriveReversedChanged", { reversed: this._driveReversed })
     }
 
-    private hookInteractionHandlers(): void {
-        const screenHandler = World.sceneRenderer.screenInteractionHandler
-        this._originalInteractionStart = screenHandler.interactionStart
-        screenHandler.interactionStart = (interaction: InteractionStart) => this.onInteractionStart(interaction)
-
-        this._pointerMoveListener = (e: PointerEvent) => {
-            this._latestMousePos = [e.clientX, e.clientY]
-        }
-        World.sceneRenderer.renderer.domElement.addEventListener("pointermove", this._pointerMoveListener)
-
-        this.rebuildPickIndex()
-    }
-
-    private unhookInteractionHandlers(): void {
-        const screenHandler = World.sceneRenderer.screenInteractionHandler
-        if (this._originalInteractionStart) screenHandler.interactionStart = this._originalInteractionStart
-
-        if (this._pointerMoveListener) {
-            World.sceneRenderer.renderer.domElement.removeEventListener("pointermove", this._pointerMoveListener)
-            this._pointerMoveListener = undefined
-        }
-        this._latestMousePos = undefined
-        this._lastProcessedMousePos = undefined
-        this.clearHover()
-
-        this._candidateBatches = []
-        this._pickIndex = new Map()
-    }
-
-    /** Flattens scene objects' batches and mesh-entry GUIDs into lookup structures for pickPart(). */
-    private rebuildPickIndex(): void {
-        this._candidateBatches = []
-        this._pickIndex = new Map()
-
-        for (const sceneObject of World.sceneRenderer.mirabufSceneObjects.getAll()) {
-            for (const batch of sceneObject.mirabufInstance.batches) {
-                this._candidateBatches.push(batch)
-            }
-
-            for (const [guid, entries] of sceneObject.mirabufInstance.meshes) {
-                for (const [mesh, instanceId] of entries) {
-                    let byInstance = this._pickIndex.get(mesh)
-                    if (!byInstance) {
-                        byInstance = new Map()
-                        this._pickIndex.set(mesh, byInstance)
-                    }
-                    byInstance.set(instanceId, { sceneObject, guid })
-                }
-            }
-        }
-    }
-
-    /** Raycasts the cached candidate batches for the part-instance GUID under the mouse. */
-    private pickPart(mousePos: [number, number]): PartPick | undefined {
-        const camera = World.sceneRenderer.mainCamera
-        ndc.set((mousePos[0] / window.innerWidth) * 2 - 1, -(mousePos[1] / window.innerHeight) * 2 + 1)
-        raycaster.setFromCamera(ndc, camera)
-
-        const hits = raycaster.intersectObjects(this._candidateBatches, false)
-        if (hits.length === 0) return undefined
-
-        const hit = hits[0]
-        const object = hit.object as THREE.BatchedMesh
-        const instanceId = (hit as unknown as { batchId?: number }).batchId ?? 0
-
-        const resolved = this._pickIndex.get(object)?.get(instanceId)
-        if (!resolved) return undefined
-
-        return { sceneObject: resolved.sceneObject, guid: resolved.guid, object, instanceId }
-    }
-
-    /** Tints the part under the cursor. */
-    private updateHover(mousePos: [number, number]): void {
-        const pick = this.pickPart(mousePos)
-        if (!pick) {
-            this.clearHover()
-            return
-        }
-
-        const mesh = pick.object as THREE.BatchedMesh
-        this.setHover({ mesh, instanceId: pick.instanceId })
-    }
-
-    public setHover(hover: PartHighlight) {
-        if (toKey(this._hover) === toKey(hover)) return
-
-        this.clearHover()
-
-        hover.mesh.setColorAt(hover.instanceId, HOVER_HIGHLIGHT_COLOR)
-        this._hover = hover
-    }
-
-    public clearHover(): void {
-        if (!this._hover) return
-
-        const isSelected = this.pendingWheels.hasHighlight(toKey(this._hover))
-
-        this._hover.mesh.setColorAt(
-            this._hover.instanceId,
-            isSelected ? SELECTED_HIGHLIGHT_COLOR : DEFAULT_INSTANCE_COLOR
-        )
-        this._hover = undefined
-    }
-
-    private onInteractionStart(interaction: InteractionStart): void {
-        if (interaction.interactionType !== PRIMARY_MOUSE_INTERACTION) {
-            this._originalInteractionStart?.(interaction)
-            return
-        }
-        this.handleWheelPick(interaction)
-    }
-
-    private handleWheelPick(interaction: InteractionStart): void {
-        const pick = this.pickPart(interaction.position)
-        if (!pick) {
-            this._originalInteractionStart?.(interaction)
-            return
-        }
-
-        if (this.pendingWheels.hasPart(pick.guid)) {
-            this.pendingWheels.removePart(pick.guid)
-            return
-        }
-
+    protected handlePick(pick: PartPick): void {
         const points = getPartLocalVertices(pick.object, pick.instanceId)
         if (!points || points.length === 0) {
             globalAddToast("warning", "Wheel Assignment", "Couldn't read this part's geometry.")
@@ -287,38 +98,22 @@ class WheelAssignmentMode extends WorldSystem {
         const worldAxisFit = transformWheelAxis(localAxisFit, assemblySpaceTransform)
 
         // Grounded/root part doubles as the parent -- no second click needed.
-        const groundedInstance =
-            pick.sceneObject.mirabufInstance.parser.assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
-        const parentPartGuid = groundedInstance.parts!.nodes!.at(0)!.value!
+        const parentPartGuid = this.getGroundedRootPartGuid(pick.sceneObject)
         if (parentPartGuid === pick.guid) {
             globalAddToast("warning", "Wheel Assignment", "This part is the assembly's grounded/root part.")
             return
         }
 
-        this.pendingWheels.addPart(pick.guid, {
-            sceneObject: pick.sceneObject,
-            highlight: {
-                instanceId: pick.instanceId,
-                mesh: pick.object as THREE.BatchedMesh,
-            },
+        this.pending.addPart(pick.guid, {
+            sceneId: pick.sceneObject.id,
+            guid: pick.guid,
+            highlight: { instanceId: pick.instanceId, mesh: pick.object as THREE.BatchedMesh },
             assignment: { wheelPartGuid: pick.guid, parentPartGuid, axisFit: worldAxisFit },
         })
-        return
     }
 
-    /** Pending assignments grouped by scene id, for a combined apply alongside other modes. */
-    public collectPendingBySceneId(): Map<number, WheelAssignment[]> {
-        const bySceneId = new Map<number, WheelAssignment[]>()
-        for (const { sceneObject, assignment } of this.pendingWheels.values()) {
-            const list = bySceneId.get(sceneObject.id)
-            if (list) list.push(assignment)
-            else bySceneId.set(sceneObject.id, [assignment])
-        }
-        return bySceneId
-    }
-
-    /** Post-rebuild bookkeeping: mismatch check/toast, clear pending, refresh the stale pick index. */
-    public finishApply(
+    /** Warns if any pending assignment's wheel and parent ended up in the same rigid node post-rebuild. */
+    public warnIfMismatched(
         assignmentsBySceneId: Map<number, WheelAssignment[]>,
         rebuiltBySceneId: Map<number, MirabufSceneObject>
     ): void {
@@ -339,79 +134,7 @@ class WheelAssignmentMode extends WorldSystem {
         if (hadMismatch) {
             globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
         }
-
-        this.pendingWheels.clear()
-
-        // Rebuilt assemblies got new batches/instance ids; refresh the stale pick index.
-        if (this._enabled) this.rebuildPickIndex()
     }
 }
 
 export default WheelAssignmentMode
-
-type HighlightKey = `${number}-${number}`
-
-function toKey(a: PartHighlight): HighlightKey
-function toKey(a?: PartHighlight): HighlightKey | undefined
-function toKey(a?: PartHighlight): HighlightKey | undefined {
-    if (a == null) return undefined
-    return `${a.mesh.id}-${a.instanceId}`
-}
-
-class HighlightMap {
-    private _map: Map<string, WheelSelection> = new Map()
-    private _hoverMap: Set<HighlightKey> = new Set()
-    public constructor(private _getHoverKey: () => HighlightKey | undefined) {}
-
-    removePart(guid: string): void {
-        const highlight = this._map.get(guid)?.highlight
-        if (!highlight) return
-
-        if (this._getHoverKey() !== toKey(highlight)) {
-            highlight.mesh.setColorAt(highlight.instanceId, DEFAULT_INSTANCE_COLOR)
-        }
-
-        this._map.delete(guid)
-        this._hoverMap.delete(toKey(highlight))
-        this.dispatchUpdate()
-    }
-
-    hasPart(guid: string): boolean {
-        return this._map.has(guid)
-    }
-
-    values() {
-        return this._map.values()
-    }
-
-    hasHighlight(key: HighlightKey): boolean {
-        return this._hoverMap.has(key)
-    }
-
-    addPart(guid: string, assignment: WheelSelection): void {
-        this._map.set(guid, assignment)
-
-        const { highlight } = assignment
-        this._hoverMap.add(toKey(highlight))
-        if (highlight && this._getHoverKey() !== toKey(highlight)) {
-            highlight.mesh.setColorAt(highlight.instanceId, SELECTED_HIGHLIGHT_COLOR)
-        }
-        this.dispatchUpdate()
-    }
-
-    get size() {
-        return this._map.size
-    }
-
-    clear() {
-        this._map.forEach(({ highlight }) => {
-            highlight.mesh.setColorAt(highlight.instanceId, DEFAULT_INSTANCE_COLOR)
-        })
-        this._map.clear()
-        this.dispatchUpdate()
-    }
-
-    dispatchUpdate() {
-        EventSystem.dispatch("WheelAssignmentSelectionChanged", { wheels: [...this._map.values()] })
-    }
-}
