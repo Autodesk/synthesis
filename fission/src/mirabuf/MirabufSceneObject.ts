@@ -102,6 +102,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public readonly mirabufInstance: MirabufInstance
     public readonly mechanism: Mechanism
 
+    public assemblyHash?: string
+
     private _brain: Brain | undefined
     public alliance: Alliance | undefined
     public station: Station | undefined
@@ -1423,7 +1425,7 @@ export async function createMirabuf(
     const parser = new MirabufParser(assembly, progressHandle)
 
     if (!parser.assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)) {
-        await migrateUUID(parser, hash)
+        hash = (await migrateUUID(parser, hash)) ?? hash
     }
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
@@ -1435,10 +1437,12 @@ export async function createMirabuf(
     progressHandle?.update("Created Mirabuf Instance", URDFImportProgressBar.MIRABUF_INSTANCE)
     await yieldToMain()
 
-    return new MirabufSceneObject(mirabufInstance, progressHandle, multiplayerOwnerId)
+    const sceneObject = new MirabufSceneObject(mirabufInstance, progressHandle, multiplayerOwnerId)
+    sceneObject.assemblyHash = MirabufCachingService.has(hash) ? hash : undefined
+    return sceneObject
 }
 
-async function migrateUUID(parser: MirabufParser, hash: string) {
+async function migrateUUID(parser: MirabufParser, hash: string): Promise<string | undefined> {
     parser.assembly.info ??= {}
     const newGUID = uuidV4({ random: hexStringToUint8Array(hash).slice(0, 16) }) // using deterministic random to prevent the same model from being assigned different uuids after being imported multiple times. Once initially set, uuid will be persistent across hash changes
     console.warn("Migrating UUID", parser.assembly.info.GUID, "->", newGUID)
@@ -1456,6 +1460,7 @@ async function migrateUUID(parser: MirabufParser, hash: string) {
     if (cacheInfo == null) {
         globalAddToast("warning", "Migration Error", "Importing failed to save")
     }
+    return cacheInfo?.hash
 }
 /**
  * Body association to a rigid node with a given mirabuf scene object.

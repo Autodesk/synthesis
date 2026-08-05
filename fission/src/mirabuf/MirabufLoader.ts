@@ -362,6 +362,11 @@ class MirabufCachingService {
         return this._cacheMap.getAll(miraType)
     }
 
+    /** is assembly retrievable / not in memory */
+    public static has(hash: string): boolean {
+        return this._cacheMap.get(hash) != null
+    }
+
     /**
      * Removes a given Mirabuf item from the cache
      */

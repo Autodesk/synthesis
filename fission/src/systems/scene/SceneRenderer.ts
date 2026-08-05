@@ -27,6 +27,7 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
+import { captureSceneThumbnail } from "./ThumbnailCapture.ts"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -400,6 +401,20 @@ class SceneRenderer extends WorldSystem {
 
         this.createCSM(settings)
         this.setupCSMMaterials()
+    }
+
+    public async captureAssemblyThumbnail(target: MirabufSceneObject): Promise<Blob | undefined> {
+        try {
+            return await captureSceneThumbnail({
+                renderer: this._renderer,
+                scene: this._scene,
+                skybox: this._skybox,
+                target,
+            })
+        } catch (e) {
+            console.warn("Thumbnail capture failed", e)
+            return undefined
+        }
     }
 
     public registerSceneObject<T extends SceneObject>(obj: T): SceneObjectId {
