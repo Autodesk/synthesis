@@ -29,7 +29,9 @@ import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsIn
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
-import { Tab, Tabs } from "@mui/material"
+import { Box, Tab, Tabs } from "@mui/material"
+import { tourTarget } from "@/ui/tour/tourSteps"
+import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -162,6 +164,8 @@ const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
     const { configureScreen, closePanel, addToast } = useUIContext()
+    const configurePanelRef = useTourAnchor("configure-panel")
+
     const {
         configMode: initialConfigMode,
         selectedAssembly: initialSelectedAssembly,
@@ -278,7 +282,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     }, [configMode, selectedAssembly])
 
     return (
-        <>
+        <Box ref={configurePanelRef}>
             <Tabs
                 value={configurationType}
                 onChange={(_, newValue) => setConfigurationType(newValue)}
@@ -355,8 +359,11 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     )}
                 </>
             )}
-        </>
+        </Box>
     )
 }
+
+// tagging onboarding target to allow for auto-advancing despite minification
+tourTarget(ConfigurePanel, "ConfigurePanel")
 
 export default ConfigurePanel

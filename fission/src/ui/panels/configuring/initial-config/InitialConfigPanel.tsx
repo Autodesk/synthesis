@@ -14,6 +14,7 @@ import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -23,6 +24,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     // TODO: can we pass these as custom props?
     const { setSelectedScheme } = useStateContext()
     const { configureScreen, closePanel } = useUIContext()
+    const assemblySetupRef = useTourAnchor("assembly-setup")
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -150,7 +152,12 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 />
             )}
             {brainIndex !== undefined && (
-                <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
+                // Tour anchor for the "Set Up Your Assembly" step. Scoped to just the input-scheme
+                // list (the card's subject) rather than the panel root, whose bounding box is
+                // widened by the transform gizmo control and would push the callout off-screen.
+                <Box ref={assemblySetupRef}>
+                    <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
+                </Box>
             )}
         </Stack>
     )

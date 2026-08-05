@@ -8,15 +8,17 @@ type TopBarButtonProps = {
     icon: React.ReactNode
     disabledTooltip?: string
     onClick: () => void
+    /** Attaches the button to a guided-tour anchor so a tour card can point at it. */
+    anchorRef?: React.Ref<HTMLSpanElement>
 }
 
 /** component for all buttons located on topbar */
-export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disabledTooltip, onClick }) => {
+export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disabledTooltip, onClick, anchorRef }) => {
     const disabled = disabledTooltip !== undefined
 
     return (
         <Tooltip title={disabledTooltip ?? label}>
-            <span>
+            <span ref={anchorRef}>
                 <IconButton
                     size="medium"
                     disableRipple

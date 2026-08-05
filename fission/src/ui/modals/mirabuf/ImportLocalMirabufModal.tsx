@@ -16,7 +16,7 @@ import {
     miraTypeToConfigType,
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
 import { getTargetControls } from "@/systems/scene/CameraControls"
 import { hashBuffer, hexStringToUint8Array } from "@/util/Utility.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
@@ -78,7 +78,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
 
     useEffect(() => {
         const onCancel = () => {
-            openPanel(ImportMirabufPanel, { configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT) })
+            // Both are modals and only one modal exists at a time; closeModal's trailing
+            // setModal(undefined) would clobber a synchronous reopen, so defer a tick.
+            setTimeout(() => globalOpenModal(LibraryModal, undefined), 0)
         }
 
         const onBeforeAccept = async () => {

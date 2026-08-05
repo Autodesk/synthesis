@@ -19,6 +19,8 @@ import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
+import { TourProvider } from "./ui/tour/TourProvider.tsx"
+import TourOverlay from "./ui/tour/TourOverlay.tsx"
 
 const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
@@ -78,21 +80,24 @@ const Synthesis = () => {
                 >
                     <StateProvider>
                         <UIProvider>
-                            <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
-                            <TouchControls />
-                            <SceneOverlay />
-                            <ContextMenu />
-                            <MultiplayerHUD />
-                            <MainHUD key={"main-hud"} />
-                            <UIRenderer />
-                            <CommandPalette />
-                            <ProgressNotifications key={"progress-notifications"} />
-                            <DragModeIndicator />
-                            <PortraitOverlay />
+                            <TourProvider>
+                                <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
+                                <TouchControls />
+                                <SceneOverlay />
+                                <ContextMenu />
+                                <MultiplayerHUD />
+                                <MainHUD key={"main-hud"} />
+                                <UIRenderer />
+                                <CommandPalette />
+                                <ProgressNotifications key={"progress-notifications"} />
+                                <DragModeIndicator />
+                                <PortraitOverlay />
+                                <TourOverlay />
 
-                            {!consentPopupDisable && (
-                                <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
-                            )}
+                                {!consentPopupDisable && (
+                                    <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
+                                )}
+                            </TourProvider>
                         </UIProvider>
                     </StateProvider>
                 </SnackbarProvider>

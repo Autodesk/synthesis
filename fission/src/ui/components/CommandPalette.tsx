@@ -8,7 +8,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry, { type CommandDefinition } from "@/ui/components/CommandRegistry"
 import "@/ui/panels/DebugPanel"
 import "@/ui/modals/configuring/SettingsModal"
-import "@/ui/panels/mirabuf/ImportMirabufPanel"
+import "@/ui/modals/mirabuf/LibraryModal"
 import "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import "@/ui/panels/configuring/MatchModeConfigPanel"
 

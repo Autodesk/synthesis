@@ -1,5 +1,5 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
-import { Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
@@ -15,6 +15,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import { Button, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
@@ -99,6 +100,7 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
     selectedAssembly,
     registerCleanupFunction,
 }) => {
+    const showZoneRef = useTourAnchor("intake-show-zone")
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
@@ -301,7 +303,13 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
             />
 
             {/* Checkbox for showing intake zone indicator at all times */}
-            <Checkbox label="Show intake zone indicator always" checked={showZoneAlways} onClick={setShowZoneAlways} />
+            <Box ref={showZoneRef}>
+                <Checkbox
+                    label="Show intake zone indicator always"
+                    checked={showZoneAlways}
+                    onClick={setShowZoneAlways}
+                />
+            </Box>
             {gizmoComponent}
             <Spacer height={10} />
             <Button

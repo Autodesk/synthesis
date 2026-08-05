@@ -10,8 +10,7 @@ import APSManagementModal from "../modals/APSManagementModal"
 import SettingsModal from "../modals/configuring/SettingsModal"
 import MultiplayerStartModal from "../modals/MultiplayerStartModal"
 import { startMultiplayerWorld } from "../helpers/StartMultiplayerWorld"
-import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
-import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "../modals/mirabuf/LibraryModal"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
 import { AssemblySelect } from "./topbar/AssemblySelect"
@@ -77,11 +76,7 @@ const MobileHUD: React.FC = () => {
                 <HUDMenuButton
                     label="Add Assembly"
                     iconName="add"
-                    onClick={() =>
-                        runAction(() =>
-                            openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
-                        )
-                    }
+                    onClick={() => runAction(() => openModal(LibraryModal, undefined))}
                 />
 
                 <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />

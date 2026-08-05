@@ -29,6 +29,7 @@ export type UserPreferences = {
     ShowCenterOfMassIndicators: boolean
     MultiplayerUsername: string
     MultiplayerClientID: string
+    HasSeenOnboardingTour: boolean
 }
 
 export type UserPreference = keyof UserPreferences
@@ -73,6 +74,7 @@ export function defaultUserPreferences(): UserPreferences {
         ShowCenterOfMassIndicators: false,
         MultiplayerClientID: "",
         MultiplayerUsername: "",
+        HasSeenOnboardingTour: false,
     }
 }
 

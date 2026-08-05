@@ -1,15 +1,10 @@
 import { type Data, downloadData } from "@/aps/APSDataManagement"
-import { globalAddToast, globalOpenPanel } from "@/components/GlobalUIControls"
+import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
+import { MiraType } from "@/mirabuf/MiraType"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
-import InitialConfigPanel from "@/panels/configuring/initial-config/InitialConfigPanel.tsx"
-import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
-import { getTargetControls } from "@/systems/scene/CameraControls.ts"
-import type { EncodedAssembly, Message } from "@/systems/multiplayer/types.ts"
-import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -20,6 +15,21 @@ export interface MirabufCacheInfo {
     miraType: MiraType
     remotePath?: string
     thumbnailStorageID?: string
+    /** Competition year, when known (defaults from the remote manifest). */
+    year?: number
+    /** Servable URL of a preview thumbnail, when available. */
+    thumbnail?: string
+}
+
+export interface CacheRemoteOptions {
+    /** Display name for the cached file; defaults to the assembly's own name. */
+    name?: string
+    /** When set, warn if the downloaded content's hash differs. */
+    expectedHash?: string
+    /** Competition year to store on the cache entry. */
+    year?: number
+    /** Servable thumbnail URL to store on the cache entry. */
+    thumbnail?: string
 }
 
 export interface MirabufRemoteInfo {
@@ -156,16 +166,17 @@ class MirabufCachingService {
      *
      * @param {string} fetchLocation Location of Mirabuf file.
      * @param {MiraType} miraType Type of Mirabuf Assembly.
-     * @param {string} name Optional display name for the cached file.
+     * @param {CacheRemoteOptions} options Optional metadata to store alongside the cached file.
      *
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
     public static async cacheRemote(
         fetchLocation: string,
         miraType: MiraType,
-        name?: string,
-        expectedHash?: string
+        options: CacheRemoteOptions = {}
     ): Promise<MirabufCacheInfo | undefined> {
+        const { expectedHash, year, thumbnail } = options
+        let { name } = options
         try {
             // grab file remote
             const resp = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
@@ -186,6 +197,8 @@ class MirabufCachingService {
                     miraType,
                     name,
                     remotePath: fetchLocation,
+                    year,
+                    thumbnail,
                 },
                 expectedHash
             )
@@ -205,6 +218,8 @@ class MirabufCachingService {
                 hash: await hashBuffer(miraBuff),
                 miraType: miraType,
                 name: name,
+                year,
+                thumbnail,
             }
         } catch (e) {
             console.warn("Caching failed", e)
@@ -450,80 +465,6 @@ class MirabufCachingService {
     }
 }
 
-export enum MiraType {
-    ROBOT = 1,
-    FIELD,
-}
+export { MiraType }
 
 export default MirabufCachingService
-
-export async function spawnCachedMira(
-    info: MirabufCacheInfo,
-    progressHandle: ProgressHandle = new ProgressHandle(info.name)
-) {
-    // If spawning a field, then remove all other fields
-    if (info.miraType === MiraType.FIELD) {
-        World.sceneRenderer.removeAllFields()
-    }
-
-    World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    await MirabufCachingService.get(info.hash)
-        .then(async assembly => {
-            if (!assembly) {
-                progressHandle.fail()
-                console.error("Failed to spawn robot")
-
-                return
-            }
-
-            await createMirabuf(info.hash, assembly, progressHandle).then(async mirabufSceneObject => {
-                if (!mirabufSceneObject) {
-                    progressHandle.fail("No object!")
-                    return
-                }
-
-                World.sceneRenderer.registerSceneObject(mirabufSceneObject)
-
-                const targetControls = getTargetControls()
-
-                if (World.multiplayerSystem != null) {
-                    const encodedAssembly =
-                        mirabufSceneObject.miraType !== MiraType.FIELD
-                            ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
-                            : undefined
-
-                    const message: Message = {
-                        type: "newObject",
-                        timestamp: Date.now(),
-                        data: {
-                            sceneObjectKey: mirabufSceneObject.id,
-                            assembly: encodedAssembly,
-                            assemblyHash: info.hash,
-                            miraType: info.miraType,
-                            initialPreferences: mirabufSceneObject.getPreferenceData(),
-                            bodyIds: mirabufSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
-                        },
-                    }
-                    await World.multiplayerSystem?.broadcast(message)
-                    World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
-                }
-
-                if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                    targetControls.focusProvider = mirabufSceneObject
-                }
-
-                progressHandle.done()
-                World.physicsSystem.deactivateGamepieces()
-                if (mirabufSceneObject.miraType == MiraType.ROBOT) {
-                    globalOpenPanel(InitialConfigPanel, undefined)
-                }
-            })
-        })
-        .catch(e => {
-            console.error(e)
-            progressHandle.fail()
-        })
-        .finally(() => {
-            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
-        })
-}

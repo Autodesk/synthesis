@@ -2,6 +2,7 @@
 
 exports[`Preferences System Global Values > Clearing preferences > default user preferences 1`] = `
 {
+  "HasSeenOnboardingTour": false,
   "InputSchemes": [],
   "MultiplayerClientID": "",
   "MultiplayerUsername": "",
@@ -29,6 +30,7 @@ exports[`Preferences System Global Values > Clearing preferences > default user 
 
 exports[`Preferences System Global Values > Reset to default if undefined > default user preferences 1`] = `
 {
+  "HasSeenOnboardingTour": false,
   "InputSchemes": [],
   "MultiplayerClientID": "",
   "MultiplayerUsername": "",
@@ -56,6 +58,7 @@ exports[`Preferences System Global Values > Reset to default if undefined > defa
 
 exports[`Preferences System Global Values > Setting without saving > default user preferences 1`] = `
 {
+  "HasSeenOnboardingTour": false,
   "InputSchemes": [],
   "MultiplayerClientID": "",
   "MultiplayerUsername": "",
