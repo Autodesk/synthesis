@@ -7,7 +7,6 @@ import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
@@ -20,6 +19,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -183,13 +183,7 @@ const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly])
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
+    useHoldPhysicsPause()
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
