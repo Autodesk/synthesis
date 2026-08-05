@@ -374,7 +374,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     useLayoutEffect(() => {
         if (unconfirmedImport) {
             addToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
-            closeModal(CloseType.Cancel)
+            closeModal(CloseType.CANCEL)
         }
     }, [])
 
@@ -386,7 +386,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             } else {
                 spawnRemote(asset)
             }
-            closeModal(CloseType.Cancel)
+            closeModal(CloseType.CANCEL)
         },
         [cachedByHash, closeModal]
     )
@@ -394,7 +394,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const spawnSaved = useCallback(
         (info: MirabufCacheInfo) => {
             spawnCachedMira(info).catch(console.error)
-            closeModal(CloseType.Cancel)
+            closeModal(CloseType.CANCEL)
         },
         [closeModal]
     )
@@ -409,7 +409,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
 
     const downloadAllForYear = useCallback(() => {
         downloadAll(assetsForYear, cachedInfos).catch(console.error)
-        closeModal(CloseType.Cancel)
+        closeModal(CloseType.CANCEL)
     }, [assetsForYear, cachedInfos, closeModal])
 
     const importFromFile = useCallback(() => {
@@ -488,7 +488,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                 )}
 
                 <Stack direction="column" gap={1} mt={2}>
-                    <AutodeskHubAccordion onSpawned={() => closeModal(CloseType.Cancel)} />
+                    <AutodeskHubAccordion onSpawned={() => closeModal(CloseType.CANCEL)} />
                 </Stack>
 
                 <Stack alignItems="center" mt={2}>

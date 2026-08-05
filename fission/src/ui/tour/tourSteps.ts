@@ -1,6 +1,6 @@
 import type { PopperPlacementType } from "@mui/material"
 import type { FunctionComponent } from "react"
-import { MiraType } from "@/mirabuf/MirabufLoader"
+import { MiraType } from "@/mirabuf/MiraType"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 export type TourTargetId = "LibraryModal" | "ConfigurePanel"

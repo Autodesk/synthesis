@@ -4,8 +4,8 @@ import type React from "react"
 import { APP_MODES, type AppMode } from "@/systems/AppMode"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { Select } from "@/ui/components/StyledComponents"
-import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "./TopBarConfig"
-import { TopBarIcon, type TopBarIconName } from "./TopBarIcons"
+import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "@/ui/components/topbar/TopBarConfig"
+import { TopBarIcon, type TopBarIconName } from "@/ui/components/topbar/TopBarIcons"
 
 export const MODE_ICONS: Record<AppMode, TopBarIconName> = {
     Configure: "mode-configure",

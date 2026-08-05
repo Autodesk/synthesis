@@ -38,15 +38,14 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { type ProgressHandle, URDFImportProgressBar } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -64,9 +63,8 @@ import MirabufCachingService, { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
-import { copyVec3, hexStringToUint8Array } from "@/util/Utility.ts"
+import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
 
 const DEBUG_BODIES = false
 
@@ -125,7 +123,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public intakeActive = false
     public ejectorActive = false
 
-    private multiplayerOwningClientId?: string
+    private _multiplayerOwningClientId?: string
 
     private _lastEjectableToastTime = 0
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
@@ -161,8 +159,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get multiplayerOwnerName(): string | undefined {
-        if (this.multiplayerOwningClientId == null) return undefined
-        return World.multiplayerSystem?._clientToInfoMap?.get(this.multiplayerOwningClientId)?.displayName
+        if (this._multiplayerOwningClientId == null) return undefined
+        return World.multiplayerSystem?._clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
     }
 
     get simConfigData() {
@@ -178,7 +176,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     get isOwnObject() {
-        return this.multiplayerOwningClientId == undefined
+        return this._multiplayerOwningClientId == undefined
     }
 
     public get activeEjectables(): Jolt.BodyID[] {
@@ -204,7 +202,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get descriptiveName(): string {
-        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
+        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? (this.brain instanceof SynthesisBrain ? this.brain.inputSchemeName : "Magic")}] ` : ""}${this.assemblyName}`
     }
 
     public get assemblyName() {
@@ -218,10 +216,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
         super()
         this.mirabufInstance = mirabufInstance
-        this.multiplayerOwningClientId = multiplayerOwnerId
+        this._multiplayerOwningClientId = multiplayerOwnerId
         this.loadPreferences()
 
-        progressHandle?.update("Creating mechanism...", 0.9)
+        progressHandle?.update("Creating scene object...", 0.9)
 
         this.mechanism = World.physicsSystem.createMechanismFromParser(this.mirabufInstance.parser)
         if (this.mechanism.layerReserve) this._physicsLayerReserve = this.mechanism.layerReserve
@@ -233,11 +231,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._nameTag = new SceneOverlayTag(() => {
                 const name =
                     this.nameOverride ??
-                    (this._brain instanceof SynthesisBrain
+                    (this._brain?.isSynthesis()
                         ? this._brain.inputSchemeName
-                        : this._brain instanceof WPILibBrain
+                        : this._brain?.isWPILib()
                           ? "Magic"
-                          : "Not Configured")
+                          : "Not Configured!")
                 if (World.multiplayerSystem != null) {
                     return `${name} (${this.alliance === "red" ? "R" : this.alliance === "blue" ? "B" : "..."}${this.station ?? ""})`
                 }
@@ -444,7 +442,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public dispose(): void {
         this.mirabufInstance.dispose(World.sceneRenderer.scene)
 
-        if (this._brain && this._brain instanceof SynthesisBrain) {
+        if (this._brain?.isSynthesis()) {
             this._brain.clearControls()
         }
 
@@ -1163,8 +1161,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return rootBody.IsActive() && !rootBody.IsSensor()
     }
 
-    public getRootNodeId(): Jolt.BodyID | undefined {
+    public getRootNodeId(): Jolt.BodyID {
         return this.mechanism.getBodyByNodeId(this.mechanism.rootBody)!
+    }
+
+    public getRootBody(): Jolt.Body {
+        return World.physicsSystem.getBody(this.getRootNodeId())!
     }
 
     public loadFocusTransform(mat: THREE.Matrix4) {
@@ -1193,9 +1195,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomTargetControls) {
         const modes = [
-            { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
-            { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
-            { mode: CameraMode.Face, name: "Camera: Face Robot" },
+            { mode: CameraMode.FOLLOW, name: "Camera: Follow Robot" },
+            { mode: CameraMode.LOCKED, name: "Camera: Lock to Robot" },
+            { mode: CameraMode.FACE, name: "Camera: Face Robot" },
         ]
 
         modes
@@ -1212,7 +1214,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getSupplierData(): ContextData {
         const data: ContextData = {
-            title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
+            title: this.miraType == MiraType.ROBOT ? `${this.descriptiveName}` : "Field",
             items: [],
         }
 
@@ -1238,14 +1240,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 type: "panel",
             }
         )
-
-        if (this.brain?.brainType == "wpilib") {
-            data.items.push({
-                name: "Auto Testing",
-                screen: AutoTestPanel,
-                type: "panel",
-            })
-        }
 
         if (World.sceneRenderer.currentCameraControls.controlsType == "Target") {
             const cameraControls = World.sceneRenderer.currentCameraControls as CustomTargetControls
@@ -1379,7 +1373,12 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), progressHandle, multiplayerOwnerId)
+    const mirabufInstance = new MirabufInstance(parser)
+
+    progressHandle?.update("Created Mirabuf Instance", URDFImportProgressBar.MIRABUF_INSTANCE)
+    await yieldToMain()
+
+    return new MirabufSceneObject(mirabufInstance, progressHandle, multiplayerOwnerId)
 }
 
 async function migrateUUID(parser: MirabufParser, hash: string) {
