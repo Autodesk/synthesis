@@ -67,8 +67,8 @@ const HOVER_HIGHLIGHT_COLOR = new THREE.Color(2.2, 1.6, 0.2)
 const DEFAULT_INSTANCE_COLOR = new THREE.Color(1, 1, 1)
 
 /** Reused across picks to avoid reallocating. */
-const _raycaster = new THREE.Raycaster()
-const _ndc = new THREE.Vector2()
+const raycaster = new THREE.Raycaster()
+const ndc = new THREE.Vector2()
 
 interface PickIndexEntry {
     sceneObject: MirabufSceneObject
@@ -199,10 +199,10 @@ class WheelAssignmentMode extends WorldSystem {
     /** Raycasts the cached candidate batches for the part-instance GUID under the mouse. */
     private pickPart(mousePos: [number, number]): PartPick | undefined {
         const camera = World.sceneRenderer.mainCamera
-        _ndc.set((mousePos[0] / window.innerWidth) * 2 - 1, -(mousePos[1] / window.innerHeight) * 2 + 1)
-        _raycaster.setFromCamera(_ndc, camera)
+        ndc.set((mousePos[0] / window.innerWidth) * 2 - 1, -(mousePos[1] / window.innerHeight) * 2 + 1)
+        raycaster.setFromCamera(ndc, camera)
 
-        const hits = _raycaster.intersectObjects(this._candidateBatches, false)
+        const hits = raycaster.intersectObjects(this._candidateBatches, false)
         if (hits.length === 0) return undefined
 
         const hit = hits[0]
