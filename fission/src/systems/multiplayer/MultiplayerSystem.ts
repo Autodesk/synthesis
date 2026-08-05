@@ -43,12 +43,14 @@ class MultiplayerSystem {
 
     public fieldTransferLock?: { ts: number; id: SceneObjectId }
 
-    public static async setup(ws: MultiplayerWebsocket, displayName: string): Promise<boolean> {
+    public isHost: boolean
+
+    public static async setup(ws: MultiplayerWebsocket, displayName: string, isHost: boolean): Promise<boolean> {
         MatchMode.getInstance().sandboxModeStart()
 
         console.group("Multiplayer initialization")
 
-        const system = new MultiplayerSystem(ws, displayName)
+        const system = new MultiplayerSystem(ws, displayName, isHost)
         const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
 
@@ -57,7 +59,8 @@ class MultiplayerSystem {
         return initResult
     }
 
-    private constructor(ws: MultiplayerWebsocket, displayName: string) {
+    private constructor(ws: MultiplayerWebsocket, displayName: string, isHost: boolean) {
+        this.isHost = isHost
         this.client = ws
 
         this.client.onError = () => {
@@ -222,6 +225,20 @@ class MultiplayerSystem {
                 peerID
             )
         }
+    }
+
+    async sendOngoingMatchModeInfo() {
+        const matchMode = MatchMode.getInstance()
+        if (!matchMode.isMatchEnabled) return
+
+        this.broadcast({
+            type: "matchModeState",
+            data: {
+                event: "ongoing",
+                config: matchMode.matchModeConfig,
+                startTime: this.toServerTime(matchMode.startTime),
+            },
+        })
     }
 
     getOwnSceneObjectIDs(): SceneObjectId[] {

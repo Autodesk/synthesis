@@ -83,6 +83,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
             return {
                 displayName: name,
                 ws: MultiplayerWebsocket.init(room ?? null, name, wsRef.current ?? new MultiplayerWebsocket(url)),
+                isHost: room == undefined,
                 keepAssets: keepAssets ?? false,
             }
         },

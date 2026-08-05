@@ -74,6 +74,7 @@ class MultiplayerWebsocket {
             room_id: roomId,
             name: displayName,
         }
+
         if (ws._ws.readyState == WebSocket.OPEN) {
             ws.sendServer(initialMessage)
         } else {
@@ -81,6 +82,7 @@ class MultiplayerWebsocket {
                 ws.sendServer(initialMessage)
             }
         }
+
         return ws
     }
 

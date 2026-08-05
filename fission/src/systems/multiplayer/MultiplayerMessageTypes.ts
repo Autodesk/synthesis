@@ -1,5 +1,4 @@
 import type { MatchModeConfig } from "@/panels/configuring/MatchModeConfigPanel.tsx"
-
 import type { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import type {
     ClientInfo,
@@ -43,11 +42,18 @@ export interface MatchModePenaltyBody {
     points: number
     description: string
 }
+
+// Maybe ongoing and start should just be the same state?
 export type MatchModeStateBody =
     | {
           event: "start"
           config: MatchModeConfig
           moveRobots: boolean
+          startTime: number
+      }
+    | {
+          event: "ongoing"
+          config: MatchModeConfig
           startTime: number
       }
     | { event: "cancel" }

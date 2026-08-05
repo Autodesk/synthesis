@@ -12,5 +12,5 @@ export async function startMultiplayerWorld(info: MultiplayerInitProps): Promise
     PreferencesSystem.setUserPreference("MultiplayerUsername", info.displayName)
     PreferencesSystem.savePreferences()
     World.reset(info.keepAssets ? "all" : "none")
-    return await MultiplayerSystem.setup(info.ws, info.displayName)
+    return await MultiplayerSystem.setup(info.ws, info.displayName, info.isHost)
 }

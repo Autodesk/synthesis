@@ -56,6 +56,10 @@ class MatchMode {
 
     private constructor() {}
 
+    get startTime() {
+        return this._startTime
+    }
+
     static getInstance(): MatchMode {
         MatchMode._instance ??= new MatchMode()
         return MatchMode._instance

@@ -12,6 +12,7 @@ import { Button } from "@/components/StyledComponents.tsx"
 export interface MultiplayerInitProps {
     displayName: string
     ws: MultiplayerWebsocket
+    isHost: boolean
     keepAssets: boolean
 }
 

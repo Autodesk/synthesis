@@ -49,18 +49,23 @@ const pendingOperations: (() => void)[] = []
 const progressHandles: Map<SceneObjectId, ProgressHandle> = new Map()
 
 async function handleMatchModeStateMessage(data: MatchModeStateBody) {
+    const matchMode = MatchMode.getInstance()
     switch (data.event) {
         case "start": {
-            MatchMode.getInstance().setMatchModeConfig(data.config)
-            await MatchMode.getInstance().start(
-                World.multiplayerSystem!.fromServerTime(data.startTime),
-                false,
-                data.moveRobots
-            )
+            matchMode.setMatchModeConfig(data.config)
+            await matchMode.start(World.multiplayerSystem!.fromServerTime(data.startTime), false, data.moveRobots)
+            break
+        }
+        case "ongoing": {
+            matchMode.setMatchModeConfig(data.config)
+            // - No need to move the robots, since if the client just joined an ongoing match
+            // then they've been / will be sent the current transform of every robot already
+            // - The mode will automatically be set by the match mode system
+            await matchMode.start(World.multiplayerSystem!.fromServerTime(data.startTime), false, false)
             break
         }
         case "cancel": {
-            MatchMode.getInstance().sandboxModeStart()
+            matchMode.sandboxModeStart()
             globalAddToast("info", "Match Mode Cancelled")
             break
         }
@@ -70,9 +75,10 @@ async function handleMatchModeStateMessage(data: MatchModeStateBody) {
 async function handleInfoMessage(this: MultiplayerSystem, { info, introduceSelf }: InfoBody) {
     this.clientToObjectMap.set(info.clientId, [])
     this.clientToInfoMap.set(info.clientId, info)
-    if (introduceSelf) {
-        await this.introduceSelf(false, info.clientId)
-    }
+
+    if (introduceSelf) await this.introduceSelf(false, info.clientId)
+    if (this.isHost) await this.sendOngoingMatchModeInfo()
+
     globalAddToast("success", "Multiplayer Peer Connected", info.displayName)
     EventSystem.dispatch("MultiplayerStatePeerChange")
 }

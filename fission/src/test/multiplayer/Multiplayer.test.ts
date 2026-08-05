@@ -55,7 +55,7 @@ describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", (
         })
         expect(ws.ready).toBe(true)
 
-        await MultiplayerSystem.setup(MultiplayerWebsocket.init(null, "User", ws), "User")
+        await MultiplayerSystem.setup(MultiplayerWebsocket.init(null, "User", ws), "User", true)
 
         expect(multiplayer).toBeDefined()
         expect(multiplayer?.roomId).toBeDefined()
@@ -74,7 +74,7 @@ async function setUpClient(roomId: null | string, name: string) {
     })
     expect(ws.ready).toBe(true)
 
-    const success = await MultiplayerSystem.setup(MultiplayerWebsocket.init(roomId, name, ws), name)
+    const success = await MultiplayerSystem.setup(MultiplayerWebsocket.init(roomId, name, ws), name, false)
     expect(success).toBe(true)
     return ws
 }
