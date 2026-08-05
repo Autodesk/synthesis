@@ -1,35 +1,22 @@
 import { Button, Stack } from "@mui/material"
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useCallback } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
 import type { PartDeletionSelection } from "@/systems/scene/PartDeletionMode.ts"
 import Label from "@/components/Label.tsx"
 import { RefreshButton } from "@/components/StyledComponents.tsx"
 import type { SubpanelProps } from "@/components/UserModelConfig/ModelConfigPanel.tsx"
+import { usePickingMode } from "./usePickingMode"
 
 const DeleteParts: React.FC<SubpanelProps> = () => {
-    const [enabled, setEnabled] = useState<boolean>(false)
-    const [pending, setPending] = useState<PartDeletionSelection[]>([
-        ...World.partDeletionMode.pendingDeletions.values(),
-    ])
+    const subscribe = useCallback(
+        (onChange: (items: PartDeletionSelection[]) => void) =>
+            EventSystem.listen("PartDeletionSelectionChanged", ({ parts }) => onChange(parts)),
+        []
+    )
+    const { enabled, setEnabled, items: pending } = usePickingMode(World.partDeletionMode, subscribe)
 
-    useEffect(() => {
-        return EventSystem.listen("PartDeletionSelectionChanged", ({ parts }) => {
-            setPending(parts)
-        })
-    }, [])
-
-    useEffect(() => {
-        World.partDeletionMode.enabled = enabled
-        return () => {
-            World.partDeletionMode.enabled = false
-        }
-    }, [enabled])
-
-    useEffect(() => {
-        setEnabled(World.partDeletionMode.pendingDeletions.size == 0)
-    }, [])
     return (
         <Stack gap={2} direction="column">
             <Button

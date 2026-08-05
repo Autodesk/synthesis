@@ -1,17 +1,22 @@
 import { Button, Stack } from "@mui/material"
 import type React from "react"
-import { useMemo } from "react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
 import type { WheelSelection } from "@/systems/scene/WheelAssignmentMode.ts"
 import Label from "@/components/Label.tsx"
 import { DeleteButton } from "@/components/StyledComponents.tsx"
 import type { SubpanelProps } from "./ModelConfigPanel"
+import { usePickingMode } from "./usePickingMode"
 
 const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage }) => {
-    const [enabled, setEnabled] = useState<boolean>(false)
-    const [selected, setSelected] = useState<WheelSelection[]>([...World.wheelAssignmentMode.pendingWheels.values()])
+    const subscribe = useCallback(
+        (onChange: (items: WheelSelection[]) => void) =>
+            EventSystem.listen("WheelAssignmentSelectionChanged", ({ wheels }) => onChange(wheels)),
+        []
+    )
+    const { enabled, setEnabled, items: selected } = usePickingMode(World.wheelAssignmentMode, subscribe)
+
     const wheelSlots = useMemo(() => {
         const slots = new Array<WheelSelection | null>(Math.max(selected.length, 4)).fill(null)
         selected.forEach((item, i) => {
@@ -19,19 +24,6 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage }) => 
         })
         return slots
     }, [selected])
-    useEffect(() => {
-        return EventSystem.listen("WheelAssignmentSelectionChanged", ({ wheels }) => {
-            setSelected(wheels)
-        })
-    }, [])
-
-    useEffect(() => {
-        World.wheelAssignmentMode.enabled = enabled
-    }, [enabled])
-
-    useEffect(() => {
-        setEnabled(World.wheelAssignmentMode.pendingWheels.size == 0)
-    }, [])
 
     useEffect(() => {
         setDisableNextMessage(selected.length < 4 ? "Must select at least 4 wheels" : null)
