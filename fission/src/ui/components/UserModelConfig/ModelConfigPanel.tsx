@@ -15,7 +15,6 @@ export interface SubpanelProps {
 const screens: { title: string; component: React.FC<SubpanelProps> | null }[] = [
     { title: "Assign Wheels", component: WheelAssignment },
     { title: "Drivetrain", component: DrivetrainConfig },
-    { title: "Delete Parts", component: null },
 ]
 
 const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
