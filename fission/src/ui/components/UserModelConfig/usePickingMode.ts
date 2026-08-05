@@ -2,11 +2,6 @@ import { useEffect, useState } from "react"
 import type PartPickingMode from "@/systems/scene/PartPickingMode.ts"
 import type { PartSelection } from "@/systems/scene/PartPickingMode.ts"
 
-/**
- * Shares the enable-toggle/subscribe wiring common to every picking-mode subpanel (WheelAssignment,
- * DeleteParts): tracks whether picking is active, mirrors it onto the mode, seeds + subscribes to the
- * mode's pending selection list. Callers own their own row rendering.
- */
 export function usePickingMode<T extends PartSelection>(
     mode: PartPickingMode<T>,
     subscribe: (onChange: (items: T[]) => void) => () => void
