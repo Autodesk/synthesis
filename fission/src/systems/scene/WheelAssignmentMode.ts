@@ -12,26 +12,21 @@ import {
 import World from "../World"
 import PartPickingMode, { type HighlightMap, type PartPick, type PartSelection } from "./PartPickingMode"
 
-interface BatchedMeshRangeApi {
-    getGeometryIdAt?: (instanceId: number) => number
-    getGeometryRangeAt?: (geometryId: number, target?: object) => { vertexStart: number; vertexCount: number }
-}
-
 /** Local-space vertices for just this part's slice of a shared BatchedMesh buffer; whole geometry otherwise. */
-function getPartLocalVertices(object: THREE.Object3D, instanceId: number): THREE.Vector3[] | undefined {
-    const mesh = object as THREE.Mesh
+function getPartLocalVertices(mesh: THREE.BatchedMesh, instanceId: number): THREE.Vector3[] | undefined {
     const position = mesh.geometry?.getAttribute("position")
     if (!position) return undefined
 
     let start = 0
     let count = position.count
 
-    const batched = object as unknown as BatchedMeshRangeApi
-    if (typeof batched.getGeometryIdAt === "function" && typeof batched.getGeometryRangeAt === "function") {
-        const geometryId = batched.getGeometryIdAt(instanceId)
-        const range = batched.getGeometryRangeAt(geometryId)
-        start = range.vertexStart
-        count = range.vertexCount
+    if (typeof mesh.getGeometryIdAt === "function" && typeof mesh.getGeometryRangeAt === "function") {
+        const geometryId = mesh.getGeometryIdAt(instanceId)
+        const range = mesh.getGeometryRangeAt(geometryId)
+        if (range != null) {
+            start = range.vertexStart
+            count = range.vertexCount
+        }
     }
 
     const points: THREE.Vector3[] = []
@@ -79,7 +74,7 @@ class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
         EventSystem.dispatch("WheelAssignmentDriveReversedChanged", { reversed: this._driveReversed })
     }
 
-    protected handlePick(pick: PartPick): void {
+    protected override handlePick(pick: PartPick): void {
         const points = getPartLocalVertices(pick.object, pick.instanceId)
         if (!points || points.length === 0) {
             globalAddToast("warning", "Wheel Assignment", "Couldn't read this part's geometry.")
@@ -106,7 +101,7 @@ class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
         this.pending.addPart(pick.guid, {
             sceneId: pick.sceneObject.id,
             guid: pick.guid,
-            highlight: { instanceId: pick.instanceId, mesh: pick.object as THREE.BatchedMesh },
+            highlight: { instanceId: pick.instanceId, mesh: pick.object },
             assignment: { wheelPartGuid: pick.guid, parentPartGuid, axisFit: worldAxisFit },
         })
     }

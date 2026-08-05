@@ -46,7 +46,7 @@ function isURDFFile(filename: string): boolean {
 }
 
 const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufProps>> = ({ modal }) => {
-    const { openPanel, closeModal, configureScreen, openModal } = useUIContext()
+    const { openPanel, closeModal, configureScreen, openModal, addToast } = useUIContext()
 
     const { configurationType, errorMessage } = modal!.props.custom
 
@@ -116,6 +116,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 if (mirabufSceneObject) {
                     finalizeSceneObject(mirabufSceneObject)
                     if (!foundDrivetrain) {
+                        addToast("info", "Drivetrain not detected", "please select wheels manually!")
                         await new Promise<void>(resolve => {
                             openPanel(ModelConfigPanel, undefined, modal, {
                                 onClose: () => {
@@ -166,7 +167,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
         } finally {
             setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
         }
-    }, [openPanel, openModal, miraType, modal, selectedFile, finalizeSceneObject])
+    }, [openPanel, openModal, miraType, modal, selectedFile, finalizeSceneObject, addToast])
 
     useEffect(() => {
         configureScreen(

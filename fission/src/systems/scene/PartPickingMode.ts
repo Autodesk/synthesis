@@ -8,7 +8,7 @@ import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenIntera
 export interface PartPick {
     sceneObject: MirabufSceneObject
     guid: string
-    object: THREE.Object3D
+    object: THREE.BatchedMesh
     instanceId: number
 }
 
@@ -232,12 +232,12 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         ndc.set((mousePos[0] / window.innerWidth) * 2 - 1, -(mousePos[1] / window.innerHeight) * 2 + 1)
         raycaster.setFromCamera(ndc, camera)
 
-        const hits = raycaster.intersectObjects(this._candidateBatches, false)
+        const hits = raycaster.intersectObjects<THREE.BatchedMesh>(this._candidateBatches, false)
         if (hits.length === 0) return undefined
 
         const hit = hits[0]
-        const object = hit.object as THREE.BatchedMesh
-        const instanceId = (hit as unknown as { batchId?: number }).batchId ?? 0
+        const object = hit.object
+        const instanceId = hit.batchId ?? 0
 
         const resolved = this._pickIndex.get(object)?.get(instanceId)
         if (!resolved) return undefined
@@ -253,7 +253,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
             return
         }
 
-        const mesh = pick.object as THREE.BatchedMesh
+        const mesh = pick.object
         this.setHover({ mesh, instanceId: pick.instanceId })
     }
 

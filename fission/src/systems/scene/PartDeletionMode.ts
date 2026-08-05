@@ -19,7 +19,7 @@ class PartDeletionMode extends PartPickingMode<PartDeletionSelection> {
         return this.pending
     }
 
-    protected handlePick(pick: PartPick): void {
+    protected override handlePick(pick: PartPick): void {
         const rootPartGuid = this.getGroundedRootPartGuid(pick.sceneObject)
         if (rootPartGuid === pick.guid) {
             globalAddToast("warning", "Delete Parts", "Can't delete the assembly's grounded/root part.")
