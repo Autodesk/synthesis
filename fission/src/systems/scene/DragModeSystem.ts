@@ -224,6 +224,8 @@ class DragModeSystem extends WorldSystem {
     }
 
     private findDragTarget(mousePos: [number, number]): { bodyId: Jolt.BodyID; hitPoint: THREE.Vector3 } | undefined {
+        if (World.physicsSystem.isPaused) return undefined
+
         const result = rayCastForRigidBody(mousePos)
         if (!result || !this.isDraggable(result.association)) return undefined
         return { bodyId: result.bodyId, hitPoint: result.hitPoint }
@@ -370,6 +372,7 @@ class DragModeSystem extends WorldSystem {
 
     private updateDragForce(): void {
         if (!this._dragTarget) return
+        if (World.physicsSystem.isPaused) return
 
         const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
         if (!body) {
