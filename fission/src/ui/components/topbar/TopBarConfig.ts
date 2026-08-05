@@ -15,6 +15,7 @@ const tintedWithButtonColor = (percent: number) => `color-mix(in srgb, currentCo
 
 export const TOP_BAR_ICON_BUTTON_ACTIVE_SX = {
     borderRadius: 1,
+    color: "primary.main",
     backgroundColor: tintedWithButtonColor(16),
     "&:hover": { backgroundColor: tintedWithButtonColor(24) },
 } as const

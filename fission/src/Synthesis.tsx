@@ -10,7 +10,6 @@ import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
-import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import PortraitOverlay from "./ui/components/PortraitOverlay.tsx"
@@ -87,7 +86,6 @@ const Synthesis = () => {
                             <UIRenderer />
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
-                            <DragModeIndicator />
                             <PortraitOverlay />
 
                             {!consentPopupDisable && (

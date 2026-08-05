@@ -1,16 +1,17 @@
-import { Box, Stack, Typography, useMediaQuery } from "@mui/material"
+import CloseIcon from "@mui/icons-material/Close"
+import { Box, IconButton, Stack, Typography, useMediaQuery } from "@mui/material"
 import type React from "react"
+import { useCallback, useState } from "react"
 import { useIsMobile } from "@/ui/helpers/useIsMobile"
 
-/**
- * Full-screen overlay shown when a mobile device is held in portrait orientation.
- * Prompts the user to rotate their device to landscape for the best experience.
- */
+/** Rotate your device to landscape screen */
 const PortraitOverlay: React.FC = () => {
     const isMobile = useIsMobile()
     const isPortrait = useMediaQuery("(orientation: portrait)")
+    const [dismissed, setDismissed] = useState(false)
+    const dismiss = useCallback(() => setDismissed(true), [])
 
-    if (!isMobile || !isPortrait) return null
+    if (!isMobile || !isPortrait || dismissed) return null
 
     return (
         <Box
@@ -24,6 +25,18 @@ const PortraitOverlay: React.FC = () => {
                 justifyContent: "center",
             }}
         >
+            <IconButton
+                aria-label="Dismiss"
+                onClick={dismiss}
+                sx={{
+                    position: "absolute",
+                    top: theme => theme.spacing(1),
+                    right: theme => theme.spacing(1),
+                    color: "topBarText.main",
+                }}
+            >
+                <CloseIcon />
+            </IconButton>
             <Stack alignItems="center" gap={3} sx={{ px: 4, textAlign: "center" }}>
                 <Box
                     component="img"
