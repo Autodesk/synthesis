@@ -10,6 +10,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { CameraPoint } from "@/systems/preferences/PreferenceTypes.ts"
 import type { PartDeletionSelection } from "@/systems/scene/PartDeletionMode.ts"
 import type { WheelSelection } from "@/systems/scene/WheelAssignmentMode.ts"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 interface EventDataMap {
     // Mirabuf
@@ -41,6 +42,7 @@ interface EventDataMap {
 
     // Code Sim
     SimMapUpdateEvent: { internalUpdate: boolean }
+    RobotCamerasChangeEvent: never
 
     // Context Menu
     ContextSupplierEvent: { data: ContextData; mousePosition: [number, number] }
@@ -58,7 +60,7 @@ interface EventDataMap {
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }
     // Field View: the active camera point changed (the selected point, or undefined when none).
-    CameraViewChangedEvent: { point: CameraPoint | undefined; focusedRobotId?: number }
+    CameraViewChangedEvent: { point: CameraPoint | undefined; focusedRobotId?: SceneObjectId }
     // The active camera control scheme changed (e.g. "Target" or "FieldView").
     CameraControlsTypeChangedEvent: { controlsType: string }
 

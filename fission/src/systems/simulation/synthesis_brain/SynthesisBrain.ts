@@ -5,11 +5,13 @@ import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import type { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
+import MecanumDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/MecanumDriveBehavior.ts"
+import { applyMecanumTires, resolveMecanumLayout } from "@/systems/simulation/behavior/synthesis/drive/MecanumLayout.ts"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
 import SwerveDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SwerveDriveBehavior.ts"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
+import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
 import Brain from "../Brain"
 import type Behavior from "../behavior/Behavior"
 import { DriveType } from "../behavior/Behavior"
@@ -42,6 +44,7 @@ class SynthesisBrain extends Brain {
     private _brainIndex: number
     private _assembly: MirabufSceneObject
     public driveType: DriveType = DriveType.ARCADE
+    public mecanumRobotCentric: boolean = false
 
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
@@ -81,12 +84,15 @@ class SynthesisBrain extends Brain {
     }
 
     public configureDriveBehavior(driveType: DriveType) {
-        const wasSwerve = this.driveType === DriveType.SWERVE
+        const previousType = this.driveType
         this.driveType = driveType
 
         // Transitioning into or out of swerve requires a full rebuild so that the
         // azimuth (steering) hinges are correctly excluded from / restored to arm control.
-        if (driveType === DriveType.SWERVE || wasSwerve) {
+        // Mecanum needs one too: it zeroes tire friction on the wheels it doesn't drive,
+        // and configure() is what restores that friction on the way back out.
+        const needsRebuild = (type: DriveType) => type === DriveType.SWERVE || type === DriveType.MECANUM
+        if (needsRebuild(driveType) || needsRebuild(previousType)) {
             this.configure()
             return
         }
@@ -100,6 +106,13 @@ class SynthesisBrain extends Brain {
         existing.isArcade = driveType == DriveType.ARCADE
     }
 
+    /** Toggles robot-centric mecanum drive without rebuilding the drivetrain. */
+    public setMecanumRobotCentric(robotCentric: boolean): void {
+        this.mecanumRobotCentric = robotCentric
+        const mecanum = this._behaviors.find(b => b instanceof MecanumDriveBehavior) as MecanumDriveBehavior | undefined
+        if (mecanum) mecanum.robotCentric = robotCentric
+    }
+
     public resetSwerveOrientation(): void {
         const swerve = this._behaviors.find(b => b instanceof SwerveDriveBehavior) as SwerveDriveBehavior | undefined
         if (!swerve) return
@@ -111,6 +124,10 @@ class SynthesisBrain extends Brain {
         this._currentJointIndex = 1
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (this._assembly.mechanism.controllable) {
+            // A previous mecanum configuration may have left wheels steered or free-rolling.
+            // Restore every tire before rebuilding.
+            this.wheelDrivers().forEach(w => w.resetTire())
+
             // In swerve mode, detect the azimuth hinges up front so they can drive the modules and
             // be excluded from arm behaviors. Fall back to arcade if detection fails.
             const swerveInfo =
@@ -123,11 +140,16 @@ class SynthesisBrain extends Brain {
                 console.warn("[Swerve] swerve detection failed for this robot; falling back to arcade drive.")
             }
 
-            this._behaviors.push(
-                useSwerve
-                    ? this.createSwerveDriveBehavior(swerveInfo.hinges)
-                    : this.createSkidSteerDriveBehavior(this.driveType === DriveType.ARCADE)
-            )
+            let driveBehavior: DriveBehavior
+            if (useSwerve) {
+                driveBehavior = this.createSwerveDriveBehavior(swerveInfo.hinges)
+            } else if (this.driveType === DriveType.MECANUM) {
+                driveBehavior = this.createMecanumDriveBehavior()
+            } else {
+                driveBehavior = this.createSkidSteerDriveBehavior(this.driveType === DriveType.ARCADE)
+            }
+
+            this._behaviors.push(driveBehavior)
 
             this.configureArmBehaviors(useSwerve ? swerveInfo.hinges : [])
             this.configureElevatorBehaviors()
@@ -198,6 +220,11 @@ class SynthesisBrain extends Brain {
 
     public clearControls(): void {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
+    }
+
+    /** @returns every wheel driver on this assembly. */
+    private wheelDrivers(): WheelDriver[] {
+        return this._simLayer.drivers.filter(driver => driver instanceof WheelDriver) as WheelDriver[]
     }
 
     /** Creates and returns a configured skid-steer (tank/arcade) drive behavior. */
@@ -276,6 +303,43 @@ class SynthesisBrain extends Brain {
             rightStimuli,
             this._brainIndex,
             isArcade
+        )
+    }
+
+    /**
+     * Creates and returns a configured mecanum drive behavior.
+     *
+     * Mecanum is treated as a pure kinematic mixing scheme over whatever wheels the robot has, so
+     * unlike swerve there is no detection step and no dependency on wheel geometry from CAD. Every
+     * wheel drives; see {@link resolveMecanumLayout} for how each one's roller geometry is picked.
+     */
+    private createMecanumDriveBehavior(): DriveBehavior {
+        const wheelDrivers = this.wheelDrivers()
+        const wheelStimuli: WheelRotationStimulus[] = this._simLayer.stimuli.filter(
+            stimulus => stimulus instanceof WheelRotationStimulus
+        ) as WheelRotationStimulus[]
+
+        if (wheelDrivers.length === 0) {
+            console.error("Cannot configure mecanum drivetrain (0 wheels). Falling back to arcade.")
+            return this.createSkidSteerDriveBehavior(true)
+        }
+
+        const rootBodyId = this._mechanism.getBodyByNodeId(this._mechanism.rootBody)
+        const chassisBody = rootBodyId ? World.physicsSystem.getBody(rootBodyId) : undefined
+        const chassisRotation = chassisBody
+            ? convertJoltQuatToThreeQuaternion(chassisBody.GetRotation())
+            : new THREE.Quaternion()
+
+        const layout = resolveMecanumLayout(wheelDrivers, chassisRotation)
+        applyMecanumTires(layout)
+
+        return new MecanumDriveBehavior(
+            layout.modules,
+            wheelStimuli,
+            this._brainIndex,
+            layout.frame,
+            chassisBody,
+            this.mecanumRobotCentric
         )
     }
 
