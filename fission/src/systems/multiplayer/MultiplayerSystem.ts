@@ -227,7 +227,9 @@ class MultiplayerSystem {
         }
     }
 
-    async sendOngoingMatchModeInfo() {
+    sendDimensionPenalty() {}
+
+    sendOngoingMatchModeInfo() {
         const matchMode = MatchMode.getInstance()
         if (!matchMode.isMatchEnabled) return
 

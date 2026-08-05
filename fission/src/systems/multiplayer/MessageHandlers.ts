@@ -357,10 +357,11 @@ function handleEnableObjectPhysicsMessage(sceneObjectKey: SceneObjectId, peerId:
 function handleMatchModePenaltyMessage(data: MatchModePenaltyBody, peerId: string) {
     const obj = World.sceneRenderer.sceneObjects.get(data.objectId)
     if (!(obj instanceof MirabufSceneObject)) {
-        console.warn("can't handle penalty for object", data.objectId, obj)
+        console.warn("Can't handle penalty for object", data.objectId, obj)
         pendingOperations.push(() => handleMatchModePenaltyMessage(data, peerId))
         return
     }
+
     World.scoreTracker.robotPenalty(obj, data.points, data.description, false)
 }
 
