@@ -305,7 +305,7 @@ class DragModeSystem extends WorldSystem {
 
         // Face mode should keep the camera enabled tracking the target
         const targetControls = getTargetControls()
-        if (targetControls && targetControls.mode !== CameraMode.Face) {
+        if (targetControls && targetControls.mode !== CameraMode.FACE) {
             targetControls.enabled = false
         }
     }
@@ -375,6 +375,11 @@ class DragModeSystem extends WorldSystem {
         if (!body) {
             this.stopDragging()
             return
+        }
+
+        // keeping the dragged body awake so drag forces take effect even if body is sleeping
+        if (!this._dragTarget.physicsDisabled && !body.IsActive()) {
+            World.physicsSystem.activateBody(this._dragTarget.bodyId)
         }
 
         const currentPos = body.GetPosition()

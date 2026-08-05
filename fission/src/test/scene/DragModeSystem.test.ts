@@ -124,7 +124,7 @@ describe("DragModeSystem Integration Tests", () => {
     })
 
     describe("Physics Integration", () => {
-        function setupDraggableCube() {
+        function setupDraggableCube(spawnActive: boolean = true) {
             // Create a physics cube which will then be a draggable game piece
             const vertices = new Float32Array([
                 -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
@@ -137,7 +137,7 @@ describe("DragModeSystem Integration Tests", () => {
             const shape = shapeResult.Get()
             const body = physicsSystem.createBody(shape, 1.0, new THREE.Vector3(0, 0, 0), new THREE.Quaternion())
             const bodyId = body.GetID()
-            physicsSystem.addBodyToSystem(bodyId, true)
+            physicsSystem.addBodyToSystem(bodyId, spawnActive)
 
             // Create a mock MirabufSceneObject that properly passes `instanceof` checks
             const mockSceneObject = Object.create(MirabufSceneObject.prototype)
@@ -166,7 +166,7 @@ describe("DragModeSystem Integration Tests", () => {
                 cleanup: () => {
                     physicsSystem.getBodyAssociation = originalGetBodyAssociation
                     physicsSystem.rayCast = originalRayCast
-                    physicsSystem.destroyBodyIds(bodyId)
+                    physicsSystem.destroyBodiesById(bodyId)
                     shape.Release()
                 },
             }
@@ -218,6 +218,44 @@ describe("DragModeSystem Integration Tests", () => {
             }
 
             screenHandler.interactionEnd?.(endInteraction)
+
+            cleanup()
+        })
+
+        test("should wake and drag a sleeping game piece", () => {
+            const { physicsBody, cleanup } = setupDraggableCube(false)
+            expect(physicsBody.IsActive()).toBe(false)
+
+            const initialPos = physicsBody.GetPosition()
+            const initialPosition = { x: initialPos.GetX(), y: initialPos.GetY(), z: initialPos.GetZ() }
+
+            const screenHandler = World.sceneRenderer.screenInteractionHandler
+            screenHandler?.interactionStart?.({
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                position: [400, 300] as [number, number],
+            })
+            screenHandler?.interactionMove?.({
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                movement: [100, 0] as [number, number],
+            })
+
+            for (let i = 0; i < 10; i++) {
+                dragModeSystem.update(0.016)
+                physicsSystem.update(0.016)
+            }
+
+            expect(physicsBody.IsActive()).toBe(true)
+            const afterDragPos = physicsBody.GetPosition()
+            const moved =
+                Math.abs(afterDragPos.GetX() - initialPosition.x) > 0.2 ||
+                Math.abs(afterDragPos.GetY() - initialPosition.y) > 0.2 ||
+                Math.abs(afterDragPos.GetZ() - initialPosition.z) > 0.2
+            expect(moved).toBe(true)
+
+            screenHandler.interactionEnd?.({
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                position: [400, 300] as [number, number],
+            })
 
             cleanup()
         })
@@ -292,7 +330,7 @@ describe("DragModeSystem Integration Tests", () => {
                 position: [400, 300] as [number, number],
             }
 
-            function installTargetControls(mode: CameraMode = CameraMode.Follow): CustomTargetControls {
+            function installTargetControls(mode: CameraMode = CameraMode.FOLLOW): CustomTargetControls {
                 const dummyHandler = {} as unknown as ConstructorParameters<typeof CustomTargetControls>[1]
                 const targetControls = new CustomTargetControls(World.sceneRenderer.mainCamera, dummyHandler)
                 targetControls.mode = mode
@@ -320,7 +358,7 @@ describe("DragModeSystem Integration Tests", () => {
             })
 
             test("keeps Face mode camera controls enabled throughout a drag so it can keep tracking its target", () => {
-                const targetControls = installTargetControls(CameraMode.Face)
+                const targetControls = installTargetControls(CameraMode.FACE)
                 const { cleanup } = setupDraggableCube()
                 const screenHandler = World.sceneRenderer.screenInteractionHandler
 

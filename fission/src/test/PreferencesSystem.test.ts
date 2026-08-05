@@ -4,10 +4,23 @@ import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     defaultFieldPreferences,
+    defaultUserPreferences,
     type FieldPreferences,
     type GraphicsPreferences,
     type RobotPreferences,
+    type UserPreference,
+    type UserPreferences,
 } from "@/systems/preferences/PreferenceTypes"
+
+/**
+ * Captures the full current user-preferences state by resolving every key
+ * defined by defaultUserPreferences() through the public getter, so the whole
+ * set can be asserted with toMatchSnapshot().
+ */
+function captureUserPreferences(): UserPreferences {
+    const keys = Object.keys(defaultUserPreferences()) as UserPreference[]
+    return Object.fromEntries(keys.map(key => [key, PreferencesSystem.getUserPreference(key)])) as UserPreferences
+}
 
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
@@ -20,7 +33,7 @@ describe("Preferences System Global Values", () => {
         expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
     })
 
-    test("Setting without saving", async () => {
+    test("Setting without saving", () => {
         PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
         PreferencesSystem.setUserPreference("RenderScoreboard", true)
@@ -28,9 +41,7 @@ describe("Preferences System Global Values", () => {
         window.localStorage.setItem("Preferences", "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
 
-        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
-        expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
+        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
     })
 
     test("Reset to default if undefined", () => {
@@ -38,9 +49,7 @@ describe("Preferences System Global Values", () => {
         PreferencesSystem.setUserPreference("RenderSceneTags", undefined as unknown as boolean)
         PreferencesSystem.setUserPreference("RenderScoreboard", undefined as unknown as boolean)
 
-        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
-        expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
+        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
     })
 
     test("Setting then saving", () => {
@@ -66,9 +75,7 @@ describe("Preferences System Global Values", () => {
 
         PreferencesSystem.clearPreferences()
 
-        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(15)
-        expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(true)
+        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
     })
 
     test("Graphics preferences", () => {
@@ -118,6 +125,7 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 ejectOrder: "FIFO",
             },
+            cameras: [],
             driveVelocity: 3,
             driveAcceleration: 6,
             unstickForce: 8000,
@@ -139,6 +147,7 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 ejectOrder: "LIFO",
             },
+            cameras: [],
             driveVelocity: 1.5,
             driveAcceleration: 8,
             unstickForce: 10000,

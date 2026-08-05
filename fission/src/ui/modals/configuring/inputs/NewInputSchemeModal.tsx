@@ -43,7 +43,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
             InputSchemeManager.saveSchemes(modal?.id)
 
             if (brainIndex !== undefined) {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
             }
 
             setSelectedScheme(scheme)
@@ -60,7 +60,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
         }
 
         configureScreen(modal!, { title: "New Input Scheme", disableAccept: nameError }, { onBeforeAccept })
-    }, [name, type, brainIndex, openPanel, modal, configureScreen, nameError])
+    }, [name, type, brainIndex, openPanel, modal, configureScreen, nameError, setSelectedScheme])
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setName(e.target.value)
@@ -101,7 +101,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
                         value={type}
                         onChange={e => setType(e.target.value as DriveType)}
                     >
-                        {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
+                        {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE, DriveType.MECANUM].map(dt => (
                             <MenuItem key={dt} value={dt}>
                                 {dt}
                             </MenuItem>
