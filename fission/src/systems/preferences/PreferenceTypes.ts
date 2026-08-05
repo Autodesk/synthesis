@@ -30,6 +30,7 @@ export type UserPreferences = {
     MultiplayerUsername: string
     MultiplayerClientID: string
     HasSeenOnboardingTour: boolean
+    AssemblyFavoriteStatus: Record<string, "favorited" | "unfavorited">
 }
 
 export type UserPreference = keyof UserPreferences
@@ -75,6 +76,7 @@ export function defaultUserPreferences(): UserPreferences {
         MultiplayerClientID: "",
         MultiplayerUsername: "",
         HasSeenOnboardingTour: false,
+        AssemblyFavoriteStatus: {},
     }
 }
 

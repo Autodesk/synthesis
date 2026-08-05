@@ -5,6 +5,7 @@ import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import EventSystem from "@/systems/EventSystem.ts"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer.ts"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalOpenModal } from "@/ui/components/GlobalUIControls"
@@ -16,6 +17,7 @@ import {
     AccordionSummary,
     Button,
     DeleteButton,
+    IconButton,
     PositiveButton,
     PositiveIconButton,
     RefreshButton,
@@ -33,20 +35,33 @@ import type TaskStatus from "@/util/TaskStatus"
 import { downloadAll, spawnAPS, spawnCachedMira, spawnRemote } from "./librarySpawnActions"
 
 const OTHER_YEAR = "Other" as const
-type YearKey = number | typeof OTHER_YEAR
+const FAVORITES_YEAR = "Favorites" as const
+type YearKey = number | typeof OTHER_YEAR | typeof FAVORITES_YEAR
 
-const yearOf = (asset: { year?: number }): YearKey => asset.year ?? OTHER_YEAR
+/** The (non-favorite) tab an asset lands in, based solely on its competition year. */
+const yearOf = (asset: { year?: number }): number | typeof OTHER_YEAR => asset.year ?? OTHER_YEAR
 
 interface AssetCardProps {
     name: string
     thumbnail?: string
     miraType: MiraType
     cached: boolean
+    isFavorite: boolean
+    onToggleFavorite: () => void
     onSpawn: () => void
     onDelete?: () => void
 }
 
-const AssetCard: React.FC<AssetCardProps> = ({ name, thumbnail, miraType, cached, onSpawn, onDelete }) => {
+const AssetCard: React.FC<AssetCardProps> = ({
+    name,
+    thumbnail,
+    miraType,
+    cached,
+    isFavorite,
+    onToggleFavorite,
+    onSpawn,
+    onDelete,
+}) => {
     const [thumbFailed, setThumbFailed] = useState(false)
     const showThumb = thumbnail && !thumbFailed
     const PlaceholderIcon = miraType === MiraType.FIELD ? SynthesisIcons.CHESS_BOARD : SynthesisIcons.CAR
@@ -86,6 +101,22 @@ const AssetCard: React.FC<AssetCardProps> = ({ name, thumbnail, miraType, cached
                         <PlaceholderIcon />
                     </Box>
                 )}
+                <Tooltip title={isFavorite ? "Remove from favorites" : "Add to favorites"}>
+                    <IconButton
+                        onClick={onToggleFavorite}
+                        size="small"
+                        sx={{
+                            position: "absolute",
+                            top: 2,
+                            left: 2,
+                            color: isFavorite ? "#f5c518" : "rgba(255, 255, 255, 0.75)",
+                            backgroundColor: "rgba(0, 0, 0, 0.35)",
+                            "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.55)" },
+                        }}
+                    >
+                        {isFavorite ? <SynthesisIcons.STAR /> : <SynthesisIcons.STAR_OUTLINE />}
+                    </IconButton>
+                </Tooltip>
                 {cached && (
                     <Box
                         sx={{
@@ -272,28 +303,68 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         [cachedInfos, manifestHashes]
     )
 
+    const [favoriteStatus, setFavoriteStatus] = useState(() => ({
+        ...PreferencesSystem.getUserPreference("AssemblyFavoriteStatus"),
+    }))
+    const isFavorite = useCallback(
+        (hash: string, defaultFavorite = false) => {
+            const status = favoriteStatus[hash]
+            if (status === "favorited") return true
+            if (status === "unfavorited") return false
+            return defaultFavorite
+        },
+        [favoriteStatus]
+    )
+    const toggleFavorite = useCallback(
+        (hash: string, defaultFavorite = false) => {
+            PreferencesSystem.setFavoriteAsset(hash, !isFavorite(hash, defaultFavorite), defaultFavorite)
+            setFavoriteStatus({ ...PreferencesSystem.getUserPreference("AssemblyFavoriteStatus") })
+        },
+        [isFavorite]
+    )
+
+    // manifest assets belonging to the Favorites tab
+    const favoriteManifest = useMemo(
+        () => manifestAssets.filter(asset => isFavorite(asset.hash, asset.defaultFavorite)),
+        [manifestAssets, isFavorite]
+    )
+    // saved (cached, non-default) assets belonging to the Favorites tab
+    const favoriteSaved = useMemo(() => savedExtra.filter(info => isFavorite(info.hash)), [savedExtra, isFavorite])
+
+    const hasFavorites = favoriteManifest.length > 0 || favoriteSaved.length > 0
+
+    // Favorites is always the first tab, even when empty
     const years = useMemo<YearKey[]>(() => {
         const set = new Set<YearKey>()
         for (const asset of manifestAssets) set.add(yearOf(asset))
         if (savedExtra.length > 0) set.add(OTHER_YEAR)
         const numeric = [...set].filter((y): y is number => typeof y === "number").sort((a, b) => b - a)
-        return set.has(OTHER_YEAR) ? [...numeric, OTHER_YEAR] : numeric
+        const result: YearKey[] = [FAVORITES_YEAR, ...numeric]
+        if (set.has(OTHER_YEAR)) result.push(OTHER_YEAR)
+        return result
     }, [manifestAssets, savedExtra])
 
     const [activeYear, setActiveYear] = useState<YearKey | undefined>(undefined)
     useEffect(() => {
-        if (years.length > 0 && (activeYear === undefined || !years.includes(activeYear))) {
-            setActiveYear(years[0])
-        }
-    }, [years, activeYear])
+        if (activeYear !== undefined && years.includes(activeYear)) return
+        const fallback = years.find(y => y !== FAVORITES_YEAR) ?? FAVORITES_YEAR
+        setActiveYear(hasFavorites ? FAVORITES_YEAR : fallback)
+    }, [years, activeYear, hasFavorites])
 
-    const assetsForYear = useMemo(
-        () => (activeYear === undefined ? [] : manifestAssets.filter(asset => yearOf(asset) === activeYear)),
-        [manifestAssets, activeYear]
-    )
-
+    const showFavorites = activeYear === FAVORITES_YEAR
     const showSaved = activeYear === OTHER_YEAR
-    const hasAssets = assetsForYear.length > 0 || (showSaved && savedExtra.length > 0)
+
+    // manifest cards shown in the active tab
+    const assetsForYear = useMemo(() => {
+        if (activeYear === undefined) return []
+        if (showFavorites) return favoriteManifest
+        return manifestAssets.filter(asset => yearOf(asset) === activeYear)
+    }, [activeYear, showFavorites, favoriteManifest, manifestAssets])
+
+    // saved cards shown in the active tab (Favorites shows favorited saved assets, Other shows all)
+    const savedForTab = showFavorites ? favoriteSaved : showSaved ? savedExtra : []
+
+    const hasAssets = assetsForYear.length > 0 || savedForTab.length > 0
 
     useEffect(() => {
         configureScreen(modal!, { title: "Library", hideAccept: true, cancelText: "Close", allowClickAway: true }, {})
@@ -386,25 +457,28 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                                 thumbnail={asset.thumbnail}
                                 miraType={asset.miraType}
                                 cached={cachedByHash.has(asset.hash)}
+                                isFavorite={isFavorite(asset.hash, asset.defaultFavorite)}
+                                onToggleFavorite={() => toggleFavorite(asset.hash, asset.defaultFavorite)}
                                 onSpawn={() => spawnLibraryAsset(asset)}
                                 onDelete={cachedByHash.has(asset.hash) ? () => deleteCached(asset.hash) : undefined}
                             />
                         ))}
-                        {showSaved &&
-                            savedExtra.map(info => (
-                                <AssetCard
-                                    key={info.hash}
-                                    name={info.name || "Unnamed"}
-                                    thumbnail={info.thumbnail}
-                                    miraType={info.miraType}
-                                    cached
-                                    onSpawn={() => spawnSaved(info)}
-                                    onDelete={() => deleteCached(info.hash)}
-                                />
-                            ))}
+                        {savedForTab.map(info => (
+                            <AssetCard
+                                key={info.hash}
+                                name={info.name || "Unnamed"}
+                                thumbnail={info.thumbnail}
+                                miraType={info.miraType}
+                                cached
+                                isFavorite={isFavorite(info.hash)}
+                                onToggleFavorite={() => toggleFavorite(info.hash)}
+                                onSpawn={() => spawnSaved(info)}
+                                onDelete={() => deleteCached(info.hash)}
+                            />
+                        ))}
                     </AssetCardGrid>
                 ) : (
-                    <Label size="sm">No Assets Found</Label>
+                    <Label size="sm">{showFavorites ? "No favorited assets yet!" : "No Assets Found"}</Label>
                 )}
 
                 {hasRemoteInYear && (

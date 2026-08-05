@@ -44,8 +44,9 @@ import {
     FaMinus,
     FaPlus,
     FaQuestion,
+    FaRegStar,
     FaScrewdriverWrench,
-    FaTags,
+    FaStar,
     FaWrench,
     FaXmark,
 } from "react-icons/fa6"
@@ -101,10 +102,11 @@ export class SynthesisIcons {
     public static readonly INFINITY = FaInfinity
     public static readonly UNLINK = FaUnlink
     public static readonly DICE = GiPerspectiveDiceSixFacesOne
+    public static readonly STAR = FaStar
+    public static readonly STAR_OUTLINE = FaRegStar
     public static readonly DROPDOWN_CARET = IoMdArrowDropdown
     public static readonly BRAIN = FaBrain
     public static readonly MOVE = FaArrowsUpDownLeftRight
-    public static readonly METADATA = FaTags
     public static readonly MICROCHIP = FaMicrochip
     public static readonly CODE_CONNECTION = MdCode
     public static readonly NO_CODE_CONNECTION = MdCodeOff

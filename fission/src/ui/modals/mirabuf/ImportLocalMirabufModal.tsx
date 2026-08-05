@@ -4,6 +4,7 @@ import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "@/systems/World"
 import { loadURDF } from "@/urdf/URDFLoader"
 import Label from "@/ui/components/Label"
@@ -111,6 +112,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                         hash = res.hash
                     }
 
+                    // Auto-favorite:user import
+                    PreferencesSystem.setFavoriteAsset(hash, true)
                     mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
                     progressHandle.done("Import complete!")
                 } else {
@@ -121,6 +124,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                         })
                         return
                     }
+                    // Auto-favorite user import
+                    PreferencesSystem.setFavoriteAsset(result.cacheInfo.hash, true)
                     mirabufSceneObject = await createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
                 }
 

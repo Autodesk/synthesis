@@ -5,6 +5,8 @@ import { API_URL } from "@/util/Consts.ts"
 export type DefaultAssetInfo = Required<Pick<MirabufCacheInfo, "hash" | "remotePath" | "miraType" | "name">> & {
     year?: number
     thumbnail?: string
+    /** Whether this asset is one of our curated picks */
+    defaultFavorite: boolean
 }
 
 class DefaultAssetLoader {
@@ -39,6 +41,7 @@ class DefaultAssetLoader {
                     name: obj.filename,
                     year: obj.year,
                     thumbnail: obj.thumbnail ? `${baseUrl}/${dir}/${obj.thumbnail}` : undefined,
+                    defaultFavorite: obj.favorite ?? false,
                 })
             })
         })
