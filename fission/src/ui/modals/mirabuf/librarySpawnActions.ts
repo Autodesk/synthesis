@@ -4,7 +4,7 @@ import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabu
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
-import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { getTargetControls } from "@/systems/scene/CameraControls"
 import World from "@/systems/World"
@@ -26,7 +26,7 @@ async function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf
         type: "newObject",
         timestamp: Date.now(),
         data: {
-            sceneObjectKey: sceneObject.id as RemoteSceneObjectId,
+            sceneObjectKey: sceneObject.id,
             assembly: encodedAssembly,
             assemblyHash: info.hash,
             miraType: info.miraType,
@@ -35,7 +35,7 @@ async function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf
         },
     }
     await multiplayer.broadcast(message)
-    multiplayer.registerOwnSceneObject(sceneObject.id as LocalSceneObjectId)
+    multiplayer.registerOwnSceneObject(sceneObject.id)
 }
 
 /**
@@ -75,6 +75,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = n
         }
 
         progressHandle.done()
+        World.physicsSystem.deactivateGamepieces()
 
         if (sceneObject.miraType === MiraType.ROBOT) {
             globalOpenPanel(InitialConfigPanel, undefined)

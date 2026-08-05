@@ -102,14 +102,14 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     assembly.info!.GUID = uuid
 
                     let hash: string = inputHash
-                    //// TODO: Caching currently requires too much memory due to the size of URDF meshes. Can be re-enabled after simplifying
 
-                    // const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
+                    const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
 
-                    // if (res == null) {
-                    //     console.warn("Caching URDF failed!")
-                    //     hash = inputHash
-                    // }
+                    if (res == null) {
+                        console.warn("Caching URDF failed!")
+                    } else {
+                        hash = res.hash
+                    }
 
                     mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
                     progressHandle.done("Import complete!")
