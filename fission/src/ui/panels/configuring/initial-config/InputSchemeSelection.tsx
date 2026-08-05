@@ -37,13 +37,13 @@ const SchemeSelector: React.FC<SchemeSelectorProps> = ({
 
     if (scheme.usesTouchControls && !isTouch) return null
     return (
-        <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
+        <Tooltip title={message} key={scheme.schemeId} placement={"left"}>
             <Stack
                 direction="row"
                 justifyContent={"space-between"}
                 alignItems={"center"}
                 gap={"1rem"}
-                key={scheme.schemeName}
+                key={scheme.schemeId}
             >
                 <Label size="sm">
                     {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
@@ -163,7 +163,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                 .map(scheme => {
                     return (
                         <SchemeSelector
-                            key={`available-${scheme.scheme.schemeName}`}
+                            key={scheme.scheme.schemeId}
                             scheme={scheme.scheme}
                             panelId={panelId}
                             brainIndex={brainIndex}
@@ -176,7 +176,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                 ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
                 .map((scheme, i) => {
                     return (
-                        <div key={`conflict-${scheme.scheme.schemeName}`}>
+                        <div key={scheme.scheme.schemeId}>
                             {i == 0 && <Divider />}
                             <SchemeSelector
                                 scheme={scheme.scheme}
@@ -193,7 +193,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                 ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
                 .map((scheme, i) => {
                     return (
-                        <div key={`in-use-${scheme.scheme.schemeName}`}>
+                        <div key={scheme.scheme.schemeId}>
                             {i == 0 && <Divider />}
                             <SchemeSelector
                                 scheme={scheme.scheme}

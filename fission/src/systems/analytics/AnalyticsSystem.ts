@@ -74,6 +74,7 @@ export interface AnalyticsEvents {
     // Scheme Events
     "Scheme Applied": {
         isCustomized: boolean
+        schemeId: string
         schemeName: string
     }
 

@@ -82,7 +82,7 @@ describe("Input Scheme Manager Checks", () => {
 
         const rebound = InputSystem.getBrainIndexSchemeMapping(brainIndex)!
         expect(rebound).not.toBe(edited)
-        expect(rebound.schemeName).toBe(DefaultInputs.ernie().schemeName)
+        expect(rebound.schemeId).toBe(DefaultInputs.ernie().schemeId)
     })
 })
 

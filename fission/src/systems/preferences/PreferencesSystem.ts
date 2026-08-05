@@ -1,3 +1,5 @@
+import DefaultInputs from "../input/DefaultInputs"
+import * as UUID from "uuid"
 import {
     defaultFieldPreferences,
     defaultGraphicsPreferences,
@@ -184,7 +186,32 @@ class PreferencesSystem {
 
             unmigratedKeys.forEach(key => {
                 const userPreferences = saved[USER_PREFERENCE_KEY] as Record<UserPreference, unknown>
-                userPreferences[key] = saved[key]
+
+                switch (key) {
+                    case "InputSchemes": {
+                        // migrate to uuids
+                        const defaultSchemes = DefaultInputs.defaultInputCopies
+                        userPreferences[key] = saved[key].map(scheme => {
+                            if (scheme.schemeId) return scheme
+
+                            if (scheme.customized) {
+                                scheme.schemeId = UUID.v4()
+                                return scheme
+                            }
+
+                            const matchingDefaultScheme =
+                                defaultSchemes.find(s => s.descriptiveName === scheme.descriptiveName) ??
+                                defaultSchemes.find(s => s.schemeName === scheme.schemeName)
+
+                            scheme.schemeId = matchingDefaultScheme?.schemeId ?? UUID.v4()
+
+                            return scheme
+                        })
+                        break
+                    }
+                    default:
+                        userPreferences[key] = saved[key]
+                }
 
                 delete saved[key]
             })

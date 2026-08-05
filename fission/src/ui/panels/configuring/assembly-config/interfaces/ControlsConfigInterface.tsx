@@ -5,7 +5,7 @@ import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject.ts"
 import ChooseInputSchemePanel from "@/panels/configuring/ChooseInputSchemePanel.tsx"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import ConfigureSchemeInterface from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureSchemeInterface.tsx"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import { Stack } from "@mui/material"
 import ConfirmChangesModal from "@/modals/configuring/ConfirmChangesModal.tsx"
@@ -20,7 +20,15 @@ const ControlsConfigInterface: ConfigurationSubpanelComponent = ({
 
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const brainIndex = useMemo(() => (selectedAssembly.brain as SynthesisBrain).brainIndex, [selectedAssembly])
-    const scheme = useMemo(() => InputSystem.getBrainIndexSchemeMapping(brainIndex), [brainIndex])
+
+    const [scheme, setScheme] = useState(InputSystem.getBrainIndexSchemeMapping(brainIndex))
+    useEffect(() => {
+        setScheme(InputSystem.getBrainIndexSchemeMapping(brainIndex))
+    }, [brainIndex])
+    useEffect(() => {
+        if (scheme === undefined) return
+        InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
+    }, [scheme])
 
     const { openPanel, closePanel, openModal } = useUIContext()
     return (
@@ -59,6 +67,7 @@ const ControlsConfigInterface: ConfigurationSubpanelComponent = ({
                 <ConfigureSchemeInterface
                     registerCleanupFunction={registerCleanupFunction}
                     selectedScheme={scheme}
+                    setSelectedScheme={setScheme}
                     panelId={panel?.id}
                 />
             )}

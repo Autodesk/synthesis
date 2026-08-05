@@ -23,6 +23,8 @@ export type ModifierState = Readonly<{
 }>
 
 export type InputScheme = {
+    // UUID
+    schemeId: string
     schemeName: string
     descriptiveName: string
     customized: boolean
