@@ -15,33 +15,28 @@ import World from "../World"
 import WorldSystem from "../WorldSystem"
 import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
 
-interface PartPick {
+interface PartPick<MeshType extends THREE.Object3D> {
     sceneObject: MirabufSceneObject
     guid: string
-    object: THREE.Object3D
+    object: MeshType
     instanceId: number
 }
 
-interface BatchedMeshRangeApi {
-    getGeometryIdAt?: (instanceId: number) => number
-    getGeometryRangeAt?: (geometryId: number, target?: object) => { vertexStart: number; vertexCount: number }
-}
-
 /** Local-space vertices for just this part's slice of a shared BatchedMesh buffer; whole geometry otherwise. */
-function getPartLocalVertices(object: THREE.Object3D, instanceId: number): THREE.Vector3[] | undefined {
-    const mesh = object as THREE.Mesh
+function getPartLocalVertices(mesh: THREE.BatchedMesh, instanceId: number): THREE.Vector3[] | undefined {
     const position = mesh.geometry?.getAttribute("position")
     if (!position) return undefined
 
     let start = 0
     let count = position.count
 
-    const batched = object as unknown as BatchedMeshRangeApi
-    if (typeof batched.getGeometryIdAt === "function" && typeof batched.getGeometryRangeAt === "function") {
-        const geometryId = batched.getGeometryIdAt(instanceId)
-        const range = batched.getGeometryRangeAt(geometryId)
-        start = range.vertexStart
-        count = range.vertexCount
+    if (typeof mesh.getGeometryIdAt === "function" && typeof mesh.getGeometryRangeAt === "function") {
+        const geometryId = mesh.getGeometryIdAt(instanceId)
+        const range = mesh.getGeometryRangeAt(geometryId)
+        if (range != null) {
+            start = range.vertexStart
+            count = range.vertexCount
+        }
     }
 
     const points: THREE.Vector3[] = []
@@ -200,17 +195,17 @@ class WheelAssignmentMode extends WorldSystem {
     }
 
     /** Raycasts the cached candidate batches for the part-instance GUID under the mouse. */
-    private pickPart(mousePos: [number, number]): PartPick | undefined {
+    private pickPart(mousePos: [number, number]): PartPick<THREE.BatchedMesh> | undefined {
         const camera = World.sceneRenderer.mainCamera
         ndc.set((mousePos[0] / window.innerWidth) * 2 - 1, -(mousePos[1] / window.innerHeight) * 2 + 1)
         raycaster.setFromCamera(ndc, camera)
 
-        const hits = raycaster.intersectObjects(this._candidateBatches, false)
+        const hits = raycaster.intersectObjects<THREE.BatchedMesh>(this._candidateBatches, false)
         if (hits.length === 0) return undefined
 
         const hit = hits[0]
-        const object = hit.object as THREE.BatchedMesh
-        const instanceId = (hit as unknown as { batchId?: number }).batchId ?? 0
+        const object = hit.object
+        const instanceId = hit.batchId ?? 0
 
         const resolved = this._pickIndex.get(object)?.get(instanceId)
         if (!resolved) return undefined
@@ -226,7 +221,7 @@ class WheelAssignmentMode extends WorldSystem {
             return
         }
 
-        const mesh = pick.object as THREE.BatchedMesh
+        const mesh = pick.object
         this.setHover({ mesh, instanceId: pick.instanceId })
     }
 
@@ -300,7 +295,7 @@ class WheelAssignmentMode extends WorldSystem {
             sceneObject: pick.sceneObject,
             highlight: {
                 instanceId: pick.instanceId,
-                mesh: pick.object as THREE.BatchedMesh,
+                mesh: pick.object,
             },
             assignment: { wheelPartGuid: pick.guid, parentPartGuid, axisFit: worldAxisFit },
         })
