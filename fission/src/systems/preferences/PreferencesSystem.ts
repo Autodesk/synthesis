@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react"
-import { LEGACY_USER_PREFERENCE_KEYS, migrateUserPreferences, type StoredUserPreferences } from "./PreferenceMigrations"
 import {
     defaultFieldPreferences,
     defaultGraphicsPreferences,
@@ -178,27 +177,21 @@ class PreferencesSystem {
         }
 
         try {
-            const saved: Preferences & Record<string, unknown> = JSON.parse(loadedPrefs)
+            const saved: Preferences & UserPreferences = JSON.parse(loadedPrefs)
             saved[USER_PREFERENCE_KEY] ??= defaultUserPreferences()
-            const userPreferences = saved[USER_PREFERENCE_KEY] as StoredUserPreferences
+            const unmigratedKeys = Object.keys(defaultUserPreferences())
+                .filter(key => key in saved) // If the key is in the top level preferences, it hasn't been migrated
+                .map(key => key as UserPreference)
 
-            const knownKeys: readonly (keyof StoredUserPreferences)[] = [
-                ...(Object.keys(defaultUserPreferences()) as UserPreference[]),
-                ...LEGACY_USER_PREFERENCE_KEYS,
-            ]
-            // If the key is in the top level preferences, it hasn't been migrated
-            const unnestedKeys = knownKeys.filter(key => key in saved)
-
-            for (const key of unnestedKeys) {
+            unmigratedKeys.forEach(key => {
+                const userPreferences = saved[USER_PREFERENCE_KEY] as Record<UserPreference, unknown>
                 userPreferences[key] = saved[key]
 
                 delete saved[key]
-            }
-
-            const valuesMigrated = migrateUserPreferences(userPreferences)
+            })
 
             this._preferences = saved
-            if (unnestedKeys.length > 0 || valuesMigrated) {
+            if (unmigratedKeys.length > 0) {
                 this.savePreferences()
             }
         } catch (e) {

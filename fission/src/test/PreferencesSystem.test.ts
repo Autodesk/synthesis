@@ -10,10 +10,7 @@ import {
     type RobotPreferences,
     type UserPreference,
     type UserPreferences,
-    USER_PREFERENCE_KEY,
 } from "@/systems/preferences/PreferenceTypes"
-
-const PREFERENCES_STORAGE_KEY = "Preferences"
 
 /**
  * Captures the full current user-preferences state by resolving every key
@@ -23,11 +20,6 @@ const PREFERENCES_STORAGE_KEY = "Preferences"
 function captureUserPreferences(): UserPreferences {
     const keys = Object.keys(defaultUserPreferences()) as UserPreference[]
     return Object.fromEntries(keys.map(key => [key, PreferencesSystem.getUserPreference(key)])) as UserPreferences
-}
-
-function readSavedUserPreferences(): Record<string, unknown> {
-    const saved = JSON.parse(window.localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? "{}")
-    return saved[USER_PREFERENCE_KEY] ?? {}
 }
 
 describe("Preferences System Global Values", () => {
@@ -46,7 +38,7 @@ describe("Preferences System Global Values", () => {
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
         PreferencesSystem.setUserPreference("ShowViewCube", true)
 
-        window.localStorage.setItem(PREFERENCES_STORAGE_KEY, "{}") // Clears local storage
+        window.localStorage.setItem("Preferences", "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
 
         expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
@@ -84,31 +76,6 @@ describe("Preferences System Global Values", () => {
         PreferencesSystem.clearPreferences()
 
         expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
-    })
-
-    test("Loading a scoreboard choice saved by an older build", () => {
-        window.localStorage.setItem(
-            PREFERENCES_STORAGE_KEY,
-            JSON.stringify({ [USER_PREFERENCE_KEY]: { RenderScoreboard: true, ScoreboardPreferenceSet: true } })
-        )
-
-        PreferencesSystem.loadPreferences()
-
-        expect(PreferencesSystem.getUserPreference("ScoreboardMode")).toBe("on")
-        expect(readSavedUserPreferences()).not.toHaveProperty("RenderScoreboard")
-    })
-
-    test("Loading a scoreboard choice saved before preferences were nested", () => {
-        window.localStorage.setItem(
-            PREFERENCES_STORAGE_KEY,
-            JSON.stringify({ RenderScoreboard: false, UseMetric: true })
-        )
-
-        PreferencesSystem.loadPreferences()
-
-        expect(PreferencesSystem.getUserPreference("ScoreboardMode")).toBe("auto")
-        expect(PreferencesSystem.getUserPreference("UseMetric")).toBe(true)
-        expect(readSavedUserPreferences()).not.toHaveProperty("RenderScoreboard")
     })
 
     test("Graphics preferences", () => {
