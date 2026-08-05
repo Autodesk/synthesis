@@ -36,6 +36,7 @@ export function applyPartDeletions(assembly: mirabuf.Assembly, partGuids: string
     for (const guid of partGuids) {
         for (const removed of removeFromDesignHierarchy(designHierarchy, guid)) removedGuids.add(removed)
     }
+
     if (removedGuids.size === 0) return
 
     const partInstances = assembly.data?.parts?.partInstances
