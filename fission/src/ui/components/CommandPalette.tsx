@@ -2,6 +2,7 @@ import { Box, List, ListItemButton, ListItemText, Paper, Stack, TextField } from
 import Fuse from "fuse.js"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import EventSystem from "@/systems/EventSystem"
 import World from "@/systems/World"
 import InputSystem from "@/systems/input/InputSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -53,9 +54,9 @@ const CommandPalette: React.FC = () => {
                 perform: () => {
                     const dragSystem = World.dragModeSystem
                     if (!dragSystem) return
-                    dragSystem.enabled = !dragSystem.enabled
-                    const status = dragSystem.enabled ? "enabled" : "disabled"
-                    addToast("info", "Drag Mode", `Drag mode has been ${status}`)
+                    const enabled = !dragSystem.enabled
+                    EventSystem.dispatch("SetDragModeEvent", { enabled })
+                    addToast("info", "Drag Mode", `Drag mode has been ${enabled ? "enabled" : "disabled"}`)
                 },
             },
         ]

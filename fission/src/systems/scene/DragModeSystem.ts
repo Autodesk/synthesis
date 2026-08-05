@@ -117,8 +117,6 @@ class DragModeSystem extends WorldSystem {
                 this._dragModeStartTime = undefined
             }
         }
-
-        EventSystem.dispatch("DragModeToggled", { enabled })
     }
 
     public update(_deltaT: number): void {

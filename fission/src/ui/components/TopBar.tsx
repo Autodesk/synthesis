@@ -51,7 +51,7 @@ const TopBar: React.FC = () => {
     const rowRef = useRef<HTMLDivElement>(null)
     const spacerRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => EventSystem.listen("DragModeToggled", ({ enabled }) => setDragModeEnabled(enabled)), [])
+    useEffect(() => EventSystem.listen("SetDragModeEvent", ({ enabled }) => setDragModeEnabled(enabled)), [])
 
     useEffect(() => {
         // biome-ignore-start lint/suspicious/noExplicitAny: allow any for window and document access

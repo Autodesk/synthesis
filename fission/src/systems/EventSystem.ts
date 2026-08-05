@@ -51,7 +51,6 @@ interface EventDataMap {
     SetTouchControlsVisibilityEvent: boolean
 
     SetDragModeEvent: { enabled: boolean }
-    DragModeToggled: { enabled: boolean }
 
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }
