@@ -295,6 +295,48 @@ function fillMissingMaterials(links: URDFLink[]): void {
     }
 }
 
+// URDF only carries one <inertial> per link, so a link with multiple <visual> elements has one
+// real mass/inertia for geometry that mirabuf needs as separate parts. Peel visuals[1:] off into
+// synthetic zero-mass links fixed-jointed (identity origin) back to the original link. The real
+// mass properties stay on the original link; the identity origin reproduces the same world
+// position since visual origin is already expressed in the original link's local frame.
+function splitMultiVisualLinks(links: URDFLink[], joints: URDFJoint[]): { links: URDFLink[]; joints: URDFJoint[] } {
+    const newLinks: URDFLink[] = []
+    const syntheticJoints: URDFJoint[] = []
+
+    for (const link of links) {
+        if (link.visuals.length <= 1) {
+            newLinks.push(link)
+            continue
+        }
+
+        newLinks.push({ ...link, visuals: [link.visuals[0]] })
+
+        for (let i = 1; i < link.visuals.length; i++) {
+            const syntheticName = `${link.name}_visual_${i}`
+            newLinks.push({
+                name: syntheticName,
+                visuals: [link.visuals[i]],
+                mass: 0,
+                comXYZ: [0, 0, 0],
+            })
+            syntheticJoints.push({
+                name: `${syntheticName}_joint`,
+                type: "fixed",
+                parent: link.name,
+                child: syntheticName,
+                originXYZ: [0, 0, 0],
+                originRPY: [0, 0, 0],
+                axisXYZ: [0, 0, 0],
+                limitLower: 0,
+                limitUpper: 0,
+            })
+        }
+    }
+
+    return { links: newLinks, joints: [...joints, ...syntheticJoints] }
+}
+
 function extractJoints(doc: Document): URDFJoint[] {
     const validTypes = new Set(["fixed", "revolute", "continuous", "prismatic", "floating", "planar"])
     return Array.from(doc.querySelectorAll("joint")).map(joint => {
@@ -1009,13 +1051,14 @@ export async function convertURDF(
     if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
 
     const robotName = doc.querySelector("robot")?.getAttribute("name") ?? "robot"
-    const links = extractLinks(doc)
-    const joints = extractJoints(doc)
+    const rawLinks = extractLinks(doc)
+    const rawJoints = extractJoints(doc)
     await yieldToMain()
 
-    if (links.length === 0) throw new Error("URDF contains no <link> elements")
+    if (rawLinks.length === 0) throw new Error("URDF contains no <link> elements")
 
-    fillMissingMaterials(links)
+    fillMissingMaterials(rawLinks)
+    const { links, joints } = splitMultiVisualLinks(rawLinks, rawJoints)
     const childSet = new Set(joints.map(j => j.child))
     const rootLink = links.find(l => !childSet.has(l.name))
     if (!rootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
