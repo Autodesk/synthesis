@@ -313,6 +313,11 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     public get sceneObject() {
         return this._object
     }
+
+    protected getName(guid: string) {
+        const partInstances = this._object?.mirabufInstance.parser.assembly.data?.parts?.partInstances
+        return partInstances?.[guid]?.info?.name ?? guid
+    }
 }
 
 export default PartPickingMode

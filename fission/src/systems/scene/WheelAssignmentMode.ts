@@ -102,7 +102,12 @@ class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
         this.pending.addPart(pick.guid, {
             guid: pick.guid,
             highlight: { instanceId: pick.instanceId, mesh: pick.object },
-            assignment: { wheelPartGuid: pick.guid, parentPartGuid, axisFit: worldAxisFit },
+            assignment: {
+                wheelPartGuid: pick.guid,
+                parentPartGuid,
+                axisFit: worldAxisFit,
+                name: this.getName(pick.guid),
+            },
         })
     }
 

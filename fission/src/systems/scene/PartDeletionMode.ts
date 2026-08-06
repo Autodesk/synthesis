@@ -27,12 +27,9 @@ class PartDeletionMode extends PartPickingMode<PartDeletionSelection> {
             return
         }
 
-        const partInstances = this._object.mirabufInstance.parser.assembly.data?.parts?.partInstances
-        const name = partInstances?.[pick.guid]?.info?.name ?? pick.guid
-
         this.pending.addPart(pick.guid, {
             guid: pick.guid,
-            name,
+            name: this.getName(pick.guid),
             highlight: { instanceId: pick.instanceId, mesh: pick.object as THREE.BatchedMesh },
         })
     }

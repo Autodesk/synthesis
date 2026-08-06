@@ -11,6 +11,8 @@ export interface WheelAssignment {
     wheelPartGuid: string
     /** Part-instance GUID of the occurrence the user picked as the wheel's parent/chassis. */
     parentPartGuid: string
+
+    name:string
     /** World-space (assembly rest-pose) axis fit — center in metres, axis normalized. */
     axisFit: WheelAxis
 }

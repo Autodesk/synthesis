@@ -8,14 +8,15 @@ import Label from "@/components/Label.tsx"
 import { RefreshButton } from "@/components/StyledComponents.tsx"
 import type { SubpanelProps } from "@/components/UserModelConfig/ModelConfigPanel.tsx"
 import { usePickingMode } from "./usePickingMode"
+import { truncate } from "@/util/Utility.ts"
 
-const DeleteParts: React.FC<SubpanelProps> = () => {
+const DeleteParts: React.FC<SubpanelProps> = ({ sceneObject }) => {
     const subscribe = useCallback(
         (onChange: (items: PartDeletionSelection[]) => void) =>
             EventSystem.listen("PartDeletionSelectionChanged", ({ parts }) => onChange(parts)),
         []
     )
-    const { enabled, setEnabled, items: pending } = usePickingMode(World.partDeletionMode, subscribe)
+    const { enabled, setEnabled, items: pending } = usePickingMode(World.partDeletionMode, subscribe, sceneObject)
 
     return (
         <Stack gap={2} direction="column">
@@ -41,7 +42,7 @@ const DeleteParts: React.FC<SubpanelProps> = () => {
                         onMouseOut={() => World.partDeletionMode.clearHover()}
                     >
                         <Label size={"sm"} flexGrow={1}>
-                            {item.name}
+                            {truncate(item.name, 40, true)}
                         </Label>
                         <RefreshButton
                             title="Undo"

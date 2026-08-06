@@ -107,3 +107,12 @@ export type RecursivePartial<T> = {
           ? RecursivePartial<T[P]>
           : T[P]
 }
+
+export function truncate(text: string, maxLen: number, addElipsis: boolean = false) {
+    if (text.length <= maxLen) return text
+    if (addElipsis) {
+        return text.slice(0, maxLen - 3) + "..."
+    } else {
+        return text.slice(0, maxLen)
+    }
+}

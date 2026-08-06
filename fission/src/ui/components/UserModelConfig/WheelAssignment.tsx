@@ -8,6 +8,7 @@ import Label from "@/components/Label.tsx"
 import { DeleteButton } from "@/components/StyledComponents.tsx"
 import type { SubpanelProps } from "./ModelConfigPanel"
 import { usePickingMode } from "./usePickingMode"
+import { truncate } from "@/util/Utility.ts"
 
 const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, sceneObject }) => {
     const subscribe = useCallback(
@@ -61,7 +62,8 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, scene
                         onMouseOut={() => item != null && World.wheelAssignmentMode.clearHover()}
                     >
                         <Label size={"sm"} p={0.5} fontStyle={item == null ? "italic" : undefined} flexGrow={1}>
-                            Wheel {i + 1} {item == null && "(Unassigned)"}
+                            {truncate(item?.assignment?.name || `Wheel ${i + 1}`, 40, true)}{" "}
+                            {item == null && "(Unassigned)"}
                         </Label>
                         {item != null && <DeleteButton onClick={onDelete(item)} />}
                     </Stack>
