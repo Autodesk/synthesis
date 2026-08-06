@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from "react"
 import {
     defaultFieldPreferences,
     defaultGraphicsPreferences,
@@ -229,18 +228,6 @@ class PreferencesSystem {
         window.localStorage.removeItem(this._localStorageKey)
         this._preferences = {}
     }
-}
-
-export function useUserPreference<K extends UserPreference>(
-    key: K
-): [UserPreferences[K], (value: UserPreferences[K]) => void] {
-    const [value, setValue] = useState(() => PreferencesSystem.getUserPreference(key))
-
-    useEffect(() => PreferencesSystem.addPreferenceEventListener(key, e => setValue(e.prefValue)), [key])
-
-    const write = useCallback((next: UserPreferences[K]) => PreferencesSystem.setUserPreference(key, next), [key])
-
-    return [value, write]
 }
 
 export default PreferencesSystem

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react"
 import EventSystem from "@/systems/EventSystem"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import PreferencesSystem, { useUserPreference } from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { type ScoreboardMode, SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
 import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
@@ -39,7 +39,7 @@ export interface Scoreboard {
 export function useScoreboard(): Scoreboard {
     const { appMode } = useStateContext()
 
-    const [mode, writeMode] = useUserPreference("ScoreboardMode")
+    const [mode, setStoredMode] = useState(PreferencesSystem.getUserPreference("ScoreboardMode"))
     const [inMatchMode, setInMatchMode] = useState(
         () => MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX
     )
@@ -49,15 +49,14 @@ export function useScoreboard(): Scoreboard {
         []
     )
 
+    useEffect(() => PreferencesSystem.addPreferenceEventListener("ScoreboardMode", e => setStoredMode(e.prefValue)), [])
+
     const gameplayActive = appMode === "Gameplay" || inMatchMode
 
-    const setMode = useCallback(
-        (next: ScoreboardMode) => {
-            writeMode(next)
-            PreferencesSystem.savePreferences()
-        },
-        [writeMode]
-    )
+    const setMode = useCallback((next: ScoreboardMode) => {
+        PreferencesSystem.setUserPreference("ScoreboardMode", next)
+        PreferencesSystem.savePreferences()
+    }, [])
 
     return { mode, visible: isScoreboardVisible(mode, gameplayActive), setMode }
 }

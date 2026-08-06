@@ -2,7 +2,7 @@ import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
-import PreferencesSystem, { useUserPreference } from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { UserPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
@@ -11,7 +11,7 @@ import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import StatefulSlider, { type StatefulSliderProps } from "@/ui/components/StatefulSlider"
 import { Button, LabelWithTooltip, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { SCOREBOARD_MODE_LABELS } from "@/ui/helpers/ScoreboardVisibility"
+import { SCOREBOARD_MODE_LABELS, useScoreboard } from "@/ui/helpers/ScoreboardVisibility"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
@@ -121,7 +121,10 @@ const GeneralTabSlider = ({
     label,
     ...props
 }: Omit<StatefulSliderProps, "defaultValue" | "onChange"> & { preference: TypedPreferenceKey<number> }) => {
-    const [pref, setPref] = useUserPreference(preference)
+    const [pref, setPref] = useState(PreferencesSystem.getUserPreference(preference))
+    useEffect(() => {
+        PreferencesSystem.setUserPreference(preference, pref)
+    }, [pref])
 
     return <StatefulSlider {...props} label={label} defaultValue={pref} onChange={setPref} />
 }
@@ -131,13 +134,16 @@ const GeneralTabCheckbox = ({
     label,
     ...props
 }: Omit<CheckboxProps, "checked" | "onClick"> & { preference: TypedPreferenceKey<boolean> }) => {
-    const [pref, setPref] = useUserPreference(preference)
+    const [pref, setPref] = useState(PreferencesSystem.getUserPreference(preference))
+    useEffect(() => {
+        PreferencesSystem.setUserPreference(preference, pref)
+    }, [pref])
 
     return <Checkbox {...props} label={label} checked={pref} onClick={setPref} />
 }
 
 const ScoreboardModeSetting = () => {
-    const [mode, setMode] = useUserPreference("ScoreboardMode")
+    const { mode, setMode } = useScoreboard()
 
     return (
         <Stack direction="row" justifyContent="space-between" alignItems="center">

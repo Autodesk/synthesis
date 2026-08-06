@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material"
-import { useEffect, useReducer } from "react"
+import { useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
-import { useUserPreference } from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Label from "./Label"
 import type { SceneOverlayTag } from "./SceneOverlayEvents"
 import ViewCube from "./ViewCube"
@@ -9,10 +9,11 @@ import ViewCube from "./ViewCube"
 const tagMap = new Map<number, SceneOverlayTag>()
 
 const SceneOverlay: React.FC = () => {
-    const [renderSceneTags] = useUserPreference("RenderSceneTags")
-    const [showViewCube] = useUserPreference("ShowViewCube")
+    /* State to determine if the overlay is disabled */
+    const [isDisabled, setIsDisabled] = useState(!PreferencesSystem.getUserPreference("RenderSceneTags"))
 
-    const isDisabled = !renderSceneTags
+    /* State to determine if the ViewCube should be shown */
+    const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getUserPreference("ShowViewCube"))
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
@@ -49,6 +50,14 @@ const SceneOverlay: React.FC = () => {
         // listening for updates to the overlay every frame
         unsubscribers.push(EventSystem.listen("SceneOverlayUpdateEvent", () => updateComponents()))
 
+        // listening for disabling and enabling scene tags
+        unsubscribers.push(
+            PreferencesSystem.addPreferenceEventListener("RenderSceneTags", e => {
+                setIsDisabled(!e.prefValue)
+                updateComponents()
+            })
+        )
+
         // disposing all the tags and listeners when the scene is destroyed
         return () => {
             unsubscribers.forEach(func => func())
@@ -56,7 +65,8 @@ const SceneOverlay: React.FC = () => {
         }
     }, [])
 
-    useEffect(() => updateComponents(), [renderSceneTags, updateComponents])
+    /* Update ViewCube visibility when preferences change */
+    useEffect(() => PreferencesSystem.addPreferenceEventListener("ShowViewCube", e => setShowViewCube(e.prefValue)), [])
 
     /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (
