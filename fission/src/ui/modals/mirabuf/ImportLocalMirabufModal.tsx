@@ -118,7 +118,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     if (!foundDrivetrain) {
                         addToast("info", "Drivetrain not detected", "please select wheels manually!")
                         await new Promise<void>(resolve => {
-                            openPanel(ModelConfigPanel, undefined, modal, {
+                            openPanel(ModelConfigPanel, { sceneObject: mirabufSceneObject! }, modal, {
                                 onClose: () => {
                                     resolve()
                                 },

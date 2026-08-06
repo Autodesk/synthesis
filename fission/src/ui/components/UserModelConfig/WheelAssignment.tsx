@@ -9,7 +9,7 @@ import Label from "@/components/Label.tsx"
 import { DeleteButton } from "@/components/StyledComponents.tsx"
 import type { SubpanelProps } from "./ModelConfigPanel"
 
-const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage }) => {
+const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, sceneObject }) => {
     const [enabled, setEnabled] = useState<boolean>(false)
     const [selected, setSelected] = useState<WheelSelection[]>([...World.wheelAssignmentMode.pendingWheels.values()])
     const wheelSlots = useMemo(() => {
@@ -26,8 +26,12 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage }) => 
     }, [])
 
     useEffect(() => {
-        World.wheelAssignmentMode.enabled = enabled
-    }, [enabled])
+        if (enabled) {
+            World.wheelAssignmentMode.enable(sceneObject)
+        } else {
+            World.wheelAssignmentMode.disable()
+        }
+    }, [enabled, sceneObject])
 
     useEffect(() => {
         setEnabled(World.wheelAssignmentMode.pendingWheels.size == 0)

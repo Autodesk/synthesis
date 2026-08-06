@@ -1,15 +1,17 @@
 import type React from "react"
-import { useEffect, useId, useMemo, useState } from "react"
+import { useCallback, useEffect, useId, useMemo, useState } from "react"
 import type { PanelImplProps } from "@/components/Panel.tsx"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import World from "@/systems/World.ts"
 import WheelAssignment from "@/components/UserModelConfig/WheelAssignment.tsx"
 import { Divider, Stack } from "@mui/material"
 import { Button, ProgressButton, SynthesisIcons, TooltipButton } from "@/components/StyledComponents.tsx"
 import DrivetrainConfig from "@/components/UserModelConfig/DrivetrainConfig.tsx"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 
 export interface SubpanelProps {
     setDisableNextMessage: (v: string | null) => void
+    sceneObject: MirabufSceneObject
 }
 
 const screens: { title: string; component: React.FC<SubpanelProps> | null }[] = [
@@ -17,10 +19,12 @@ const screens: { title: string; component: React.FC<SubpanelProps> | null }[] = 
     { title: "Drivetrain", component: DrivetrainConfig },
 ]
 
-const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { configureScreen } = useUIContext()
+const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufSceneObject }>> = ({ panel }) => {
+    const { configureScreen, closePanel } = useUIContext()
     const [screen, setScreen] = useState<number>(0)
     const [disableNextMessage, setDisableNextMessage] = useState<string | null>(null)
+
+    const { sceneObject } = panel!.props.custom
 
     const title = useMemo(() => screens[screen].title, [screen])
     const ScreenComponent = useMemo(() => screens[screen].component, [screen])
@@ -37,16 +41,23 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         configureScreen(panel!, { title, hideCancel: true, hideAccept: true }, {})
     }, [configureScreen, panel, title])
 
+    const closeCallback = useCallback(async () => {
+        await World.wheelAssignmentMode.apply()
+        closePanel(panel!.id, CloseType.ACCEPT)
+    }, [panel, closePanel])
+
     return (
         <Stack gap={2}>
-            {ScreenComponent != null && <ScreenComponent setDisableNextMessage={setDisableNextMessage} />}
+            {ScreenComponent != null && (
+                <ScreenComponent setDisableNextMessage={setDisableNextMessage} sceneObject={sceneObject} />
+            )}
             <Divider />
             {screen == screens.length - 1 && (
                 <ProgressButton
                     color="secondary"
                     refreshLabel={"Applying..."}
                     sx={{ px: 4, flexGrow: 2 }}
-                    onClick={() => World.wheelAssignmentMode.apply()}
+                    onClick={closeCallback}
                 >
                     Apply
                 </ProgressButton>

@@ -16,7 +16,6 @@ import WorldSystem from "../WorldSystem"
 import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
 
 interface PartPick<MeshType extends THREE.Object3D> {
-    sceneObject: MirabufSceneObject
     guid: string
     object: MeshType
     instanceId: number
@@ -47,7 +46,6 @@ function getPartLocalVertices(mesh: THREE.BatchedMesh, instanceId: number): THRE
 }
 
 export interface WheelSelection {
-    sceneObject: MirabufSceneObject
     highlight: PartHighlight
     assignment: WheelAssignment
 }
@@ -69,11 +67,6 @@ const DEFAULT_INSTANCE_COLOR = new THREE.Color(1, 1, 1)
 const raycaster = new THREE.Raycaster()
 const ndc = new THREE.Vector2()
 
-interface PickIndexEntry {
-    sceneObject: MirabufSceneObject
-    guid: string
-}
-
 /** Interaction mode: click a wheel's rim to fit a joint axis, using the assembly's grounded part as parent. */
 class WheelAssignmentMode extends WorldSystem {
     public pendingWheels: HighlightMap = new HighlightMap(() => toKey(this._hover))
@@ -88,20 +81,26 @@ class WheelAssignmentMode extends WorldSystem {
 
     // Rebuilt on enable and after apply() to avoid rescanning every mesh entry per raycast.
     private _candidateBatches: THREE.BatchedMesh[] = []
-    private _pickIndex = new Map<THREE.BatchedMesh, Map<number, PickIndexEntry>>()
+    private _pickIndex = new Map<THREE.BatchedMesh, Map<number, string>>() //
 
     private _driveReversed = false
+    private _object?: MirabufSceneObject
 
     public get enabled(): boolean {
         return this._enabled
     }
 
-    public set enabled(enabled: boolean) {
-        if (this._enabled === enabled) return
-        this._enabled = enabled
+    public enable(object: MirabufSceneObject) {
+        if (this._enabled) return
+        this._enabled = true
+        this._object = object
+        this.hookInteractionHandlers()
+    }
 
-        if (enabled) this.hookInteractionHandlers()
-        else this.unhookInteractionHandlers()
+    public disable() {
+        if (!this._enabled) return
+        this._enabled = false
+        this.unhookInteractionHandlers()
     }
 
     public get pendingCount(): number {
@@ -124,7 +123,7 @@ class WheelAssignmentMode extends WorldSystem {
     }
 
     public destroy(): void {
-        this.enabled = false
+        this.disable()
     }
 
     public toggleReverseDrive(): void {
@@ -175,21 +174,19 @@ class WheelAssignmentMode extends WorldSystem {
     private rebuildPickIndex(): void {
         this._candidateBatches = []
         this._pickIndex = new Map()
+        if (this._object == null) return
+        for (const batch of this._object.mirabufInstance.batches) {
+            this._candidateBatches.push(batch)
+        }
 
-        for (const sceneObject of World.sceneRenderer.mirabufSceneObjects.getAll()) {
-            for (const batch of sceneObject.mirabufInstance.batches) {
-                this._candidateBatches.push(batch)
-            }
-
-            for (const [guid, entries] of sceneObject.mirabufInstance.meshes) {
-                for (const [mesh, instanceId] of entries) {
-                    let byInstance = this._pickIndex.get(mesh)
-                    if (!byInstance) {
-                        byInstance = new Map()
-                        this._pickIndex.set(mesh, byInstance)
-                    }
-                    byInstance.set(instanceId, { sceneObject, guid })
+        for (const [guid, entries] of this._object.mirabufInstance.meshes) {
+            for (const [mesh, instanceId] of entries) {
+                let byInstance = this._pickIndex.get(mesh)
+                if (!byInstance) {
+                    byInstance = new Map()
+                    this._pickIndex.set(mesh, byInstance)
                 }
+                byInstance.set(instanceId, guid)
             }
         }
     }
@@ -207,10 +204,10 @@ class WheelAssignmentMode extends WorldSystem {
         const object = hit.object
         const instanceId = hit.batchId ?? 0
 
-        const resolved = this._pickIndex.get(object)?.get(instanceId)
-        if (!resolved) return undefined
+        const guid = this._pickIndex.get(object)?.get(instanceId)
+        if (!guid) return undefined
 
-        return { sceneObject: resolved.sceneObject, guid: resolved.guid, object, instanceId }
+        return { guid, object, instanceId }
     }
 
     /** Tints the part under the cursor. */
@@ -255,6 +252,7 @@ class WheelAssignmentMode extends WorldSystem {
     }
 
     private handleWheelPick(interaction: InteractionStart): void {
+        if (this._object == null) return
         const pick = this.pickPart(interaction.position)
         if (!pick) {
             this._originalInteractionStart?.(interaction)
@@ -279,12 +277,12 @@ class WheelAssignmentMode extends WorldSystem {
         }
 
         // Assembly-space transform, not the live scene matrix (which bakes in the physics body's world transform).
-        const assemblySpaceTransform = pick.sceneObject.mirabufInstance.parser.globalTransforms.get(pick.guid)!
+        const assemblySpaceTransform = this._object.mirabufInstance.parser.globalTransforms.get(pick.guid)!
         const worldAxisFit = transformWheelAxis(localAxisFit, assemblySpaceTransform)
 
         // Grounded/root part doubles as the parent -- no second click needed.
         const groundedInstance =
-            pick.sceneObject.mirabufInstance.parser.assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
+            this._object.mirabufInstance.parser.assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
         const parentPartGuid = groundedInstance.parts!.nodes!.at(0)!.value!
         if (parentPartGuid === pick.guid) {
             globalAddToast("warning", "Wheel Assignment", "This part is the assembly's grounded/root part.")
@@ -292,7 +290,6 @@ class WheelAssignmentMode extends WorldSystem {
         }
 
         this.pendingWheels.addPart(pick.guid, {
-            sceneObject: pick.sceneObject,
             highlight: {
                 instanceId: pick.instanceId,
                 mesh: pick.object,
@@ -304,46 +301,38 @@ class WheelAssignmentMode extends WorldSystem {
 
     /** Mutates each affected assembly and fully rebuilds its MirabufSceneObject. */
     public async apply(): Promise<void> {
-        if (this.pendingWheels.size === 0) return
+        if (this.pendingWheels.size === 0 || this._object == null) return
 
         // Clear before rebuild destroys the hovered mesh's batches.
         this.clearHover()
 
-        const bySceneObject = new Map<MirabufSceneObject, WheelAssignment[]>()
-        for (const { sceneObject, assignment } of this.pendingWheels.values()) {
-            const list = bySceneObject.get(sceneObject)
-            if (list) list.push(assignment)
-            else bySceneObject.set(sceneObject, [assignment])
+        const assignments = [...this.pendingWheels.values()].map(({ assignment }) => assignment)
+        const assembly = this._object.mirabufInstance.parser.assembly
+        applyWheelAssignments(assembly, assignments)
+
+        const sceneId = this._object.id
+        World.sceneRenderer.removeSceneObject(sceneId)
+
+        const rebuilt = await createMirabuf(assembly.info!.GUID!, assembly)
+        if (!rebuilt) {
+            globalAddToast("error", "Wheel Assignment", "Failed to rebuild assembly after applying wheel joints.")
+            return
+        }
+        World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
+
+        const parser = rebuilt.mirabufInstance.parser
+
+        let hadMismatch = false
+        for (const assignment of assignments) {
+            const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
+            const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
+            if (!wheelNode || !parentNode) continue
+            if (wheelNode.id !== parentNode.id) continue
+            hadMismatch = true
         }
 
-        for (const [sceneObject, assignments] of bySceneObject) {
-            const assembly = sceneObject.mirabufInstance.parser.assembly
-            applyWheelAssignments(assembly, assignments)
-
-            const sceneId = sceneObject.id
-            World.sceneRenderer.removeSceneObject(sceneId)
-
-            const rebuilt = await createMirabuf(assembly.info!.GUID!, assembly)
-            if (!rebuilt) {
-                globalAddToast("error", "Wheel Assignment", "Failed to rebuild assembly after applying wheel joints.")
-                continue
-            }
-            World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
-
-            const parser = rebuilt.mirabufInstance.parser
-
-            let hadMismatch = false
-            for (const assignment of assignments) {
-                const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
-                const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
-                if (!wheelNode || !parentNode) continue
-                if (wheelNode.id !== parentNode.id) continue
-                hadMismatch = true
-            }
-
-            if (hadMismatch) {
-                globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
-            }
+        if (hadMismatch) {
+            globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
         }
         this.pendingWheels.clear()
         globalAddToast("success", "Wheel Assignment", "Applied wheel joints and rebuilt the affected assembly.")
