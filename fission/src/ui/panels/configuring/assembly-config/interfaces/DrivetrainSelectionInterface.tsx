@@ -1,21 +1,24 @@
-import { FormControl, InputLabel, MenuItem } from "@mui/material"
-import { useState } from "react"
+import { FormControl, InputLabel, MenuItem, Stack } from "@mui/material"
 import { Select } from "@/ui/components/StyledComponents"
+import Checkbox from "@/ui/components/Checkbox"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import InputSystem from "@/systems/input/InputSystem.ts"
 
 const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
     selectedAssembly,
     registerCleanupFunction,
 }) => {
-    const [driveType, setDriveType] = useState<DriveType>(
-        (selectedAssembly.brain as SynthesisBrain | undefined)?.driveType ?? DriveType.ARCADE
-    )
+    const synthesisBrain = selectedAssembly.brain?.isSynthesis()
+        ? (selectedAssembly.brain as SynthesisBrain)
+        : undefined
+
+    const [driveType, setDriveType] = useState<DriveType>(synthesisBrain?.driveType ?? DriveType.ARCADE)
+    const [robotCentric, setRobotCentric] = useState<boolean>(synthesisBrain?.mecanumRobotCentric ?? false)
 
     useEffect(() => {
         const brain = selectedAssembly.brain
@@ -23,9 +26,11 @@ const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
             return
         }
         const originalDriveBehavior = brain.driveType
+        const originalRobotCentric = brain.mecanumRobotCentric
         const originalScheme = InputSystem.getBrainIndexSchemeMapping(brain.brainIndex)
         registerCleanupFunction(undefined, () => {
             brain.configureDriveBehavior(originalDriveBehavior)
+            brain.setMecanumRobotCentric(originalRobotCentric)
             if (originalScheme != null) {
                 InputSystem.setBrainIndexSchemeMapping(brain.brainIndex, originalScheme)
             } else {
@@ -35,7 +40,7 @@ const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
         })
     }, [registerCleanupFunction, selectedAssembly])
     return (
-        <>
+        <Stack direction="column" gap={2}>
             <FormControl fullWidth>
                 <InputLabel id="drivetrain-type-label">Drivetrain Type</InputLabel>
                 <Select // TODO: disable/hide when wpilib brain selected
@@ -54,14 +59,25 @@ const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
                         }
                     }}
                 >
-                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
-                        <MenuItem key={dt} value={dt}>
+                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE, DriveType.MECANUM].map(dt => (
+                        <MenuItem key={`drivetrain-type-${dt}`} value={dt}>
                             {dt}
                         </MenuItem>
                     ))}
                 </Select>
             </FormControl>
-        </>
+            {driveType === DriveType.MECANUM && (
+                <Checkbox
+                    label="Robot-Centric Drive"
+                    tooltip="Drive relative to the robot's nose instead of a fixed field heading."
+                    checked={robotCentric}
+                    onClick={checked => {
+                        synthesisBrain?.setMecanumRobotCentric(checked)
+                        setRobotCentric(checked)
+                    }}
+                />
+            )}
+        </Stack>
     )
 }
 

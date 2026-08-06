@@ -99,3 +99,11 @@ export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
  * Useful in long, blocking functions to allow the UI to update
  */
 export const yieldToMain = () => new Promise<void>(resolve => setTimeout(resolve, 0))
+
+export type RecursivePartial<T> = {
+    [P in keyof T]?: T[P] extends (infer U)[]
+        ? RecursivePartial<U>[]
+        : T[P] extends object | undefined
+          ? RecursivePartial<T[P]>
+          : T[P]
+}

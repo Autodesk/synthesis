@@ -65,12 +65,18 @@ const ConfigureInputsInterface: React.FC<Pick<ConfigurationSubpanelProps, "regis
         const unsubscribeConfig = EventSystem.listen("ConfigurationSavedEvent", saveEvent)
         const unsubscribeInput = EventSystem.listen("InputSchemeChanged", handleSchemeChange)
         return () => {
-            setSelectedScheme(undefined)
-            setGlobalSelectedScheme(undefined)
             unsubscribeConfig()
             unsubscribeInput()
         }
-    }, [saveEvent, handleSchemeChange, setGlobalSelectedScheme])
+    }, [saveEvent, handleSchemeChange])
+
+    // We want a separate use effect as handleSchemeChange is recreated on selectedScheme change
+    useEffect(() => {
+        return () => {
+            setSelectedScheme(undefined)
+            setGlobalSelectedScheme(undefined)
+        }
+    }, [setGlobalSelectedScheme])
 
     const schemeOptionMap = useMemo(() => {
         const map = new Map<InputScheme, SchemeSelectionOption>()
