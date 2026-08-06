@@ -1,44 +1,38 @@
 import { Box, Stack } from "@mui/material"
 import type React from "react"
-import { useMemo } from "react"
-import { SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
+import { useCallback } from "react"
+import type { ScoreboardMode } from "@/systems/preferences/PreferenceTypes"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { SCOREBOARD_GLYPH_SX, SCOREBOARD_MODE_LABELS, useScoreboard } from "@/ui/helpers/ScoreboardVisibility"
+import { nextScoreboardMode, SCOREBOARD_GLYPH_SX, useScoreboard } from "@/ui/helpers/ScoreboardVisibility"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import MultiplayerStartModal from "@/ui/modals/MultiplayerStartModal"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld"
-import SplitButtonDropdown from "@/ui/components/SplitButtonDropdown"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 
-const ScoreboardSplitDropdown: React.FC = () => {
-    const { mode, visible, setMode, toggle } = useScoreboard()
+const SCOREBOARD_TOOLTIPS: Record<ScoreboardMode, string> = {
+    auto: "Scoreboard: auto (shown in gameplay only)",
+    on: "Scoreboard: always on",
+    off: "Scoreboard: always off",
+}
+
+const ScoreboardModeButton: React.FC = () => {
+    const { mode, visible, setMode } = useScoreboard()
 
     const ScoreboardGlyph = visible ? SynthesisIcons.SCOREBOARD : SynthesisIcons.SCOREBOARD_HIDDEN
-
-    const items = useMemo(
-        () =>
-            SCOREBOARD_MODES.map(option => ({
-                key: option,
-                label: SCOREBOARD_MODE_LABELS[option],
-                selected: option === mode,
-                onSelect: () => setMode(option),
-            })),
-        [mode, setMode]
-    )
+    const nextMode = nextScoreboardMode(mode)
+    const cycleMode = useCallback(() => setMode(nextMode), [setMode, nextMode])
 
     return (
-        <SplitButtonDropdown
+        <TopBarButton
+            label={SCOREBOARD_TOOLTIPS[mode]}
             icon={
                 <Box sx={SCOREBOARD_GLYPH_SX[mode]}>
                     <ScoreboardGlyph />
                 </Box>
             }
-            iconTooltip={visible ? "Hide Scoreboard" : "Show Scoreboard"}
-            caretTooltip={`Scoreboard visibility: ${SCOREBOARD_MODE_LABELS[mode]}`}
-            onIconClick={toggle}
-            items={items}
+            onClick={cycleMode}
         />
     )
 }
@@ -62,7 +56,7 @@ const GameplayControls: React.FC = () => {
                 icon={<TopBarIcon name="gp-multiplayer" size={30} />}
                 onClick={openMultiplayer}
             />
-            <ScoreboardSplitDropdown />
+            <ScoreboardModeButton />
         </Stack>
     )
 }

@@ -4,7 +4,7 @@ import EventSystem from "@/systems/EventSystem"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem, { useUserPreference } from "@/systems/preferences/PreferencesSystem"
-import type { ScoreboardMode } from "@/systems/preferences/PreferenceTypes"
+import { type ScoreboardMode, SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
 import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
@@ -26,15 +26,14 @@ export function isScoreboardVisible(mode: ScoreboardMode, gameplayActive: boolea
     return mode === "on" || (mode === "auto" && gameplayActive)
 }
 
-export function toggledScoreboardMode(mode: ScoreboardMode, gameplayActive: boolean): ScoreboardMode {
-    return isScoreboardVisible(mode, gameplayActive) ? "off" : "on"
+export function nextScoreboardMode(mode: ScoreboardMode): ScoreboardMode {
+    return SCOREBOARD_MODES[(SCOREBOARD_MODES.indexOf(mode) + 1) % SCOREBOARD_MODES.length]
 }
 
 export interface Scoreboard {
     mode: ScoreboardMode
     visible: boolean
     setMode: (mode: ScoreboardMode) => void
-    toggle: () => void
 }
 
 export function useScoreboard(): Scoreboard {
@@ -60,10 +59,5 @@ export function useScoreboard(): Scoreboard {
         [writeMode]
     )
 
-    const toggle = useCallback(
-        () => setMode(toggledScoreboardMode(mode, gameplayActive)),
-        [setMode, mode, gameplayActive]
-    )
-
-    return { mode, visible: isScoreboardVisible(mode, gameplayActive), setMode, toggle }
+    return { mode, visible: isScoreboardVisible(mode, gameplayActive), setMode }
 }

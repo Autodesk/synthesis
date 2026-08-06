@@ -1,6 +1,6 @@
 import { expect, test } from "vitest"
-import { SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
-import { isScoreboardVisible, toggledScoreboardMode } from "@/ui/helpers/ScoreboardVisibility"
+import { type ScoreboardMode, SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
+import { isScoreboardVisible, nextScoreboardMode } from "@/ui/helpers/ScoreboardVisibility"
 
 test("only auto depends on gameplay", () => {
     expect(isScoreboardVisible("auto", false)).toBe(false)
@@ -11,13 +11,10 @@ test("only auto depends on gameplay", () => {
     expect(isScoreboardVisible("off", true)).toBe(false)
 })
 
-test("toggling pins the scoreboard to the opposite of what is on screen", () => {
-    for (const mode of SCOREBOARD_MODES) {
-        for (const gameplayActive of [false, true]) {
-            const toggled = toggledScoreboardMode(mode, gameplayActive)
+test("cycling visits every mode and returns to the start", () => {
+    let mode: ScoreboardMode = SCOREBOARD_MODES[0]
+    const visited = SCOREBOARD_MODES.map(() => (mode = nextScoreboardMode(mode)))
 
-            expect(toggled).not.toBe("auto")
-            expect(isScoreboardVisible(toggled, gameplayActive)).toBe(!isScoreboardVisible(mode, gameplayActive))
-        }
-    }
+    expect(new Set(visited).size).toBe(SCOREBOARD_MODES.length)
+    expect(mode).toBe(SCOREBOARD_MODES[0])
 })
