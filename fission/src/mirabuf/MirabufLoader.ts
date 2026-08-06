@@ -473,6 +473,7 @@ export async function spawnCachedMira(
     if (info.miraType === MiraType.FIELD) {
         if (World.multiplayerSystem != null && World.sceneRenderer.mirabufSceneObjects.getField() != null) {
             globalAddToast("warning", "Cannot spawn a second field!")
+            progressHandle.fail("Cannot spawn a second field")
             return
         }
         World.sceneRenderer.removeAllFields()
