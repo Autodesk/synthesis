@@ -205,7 +205,14 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        const unstickImpulse = new JOLT.Vec3(0, this._assembly.robotPreferences.unstickForce, 0)
+        const inverseMass = body.GetMotionProperties().GetInverseMass()
+        if (inverseMass <= 0) {
+            console.warn("Root body has no mass, skipping unstick")
+            return
+        }
+
+        const mass = 1.0 / inverseMass
+        const unstickImpulse = new JOLT.Vec3(0, this._assembly.robotPreferences.unstickForce * mass, 0)
         body.AddImpulse(unstickImpulse)
     }
 

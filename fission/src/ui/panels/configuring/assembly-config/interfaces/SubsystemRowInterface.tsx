@@ -1,6 +1,7 @@
 import { Divider, Stack } from "@mui/material"
 import { useCallback, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { MAX_UNSTICK_FORCE, MIN_UNSTICK_FORCE } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
@@ -88,8 +89,8 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, save
                     )}
                     {group.id == "drivetrain" && (
                         <StatefulSlider
-                            min={0}
-                            max={250}
+                            min={MIN_UNSTICK_FORCE}
+                            max={MAX_UNSTICK_FORCE}
                             defaultValue={unstickForce}
                             label="Unstick Force"
                             onChange={(value: number | number[]) => {
@@ -97,7 +98,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, save
                                 robot.robotPreferences.unstickForce = value as number
                                 robot.savePreferences()
                             }}
-                            step={5}
+                            step={0.1}
                         />
                     )}
                 </Stack>
