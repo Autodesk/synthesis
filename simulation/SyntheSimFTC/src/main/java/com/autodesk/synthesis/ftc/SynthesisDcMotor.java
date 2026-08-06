@@ -1,22 +1,26 @@
 package com.autodesk.synthesis.ftc;
 
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.google.gson.JsonObject;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 
 /**
  * Backs every DcMotor/DcMotorEx/DcMotorSimple request for a given
  * hardwareMap device name.
  */
-public class SynthesisDcMotor implements DcMotorSimple {
+public class SynthesisDcMotor implements DcMotor {
     private final String deviceName;
     private final FTCWsBridge bridge;
 
     private volatile Direction direction = Direction.FORWARD;
     private volatile double power = 0.0;
+    private volatile int currentPosition = 0;
+    private volatile double velocity = 0.0;
 
     public SynthesisDcMotor(String deviceName, FTCWsBridge bridge) {
         this.deviceName = deviceName;
         this.bridge = bridge;
+        bridge.registerDcMotor(deviceName, this);
     }
 
     @Override
@@ -39,6 +43,26 @@ public class SynthesisDcMotor implements DcMotorSimple {
     @Override
     public double getPower() {
         return power;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return currentPosition;
+    }
+
+    @Override
+    public double getVelocity() {
+        return velocity;
+    }
+
+    /** Applies a "CANEncoder" readback pushed from Fission (position/velocity, ">"-prefixed keys). */
+    void applyEncoderUpdate(JsonObject data) {
+        if (data.has(">position")) {
+            currentPosition = data.get(">position").getAsInt();
+        }
+        if (data.has(">velocity")) {
+            velocity = data.get(">velocity").getAsDouble();
+        }
     }
 
     @Override

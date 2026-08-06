@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import type Brain from "@/systems/simulation/Brain"
 import type { BrainType } from "@/systems/simulation/Brain"
-import FTCBrain from "@/systems/simulation/ftc_brain/FTCBrain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
@@ -14,9 +13,9 @@ function createBrain(assembly: MirabufSceneObject, brainType: BrainType): Brain 
         case "synthesis":
             return new SynthesisBrain(assembly)
         case "wpilib":
-            return new WPILibBrain(assembly)
+            return new WPILibBrain(assembly, "wpilib")
         case "ftc":
-            return new FTCBrain(assembly)
+            return new WPILibBrain(assembly, "ftc")
         default:
             return
     }

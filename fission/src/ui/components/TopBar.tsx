@@ -28,14 +28,7 @@ import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX, TOP_BAR_HEIGHT } from "@/ui/compo
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { useAssemblySelection } from "@/ui/components/topbar/UseConfigureAssembly"
 import UserIcon from "@/ui/components/UserIcon"
-import {
-    getIsConnected as getFTCIsConnected,
-    hasSimBrain as hasFTCSimBrain,
-} from "@/systems/simulation/ftc_brain/FTCState"
-import {
-    getIsConnected as getWPILibIsConnected,
-    hasSimBrain as hasWPILibSimBrain,
-} from "@/systems/simulation/wpilib_brain/WPILibState"
+import { getIsConnected, getSimBrain, hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 
 const TopBar: React.FC = () => {
     const { openModal, openPanel, togglePanel, addToast } = useUIContext()
@@ -140,14 +133,12 @@ const TopBar: React.FC = () => {
                 {appMode === "Gameplay" && <GameplayControls />}
                 <Box flexGrow={1} />
 
-                {(hasWPILibSimBrain() || hasFTCSimBrain()) && (
+                {hasSimBrain() && (
                     <>
-                        {hasWPILibSimBrain() && (
-                            <CodeConnectionIndicator label="Code connection" getIsConnected={getWPILibIsConnected} />
-                        )}
-                        {hasFTCSimBrain() && (
-                            <CodeConnectionIndicator label="FTC code connection" getIsConnected={getFTCIsConnected} />
-                        )}
+                        <CodeConnectionIndicator
+                            label={getSimBrain()?.brainType === "ftc" ? "FTC code connection" : "Code connection"}
+                            getIsConnected={getIsConnected}
+                        />
                         <Box sx={TOP_BAR_DIVIDER_SX} />
                     </>
                 )}

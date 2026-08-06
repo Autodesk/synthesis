@@ -1,7 +1,8 @@
 import Lazy from "@/util/Lazy.ts"
 import WSWorker from "../shared/WSWorker?worker"
 
-export const DEFAULT_WS_URL = "ws://localhost:3300/wpilibws"
+export const WPILIB_WS_URL = "ws://localhost:3300/wpilibws"
+export const FTC_WS_URL = "ws://localhost:3301/ftcsimws"
 
 export type DeviceName = string
 export type DeviceData = Map<string, number | boolean | string>
@@ -20,6 +21,7 @@ export enum SimType {
     AI = "AI",
     AO = "AO",
     DRIVERS_STATION = "DriverStation",
+    GAMEPAD = "Gamepad",
 }
 
 export enum FieldType {

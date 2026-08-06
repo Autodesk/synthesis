@@ -1,5 +1,4 @@
 import type Mechanism from "../physics/Mechanism"
-import type FTCBrain from "@/systems/simulation/ftc_brain/FTCBrain.ts"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain.ts"
 
@@ -25,7 +24,7 @@ abstract class Brain {
     public isWPILib(): this is WPILibBrain {
         return this.brainType == "wpilib"
     }
-    public isFTC(): this is FTCBrain {
+    public isFTC(): this is WPILibBrain {
         return this.brainType == "ftc"
     }
 }
