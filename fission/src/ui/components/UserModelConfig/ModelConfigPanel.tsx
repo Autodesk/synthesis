@@ -9,7 +9,8 @@ import { Button, ProgressButton, SynthesisIcons, TooltipButton } from "@/compone
 import DrivetrainConfig from "@/components/UserModelConfig/DrivetrainConfig.tsx"
 import DeleteParts from "@/components/UserModelConfig/DeleteParts.tsx"
 import { applyModelConfigChanges } from "@/systems/scene/ApplyModelConfig.ts"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts";
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 export interface SubpanelProps {
     setDisableNextMessage: (v: string | null) => void
@@ -21,10 +22,11 @@ const screens: { title: string; component: React.FC<SubpanelProps> }[] = [
     { title: "Delete Parts", component: DeleteParts },
     { title: "Assign Wheels", component: WheelAssignment },
     { title: "Drivetrain", component: DrivetrainConfig },
-
 ]
 
-const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufSceneObject }>> = ({ panel }) => {
+const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufSceneObject; hasDrivetrain: boolean }>> = ({
+    panel,
+}) => {
     const { configureScreen, closePanel } = useUIContext()
     const [screen, setScreen] = useState<number>(0)
     const [disableNextMessage, setDisableNextMessage] = useState<string | null>(null)
@@ -44,16 +46,31 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
         }
     }, [pauseHandle])
 
-    const apply = useCallback(async () => {
-        await applyModelConfigChanges()
+    const apply = useCallback(
+        async (advance: boolean) => {
+            const success = await applyModelConfigChanges()
+            if (success) {
+                globalAddToast(
+                    "success",
+                    "Model Config",
+                    "Applied the pending changes and rebuilt the affected assembly."
+                )
+            } else {
+                globalAddToast("error", "Model Config", "Failed to rebuild assembly.")
+                return
+            }
 
-        const newObj = World.sceneRenderer.sceneObjects.get(originalSceneObject.id)
-        if (!newObj || !(newObj instanceof MirabufSceneObject)) {
-            return
-        }
-        setSceneObject(newObj)
-        return newObj
-    }, [originalSceneObject])
+            const newObj = World.sceneRenderer.sceneObjects.get(originalSceneObject.id)
+            if (!newObj || !(newObj instanceof MirabufSceneObject)) {
+                return
+            }
+            setSceneObject(newObj)
+            if (advance) {
+                setScreen(s => s + 1)
+            }
+        },
+        [originalSceneObject]
+    )
 
     useEffect(() => {
         configureScreen(panel!, { title, hideCancel: true, hideAccept: true }, {})
@@ -71,22 +88,19 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
                 pauseRef={pauseHandle}
             />
             <Divider />
-            {screen == 0 && (
+            {screen == 1 && (
                 <ProgressButton
                     color="secondary"
                     refreshLabel={"Applying..."}
                     sx={{ px: 4, flexGrow: 2 }}
-                    onClick={async () => {
-                        await apply()
-                        setScreen(screen + 1)
-                    }}
+                    onClick={() => apply(true)}
                 >
                     Apply
                 </ProgressButton>
             )}
             {screen == screens.length - 1 && (
                 <Button color="secondary" sx={{ px: 4, flexGrow: 2 }} onClick={closeCallback}>
-                    Apply
+                    Save
                 </Button>
             )}
             <Stack direction={"row"} gap={1}>
@@ -95,7 +109,7 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
                     color="secondary"
                     size={"medium"}
                     sx={{ px: 4 }}
-                    disabled={true}
+                    disabled={screen !== 1}
                     onClick={() => setScreen(screen - 1)}
                 >
                     <SynthesisIcons.LEFT_ARROW_LARGE />
@@ -106,7 +120,7 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
                     color="secondary"
                     sx={{ px: 4 }}
                     tooltip={disableNextMessage ?? undefined}
-                    disabled={screen == 1 || disableNextMessage != null}
+                    disabled={screen == 1 || screen == screens.length - 1 || disableNextMessage != null}
                     onClick={() => setScreen(screen + 1)}
                 >
                     <SynthesisIcons.RIGHT_ARROW_LARGE />
