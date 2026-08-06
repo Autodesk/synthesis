@@ -70,6 +70,14 @@ function rpyToMatrix(roll: number, pitch: number, yaw: number): Mat3 {
     ]
 }
 
+// Inverse of rpyToMatrix (ZYX Euler extraction). https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
+function matrixToRPY(m: Mat3): [number, number, number] {
+    const pitch = Math.asin(Math.min(1, Math.max(-1, -m[2][0])))
+    const yaw = Math.atan2(m[1][0], m[0][0])
+    const roll = Math.atan2(m[2][1], m[2][2])
+    return [roll, pitch, yaw]
+}
+
 // Rx(-90°): converts URDF Z-up frame to Y-up
 // biome-ignore format: matrix layout
 const RZy: Mat3 = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
@@ -300,14 +308,42 @@ function fillMissingMaterials(links: URDFLink[]): void {
 // synthetic zero-mass links fixed-jointed (identity origin) back to the original link. The real
 // mass properties stay on the original link; the identity origin reproduces the same world
 // position since visual origin is already expressed in the original link's local frame.
-function splitMultiVisualLinks(links: URDFLink[], joints: URDFJoint[]): { links: URDFLink[]; joints: URDFJoint[] } {
+//
+// shouldTreatVisualOriginsAsRobotSpace only fires on multi-visual links (it needs >= 2 visuals to
+// tell baked-in occurrence transforms apart from ordinary link-local offsets). Once split, every
+// resulting link has exactly one visual, so that detection would never fire again. Bake the
+// robot-space correction into each visual's origin here, before splitting, while the original
+// multi-visual link is still intact for the heuristic to inspect.
+function splitMultiVisualLinks(
+    links: URDFLink[],
+    joints: URDFJoint[],
+    rootName: string,
+    meshFiles: Map<string, Uint8Array>
+): { links: URDFLink[]; joints: URDFJoint[] } {
     const newLinks: URDFLink[] = []
     const syntheticJoints: URDFJoint[] = []
+    const globalTransforms = buildGlobalLinkTransforms(joints, rootName)
+    const meshCache = new Map<string, ParsedMesh | null>()
 
     for (const link of links) {
         if (link.visuals.length <= 1) {
             newLinks.push(link)
             continue
+        }
+
+        const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(
+            link,
+            globalTransforms.get(link.name),
+            meshFiles,
+            meshCache
+        )
+        if (robotSpaceVisuals) {
+            const linkGlobalTransform = globalTransforms.get(link.name)
+            for (const visual of link.visuals) {
+                const baked = visualTransformInLinkFrame(visual, true, linkGlobalTransform)
+                visual.visualOriginXYZ = baked.translation
+                visual.visualOriginRPY = matrixToRPY(baked.rotation)
+            }
         }
 
         newLinks.push({ ...link, visuals: [link.visuals[0]] })
@@ -1058,10 +1094,12 @@ export async function convertURDF(
     if (rawLinks.length === 0) throw new Error("URDF contains no <link> elements")
 
     fillMissingMaterials(rawLinks)
-    const { links, joints } = splitMultiVisualLinks(rawLinks, rawJoints)
-    const childSet = new Set(joints.map(j => j.child))
-    const rootLink = links.find(l => !childSet.has(l.name))
-    if (!rootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
+    const rawChildSet = new Set(rawJoints.map(j => j.child))
+    const rawRootLink = rawLinks.find(l => !rawChildSet.has(l.name))
+    if (!rawRootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
+
+    const { links, joints } = splitMultiVisualLinks(rawLinks, rawJoints, rawRootLink.name, meshFiles)
+    const rootLink = links.find(l => l.name === rawRootLink.name)!
 
     // rigidGroups must be computed before physicsJoints — filtering depends on group membership.
     // Must be an array (not undefined): bandageRigidNodes calls .forEach on it directly.
