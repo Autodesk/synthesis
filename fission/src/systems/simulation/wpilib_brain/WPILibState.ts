@@ -1,7 +1,7 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { NoraTypes } from "../Nora"
 import type WPILibBrain from "./WPILibBrain"
-import { DEFAULT_WS_URL, type SimMap, SimType, worker } from "./WPILibTypes"
+import { FTC_WS_URL, type SimMap, SimType, WPILIB_WS_URL, worker } from "./WPILibTypes"
 
 export const simMaps = new Map<string, SimMap>()
 
@@ -15,7 +15,7 @@ export function setSimBrain(brain: WPILibBrain | undefined) {
     if (simBrain)
         worker.getValue().postMessage({
             command: "enable",
-            url: DEFAULT_WS_URL,
+            url: simBrain.brainType === "ftc" ? FTC_WS_URL : WPILIB_WS_URL,
             reconnect: PreferencesSystem.getUserPreference("SimAutoReconnect"),
         })
 }
@@ -55,6 +55,7 @@ export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.AI]: undefined,
     [SimType.AO]: NoraTypes.NUMBER,
     [SimType.DRIVERS_STATION]: undefined,
+    [SimType.GAMEPAD]: undefined,
 }
 
 export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
@@ -69,4 +70,5 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.AI]: NoraTypes.NUMBER,
     [SimType.AO]: undefined,
     [SimType.DRIVERS_STATION]: undefined,
+    [SimType.GAMEPAD]: undefined,
 }

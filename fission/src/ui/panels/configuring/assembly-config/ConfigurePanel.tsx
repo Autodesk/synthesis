@@ -12,7 +12,6 @@ import {
     type ConfigurationSubpanelComponent,
     type ConfigurationType,
     fieldConfigModes,
-    ftcRobotConfigModes,
     synthesisRobotConfigModes,
     wpilibRobotConfigModes,
 } from "./ConfigTypes"
@@ -255,9 +254,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         if (configurationType == "ROBOTS") {
             if (selectedAssembly?.brain?.isSynthesis()) {
                 return synthesisRobotConfigModes
-            }
-            if (selectedAssembly?.brain?.isFTC()) {
-                return ftcRobotConfigModes
             }
             return wpilibRobotConfigModes
         }

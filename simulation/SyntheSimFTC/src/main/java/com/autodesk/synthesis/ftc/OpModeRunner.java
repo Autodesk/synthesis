@@ -89,6 +89,7 @@ public class OpModeRunner {
                 }, "ftc-opmode");
                 thread.start();
                 OpModeManagerBridge.start(opMode);
+                bridge.setEnabled(true);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Unable to construct " + opModeClass.getName(), e);
             }
@@ -96,6 +97,7 @@ public class OpModeRunner {
 
         @Override
         public synchronized void onFissionDisconnected() {
+            bridge.setEnabled(false);
             if (current != null) {
                 OpModeManagerBridge.stop(current);
             }

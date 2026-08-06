@@ -11,6 +11,7 @@ import { SimAnalogOutput, SimDigitalOutput, type SimOutput } from "./SimOutput"
 import { SimAccelInput } from "./sim/SimAccel"
 import { SimAnalogInput } from "./sim/SimAI"
 import { SimDigitalInput } from "./sim/SimDIO"
+import { SimGamepadInput } from "./sim/SimGamepad"
 import { SimGyroInput } from "./sim/SimGyro"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
 import { type DeviceData, type SimType, type WSMessage, worker } from "./WPILibTypes"
@@ -88,14 +89,17 @@ class WPILibBrain extends Brain {
         return this._assembly.assemblyId
     }
 
+    private _brainType: "wpilib" | "ftc"
+
     public override get brainType() {
-        return "wpilib" as const
+        return this._brainType
     }
 
-    constructor(assembly: MirabufSceneObject) {
+    constructor(assembly: MirabufSceneObject, brainType: "wpilib" | "ftc" = "wpilib") {
         super(assembly.mechanism)
 
         this._assembly = assembly
+        this._brainType = brainType
 
         this._simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
 
@@ -103,18 +107,22 @@ class WPILibBrain extends Brain {
             return
         }
 
-        // TODO: make these configurable
-        this.addSimInput(new SimGyroInput("SYN AHRS[0]", this._mechanism))
-        this.addSimInput(new SimAccelInput("SYN AHRS[0]", this._mechanism))
-        this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
-        this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
-        this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
-        this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
+        if (brainType === "wpilib") {
+            // TODO: make these configurable
+            this.addSimInput(new SimGyroInput("SYN AHRS[0]", this._mechanism))
+            this.addSimInput(new SimAccelInput("SYN AHRS[0]", this._mechanism))
+            this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
+            this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
+            this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
+            this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
+        } else {
+            this.addSimInput(new SimGamepadInput("1"))
+        }
 
         this.loadSimConfig()
 
         World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
-            if (v.brain?.isWPILib()) {
+            if (v.brain?.isWPILib() || v.brain?.isFTC()) {
                 v.brain = new SynthesisBrain(v)
             }
         })

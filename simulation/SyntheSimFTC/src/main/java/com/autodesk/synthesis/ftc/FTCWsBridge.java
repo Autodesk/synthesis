@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -29,6 +30,7 @@ public class FTCWsBridge extends WebSocketServer {
     private final Gson gson = new Gson();
     private final Gamepad gamepad1 = new Gamepad();
     private final Gamepad gamepad2 = new Gamepad();
+    private final Map<String, SynthesisDcMotor> dcMotors = new ConcurrentHashMap<>();
     private volatile ConnectionListener listener;
 
     public FTCWsBridge(int port) {
@@ -47,10 +49,24 @@ public class FTCWsBridge extends WebSocketServer {
         this.listener = listener;
     }
 
+    public void registerDcMotor(String deviceName, SynthesisDcMotor motor) {
+        dcMotors.put(deviceName, motor);
+        Map<String, Object> init = new HashMap<>();
+        init.put("<init", true);
+        send("CANMotor", deviceName, init);
+        send("CANEncoder", deviceName, init);
+    }
+
     public void sendMotorPower(String deviceName, double power) {
         Map<String, Object> data = new HashMap<>();
-        data.put("power", power);
-        send("DcMotor", deviceName, data);
+        data.put("<percentOutput", power);
+        send("CANMotor", deviceName, data);
+    }
+
+    public void setEnabled(boolean enabled) {
+        Map<String, Object> data = new HashMap<>();
+        data.put(">enabled", enabled);
+        send("DriverStation", "", data);
     }
 
     private void send(String type, String device, Map<String, Object> data) {
@@ -104,6 +120,11 @@ public class FTCWsBridge extends WebSocketServer {
         if ("Gamepad".equals(type)) {
             String device = json.has("device") ? json.get("device").getAsString() : "1";
             applyGamepadUpdate("2".equals(device) ? gamepad2 : gamepad1, json.getAsJsonObject("data"));
+        } else if ("CANEncoder".equals(type) && json.has("device")) {
+            SynthesisDcMotor motor = dcMotors.get(json.get("device").getAsString());
+            if (motor != null) {
+                motor.applyEncoderUpdate(json.getAsJsonObject("data"));
+            }
         }
     }
 

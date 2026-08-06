@@ -110,18 +110,9 @@ export const wpilibRobotConfigModes = [
     new ConfigModeSelectionOption(
         "Simulation",
         ConfigMode.SIM,
-        "Configure the WPILib simulation settings for this robot."
+        "Configure the code simulation settings for this robot."
     ),
 ]
-export const ftcRobotConfigModes = [
-    ...baseRobotConfigModes,
-    new ConfigModeSelectionOption(
-        "Simulation",
-        ConfigMode.SIM,
-        "Configure the FTC simulation settings for this robot."
-    ),
-]
-
 export const fieldConfigModes = [
     new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of field relative to robot."),
     new ConfigModeSelectionOption(

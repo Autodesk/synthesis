@@ -5,13 +5,12 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Checkbox from "@/ui/components/Checkbox"
 import { Button } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import FTCCreateDeviceModal from "@/ui/modals/configuring/ftc-config/FTCCreateDeviceModal"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import WiringPanel from "@/ui/panels/simulation/WiringPanel"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
 const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, panel, registerCleanupFunction }) => {
-    const { openPanel, closePanel, openModal } = useUIContext()
+    const { openPanel, closePanel } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
     const ftcActive = selectedAssembly.brain?.isFTC() ?? false
 
@@ -32,17 +31,15 @@ const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly,
                     setAutoReconnect(!autoReconnect)
                 }}
             />
-            {!ftcActive && (
-                <Button
-                    className="self-center"
-                    onClick={() => {
-                        setSpotlightAssembly(selectedAssembly)
-                        openPanel(WiringPanel, undefined, panel)
-                    }}
-                >
-                    Wiring Panel
-                </Button>
-            )}
+            <Button
+                className="self-center"
+                onClick={() => {
+                    setSpotlightAssembly(selectedAssembly)
+                    openPanel(WiringPanel, undefined, panel)
+                }}
+            >
+                Wiring Panel
+            </Button>
             <Tooltip title={ftcActive ? "Not currently implemented for FTC CodeSim" : ""}>
                 <span className="self-center">
                     <Button
@@ -57,11 +54,6 @@ const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly,
                     </Button>
                 </span>
             </Tooltip>
-            {ftcActive && (
-                <Button className="self-center" onClick={() => openModal(FTCCreateDeviceModal, undefined)}>
-                    Configure FTC Devices
-                </Button>
-            )}
         </Stack>
     )
 }
