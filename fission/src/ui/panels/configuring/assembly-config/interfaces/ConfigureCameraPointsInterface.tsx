@@ -1,5 +1,5 @@
 import { Divider, MenuItem, Select, Stack, TextField } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -12,7 +12,12 @@ import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledCompo
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../AssemblyConfigHooks"
-import { useDirectionIndicatorMesh, useFieldRelativeGizmoPosition, useSyncIndicatorRotation } from "./FieldPointEditing"
+import {
+    useDirectionIndicatorMesh,
+    useFieldPointMarkers,
+    useFieldRelativeGizmoPosition,
+    useSyncIndicatorRotation,
+} from "./FieldPointEditing"
 
 const RAD_TO_DEG = 180 / Math.PI
 const DEG_TO_RAD = Math.PI / 180
@@ -48,6 +53,17 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, points, onChange, on
     useConfigurationSavedListener(saveEvent)
     useHoldPhysicsPauseWhileMounted()
     useEffect(() => persist(points, selectedField), [selectedField, points])
+
+    const markerPoints = useMemo(
+        () =>
+            points.map(p => ({
+                pos: p.pos,
+                yaw: p.look.type === "rotation" ? p.look.yaw : undefined,
+                pitch: p.look.type === "rotation" ? p.look.pitch : undefined,
+            })),
+        [points]
+    )
+    useFieldPointMarkers(selectedField, markerPoints, "-z")
 
     return (
         <>

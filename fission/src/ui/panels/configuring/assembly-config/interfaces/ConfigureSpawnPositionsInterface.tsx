@@ -1,5 +1,5 @@
 import { Box, Stack, TextField } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
@@ -20,7 +20,12 @@ import ScrollView from "@/ui/components/ScrollView"
 import { EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../AssemblyConfigHooks"
-import { useDirectionIndicatorMesh, useFieldRelativeGizmoPosition, useSyncIndicatorRotation } from "./FieldPointEditing"
+import {
+    useDirectionIndicatorMesh,
+    useFieldPointMarkers,
+    useFieldRelativeGizmoPosition,
+    useSyncIndicatorRotation,
+} from "./FieldPointEditing"
 import { capitalize } from "@/util/Utility"
 
 const RAD_TO_DEG = 180 / Math.PI
@@ -89,6 +94,9 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, locations, onEdit })
 
     useConfigurationSavedListener(saveEvent)
     useHoldPhysicsPauseWhileMounted()
+
+    const markerPoints = useMemo(() => SPAWN_SLOTS.map(slot => getSpawnLocation(locations, slot.path)), [locations])
+    useFieldPointMarkers(selectedField, markerPoints)
 
     return (
         <ScrollView>
