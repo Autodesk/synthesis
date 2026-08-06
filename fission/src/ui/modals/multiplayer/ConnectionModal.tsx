@@ -58,7 +58,7 @@ const ConnectionModal: React.FC<ConnectionModalProps> = ({ setRoomList, setURL, 
 
     const validateServer = useCallback(
         (silent: boolean): string | undefined => {
-            const parsedPort = parseInt(port)
+            const parsedPort = parseInt(port || `${DEFAULT_MULTIPLAYER_PORT}`)
             if (isNaN(parsedPort) || parsedPort <= 0 || parsedPort > 65535) {
                 !silent && globalAddToast("warning", "Invalid Port", "Must be an integer between 0 and 65535")
                 return
