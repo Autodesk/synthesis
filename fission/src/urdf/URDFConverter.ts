@@ -70,7 +70,6 @@ function rpyToMatrix(roll: number, pitch: number, yaw: number): Mat3 {
     ]
 }
 
-// Inverse of rpyToMatrix (ZYX Euler extraction). https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
 function matrixToRPY(m: Mat3): [number, number, number] {
     const pitch = Math.asin(Math.min(1, Math.max(-1, -m[2][0])))
     const yaw = Math.atan2(m[1][0], m[0][0])
@@ -305,15 +304,8 @@ function fillMissingMaterials(links: URDFLink[]): void {
 
 // URDF only carries one <inertial> per link, so a link with multiple <visual> elements has one
 // real mass/inertia for geometry that mirabuf needs as separate parts. Peel visuals[1:] off into
-// synthetic zero-mass links fixed-jointed (identity origin) back to the original link. The real
-// mass properties stay on the original link; the identity origin reproduces the same world
-// position since visual origin is already expressed in the original link's local frame.
-//
-// shouldTreatVisualOriginsAsRobotSpace only fires on multi-visual links (it needs >= 2 visuals to
-// tell baked-in occurrence transforms apart from ordinary link-local offsets). Once split, every
-// resulting link has exactly one visual, so that detection would never fire again. Bake the
-// robot-space correction into each visual's origin here, before splitting, while the original
-// multi-visual link is still intact for the heuristic to inspect.
+// synthetic zero-mass links fixed-jointed back to the original link.
+// The real mass properties stay on the original link
 function splitMultiVisualLinks(
     links: URDFLink[],
     joints: URDFJoint[],

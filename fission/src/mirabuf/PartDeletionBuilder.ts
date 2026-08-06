@@ -3,8 +3,7 @@ import type { mirabuf } from "@/proto/mirabuf"
 
 /**
  * Removes guid's node from the design hierarchy, wherever it lives, re-parenting its children in its place.
- * The hierarchy is derived from the joint/fastener graph (not assembly containment), so a node's descendants
- * are routinely unrelated parts elsewhere in the robot — only the selected guid itself is safe to remove.
+ * The hierarchy is derived from the joint/fastener graph (not assembly containment).
  * Returns the removed GUID.
  */
 function removeFromDesignHierarchy(designHierarchy: mirabuf.IGraphContainer, guid: string): Set<string> {
