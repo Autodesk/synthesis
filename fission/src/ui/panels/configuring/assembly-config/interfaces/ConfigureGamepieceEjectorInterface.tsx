@@ -123,48 +123,48 @@ const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
     }, [])
 
     const gizmoComponent = useMemo(() => {
-        if (selectedAssembly?.ejectorPreferences) {
-            const postGizmoCreation = (gizmo: GizmoSceneObject) => {
-                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
-                material.depthTest = false
+        if (!selectedAssembly?.ejectorPreferences) {
+            gizmoRef.current = undefined
+            return null
+        }
 
-                const deltaTransformation = convertArrayToThreeMatrix4(
-                    selectedAssembly.ejectorPreferences!.deltaTransformation
-                )
+        const postGizmoCreation = (gizmo: GizmoSceneObject) => {
+            const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+            material.depthTest = false
 
-                let nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(
-                    selectedAssembly.ejectorPreferences!.parentNode ?? selectedAssembly.rootNodeId
-                )
-                if (!nodeBodyId) {
-                    // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
-                    nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(selectedAssembly.rootNodeId)!
-                }
+            const deltaTransformation = convertArrayToThreeMatrix4(
+                selectedAssembly.ejectorPreferences!.deltaTransformation
+            )
 
-                /** W = L x R. See save() for math details */
-                const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
-                )
-                const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
-
-                gizmo.obj.position.setFromMatrixPosition(gizmoTransformation)
-                gizmo.obj.rotation.setFromRotationMatrix(gizmoTransformation)
+            let nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(
+                selectedAssembly.ejectorPreferences!.parentNode ?? selectedAssembly.rootNodeId
+            )
+            if (!nodeBodyId) {
+                // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+                nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(selectedAssembly.rootNodeId)!
             }
 
-            return (
-                <TransformGizmoControl
-                    key="shot-transform-gizmo"
-                    size={1.5}
-                    gizmoRef={gizmoRef}
-                    defaultMode="translate"
-                    defaultMesh={placeholderMesh}
-                    scaleDisabled={true}
-                    postGizmoCreation={postGizmoCreation}
-                />
+            /** W = L x R. See save() for math details */
+            const robotTransformation = convertJoltMat44ToThreeMatrix4(
+                World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
             )
-        } else {
-            gizmoRef.current = undefined
-            return <></>
+            const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
+
+            gizmo.obj.position.setFromMatrixPosition(gizmoTransformation)
+            gizmo.obj.rotation.setFromRotationMatrix(gizmoTransformation)
         }
+
+        return (
+            <TransformGizmoControl
+                key="shot-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+                defaultMesh={placeholderMesh}
+                scaleDisabled={true}
+                postGizmoCreation={postGizmoCreation}
+            />
+        )
     }, [
         placeholderMesh,
         selectedAssembly.ejectorPreferences,

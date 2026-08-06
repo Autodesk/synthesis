@@ -245,6 +245,8 @@ class DragModeSystem extends WorldSystem {
               sceneObjectId: SceneObjectId
           }
         | undefined {
+        if (World.physicsSystem.isPaused) return undefined
+
         const result = rayCastForRigidBody(mousePos)
         if (!result || !this.isDraggable(result.association)) return undefined
         const isGamePiece = result.association.isGamePiece
@@ -413,6 +415,7 @@ class DragModeSystem extends WorldSystem {
 
     private updateDragForce(): void {
         if (!this._dragTarget) return
+        if (World.physicsSystem.isPaused) return
 
         const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
         if (!body) {
