@@ -34,7 +34,8 @@
         "noUselessCatch": "error",
         "noUselessEscapeInRegex": "error",
         "noUselessThisAlias": "error",
-        "noUselessTypeConstraint": "error"
+        "noUselessTypeConstraint": "error",
+        "noUselessFragments": "error"
       },
       "correctness": {
         "noConstAssign": "error",
