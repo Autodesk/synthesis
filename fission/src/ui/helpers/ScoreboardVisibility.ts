@@ -5,6 +5,7 @@ import MatchMode from "@/systems/match_mode/MatchMode"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { type ScoreboardMode, SCOREBOARD_MODES } from "@/systems/preferences/PreferenceTypes"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
@@ -53,10 +54,18 @@ export function useScoreboard(): Scoreboard {
 
     const gameplayActive = appMode === "Gameplay" || inMatchMode
 
-    const setMode = useCallback((next: ScoreboardMode) => {
-        PreferencesSystem.setUserPreference("ScoreboardMode", next)
-        PreferencesSystem.savePreferences()
-    }, [])
+    const setMode = useCallback(
+        (next: ScoreboardMode) => {
+            if (inMatchMode && !isScoreboardVisible(next, true)) {
+                globalAddToast("error", "Match In Progress", "The scoreboard cannot be hidden during a match.")
+                return
+            }
+
+            PreferencesSystem.setUserPreference("ScoreboardMode", next)
+            PreferencesSystem.savePreferences()
+        },
+        [inMatchMode]
+    )
 
     return { mode, visible: isScoreboardVisible(mode, gameplayActive), setMode }
 }
