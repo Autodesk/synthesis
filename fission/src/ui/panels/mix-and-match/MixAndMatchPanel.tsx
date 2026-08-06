@@ -256,25 +256,24 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                 .then(() => {
                     const component = MixAndMatchMode.scene?.get(selected)
 
-                    // Gizmo space is the root body's center-of-mass transform, not its world transform.
-                    // setTransform force-updates, so passing the world transform here would re-drive every
-                    // body by the root compound's COM offset on the very next frame.
+                    // The gizmo has already been re-seated by the placement itself. Logged anyway because
+                    // the two frames are metres apart on a real part, so "which one is the gizmo on" is the
+                    // first thing worth knowing if a part ever jumps after a snap again.
                     const rootWorldTransform = component ? componentWorldTransform(component) : new THREE.Matrix4()
                     const gizmoTransform = component ? componentGizmoTransform(component) : new THREE.Matrix4()
                     const comOffset = new THREE.Vector3()
                         .setFromMatrixPosition(gizmoTransform)
                         .sub(new THREE.Vector3().setFromMatrixPosition(rootWorldTransform))
 
-                    debugLog("[MixAndMatch] gizmo resync", {
+                    debugLog("[MixAndMatch] gizmo frames after mate", {
                         componentId: selected,
                         rootWorldTransform: rootWorldTransform.toArray(),
                         gizmoTransform: gizmoTransform.toArray(),
-                        // How far the gizmo would have dragged the part if it were fed the world transform.
+                        // How far a part would be dragged by a gizmo seated on the wrong one of the two.
                         comOffset: comOffset.toArray(),
                         comOffsetLength: comOffset.length(),
                     })
 
-                    if (component) gizmoRef.current?.setTransform(gizmoTransform)
                     if (component) debugSettleCheck(selected, rootWorldTransform, comOffset.clone().negate())
 
                     if (DEBUG_SNAP_TO_FACE && component && targetComponent) {
