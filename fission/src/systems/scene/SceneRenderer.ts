@@ -28,6 +28,7 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
+import { isDefined } from "@/util/Utility"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -591,18 +592,15 @@ class SceneRenderer extends WorldSystem {
         const hit = rayCastForRigidBody(e.position)
         if (hit) {
             const sceneObject = hit.association.sceneObject
-            if (
-                !World.multiplayerSystem ||
-                (sceneObject.miraType === MiraType.ROBOT &&
-                    World.multiplayerSystem
-                        ?.getOwnRobots()
-                        .map(obj => obj.id)
-                        .includes(sceneObject.id))
-            ) {
+
+            const configurableObjectIds = World.getOwnRobots().map(obj => obj?.id)
+            const isField = sceneObject.miraType === MiraType.FIELD
+
+            if ((isField && sceneObject.isOwnObject) || configurableObjectIds.includes(sceneObject.id)) {
                 miraSupplierData = sceneObject.getSupplierData()
             }
         }
-        // All else fails, present default options.
+
         if (!miraSupplierData) {
             miraSupplierData = { title: "The Scene", items: [] }
             miraSupplierData.items.push({
