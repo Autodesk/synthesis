@@ -89,7 +89,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, save
                     {group.id == "drivetrain" && (
                         <StatefulSlider
                             min={0}
-                            max={15000}
+                            max={250}
                             defaultValue={unstickForce}
                             label="Unstick Force"
                             onChange={(value: number | number[]) => {
@@ -97,7 +97,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, save
                                 robot.robotPreferences.unstickForce = value as number
                                 robot.savePreferences()
                             }}
-                            step={100}
+                            step={5}
                         />
                     )}
                 </Stack>

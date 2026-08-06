@@ -288,7 +288,7 @@ export function defaultRobotPreferences(): RobotPreferences {
         cameras: [],
         driveVelocity: 0,
         driveAcceleration: 0,
-        unstickForce: 8000,
+        unstickForce: 75,
     }
 }
 
