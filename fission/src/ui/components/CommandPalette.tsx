@@ -4,7 +4,6 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import World from "@/systems/World"
 import InputSystem from "@/systems/input/InputSystem"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry, { type CommandDefinition } from "@/ui/components/CommandRegistry"
 import "@/ui/panels/DebugPanel"
@@ -22,7 +21,6 @@ function isTextInputTarget(target: EventTarget | null): boolean {
 
 const CommandPalette: React.FC = () => {
     const { addToast, modal } = useUIContext()
-    const { isMainMenuOpen } = useStateContext()
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [query, setQuery] = useState<string>("")
@@ -137,20 +135,19 @@ const CommandPalette: React.FC = () => {
                 if (isTextInputTarget(e.target)) return
                 e.preventDefault()
                 if (!World.isAlive) return
-                if (isMainMenuOpen) return
                 if (modal) return
                 openPalette()
             }
         }
         window.addEventListener("keydown", onKeyDown)
         return () => window.removeEventListener("keydown", onKeyDown)
-    }, [isMainMenuOpen, modal, openPalette])
+    }, [modal, openPalette])
 
     useEffect(() => {
-        if ((isMainMenuOpen || modal) && isOpen) {
+        if (modal && isOpen) {
             closePalette()
         }
-    }, [isMainMenuOpen, modal, isOpen, closePalette])
+    }, [modal, isOpen, closePalette])
 
     useEffect(() => {
         if (!isOpen) return

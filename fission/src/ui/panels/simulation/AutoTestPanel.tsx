@@ -297,7 +297,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
-        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
+        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.isWPILib() ?? false),
         []
     )
 
@@ -342,15 +342,15 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         setEnd={setActiveProps}
                         state="Playing"
                     />
-                ) : activeProps.state === "End" ? (
-                    <End
-                        assembly={activeProps.assembly}
-                        setStaging={setActiveProps}
-                        captures={activeProps.captures}
-                        state="End"
-                    />
                 ) : (
-                    <></>
+                    activeProps.state === "End" && (
+                        <End
+                            assembly={activeProps.assembly}
+                            setStaging={setActiveProps}
+                            captures={activeProps.captures}
+                            state="End"
+                        />
+                    )
                 ))}
         </Stack>
     )
