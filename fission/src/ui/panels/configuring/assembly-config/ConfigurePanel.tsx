@@ -1,5 +1,5 @@
 import type React from "react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import World from "@/systems/World"
@@ -29,13 +29,14 @@ import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsIn
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
-import { Tab, Tabs } from "@mui/material"
+import { Tab, Tabs, type TabsActions } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
 import MetadataConfigInterface from "@/panels/configuring/assembly-config/interfaces/MetadataConfigInterface.tsx"
 import { FaArrowsRotate } from "react-icons/fa6"
+import ConfigureCameraInterface from "./interfaces/cameras/ConfigureCameraInterface"
 import MoveInterface from "@/panels/configuring/assembly-config/interfaces/MoveInterface.tsx"
 import ControlsConfigInterface from "@/panels/configuring/assembly-config/interfaces/ControlsConfigInterface.tsx"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
@@ -145,6 +146,7 @@ export interface ConfigurePanelCustomProps {
 const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
     [ConfigMode.JOINTS]: ConfigureJointsInterface,
     [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface,
+    [ConfigMode.CAMERA]: ConfigureCameraInterface,
     [ConfigMode.INTAKE]: ConfigureGamepiecePickupInterface,
     [ConfigMode.CONTROLS]: ControlsConfigInterface,
     [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
@@ -175,6 +177,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const [cancelCallbacks, setCancelCallbacks] = useState<(() => void | Promise<void>)[]>([])
     const [accessedAssemblies, setAccessedAssemblies] = useState<MirabufSceneObject[]>([])
 
+    const [disableAccept, setDisableAccept] = useState<boolean>(false)
+
     const registerCleanupFunctions: CleanupRegisterFunction = useCallback((applyFunc?, revertFunc?) => {
         if (applyFunc) {
             setConfirmCallbacks(old => [...old, applyFunc])
@@ -182,6 +186,19 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
         if (revertFunc) {
             setCancelCallbacks(old => [...old, revertFunc])
         }
+    }, [])
+
+    // Resize tab indicator when content changes size
+    const tabsActionsRef = useRef<TabsActions>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const content = contentRef.current
+        if (!content) return
+
+        const observer = new ResizeObserver(() => tabsActionsRef.current?.updateIndicator())
+        observer.observe(content)
+        return () => observer.disconnect()
     }, [])
 
     useEffect(() => {
@@ -243,10 +260,15 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     useEffect(() => {
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: hasMadeChanges ? "Revert" : "Cancel" },
+            {
+                title: "Configure Assets",
+                acceptText: "Save",
+                cancelText: hasMadeChanges ? "Revert" : "Cancel",
+                disableAccept,
+            },
             { onBeforeAccept, onCancel, onClose }
         )
-    }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges])
+    }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges, disableAccept])
 
     const modes = useMemo(() => {
         if (configurationType == "FIELDS") {
@@ -271,6 +293,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     return (
         <>
             <Tabs
+                action={tabsActionsRef}
                 value={configurationType}
                 onChange={(_, newValue) => setConfigurationType(newValue)}
                 textColor="inherit"
@@ -282,69 +305,72 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 <Tab key="fields" value="FIELDS" label="FIELDS" />
                 <Tab key="inputs" value="INPUTS" label="INPUTS" />
             </Tabs>
-            {configurationType === "INPUTS" && (
-                <ConfigureInputsInterface panel={panel!} registerCleanupFunction={registerCleanupFunctions} />
-            )}
-            {configurationType !== "INPUTS" && (
-                <>
-                    <AssemblySelection
-                        panel={panel!}
-                        configurationType={configurationType}
-                        onAssemblySelected={a => {
-                            if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                            setConfigMode(undefined)
-                            setSelectedAssembly(a as MirabufSceneObject)
-                        }}
-                        selectedAssembly={selectedAssembly}
-                        onStageDelete={opt => {
-                            const id = (opt as AssemblySelectionOption).assemblyObject.id
-                            setPendingDeletes(prev => [...prev, id])
-                        }}
-                        pendingDeletes={pendingDeletes}
-                    />
-                    {selectedAssembly !== undefined && (
-                        <ConfigModeSelection
-                            modes={modes}
-                            configMode={configMode}
-                            onModeSelected={mode => {
-                                if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                                setConfigMode(mode)
-                            }}
-                        />
-                    )}
-                    {ConfigSubPanel != null && (
-                        <ConfigSubPanel
+            <div ref={contentRef}>
+                {configurationType === "INPUTS" && (
+                    <ConfigureInputsInterface panel={panel!} registerCleanupFunction={registerCleanupFunctions} />
+                )}
+                {configurationType !== "INPUTS" && (
+                    <>
+                        <AssemblySelection
                             panel={panel!}
-                            selectedAssembly={selectedAssembly!}
-                            hasMadeChanges={hasMadeChanges}
-                            registerCleanupFunction={registerCleanupFunctions}
+                            configurationType={configurationType}
+                            onAssemblySelected={a => {
+                                if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
+                                setConfigMode(undefined)
+                                setSelectedAssembly(a as MirabufSceneObject)
+                            }}
+                            selectedAssembly={selectedAssembly}
+                            onStageDelete={opt => {
+                                const id = (opt as AssemblySelectionOption).assemblyObject.id
+                                setPendingDeletes(prev => [...prev, id])
+                            }}
+                            pendingDeletes={pendingDeletes}
                         />
-                    )}
-                    {configMode === undefined && selectedAssembly !== undefined && (
-                        <>
-                            <Spacer height={16} />
-                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
-                            <Spacer height={16} />
-                            <Button
-                                className={"w-full"}
-                                color={"warning"}
-                                onClick={() => {
-                                    closePanel(panel!.id, CloseType.ACCEPT)
-                                    selectedAssembly.resetPreferences()
-                                    globalAddToast(
-                                        "info",
-                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
-                                    )
+                        {selectedAssembly !== undefined && (
+                            <ConfigModeSelection
+                                modes={modes}
+                                configMode={configMode}
+                                onModeSelected={mode => {
+                                    if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
+                                    setConfigMode(mode)
                                 }}
-                            >
-                                Reset
-                                <Spacer width={5} />
-                                <FaArrowsRotate />
-                            </Button>
-                        </>
-                    )}
-                </>
-            )}
+                            />
+                        )}
+                        {ConfigSubPanel != null && (
+                            <ConfigSubPanel
+                                panel={panel!}
+                                selectedAssembly={selectedAssembly!}
+                                hasMadeChanges={hasMadeChanges}
+                                setDisableAccept={setDisableAccept}
+                                registerCleanupFunction={registerCleanupFunctions}
+                            />
+                        )}
+                        {configMode === undefined && selectedAssembly !== undefined && (
+                            <>
+                                <Spacer height={16} />
+                                <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                                <Spacer height={16} />
+                                <Button
+                                    className={"w-full"}
+                                    color={"warning"}
+                                    onClick={() => {
+                                        closePanel(panel!.id, CloseType.ACCEPT)
+                                        selectedAssembly.resetPreferences()
+                                        globalAddToast(
+                                            "info",
+                                            "Preferences for " + selectedAssembly.descriptiveName + " reset"
+                                        )
+                                    }}
+                                >
+                                    Reset
+                                    <Spacer width={5} />
+                                    <FaArrowsRotate />
+                                </Button>
+                            </>
+                        )}
+                    </>
+                )}
+            </div>
         </>
     )
 }

@@ -133,7 +133,9 @@ class MirabufInstance {
             ([appearanceId, appearance]) => {
                 const { A, B, G, R } = appearance.albedo ?? {}
                 const [hex, opacity] =
-                    A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
+                    A != null && B != null && G != null && R != null
+                        ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0]
+                        : [0xe32b50, 1.0]
 
                 const material =
                     materialStyle === MaterialStyle.REGULAR
