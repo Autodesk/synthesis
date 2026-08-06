@@ -1,5 +1,6 @@
 package com.autodesk.synthesis.ftc;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerBridge;
@@ -13,6 +14,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,9 +24,9 @@ import javax.tools.ToolProvider;
 /**
  * Headless stand-in for FTC's OnBotJava: compiles a plain directory of team
  * source with the JDK's own compiler (no Gradle/Android project needed),
- * classloads the result, finds the @TeleOp LinearOpMode by reflection (same
- * discovery mechanism the real SDK uses on-device), and drives its lifecycle
- * off Fission WS connect/disconnect events.
+ * classloads the result, finds the @TeleOp/@Autonomous LinearOpMode by
+ * reflection (same discovery mechanism the real SDK uses on-device), and drives
+ * its lifecycle off Fission WS connect/disconnect events.
  */
 public class OpModeRunner {
     public static void main(String[] args) throws Exception {
@@ -44,11 +46,12 @@ public class OpModeRunner {
             throw new IllegalArgumentException("Usage: OpModeRunner --src <directory> [--opmode <ClassName>] [--port <port>]");
         }
 
-        Class<? extends LinearOpMode> opModeClass = compileAndDiscover(srcDir, opModeName);
-        System.out.println("[OpModeRunner] Running " + opModeClass.getName());
+        OpModeCandidate selected = compileAndDiscover(srcDir, opModeName);
+        System.out.println("[OpModeRunner] Running [" + selected.kind() + "] " + selected.displayName()
+                + " (" + selected.cls().getName() + ")");
 
         FTCWsBridge bridge = new FTCWsBridge(port);
-        OpModeLifecycle lifecycle = new OpModeLifecycle(opModeClass, bridge);
+        OpModeLifecycle lifecycle = new OpModeLifecycle(selected.cls(), bridge);
         bridge.setConnectionListener(lifecycle);
         bridge.start();
     }
@@ -121,7 +124,20 @@ public class OpModeRunner {
         }
     }
 
-    private static Class<? extends LinearOpMode> compileAndDiscover(Path srcDir, String requestedName) throws Exception {
+    // A discovered OpMode. {@code displayName} is the annotation's name when the team set one
+    private record OpModeCandidate(Class<? extends LinearOpMode> cls, boolean autonomous, String displayName) {
+        String kind() {
+            return autonomous ? "Autonomous" : "TeleOp";
+        }
+
+        boolean matches(String requested) {
+            return cls.getSimpleName().equals(requested)
+                    || cls.getName().equals(requested)
+                    || displayName.equals(requested);
+        }
+    }
+
+    private static OpModeCandidate compileAndDiscover(Path srcDir, String requestedName) throws Exception {
         List<Path> sourceFiles;
         try (Stream<Path> walk = Files.walk(srcDir)) {
             sourceFiles = walk.filter(p -> p.toString().endsWith(".java")).collect(Collectors.toList());
@@ -148,35 +164,76 @@ public class OpModeRunner {
 
         URLClassLoader loader = new URLClassLoader(new URL[] {outDir.toUri().toURL()}, OpModeRunner.class.getClassLoader());
 
-        List<Class<? extends LinearOpMode>> candidates = new ArrayList<>();
+        List<OpModeCandidate> candidates = new ArrayList<>();
         try (Stream<Path> walk = Files.walk(outDir)) {
             for (Path classFile : (Iterable<Path>) walk.filter(p -> p.toString().endsWith(".class"))::iterator) {
                 String relative = outDir.relativize(classFile).toString();
                 String className = relative.substring(0, relative.length() - ".class".length())
                         .replace(File.separatorChar, '.');
                 Class<?> cls = Class.forName(className, false, loader);
-                if (LinearOpMode.class.isAssignableFrom(cls)
-                        && !Modifier.isAbstract(cls.getModifiers())
-                        && cls.isAnnotationPresent(TeleOp.class)
-                        && !cls.isAnnotationPresent(Disabled.class)) {
-                    candidates.add((Class<? extends LinearOpMode>) cls);
+                OpModeCandidate candidate = asCandidate(cls);
+                if (candidate != null) {
+                    candidates.add(candidate);
                 }
             }
         }
 
         if (candidates.isEmpty()) {
-            throw new IllegalStateException("No @TeleOp LinearOpMode class found under " + srcDir);
+            throw new IllegalStateException("No @TeleOp or @Autonomous LinearOpMode class found under " + srcDir);
         }
+
+        candidates.sort(Comparator.comparing(OpModeCandidate::displayName).thenComparing(c -> c.cls().getName()));
+        candidates.forEach(c -> System.out.println(
+                "[OpModeRunner] Discovered [" + c.kind() + "] " + c.displayName() + " (" + c.cls().getName() + ")"));
+
+        return select(candidates, requestedName);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static OpModeCandidate asCandidate(Class<?> cls) {
+        if (!LinearOpMode.class.isAssignableFrom(cls)
+                || Modifier.isAbstract(cls.getModifiers())
+                || cls.isAnnotationPresent(Disabled.class)) {
+            return null;
+        }
+
+        TeleOp teleOp = cls.getAnnotation(TeleOp.class);
+        Autonomous autonomous = cls.getAnnotation(Autonomous.class);
+        if (teleOp == null && autonomous == null) {
+            return null;
+        }
+        if (teleOp != null && autonomous != null) {
+            throw new IllegalStateException(cls.getName() + " is annotated both @TeleOp and @Autonomous; pick one");
+        }
+
+        String annotated = teleOp != null ? teleOp.name() : autonomous.name();
+        String displayName = annotated.isBlank() ? cls.getSimpleName() : annotated;
+        return new OpModeCandidate((Class<? extends LinearOpMode>) cls, autonomous != null, displayName);
+    }
+
+    // Matches --opmode against class name
+    private static OpModeCandidate select(List<OpModeCandidate> candidates, String requestedName) {
         if (requestedName != null) {
-            return candidates.stream()
-                    .filter(c -> c.getSimpleName().equals(requestedName) || c.getName().equals(requestedName))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("No @TeleOp class named " + requestedName + " found"));
+            List<OpModeCandidate> matches = candidates.stream().filter(c -> c.matches(requestedName)).toList();
+            if (matches.isEmpty()) {
+                throw new IllegalArgumentException("No OpMode named " + requestedName + " found, discovered: "
+                        + candidates.stream().map(OpModeCandidate::displayName).collect(Collectors.joining(", ")));
+            }
+            if (matches.size() > 1) {
+                throw new IllegalArgumentException(requestedName + " is ambiguous, it matches: "
+                        + matches.stream().map(c -> c.cls().getName()).collect(Collectors.joining(", ")));
+            }
+            return matches.get(0);
         }
-        if (candidates.size() > 1) {
-            System.out.println("[OpModeRunner] Multiple @TeleOp classes found, using the first: "
-                    + candidates.stream().map(Class::getName).collect(Collectors.joining(", ")));
+
+        List<OpModeCandidate> preferred = candidates.stream().filter(c -> !c.autonomous()).toList();
+        if (preferred.isEmpty()) {
+            preferred = candidates;
         }
-        return candidates.get(0);
+        if (preferred.size() > 1) {
+            System.out.println("[OpModeRunner] Multiple " + preferred.get(0).kind()
+                    + " OpModes found, using the first -- pass --opmode to choose");
+        }
+        return preferred.get(0);
     }
 }

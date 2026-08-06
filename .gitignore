@@ -11,3 +11,4 @@ renderer/
 .idea
 **/.direnv
 .npmrc
+simulation/SyntheSimFTC/gradle/wrapper/gradle-wrapper.jar
