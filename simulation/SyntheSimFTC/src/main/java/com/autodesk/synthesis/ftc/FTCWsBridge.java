@@ -25,6 +25,8 @@ public class FTCWsBridge extends WebSocketServer {
         void onFissionConnected();
 
         void onFissionDisconnected();
+
+        void onDriverStationState(boolean enabled, boolean autonomous);
     }
 
     private final Gson gson = new Gson();
@@ -32,6 +34,9 @@ public class FTCWsBridge extends WebSocketServer {
     private final Gamepad gamepad2 = new Gamepad();
     private final Map<String, SynthesisDcMotor> dcMotors = new ConcurrentHashMap<>();
     private volatile ConnectionListener listener;
+
+    private volatile boolean dsEnabled;
+    private volatile boolean dsAutonomous;
 
     public FTCWsBridge(int port) {
         super(new InetSocketAddress(port));
@@ -63,10 +68,11 @@ public class FTCWsBridge extends WebSocketServer {
         send("CANMotor", deviceName, data);
     }
 
-    public void setEnabled(boolean enabled) {
-        Map<String, Object> data = new HashMap<>();
-        data.put(">enabled", enabled);
-        send("DriverStation", "", data);
+    //Announces the driver station deice
+    private void registerDriverStation() {
+        Map<String, Object> init = new HashMap<>();
+        init.put("<init", true);
+        send("DriverStation", "", init);
     }
 
     private void send(String type, String device, Map<String, Object> data) {
@@ -88,6 +94,9 @@ public class FTCWsBridge extends WebSocketServer {
             return;
         }
         System.out.println("[FTCWsBridge] Fission connected from " + conn.getRemoteSocketAddress());
+        dsEnabled = false;
+        dsAutonomous = false;
+        registerDriverStation();
         ConnectionListener l = listener;
         if (l != null) {
             l.onFissionConnected();
@@ -97,6 +106,9 @@ public class FTCWsBridge extends WebSocketServer {
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         System.out.println("[FTCWsBridge] Fission disconnected: " + reason);
+        dsEnabled = false;
+        dsAutonomous = false;
+        dcMotors.clear();
         ConnectionListener l = listener;
         if (l != null) {
             l.onFissionDisconnected();
@@ -125,6 +137,28 @@ public class FTCWsBridge extends WebSocketServer {
             if (motor != null) {
                 motor.applyEncoderUpdate(json.getAsJsonObject("data"));
             }
+        } else if ("DriverStation".equals(type)) {
+            applyDriverStationUpdate(json.getAsJsonObject("data"));
+        }
+    }
+
+    private void applyDriverStationUpdate(JsonObject data) {
+        boolean changed = false;
+        if (data.has(">enabled")) {
+            dsEnabled = data.get(">enabled").getAsBoolean();
+            changed = true;
+        }
+        if (data.has(">autonomous")) {
+            dsAutonomous = data.get(">autonomous").getAsBoolean();
+            changed = true;
+        }
+        if (!changed) {
+            return;
+        }
+
+        ConnectionListener l = listener;
+        if (l != null) {
+            l.onDriverStationState(dsEnabled, dsAutonomous);
         }
     }
 

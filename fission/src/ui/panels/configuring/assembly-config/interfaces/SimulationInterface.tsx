@@ -1,7 +1,9 @@
-import { Stack, Tooltip } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
+import { RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import Checkbox from "@/ui/components/Checkbox"
 import { Button } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -12,7 +14,7 @@ import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assemb
 const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, panel, registerCleanupFunction }) => {
     const { openPanel, closePanel } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
-    const ftcActive = selectedAssembly.brain?.isFTC() ?? false
+    const [teleopEnabled, setTeleopEnabled] = useState<boolean>(() => SimDriverStation.isEnabled())
 
     useEffect(() => {
         const originalAutoReconnect = PreferencesSystem.getUserPreference("SimAutoReconnect")
@@ -40,20 +42,25 @@ const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly,
             >
                 Wiring Panel
             </Button>
-            <Tooltip title={ftcActive ? "Not currently implemented for FTC CodeSim" : ""}>
-                <span className="self-center">
-                    <Button
-                        className="self-center"
-                        disabled={ftcActive}
-                        onClick={() => {
-                            openPanel(AutoTestPanel, undefined, panel)
-                            if (panel) closePanel(panel.id, CloseType.OVERWRITE)
-                        }}
-                    >
-                        Auto Testing
-                    </Button>
-                </span>
-            </Tooltip>
+            <Button
+                className="self-center"
+                onClick={() => {
+                    openPanel(AutoTestPanel, undefined, panel)
+                    if (panel) closePanel(panel.id, CloseType.OVERWRITE)
+                }}
+            >
+                Auto Testing
+            </Button>
+            <Button
+                className="self-center"
+                onClick={() => {
+                    const next = !teleopEnabled
+                    SimDriverStation.setMode(next ? RobotSimMode.TELEOP : RobotSimMode.DISABLED)
+                    setTeleopEnabled(next)
+                }}
+            >
+                {teleopEnabled ? "Disable Robot" : "Enable FTC Teleop"}
+            </Button>
         </Stack>
     )
 }

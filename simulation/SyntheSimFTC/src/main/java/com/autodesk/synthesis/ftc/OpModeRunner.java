@@ -46,12 +46,12 @@ public class OpModeRunner {
             throw new IllegalArgumentException("Usage: OpModeRunner --src <directory> [--opmode <ClassName>] [--port <port>]");
         }
 
-        OpModeCandidate selected = compileAndDiscover(srcDir, opModeName);
-        System.out.println("[OpModeRunner] Running [" + selected.kind() + "] " + selected.displayName()
-                + " (" + selected.cls().getName() + ")");
+        OpModeSlots slots = compileAndDiscover(srcDir, opModeName);
+        System.out.println("[OpModeRunner] TeleOp slot: " + slots.describe(slots.teleOp()));
+        System.out.println("[OpModeRunner] Autonomous slot: " + slots.describe(slots.autonomous()));
 
         FTCWsBridge bridge = new FTCWsBridge(port);
-        OpModeLifecycle lifecycle = new OpModeLifecycle(selected.cls(), bridge);
+        OpModeLifecycle lifecycle = new OpModeLifecycle(slots, bridge);
         bridge.setConnectionListener(lifecycle);
         bridge.start();
     }
@@ -61,17 +61,46 @@ public class OpModeRunner {
         private final Class<? extends LinearOpMode> opModeClass;
         private final FTCWsBridge bridge;
         private volatile LinearOpMode current;
-        private volatile Thread thread;
+        private OpModeCandidate running;
+        private LinearOpMode current;
+        private Thread thread;
 
-        OpModeLifecycle(Class<? extends LinearOpMode> opModeClass, FTCWsBridge bridge) {
-            this.opModeClass = opModeClass;
+        OpModeLifecycle(OpModeSlots slots, FTCWsBridge bridge) {
+            this.slots = slots;
             this.bridge = bridge;
         }
 
         @Override
         public synchronized void onFissionConnected() {
+            System.out.println("[OpModeRunner] Waiting for the driver station to enable");
+        }
+
+        @Override
+        public synchronized void onFissionDisconnected() {
+            stopCurrent();
+        }
+
+        @Override
+        public synchronized void onDriverStationState(boolean enabled, boolean autonomous) {
+            OpModeCandidate desired = !enabled ? null : autonomous ? slots.autonomous() : slots.teleOp();
+
+            if (enabled && desired == null) {
+                System.out.println("[OpModeRunner] Driver station enabled in "
+                        + (autonomous ? "autonomous" : "teleop") + ", but no such OpMode was discovered");
+            }
+            if (desired != null && running != null && desired.cls() == running.cls()) {
+                return;
+            }
+
+            stopCurrent();
+            if (desired != null) {
+                start(desired);
+            }
+        }
+
+        private void start(OpModeCandidate candidate) {
             try {
-                Constructor<? extends LinearOpMode> ctor = opModeClass.getDeclaredConstructor();
+                Constructor<? extends LinearOpMode> ctor = candidate.cls().getDeclaredConstructor();
                 ctor.setAccessible(true);
                 LinearOpMode opMode = ctor.newInstance();
                 opMode.hardwareMap = new HardwareMap(this::createDevice);
@@ -80,6 +109,7 @@ public class OpModeRunner {
                 opMode.telemetry = new ConsoleTelemetry();
 
                 current = opMode;
+                running = candidate;
                 thread = new Thread(() -> {
                     try {
                         opMode.runOpMode();
@@ -92,18 +122,17 @@ public class OpModeRunner {
                 }, "ftc-opmode");
                 thread.start();
                 OpModeManagerBridge.start(opMode);
-                bridge.setEnabled(true);
+                System.out.println("[OpModeRunner] Started [" + candidate.kind() + "] " + candidate.displayName());
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Unable to construct " + opModeClass.getName(), e);
+                throw new RuntimeException("Unable to construct " + candidate.cls().getName(), e);
             }
         }
 
-        @Override
-        public synchronized void onFissionDisconnected() {
-            bridge.setEnabled(false);
-            if (current != null) {
-                OpModeManagerBridge.stop(current);
+        private void stopCurrent() {
+            if (current == null) {
+                return;
             }
+            OpModeManagerBridge.stop(current);
             if (thread != null) {
                 try {
                     thread.join(1000);
@@ -111,7 +140,9 @@ public class OpModeRunner {
                     Thread.currentThread().interrupt();
                 }
             }
+            System.out.println("[OpModeRunner] Stopped [" + running.kind() + "] " + running.displayName());
             current = null;
+            running = null;
             thread = null;
         }
 
@@ -137,7 +168,14 @@ public class OpModeRunner {
         }
     }
 
-    private static OpModeCandidate compileAndDiscover(Path srcDir, String requestedName) throws Exception {
+    //The one teleop and one autonomous the driver station can switch between without restarting the process.
+    private record OpModeSlots(OpModeCandidate teleOp, OpModeCandidate autonomous) {
+        String describe(OpModeCandidate candidate) {
+            return candidate == null ? "(none)" : candidate.displayName() + " (" + candidate.cls().getName() + ")";
+        }
+    }
+
+    private static OpModeSlots compileAndDiscover(Path srcDir, String requestedName) throws Exception {
         List<Path> sourceFiles;
         try (Stream<Path> walk = Files.walk(srcDir)) {
             sourceFiles = walk.filter(p -> p.toString().endsWith(".java")).collect(Collectors.toList());
@@ -186,7 +224,7 @@ public class OpModeRunner {
         candidates.forEach(c -> System.out.println(
                 "[OpModeRunner] Discovered [" + c.kind() + "] " + c.displayName() + " (" + c.cls().getName() + ")"));
 
-        return select(candidates, requestedName);
+        return fillSlots(candidates, requestedName);
     }
 
     @SuppressWarnings("unchecked")
@@ -211,29 +249,38 @@ public class OpModeRunner {
         return new OpModeCandidate((Class<? extends LinearOpMode>) cls, autonomous != null, displayName);
     }
 
-    // Matches --opmode against class name
-    private static OpModeCandidate select(List<OpModeCandidate> candidates, String requestedName) {
-        if (requestedName != null) {
-            List<OpModeCandidate> matches = candidates.stream().filter(c -> c.matches(requestedName)).toList();
-            if (matches.isEmpty()) {
-                throw new IllegalArgumentException("No OpMode named " + requestedName + " found, discovered: "
-                        + candidates.stream().map(OpModeCandidate::displayName).collect(Collectors.joining(", ")));
-            }
-            if (matches.size() > 1) {
-                throw new IllegalArgumentException(requestedName + " is ambiguous, it matches: "
-                        + matches.stream().map(c -> c.cls().getName()).collect(Collectors.joining(", ")));
-            }
-            return matches.get(0);
+    private static OpModeSlots fillSlots(List<OpModeCandidate> candidates, String requestedName) {
+        OpModeCandidate requested = requestedName == null ? null : resolve(candidates, requestedName);
+        return new OpModeSlots(slotFor(candidates, requested, false), slotFor(candidates, requested, true));
+    }
+
+    // Matches --opmode against class name, fully-qualified name, or annotation name.
+    private static OpModeCandidate resolve(List<OpModeCandidate> candidates, String requestedName) {
+        List<OpModeCandidate> matches = candidates.stream().filter(c -> c.matches(requestedName)).toList();
+        if (matches.isEmpty()) {
+            throw new IllegalArgumentException("No OpMode named " + requestedName + " found, discovered: "
+                    + candidates.stream().map(OpModeCandidate::displayName).collect(Collectors.joining(", ")));
+        }
+        if (matches.size() > 1) {
+            throw new IllegalArgumentException(requestedName + " is ambiguous, it matches: "
+                    + matches.stream().map(c -> c.cls().getName()).collect(Collectors.joining(", ")));
+        }
+        return matches.get(0);
+    }
+
+    private static OpModeCandidate slotFor(List<OpModeCandidate> candidates, OpModeCandidate requested, boolean autonomous) {
+        if (requested != null && requested.autonomous() == autonomous) {
+            return requested;
         }
 
-        List<OpModeCandidate> preferred = candidates.stream().filter(c -> !c.autonomous()).toList();
-        if (preferred.isEmpty()) {
-            preferred = candidates;
+        List<OpModeCandidate> ofKind = candidates.stream().filter(c -> c.autonomous() == autonomous).toList();
+        if (ofKind.isEmpty()) {
+            return null;
         }
-        if (preferred.size() > 1) {
-            System.out.println("[OpModeRunner] Multiple " + preferred.get(0).kind()
-                    + " OpModes found, using the first -- pass --opmode to choose");
+        if (ofKind.size() > 1) {
+            System.out.println("[OpModeRunner] Multiple " + ofKind.get(0).kind() + " OpModes found, using "
+                    + ofKind.get(0).displayName() + " -- pass --opmode to choose");
         }
-        return preferred.get(0);
+        return ofKind.get(0);
     }
 }
