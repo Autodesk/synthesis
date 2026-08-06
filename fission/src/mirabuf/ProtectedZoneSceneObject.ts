@@ -153,7 +153,8 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         World.scoreTracker.robotPenalty(
             opposingRobot,
             this.prefs?.penaltyPoints ?? 0,
-            `Contact penalty in protected zone`
+            `Contact penalty in protected zone`,
+            false
         )
     }
 
