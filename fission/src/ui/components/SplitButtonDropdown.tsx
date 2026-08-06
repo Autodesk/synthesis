@@ -15,7 +15,6 @@ const HALF_SX = {
     ...TOP_BAR_ICON_BUTTON_SX,
     height: "100%",
     borderRadius: 0,
-    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" },
 } as const
 
 interface HalfProps {

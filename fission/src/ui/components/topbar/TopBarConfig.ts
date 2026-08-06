@@ -7,7 +7,8 @@ export const TOP_BAR_GAP_PX = TOP_BAR_GAP * MUI_SPACING_UNIT_PX
 
 export const TOP_BAR_ICON_BUTTON_SX = {
     color: "topBarText.main",
-    "&:hover": { backgroundColor: "transparent" },
+    borderRadius: 1,
+    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" },
     "&:focus, &:focus-visible": { outline: "none" },
 } as const
 
