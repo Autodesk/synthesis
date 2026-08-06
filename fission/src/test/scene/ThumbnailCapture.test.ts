@@ -19,7 +19,7 @@ vi.mock("@/systems/World", () => ({
 }))
 
 // testing shapes for thumbnail generation
-const SHAPES: ReadonlyArray<[string, Box3]> = [
+const SHAPES: readonly [string, Box3][] = [
     ["robot", new Box3(new Vector3(-0.4, 0, -0.5), new Vector3(0.4, 1.4, 0.5))],
     ["field", new Box3(new Vector3(-11, 0, -4.6), new Vector3(11, 3, 4.6))],
     ["off-origin", new Box3(new Vector3(20, 5, -30), new Vector3(21, 6, -29))],
