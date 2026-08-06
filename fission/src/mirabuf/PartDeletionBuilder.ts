@@ -1,12 +1,12 @@
 import { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
 import type { mirabuf } from "@/proto/mirabuf"
 
-function collectSubtreeGuids(node: mirabuf.INode, acc: Set<string>): void {
-    if (node.value) acc.add(node.value)
-    node.children?.forEach(child => collectSubtreeGuids(child, acc))
-}
-
-/** Removes guid's node (and its descendants) from the design hierarchy, wherever it lives. Returns the removed GUIDs. */
+/**
+ * Removes guid's node from the design hierarchy, wherever it lives, re-parenting its children in its place.
+ * The hierarchy is derived from the joint/fastener graph (not assembly containment), so a node's descendants
+ * are routinely unrelated parts elsewhere in the robot — only the selected guid itself is safe to remove.
+ * Returns the removed GUID.
+ */
 function removeFromDesignHierarchy(designHierarchy: mirabuf.IGraphContainer, guid: string): Set<string> {
     const removed = new Set<string>()
 
@@ -15,8 +15,8 @@ function removeFromDesignHierarchy(designHierarchy: mirabuf.IGraphContainer, gui
 
         const index = children.findIndex(n => n.value === guid)
         if (index !== -1) {
-            collectSubtreeGuids(children[index], removed)
-            children.splice(index, 1)
+            removed.add(children[index].value!)
+            children.splice(index, 1, ...(children[index].children ?? []))
             return true
         }
 
@@ -27,7 +27,7 @@ function removeFromDesignHierarchy(designHierarchy: mirabuf.IGraphContainer, gui
     return removed
 }
 
-/** Mutates assembly in place: removes each part's subtree and prunes joints/rigid groups referencing it. */
+/** Mutates assembly in place: removes each selected part and prunes joints/rigid groups referencing it. */
 export function applyPartDeletions(assembly: mirabuf.Assembly, partGuids: string[]): void {
     const designHierarchy = assembly.designHierarchy
     if (!designHierarchy) throw new Error("Assembly has no design hierarchy")
