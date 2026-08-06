@@ -322,16 +322,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                         }}
                         pendingDeletes={pendingDeletes}
                     />
-                    {selectedAssembly !== undefined && (
-                        <ConfigModeSelection
-                            modes={modes}
-                            configMode={configMode}
-                            onModeSelected={mode => {
-                                if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                                setConfigMode(mode)
-                            }}
-                        />
-                    )}
+
                     {ConfigSubPanel != null && (
                         <ConfigSubPanel
                             panel={panel!}
