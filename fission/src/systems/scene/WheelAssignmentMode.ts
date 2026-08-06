@@ -10,7 +10,12 @@ import {
     transformWheelAxis,
 } from "@/util/geometry/WheelAxisFit"
 import World from "../World"
-import PartPickingMode, { type HighlightMap, type PartPick, type PartSelection } from "./PartPickingMode"
+import PartPickingMode, {
+    DEFAULT_INSTANCE_COLOR,
+    type HighlightMap,
+    type PartPick,
+    type PartSelection,
+} from "./PartPickingMode"
 
 /** Local-space vertices for just this part's slice of a shared BatchedMesh buffer; whole geometry otherwise. */
 function getPartLocalVertices(mesh: THREE.BatchedMesh, instanceId: number): THREE.Vector3[] | undefined {
@@ -48,7 +53,15 @@ class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
     private _driveReversed = false
 
     public constructor() {
-        super(SELECTED_HIGHLIGHT_COLOR, wheels => EventSystem.dispatch("WheelAssignmentSelectionChanged", { wheels }))
+        super(
+            (isSelected, highlight) => {
+                highlight.mesh.setColorAt(
+                    highlight.instanceId,
+                    isSelected ? SELECTED_HIGHLIGHT_COLOR : DEFAULT_INSTANCE_COLOR
+                )
+            },
+            wheels => EventSystem.dispatch("WheelAssignmentSelectionChanged", { wheels })
+        )
     }
 
     public get pendingWheels(): HighlightMap<WheelSelection> {

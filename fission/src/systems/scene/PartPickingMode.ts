@@ -40,13 +40,15 @@ export function toKey(a?: PartHighlight): HighlightKey | undefined {
 const raycaster = new THREE.Raycaster()
 const ndc = new THREE.Vector2()
 
+type HighlightStyler = (isSelected: boolean, highlight: PartHighlight) => void
+
 /** Tracks a set of picked parts and tints their meshes; a hovered pending part keeps `selectedColor`. */
 export class HighlightMap<T extends PartSelection> {
     private _map = new Map<string, T>()
     private _hoverMap = new Set<HighlightKey>()
 
     public constructor(
-        private _selectedColor: THREE.Color,
+        public readonly styler: HighlightStyler,
         private _getHoverKey: () => HighlightKey | undefined,
         private _dispatchUpdate: (values: T[]) => void
     ) {}
@@ -56,7 +58,7 @@ export class HighlightMap<T extends PartSelection> {
         if (!highlight) return
 
         if (this._getHoverKey() !== toKey(highlight)) {
-            highlight.mesh.setColorAt(highlight.instanceId, DEFAULT_INSTANCE_COLOR)
+            this.styler(false, highlight)
         }
 
         this._map.delete(guid)
@@ -76,17 +78,13 @@ export class HighlightMap<T extends PartSelection> {
         return this._hoverMap.has(key)
     }
 
-    get selectedColor(): THREE.Color {
-        return this._selectedColor
-    }
-
     addPart(guid: string, selection: T): void {
         this._map.set(guid, selection)
 
         const { highlight } = selection
         this._hoverMap.add(toKey(highlight))
         if (highlight && this._getHoverKey() !== toKey(highlight)) {
-            highlight.mesh.setColorAt(highlight.instanceId, this._selectedColor)
+            this.styler(true, highlight)
         }
         this.dispatchUpdate()
     }
@@ -131,9 +129,9 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     private _candidateBatches: THREE.BatchedMesh[] = []
     private _pickIndex = new Map<THREE.BatchedMesh, Map<number, string>>()
 
-    protected constructor(selectedColor: THREE.Color, dispatchUpdate: (values: T[]) => void) {
+    protected constructor(styler: HighlightStyler, dispatchUpdate: (values: T[]) => void) {
         super()
-        this.pending = new HighlightMap<T>(selectedColor, () => toKey(this._hover), dispatchUpdate)
+        this.pending = new HighlightMap<T>(styler, () => toKey(this._hover), dispatchUpdate)
     }
 
     public get enabled() {
@@ -256,20 +254,18 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         if (toKey(this._hover) === toKey(hover)) return
 
         this.clearHover()
-
+        this.pending.styler(false, hover)
         hover.mesh.setColorAt(hover.instanceId, HOVER_HIGHLIGHT_COLOR)
         this._hover = hover
     }
 
     public clearHover(): void {
         if (!this._hover) return
+        this._hover.mesh.setColorAt(this._hover.instanceId, DEFAULT_INSTANCE_COLOR)
 
         const isPending = this.pending.hasHighlight(toKey(this._hover))
+        this.pending.styler(isPending, this._hover)
 
-        this._hover.mesh.setColorAt(
-            this._hover.instanceId,
-            isPending ? this.pending.selectedColor : DEFAULT_INSTANCE_COLOR
-        )
         this._hover = undefined
     }
 

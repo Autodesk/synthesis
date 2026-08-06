@@ -1,4 +1,4 @@
-import * as THREE from "three"
+import type * as THREE from "three"
 import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import PartPickingMode, { type HighlightMap, type PartPick, type PartSelection } from "./PartPickingMode"
@@ -7,12 +7,17 @@ export interface PartDeletionSelection extends PartSelection {
     name: string
 }
 
-const PENDING_DELETE_HIGHLIGHT_COLOR = new THREE.Color(1, 0.15, 0.15)
+// const PENDING_DELETE_HIGHLIGHT_COLOR = new THREE.Color(1, 0.15, 0.15)
 
 /** Interaction mode: click a part to mark it for deletion; click again (or Undo) to unmark. */
 class PartDeletionMode extends PartPickingMode<PartDeletionSelection> {
     public constructor() {
-        super(PENDING_DELETE_HIGHLIGHT_COLOR, parts => EventSystem.dispatch("PartDeletionSelectionChanged", { parts }))
+        super(
+            (isSelected, highlight) => {
+                highlight.mesh.setVisibleAt(highlight.instanceId, !isSelected)
+            },
+            parts => EventSystem.dispatch("PartDeletionSelectionChanged", { parts })
+        )
     }
 
     public get pendingDeletions(): HighlightMap<PartDeletionSelection> {
