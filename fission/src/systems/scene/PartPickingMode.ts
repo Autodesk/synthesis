@@ -3,7 +3,7 @@ import { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
-import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
+import { type InteractionEnd, type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
 
 export interface PartPick {
     guid: string
@@ -45,7 +45,7 @@ type HighlightStyler = (isSelected: boolean, highlight: PartHighlight) => void
 /** Tracks a set of picked parts and tints their meshes; a hovered pending part keeps `selectedColor`. */
 export class HighlightMap<T extends PartSelection> {
     private _map = new Map<string, T>()
-    private _hoverMap = new Set<HighlightKey>()
+    private _highlightKeys = new Set<HighlightKey>()
 
     public constructor(
         public readonly styler: HighlightStyler,
@@ -62,7 +62,7 @@ export class HighlightMap<T extends PartSelection> {
         }
 
         this._map.delete(guid)
-        this._hoverMap.delete(toKey(highlight))
+        this._highlightKeys.delete(toKey(highlight))
         this.dispatchUpdate()
     }
 
@@ -75,15 +75,15 @@ export class HighlightMap<T extends PartSelection> {
     }
 
     hasHighlight(key: HighlightKey): boolean {
-        return this._hoverMap.has(key)
+        return this._highlightKeys.has(key)
     }
 
     addPart(guid: string, selection: T): void {
         this._map.set(guid, selection)
 
         const { highlight } = selection
-        this._hoverMap.add(toKey(highlight))
-        if (highlight && this._getHoverKey() !== toKey(highlight)) {
+        this._highlightKeys.add(toKey(highlight))
+        if (highlight) {
             this.styler(true, highlight)
         }
         this.dispatchUpdate()
@@ -104,7 +104,7 @@ export class HighlightMap<T extends PartSelection> {
     /** Drops tracking without touching mesh colors -- used once the batches are already gone (e.g. post-rebuild). */
     clearSilently() {
         this._map.clear()
-        this._hoverMap.clear()
+        this._highlightKeys.clear()
         this.dispatchUpdate()
     }
 
@@ -120,6 +120,9 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     protected _object: MirabufSceneObject | null = null
 
     private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
+    private _originalInteractionEnd: ((i: InteractionEnd) => void) | undefined
+    private _interactionStartTarget: PartPick | undefined
+
     private _pointerMoveListener: ((e: PointerEvent) => void) | undefined
     private _hover: PartHighlight | undefined
     private _latestMousePos: [number, number] | undefined
@@ -171,8 +174,10 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
 
     private hookInteractionHandlers(): void {
         const screenHandler = World.sceneRenderer.screenInteractionHandler
+        this._originalInteractionEnd = screenHandler.interactionEnd
         this._originalInteractionStart = screenHandler.interactionStart
         screenHandler.interactionStart = (interaction: InteractionStart) => this.onInteractionStart(interaction)
+        screenHandler.interactionEnd = (interaction: InteractionEnd) => this.onInteractionEnd(interaction)
 
         this._pointerMoveListener = (e: PointerEvent) => {
             this._latestMousePos = [e.clientX, e.clientY]
@@ -185,6 +190,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     private unhookInteractionHandlers(): void {
         const screenHandler = World.sceneRenderer.screenInteractionHandler
         if (this._originalInteractionStart) screenHandler.interactionStart = this._originalInteractionStart
+        if (this._originalInteractionEnd) screenHandler.interactionEnd = this._originalInteractionEnd
 
         if (this._pointerMoveListener) {
             World.sceneRenderer.renderer.domElement.removeEventListener("pointermove", this._pointerMoveListener)
@@ -281,12 +287,33 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
             return
         }
 
+        this._interactionStartTarget = pick
+    }
+
+    private onInteractionEnd(interaction: InteractionEnd): void {
+        if (interaction.interactionType !== PRIMARY_MOUSE_INTERACTION) {
+            this._originalInteractionEnd?.(interaction)
+            return
+        }
+
+        if (!this._interactionStartTarget) {
+            this._originalInteractionEnd?.(interaction)
+            return
+        }
+
+        const pick = this.pickPart(interaction.position)
+        if (!pick || pick.guid != this._interactionStartTarget.guid) {
+            this._originalInteractionEnd?.(interaction)
+            return
+        }
+
         if (this.pending.hasPart(pick.guid)) {
             this.pending.removePart(pick.guid)
             return
         }
 
         this.handlePick(pick)
+        this.updateHover(interaction.position)
     }
 
     protected abstract handlePick(pick: PartPick): void
