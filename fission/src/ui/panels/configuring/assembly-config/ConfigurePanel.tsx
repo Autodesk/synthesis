@@ -76,7 +76,7 @@ const provider: CommandProvider = () => {
     if (!World.isAlive || !World.sceneRenderer) return []
     const list: CommandDefinition[] = []
 
-    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots() || []
+    const robots = World.getOwnRobots() || []
     for (const r of robots) {
         const name = r.assemblyName || "Robot"
         const nameTokens = String(name)
