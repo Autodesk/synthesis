@@ -18,13 +18,12 @@ export async function applyModelConfigChanges(): Promise<boolean> {
     wheelMode.clearHover()
     deleteMode.clearHover()
 
-    const sceneObject = World.wheelAssignmentMode.sceneObject
+    const sceneObject = World.wheelAssignmentMode.sceneObject ?? World.partDeletionMode.sceneObject
     if (sceneObject == null) {
         console.warn("Missing part handler", World.wheelAssignmentMode.sceneObject, World.partDeletionMode.sceneObject)
         return false
     }
     const sceneId = sceneObject.id
-    if (!sceneObject) return false
 
     const assembly = sceneObject.mirabufInstance.parser.assembly
 
