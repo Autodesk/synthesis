@@ -38,9 +38,9 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         justifyContent: "space-between",
                     }}
                 >
-                    {[...robotInput].sort(handleInfoDisplayCompare).map((x, i) => {
+                    {[...robotInput].sort(handleInfoDisplayCompare).map(x => {
                         return (
-                            <div key={i} className="relative">
+                            <div key={x.id} className="relative">
                                 <div className="px-3 text-lg">{x.displayName}</div>
                                 <Handle
                                     style={{
@@ -50,7 +50,6 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                                         height: "1rem",
                                         backgroundColor: NORA_TYPES_COLORS[x.noraType],
                                     }}
-                                    key={i}
                                     type="target"
                                     position={Position.Left}
                                     id={x.id}
@@ -76,9 +75,9 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         justifyContent: "space-between",
                     }}
                 >
-                    {[...robotOutput].sort(handleInfoDisplayCompare).map((x, i) => {
+                    {[...robotOutput].sort(handleInfoDisplayCompare).map(x => {
                         return (
-                            <div key={i} className="relative">
+                            <div key={x.id} className="relative">
                                 <div className="px-3 text-lg text-right">{x.displayName}</div>
                                 <Handle
                                     style={{
@@ -88,7 +87,6 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                                         height: "1rem",
                                         backgroundColor: NORA_TYPES_COLORS[x.noraType],
                                     }}
-                                    key={i}
                                     type="source"
                                     position={Position.Right}
                                     id={x.id}

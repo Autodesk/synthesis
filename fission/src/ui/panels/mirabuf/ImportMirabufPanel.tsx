@@ -67,7 +67,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ name, primaryButtonNode, primaryOnC
                 {name.replace(/.mira$/, "")}
             </Label>
             <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
-                <PositiveIconButton children={primaryButtonNode} onClick={primaryOnClick} />
+                <PositiveIconButton onClick={primaryOnClick}>{primaryButtonNode}</PositiveIconButton>
                 {secondaryOnClick && <DeleteButton onClick={secondaryOnClick} />}
             </Stack>
         </Stack>

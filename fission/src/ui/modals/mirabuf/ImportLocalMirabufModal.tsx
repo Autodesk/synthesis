@@ -89,10 +89,18 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 let result: Awaited<ReturnType<typeof createMirabuf>>
 
                 if (isURDFFile(selectedFile.name)) {
-                    const hash = await hashBuffer(buffer)
+                    let hash = await hashBuffer(buffer)
                     const assembly = await loadURDF(buffer, selectedFile.name, progressHandle)
                     // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
                     assembly.info!.name = selectedFile.name.split(".")[0]
+
+                    const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
+
+                    if (res == null) {
+                        console.warn("Caching URDF failed!")
+                    } else {
+                        hash = res.hash
+                    }
 
                     result = await createMirabuf(hash, assembly, hash, miraType, progressHandle)
                     progressHandle.done("Import complete!")

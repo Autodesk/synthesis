@@ -116,7 +116,7 @@ class IntakeSensorSceneObject extends SceneObject {
 
     public dispose(): void {
         if (this._joltBodyId) {
-            World.physicsSystem.destroyBodyIds(this._joltBodyId)
+            World.physicsSystem.destroyBodiesById(this._joltBodyId)
         }
 
         this._collisionUnsubscriber?.()

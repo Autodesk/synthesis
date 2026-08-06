@@ -6,7 +6,7 @@ import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/Mirabu
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
 import { createMirabuf, finalizeMirabufSpawn } from "@/mirabuf/MirabufSceneObject.ts"
-import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/types.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
@@ -501,7 +501,7 @@ export async function spawnCachedMira(
                     type: "newObject",
                     timestamp: Date.now(),
                     data: {
-                        sceneObjectKey: mainSceneObject.id as RemoteSceneObjectId,
+                        sceneObjectKey: mainSceneObject.id,
                         assembly: encodedAssembly,
                         assemblyHash: info.hash,
                         miraType: info.miraType,
@@ -510,10 +510,11 @@ export async function spawnCachedMira(
                     },
                 }
                 await World.multiplayerSystem?.broadcast(message)
-                World.multiplayerSystem?.registerOwnSceneObject(mainSceneObject.id as LocalSceneObjectId)
+                World.multiplayerSystem?.registerOwnSceneObject(mainSceneObject.id)
             }
 
             progressHandle.done()
+            World.physicsSystem.deactivateGamepieces()
         })
         .catch(e => {
             console.error(e)
