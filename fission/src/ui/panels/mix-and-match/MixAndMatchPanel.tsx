@@ -10,6 +10,7 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
+import SelectButton from "@/ui/components/SelectButton"
 import {
     Accordion,
     AccordionDetails,
