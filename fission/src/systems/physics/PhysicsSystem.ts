@@ -168,6 +168,7 @@ class PhysicsSystem extends WorldSystem {
     private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
 
     public get isPaused(): boolean {
+        console.log(this._pauseSet)
         return this._pauseSet.size > 0
     }
 

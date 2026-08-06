@@ -117,13 +117,14 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     finalizeSceneObject(mirabufSceneObject)
                     if (!foundDrivetrain) {
                         addToast("info", "Drivetrain not detected", "please select wheels manually!")
-                        await new Promise<void>(resolve => {
-                            openPanel(ModelConfigPanel, { sceneObject: mirabufSceneObject! }, modal, {
-                                onClose: () => {
-                                    resolve()
-                                },
-                            })
-                        })
+                        World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING),
+                            await new Promise<void>(resolve => {
+                                openPanel(ModelConfigPanel, { sceneObject: mirabufSceneObject! }, modal, {
+                                    onClose: () => {
+                                        resolve()
+                                    },
+                                })
+                            }).finally(() => World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING))
                     }
                     const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
 

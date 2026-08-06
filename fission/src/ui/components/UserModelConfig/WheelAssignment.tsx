@@ -1,5 +1,6 @@
 import { Button, Stack } from "@mui/material"
 import type React from "react"
+import { useCallback } from "react"
 import { useMemo } from "react"
 import { useEffect, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -35,6 +36,9 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, scene
 
     useEffect(() => {
         setEnabled(World.wheelAssignmentMode.pendingWheels.size == 0)
+        return () => {
+            World.wheelAssignmentMode.disable()
+        }
     }, [])
 
     useEffect(() => {
@@ -45,9 +49,9 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, scene
         <Stack gap={2} direction="column">
             <Button
                 variant={enabled ? "contained" : "outlined"}
-                onClick={() => {
+                onClick={useCallback(() => {
                     setEnabled(e => !e)
-                }}
+                }, [])}
             >
                 {enabled ? "Stop Picking" : "Start Picking"}
             </Button>

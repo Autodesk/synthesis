@@ -6,9 +6,9 @@ import { useEffect, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
 import type { SubpanelProps } from "@/components/UserModelConfig/ModelConfigPanel.tsx"
-import { ToggleButton } from "@/components/StyledComponents.tsx"
+import Checkbox from "@/components/Checkbox.tsx"
 
-const DrivetrainConfig: React.FC<SubpanelProps> = () => {
+const DrivetrainConfig: React.FC<SubpanelProps> = ({ sceneObject, pauseRef }) => {
     const [driveReversed, setDriveReversed] = useState<boolean>(false)
     const [isRunning, setIsRunning] = useState(false)
     const runningTimeoutHandle = useRef<number | undefined>(undefined)
@@ -18,20 +18,28 @@ const DrivetrainConfig: React.FC<SubpanelProps> = () => {
     }, [])
 
     useEffect(() => {
+        if (!sceneObject.brain?.isSynthesis()) return
+        const driveBehavior = sceneObject.brain.getDriveBehavior()
+        console.log("driveBehavior", driveBehavior)
+        if (!driveBehavior) return
         if (isRunning) {
-            World.wheelAssignmentMode
+            World.physicsSystem.releasePause(pauseRef)
+            console.log(World.physicsSystem.isPaused)
+            driveBehavior.runTestingForward(0.5)
+        } else {
+            driveBehavior.releaseTesting()
+            World.physicsSystem.holdPause(pauseRef)
         }
-    }, [isRunning])
+    }, [isRunning, sceneObject, pauseRef])
 
     return (
         <Stack gap={2} direction="column">
-            <ToggleButton
-                color="warning"
+            <Checkbox
                 onClick={useCallback(() => World.wheelAssignmentMode.toggleReverseDrive(), [])}
                 value={driveReversed}
-            >
-                Reverse Drive
-            </ToggleButton>
+                label={"Reverse Drive"}
+            />
+
             <Button
                 variant={isRunning ? "contained" : "outlined"}
                 color="secondary"

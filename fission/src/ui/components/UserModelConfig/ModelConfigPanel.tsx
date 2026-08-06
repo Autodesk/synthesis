@@ -7,11 +7,12 @@ import WheelAssignment from "@/components/UserModelConfig/WheelAssignment.tsx"
 import { Divider, Stack } from "@mui/material"
 import { Button, ProgressButton, SynthesisIcons, TooltipButton } from "@/components/StyledComponents.tsx"
 import DrivetrainConfig from "@/components/UserModelConfig/DrivetrainConfig.tsx"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 
 export interface SubpanelProps {
     setDisableNextMessage: (v: string | null) => void
     sceneObject: MirabufSceneObject
+    pauseRef: string
 }
 
 const screens: { title: string; component: React.FC<SubpanelProps> | null }[] = [
@@ -24,7 +25,9 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
     const [screen, setScreen] = useState<number>(0)
     const [disableNextMessage, setDisableNextMessage] = useState<string | null>(null)
 
-    const { sceneObject } = panel!.props.custom
+    const { sceneObject: originalSceneObject } = panel!.props.custom
+
+    const [sceneObject, setSceneObject] = useState<MirabufSceneObject>(originalSceneObject)
 
     const title = useMemo(() => screens[screen].title, [screen])
     const ScreenComponent = useMemo(() => screens[screen].component, [screen])
@@ -37,30 +40,52 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
         }
     }, [pauseHandle])
 
+    const apply = useCallback(async () => {
+        await World.wheelAssignmentMode.apply()
+
+        const newObj = World.sceneRenderer.sceneObjects.get(originalSceneObject.id)
+        if (!newObj || !(newObj instanceof MirabufSceneObject)) {
+            return
+        }
+        setSceneObject(newObj)
+        return newObj
+    }, [originalSceneObject])
+
     useEffect(() => {
         configureScreen(panel!, { title, hideCancel: true, hideAccept: true }, {})
     }, [configureScreen, panel, title])
 
     const closeCallback = useCallback(async () => {
-        await World.wheelAssignmentMode.apply()
         closePanel(panel!.id, CloseType.ACCEPT)
-    }, [panel, closePanel])
+    }, [panel, closePanel, apply])
 
     return (
         <Stack gap={2}>
             {ScreenComponent != null && (
-                <ScreenComponent setDisableNextMessage={setDisableNextMessage} sceneObject={sceneObject} />
+                <ScreenComponent
+                    setDisableNextMessage={setDisableNextMessage}
+                    sceneObject={sceneObject}
+                    pauseRef={pauseHandle}
+                />
             )}
             <Divider />
-            {screen == screens.length - 1 && (
+            {screen == 0 && (
                 <ProgressButton
                     color="secondary"
                     refreshLabel={"Applying..."}
                     sx={{ px: 4, flexGrow: 2 }}
-                    onClick={closeCallback}
+                    onClick={async () => {
+                        await apply()
+                        setScreen(screen + 1)
+                    }}
                 >
                     Apply
                 </ProgressButton>
+            )}
+            {screen == screens.length - 1 && (
+                <Button color="secondary" sx={{ px: 4, flexGrow: 2 }} onClick={closeCallback}>
+                    Apply
+                </Button>
             )}
             <Stack direction={"row"} gap={1}>
                 <Button
@@ -68,7 +93,7 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
                     color="secondary"
                     size={"medium"}
                     sx={{ px: 4 }}
-                    disabled={screen == 0}
+                    disabled={true}
                     onClick={() => setScreen(screen - 1)}
                 >
                     <SynthesisIcons.LEFT_ARROW_LARGE />
@@ -79,7 +104,7 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
                     color="secondary"
                     sx={{ px: 4 }}
                     tooltip={disableNextMessage ?? undefined}
-                    disabled={screen == screens.length - 1 || disableNextMessage != null}
+                    disabled={screen == 1 || disableNextMessage != null}
                     onClick={() => setScreen(screen + 1)}
                 >
                     <SynthesisIcons.RIGHT_ARROW_LARGE />
