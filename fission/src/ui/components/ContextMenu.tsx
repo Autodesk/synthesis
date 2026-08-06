@@ -24,9 +24,9 @@ const ContextMenu: React.FC = () => {
         })
     }, [])
 
-    return !state ? (
-        <></>
-    ) : (
+    if (!state) return null
+
+    return (
         <Stack
             key="CANCEL"
             component="div"
