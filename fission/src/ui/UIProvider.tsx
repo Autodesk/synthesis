@@ -176,18 +176,16 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const addToast = useCallback(
         (variant: VariantType, ...contents: SnackbarMessage[]) => {
             enqueueSnackbar(
-                contents.length <= 1 ? (
-                    <>{...contents}</>
-                ) : (
-                    <>
-                        {...contents.map(child => (
-                            <>
-                                {child}
-                                <br />
-                            </>
-                        ))}
-                    </>
-                ),
+                contents.length <= 1
+                    ? { ...contents }
+                    : {
+                          ...contents.map(child => (
+                              <>
+                                  {child}
+                                  <br />
+                              </>
+                          )),
+                      },
                 { variant, action: snackbarAction }
             )
         },

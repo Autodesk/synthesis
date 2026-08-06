@@ -149,48 +149,48 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
     }, [])
 
     const gizmoComponent = useMemo(() => {
-        if (selectedAssembly?.intakePreferences) {
-            const postGizmoCreation = (gizmo: GizmoSceneObject) => {
-                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
-                material.depthTest = false
+        if (!selectedAssembly?.intakePreferences) {
+            gizmoRef.current = undefined
+            return null
+        }
 
-                const deltaTransformation = convertArrayToThreeMatrix4(
-                    selectedAssembly.intakePreferences!.deltaTransformation
-                )
+        const postGizmoCreation = (gizmo: GizmoSceneObject) => {
+            const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+            material.depthTest = false
 
-                let nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(
-                    selectedAssembly.intakePreferences!.parentNode ?? selectedAssembly.rootNodeId
-                )
-                if (!nodeBodyId) {
-                    // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
-                    nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(selectedAssembly.rootNodeId)!
-                }
+            const deltaTransformation = convertArrayToThreeMatrix4(
+                selectedAssembly.intakePreferences!.deltaTransformation
+            )
 
-                /** W = L x R. See save() for math details */
-                const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
-                )
-                const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
-
-                gizmo.setTransform(gizmoTransformation)
+            let nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(
+                selectedAssembly.intakePreferences!.parentNode ?? selectedAssembly.rootNodeId
+            )
+            if (!nodeBodyId) {
+                // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+                nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(selectedAssembly.rootNodeId)!
             }
 
-            return (
-                <TransformGizmoControl
-                    key="pickup-transform-gizmo"
-                    size={1.5}
-                    gizmoRef={gizmoRef}
-                    defaultMode="translate"
-                    defaultMesh={placeholderMesh}
-                    scaleDisabled={true}
-                    rotateDisabled={true}
-                    postGizmoCreation={postGizmoCreation}
-                />
+            /** W = L x R. See save() for math details */
+            const robotTransformation = convertJoltMat44ToThreeMatrix4(
+                World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
             )
-        } else {
-            gizmoRef.current = undefined
-            return <></>
+            const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
+
+            gizmo.setTransform(gizmoTransformation)
         }
+
+        return (
+            <TransformGizmoControl
+                key="pickup-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+                defaultMesh={placeholderMesh}
+                scaleDisabled={true}
+                rotateDisabled={true}
+                postGizmoCreation={postGizmoCreation}
+            />
+        )
     }, [
         selectedAssembly.intakePreferences,
         placeholderMesh,
