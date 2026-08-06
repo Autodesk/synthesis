@@ -124,12 +124,8 @@ class MixAndMatchMode {
     /**
      * Welds `childId` onto `parentId`.
      *
-     * The recorded offset is between the two components' root bodies — the parts their own miras
-     * declare as `"grounded"` — so clicking a swerve module's wheel anchors the weld at the module's
-     * mount plate, never at the wheel.
-     *
-     * Everything welded here is rigid. Joints authored inside a library part are untouched: an
-     * elevator keeps its slides, a swerve pod keeps its steer and drive.
+     * The recorded offset is between the two components' root bodies. Everything welded here is rigid.
+     * Joints authored inside a library part are untouched.
      *
      * @returns Whether the weld was recorded.
      */
