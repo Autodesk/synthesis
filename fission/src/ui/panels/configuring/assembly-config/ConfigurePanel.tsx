@@ -12,6 +12,7 @@ import {
     type ConfigurationSubpanelComponent,
     type ConfigurationType,
     fieldConfigModes,
+    pieceConfigModes,
     synthesisRobotConfigModes,
     wpilibRobotConfigModes,
 } from "./ConfigTypes"
@@ -280,6 +281,9 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             }
             return wpilibRobotConfigModes
         }
+        if (configurationType == "PIECES") {
+            return pieceConfigModes
+        }
         return []
     }, [configurationType, selectedAssembly?.brain])
 
@@ -303,6 +307,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             >
                 <Tab key="robots" value="ROBOTS" label="ROBOTS" />
                 <Tab key="fields" value="FIELDS" label="FIELDS" />
+                <Tab key="pieces" value="PIECES" label="PIECES" />
                 <Tab key="inputs" value="INPUTS" label="INPUTS" />
             </Tabs>
             <div ref={contentRef}>

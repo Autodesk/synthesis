@@ -2,7 +2,7 @@ import { Stack, styled } from "@mui/material"
 import { type ChangeEvent, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { createMirabuf, finalizeMirabufSpawn } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { loadURDF } from "@/urdf/URDFLoader"
@@ -15,12 +15,9 @@ import {
     type ConfigurationType,
     miraTypeToConfigType,
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { getTargetControls } from "@/systems/scene/CameraControls"
-import { hashBuffer, hexStringToUint8Array } from "@/util/Utility.ts"
+import { hashBuffer } from "@/util/Utility.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
-import { v4 as uuidV4 } from "uuid"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -89,17 +86,13 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
 
             const progressHandle = new ProgressHandle(`Importing ${selectedFile.name}`)
             try {
-                let mirabufSceneObject
+                let result: Awaited<ReturnType<typeof createMirabuf>>
 
                 if (isURDFFile(selectedFile.name)) {
-                    const inputHash = await hashBuffer(buffer)
-                    const uuid = uuidV4({ random: hexStringToUint8Array(inputHash).slice(0, 16) })
+                    let hash = await hashBuffer(buffer)
                     const assembly = await loadURDF(buffer, selectedFile.name, progressHandle)
                     // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
                     assembly.info!.name = selectedFile.name.split(".")[0]
-                    assembly.info!.GUID = uuid
-
-                    let hash: string = inputHash
 
                     const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
 
@@ -109,35 +102,33 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                         hash = res.hash
                     }
 
-                    mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
+                    result = await createMirabuf(hash, assembly, hash, miraType, progressHandle)
                     progressHandle.done("Import complete!")
                 } else {
-                    const result = await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
-                    if (!result) {
+                    const cached = await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
+                    if (!cached) {
                         globalOpenModal(ImportLocalMirabufModal, {
                             configurationType: miraTypeToConfigType(miraType),
                         })
                         return
                     }
-                    mirabufSceneObject = await createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
+                    result = await createMirabuf(
+                        cached.cacheInfo.hash,
+                        cached.assembly,
+                        cached.cacheInfo.hash,
+                        miraType
+                    )
                 }
 
-                if (mirabufSceneObject) {
-                    World.sceneRenderer.registerSceneObject(mirabufSceneObject)
-
-                    if (mirabufSceneObject.miraType == MiraType.ROBOT) {
-                        openPanel(InitialConfigPanel, undefined, modal)
-                    }
-                    const targetControls = getTargetControls()
-                    if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                        targetControls.focusProvider = mirabufSceneObject
-                    }
-                    closeModal(CloseType.OVERWRITE)
-                } else {
+                if (!result) {
                     globalOpenModal(ImportLocalMirabufModal, {
                         configurationType: miraTypeToConfigType(miraType),
                     })
+                    return
                 }
+
+                finalizeMirabufSpawn(result, openPanel, modal)
+                closeModal(CloseType.OVERWRITE)
             } catch (e) {
                 console.error("[Import]", e)
                 progressHandle.fail("Import failed!")
@@ -172,6 +163,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 >
                     <ToggleButton value={MiraType.ROBOT}>Robot</ToggleButton>
                     <ToggleButton value={MiraType.FIELD}>Field</ToggleButton>
+                    <ToggleButton value={MiraType.PIECE}>Piece</ToggleButton>
                 </ToggleButtonGroup>
             )}
             <Button component="label" role={undefined}>

@@ -2,7 +2,9 @@ import type React from "react"
 import { useCallback } from "react"
 import { Button, Spacer } from "@/components/StyledComponents.tsx"
 import { FaFileDownload } from "react-icons/fa"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import { zeroGamePieceAssemblyPosition } from "@/mirabuf/MirabufParser"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import { downloadBlob } from "@/util/Utility.ts"
@@ -15,6 +17,10 @@ const AssemblyExportButton: React.FC<ConfigModeSelectionProps> = ({ selectedAsse
     const exportHandler = useCallback(() => {
         selectedAssembly.savePreferencesToMirabuf()
         const assembly = selectedAssembly.mirabufInstance.parser.assembly
+
+        if (selectedAssembly.miraType === MiraType.PIECE) {
+            zeroGamePieceAssemblyPosition(assembly)
+        }
 
         const filename = `${assembly.info?.name ?? "unknown"}.mira`
         try {

@@ -85,6 +85,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
 
     const [cachedRobots, setCachedRobots] = useState(MirabufCachingService.getAll(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(MirabufCachingService.getAll(MiraType.FIELD))
+    const [cachedPieces, setCachedPieces] = useState(MirabufCachingService.getAll(MiraType.PIECE))
 
     const manifestRobots = useMemo(() => DefaultAssetLoader.robots, [])
     const manifestFields = useMemo(() => DefaultAssetLoader.fields, [])
@@ -213,6 +214,29 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         [cachedFields, createCachedAssetElements]
     )
 
+    const cachedGamePieces = useMemo(
+        () =>
+            cachedPieces
+                .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
+                .map(info => (
+                    <ItemCard
+                        name={info.name || "Unnamed Piece"}
+                        key={info.hash}
+                        primaryButtonNode={<SynthesisIcons.ADD_LARGE />}
+                        primaryOnClick={async () => {
+                            console.log(`Selecting cached game pieces: ${info.name}`)
+                            await selectCache(info)
+                        }}
+                        secondaryOnClick={async () => {
+                            console.log(`Deleting cache of: ${info.name}`)
+                            await MirabufCachingService.remove(info.hash)
+                            setCachedPieces(MirabufCachingService.getAll(MiraType.PIECE))
+                        }}
+                    />
+                )),
+        [cachedPieces, selectCache]
+    )
+
     // Generate Item cards for remote robots.
     const remoteRobotElements = useMemo(() => {
         const remoteRobots = manifestRobots.filter(
@@ -299,6 +323,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
         () => downloadAllRemote(manifestFields, cachedFields),
         [manifestFields, cachedFields, downloadAllRemote]
     )
+    const downloadAllRemotePieces = useCallback(
+        () => downloadAllRemote([], cachedPieces),
+        [cachedPieces, downloadAllRemote]
+    )
 
     // Generate Item cards for APS robots and fields.
     const hubElements = useMemo(
@@ -333,6 +361,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
             >
                 <Tab key="robots" value={MiraType.ROBOT} label="ROBOTS" />
                 <Tab key="fields" value={MiraType.FIELD} label="FIELDS" />
+                <Tab key="pieces" value={MiraType.PIECE} label="PIECES" />
             </Tabs>
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
@@ -342,11 +371,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length === 1 ? "" : "s"}`
                                 : "Loading Saved Robots"}
                         </Label>
-                    ) : (
+                    ) : viewType === MiraType.FIELD ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedFieldElements
                                 ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
                                 : "Loading Saved Fields"}
+                        </Label>
+                    ) : (
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {cachedGamePieces
+                                ? `${cachedGamePieces.length} Saved Piece${cachedGamePieces.length == 1 ? "" : "s"}`
+                                : "Loading Saved Pieces"}
                         </Label>
                     )}
                 </AccordionSummary>
@@ -357,8 +392,14 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         ) : (
                             <Label size="sm">No Saved Assets</Label>
                         )
-                    ) : cachedFieldElements && cachedFieldElements.length > 0 ? (
-                        cachedFieldElements
+                    ) : viewType === MiraType.FIELD ? (
+                        cachedFieldElements && cachedFieldElements.length > 0 ? (
+                            cachedFieldElements
+                        ) : (
+                            <Label size="sm">No Saved Assets</Label>
+                        )
+                    ) : cachedGamePieces && cachedGamePieces.length > 0 ? (
+                        cachedGamePieces
                     ) : (
                         <Label size="sm">No Saved Assets</Label>
                     )}
@@ -410,11 +451,15 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                                 ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length === 1 ? "" : "s"}`
                                 : "Loading Default Robots"}
                         </Label>
-                    ) : (
+                    ) : viewType === MiraType.FIELD ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteFieldElements
                                 ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length === 1 ? "" : "s"}`
                                 : "Loading Default Fields"}
+                        </Label>
+                    ) : (
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            Default Game Pieces
                         </Label>
                     )}
                 </AccordionSummary>
@@ -425,14 +470,24 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         ) : (
                             <Label size="sm">No Assets Found</Label>
                         )
-                    ) : remoteFieldElements && remoteFieldElements.length > 0 ? (
-                        remoteFieldElements
+                    ) : viewType === MiraType.FIELD ? (
+                        remoteFieldElements && remoteFieldElements.length > 0 ? (
+                            remoteFieldElements
+                        ) : (
+                            <Label size="sm">No Assets Found</Label>
+                        )
                     ) : (
                         <Label size="sm">No Assets Found</Label>
                     )}
                     <Stack justifyContent="center" mt={1}>
                         <PositiveButton
-                            onClick={viewType === MiraType.ROBOT ? downloadAllRemoteRobots : downloadAllRemoteFields}
+                            onClick={
+                                viewType === MiraType.ROBOT
+                                    ? downloadAllRemoteRobots
+                                    : viewType === MiraType.FIELD
+                                      ? downloadAllRemoteFields
+                                      : downloadAllRemotePieces
+                            }
                         >
                             Download All
                         </PositiveButton>

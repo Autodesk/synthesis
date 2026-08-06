@@ -1,18 +1,24 @@
 import { type Data, downloadData } from "@/aps/APSDataManagement"
-import { globalAddToast, globalOpenPanel } from "@/components/GlobalUIControls"
+import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
-import InitialConfigPanel from "@/panels/configuring/initial-config/InitialConfigPanel.tsx"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
-import { getTargetControls } from "@/systems/scene/CameraControls.ts"
+import { createMirabuf, finalizeMirabufSpawn } from "@/mirabuf/MirabufSceneObject.ts"
 import type { EncodedAssembly, Message } from "@/systems/multiplayer/types.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
+
+export enum MiraType {
+    ROBOT = 1,
+    FIELD,
+    PIECE,
+}
+
+export type MirabufCacheID = string
 
 export interface MirabufCacheInfo {
     hash: string
@@ -231,7 +237,7 @@ class MirabufCachingService {
         }
 
         World.analyticsSystem?.event("APS Download", {
-            type: miraType == MiraType.ROBOT ? "robot" : "field",
+            type: miraType === MiraType.ROBOT ? "robot" : miraType === MiraType.FIELD ? "field" : "piece",
             fileSize: miraBuff.byteLength,
         })
 
@@ -450,11 +456,6 @@ class MirabufCachingService {
     }
 }
 
-export enum MiraType {
-    ROBOT = 1,
-    FIELD,
-}
-
 export default MirabufCachingService
 
 export async function spawnCachedMira(
@@ -464,6 +465,7 @@ export async function spawnCachedMira(
     // If spawning a field, then remove all other fields
     if (info.miraType === MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
+        World.sceneRenderer.removeAllGamePieces()
     }
 
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
@@ -471,53 +473,48 @@ export async function spawnCachedMira(
         .then(async assembly => {
             if (!assembly) {
                 progressHandle.fail()
-                console.error("Failed to spawn robot")
-
+                console.error("Failed to spawn assembly")
                 return
             }
 
-            await createMirabuf(info.hash, assembly, progressHandle).then(async mirabufSceneObject => {
-                if (!mirabufSceneObject) {
-                    progressHandle.fail("No object!")
-                    return
+            const mirabufSceneObjects = await createMirabuf(
+                info.hash,
+                assembly,
+                info.hash,
+                info.miraType,
+                progressHandle
+            )
+            if (!mirabufSceneObjects) {
+                progressHandle.fail("No object!")
+                return
+            }
+
+            const mainSceneObject = finalizeMirabufSpawn(mirabufSceneObjects)
+
+            if (World.multiplayerSystem != null) {
+                const encodedAssembly =
+                    mainSceneObject.miraType !== MiraType.FIELD
+                        ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
+                        : undefined
+
+                const message: Message = {
+                    type: "newObject",
+                    timestamp: Date.now(),
+                    data: {
+                        sceneObjectKey: mainSceneObject.id,
+                        assembly: encodedAssembly,
+                        assemblyHash: info.hash,
+                        miraType: info.miraType,
+                        initialPreferences: mainSceneObject.getPreferenceData(),
+                        bodyIds: mainSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
+                    },
                 }
+                await World.multiplayerSystem?.broadcast(message)
+                World.multiplayerSystem?.registerOwnSceneObject(mainSceneObject.id)
+            }
 
-                World.sceneRenderer.registerSceneObject(mirabufSceneObject)
-
-                const targetControls = getTargetControls()
-
-                if (World.multiplayerSystem != null) {
-                    const encodedAssembly =
-                        mirabufSceneObject.miraType !== MiraType.FIELD
-                            ? (mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly)
-                            : undefined
-
-                    const message: Message = {
-                        type: "newObject",
-                        timestamp: Date.now(),
-                        data: {
-                            sceneObjectKey: mirabufSceneObject.id,
-                            assembly: encodedAssembly,
-                            assemblyHash: info.hash,
-                            miraType: info.miraType,
-                            initialPreferences: mirabufSceneObject.getPreferenceData(),
-                            bodyIds: mirabufSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
-                        },
-                    }
-                    await World.multiplayerSystem?.broadcast(message)
-                    World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
-                }
-
-                if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                    targetControls.focusProvider = mirabufSceneObject
-                }
-
-                progressHandle.done()
-                World.physicsSystem.deactivateGamepieces()
-                if (mirabufSceneObject.miraType == MiraType.ROBOT) {
-                    globalOpenPanel(InitialConfigPanel, undefined)
-                }
-            })
+            progressHandle.done()
+            World.physicsSystem.deactivateGamepieces()
         })
         .catch(e => {
             console.error(e)

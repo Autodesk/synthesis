@@ -5,7 +5,7 @@ import type { FieldConfiguration, RobotConfiguration, UpdateObjectData } from "@
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
-import type { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { LAYER_GENERAL_DYNAMIC, type LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import {
@@ -36,13 +36,15 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { type ProgressHandle, URDFImportProgressBar } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
-import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import { ConfigMode, miraTypeToConfigType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import CameraPreviewPanel from "@/ui/panels/simulation/CameraPreviewPanel"
+import type { OpenPanelFn, UIScreen } from "@/ui/helpers/UIProviderHelpers"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -50,17 +52,22 @@ import {
     convertJoltVec3ToThreeVector3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
-import { createMeshForShape } from "@/util/threejs/MeshCreation.ts"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import FieldMiraEditor from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
-import MirabufCachingService, { MiraType } from "./MirabufLoader"
+import MirabufCachingService, { type MirabufCacheID, MiraType } from "./MirabufLoader"
 import RobotCameraSceneObject from "./RobotCameraSceneObject"
-import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
+import MirabufParser, {
+    DEBUG_GAMEPIECE,
+    ParseErrorSeverity,
+    type RigidNodeId,
+    type RigidNodeReadOnly,
+} from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import { createMeshForShape } from "@/util/threejs/MeshCreation"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
@@ -131,6 +138,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
     private _collisionUnsubscriber?: () => void
+    private _cacheId?: string
+    private _miraType: MiraType = MiraType.ROBOT
 
     private _furthestVertices?: AxisVertices = undefined
     private _unrotatedRootNodeToCenterPositionTranslation?: Jolt.Vec3 = undefined
@@ -197,7 +206,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get miraType(): MiraType {
-        return this.mirabufInstance.parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD
+        return this._miraType
     }
 
     public get rootNodeId(): string {
@@ -218,6 +227,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? (this.brain instanceof SynthesisBrain ? this.brain.inputSchemeName : "Magic")}] ` : ""}${this.assemblyName}`
     }
 
+    public set miraType(type: MiraType) {
+        this._miraType = type
+    }
+
+    public get cacheId() {
+        return this._cacheId
+    }
+
     public get assemblyName() {
         return this.mirabufInstance.parser.assembly.info?.name ?? "Unknown"
     }
@@ -226,10 +243,21 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this.mirabufInstance.parser.assemblyId
     }
 
-    public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
+    public constructor(
+        mirabufInstance: MirabufInstance,
+        cacheId: string = "",
+        progressHandle?: ProgressHandle,
+        multiplayerOwnerId?: string
+    ) {
         super()
         this.mirabufInstance = mirabufInstance
         this._multiplayerOwningClientId = multiplayerOwnerId
+        this._cacheId = cacheId
+        this._miraType = this.mirabufInstance.parser.assembly.dynamic
+            ? this.mirabufInstance.parser.isGamePiece
+                ? MiraType.PIECE
+                : MiraType.ROBOT
+            : MiraType.FIELD
         this.loadPreferences()
 
         progressHandle?.update("Creating scene object...", 0.9)
@@ -344,6 +372,23 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.moveToSpawnLocation()
 
+        // detects any rendered field part orphaned from a live rigid node, a static phantom duplicate
+        if (this.miraType === MiraType.FIELD && DEBUG_GAMEPIECE) {
+            const liveRigidNodeIds = new Set(this.mirabufInstance.parser.rigidNodes.keys())
+            this.mirabufInstance.meshes.forEach((_batches, partGuid) => {
+                const owningNode = this.mirabufInstance.parser.partToNodeMap.get(partGuid)
+                if (owningNode && liveRigidNodeIds.has(owningNode.id)) return
+
+                const transform = this.mirabufInstance.parser.globalTransforms.get(partGuid)
+                const pos = transform ? new THREE.Vector3().setFromMatrixPosition(transform) : undefined
+                console.warn(
+                    `[dev-GamePiece] Orphaned/phantom part rendered by field '${this.assemblyName}': ` +
+                        `guid=${partGuid}, owningRigidNodeId=${owningNode?.id ?? "none"} (not live), ` +
+                        `frozen position: x=${pos?.x}, y=${pos?.y}, z=${pos?.z}`
+                )
+            })
+        }
+
         this.updateIntakeSensor()
         this.updateScoringZones()
         this.updateProtectedZones()
@@ -372,29 +417,55 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public moveToSpawnLocation() {
-        const referencePos = new THREE.Vector3()
-        const pos =
-            this.miraType == MiraType.FIELD
-                ? defaultFieldSpawnLocation()
-                : (this.robotSpawnPosition(referencePos) ?? defaultFieldSpawnLocation())
+        if (this._miraType === MiraType.PIECE) {
+            this.spawnGamePiece()
+            return
+        }
 
+        let pos: SpawnLocation
+        if (this.miraType == MiraType.FIELD) {
+            pos = defaultFieldSpawnLocation()
+        } else {
+            const field = World.sceneRenderer.mirabufSceneObjects.getField()
+            const fieldLocations = field?.fieldPreferences?.spawnLocations
+            if (this.alliance != null && this.station != null && fieldLocations != null) {
+                pos = fieldLocations[this.alliance][this.station]
+            } else {
+                pos = fieldLocations?.default ?? defaultFieldSpawnLocation()
+            }
+        }
         this.setObjectPosition(pos)
     }
 
-    private robotSpawnPosition(referencePos: THREE.Vector3): SpawnLocation | undefined {
+    // Game piece globalTransforms are relative to the field's unshifted design origin, so
+    // they need the field's current (re-centered) root body transform applied, not just Y.
+    private spawnGamePiece() {
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
-        const fieldLocations = field?.fieldPreferences?.spawnLocations
+        if (!field) return
 
-        const pos =
-            this.alliance != null && this.station != null && fieldLocations != null
-                ? fieldLocations[this.alliance][this.station]
-                : fieldLocations?.default
+        const fieldRootBodyId = field.mechanism.getBodyByNodeId(field.mechanism.rootBody)
+        if (!fieldRootBodyId) return
 
-        // TODO
-        // Why are we calling this?
-        field?.getXZPositionTransform(referencePos)
+        const fieldRootBody = World.physicsSystem.getBody(fieldRootBodyId)!
+        const fieldRootPos = fieldRootBody.GetPosition()
+        const fieldRootRot = fieldRootBody.GetRotation()
+        const blankVec = new JOLT.Vec3()
 
-        return pos
+        this.mirabufInstance.parser.rigidNodes.forEach(rn => {
+            const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
+            if (!jBodyId) return
+            World.physicsSystem.setBodyPositionRotationAndVelocity(
+                jBodyId,
+                fieldRootPos,
+                fieldRootRot,
+                blankVec,
+                blankVec,
+                false
+            )
+        })
+
+        JOLT.destroy(blankVec)
+        this.updateMeshTransforms()
     }
 
     private setObjectPosition(initialPos: SpawnLocation, referencePosition: THREE.Vector3 = new THREE.Vector3()) {
@@ -1252,32 +1323,42 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getSupplierData(): ContextData {
         const data: ContextData = {
-            title: this.miraType == MiraType.ROBOT ? `${this.descriptiveName}` : "Field",
+            title:
+                this.miraType == MiraType.ROBOT
+                    ? `${this.descriptiveName}`
+                    : this.miraType == MiraType.PIECE
+                      ? "A Game Piece"
+                      : "Field",
             items: [],
         }
 
-        data.items.push(
-            {
+        const configurationType = miraTypeToConfigType(this.miraType)
+
+        if (this.miraType !== MiraType.FIELD) {
+            data.items.push({
                 name: "Move",
+
                 customProps: {
-                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configurationType,
                     configMode: ConfigMode.MOVE,
                     selectedAssembly: this,
                 },
                 screen: ConfigurePanel,
                 type: "panel",
+            })
+        }
+
+        data.items.push({
+            name: "Configure",
+
+            customProps: {
+                configurationType,
+                configMode: undefined,
+                selectedAssembly: this,
             },
-            {
-                name: "Configure",
-                customProps: {
-                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
-                    configMode: undefined,
-                    selectedAssembly: this,
-                },
-                screen: ConfigurePanel,
-                type: "panel",
-            }
-        )
+            screen: ConfigurePanel,
+            type: "panel",
+        })
 
         if (this.brain?.brainType == "wpilib") {
             data.items.push({
@@ -1408,7 +1489,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private recordRobotCollision(collision: Jolt.BodyID) {
         const objectCollidedWith = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collision)
-        if (objectCollidedWith && objectCollidedWith.isGamePiece) {
+        const inGPLayer = World.physicsSystem.getBody(collision)?.GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        if (objectCollidedWith && (objectCollidedWith.isGamePiece || inGPLayer)) {
             objectCollidedWith.robotLastInContactWith = this
         }
     }
@@ -1417,10 +1499,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 export async function createMirabuf(
     hash: string,
     assembly: mirabuf.Assembly,
+    id: MirabufCacheID,
+    type: MiraType,
     progressHandle?: ProgressHandle,
     multiplayerOwnerId?: string
-): Promise<MirabufSceneObject | undefined> {
-    const parser = new MirabufParser(assembly, progressHandle)
+): Promise<
+    | {
+          mainSceneObject: MirabufSceneObject
+          gamePieces?: MirabufInstance[]
+      }
+    | undefined
+> {
+    const parser = new MirabufParser(assembly, type == MiraType.PIECE, progressHandle)
 
     if (!parser.assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)) {
         await migrateUUID(parser, hash)
@@ -1435,7 +1525,44 @@ export async function createMirabuf(
     progressHandle?.update("Created Mirabuf Instance", URDFImportProgressBar.MIRABUF_INSTANCE)
     await yieldToMain()
 
-    return new MirabufSceneObject(mirabufInstance, progressHandle, multiplayerOwnerId)
+    const mainSceneObject = new MirabufSceneObject(mirabufInstance, id, progressHandle, multiplayerOwnerId)
+    if (parser.gamePieces == undefined || parser.gamePieces.length === 0)
+        return {
+            mainSceneObject,
+        }
+
+    const gamePieces = parser.gamePieces.map(parser => new MirabufInstance(parser))
+
+    return {
+        mainSceneObject,
+        gamePieces,
+    }
+}
+
+export function finalizeMirabufSpawn(
+    result: { mainSceneObject: MirabufSceneObject; gamePieces?: MirabufInstance[] },
+    openPanelFn: OpenPanelFn = globalOpenPanel,
+    // biome-ignore lint/suspicious/noExplicitAny: matches UIScreen's own any-typed generics
+    parent?: UIScreen<any, any>
+): MirabufSceneObject {
+    const { mainSceneObject, gamePieces } = result
+    World.sceneRenderer.registerSceneObject(mainSceneObject)
+
+    for (const instance of gamePieces ?? []) {
+        const gamePieceSceneObject = new MirabufSceneObject(instance)
+        World.sceneRenderer.registerSceneObject(gamePieceSceneObject)
+    }
+
+    const targetControls = getTargetControls()
+    if (targetControls && (mainSceneObject.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+        targetControls.focusProvider = mainSceneObject
+    }
+
+    if (mainSceneObject.miraType === MiraType.ROBOT || mainSceneObject.miraType === MiraType.PIECE) {
+        openPanelFn(InitialConfigPanel, undefined, parent)
+    }
+
+    return mainSceneObject
 }
 
 async function migrateUUID(parser: MirabufParser, hash: string) {

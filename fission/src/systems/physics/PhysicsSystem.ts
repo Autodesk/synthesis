@@ -13,7 +13,7 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import { GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -50,7 +50,7 @@ const DEBUG_COLLIDER_WARNINGS = false
  * Layers used for determining enabled/disabled collisions.
  */
 const LAYER_FIELD = 0 // Used for grounded rigid node of a field as well as any rigid nodes jointed to it.
-const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
+export const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
 const ROBOT_LAYERS: number[] = [
     // Reserved layers for robots. Robot layers have no collision with themselves but have collision with everything else.
     2,
@@ -408,10 +408,9 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public createMechanismFromParser(parser: MirabufParser): Mechanism {
-        const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
-        const bodyMap = this.createBodiesFromParser(parser, layer)
+        const layer = parser.assembly.dynamic && !parser.isGamePiece ? new LayerReserve() : undefined
         const rootBody = parser.rootNode
-
+        const bodyMap = this.createBodiesFromParser(parser, layer)
         const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)
         this.createJointsFromParser(parser, mechanism)
 
@@ -900,8 +899,8 @@ class PhysicsSystem extends WorldSystem {
     public createBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
         const rnToBodies = new Map<string, Jolt.BodyID>()
 
-        if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
-            throw new Error("No layer reserve for dynamic assembly")
+        if ((parser.assembly.dynamic && !layerReserve && !parser.isGamePiece) || layerReserve?.isReleased) {
+            throw new Error("No layer reserve for non-game piece dynamic assembly")
         }
 
         const reservedLayer: number | undefined = layerReserve?.layer
@@ -944,7 +943,7 @@ class PhysicsSystem extends WorldSystem {
 
             const rnLayer: number = reservedLayer
                 ? reservedLayer
-                : rn.id.endsWith(GAMEPIECE_SUFFIX)
+                : parser.isGamePiece
                   ? LAYER_GENERAL_DYNAMIC
                   : LAYER_FIELD
 
@@ -1949,9 +1948,13 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
 }
 
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
+    const instances = mira.data?.parts?.partInstances
     return nodes.filter(x => {
         for (const part of x.parts) {
-            const inst = mira.data!.parts!.partInstances![part]!
+            const inst = instances![part] ?? instances![mira.info?.GUID ?? ""]
+            if (!inst) {
+                return false
+            }
             const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!
             if (def.bodies && def.bodies.length > 0) {
                 return true

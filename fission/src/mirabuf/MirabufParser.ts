@@ -15,13 +15,10 @@ export enum ParseErrorSeverity {
 export const GROUNDED_JOINT_ID = "grounded"
 export const GAMEPIECE_SUFFIX = "_gp"
 
+export const DEBUG_GAMEPIECE = import.meta.env.VITE_DEBUG_GAMEPIECE === "true"
+
 export type ParseError = [severity: ParseErrorSeverity, message: string]
 
-/**
- * TODO:
- * 1. Account for special versions
- * 2. Gamepieces added to their own RigidNodes
- */
 class MirabufParser {
     private _nodeNameCounter: number = 0
 
@@ -38,6 +35,10 @@ class MirabufParser {
     private _globalTransforms: Map<string, THREE.Matrix4>
 
     private _groundedNode: RigidNode | undefined
+
+    private _gamePieces?: MirabufParser[]
+    private _isGamePiece: boolean
+    private _gamePieceTransform?: mirabuf.ITransform
 
     public get errors() {
         return [...this._errors]
@@ -72,15 +73,27 @@ class MirabufParser {
     public get rootNode() {
         return this._rootNode
     }
+    public get gamePieces(): MirabufParser[] | undefined {
+        return this._gamePieces
+    }
+    public get isGamePiece(): boolean {
+        return this._isGamePiece
+    }
+    public get gamePieceTransform(): mirabuf.ITransform | undefined {
+        return this._gamePieceTransform
+    }
 
     public get assemblyId() {
         return this.assembly.info!.GUID!
     }
 
-    public constructor(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle) {
+    public constructor(assembly: mirabuf.Assembly, isGamePiece: boolean = false, progressHandle?: ProgressHandle) {
         this._assembly = assembly
         this._errors = []
         this._globalTransforms = new Map()
+        this._gamePieces = undefined
+        this._isGamePiece = isGamePiece
+        if (isGamePiece && assembly.transform) this._gamePieceTransform = assembly.transform
 
         progressHandle?.update("Parsing assembly...", 0.3)
 
@@ -90,7 +103,10 @@ class MirabufParser {
         this.initializeRigidGroups() // 1: from ancestral breaks in joints
 
         // Fields Only: Assign Game Piece rigid nodes
-        if (!assembly.dynamic) this.assignGamePieceRigidNodes()
+        if (!assembly.dynamic) {
+            progressHandle?.update("Wrangling Gamepieces...", 0.4)
+            this._gamePieces = this.pruneGamePieceNodes().map(gp => new MirabufParser(gp, true))
+        }
 
         // 2: Grounded joint
         const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
@@ -116,6 +132,14 @@ class MirabufParser {
 
         // 5. Remove Empty RNs
         this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0)
+
+        // A parser representing a standalone game piece asset never runs pruneGamePieceNodes
+        // on itself, so its own rigid nodes need to be flagged directly.
+        if (this._isGamePiece) {
+            this._rigidNodes.forEach(rn => {
+                rn.isGamePiece = true
+            })
+        }
 
         // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
         this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
@@ -168,38 +192,202 @@ class MirabufParser {
         })
     }
 
-    private assignGamePieceRigidNodes() {
+    /*
+     * Separates and returns the sub-assemblies (partInstances) of each game piece
+     */
+    private pruneGamePieceNodes(): mirabuf.Assembly[] {
         // Collect all definitions labeled as gamepieces (dynamic = true)
         const gamepieceDefinitions: Set<string> = new Set(
             Object.values(this._assembly.data!.parts!.partDefinitions!)
                 .filter(def => def.dynamic)
-                .map((def: mirabuf.IPartDefinition) => {
-                    return def.info!.GUID!
-                })
+                .map((def: mirabuf.IPartDefinition) => def.info!.GUID!)
         )
 
         // Create gamepiece rigid nodes from PartInstances with corresponding definitions
-        Object.values(this._assembly.data!.parts!.partInstances!).forEach((inst: mirabuf.IPartInstance) => {
-            if (!gamepieceDefinitions.has(inst.partDefinitionReference!)) return
+        const gamePieces = Object.values(this._assembly.data!.parts!.partInstances!)
+            .filter(inst => gamepieceDefinitions.has(inst.partDefinitionReference!))
+            .map(inst => {
+                const instNode = this.binarySearchDesignTree(inst.info!.GUID!)
+                if (instNode == null) {
+                    this.newError(
+                        ParseErrorSeverity.LIKELY_ISSUES,
+                        `Failed to find game piece in Design Tree: GUID='${inst.info!.GUID}' name='${inst.info!.name}'`
+                    )
+                    return
+                }
+                // Trick to capture and delete references to gamePiece
+                // Removing this yields a null function runtime error
+                const gpRn = this.newRigidNode(GAMEPIECE_SUFFIX)
+                gpRn.isGamePiece = true
+                this.movePartToRigidNode(instNode!.value!, gpRn)
+                if (instNode.children)
+                    this.traverseTree(instNode.children, x => this.movePartToRigidNode(x.value!, gpRn))
+                // Includes descendants (e.g. a collision sub-part) so their data carries over too
+                const allParts = [...gpRn.parts]
+                this.deleteRigidNode(gpRn)
 
-            const instNode = this.binarySearchDesignTree(inst.info!.GUID!)
-            if (!instNode) {
-                this._errors.push([ParseErrorSeverity.LIKELY_ISSUES, "Failed to find Game piece in Design Tree"])
-                return
-            }
+                // Assumes that the game piece is composed of one instance. Build before deleting below
+                // convertPartInstanceToAssembly reads these same partInstances entries.
+                const worldTransform = this._globalTransforms.get(inst.info!.GUID!)
+                const gamePieceAssembly = this.convertPartInstanceToAssembly(
+                    inst,
+                    instNode,
+                    allParts,
+                    false,
+                    true,
+                    worldTransform
+                )
 
-            const gpRn = this.newRigidNode(GAMEPIECE_SUFFIX)
-            gpRn.isGamePiece = true
-            this.movePartToRigidNode(instNode!.value!, gpRn)
-            if (instNode.children) this.traverseTree(instNode.children, x => this.movePartToRigidNode(x.value!, gpRn))
+                // Skip deleting bystanders shared with a joint rigidGroup (bandageRigidNodes could
+                // otherwise silently re-merge a dangling reference into live field structure).
+                const rigidGroups = this._assembly.data?.joints?.rigidGroups ?? []
+                const entangled = new Set(
+                    allParts.filter(guid => {
+                        const partInst = this._assembly.data?.parts?.partInstances?.[guid]
+                        const isBystander =
+                            !partInst || !gamepieceDefinitions.has(partInst.partDefinitionReference ?? "")
+                        return isBystander && rigidGroups.some(rg => rg.occurrences?.includes(guid))
+                    })
+                )
+
+                if (entangled.size > 0 && DEBUG_GAMEPIECE) {
+                    console.warn(
+                        `[dev-GamePiece] '${inst.info!.name}' kept ${entangled.size} part(s) behind in the ` +
+                            `field (entangled with a joint rigidGroup, unsafe to delete): ${JSON.stringify([...entangled])}`
+                    )
+                }
+
+                allParts.forEach(guid => {
+                    if (entangled.has(guid)) return
+                    delete this._assembly.data?.parts?.partInstances?.[guid]
+                })
+
+                return gamePieceAssembly
+            })
+            .filter(asm => asm != undefined)
+
+        return gamePieces
+    }
+
+    /*
+     * Converts specfic part instances to entire assemblies. Designed and tested for gamePiece instances, but theoretically should generalize
+     *
+     * Assumptions:
+     * - The part is a single dynamic rigid body
+     * - One joint and one part exist on the instance
+     */
+    private convertPartInstanceToAssembly(
+        inst: mirabuf.IPartInstance,
+        instNode: mirabuf.INode,
+        allParts: string[],
+        isEndEffector: boolean = false,
+        isDynamic: boolean = true,
+        worldTransform?: THREE.Matrix4
+    ): mirabuf.Assembly | undefined {
+        const jointDefinition = new mirabuf.joint.Joint({
+            info: {
+                GUID: GROUNDED_JOINT_ID,
+                name: GROUNDED_JOINT_ID,
+            },
+            jointMotionType: mirabuf.joint.JointMotion.RIGID,
+            // Affects the placement of the joints, cannot affect the placement of the assembly in absolute space
+            origin: new mirabuf.Vector3(),
         })
+        const jointInstance = new mirabuf.joint.JointInstance({
+            isEndEffector,
+            parentPart: "",
+            jointReference: jointDefinition.info?.GUID,
+            parts: { nodes: [instNode] },
+        })
+
+        const joints = new mirabuf.joint.Joints({
+            jointDefinitions: {
+                [GROUNDED_JOINT_ID]: jointDefinition,
+            },
+            jointInstances: {
+                [GROUNDED_JOINT_ID]: jointInstance,
+            },
+            rigidGroups: [],
+            // This probably needs to be changed if this function gets generalized for mix-n-match or something
+            motorDefinitions: {},
+        })
+
+        const partDefinitionReference = inst?.partDefinitionReference
+        if (partDefinitionReference == null) {
+            this.newError(ParseErrorSeverity.UNIMPORTABLE, "partInstance does not reference a partDefinition")
+            return
+        }
+
+        // Register every part in allParts, not just inst, in case of multi-part game pieces
+        const partInstances: { [guid: string]: mirabuf.IPartInstance } = {}
+        const partDefinitions: { [guid: string]: mirabuf.IPartDefinition } = {}
+        allParts.forEach(partGUID => {
+            const partInst = this._assembly.data?.parts?.partInstances?.[partGUID]
+            if (!partInst?.partDefinitionReference) return
+            partInstances[partGUID] = partInst
+            partDefinitions[partInst.partDefinitionReference] =
+                this._assembly.data?.parts?.partDefinitions?.[partInst.partDefinitionReference] ?? {}
+        })
+        partInstances[inst.info?.GUID ?? ""] = inst
+        partDefinitions[partDefinitionReference] =
+            this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
+
+        const parts = new mirabuf.Parts({
+            info: inst.info,
+            partDefinitions,
+            partInstances,
+        })
+
+        const gamePieceAssembly = new mirabuf.Assembly({
+            info: inst.info,
+            data: {
+                parts,
+                joints,
+                materials: this.assembly.data?.materials,
+                // This probably needs to be changed if this function gets generalized for mix-n-match or something
+                signals: {},
+            },
+            dynamic: isDynamic,
+            designHierarchy: { nodes: [instNode] },
+            // This probably needs to be changed if this function gets generalized for mix-n-match or something
+            jointHierarchy: {},
+            thumbnail: null,
+            transform: worldTransform
+                ? (() => {
+                      const e = worldTransform.elements
+                      return new mirabuf.Transform({
+                          // biome-ignore-start format: We would prefer to visualize this as a matrix
+                          spatialMatrix: [
+                              e[0], e[4], e[8],  e[12] * 100,
+                              e[1], e[5], e[9],  e[13] * 100,
+                              e[2], e[6], e[10], e[14] * 100,
+                              e[3], e[7], e[11], e[15],
+                          ],
+                          // biome-ignore-end format: We would prefer to visualize this as a matrix
+                      })
+                  })()
+                : inst.transform,
+        })
+
+        return gamePieceAssembly
     }
 
     private bandageRigidNodes(assembly: mirabuf.Assembly) {
         assembly.data!.joints!.rigidGroups!.forEach(rg => {
             let rn: RigidNode | null = null
             rg.occurrences!.forEach(y => {
-                const currentRn = this._partToNodeMap.get(y)!
+                // Occurrence may have been extracted as a game piece, leaving no rigid node
+                const currentRn = this._partToNodeMap.get(y)
+                if (!currentRn) return
+
+                // deleteRigidNode doesn't clean up _partToNodeMap, so currentRn can be stale/orphaned
+                if (!this._rigidNodes.includes(currentRn) && DEBUG_GAMEPIECE) {
+                    console.warn(
+                        `[dev-GamePiece] bandageRigidNodes: occurrence '${y}' resolves to stale/orphaned ` +
+                            `rigid node '${currentRn.id}' (not in _rigidNodes) with parts=` +
+                            `${JSON.stringify([...currentRn.parts])}, about to rescue-merge into the live graph`
+                    )
+                }
 
                 rn = !rn ? currentRn : currentRn.id != rn.id ? this.mergeRigidNodes(currentRn, rn) : rn
             })
@@ -249,6 +437,13 @@ class MirabufParser {
         const node = new RigidNode(`${this._nodeNameCounter++}${suffix ?? ""}`)
         this._rigidNodes.push(node)
         return node
+    }
+
+    private deleteRigidNode(node: RigidNode) {
+        const index = this._rigidNodes.indexOf(node)
+        if (index != -1) {
+            this._rigidNodes.splice(index, 1)
+        }
     }
 
     private mergeRigidNodes(rnA: RigidNode, rnB: RigidNode) {
@@ -301,11 +496,17 @@ class MirabufParser {
             const partInstance = partInstances.get(child.value!)!
             const def = partDefinitions[partInstance.partDefinitionReference!]
 
-            const mat = partInstance.transform
-                ? convertMirabufTransformToThreeMatrix(partInstance.transform)
-                : def.baseTransform
-                  ? convertMirabufTransformToThreeMatrix(def.baseTransform)
-                  : new THREE.Matrix4().identity()
+            // gamePieceTransform is already the resolved world transform; partInstance.transform is only local
+            let mat: THREE.Matrix4
+            if (this._isGamePiece && this._gamePieceTransform) {
+                mat = convertMirabufTransformToThreeMatrix(this._gamePieceTransform)
+            } else if (partInstance.transform) {
+                mat = convertMirabufTransformToThreeMatrix(partInstance.transform)
+            } else if (def.baseTransform) {
+                mat = convertMirabufTransformToThreeMatrix(def.baseTransform)
+            } else {
+                mat = new THREE.Matrix4().identity()
+            }
 
             this._globalTransforms.set(partInstance.info!.GUID!, mat)
             getTransforms(child, mat)
@@ -372,13 +573,13 @@ class MirabufParser {
         let node = this._designHierarchyRoot
         const targetValue = this._partTreeValues.get(target)!
 
-        while (node.value != target && node.children) {
+        while (node?.value != target && node?.children) {
             const i = this.binarySearchIndex(targetValue, node.children!)
             const iValue = this._partTreeValues.get(node.children![i].value!)!
             node = node.children![i + (iValue < targetValue ? 1 : 0)]
         }
 
-        return node.value! == target ? node : null
+        return node?.value === target ? node : null
     }
 
     private generateTreeValues() {
@@ -399,6 +600,40 @@ class MirabufParser {
         recursive(this._designHierarchyRoot)
         this._partTreeValues = partTreeValues
     }
+
+    private newError(severity: ParseErrorSeverity, message: string) {
+        if (severity >= ParseErrorSeverity.LIKELY_ISSUES) {
+            console.error(message)
+            if (severity == ParseErrorSeverity.UNIMPORTABLE)
+                console.error(`Aborting Parse of assembly: ${this._assembly.info?.name}`)
+        } else {
+            console.warn(message)
+        }
+        this._errors.push([severity, message])
+    }
+}
+
+// Piece world position lives on assembly.transform, not the part instance's transform.
+export function zeroGamePieceAssemblyPosition(assembly: mirabuf.Assembly) {
+    if (!assembly.transform) return
+
+    const pos = new THREE.Vector3()
+    const quat = new THREE.Quaternion()
+    const scale = new THREE.Vector3()
+    convertMirabufTransformToThreeMatrix(assembly.transform).decompose(pos, quat, scale)
+
+    const zeroed = new THREE.Matrix4().compose(new THREE.Vector3(0, 0, 0), quat, scale)
+    const e = zeroed.elements
+    assembly.transform = new mirabuf.Transform({
+        // biome-ignore-start format: We would prefer to visualize this as a matrix
+        spatialMatrix: [
+            e[0], e[4], e[8],  0,
+            e[1], e[5], e[9],  0,
+            e[2], e[6], e[10], 0,
+            e[3], e[7], e[11], e[15],
+        ],
+        // biome-ignore-end format: We would prefer to visualize this as a matrix
+    })
 }
 
 /**

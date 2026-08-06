@@ -98,6 +98,7 @@ export function createBodyMock() {
         SetLinearVelocity: vi.fn(),
         SetAngularVelocity: vi.fn(),
         GetAngularVelocity: vi.fn(() => createVec3Mock()),
+        GetObjectLayer: vi.fn(() => 1), // In the future, this would need to be amended
         GetWorldSpaceBounds: vi.fn(),
         GetShape: vi.fn(() => {
             const settings = new JOLT.BoxShapeSettings(new JOLT.Vec3(1, 1, 1))

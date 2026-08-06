@@ -5,7 +5,7 @@ import type { ConfigurePanelCustomProps } from "@/panels/configuring/assembly-co
 import type { UIScreen } from "@/ui/helpers/UIProviderHelpers.ts"
 import { ConfigModeSelectionOption } from "@/panels/configuring/assembly-config/configure/ConfigModeSelection.tsx"
 
-export const CONFIG_OPTS = ["ROBOTS", "FIELDS", "INPUTS"] as const
+export const CONFIG_OPTS = ["ROBOTS", "FIELDS", "PIECES", "INPUTS"] as const
 export type ConfigurationType = (typeof CONFIG_OPTS)[number]
 
 export function configTypeToMiraType(config: ConfigurationType): MiraType | undefined {
@@ -14,6 +14,8 @@ export function configTypeToMiraType(config: ConfigurationType): MiraType | unde
             return MiraType.FIELD
         case "ROBOTS":
             return MiraType.ROBOT
+        case "PIECES":
+            return MiraType.PIECE
         default:
             return undefined
     }
@@ -25,6 +27,8 @@ export function miraTypeToConfigType(config: MiraType): ConfigurationType {
             return "ROBOTS"
         case MiraType.FIELD:
             return "FIELDS"
+        case MiraType.PIECE:
+            return "PIECES"
     }
 }
 
@@ -126,7 +130,6 @@ export const wpilibRobotConfigModes = [
 ]
 
 export const fieldConfigModes = [
-    new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of field relative to robot."),
     new ConfigModeSelectionOption(
         "Scoring Zones",
         ConfigMode.SCORING_ZONES,
@@ -143,4 +146,8 @@ export const fieldConfigModes = [
         "Place and configure driver-station camera views for this field."
     ),
     new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the field's metadata"),
+]
+
+export const pieceConfigModes = [
+    new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of the game piece."),
 ]

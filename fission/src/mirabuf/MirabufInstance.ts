@@ -3,7 +3,7 @@ import World from "@/systems/World.ts"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
 import type { mirabuf } from "../proto/mirabuf"
 import type MirabufParser from "./MirabufParser.ts"
-import { ParseErrorSeverity } from "./MirabufParser.ts"
+import { DEBUG_GAMEPIECE, ParseErrorSeverity } from "./MirabufParser.ts"
 
 type MirabufPartInstanceGUID = string
 
@@ -177,6 +177,22 @@ class MirabufInstance {
         const batchMap = new Map<THREE.Material, Map<string, [mirabuf.IBody, mirabuf.IPartInstance[]]>>()
         const countMap = new Map<THREE.Material, BatchCounts>()
 
+        // dynamic-flagged parts should've been pruned into their own piece assembly one
+        // surviving here means it's about to render as a static phantom duplicate
+        if (!assembly.dynamic && DEBUG_GAMEPIECE) {
+            const strandedGamePieceParts = Object.values(instances).filter(
+                instance => assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]?.dynamic
+            )
+            if (strandedGamePieceParts.length > 0) {
+                console.warn(
+                    `[dev-GamePiece] Field assembly '${assembly.info?.name}' still has ` +
+                        `${strandedGamePieceParts.length} dynamic-definition partInstance(s) that will be ` +
+                        `batched into the static field mesh (phantom candidates): ` +
+                        `${JSON.stringify(strandedGamePieceParts.map(i => ({ guid: i.info?.GUID, name: i.info?.name })))}`
+                )
+            }
+        }
+
         // Filter all instances by first material, then body
         Object.values(instances).forEach(instance => {
             const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]
@@ -236,7 +252,14 @@ class MirabufInstance {
             materialBodyMap.forEach(instances => {
                 const body = instances[0]
                 instances[1].forEach(instance => {
-                    const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!
+                    const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)
+                    if (!mat) {
+                        if (DEBUG_GAMEPIECE)
+                            console.warn(
+                                `No globalTransform for partInstance '${instance.info?.GUID}', skipping its mesh`
+                            )
+                        return
+                    }
 
                     const geometry = new THREE.BufferGeometry()
                     transformGeometry(geometry, body.triangleMesh!.mesh!)

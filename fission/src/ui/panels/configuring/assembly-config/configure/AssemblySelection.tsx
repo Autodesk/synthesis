@@ -56,11 +56,16 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
         const field = World.sceneRenderer.mirabufSceneObjects.getField()
         return !field || pendingDeletes.includes(field.id) ? [] : [field]
     }, [pendingDeletes])
+    const getPieces = useCallback(
+        () => World.sceneRenderer.mirabufSceneObjects.getPieces().filter(x => !pendingDeletes.includes(x.id)),
+        [pendingDeletes]
+    )
 
     const computeOptions = useCallback(() => {
-        const items: MirabufSceneObject[] = configurationType === "ROBOTS" ? getRobots() : getFields()
+        const items: MirabufSceneObject[] =
+            configurationType === "ROBOTS" ? getRobots() : configurationType === "PIECES" ? getPieces() : getFields()
         return items.filter(assembly => assembly != null).map(assembly => makeSelectionOption(assembly))
-    }, [getRobots, getFields, configurationType])
+    }, [getRobots, getFields, getPieces, configurationType])
 
     const [options, setOptions] = useState<AssemblySelectionOption[]>(computeOptions)
 
@@ -82,7 +87,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
         <SelectMenu
             options={options}
             onOptionSelected={val => onAssemblySelected(val?.assemblyObject)}
-            defaultHeaderText={`Select a ${configurationType === "ROBOTS" ? "Robot" : "Field"}`}
+            defaultHeaderText={`Select a ${configurationType.slice(0, configurationType.length - 1).toLowerCase()}`}
             onDelete={val => {
                 onStageDelete(val)
                 update()
@@ -92,7 +97,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
                 closePanel(panel!.id, CloseType.ACCEPT)
                 setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
             }}
-            noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
+            noOptionsText={`No ${configurationType.slice(0, configurationType.length - 1).toLowerCase()} spawned!`}
             defaultSelectedOption={selectedAssembly ? makeSelectionOption(selectedAssembly) : undefined}
         />
     )
