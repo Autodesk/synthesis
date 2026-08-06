@@ -49,12 +49,6 @@ public class FTCWsBridge extends WebSocketServer {
         this.listener = listener;
     }
 
-    /**
-     * Registers a motor's Fission-facing device name and announces it under
-     * the same "CANMotor"/"CANEncoder" wire types WPILib's HALSim WS bridge
-     * uses, so Fission's existing CAN motor/encoder handling covers FTC
-     * motors with zero FTC-specific fission code.
-     */
     public void registerDcMotor(String deviceName, SynthesisDcMotor motor) {
         dcMotors.put(deviceName, motor);
         Map<String, Object> init = new HashMap<>();
@@ -69,7 +63,6 @@ public class FTCWsBridge extends WebSocketServer {
         send("CANMotor", deviceName, data);
     }
 
-    /** Mirrors WPILib's DriverStation "enabled" flag off FTC OpMode run state. */
     public void setEnabled(boolean enabled) {
         Map<String, Object> data = new HashMap<>();
         data.put(">enabled", enabled);

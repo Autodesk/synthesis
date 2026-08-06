@@ -21,7 +21,6 @@ const GAMEPAD_BUTTON = {
     DPAD_RIGHT: 15,
 }
 
-/** Pushes the local physical/keyboard gamepad state out over the WS worker every frame, for brains without their own driver-station-style input relay (e.g. FTC). */
 export class SimGamepadInput extends SimInput {
     public update(_deltaT: number) {
         const data = InputSystem.gamepad ? this.readPhysicalGamepad() : this.readKeyboardGamepad()

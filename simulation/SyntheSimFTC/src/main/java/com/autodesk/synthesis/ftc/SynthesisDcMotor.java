@@ -55,7 +55,6 @@ public class SynthesisDcMotor implements DcMotor {
         return velocity;
     }
 
-    /** Applies a "CANEncoder" readback pushed from Fission (position/velocity, ">"-prefixed keys). */
     void applyEncoderUpdate(JsonObject data) {
         if (data.has(">position")) {
             currentPosition = data.get(">position").getAsInt();
