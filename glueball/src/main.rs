@@ -21,6 +21,7 @@ use crate::logging::{
 use crate::messaging::handle_connection;
 use crate::room::State;
 use crate::tui::start_tui_thread;
+use crate::util::get_local_ip;
 
 use std::sync::{Arc, Mutex};
 
@@ -55,9 +56,11 @@ async fn main() -> Result<()> {
     let (cert_dir, port) = config_or_default(&config)?;
 
     // `listener` will be used regardless of the security level specified
-    let Ok(listener) = TcpListener::bind(format!("127.0.0.1:{port}")).await else {
+    let Ok(listener) = TcpListener::bind(format!("0.0.0.0:{port}")).await else {
         bail!("Could not create TCP listener (the port is likely in use)");
     };
+
+    let local_ip = get_local_ip().unwrap_or_else(|| String::from("0.0.0.0"));
 
     if config.headless {
         // Read the logging channel and immediantly print result
@@ -90,6 +93,11 @@ async fn main() -> Result<()> {
     }
 
     if !config.secure {
+        info_global!(
+            logging_tx,
+            "Server hosted on {local_ip} listening at port {port} (insecure)"
+        );
+
         while let Ok((stream, addr)) = listener.accept().await {
             tokio::spawn(handle_connection(
                 state.clone(),
@@ -106,7 +114,10 @@ async fn main() -> Result<()> {
     let tls_config = build_tls_config(&cert_dir)?;
     let acceptor = TlsAcceptor::from(Arc::new(tls_config));
 
-    info_global!(logging_tx, "Server listening on port {} (secure)", port);
+    info_global!(
+        logging_tx,
+        "Server hosted on {local_ip} listening at port {port} (secure)"
+    );
 
     while let Ok((stream, addr)) = listener.accept().await {
         let acceptor = acceptor.clone();

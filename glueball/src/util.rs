@@ -1,4 +1,4 @@
-use std::{env::home_dir, ops::Deref, path::PathBuf};
+use std::{env::home_dir, net::UdpSocket, ops::Deref, path::PathBuf};
 
 use anyhow::{Result, bail};
 use serde::{Deserialize, Serialize};
@@ -14,6 +14,14 @@ macro_rules! lock {
             .lock()
             .expect("Poisoned Mutex (panic on another thread). Aborting.")
     };
+}
+
+pub fn get_local_ip() -> Option<String> {
+    let socket = UdpSocket::bind("0.0.0.0:0").ok()?;
+    socket.connect("8.8.8.8:80").ok()?;
+
+    let local_addr = socket.local_addr().ok()?;
+    Some(local_addr.ip().to_string())
 }
 
 pub fn trim_uuid(uuid: &Uuid) -> String {
