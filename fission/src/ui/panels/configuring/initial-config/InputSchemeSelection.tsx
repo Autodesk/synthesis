@@ -6,6 +6,7 @@ import InputSystem from "@/systems/input/InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import { PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
@@ -83,6 +84,9 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
     )
+    const [robotCentric, setRobotCentric] = useState<boolean>(
+        SynthesisBrain.brainIndexMap.get(brainIndex)?.mecanumRobotCentric ?? false
+    )
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
 
     const refreshAvailableSchemes = useCallback(() => {
@@ -129,13 +133,24 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                         EventSystem.dispatch("InputSchemeChanged", { panelId })
                     }}
                 >
-                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
+                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE, DriveType.MECANUM].map(dt => (
                         <MenuItem key={dt} value={dt}>
                             {dt}
                         </MenuItem>
                     ))}
                 </Select>
             </FormControl>
+            {robotDriveType === DriveType.MECANUM && (
+                <Checkbox
+                    label="Robot-Centric Drive"
+                    tooltip="Drive relative to the robot's nose instead of a fixed field heading."
+                    checked={robotCentric}
+                    onClick={checked => {
+                        SynthesisBrain.brainIndexMap.get(brainIndex)?.setMecanumRobotCentric(checked)
+                        setRobotCentric(checked)
+                    }}
+                />
+            )}
             <Divider />
             <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                 {`${availableSchemes?.length} Input Schemes`}

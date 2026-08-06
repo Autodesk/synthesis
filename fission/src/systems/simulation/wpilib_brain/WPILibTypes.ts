@@ -22,6 +22,7 @@ export enum SimType {
     AO = "AO",
     DRIVERS_STATION = "DriverStation",
     GAMEPAD = "Gamepad",
+    CAMERA = "Camera",
 }
 
 export enum FieldType {
@@ -58,5 +59,12 @@ export const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 
 export const CANENCODER_POSITION = ">position"
 export const CANENCODER_VELOCITY = ">velocity"
+
+// USB camera config, set by robot code and read by Synthesis. the frame can't ride HALSim
+// (numbers/booleans only) and streams over a side channel (see CameraFrameSocket)
+export const CAMERA_WIDTH = "<width"
+export const CAMERA_HEIGHT = "<height"
+export const CAMERA_FPS = "<fps"
+export const CAMERA_CONNECTED = "<connected"
 
 export const worker: Lazy<Worker> = new Lazy<Worker>(() => new WSWorker())
