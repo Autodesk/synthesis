@@ -64,6 +64,10 @@ export type NewObjectBody = {
     assemblyHash: string
     miraType: MiraType
     initialPreferences: RobotConfiguration | FieldConfiguration
+    // It's only important that you set this property if you're spawning a field.
+    // This is because all robot physics updates are sent every time the physics system updates
+    // While updates to game piece positions (when moved via drag mode) are sent out only when they're moved
+    initialPhysicsData?: PhysicsBodyData[]
 }
 
 export type ConfigureObjectBody = {

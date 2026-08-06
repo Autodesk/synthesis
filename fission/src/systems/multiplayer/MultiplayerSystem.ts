@@ -220,6 +220,7 @@ class MultiplayerSystem {
                         ),
                         miraType: obj.miraType,
                         initialPreferences: obj.getPreferenceData(),
+                        initialPhysicsData: obj.miraType === MiraType.FIELD ? obj.getUpdateData().bodies : undefined,
                     },
                 },
                 peerID

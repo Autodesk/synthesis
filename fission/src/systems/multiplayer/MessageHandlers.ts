@@ -15,17 +15,16 @@ import type {
     MessageType,
     NeedAssemblyBody,
     NewObjectBody,
-    PhysicsBodyData,
     UpdateObjectData,
     UpdatePhysicsBodyData,
 } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
 import type MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerSystem.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import { isDefined } from "@/util/Utility"
 import EventSystem from "@/systems/EventSystem.ts"
 import { EncodedAssembly } from "./MultiplayerTypes"
+import { applyPhysicsBodyData, handleUpdateObjectPhysics } from "./UpdatePhysicsData"
 
 export const peerMessageHandlers = {
     info: handleInfoMessage,
@@ -77,7 +76,7 @@ async function handleInfoMessage(this: MultiplayerSystem, { info, introduceSelf 
     this.clientToInfoMap.set(info.clientId, info)
 
     if (introduceSelf) await this.introduceSelf(false, info.clientId)
-    if (this.isHost) await this.sendOngoingMatchModeInfo()
+    if (this.isHost) this.sendOngoingMatchModeInfo()
 
     globalAddToast("success", "Multiplayer Peer Connected", info.displayName)
     EventSystem.dispatch("MultiplayerStatePeerChange")
@@ -130,16 +129,7 @@ function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp
                 })
         }
 
-        // Sets the physics data for each body in the assembly
-        bodies.forEach(({ rigidNodeId, ...physicsData }) => {
-            const bodyId = sceneObject.mechanism.getBodyByNodeId(rigidNodeId)
-            if (bodyId == null) {
-                console.error(`BodyId: ${bodyId} sent by ${peerId} does not exist in bodyMap`)
-                return
-            }
-
-            applyPhysicsBodyData(bodyId, physicsData)
-        })
+        handleUpdateObjectPhysics(sceneObject, bodies, peerId)
     })
 }
 
@@ -157,28 +147,6 @@ function handleUpdatePhysicsBody(data: UpdatePhysicsBodyData, peerId: string, _t
     }
 
     applyPhysicsBodyData(bodyId, data)
-}
-
-function applyPhysicsBodyData(bodyId: Jolt.BodyID, data: Omit<PhysicsBodyData, "rigidNodeId">) {
-    const lin: { x: number; y: number; z: number } = JSON.parse(data.linearVelocityStr)
-    const ang: { x: number; y: number; z: number } = JSON.parse(data.angularVelocityStr)
-    const pos: { x: number; y: number; z: number } = JSON.parse(data.positionStr)
-    const rot: { x: number; y: number; z: number; w: number } = JSON.parse(data.rotationStr)
-
-    const linearVelocity = new JOLT.Vec3(lin.x, lin.y, lin.z)
-    const angularVelocity = new JOLT.Vec3(ang.x, ang.y, ang.z)
-    const position = new JOLT.RVec3(pos.x, pos.y, pos.z)
-    const rotation = new JOLT.Quat(rot.x, rot.y, rot.z, rot.w)
-
-    const clientBody = World.physicsSystem.getBody(bodyId)
-    if (!clientBody) {
-        console.error(`Body ${bodyId} not found`)
-        return
-    }
-
-    clientBody.SetLinearVelocity(linearVelocity)
-    clientBody.SetAngularVelocity(angularVelocity)
-    World.physicsSystem.setBodyPositionAndRotation(bodyId, position, rotation)
 }
 
 function handleCollisionMessage() {
@@ -202,6 +170,7 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
             deleteObject()
         }
     }
+
     const handle =
         progressHandles.get(data.sceneObjectId) ??
         new ProgressHandle(
@@ -209,6 +178,7 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
         )
     handle.update("Finding Assembly", 0.05)
     progressHandles.set(data.sceneObjectId, handle)
+
     let assembly: mirabuf.Assembly | undefined
     if (data.assembly) {
         handle.update("Loading Assembly", 0.2)
@@ -227,6 +197,7 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
     } else {
         assembly = await MirabufCachingService.get(data.assemblyHash)
     }
+
     if (!assembly) {
         console.log("needAssembly")
         handle.update("Requesting Assembly", 0.05)
@@ -256,6 +227,13 @@ async function handleNewObjectMessage(data: NewObjectBody, peerId: string, ts: n
     World.sceneRenderer.registerSceneObject(object, data.sceneObjectId)
 
     clientToObjectMap.get(peerId)?.push(object.id) || clientToObjectMap.set(peerId, [object.id])
+
+    // Update all bodies to their present configuration
+    if (data.initialPhysicsData) {
+        console.log("initialPhysics:" + JSON.stringify(data.initialPhysicsData))
+
+        handleUpdateObjectPhysics(object, data.initialPhysicsData, peerId)
+    }
 
     handle.done("Loaded")
     // Run all messages that arrived before the assembly fully spawned
