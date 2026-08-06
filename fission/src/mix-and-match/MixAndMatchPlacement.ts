@@ -32,22 +32,6 @@ function flipAxisFor(normal: THREE.Vector3): THREE.Vector3 {
     return axis.normalize()
 }
 
-/** Toggle to trace snap-to-face/mate-faces geometry (selected faces, bounds, computed offsets) while diagnosing placement issues. */
-export const DEBUG_SNAP_TO_FACE = true
-
-/**
- * Logs pre-serialized to a single JSON string.
- *
- * Plain `console.debug(label, obj)` renders nested arrays/objects as collapsed, interactive
- * `Array(3)`/`Object` placeholders in devtools — copying or auto-saving the console (rather than
- * manually expanding every entry first) loses the actual numbers. Stringifying up front means the
- * real values are in the text no matter how the log is captured.
- */
-export function debugLog(label: string, data: Record<string, unknown>) {
-    if (!DEBUG_SNAP_TO_FACE) return
-    console.debug(label, JSON.stringify(data))
-}
-
 /**
  * A component's world transform is the world transform of its root body — the part its own mira
  * declares as `"grounded"`, which every internal joint hangs off of.
@@ -157,16 +141,6 @@ export function snapToFaceOffset(moving: THREE.Box3, target: THREE.Box3): THREE.
     const offset = new THREE.Vector3()
     offset[axis] = flushCenter - movingCenter[axis]
 
-    debugLog("[MixAndMatch] snapToFaceOffset", {
-        movingBounds: { min: moving.min.toArray(), max: moving.max.toArray() },
-        targetBounds: { min: target.min.toArray(), max: target.max.toArray() },
-        movingCenter: movingCenter.toArray(),
-        targetCenter: targetCenter.toArray(),
-        axis,
-        direction,
-        offset: offset.toArray(),
-    })
-
     return offset
 }
 
@@ -203,22 +177,6 @@ export function mateFacesTransform(
         .makeTranslation(targetPoint.x, targetPoint.y, targetPoint.z)
         .multiply(new THREE.Matrix4().makeRotationFromQuaternion(rotation))
         .multiply(new THREE.Matrix4().makeTranslation(-movingPoint.x, -movingPoint.y, -movingPoint.z))
-
-    const resultingMovingNormal = movingNormal.clone().normalize().applyQuaternion(rotation)
-    debugLog("[MixAndMatch] mateFacesTransform", {
-        movingPoint: movingPoint.toArray(),
-        movingNormal: movingNormal.toArray(),
-        targetPoint: targetPoint.toArray(),
-        targetNormal: targetNormal.toArray(),
-        // A flip is the case where the axis is chosen rather than derived, so it's the one worth spotting
-        // in a log if a part ever comes out mated but rolled.
-        isFlip,
-        rotation: rotation.toArray(),
-        // Should end up ~antiparallel to targetNormal (dot ~ -1) once the faces are mated.
-        resultingMovingNormal: resultingMovingNormal.toArray(),
-        alignmentDot: resultingMovingNormal.dot(targetNormal.clone().normalize()),
-        transform: transform.toArray(),
-    })
 
     return transform
 }
