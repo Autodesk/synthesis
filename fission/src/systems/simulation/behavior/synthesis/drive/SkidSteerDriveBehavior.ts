@@ -44,15 +44,15 @@ class SkidSteerDriveBehavior extends DriveBehavior {
     }
 
     private arcadeUpdate() {
-        const driveInput = InputSystem.getInput("arcadeDrive", this._brainIndex)
+        const driveInput = this._testingForwardSpeed ?? InputSystem.getInput("arcadeDrive", this._brainIndex)
         const turnInput = InputSystem.getInput("arcadeTurn", this._brainIndex)
 
         this.driveSpeeds(driveInput + turnInput, driveInput - turnInput)
     }
     private tankUpdate() {
         this.driveSpeeds(
-            InputSystem.getInput("tankLeft", this._brainIndex),
-            InputSystem.getInput("tankRight", this._brainIndex)
+            this._testingForwardSpeed ?? InputSystem.getInput("tankLeft", this._brainIndex),
+            this._testingForwardSpeed ?? InputSystem.getInput("tankRight", this._brainIndex)
         )
     }
 

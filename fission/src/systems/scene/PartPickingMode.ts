@@ -6,7 +6,6 @@ import WorldSystem from "../WorldSystem"
 import { type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
 
 export interface PartPick {
-    sceneObject: MirabufSceneObject
     guid: string
     object: THREE.BatchedMesh
     instanceId: number
@@ -19,7 +18,6 @@ export interface PartHighlight {
 
 /** Common shape a mode's pending-selection value must have to be trackable by HighlightMap/PartPickingMode. */
 export interface PartSelection {
-    sceneId: number
     guid: string
     highlight: PartHighlight
 }
@@ -41,11 +39,6 @@ export function toKey(a?: PartHighlight): HighlightKey | undefined {
 /** Reused across picks to avoid reallocating. */
 const raycaster = new THREE.Raycaster()
 const ndc = new THREE.Vector2()
-
-interface PickIndexEntry {
-    sceneObject: MirabufSceneObject
-    guid: string
-}
 
 /** Tracks a set of picked parts and tints their meshes; a hovered pending part keeps `selectedColor`. */
 export class HighlightMap<T extends PartSelection> {
@@ -126,7 +119,7 @@ export class HighlightMap<T extends PartSelection> {
 abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     public readonly pending: HighlightMap<T>
 
-    private _enabled = false
+    protected _object: MirabufSceneObject | null = null
 
     private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
     private _pointerMoveListener: ((e: PointerEvent) => void) | undefined
@@ -136,23 +129,27 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
 
     // Rebuilt on enable and after finishApply() to avoid rescanning every mesh entry per raycast.
     private _candidateBatches: THREE.BatchedMesh[] = []
-    private _pickIndex = new Map<THREE.BatchedMesh, Map<number, PickIndexEntry>>()
+    private _pickIndex = new Map<THREE.BatchedMesh, Map<number, string>>()
 
     protected constructor(selectedColor: THREE.Color, dispatchUpdate: (values: T[]) => void) {
         super()
         this.pending = new HighlightMap<T>(selectedColor, () => toKey(this._hover), dispatchUpdate)
     }
 
-    public get enabled(): boolean {
-        return this._enabled
+    public get enabled() {
+        return this._object != null
     }
 
-    public set enabled(enabled: boolean) {
-        if (this._enabled === enabled) return
-        this._enabled = enabled
+    public enable(object: MirabufSceneObject) {
+        if (this.enabled) return
+        this._object = object
+        this.hookInteractionHandlers()
+    }
 
-        if (enabled) this.hookInteractionHandlers()
-        else this.unhookInteractionHandlers()
+    public disable() {
+        if (!this.enabled) return
+        this._object = null
+        this.unhookInteractionHandlers()
     }
 
     public get pendingCount(): number {
@@ -160,7 +157,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     }
 
     public update(_deltaT: number): void {
-        if (!this._enabled || !this._latestMousePos) return
+        if (!this.enabled || !this._latestMousePos) return
 
         const [x, y] = this._latestMousePos
         const last = this._lastProcessedMousePos
@@ -171,7 +168,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     }
 
     public destroy(): void {
-        this.enabled = false
+        this.disable()
     }
 
     private hookInteractionHandlers(): void {
@@ -207,21 +204,19 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     private rebuildPickIndex(): void {
         this._candidateBatches = []
         this._pickIndex = new Map()
+        if (this._object == null) return
+        for (const batch of this._object.mirabufInstance.batches) {
+            this._candidateBatches.push(batch)
+        }
 
-        for (const sceneObject of World.sceneRenderer.mirabufSceneObjects.getAll()) {
-            for (const batch of sceneObject.mirabufInstance.batches) {
-                this._candidateBatches.push(batch)
-            }
-
-            for (const [guid, entries] of sceneObject.mirabufInstance.meshes) {
-                for (const [mesh, instanceId] of entries) {
-                    let byInstance = this._pickIndex.get(mesh)
-                    if (!byInstance) {
-                        byInstance = new Map()
-                        this._pickIndex.set(mesh, byInstance)
-                    }
-                    byInstance.set(instanceId, { sceneObject, guid })
+        for (const [guid, entries] of this._object.mirabufInstance.meshes) {
+            for (const [mesh, instanceId] of entries) {
+                let byInstance = this._pickIndex.get(mesh)
+                if (!byInstance) {
+                    byInstance = new Map()
+                    this._pickIndex.set(mesh, byInstance)
                 }
+                byInstance.set(instanceId, guid)
             }
         }
     }
@@ -239,10 +234,10 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         const object = hit.object
         const instanceId = hit.batchId ?? 0
 
-        const resolved = this._pickIndex.get(object)?.get(instanceId)
-        if (!resolved) return undefined
+        const guid = this._pickIndex.get(object)?.get(instanceId)
+        if (!guid) return undefined
 
-        return { sceneObject: resolved.sceneObject, guid: resolved.guid, object, instanceId }
+        return { guid, object, instanceId }
     }
 
     /** Tints the part under the cursor. */
@@ -306,21 +301,17 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         return groundedInstance.parts!.nodes!.at(0)!.value!
     }
 
-    public collectPendingBySceneId<K>(toEntry: (selection: T) => K): Map<number, K[]> {
-        const bySceneId = new Map<number, K[]>()
-        for (const selection of this.pending.values()) {
-            const entry = toEntry(selection)
-            const list = bySceneId.get(selection.sceneId)
-            if (list) list.push(entry)
-            else bySceneId.set(selection.sceneId, [entry])
-        }
-        return bySceneId
+    public get pendingList(): T[] {
+        return [...this.pending.values()]
     }
 
     public finishApply(): void {
         this.pending.clearSilently()
+        if (this.enabled) this.rebuildPickIndex()
+    }
 
-        if (this._enabled) this.rebuildPickIndex()
+    public get sceneObject() {
+        return this._object
     }
 }
 

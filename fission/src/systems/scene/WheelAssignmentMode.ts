@@ -75,6 +75,7 @@ class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
     }
 
     protected override handlePick(pick: PartPick): void {
+        if (this._object == null) return
         const points = getPartLocalVertices(pick.object, pick.instanceId)
         if (!points || points.length === 0) {
             globalAddToast("warning", "Wheel Assignment", "Couldn't read this part's geometry.")
@@ -88,46 +89,37 @@ class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
         }
 
         // Assembly-space transform, not the live scene matrix (which bakes in the physics body's world transform).
-        const assemblySpaceTransform = pick.sceneObject.mirabufInstance.parser.globalTransforms.get(pick.guid)!
+        const assemblySpaceTransform = this._object.mirabufInstance.parser.globalTransforms.get(pick.guid)!
         const worldAxisFit = transformWheelAxis(localAxisFit, assemblySpaceTransform)
 
         // Grounded/root part doubles as the parent -- no second click needed.
-        const parentPartGuid = this.getGroundedRootPartGuid(pick.sceneObject)
+        const parentPartGuid = this.getGroundedRootPartGuid(this._object)
         if (parentPartGuid === pick.guid) {
             globalAddToast("warning", "Wheel Assignment", "This part is the assembly's grounded/root part.")
             return
         }
 
         this.pending.addPart(pick.guid, {
-            sceneId: pick.sceneObject.id,
             guid: pick.guid,
             highlight: { instanceId: pick.instanceId, mesh: pick.object },
             assignment: { wheelPartGuid: pick.guid, parentPartGuid, axisFit: worldAxisFit },
         })
     }
 
-    /** Warns if any pending assignment's wheel and parent ended up in the same rigid node post-rebuild. */
-    public warnIfMismatched(
-        assignmentsBySceneId: Map<number, WheelAssignment[]>,
-        rebuiltBySceneId: Map<number, MirabufSceneObject>
-    ): void {
-        let hadMismatch = false
-        for (const [sceneId, assignments] of assignmentsBySceneId) {
-            const parser = rebuiltBySceneId.get(sceneId)?.mirabufInstance.parser
-            if (!parser) continue
+    /** Checks if any pending assignment's wheel and parent ended up in the same rigid node post-rebuild. */
+    public isMismatched(assignments: WheelAssignment[], rebuilt: MirabufSceneObject): boolean {
+        const parser = rebuilt.mirabufInstance.parser
+        if (!parser) return true
 
-            for (const assignment of assignments) {
-                const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
-                const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
-                if (!wheelNode || !parentNode) continue
-                if (wheelNode.id !== parentNode.id) continue
-                hadMismatch = true
-            }
-        }
+        for (const assignment of assignments) {
+            const wheelNode = parser.partToNodeMap.get(assignment.wheelPartGuid)
+            const parentNode = parser.partToNodeMap.get(assignment.parentPartGuid)
 
-        if (hadMismatch) {
-            globalAddToast("warning", "Wheel Assignment", "Wheel and parent ended up in the same rigid node.")
+            if (!wheelNode || !parentNode) continue
+            if (wheelNode.id !== parentNode.id) continue
+            return true
         }
+        return false
     }
 }
 

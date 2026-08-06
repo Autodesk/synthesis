@@ -1,7 +1,7 @@
 import type React from "react"
-import { useEffect, useId, useMemo, useState } from "react"
+import { useCallback, useEffect, useId, useMemo, useState } from "react"
 import type { PanelImplProps } from "@/components/Panel.tsx"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import World from "@/systems/World.ts"
 import WheelAssignment from "@/components/UserModelConfig/WheelAssignment.tsx"
 import { Divider, Stack } from "@mui/material"
@@ -9,21 +9,29 @@ import { Button, ProgressButton, SynthesisIcons, TooltipButton } from "@/compone
 import DrivetrainConfig from "@/components/UserModelConfig/DrivetrainConfig.tsx"
 import DeleteParts from "@/components/UserModelConfig/DeleteParts.tsx"
 import { applyModelConfigChanges } from "@/systems/scene/ApplyModelConfig.ts"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts";
 
 export interface SubpanelProps {
     setDisableNextMessage: (v: string | null) => void
+    sceneObject: MirabufSceneObject
+    pauseRef: string
 }
 
 const screens: { title: string; component: React.FC<SubpanelProps> }[] = [
+    { title: "Delete Parts", component: DeleteParts },
     { title: "Assign Wheels", component: WheelAssignment },
     { title: "Drivetrain", component: DrivetrainConfig },
-    { title: "Delete Parts", component: DeleteParts },
+
 ]
 
-const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { configureScreen } = useUIContext()
+const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufSceneObject }>> = ({ panel }) => {
+    const { configureScreen, closePanel } = useUIContext()
     const [screen, setScreen] = useState<number>(0)
     const [disableNextMessage, setDisableNextMessage] = useState<string | null>(null)
+
+    const { sceneObject: originalSceneObject } = panel!.props.custom
+
+    const [sceneObject, setSceneObject] = useState<MirabufSceneObject>(originalSceneObject)
 
     const title = useMemo(() => screens[screen].title, [screen])
     const ScreenComponent = useMemo(() => screens[screen].component, [screen])
@@ -36,23 +44,50 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         }
     }, [pauseHandle])
 
+    const apply = useCallback(async () => {
+        await applyModelConfigChanges()
+
+        const newObj = World.sceneRenderer.sceneObjects.get(originalSceneObject.id)
+        if (!newObj || !(newObj instanceof MirabufSceneObject)) {
+            return
+        }
+        setSceneObject(newObj)
+        return newObj
+    }, [originalSceneObject])
+
     useEffect(() => {
         configureScreen(panel!, { title, hideCancel: true, hideAccept: true }, {})
     }, [configureScreen, panel, title])
 
+    const closeCallback = useCallback(async () => {
+        closePanel(panel!.id, CloseType.ACCEPT)
+    }, [panel, closePanel, apply])
+
     return (
         <Stack gap={2}>
-            <ScreenComponent setDisableNextMessage={setDisableNextMessage} />
+            <ScreenComponent
+                setDisableNextMessage={setDisableNextMessage}
+                sceneObject={sceneObject}
+                pauseRef={pauseHandle}
+            />
             <Divider />
-            {screen == screens.length - 1 && (
+            {screen == 0 && (
                 <ProgressButton
                     color="secondary"
                     refreshLabel={"Applying..."}
                     sx={{ px: 4, flexGrow: 2 }}
-                    onClick={applyModelConfigChanges}
+                    onClick={async () => {
+                        await apply()
+                        setScreen(screen + 1)
+                    }}
                 >
                     Apply
                 </ProgressButton>
+            )}
+            {screen == screens.length - 1 && (
+                <Button color="secondary" sx={{ px: 4, flexGrow: 2 }} onClick={closeCallback}>
+                    Apply
+                </Button>
             )}
             <Stack direction={"row"} gap={1}>
                 <Button
@@ -60,7 +95,7 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                     color="secondary"
                     size={"medium"}
                     sx={{ px: 4 }}
-                    disabled={screen == 0}
+                    disabled={true}
                     onClick={() => setScreen(screen - 1)}
                 >
                     <SynthesisIcons.LEFT_ARROW_LARGE />
@@ -71,7 +106,7 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                     color="secondary"
                     sx={{ px: 4 }}
                     tooltip={disableNextMessage ?? undefined}
-                    disabled={screen == screens.length - 1 || disableNextMessage != null}
+                    disabled={screen == 1 || disableNextMessage != null}
                     onClick={() => setScreen(screen + 1)}
                 >
                     <SynthesisIcons.RIGHT_ARROW_LARGE />

@@ -20,17 +20,17 @@ class PartDeletionMode extends PartPickingMode<PartDeletionSelection> {
     }
 
     protected override handlePick(pick: PartPick): void {
-        const rootPartGuid = this.getGroundedRootPartGuid(pick.sceneObject)
+        if (this._object == null) return
+        const rootPartGuid = this.getGroundedRootPartGuid(this._object)
         if (rootPartGuid === pick.guid) {
             globalAddToast("warning", "Delete Parts", "Can't delete the assembly's grounded/root part.")
             return
         }
 
-        const partInstances = pick.sceneObject.mirabufInstance.parser.assembly.data?.parts?.partInstances
+        const partInstances = this._object.mirabufInstance.parser.assembly.data?.parts?.partInstances
         const name = partInstances?.[pick.guid]?.info?.name ?? pick.guid
 
         this.pending.addPart(pick.guid, {
-            sceneId: pick.sceneObject.id,
             guid: pick.guid,
             name,
             highlight: { instanceId: pick.instanceId, mesh: pick.object as THREE.BatchedMesh },

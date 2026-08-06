@@ -369,7 +369,9 @@ class MecanumDriveBehavior extends DriveBehavior {
     public update(dt: number): void {
         // Deadband here rather than inside driveSpeeds so the threshold is applied to the raw -1..1
         // stick value, before the field-oriented rotation mixes the two translation axes together.
-        const fieldForward = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveForward", this._brainIndex))
+        const fieldForward = MecanumDriveBehavior.deadband(
+            this._testingForwardSpeed ?? InputSystem.getInput("swerveForward", this._brainIndex)
+        )
         const fieldStrafe = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveStrafe", this._brainIndex))
         const turn = MecanumDriveBehavior.deadband(InputSystem.getInput("swerveTurn", this._brainIndex))
 

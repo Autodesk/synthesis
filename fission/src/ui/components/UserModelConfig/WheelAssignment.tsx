@@ -9,13 +9,13 @@ import { DeleteButton } from "@/components/StyledComponents.tsx"
 import type { SubpanelProps } from "./ModelConfigPanel"
 import { usePickingMode } from "./usePickingMode"
 
-const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage }) => {
+const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, sceneObject }) => {
     const subscribe = useCallback(
         (onChange: (items: WheelSelection[]) => void) =>
             EventSystem.listen("WheelAssignmentSelectionChanged", ({ wheels }) => onChange(wheels)),
         []
     )
-    const { enabled, setEnabled, items: selected } = usePickingMode(World.wheelAssignmentMode, subscribe)
+    const { enabled, setEnabled, items: selected } = usePickingMode(World.wheelAssignmentMode, subscribe, sceneObject)
 
     const wheelSlots = useMemo(() => {
         const slots = new Array<WheelSelection | null>(Math.max(selected.length, 4)).fill(null)
@@ -29,13 +29,20 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage }) => 
         setDisableNextMessage(selected.length < 4 ? "Must select at least 4 wheels" : null)
     }, [selected, setDisableNextMessage])
 
+    const onDelete = useCallback((item: WheelSelection) => {
+        return () => {
+            World.wheelAssignmentMode.clearHover()
+            World.wheelAssignmentMode.pendingWheels.removePart(item.assignment.wheelPartGuid)
+        }
+    }, [])
+
     return (
         <Stack gap={2} direction="column">
             <Button
                 variant={enabled ? "contained" : "outlined"}
-                onClick={() => {
+                onClick={useCallback(() => {
                     setEnabled(e => !e)
-                }}
+                }, [setEnabled])}
             >
                 {enabled ? "Stop Picking" : "Start Picking"}
             </Button>
@@ -56,14 +63,7 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage }) => 
                         <Label size={"sm"} p={0.5} fontStyle={item == null ? "italic" : undefined} flexGrow={1}>
                             Wheel {i + 1} {item == null && "(Unassigned)"}
                         </Label>
-                        {item != null && (
-                            <DeleteButton
-                                onClick={() => {
-                                    World.wheelAssignmentMode.clearHover()
-                                    World.wheelAssignmentMode.pendingWheels.removePart(item.assignment.wheelPartGuid)
-                                }}
-                            />
-                        )}
+                        {item != null && <DeleteButton onClick={onDelete(item)} />}
                     </Stack>
                 ))}
                 <Stack
