@@ -10,6 +10,28 @@ import {
 /** Below this, a re-place would be a no-op and writing to the bodies just adds jitter. */
 const TRANSFORM_EPSILON = 1e-6
 
+/** How close two unit vectors have to be to opposed before the rotation between them is ambiguous. */
+const ANTIPARALLEL_EPSILON = 1e-6
+
+const WORLD_UP = new THREE.Vector3(0, 1, 0)
+
+/**
+ * Axis to flip `normal` 180° about, chosen so the part keeps its up direction where it can.
+ *
+ * Any axis perpendicular to `normal` reverses it, and they differ only by how much they roll everything
+ * else. Taking the one closest to world up leaves the part's up untouched, since it becomes the axis of
+ * rotation itself.
+ */
+function flipAxisFor(normal: THREE.Vector3): THREE.Vector3 {
+    const axis = WORLD_UP.clone().sub(normal.clone().multiplyScalar(WORLD_UP.dot(normal)))
+
+    // The face points straight up or straight down, e.g. mating a lid onto a floor, so the part has to
+    // turn over no matter which axis is used. Any perpendicular will do.
+    if (axis.lengthSq() < ANTIPARALLEL_EPSILON) return new THREE.Vector3(0, 0, 1).cross(normal).normalize()
+
+    return axis.normalize()
+}
+
 /** Toggle to trace snap-to-face/mate-faces geometry (selected faces, bounds, computed offsets) while diagnosing placement issues. */
 export const DEBUG_SNAP_TO_FACE = true
 
@@ -115,10 +137,17 @@ export function mateFacesTransform(
     targetPoint: THREE.Vector3,
     targetNormal: THREE.Vector3
 ): THREE.Matrix4 {
-    const rotation = new THREE.Quaternion().setFromUnitVectors(
-        movingNormal.clone().normalize(),
-        targetNormal.clone().normalize().negate()
-    )
+    const from = movingNormal.clone().normalize()
+    const to = targetNormal.clone().normalize().negate()
+
+    // A straight 180° turn has no single answer, and `setFromUnitVectors` resolves it by grabbing whichever
+    // perpendicular falls out of the component ordering — so picking two faces that already point the same
+    // way rolls the part by an amount nobody asked for, and which way it rolls depends on the axis the
+    // faces happen to lie along.
+    const isFlip = from.dot(to) < -1 + ANTIPARALLEL_EPSILON
+    const rotation = isFlip
+        ? new THREE.Quaternion().setFromAxisAngle(flipAxisFor(from), Math.PI)
+        : new THREE.Quaternion().setFromUnitVectors(from, to)
 
     // Rotate about movingPoint (so it doesn't wander off during the rotation), then slide it onto targetPoint.
     const transform = new THREE.Matrix4()
@@ -132,6 +161,9 @@ export function mateFacesTransform(
         movingNormal: movingNormal.toArray(),
         targetPoint: targetPoint.toArray(),
         targetNormal: targetNormal.toArray(),
+        // A flip is the case where the axis is chosen rather than derived, so it's the one worth spotting
+        // in a log if a part ever comes out mated but rolled.
+        isFlip,
         rotation: rotation.toArray(),
         // Should end up ~antiparallel to targetNormal (dot ~ -1) once the faces are mated.
         resultingMovingNormal: resultingMovingNormal.toArray(),
