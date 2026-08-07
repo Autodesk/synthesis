@@ -83,7 +83,21 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
     )
 
     useEffect(() => {
-        configureScreen(panel!, { title: screen.title, hideCancel: true, hideAccept: true }, {})
+        configureScreen(
+            panel!,
+            {
+                title: `Model Config - ${screen.title}`,
+                hideCancel: true,
+                hideAccept: true,
+                blocking: true,
+                blockingMessage: "Finish model config first!",
+            },
+            {
+                onCancel: () => {
+                    World.sceneRenderer.removeSceneObject(sceneObject.id)
+                },
+            }
+        )
     }, [configureScreen, panel, screen])
 
     const closeCallback = useCallback(async () => {
@@ -110,6 +124,17 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
                 </Button>
             )}
             <Stack direction={"row"} gap={1} justifyContent={"center"}>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    size={"medium"}
+                    sx={{ px: 4, flex: "auto" }}
+                    onClick={() => {
+                        ;() => closePanel(panel!.id, CloseType.CANCEL)
+                    }}
+                >
+                    Abort
+                </Button>
                 <Button
                     variant="outlined"
                     color="secondary"
