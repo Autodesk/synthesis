@@ -1,12 +1,23 @@
-import type * as THREE from "three"
+import * as THREE from "three"
 import EventSystem from "@/systems/EventSystem"
 import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import MixAndMatchBuild from "./MixAndMatchBuild"
-import { componentWorldTransform, DEBUG_SNAP_TO_FACE, mateFacesTransform } from "./MixAndMatchPlacement"
+import { componentWorldBounds, componentWorldTransform, debugLog, mateFacesTransform } from "./MixAndMatchPlacement"
 import MixAndMatchScene from "./MixAndMatchScene"
 import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMatchTypes"
+
+/** Compact, loggable view of a world-space box: exact min/max plus how much two boxes overlap, if at all. */
+function boundsDebugInfo(a: THREE.Box3, b: THREE.Box3) {
+    const overlap = a.clone().intersect(b)
+    return {
+        aBounds: { min: a.min.toArray(), max: a.max.toArray() },
+        bBounds: { min: b.min.toArray(), max: b.max.toArray() },
+        overlaps: a.intersectsBox(b),
+        overlapSize: overlap.isEmpty() ? undefined : overlap.getSize(new THREE.Vector3()).toArray(),
+    }
+}
 
 /**
  * Lifecycle and user-facing operations for mix-and-match build mode.
@@ -115,29 +126,29 @@ class MixAndMatchMode {
         const target = scene?.get(targetId)
         if (!build || !scene || !component || !target || componentId === targetId) return
 
-        if (DEBUG_SNAP_TO_FACE) {
-            console.debug("[MixAndMatch] mateFaces", {
-                componentId,
-                targetId,
-                movingPoint: movingPoint.toArray(),
-                movingNormal: movingNormal.toArray(),
-                targetPoint: targetPoint.toArray(),
-                targetNormal: targetNormal.toArray(),
-                beforeTransform: componentWorldTransform(component).toArray(),
-            })
-        }
+        debugLog("[MixAndMatch] mateFaces", {
+            componentId,
+            targetId,
+            movingPoint: movingPoint.toArray(),
+            movingNormal: movingNormal.toArray(),
+            targetPoint: targetPoint.toArray(),
+            targetNormal: targetNormal.toArray(),
+            beforeTransform: componentWorldTransform(component).toArray(),
+            // Bounds before the move: confirms the two parts weren't already overlapping going in.
+            ...boundsDebugInfo(componentWorldBounds(component), componentWorldBounds(target)),
+        })
 
         const delta = mateFacesTransform(movingPoint, movingNormal, targetPoint, targetNormal)
         scene.moveTree(componentId, delta)
 
         await this.commitPlacement(componentId)
 
-        if (DEBUG_SNAP_TO_FACE) {
-            console.debug("[MixAndMatch] mateFaces committed", {
-                componentId,
-                afterTransform: componentWorldTransform(component).toArray(),
-            })
-        }
+        debugLog("[MixAndMatch] mateFaces committed", {
+            componentId,
+            afterTransform: componentWorldTransform(component).toArray(),
+            // If overlaps is true here, the two parts ended up inside each other post-mate.
+            ...boundsDebugInfo(componentWorldBounds(component), componentWorldBounds(target)),
+        })
     }
 
     public static async deleteComponent(componentId: ComponentId) {

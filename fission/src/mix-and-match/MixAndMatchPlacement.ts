@@ -14,6 +14,19 @@ const TRANSFORM_EPSILON = 1e-6
 export const DEBUG_SNAP_TO_FACE = true
 
 /**
+ * Logs pre-serialized to a single JSON string.
+ *
+ * Plain `console.debug(label, obj)` renders nested arrays/objects as collapsed, interactive
+ * `Array(3)`/`Object` placeholders in devtools — copying or auto-saving the console (rather than
+ * manually expanding every entry first) loses the actual numbers. Stringifying up front means the
+ * real values are in the text no matter how the log is captured.
+ */
+export function debugLog(label: string, data: Record<string, unknown>) {
+    if (!DEBUG_SNAP_TO_FACE) return
+    console.debug(label, JSON.stringify(data))
+}
+
+/**
  * A component's world transform is the world transform of its root body — the part its own mira
  * declares as `"grounded"`, which every internal joint hangs off of.
  */
@@ -22,6 +35,35 @@ export function componentWorldTransform(component: MirabufSceneObject): THREE.Ma
     const body = rootBodyId ? World.physicsSystem.getBody(rootBodyId) : undefined
 
     return body ? convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()) : new THREE.Matrix4()
+}
+
+/**
+ * The transform a gizmo attached to `component` sits at, which is *not* `componentWorldTransform`.
+ *
+ * `MirabufSceneObject.postGizmoCreation` seats a new gizmo at the root body's center-of-mass
+ * transform, and `GizmoSceneObject` bakes every body's offset relative to that. Since
+ * `GizmoSceneObject.setTransform` also force-updates — it re-drives every body from those baked
+ * offsets on the next frame — handing it a root *world* transform silently translates the whole
+ * component by the root shape's COM offset. For a mira root body (a compound of every part in the
+ * `grounded` node) that offset is meters, not rounding error.
+ */
+export function componentGizmoTransform(component: MirabufSceneObject): THREE.Matrix4 {
+    const rootBodyId = component.getRootNodeId()
+    const body = rootBodyId ? World.physicsSystem.getBody(rootBodyId) : undefined
+
+    // NOTE Jolt getter, returns a scratch reference. Do not destroy.
+    return body ? convertJoltMat44ToThreeMatrix4(body.GetCenterOfMassTransform()) : new THREE.Matrix4()
+}
+
+/** World-space axis-aligned bounds of every render batch belonging to `component`. */
+export function componentWorldBounds(component: MirabufSceneObject): THREE.Box3 {
+    const bounds = new THREE.Box3()
+    component.mirabufInstance.batches.forEach(batch => {
+        batch.computeBoundingBox()
+        if (batch.boundingBox) bounds.union(batch.boundingBox)
+    })
+
+    return bounds
 }
 
 /** Moves every body of a component rigidly, preserving whatever pose its internal joints are in. */
@@ -84,20 +126,18 @@ export function mateFacesTransform(
         .multiply(new THREE.Matrix4().makeRotationFromQuaternion(rotation))
         .multiply(new THREE.Matrix4().makeTranslation(-movingPoint.x, -movingPoint.y, -movingPoint.z))
 
-    if (DEBUG_SNAP_TO_FACE) {
-        const resultingMovingNormal = movingNormal.clone().normalize().applyQuaternion(rotation)
-        console.debug("[MixAndMatch] mateFacesTransform", {
-            movingPoint: movingPoint.toArray(),
-            movingNormal: movingNormal.toArray(),
-            targetPoint: targetPoint.toArray(),
-            targetNormal: targetNormal.toArray(),
-            rotation: rotation.toArray(),
-            // Should end up ~antiparallel to targetNormal (dot ~ -1) once the faces are mated.
-            resultingMovingNormal: resultingMovingNormal.toArray(),
-            alignmentDot: resultingMovingNormal.dot(targetNormal.clone().normalize()),
-            transform: transform.toArray(),
-        })
-    }
+    const resultingMovingNormal = movingNormal.clone().normalize().applyQuaternion(rotation)
+    debugLog("[MixAndMatch] mateFacesTransform", {
+        movingPoint: movingPoint.toArray(),
+        movingNormal: movingNormal.toArray(),
+        targetPoint: targetPoint.toArray(),
+        targetNormal: targetNormal.toArray(),
+        rotation: rotation.toArray(),
+        // Should end up ~antiparallel to targetNormal (dot ~ -1) once the faces are mated.
+        resultingMovingNormal: resultingMovingNormal.toArray(),
+        alignmentDot: resultingMovingNormal.dot(targetNormal.clone().normalize()),
+        transform: transform.toArray(),
+    })
 
     return transform
 }
