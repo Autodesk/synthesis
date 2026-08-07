@@ -21,6 +21,7 @@ export interface MirabufCacheInfo {
     miraType: MiraType
     remotePath?: string
     thumbnailStorageID?: string
+    isMixAndMatchBuild?: boolean
 }
 
 export interface MirabufRemoteInfo {

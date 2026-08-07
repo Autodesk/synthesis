@@ -24,7 +24,7 @@ const PartLibraryPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     useEffect(() => EventSystem.listen("MixAndMatchStateChangedEvent", bumpRevision), [])
 
     const library = PartLibrary.list()
-    const savedBuilds = MirabufCachingService.getAll(MiraType.ROBOT)
+    const savedBuilds = MirabufCachingService.getAll(MiraType.ROBOT).filter(info => info.isMixAndMatchBuild)
 
     const importBuild = useCallback((hash: string) => {
         MixAndMatchMode.resumeFrom(hash).catch(console.error)

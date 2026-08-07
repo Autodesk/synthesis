@@ -264,7 +264,11 @@ class MixAndMatchMode {
         downloadBlob(`${name}.mira`, encoded.buffer as ArrayBuffer)
 
         // Cached as well so the saved build shows up in the part library, ready to be re-opened.
-        await MirabufCachingService.storeAssemblyInCache(assembly, { miraType: MiraType.ROBOT, name })
+        await MirabufCachingService.storeAssemblyInCache(assembly, {
+            miraType: MiraType.ROBOT,
+            name,
+            isMixAndMatchBuild: true,
+        })
         globalAddToast("info", "Exported", `Saved ${name}.mira`)
 
         return true
