@@ -199,7 +199,7 @@ export type RobotPreferences = {
     cameras: CameraPreferences[]
     driveVelocity: number
     driveAcceleration: number
-    unstickForce: number
+    unstickStrength: number
     sequentialConfig?: SequentialBehaviorPreferences[]
     simConfig?: SimConfigData
 }
@@ -267,21 +267,8 @@ export type FieldPreferences = {
     cameraPoints: CameraPoint[]
 }
 
-export const MIN_UNSTICK_FORCE = 0
-export const MAX_UNSTICK_FORCE = 5
-export const DEFAULT_UNSTICK_FORCE = 1
-
-// [SYNTH-323] changes unstick force logic, migrate old values to new range if out of bounds
-export function migrateUnstickForce(unstickForce: number): number {
-    if (unstickForce < MIN_UNSTICK_FORCE || unstickForce > MAX_UNSTICK_FORCE) {
-        console.warn(
-            `Unstick force ${unstickForce} is outside the valid range [${MIN_UNSTICK_FORCE}, ${MAX_UNSTICK_FORCE}]. Resetting to default ${DEFAULT_UNSTICK_FORCE}.`
-        )
-        return DEFAULT_UNSTICK_FORCE
-    }
-
-    return unstickForce
-}
+export const MIN_UNSTICK_STRENGTH = 0
+export const MAX_UNSTICK_STRENGTH = 5
 
 export function defaultRobotPreferences(): RobotPreferences {
     return {
@@ -304,7 +291,7 @@ export function defaultRobotPreferences(): RobotPreferences {
         cameras: [],
         driveVelocity: 0,
         driveAcceleration: 0,
-        unstickForce: DEFAULT_UNSTICK_FORCE,
+        unstickStrength: 1,
     }
 }
 

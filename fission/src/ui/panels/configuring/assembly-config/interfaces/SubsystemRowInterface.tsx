@@ -1,7 +1,7 @@
 import { Divider, Stack } from "@mui/material"
 import { useCallback, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { MAX_UNSTICK_FORCE, MIN_UNSTICK_FORCE } from "@/systems/preferences/PreferenceTypes"
+import { MAX_UNSTICK_STRENGTH, MIN_UNSTICK_STRENGTH } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
@@ -67,7 +67,7 @@ type SubsystemRowProps = {
 }
 
 const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, saveBehaviors }) => {
-    const [unstickForce, setUnstickForce] = useState<number>(robot.robotPreferences.unstickForce)
+    const [unstickStrength, setUnstickStrength] = useState<number>(robot.robotPreferences.unstickStrength)
     const [invertMotor, setInvertMotor] = useState<boolean>(group.sequential?.inverted ?? false)
     return (
         <>
@@ -89,13 +89,13 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, group, save
                     )}
                     {group.id == "drivetrain" && (
                         <StatefulSlider
-                            min={MIN_UNSTICK_FORCE}
-                            max={MAX_UNSTICK_FORCE}
-                            defaultValue={unstickForce}
-                            label="Unstick Force"
+                            min={MIN_UNSTICK_STRENGTH}
+                            max={MAX_UNSTICK_STRENGTH}
+                            defaultValue={unstickStrength}
+                            label="Unstick Strength"
                             onChange={(value: number | number[]) => {
-                                setUnstickForce(value as number)
-                                robot.robotPreferences.unstickForce = value as number
+                                setUnstickStrength(value as number)
+                                robot.robotPreferences.unstickStrength = value as number
                                 robot.savePreferences()
                             }}
                             step={0.1}

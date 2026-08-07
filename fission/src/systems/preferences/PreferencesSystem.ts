@@ -1,5 +1,4 @@
 import {
-    migrateUnstickForce as migrateUnstickForce,
     defaultFieldPreferences,
     defaultGraphicsPreferences,
     defaultRobotPreferences,
@@ -103,7 +102,6 @@ class PreferencesSystem {
      */
     public static getRobotPreferences(assemblyId: string): RobotPreferences {
         const mergedPrefs = { ...defaultRobotPreferences(), ...(this._robotPreferences[assemblyId] ?? {}) }
-        mergedPrefs.unstickForce = migrateUnstickForce(mergedPrefs.unstickForce)
         this._robotPreferences[assemblyId] = mergedPrefs
 
         return mergedPrefs
