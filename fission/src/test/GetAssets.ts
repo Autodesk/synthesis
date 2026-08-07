@@ -9,7 +9,7 @@ export const ROBOT_MODELS = {
 
 export const FIELD_MODELS = {
     2018: "/api/mira/fields/FRC Field 2018 v13.mira",
-    2023: "/api/mira/fields/FRC Field 2023 v8.mira",
+    2023: "/api/mira/fields/FRC Field 2023 v10.mira",
 } satisfies Record<number, string>
 
 export async function getMiraAssembly(name: keyof typeof ROBOT_MODELS | keyof typeof FIELD_MODELS) {

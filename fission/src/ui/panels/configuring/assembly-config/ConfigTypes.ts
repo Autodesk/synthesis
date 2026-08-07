@@ -48,6 +48,10 @@ export interface ConfigurationSubpanelProps {
      * This determines not if any change has been made, but whether it is possible for any change to have been made (any cleanup callbacks have been registered). Therefore, it will have false positives, but will not report false negatives.
      */
     hasMadeChanges: boolean
+    /**
+     * Passed from ConfigurePanel, allows panels to forbid proceeding (e.g., if the config is invalid)
+     */
+    setDisableAccept: React.Dispatch<React.SetStateAction<boolean>>
     panel: UIScreen<void, ConfigurePanelCustomProps>
 }
 
@@ -68,6 +72,7 @@ export enum ConfigMode {
     DRIVETRAIN,
     ALLIANCE,
     METADATA,
+    CAMERA,
 }
 
 const baseRobotConfigModes = [
@@ -86,6 +91,12 @@ const baseRobotConfigModes = [
         "Ejector",
         ConfigMode.EJECTOR,
         "Configure the robot’s ejector mechanism, which controls the release or expulsion of game pieces."
+    ),
+
+    new ConfigModeSelectionOption(
+        "USB Cameras",
+        ConfigMode.CAMERA,
+        "Add USB cameras and configure their position, resolution, and field of view for code simulation."
     ),
 
     new ConfigModeSelectionOption(

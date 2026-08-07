@@ -194,21 +194,21 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
     )
 
     const gizmoComponent = useMemo(() => {
-        if (selectedField && selectedZone) {
-            return (
-                <TransformGizmoControl
-                    key="zone-transform-gizmo"
-                    size={1.5}
-                    gizmoRef={gizmoRef}
-                    defaultMode="translate"
-                    defaultMesh={defaultGizmoMesh}
-                    postGizmoCreation={postGizmoCreation}
-                />
-            )
-        } else {
+        if (!selectedField || !selectedZone) {
             gizmoRef.current = undefined
-            return <></>
+            return null
         }
+
+        return (
+            <TransformGizmoControl
+                key="zone-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+                defaultMesh={defaultGizmoMesh}
+                postGizmoCreation={postGizmoCreation}
+            />
+        )
     }, [selectedField, selectedZone, defaultGizmoMesh, postGizmoCreation])
 
     const trySetSelectedNode = useCallback(

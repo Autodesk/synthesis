@@ -75,6 +75,7 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
                     return (
                         <Box
                             sx={{ bgcolor: "background.paper", p: 2, borderRadius: 5, width: "100%" }}
+                            // biome-ignore lint/suspicious/noArrayIndexKey: index can not change thus is consider stable
                             key={`${item.name}-${item.alliance}-${i}`}
                         >
                             <Stack direction="row" gap={2}>
