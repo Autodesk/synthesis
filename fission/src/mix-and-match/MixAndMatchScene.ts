@@ -203,39 +203,19 @@ class MixAndMatchScene {
         World.sceneRenderer.removeSceneObject(component.id)
     }
 
-    /**
-     * Tears the build down.
-     *
-     * @param keepComponents Leave the spawned assemblies in the scene, for handing a finished build
-     *                       off to normal simulation instead of throwing it away.
-     */
-    public dispose(keepComponents: boolean) {
+    /** Tears the build down: every spawned scene object is removed and the shared layer released. */
+    public dispose() {
         World.sceneRenderer.removeSceneObject(this._weldFollowerId)
-
-        if (keepComponents) {
-            // The build is now one robot made of many bodies, so it keeps the shared layer it was
-            // assembled on rather than handing it back to the pool.
-            this._components.forEach(component => component.enablePhysics())
-        } else {
-            ;[...this._components.keys()].forEach(componentId => this.remove(componentId))
-            this._layerReserve.release()
-        }
+        ;[...this._components.keys()].forEach(componentId => this.remove(componentId))
+        this._layerReserve.release()
 
         this._components.clear()
         this._componentBySceneObject.clear()
     }
 
-    /**
-     * The assembly to save a finished build as.
-     *
-     * Welds form a tree, so the root of that tree is the natural stand-in for the whole robot; without
-     * any welds it's simply the first part placed.
-     */
-    public rootAssembly(state: TimelineState): mirabuf.Assembly | undefined {
-        const rootId = [...state.components.values()].find(component => !component.weld)?.id
-        const component = rootId ? this._components.get(rootId) : undefined
-
-        return component?.mirabufInstance.parser.assembly
+    /** Every live component's own (unmerged) mira assembly, keyed by component id. */
+    public assembliesByComponent(): Map<ComponentId, mirabuf.Assembly> {
+        return new Map([...this._components].map(([id, component]) => [id, component.mirabufInstance.parser.assembly]))
     }
 
     private configure(component: MirabufSceneObject) {
