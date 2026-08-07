@@ -16,8 +16,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
-import { useConfigurationSavedListener } from "../../AssemblyConfigHooks"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 /**
  * Saves zone configuration to selected field.

@@ -11,8 +11,7 @@ import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
-import { useConfigurationSavedListener } from "../AssemblyConfigHooks"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 import {
     useDirectionIndicatorMesh,
     useFieldPointMarkers,

@@ -4,8 +4,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import { Button, DeleteButton, EditButton, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
-import { useConfigurationSavedListener } from "../../AssemblyConfigHooks"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 import type { BaseZonePreferences } from "./ZoneConfigBase"
 
 export type ZoneListItem = {
