@@ -36,7 +36,7 @@ const DrivetrainConfig: React.FC<SubpanelProps> = ({ sceneObject, pauseRef }) =>
         <Stack gap={2} direction="column">
             <Checkbox
                 onClick={useCallback(() => World.wheelAssignmentMode.toggleReverseDrive(), [])}
-                value={driveReversed}
+                checked={driveReversed}
                 label={"Reverse Drive"}
             />
 

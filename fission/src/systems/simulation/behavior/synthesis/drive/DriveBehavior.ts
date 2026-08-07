@@ -7,7 +7,7 @@ import Behavior from "@/systems/simulation/behavior/Behavior.ts"
  * a single `instanceof DriveBehavior` check regardless of the concrete drivetrain.
  */
 export abstract class DriveBehavior extends Behavior {
-    protected _testingForwardSpeed: number|null = null
+    protected _testingForwardSpeed: number | null = null
 
     runTestingForward(speed: number): void {
         this._testingForwardSpeed = speed
