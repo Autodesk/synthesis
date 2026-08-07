@@ -22,7 +22,7 @@ import {
     Tooltip,
 } from "@mui/material"
 import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle, AiOutlineClose } from "react-icons/ai"
-import { BiRefresh } from "react-icons/bi"
+import { BiRefresh, BiRotateLeft } from "react-icons/bi"
 import { BsCodeSquare } from "react-icons/bs"
 import {
     FaAngleRight,
@@ -110,6 +110,7 @@ export class SynthesisIcons {
     public static readonly CODE_CONNECTION = MdCode
     public static readonly NO_CODE_CONNECTION = MdCodeOff
     public static readonly REFRESH = BiRefresh
+    public static readonly UNDO = BiRotateLeft
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })

@@ -5,7 +5,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
 import type { PartDeletionSelection } from "@/systems/scene/PartDeletionMode.ts"
 import Label from "@/components/Label.tsx"
-import { RefreshButton } from "@/components/StyledComponents.tsx"
+import { SynthesisIcons } from "@/components/StyledComponents.tsx"
 import type { SubpanelProps } from "@/components/UserModelConfig/ModelConfigPanel.tsx"
 import { usePickingMode } from "./usePickingMode"
 import { truncate } from "@/util/Utility.ts"
@@ -35,22 +35,21 @@ const DeleteParts: React.FC<SubpanelProps> = ({ sceneObject }) => {
                         key={item.guid}
                         direction={"row"}
                         alignItems={"center"}
-                        px={1}
+                        px={2}
+                        py={0.5}
                         borderRadius={1}
                         bgcolor="background.paper"
                         onMouseOver={() => World.partDeletionMode.setHover(item.highlight)}
                         onMouseOut={() => World.partDeletionMode.clearHover()}
+                        onClick={() => {
+                            World.partDeletionMode.pendingDeletions.removePart(item.guid)
+                        }}
+                        sx={{ cursor: "pointer" }}
                     >
                         <Label size={"sm"} flexGrow={1}>
                             {truncate(item.name, 40, true)}
                         </Label>
-                        <RefreshButton
-                            title="Undo"
-                            onClick={() => {
-                                World.partDeletionMode.clearHover()
-                                World.partDeletionMode.pendingDeletions.removePart(item.guid)
-                            }}
-                        />
+                        <SynthesisIcons.UNDO />
                     </Stack>
                 ))}
             </Stack>
