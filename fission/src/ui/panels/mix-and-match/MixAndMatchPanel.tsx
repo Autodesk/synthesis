@@ -3,6 +3,7 @@ import { Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import type * as THREE from "three"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MixAndMatchMode from "@/mix-and-match/MixAndMatchMode"
 import type { ComponentId } from "@/mix-and-match/MixAndMatchTypes"
 import PartLibrary from "@/mix-and-match/PartLibrary"
@@ -67,6 +68,7 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const scene = MixAndMatchMode.scene
     const placed = [...(build?.state.components.values() ?? [])]
     const library = PartLibrary.list()
+    const savedBuilds = MirabufCachingService.getAll(MiraType.ROBOT)
     const selectedComponent = selected ? scene?.get(selected) : undefined
 
     useEffect(() => {
@@ -186,6 +188,11 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         MixAndMatchMode.exportBuild().catch(console.error)
     }, [])
 
+    const importBuild = useCallback((hash: string) => {
+        setSelected(undefined)
+        MixAndMatchMode.resumeFrom(hash).catch(console.error)
+    }, [])
+
     const confirmDelete = useCallback(() => {
         if (!selected) return
 
@@ -228,6 +235,23 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                                         .catch(console.error)
                                 }
                             />
+                        </Stack>
+                    ))}
+                </AccordionDetails>
+            </Accordion>
+
+            <Accordion>
+                <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
+                    <Label size="md">{`Saved Builds (${savedBuilds.length})`}</Label>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {savedBuilds.length === 0 && <Label size="sm">No saved builds yet</Label>}
+                    {savedBuilds.map(saved => (
+                        <Stack key={saved.hash} direction="row" justifyContent="space-between" alignItems="center">
+                            <Label size="sm" className="text-wrap break-all">
+                                {saved.name}
+                            </Label>
+                            <Button onClick={() => importBuild(saved.hash)}>Import</Button>
                         </Stack>
                     ))}
                 </AccordionDetails>
