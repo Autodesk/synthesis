@@ -10,7 +10,7 @@ import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import { downloadBlob } from "@/util/Utility"
 import { mergeAssemblies } from "./MixAndMatchAssemblyMerge"
 import MixAndMatchBuild from "./MixAndMatchBuild"
-import { writeSessionToAssembly } from "./MixAndMatchDocument"
+import { readSessionFromAssembly, writeSessionToAssembly } from "./MixAndMatchDocument"
 import { componentWorldTransform, mateFacesTransform, relativeOffsetBetween } from "./MixAndMatchPlacement"
 import MixAndMatchScene from "./MixAndMatchScene"
 import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMatchTypes"
@@ -66,6 +66,29 @@ class MixAndMatchMode {
         this._build = undefined
         World.physicsSystem.releasePause(PAUSE_REF_MIX_AND_MATCH)
         EventSystem.dispatch("MixAndMatchStateChangedEvent")
+    }
+
+    /**
+     * Re-opens a build previously saved with {@link exportBuild} (or finished and later re-saved),
+     * looked up by its cache hash. Replays the whole timeline rather than reconstructing something
+     * equivalent, so the user gets back exactly the state they left. Any build already in progress is
+     * discarded.
+     *
+     * @returns Whether the file carried a build to resume.
+     */
+    public static async resumeFrom(cachedAssemblyHash: string): Promise<boolean> {
+        const assembly = await MirabufCachingService.get(cachedAssemblyHash)
+        const session = assembly ? readSessionFromAssembly(assembly) : undefined
+
+        if (!session) {
+            globalAddToast("warning", "Not a Build", "That file has no mix and match build saved in it.")
+            return false
+        }
+
+        this.exit()
+        await this.enter(session)
+
+        return true
     }
 
     /** Adds a library part to the build and stages it clear of what's already placed. */
