@@ -70,6 +70,13 @@ function rpyToMatrix(roll: number, pitch: number, yaw: number): Mat3 {
     ]
 }
 
+function matrixToRPY(m: Mat3): [number, number, number] {
+    const pitch = Math.asin(Math.min(1, Math.max(-1, -m[2][0])))
+    const yaw = Math.atan2(m[1][0], m[0][0])
+    const roll = Math.atan2(m[2][1], m[2][2])
+    return [roll, pitch, yaw]
+}
+
 // Rx(-90°): converts URDF Z-up frame to Y-up
 // biome-ignore format: matrix layout
 const RZy: Mat3 = [[1, 0, 0], [0, 0, 1], [0, -1, 0]]
@@ -293,6 +300,69 @@ function fillMissingMaterials(links: URDFLink[]): void {
             visual.materialRGBA = fallback.rgba
         }
     }
+}
+
+// URDF only carries one <inertial> per link, so a link with multiple <visual> elements has one
+// real mass/inertia for geometry that mirabuf needs as separate parts. Peel visuals[1:] off into
+// synthetic zero-mass links fixed-jointed back to the original link.
+// The real mass properties stay on the original link
+function splitMultiVisualLinks(
+    links: URDFLink[],
+    joints: URDFJoint[],
+    rootName: string,
+    meshFiles: Map<string, Uint8Array>
+): { links: URDFLink[]; joints: URDFJoint[] } {
+    const newLinks: URDFLink[] = []
+    const syntheticJoints: URDFJoint[] = []
+    const globalTransforms = buildGlobalLinkTransforms(joints, rootName)
+    const meshCache = new Map<string, ParsedMesh | null>()
+
+    for (const link of links) {
+        if (link.visuals.length <= 1) {
+            newLinks.push(link)
+            continue
+        }
+
+        const robotSpaceVisuals = shouldTreatVisualOriginsAsRobotSpace(
+            link,
+            globalTransforms.get(link.name),
+            meshFiles,
+            meshCache
+        )
+        if (robotSpaceVisuals) {
+            const linkGlobalTransform = globalTransforms.get(link.name)
+            for (const visual of link.visuals) {
+                const baked = visualTransformInLinkFrame(visual, true, linkGlobalTransform)
+                visual.visualOriginXYZ = baked.translation
+                visual.visualOriginRPY = matrixToRPY(baked.rotation)
+            }
+        }
+
+        newLinks.push({ ...link, visuals: [link.visuals[0]] })
+
+        for (let i = 1; i < link.visuals.length; i++) {
+            const syntheticName = `${link.name}_visual_${i}`
+            newLinks.push({
+                name: syntheticName,
+                visuals: [link.visuals[i]],
+                mass: 0,
+                comXYZ: [0, 0, 0],
+            })
+            syntheticJoints.push({
+                name: `${syntheticName}_joint`,
+                type: "fixed",
+                parent: link.name,
+                child: syntheticName,
+                originXYZ: [0, 0, 0],
+                originRPY: [0, 0, 0],
+                axisXYZ: [0, 0, 0],
+                limitLower: 0,
+                limitUpper: 0,
+            })
+        }
+    }
+
+    return { links: newLinks, joints: [...joints, ...syntheticJoints] }
 }
 
 function extractJoints(doc: Document): URDFJoint[] {
@@ -1009,16 +1079,19 @@ export async function convertURDF(
     if (parseError) throw new Error(`URDF XML parse error: ${parseError.textContent}`)
 
     const robotName = doc.querySelector("robot")?.getAttribute("name") ?? "robot"
-    const links = extractLinks(doc)
-    const joints = extractJoints(doc)
+    const rawLinks = extractLinks(doc)
+    const rawJoints = extractJoints(doc)
     await yieldToMain()
 
-    if (links.length === 0) throw new Error("URDF contains no <link> elements")
+    if (rawLinks.length === 0) throw new Error("URDF contains no <link> elements")
 
-    fillMissingMaterials(links)
-    const childSet = new Set(joints.map(j => j.child))
-    const rootLink = links.find(l => !childSet.has(l.name))
-    if (!rootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
+    fillMissingMaterials(rawLinks)
+    const rawChildSet = new Set(rawJoints.map(j => j.child))
+    const rawRootLink = rawLinks.find(l => !rawChildSet.has(l.name))
+    if (!rawRootLink) throw new Error("URDF has no root link - every link is listed as a child joint")
+
+    const { links, joints } = splitMultiVisualLinks(rawLinks, rawJoints, rawRootLink.name, meshFiles)
+    const rootLink = links.find(l => l.name === rawRootLink.name)!
 
     // rigidGroups must be computed before physicsJoints — filtering depends on group membership.
     // Must be an array (not undefined): bandageRigidNodes calls .forEach on it directly.

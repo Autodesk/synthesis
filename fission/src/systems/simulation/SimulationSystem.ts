@@ -91,7 +91,15 @@ class SimulationLayer {
             } else if (x.primaryConstraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.primaryConstraint, JOLT.VehicleConstraint)
                 const reversed = x.jointUserData?.["reversed"] === "true"
-                const driver = new WheelDriver(makeDriverID(x), vehicle, x.maxVelocity, x.info, undefined, undefined, reversed)
+                const driver = new WheelDriver(
+                    makeDriverID(x),
+                    vehicle,
+                    x.maxVelocity,
+                    x.info,
+                    undefined,
+                    undefined,
+                    reversed
+                )
                 this._drivers.set(JSON.stringify(driver.id), driver)
                 const stim = new WheelRotationStimulus(makeStimulusID(x), vehicle.GetWheel(0), x.info)
                 this._stimuli.set(JSON.stringify(stim.id), stim)

@@ -115,16 +115,26 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 mirabufSceneObject = await createMirabuf(inputHash, assembly, progressHandle)
                 if (mirabufSceneObject) {
                     finalizeSceneObject(mirabufSceneObject)
-                    if (!foundDrivetrain) {
-                        addToast("info", "Drivetrain not detected", "please select wheels manually!")
-                        World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING),
-                            await new Promise<void>(resolve => {
-                                openPanel(ModelConfigPanel, { sceneObject: mirabufSceneObject! }, modal, {
-                                    onClose: () => {
-                                        resolve()
-                                    },
-                                })
-                            }).finally(() => World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING))
+
+                    addToast("info", "Drivetrain not detected", "please select wheels manually!")
+                    World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING)
+
+                    const success = await new Promise<boolean>(resolve => {
+                        openPanel(
+                            ModelConfigPanel,
+                            { sceneObject: mirabufSceneObject!, hasDrivetrain: foundDrivetrain },
+                            modal,
+                            {
+                                onClose: closeType => {
+                                    resolve(closeType == CloseType.ACCEPT)
+                                },
+                            }
+                        )
+                    }).finally(() => World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING))
+                    if (!success) {
+                        addToast("warning", "Import aborted")
+                        progressHandle.fail("Import aborted")
+                        return
                     }
                     const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
 

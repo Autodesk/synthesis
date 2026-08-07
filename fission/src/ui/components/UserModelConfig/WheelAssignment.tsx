@@ -1,18 +1,23 @@
 import { Button, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback } from "react"
-import { useMemo } from "react"
-import { useEffect, useState } from "react"
+import { useCallback, useMemo } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
 import type { WheelSelection } from "@/systems/scene/WheelAssignmentMode.ts"
 import Label from "@/components/Label.tsx"
 import { DeleteButton } from "@/components/StyledComponents.tsx"
 import type { SubpanelProps } from "./ModelConfigPanel"
+import { usePickingMode } from "./usePickingMode"
+import { truncate } from "@/util/Utility.ts"
 
-const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, sceneObject }) => {
-    const [enabled, setEnabled] = useState<boolean>(false)
-    const [selected, setSelected] = useState<WheelSelection[]>([...World.wheelAssignmentMode.pendingWheels.values()])
+const WheelAssignment: React.FC<SubpanelProps> = ({ sceneObject }) => {
+    const subscribe = useCallback(
+        (onChange: (items: WheelSelection[]) => void) =>
+            EventSystem.listen("WheelAssignmentSelectionChanged", ({ wheels }) => onChange(wheels)),
+        []
+    )
+    const { enabled, setEnabled, items: selected } = usePickingMode(World.wheelAssignmentMode, subscribe, sceneObject)
+
     const wheelSlots = useMemo(() => {
         const slots = new Array<WheelSelection | null>(Math.max(selected.length, 4)).fill(null)
         selected.forEach((item, i) => {
@@ -20,30 +25,13 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, scene
         })
         return slots
     }, [selected])
-    useEffect(() => {
-        return EventSystem.listen("WheelAssignmentSelectionChanged", ({ wheels }) => {
-            setSelected(wheels)
-        })
-    }, [])
 
-    useEffect(() => {
-        if (enabled) {
-            World.wheelAssignmentMode.enable(sceneObject)
-        } else {
-            World.wheelAssignmentMode.disable()
-        }
-    }, [enabled, sceneObject])
-
-    useEffect(() => {
-        setEnabled(World.wheelAssignmentMode.pendingWheels.size == 0)
+    const onDelete = useCallback((item: WheelSelection) => {
         return () => {
-            World.wheelAssignmentMode.disable()
+            World.wheelAssignmentMode.clearHover()
+            World.wheelAssignmentMode.pendingWheels.removePart(item.assignment.wheelPartGuid)
         }
     }, [])
-
-    useEffect(() => {
-        setDisableNextMessage(selected.length < 4 ? "Must select at least 4 wheels" : null)
-    }, [selected, setDisableNextMessage])
 
     return (
         <Stack gap={2} direction="column">
@@ -51,7 +39,7 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, scene
                 variant={enabled ? "contained" : "outlined"}
                 onClick={useCallback(() => {
                     setEnabled(e => !e)
-                }, [])}
+                }, [setEnabled])}
             >
                 {enabled ? "Stop Picking" : "Start Picking"}
             </Button>
@@ -70,16 +58,10 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, scene
                         onMouseOut={() => item != null && World.wheelAssignmentMode.clearHover()}
                     >
                         <Label size={"sm"} p={0.5} fontStyle={item == null ? "italic" : undefined} flexGrow={1}>
-                            Wheel {i + 1} {item == null && "(Unassigned)"}
+                            {truncate(item?.assignment?.name || `Wheel ${i + 1}`, 40, true)}{" "}
+                            {item == null && "(Unassigned)"}
                         </Label>
-                        {item != null && (
-                            <DeleteButton
-                                onClick={() => {
-                                    World.wheelAssignmentMode.clearHover()
-                                    World.wheelAssignmentMode.pendingWheels.removePart(item.assignment.wheelPartGuid)
-                                }}
-                            />
-                        )}
+                        {item != null && <DeleteButton onClick={onDelete(item)} />}
                     </Stack>
                 ))}
                 <Stack
