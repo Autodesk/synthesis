@@ -137,6 +137,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             newModal.onAccept = new UICallback()
             if (props.onAccept) newModal.onAccept.setUserDefinedFunc(props.onAccept)
 
+            newModal.onBeforeAccept = new UICallback()
+
             newModal.onCancel = new UICallback()
             if (props.onCancel) newModal.onCancel.setUserDefinedFunc(props.onCancel)
 
@@ -224,6 +226,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             panel.onAccept = new UICallback()
             if (props.onAccept) panel.onAccept.setUserDefinedFunc(props.onAccept)
 
+            panel.onBeforeAccept = new UICallback()
+
             panel.onCancel = new UICallback()
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
@@ -297,7 +301,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
         screen.props.configured = true
 
-        if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
+        if (callbacks.onBeforeAccept) screen.onBeforeAccept.setDefaultFunc(callbacks.onBeforeAccept)
         if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
         if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
 
