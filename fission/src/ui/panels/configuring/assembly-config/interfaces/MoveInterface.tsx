@@ -4,19 +4,12 @@ import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import { useEffect } from "react"
 import World from "@/systems/World.ts"
 import JOLT from "@/util/loading/JoltSyncLoader.ts"
-import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes.ts"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 const MoveInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, panel, registerCleanupFunction }) => {
     const { closePanel } = useUIContext()
 
-    // Keep physics paused while the gizmo is up, otherwise the assembly drifts
-    // out from under the handles as it is being positioned.
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
-        }
-    }, [])
+    useHoldPhysicsPause()
 
     useEffect(() => {
         const scaleVec = new JOLT.Vec3()

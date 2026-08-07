@@ -3,16 +3,15 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { CameraLook, CameraPoint } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 const RAD_TO_DEG = 180 / Math.PI
 const DEG_TO_RAD = Math.PI / 180
@@ -48,11 +47,9 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, points, onChange, on
     useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
     useEffect(() => {
         persist(points, selectedField)
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
     }, [selectedField, points])
+
+    useHoldPhysicsPause()
 
     return (
         <>
@@ -134,12 +131,7 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
     }, [selectedField, point.pos, lookType, name, yawDeg, pitchDeg])
 
     useEffect(() => EventSystem.listen("ConfigurationSavedEvent", () => onSave(buildPoint())), [buildPoint, onSave])
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
+    useHoldPhysicsPause()
 
     return (
         <Stack gap={2} className="bg-background-secondary rounded-md p-2">

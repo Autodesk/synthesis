@@ -1,14 +1,13 @@
 import { Box, Divider, Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import { type CameraPreferences, defaultCameraPreferences } from "@/systems/preferences/PreferenceTypes"
-import World from "@/systems/World"
 import { Button, DeleteButton, EditButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import CameraConfigInterface from "./CameraConfigInterface"
 import Label from "@/ui/components/Label"
 import { SelectMenuHeader } from "@/ui/components/SelectMenu"
 import EventSystem from "@/systems/EventSystem"
 import type { ConfigurationSubpanelComponent } from "../../ConfigTypes"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 const ConfigureCameraInterface: ConfigurationSubpanelComponent = ({
     selectedAssembly,
@@ -22,12 +21,7 @@ const ConfigureCameraInterface: ConfigurationSubpanelComponent = ({
 
     const forceRender = useCallback(() => setVersion(v => v + 1), [])
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
+    useHoldPhysicsPause()
 
     useEffect(() => {
         const originalCameras = structuredClone(selectedAssembly.cameraPreferences)
