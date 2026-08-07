@@ -53,7 +53,6 @@ interface EventDataMap {
 
     DragModeToggled: { enabled: boolean }
     WheelAssignmentSelectionChanged: { readonly wheels: WheelSelection[] }
-    WheelAssignmentDriveReversedChanged: { reversed: boolean }
 
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }

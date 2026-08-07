@@ -80,9 +80,7 @@ class WheelAssignmentMode extends WorldSystem {
 
     // Rebuilt on enable and after apply() to avoid rescanning every mesh entry per raycast.
     private _candidateBatches: THREE.BatchedMesh[] = []
-    private _pickIndex = new Map<THREE.BatchedMesh, Map<number, string>>() //
-
-    private _driveReversed = false
+    private _pickIndex = new Map<THREE.BatchedMesh, Map<number, string>>()
     private _object?: MirabufSceneObject
 
     public get enabled(): boolean {
@@ -106,10 +104,6 @@ class WheelAssignmentMode extends WorldSystem {
         return this.pendingWheels.size
     }
 
-    public get driveReversed(): boolean {
-        return this._driveReversed
-    }
-
     public update(_deltaT: number): void {
         if (!this._enabled || !this._latestMousePos) return
 
@@ -123,18 +117,6 @@ class WheelAssignmentMode extends WorldSystem {
 
     public destroy(): void {
         this.disable()
-    }
-
-    public toggleReverseDrive(): void {
-        this._driveReversed = !this._driveReversed
-
-        if (!this._object?.brain?.isSynthesis()) return
-
-        for (const driver of this._object.brain.getWheelDrivers()) {
-            driver.reversed = this._driveReversed
-        }
-
-        EventSystem.dispatch("WheelAssignmentDriveReversedChanged", { reversed: this._driveReversed })
     }
 
     private hookInteractionHandlers(): void {

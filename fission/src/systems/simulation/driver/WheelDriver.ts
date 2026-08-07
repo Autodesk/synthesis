@@ -66,7 +66,6 @@ class WheelDriver extends Driver {
     private _wheel: Jolt.WheelWV
     public deviceType?: SimType
     public device?: string
-    private _reversed: boolean
     /** This wheel's unrotated rolling direction, chassis-local. Mecanum swings it onto the rollers. */
     private readonly _restForward: THREE.Vector3
     /** Axis `_restForward` is swung about, chassis-local. Vertical for every current import path. */
@@ -86,9 +85,9 @@ class WheelDriver extends Driver {
     public maxVelocity = 30.0
     public maxAcceleration = 1.5
 
-    public _targetVelocity = () => {
-        let vel = this.accelerationDirection * (this._reversed ? -1 : 1) * this.maxVelocity
-
+    private get _targetVelocity() {
+        let vel = this.accelerationDirection * (this.reversed ? -1 : 1) * this.maxVelocity
+        console.log(this.reversed)
         if (vel - this._prevVel < -this.maxAcceleration) vel = this._prevVel - this.maxAcceleration
         if (vel - this._prevVel > this.maxAcceleration) vel = this._prevVel + this.maxAcceleration
 
@@ -99,14 +98,6 @@ class WheelDriver extends Driver {
         return this._constraint
     }
 
-    public get reversed(): boolean {
-        return this._reversed
-    }
-
-    public set reversed(value: boolean) {
-        this._reversed = value
-    }
-
     public constructor(
         id: DriverID,
         constraint: Jolt.VehicleConstraint,
@@ -114,7 +105,7 @@ class WheelDriver extends Driver {
         info?: mirabuf.IInfo,
         deviceType?: SimType,
         device?: string,
-        reversed: boolean = false
+        public reversed: boolean = false
     ) {
         super(id, info)
 
@@ -123,7 +114,6 @@ class WheelDriver extends Driver {
         const controller = JOLT.castObject(this._constraint.GetController(), JOLT.WheeledVehicleController)
         this.maxAcceleration = controller.GetEngine().mMaxTorque
 
-        this._reversed = reversed
         this.deviceType = deviceType
         this.device = device
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
@@ -294,7 +284,7 @@ class WheelDriver extends Driver {
     }
 
     public update(_: number): void {
-        const vel = this._targetVelocity()
+        const vel = this._targetVelocity
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
     }

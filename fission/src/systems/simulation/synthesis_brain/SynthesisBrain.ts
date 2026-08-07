@@ -80,7 +80,7 @@ class SynthesisBrain extends Brain {
     }
 
     public getWheelDrivers(): WheelDriver[] {
-        return this._simLayer.drivers.filter(driver => driver instanceof WheelDriver) as WheelDriver[]
+        return this._simLayer.drivers.filter(driver => driver instanceof WheelDriver)
     }
 
     public configureDriveBehavior(driveType: DriveType) {
