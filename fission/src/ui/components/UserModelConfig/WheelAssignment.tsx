@@ -1,6 +1,6 @@
 import { Button, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
 import type { WheelSelection } from "@/systems/scene/WheelAssignmentMode.ts"
@@ -10,7 +10,7 @@ import type { SubpanelProps } from "./ModelConfigPanel"
 import { usePickingMode } from "./usePickingMode"
 import { truncate } from "@/util/Utility.ts"
 
-const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, sceneObject }) => {
+const WheelAssignment: React.FC<SubpanelProps> = ({ sceneObject }) => {
     const subscribe = useCallback(
         (onChange: (items: WheelSelection[]) => void) =>
             EventSystem.listen("WheelAssignmentSelectionChanged", ({ wheels }) => onChange(wheels)),
@@ -25,10 +25,6 @@ const WheelAssignment: React.FC<SubpanelProps> = ({ setDisableNextMessage, scene
         })
         return slots
     }, [selected])
-
-    useEffect(() => {
-        setDisableNextMessage(selected.length < 4 ? "Must select at least 4 wheels" : null)
-    }, [selected, setDisableNextMessage])
 
     const onDelete = useCallback((item: WheelSelection) => {
         return () => {

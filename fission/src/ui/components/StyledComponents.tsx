@@ -367,9 +367,7 @@ interface TooltipButtonProps extends ButtonProps {
 export const TooltipButton = React.forwardRef<HTMLButtonElement, TooltipButtonProps>(({ tooltip, ...props }, ref) => {
     return (
         <Tooltip title={tooltip}>
-            <span>
-                <MuiButton ref={ref} {...props} />
-            </span>
+            <MuiButton ref={ref} {...props} />
         </Tooltip>
     )
 })
