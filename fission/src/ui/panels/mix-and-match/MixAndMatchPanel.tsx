@@ -25,7 +25,7 @@ import {
     ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
 import { rayCastMesh } from "@/util/RaycastUtils"
 
@@ -41,7 +41,7 @@ function partName(libraryPartRef: string): string {
 }
 
 const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { configureScreen, openModal } = useUIContext()
+    const { configureScreen, openModal, closePanel } = useUIContext()
 
     const [, bumpRevision] = useReducer((x: number) => x + 1, 0)
     const [selected, setSelected] = useState<ComponentId | undefined>(undefined)
@@ -172,6 +172,16 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             .catch(console.error)
     }, [weldChild, weldParent])
 
+    const finishBuild = useCallback(() => {
+        if (!panel) return
+
+        MixAndMatchMode.finish()
+            .then(finished => {
+                if (finished) closePanel(panel.id, CloseType.ACCEPT)
+            })
+            .catch(console.error)
+    }, [closePanel, panel])
+
     const confirmDelete = useCallback(() => {
         if (!selected) return
 
@@ -187,6 +197,10 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     return (
         <Stack direction="column" gap={1} className="overflow-y-auto" minWidth="20rem">
+            <Button disabled={placed.length === 0} onClick={finishBuild}>
+                Finish Build
+            </Button>
+
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
                     <Label size="md">{`Part Library (${library.length})`}</Label>
