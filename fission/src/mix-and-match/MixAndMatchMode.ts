@@ -1,9 +1,11 @@
 import type * as THREE from "three"
+import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem"
 import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
+import { mergeAssemblies } from "./MixAndMatchAssemblyMerge"
 import MixAndMatchBuild from "./MixAndMatchBuild"
 import { writeSessionToAssembly } from "./MixAndMatchDocument"
 import { componentWorldTransform, mateFacesTransform, relativeOffsetBetween } from "./MixAndMatchPlacement"
@@ -52,16 +54,11 @@ class MixAndMatchMode {
         return this._build
     }
 
-    /**
-     * Leaves build mode.
-     *
-     * @param keepComponents Hand the assembled parts off to normal simulation instead of removing
-     *                       them. Set when finishing a build, cleared when abandoning one.
-     */
-    public static exit(keepComponents: boolean = false) {
+    /** Leaves build mode, discarding the build-time scene objects. */
+    public static exit() {
         if (!this._build) return
 
-        this._scene?.dispose(keepComponents)
+        this._scene?.dispose()
         this._scene = undefined
         this._build = undefined
         World.physicsSystem.releasePause(PAUSE_REF_MIX_AND_MATCH)
@@ -153,11 +150,9 @@ class MixAndMatchMode {
     }
 
     /**
-     * Turns the build into an ordinary simulated robot and hands the parts off to the scene as they
-     * are.
-     *
-     * TODO: Update this step to include logic for combining all the mix-and-match bodies into one
-     * mira assembly.
+     * Merges every placed component into one real `mirabuf.Assembly` per weld tree - the shape the
+     * simulator loads like any other robot - and hands those off to normal simulation in place of
+     * the build-time scene.
      *
      * @returns Whether the build was finished. Refused while scrubbed or while nothing is placed.
      */
@@ -174,11 +169,17 @@ class MixAndMatchMode {
             return false
         }
 
-        // Stamped before the scene is torn down so a re-opened robot can replay this exact build.
-        const assembly = scene.rootAssembly(build.state)
-        if (assembly) writeSessionToAssembly(assembly, build.session)
+        // Merged and stamped before the scene is torn down so a re-opened robot can replay this
+        // exact build.
+        const merged = mergeAssemblies(build.state, scene.assembliesByComponent())
+        merged.forEach(assembly => writeSessionToAssembly(assembly, build.session))
 
-        this.exit(true)
+        this.exit()
+
+        for (const assembly of merged) {
+            const sceneObject = await createMirabuf(assembly.info?.GUID ?? "mix-and-match-build", assembly)
+            if (sceneObject) World.sceneRenderer.registerSceneObject(sceneObject)
+        }
         globalAddToast("info", "Build Finished", "Build finished")
 
         return true
