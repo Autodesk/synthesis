@@ -15,6 +15,7 @@ const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly,
     const { openPanel, closePanel } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
     const [teleopEnabled, setTeleopEnabled] = useState<boolean>(() => SimDriverStation.isEnabled())
+    const supportsAutoTesting = (selectedAssembly?.brain?.isWPILib() ?? false) || (selectedAssembly?.brain?.isFTC() ?? false)
 
     useEffect(() => {
         const originalAutoReconnect = PreferencesSystem.getUserPreference("SimAutoReconnect")
@@ -44,6 +45,7 @@ const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly,
             </Button>
             <Button
                 className="self-center"
+                disabled={!supportsAutoTesting}
                 onClick={() => {
                     openPanel(AutoTestPanel, undefined, panel)
                     if (panel) closePanel(panel.id, CloseType.OVERWRITE)

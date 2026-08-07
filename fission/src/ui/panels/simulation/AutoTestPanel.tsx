@@ -297,7 +297,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
-        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.isWPILib() ?? false),
+        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => (x.brain?.isWPILib() ?? false) || (x.brain?.isFTC() ?? false)),
         []
     )
 
@@ -315,7 +315,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     useEffect(() => {
         World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
         if (assembly == null) {
-            console.warn("Couldn't find assembly with wpilib brain")
+            console.warn("Couldn't find assembly with a codesim brain")
             return
         }
         setActiveProps({

@@ -58,9 +58,8 @@ public class OpModeRunner {
 
     /** Owns spawning/stopping a fresh OpMode instance+thread per Fission connect/disconnect cycle. */
     private static class OpModeLifecycle implements FTCWsBridge.ConnectionListener {
-        private final Class<? extends LinearOpMode> opModeClass;
+        private final OpModeSlots slots;
         private final FTCWsBridge bridge;
-        private volatile LinearOpMode current;
         private OpModeCandidate running;
         private LinearOpMode current;
         private Thread thread;
@@ -88,6 +87,7 @@ public class OpModeRunner {
                 System.out.println("[OpModeRunner] Driver station enabled in "
                         + (autonomous ? "autonomous" : "teleop") + ", but no such OpMode was discovered");
             }
+
             if (desired != null && running != null && desired.cls() == running.cls()) {
                 return;
             }
@@ -108,6 +108,7 @@ public class OpModeRunner {
                 opMode.gamepad2 = bridge.gamepad2();
                 opMode.telemetry = new ConsoleTelemetry();
 
+                opMode.resetRuntime();
                 current = opMode;
                 running = candidate;
                 thread = new Thread(() -> {

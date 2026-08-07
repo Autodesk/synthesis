@@ -22,22 +22,29 @@ public class ExampleDozerAutoDrive extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            double drive = -gamepad1.left_stick_y;
-            double turn  = gamepad1.right_stick_x;
-
-            double leftPower  = drive + turn;
-            double rightPower = drive - turn;
-
-            double max = Math.max(1.0, Math.max(Math.abs(leftPower), Math.abs(rightPower)));
-            leftPower  /= max;
-            rightPower /= max;
-
-            leftFront.setPower(leftPower);
-            leftMiddle.setPower(leftPower);
-            leftBack.setPower(leftPower);
-            rightFront.setPower(rightPower);
-            rightMiddle.setPower(rightPower);
-            rightBack.setPower(rightPower);
+            if (time > 2.0) {
+                leftFront.setPower(0.0);
+                leftMiddle.setPower(0.0);
+                leftBack.setPower(0.0);
+                rightFront.setPower(0.0);
+                rightMiddle.setPower(0.0);
+                rightBack.setPower(0.0);
+            }
+            else if (time > 1.0) {
+                leftFront.setPower(-0.5);
+                leftMiddle.setPower(-0.5);
+                leftBack.setPower(-0.5);
+                rightFront.setPower(-0.5);
+                rightMiddle.setPower(-0.5);
+                rightBack.setPower(-0.5);
+            } else {
+                leftFront.setPower(0.5);
+                leftMiddle.setPower(0.5);
+                leftBack.setPower(0.5);
+                rightFront.setPower(0.5);
+                rightMiddle.setPower(0.5);
+                rightBack.setPower(0.5);
+            }
         }
     }
 }

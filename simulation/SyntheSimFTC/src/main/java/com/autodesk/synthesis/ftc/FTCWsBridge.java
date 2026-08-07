@@ -54,6 +54,14 @@ public class FTCWsBridge extends WebSocketServer {
         this.listener = listener;
     }
 
+    public boolean isDriverStationEnabled() {
+        return dsEnabled;
+    }
+
+    public boolean isDriverStationAutonomous() {
+        return dsAutonomous;
+    }
+
     public void registerDcMotor(String deviceName, SynthesisDcMotor motor) {
         dcMotors.put(deviceName, motor);
         Map<String, Object> init = new HashMap<>();
@@ -94,8 +102,6 @@ public class FTCWsBridge extends WebSocketServer {
             return;
         }
         System.out.println("[FTCWsBridge] Fission connected from " + conn.getRemoteSocketAddress());
-        dsEnabled = false;
-        dsAutonomous = false;
         registerDriverStation();
         ConnectionListener l = listener;
         if (l != null) {
@@ -106,8 +112,6 @@ public class FTCWsBridge extends WebSocketServer {
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         System.out.println("[FTCWsBridge] Fission disconnected: " + reason);
-        dsEnabled = false;
-        dsAutonomous = false;
         dcMotors.clear();
         ConnectionListener l = listener;
         if (l != null) {

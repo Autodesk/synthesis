@@ -17,4 +17,8 @@ public abstract class OpMode {
     public void resetRuntime() {
         time = 0;
     }
+
+    public void advanceRuntime(double seconds) {
+        time += seconds;
+    }
 }
