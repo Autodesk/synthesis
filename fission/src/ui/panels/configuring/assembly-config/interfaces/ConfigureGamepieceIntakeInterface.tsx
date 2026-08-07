@@ -21,6 +21,7 @@ import {
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -94,27 +95,34 @@ function save(
     selectedRobot.savePreferences()
 }
 
-interface ConfigPickupProps {
-    selectedRobot: MirabufSceneObject
-}
-
-const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ selectedRobot }) => {
+const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
+}) => {
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
-    const [maxPieces, setMaxPieces] = useState<number>(selectedRobot.intakePreferences?.maxPieces || 1)
+    const [maxPieces, setMaxPieces] = useState<number>(selectedAssembly.intakePreferences?.maxPieces || 1)
     const [animationDuration, setAnimationDuration] = useState<number>(
-        selectedRobot.intakePreferences?.animationDuration || 0.5
+        selectedAssembly.intakePreferences?.animationDuration || 0.5
     )
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
-        if (gizmoRef.current && selectedRobot) {
-            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces, animationDuration)
-            selectedRobot.updateIntakeSensor()
+        if (gizmoRef.current && selectedAssembly) {
+            save(
+                zoneSize,
+                gizmoRef.current,
+                selectedAssembly,
+                selectedNode,
+                showZoneAlways,
+                maxPieces,
+                animationDuration
+            )
+            selectedAssembly.updateIntakeSensor()
         }
-    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
+    }, [selectedAssembly, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
     useEffect(() => {
         return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
@@ -139,103 +147,111 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [])
 
     const gizmoComponent = useMemo(() => {
-        if (selectedRobot?.intakePreferences) {
-            const postGizmoCreation = (gizmo: GizmoSceneObject) => {
-                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
-                material.depthTest = false
+        if (!selectedAssembly?.intakePreferences) {
+            gizmoRef.current = undefined
+            return null
+        }
 
-                const deltaTransformation = convertArrayToThreeMatrix4(
-                    selectedRobot.intakePreferences!.deltaTransformation
-                )
+        const postGizmoCreation = (gizmo: GizmoSceneObject) => {
+            const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+            material.depthTest = false
 
-                let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
-                    selectedRobot.intakePreferences!.parentNode ?? selectedRobot.rootNodeId
-                )
-                if (!nodeBodyId) {
-                    // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
-                    nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.rootNodeId)!
-                }
+            const deltaTransformation = convertArrayToThreeMatrix4(
+                selectedAssembly.intakePreferences!.deltaTransformation
+            )
 
-                /** W = L x R. See save() for math details */
-                const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
-                )
-                const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
-
-                gizmo.setTransform(gizmoTransformation)
+            let nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(
+                selectedAssembly.intakePreferences!.parentNode ?? selectedAssembly.rootNodeId
+            )
+            if (!nodeBodyId) {
+                // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+                nodeBodyId = selectedAssembly.mechanism.nodeToBody.get(selectedAssembly.rootNodeId)!
             }
 
-            return (
-                <TransformGizmoControl
-                    key="pickup-transform-gizmo"
-                    size={1.5}
-                    gizmoRef={gizmoRef}
-                    defaultMode="translate"
-                    defaultMesh={placeholderMesh}
-                    scaleDisabled={true}
-                    rotateDisabled={true}
-                    postGizmoCreation={postGizmoCreation}
-                />
+            /** W = L x R. See save() for math details */
+            const robotTransformation = convertJoltMat44ToThreeMatrix4(
+                World.physicsSystem.getBody(nodeBodyId)!.GetWorldTransform()
             )
-        } else {
-            gizmoRef.current = undefined
-            return <></>
+            const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
+
+            gizmo.setTransform(gizmoTransformation)
         }
+
+        return (
+            <TransformGizmoControl
+                key="pickup-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+                defaultMesh={placeholderMesh}
+                scaleDisabled={true}
+                rotateDisabled={true}
+                postGizmoCreation={postGizmoCreation}
+            />
+        )
     }, [
-        selectedRobot?.intakePreferences,
+        selectedAssembly.intakePreferences,
         placeholderMesh,
-        selectedRobot.mechanism.nodeToBody.get,
-        selectedRobot.rootNodeId,
+        selectedAssembly.rootNodeId,
+        selectedAssembly.mechanism.nodeToBody,
     ])
 
     useEffect(() => {
-        if (selectedRobot?.intakePreferences) {
-            setZoneSize(selectedRobot.intakePreferences.zoneDiameter)
-            setSelectedNode(selectedRobot.intakePreferences.parentNode)
-            setMaxPieces(selectedRobot.intakePreferences.maxPieces)
-            setShowZoneAlways(selectedRobot.intakePreferences.showZoneAlways ?? false)
-            setAnimationDuration(selectedRobot.intakePreferences.animationDuration ?? 0.5)
+        if (selectedAssembly?.intakePreferences) {
+            setZoneSize(selectedAssembly.intakePreferences.zoneDiameter)
+            setSelectedNode(selectedAssembly.intakePreferences.parentNode)
+            setMaxPieces(selectedAssembly.intakePreferences.maxPieces)
+            setShowZoneAlways(selectedAssembly.intakePreferences.showZoneAlways ?? false)
+            setAnimationDuration(selectedAssembly.intakePreferences.animationDuration ?? 0.5)
         } else {
             setSelectedNode(undefined)
             setShowZoneAlways(false)
             setAnimationDuration(0.5)
         }
-    }, [selectedRobot])
+    }, [selectedAssembly])
 
     useEffect(() => {
         World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         // Hide the visual indicator when entering configuration mode
-        if (selectedRobot) {
-            selectedRobot.setIntakeVisualIndicatorVisible(false)
+        if (selectedAssembly) {
+            selectedAssembly.setIntakeVisualIndicatorVisible(false)
         }
 
         return () => {
             World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
 
             // Show the visual indicator when exiting configuration mode
-            if (selectedRobot) {
-                selectedRobot.setIntakeVisualIndicatorVisible(true)
+            if (selectedAssembly) {
+                selectedAssembly.setIntakeVisualIndicatorVisible(true)
             }
         }
-    }, [selectedRobot])
+    }, [selectedAssembly])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
-            if (!selectedRobot) {
+            if (!selectedAssembly) {
                 return false
             }
 
             const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
-            if (!assoc || !assoc.sceneObject || assoc.sceneObject != selectedRobot) {
+            if (!assoc || !assoc.sceneObject || assoc.sceneObject != selectedAssembly) {
                 return false
             }
 
             setSelectedNode(assoc.rigidNodeId)
             return true
         },
-        [selectedRobot]
+        [selectedAssembly]
     )
+
+    useEffect(() => {
+        const originalPrefs = structuredClone(selectedAssembly.intakePreferences)
+        registerCleanupFunction(undefined, () => {
+            selectedAssembly.intakePreferences = originalPrefs
+            selectedAssembly.updateIntakeSensor()
+        })
+    }, [registerCleanupFunction, selectedAssembly])
 
     return (
         <Stack direction="column">
@@ -292,14 +308,14 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
-                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!)!.GetWorldTransform()
+                            World.physicsSystem.getBody(selectedAssembly.getRootNodeId()!)!.GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)
                     }
                     setZoneSize(0.5)
-                    setSelectedNode(selectedRobot?.rootNodeId)
-                    setMaxPieces(selectedRobot.intakePreferences?.maxPieces ?? 1)
+                    setSelectedNode(selectedAssembly?.rootNodeId)
+                    setMaxPieces(selectedAssembly.intakePreferences?.maxPieces ?? 1)
                     setAnimationDuration(0.5)
                 }}
             >
@@ -309,4 +325,4 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     )
 }
 
-export default ConfigureGamepiecePickupInterface
+export default ConfigureGamepieceIntakeInterface

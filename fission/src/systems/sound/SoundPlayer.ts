@@ -107,8 +107,12 @@ export class SoundPlayer {
     }
     public dropdownSoundEffects(): SoundEffect {
         return {
-            onMouseDown: () => this.play(dropdownMenuSound),
+            onMouseDown: () => this.playDropdownSound(),
         }
+    }
+
+    public playDropdownSound(): Promise<void> {
+        return this.play(dropdownMenuSound)
     }
 
     public changeVolume(): void {

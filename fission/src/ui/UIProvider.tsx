@@ -1,9 +1,9 @@
 import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
-import type { FunctionComponent, ReactNode } from "react"
 import type React from "react"
-import { useCallback, useReducer, useState } from "react"
+import type { FunctionComponent, ReactNode } from "react"
+import { Fragment, useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
 import type { PanelImplProps } from "./components/Panel"
@@ -17,6 +17,7 @@ import {
     type OpenPanelFn,
     type Panel,
     type PanelProps,
+    type TogglePanelFn,
     UIContext,
     type UIScreen,
     type UIScreenCallbacks,
@@ -158,16 +159,16 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         (variant: VariantType, ...contents: SnackbarMessage[]) => {
             enqueueSnackbar(
                 contents.length <= 1 ? (
-                    <>{...contents}</>
+                    (contents[0] ?? "")
                 ) : (
-                    <>
-                        {...contents.map(child => (
-                            <>
-                                {child}
-                                <br />
-                            </>
+                    <span>
+                        {contents.map((content, index) => (
+                            <Fragment key={index}>
+                                {content}
+                                {index < contents.length - 1 && <br />}
+                            </Fragment>
                         ))}
-                    </>
+                    </span>
                 ),
                 { variant, action: snackbarAction }
             )
@@ -228,19 +229,20 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
             const contentName = (content as unknown as { name?: string })?.name ?? ""
             const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel", "InitialConfigPanel"]
-            const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
+
             if (mutuallyExclusive.includes(contentName)) {
                 const existing = panels.find(p =>
                     mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
                 )
                 if (existing) {
-                    // Replace existing with the new one
-                    setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])
-                    return id
+                    closePanel(existing.id, CloseType.OVERWRITE)
                 }
             }
 
-            setPanels([...nextPanels, panel as Panel<any, any>])
+            setPanels(panels => {
+                const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
+                return [...nextPanels, panel as Panel<any, any>]
+            })
             return id
         },
         [panels, addToast]
@@ -261,6 +263,24 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
         })
     }, [])
+
+    const togglePanel: TogglePanelFn = useCallback(
+        <T, P>(
+            content: FunctionComponent<PanelImplProps<T, P>>,
+            customProps: P,
+            matchesOpen?: (openCustomProps: P) => boolean
+        ) => {
+            const openInstance = panels.find(p => p.content === content)
+            if (openInstance && (matchesOpen?.((openInstance.props as PanelProps<P>).custom) ?? true)) {
+                // OVERWRITE, not CANCEL: dismissing a panel by re-clicking its icon is not a
+                // rejection of the user's edits, so panels get to save them via onClose.
+                closePanel(openInstance.id, CloseType.OVERWRITE)
+                return null
+            }
+            return openPanel(content, customProps)
+        },
+        [panels, openPanel, closePanel]
+    )
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
     const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {
@@ -287,6 +307,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 panels,
                 openModal,
                 openPanel,
+                togglePanel,
                 closeModal,
                 closePanel,
                 addToast,
