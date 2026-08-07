@@ -30,6 +30,8 @@ export interface UIScreenProps<P> {
     acceptText?: string
     blocking?: boolean // if true, will prevent other panels from opening while this panel is open
     blockingMessage?: string
+    width?: number | string
+    height?: number | string
     custom: P
 }
 

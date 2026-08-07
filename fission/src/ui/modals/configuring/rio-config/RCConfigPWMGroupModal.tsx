@@ -81,10 +81,10 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) 
                 <Box className="w-max">
                     <Label size="md">Signals</Label>
                     <ScrollView>
-                        {drivers.map((driver, idx) => (
+                        {drivers.map(driver => (
                             <Checkbox
                                 label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
-                                key={`${driver.constructor.name}-${idx}`}
+                                key={driver.id.guid}
                                 checked={false}
                                 onClick={checked => {
                                     if (checked && !checkedDrivers.includes(driver)) {

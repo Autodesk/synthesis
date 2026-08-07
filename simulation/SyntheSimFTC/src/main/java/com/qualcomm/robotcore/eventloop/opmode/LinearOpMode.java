@@ -2,18 +2,12 @@ package com.qualcomm.robotcore.eventloop.opmode;
 
 /**
  * Clean-room shim of the real FTC SDK class.
- *
- * isStarted/stopRequested are package-private and driven by
- * {@link OpModeManagerBridge}, which stands in for the real SDK's internal
- * OpModeManagerImpl (also historically in this package).
  */
 public abstract class LinearOpMode extends OpMode {
     /**
      * Real hardware loops land around 50-100Hz because actual I2C/USB motor
-     * controller I/O has latency ours doesn't. Without this, an opmode with
-     * no idle()/sleep of its own (e.g. ExampleDozerArcadeDrive) spins effectively
-     * unthrottled and floods the Fission WS connection with a power update
-     * every microsecond.
+     * controller I/O has latency, ours doesn't. Without this, an opmode with
+     * no idle()/sleep of its own operates it loop unrealistically fast.
      */
     private static final long LOOP_PERIOD_MILLIS = 10;
     private static final double LOOP_PERIOD_SECONDS = LOOP_PERIOD_MILLIS / 1000.0;

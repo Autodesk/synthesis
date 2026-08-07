@@ -56,6 +56,7 @@ export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.AO]: NoraTypes.NUMBER,
     [SimType.DRIVERS_STATION]: undefined,
     [SimType.GAMEPAD]: undefined,
+    [SimType.CAMERA]: undefined,
 }
 
 export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
@@ -71,4 +72,5 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.AO]: undefined,
     [SimType.DRIVERS_STATION]: undefined,
     [SimType.GAMEPAD]: undefined,
+    [SimType.CAMERA]: undefined,
 }

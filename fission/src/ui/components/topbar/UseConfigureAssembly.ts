@@ -66,7 +66,7 @@ export function useConfigureAssembly(selectedAssembly?: MirabufSceneObject) {
     const configurationType: ConfigurationType = isField ? "FIELDS" : "ROBOTS"
     const configureButtons = isField ? FIELD_CONFIGURE_BUTTONS : ROBOT_CONFIGURE_BUTTONS
 
-    // simulation only available when a codesim-capable brain (wpilib or ftc) is enabled
+    // simulation only available when a codesim-capable brain is enabled
     const isCodesimBrain = (selectedAssembly?.brain?.isWPILib() || selectedAssembly?.brain?.isFTC()) ?? false
 
     const openConfig = useCallback(

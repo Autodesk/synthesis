@@ -224,6 +224,8 @@ class DragModeSystem extends WorldSystem {
     }
 
     private findDragTarget(mousePos: [number, number]): { bodyId: Jolt.BodyID; hitPoint: THREE.Vector3 } | undefined {
+        if (World.physicsSystem.isPaused) return undefined
+
         const result = rayCastForRigidBody(mousePos)
         if (!result || !this.isDraggable(result.association)) return undefined
         return { bodyId: result.bodyId, hitPoint: result.hitPoint }
@@ -370,11 +372,17 @@ class DragModeSystem extends WorldSystem {
 
     private updateDragForce(): void {
         if (!this._dragTarget) return
+        if (World.physicsSystem.isPaused) return
 
         const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
         if (!body) {
             this.stopDragging()
             return
+        }
+
+        // keeping the dragged body awake so drag forces take effect even if body is sleeping
+        if (!this._dragTarget.physicsDisabled && !body.IsActive()) {
+            World.physicsSystem.activateBody(this._dragTarget.bodyId)
         }
 
         const currentPos = body.GetPosition()
