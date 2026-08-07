@@ -20,6 +20,7 @@ import {
     AddButton,
     Button,
     NegativeButton,
+    PositiveButton,
     Spacer,
     SynthesisIcons,
     ToggleButton,
@@ -28,7 +29,10 @@ import {
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
+import NameBuildModal from "@/ui/modals/mix-and-match/NameBuildModal"
 import { rayCastMesh } from "@/util/RaycastUtils"
+
+const DEFAULT_BUILD_NAME = "Mix and Match Robot"
 
 const GIZMO_SIZE = 1.5
 
@@ -177,16 +181,31 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const finishBuild = useCallback(() => {
         if (!panel) return
 
-        MixAndMatchMode.finish()
-            .then(finished => {
-                if (finished) closePanel(panel.id, CloseType.ACCEPT)
-            })
-            .catch(console.error)
-    }, [closePanel, panel])
+        openModal(
+            NameBuildModal,
+            { title: "Finish Build", acceptText: "Finish", defaultName: DEFAULT_BUILD_NAME },
+            panel,
+            {
+                onAccept: (name: string) =>
+                    MixAndMatchMode.finish(name)
+                        .then(finished => {
+                            if (finished) closePanel(panel.id, CloseType.ACCEPT)
+                        })
+                        .catch(console.error),
+            }
+        )
+    }, [closePanel, openModal, panel])
 
     const exportBuild = useCallback(() => {
-        MixAndMatchMode.exportBuild().catch(console.error)
-    }, [])
+        if (!panel) return
+
+        openModal(
+            NameBuildModal,
+            { title: "Export as Mira", acceptText: "Export", defaultName: DEFAULT_BUILD_NAME },
+            panel,
+            { onAccept: (name: string) => MixAndMatchMode.exportBuild(name).catch(console.error) }
+        )
+    }, [openModal, panel])
 
     const importBuild = useCallback((hash: string) => {
         setSelected(undefined)
@@ -208,15 +227,6 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     return (
         <Stack direction="column" gap={1} className="overflow-y-auto" minWidth="20rem">
-            <Stack direction="row" gap={1}>
-                <Button disabled={placed.length === 0} onClick={finishBuild}>
-                    Finish Build
-                </Button>
-                <Button disabled={placed.length === 0} onClick={exportBuild}>
-                    Export as Mira
-                </Button>
-            </Stack>
-
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
                     <Label size="md">{`Part Library (${library.length})`}</Label>
@@ -341,6 +351,15 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                     </AccordionDetails>
                 </Accordion>
             )}
+
+            <Stack direction="row" gap={1} sx={{ position: "sticky", bottom: 0, bgcolor: "inherit", pt: 1 }}>
+                <Button disabled={placed.length === 0} onClick={exportBuild} variant="outlined" color="info">
+                    Export as Mira
+                </Button>
+                <PositiveButton disabled={placed.length === 0} onClick={finishBuild}>
+                    Finish Build
+                </PositiveButton>
+            </Stack>
         </Stack>
     )
 }

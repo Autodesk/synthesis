@@ -136,6 +136,11 @@ describe("Mix and Match End to End", () => {
         const session = readSessionFromAssembly(assembly)!
         expect(session.timeline.filter(entry => entry.type === "spawn")).toHaveLength(2)
         expect(session.timeline.filter(entry => entry.type === "weld")).toHaveLength(1)
+
+        // Finishing also saves the build the same way exporting does, ready to be re-opened later.
+        const cached = MirabufCachingService.getAll(MiraType.ROBOT).find(info => info.isMixAndMatchBuild)
+        expect(cached).toBeDefined()
+        expect(hasMixAndMatchSession((await MirabufCachingService.get(cached!.hash))!)).toBe(true)
     })
 
     test("Reopening A Finished Build Replays It", async () => {
@@ -160,26 +165,26 @@ describe("Mix and Match End to End", () => {
     test("Exports A Build Without Ending It", async () => {
         const build = MixAndMatchMode.build!
         const scene = MixAndMatchMode.scene!
-        const cachedBefore = MirabufCachingService.getAll(MiraType.ROBOT).length
 
-        expect(await MixAndMatchMode.exportBuild()).toBe(true)
+        expect(await MixAndMatchMode.exportBuild("Exported Build")).toBe(true)
 
         // A snapshot, not an exit: the build-time scene is untouched.
         expect(MixAndMatchMode.isActive).toBe(true)
         expect(scene.components.size).toBe(2)
         expect(build.state.components.size).toBe(2)
 
-        // Cached under the same tagged mira the build would produce on finish.
-        const cachedAfter = MirabufCachingService.getAll(MiraType.ROBOT)
-        expect(cachedAfter.length).toBe(cachedBefore + 1)
-        const exported = cachedAfter.at(-1)!
-        const assembly = await MirabufCachingService.get(exported.hash)
+        // Cached under the same tagged mira the build would produce on finish, under the given name.
+        const exported = MirabufCachingService.getAll(MiraType.ROBOT).find(info => info.name === "Exported Build")
+        expect(exported).toBeDefined()
+        const assembly = await MirabufCachingService.get(exported!.hash)
         expect(hasMixAndMatchSession(assembly!)).toBe(true)
     })
 
     test("Resumes A Build From A Saved Mira By Cache Hash", async () => {
-        expect(await MixAndMatchMode.exportBuild()).toBe(true)
-        const exportedHash = MirabufCachingService.getAll(MiraType.ROBOT).at(-1)!.hash
+        expect(await MixAndMatchMode.exportBuild("Build To Resume")).toBe(true)
+        const exportedHash = MirabufCachingService.getAll(MiraType.ROBOT).find(
+            info => info.name === "Build To Resume"
+        )!.hash
 
         expect(await MixAndMatchMode.resumeFrom(exportedHash)).toBe(true)
 

@@ -15,6 +15,11 @@ import { componentWorldTransform, mateFacesTransform, relativeOffsetBetween } fr
 import MixAndMatchScene from "./MixAndMatchScene"
 import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMatchTypes"
 
+function nameAssembly(assembly: mirabuf.Assembly, name: string) {
+    if (assembly.info) assembly.info.name = name
+    else assembly.info = mirabuf.Info.create({ name })
+}
+
 /**
  * Lifecycle and user-facing operations for mix-and-match build mode.
  *
@@ -180,9 +185,15 @@ class MixAndMatchMode {
      * simulator loads like any other robot - and hands those off to normal simulation in place of
      * the build-time scene.
      *
+     * Each merged assembly is also cached as a tagged `.mira`, same as {@link exportBuild}, so a
+     * finished build shows up in Saved Builds ready to be re-opened for further editing.
+     *
+     * @param name Name for the resulting robot(s). If the build split into several disconnected
+     *             weld trees, each gets this name suffixed with its index. Omit to keep the parts'
+     *             own names.
      * @returns Whether the build was finished. Refused while scrubbed or while nothing is placed.
      */
-    public static async finish(): Promise<boolean> {
+    public static async finish(name?: string): Promise<boolean> {
         const [build, scene] = this.require()
         if (!build || !scene) return false
 
@@ -198,13 +209,22 @@ class MixAndMatchMode {
         // Merged and stamped before the scene is torn down so a re-opened robot can replay this
         // exact build.
         const merged = mergeAssemblies(build.state, scene.assembliesByComponent())
-        merged.forEach(assembly => writeSessionToAssembly(assembly, build.session))
+        merged.forEach((assembly, index) => {
+            if (name) nameAssembly(assembly, merged.length > 1 ? `${name} ${index + 1}` : name)
+            writeSessionToAssembly(assembly, build.session)
+        })
 
         this.exit()
 
         for (const assembly of merged) {
             const sceneObject = await createMirabuf(assembly.info?.GUID ?? "mix-and-match-build", assembly)
             if (sceneObject) World.sceneRenderer.registerSceneObject(sceneObject)
+
+            await MirabufCachingService.storeAssemblyInCache(assembly, {
+                miraType: MiraType.ROBOT,
+                name: assembly.info?.name ?? "Mix and Match Robot",
+                isMixAndMatchBuild: true,
+            })
         }
         globalAddToast("info", "Build Finished", "Build finished")
 
@@ -218,8 +238,10 @@ class MixAndMatchMode {
      *
      * Refuses if any component is stranded (not welded into the rest of the build): an export must
      * resolve into exactly one robot, not several loose ones.
+     *
+     * @param name Name for the exported robot. Omit to keep the build's own name.
      */
-    public static async exportBuild(): Promise<boolean> {
+    public static async exportBuild(name?: string): Promise<boolean> {
         const [build, scene] = this.require()
         if (!build || !scene) return false
 
@@ -239,19 +261,20 @@ class MixAndMatchMode {
         }
 
         const [assembly] = merged
+        if (name) nameAssembly(assembly, name)
         writeSessionToAssembly(assembly, build.session)
 
-        const name = assembly.info?.name ?? "Mix and Match Robot"
+        const exportName = assembly.info?.name ?? "Mix and Match Robot"
         const encoded = mirabuf.Assembly.encode(assembly).finish()
-        downloadBlob(`${name}.mira`, encoded.buffer as ArrayBuffer)
+        downloadBlob(`${exportName}.mira`, encoded.buffer as ArrayBuffer)
 
         // Cached as well so the saved build shows up in the part library, ready to be re-opened.
         await MirabufCachingService.storeAssemblyInCache(assembly, {
             miraType: MiraType.ROBOT,
-            name,
+            name: exportName,
             isMixAndMatchBuild: true,
         })
-        globalAddToast("info", "Exported", `Saved ${name}.mira`)
+        globalAddToast("info", "Exported", `Saved ${exportName}.mira`)
 
         return true
     }
