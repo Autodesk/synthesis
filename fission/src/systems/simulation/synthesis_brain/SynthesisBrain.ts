@@ -216,7 +216,8 @@ class SynthesisBrain extends Brain {
         }
 
         const unstickForce = new JOLT.Vec3(0, this._assembly.robotPreferences.unstickForce, 0)
-        body.AddForce(unstickForce)
+        body.AddForce(unstickForce) // CLONE
+        JOLT.destroy(unstickForce)
     }
 
     public disable(): void {
