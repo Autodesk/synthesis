@@ -54,6 +54,7 @@ class WheelAssignmentMode extends PartPickingMode<WheelSelection> {
 
     public constructor() {
         super(
+            new THREE.Color().setHex(0xffff20),
             (isSelected, highlight) => {
                 highlight.mesh.setColorAt(
                     highlight.instanceId,

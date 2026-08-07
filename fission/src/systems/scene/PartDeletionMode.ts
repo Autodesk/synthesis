@@ -1,4 +1,4 @@
-import type * as THREE from "three"
+import * as THREE from "three"
 import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import PartPickingMode, { type HighlightMap, type PartPick, type PartSelection } from "./PartPickingMode"
@@ -13,6 +13,7 @@ export interface PartDeletionSelection extends PartSelection {
 class PartDeletionMode extends PartPickingMode<PartDeletionSelection> {
     public constructor() {
         super(
+            new THREE.Color().setHex(0xb00000),
             (isSelected, highlight) => {
                 highlight.mesh.setVisibleAt(highlight.instanceId, !isSelected)
             },

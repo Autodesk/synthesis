@@ -5,15 +5,6 @@ import World from "../World"
 import WorldSystem from "../WorldSystem"
 import { type InteractionEnd, type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
 
-const HOVER_OUTLINE_MAT = new THREE.MeshBasicMaterial({
-    color: 0xffff60,
-    polygonOffset: true,
-    polygonOffsetFactor: -1,
-    polygonOffsetUnits: -1,
-    transparent: true,
-    opacity: 0.5,
-})
-
 export interface PartPick {
     guid: string
     object: THREE.BatchedMesh
@@ -113,7 +104,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
 
     private _pointerMoveListener: ((e: PointerEvent) => void) | undefined
     private _hover: PartHighlight | undefined
-    private _hoverOutline: THREE.Mesh | null = null
+    private _hoverOutline: THREE.Mesh
     private _latestMousePos: [number, number] | undefined
     private _lastProcessedMousePos: [number, number] | undefined
 
@@ -121,8 +112,20 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     private _candidateBatches: THREE.BatchedMesh[] = []
     private _pickIndex = new Map<THREE.BatchedMesh, Map<number, string>>()
 
-    protected constructor(styler: HighlightStyler, dispatchUpdate: (values: T[]) => void) {
+    protected constructor(hoverColor: THREE.Color, styler: HighlightStyler, dispatchUpdate: (values: T[]) => void) {
         super()
+        this._hoverOutline = new THREE.Mesh(
+            new THREE.BufferGeometry(),
+            new THREE.MeshBasicMaterial({
+                color: hoverColor,
+                polygonOffset: true,
+                polygonOffsetFactor: -1,
+                polygonOffsetUnits: -1,
+                transparent: true,
+                opacity: 0.5,
+            })
+        )
+        this._hoverOutline.matrixAutoUpdate = false
         this.pending = new HighlightMap<T>(styler, dispatchUpdate)
     }
 
@@ -160,7 +163,6 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     public destroy(): void {
         this.disable()
         this._hoverOutline?.geometry.dispose()
-        this._hoverOutline = null
     }
 
     private hookInteractionHandlers(): void {
@@ -252,10 +254,6 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         const geoId = hover.mesh.getGeometryIdAt(hover.instanceId)
         if (geoId >= 0) {
             const { indexStart, indexCount } = hover.mesh.getGeometryRangeAt(geoId)!
-            if (!this._hoverOutline) {
-                this._hoverOutline = new THREE.Mesh(new THREE.BufferGeometry(), HOVER_OUTLINE_MAT)
-                this._hoverOutline.matrixAutoUpdate = false
-            }
             const geo = this._hoverOutline.geometry
             geo.setAttribute("position", hover.mesh.geometry.getAttribute("position"))
             geo.setIndex(hover.mesh.geometry.index)
