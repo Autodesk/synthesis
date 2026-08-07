@@ -1,12 +1,20 @@
 import { Stack } from "@mui/material"
 import type React from "react"
-import { useEffect, useReducer } from "react"
+import { useCallback, useEffect, useReducer } from "react"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import MixAndMatchMode from "@/mix-and-match/MixAndMatchMode"
 import PartLibrary from "@/mix-and-match/PartLibrary"
 import EventSystem from "@/systems/EventSystem"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { AddButton } from "@/ui/components/StyledComponents"
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    AddButton,
+    Button,
+    SynthesisIcons,
+} from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 const PartLibraryPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
@@ -16,6 +24,11 @@ const PartLibraryPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     useEffect(() => EventSystem.listen("MixAndMatchStateChangedEvent", bumpRevision), [])
 
     const library = PartLibrary.list()
+    const savedBuilds = MirabufCachingService.getAll(MiraType.ROBOT)
+
+    const importBuild = useCallback((hash: string) => {
+        MixAndMatchMode.resumeFrom(hash).catch(console.error)
+    }, [])
 
     useEffect(() => {
         configureScreen(panel!, { title: "Part Library", hideAccept: true, cancelText: "Close" }, {})
@@ -32,6 +45,23 @@ const PartLibraryPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                     <AddButton onClick={() => MixAndMatchMode.spawnPart(part.ref).catch(console.error)} />
                 </Stack>
             ))}
+
+            <Accordion>
+                <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
+                    <Label size="md">{`Saved Builds (${savedBuilds.length})`}</Label>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {savedBuilds.length === 0 && <Label size="sm">No saved builds yet</Label>}
+                    {savedBuilds.map(saved => (
+                        <Stack key={saved.hash} direction="row" justifyContent="space-between" alignItems="center">
+                            <Label size="sm" className="text-wrap break-all">
+                                {saved.name}
+                            </Label>
+                            <Button onClick={() => importBuild(saved.hash)}>Import</Button>
+                        </Stack>
+                    ))}
+                </AccordionDetails>
+            </Accordion>
         </Stack>
     )
 }
