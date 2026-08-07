@@ -29,24 +29,22 @@ public class OpModeRunner {
     public static void main(String[] args) throws Exception {
         Path srcDir = null;
         String opModeName = null;
-        int port = FTCWsBridge.DEFAULT_PORT;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "--src" -> srcDir = Path.of(args[++i]);
                 case "--opmode" -> opModeName = args[++i];
-                case "--port" -> port = Integer.parseInt(args[++i]);
                 default -> throw new IllegalArgumentException("Unrecognized argument: " + args[i]);
             }
         }
         if (srcDir == null) {
-            throw new IllegalArgumentException("Usage: OpModeRunner --src <directory> [--opmode <ClassName>] [--port <port>]");
+            throw new IllegalArgumentException("Usage: OpModeRunner --src <directory> [--opmode <ClassName>]");
         }
 
         Class<? extends LinearOpMode> opModeClass = compileAndDiscover(srcDir, opModeName);
         System.out.println("[OpModeRunner] Running " + opModeClass.getName());
 
-        FTCWsBridge bridge = new FTCWsBridge(port);
+        FTCWsBridge bridge = new FTCWsBridge(FTCWsBridge.DEFAULT_PORT);
         OpModeLifecycle lifecycle = new OpModeLifecycle(opModeClass, bridge);
         bridge.setConnectionListener(lifecycle);
         bridge.start();
