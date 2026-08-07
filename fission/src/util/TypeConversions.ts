@@ -115,6 +115,24 @@ export function convertMirabufTransformToThreeMatrix(m: mirabuf.ITransform): THR
     return new THREE.Matrix4().compose(pos, quat, new THREE.Vector3(1, 1, 1))
 }
 
+/**
+ * Inverse of {@link convertMirabufTransformToThreeMatrix}: encodes a rotation and translation as
+ * mira's row-major, centimeter-scaled `spatialMatrix`. `mat`'s scale is ignored on the way in, same
+ * as the forward conversion ignores it on the way out - mira transforms here are assumed rigid.
+ */
+export function convertThreeMatrix4ToMirabufTransform(mat: THREE.Matrix4): mirabuf.ITransform {
+    const e = mat.elements
+    return {
+        // biome-ignore format: We would prefer to visualize this as a matrix
+        spatialMatrix: [
+            e[0], e[4], e[8], e[12] * 100,
+            e[1], e[5], e[9], e[13] * 100,
+            e[2], e[6], e[10], e[14] * 100,
+            0, 0, 0, 1,
+        ],
+    }
+}
+
 export function convertMirabufVector3ToJoltVec3(v: mirabuf.IVector3): Jolt.Vec3 {
     return new JOLT.Vec3(v.x! / 100.0, v.y! / 100.0, v.z! / 100.0)
 }
