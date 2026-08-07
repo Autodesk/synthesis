@@ -182,6 +182,10 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             .catch(console.error)
     }, [closePanel, panel])
 
+    const exportBuild = useCallback(() => {
+        MixAndMatchMode.exportBuild().catch(console.error)
+    }, [])
+
     const confirmDelete = useCallback(() => {
         if (!selected) return
 
@@ -197,9 +201,14 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     return (
         <Stack direction="column" gap={1} className="overflow-y-auto" minWidth="20rem">
-            <Button disabled={placed.length === 0} onClick={finishBuild}>
-                Finish Build
-            </Button>
+            <Stack direction="row" gap={1}>
+                <Button disabled={placed.length === 0} onClick={finishBuild}>
+                    Finish Build
+                </Button>
+                <Button disabled={placed.length === 0} onClick={exportBuild}>
+                    Export as Mira
+                </Button>
+            </Stack>
 
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
