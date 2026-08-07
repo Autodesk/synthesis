@@ -160,10 +160,26 @@ class MixAndMatchScene {
         if (!component) return
 
         moveComponentBy(component, delta)
+        this.resyncGizmo(component)
+
         this.descendantsOf(componentId).forEach(descendantId => {
             const descendant = this._components.get(descendantId)
-            if (descendant) moveComponentBy(descendant, delta)
+            if (!descendant) return
+
+            moveComponentBy(descendant, delta)
+            this.resyncGizmo(descendant)
         })
+    }
+
+    /**
+     * Points a component's transform gizmo, if it has one, back at where the component now is.
+     *
+     * A gizmo caches its parent's pose when it attaches and drags the bodies from that cache, so any
+     * placement done in code — a snap, a reconcile — leaves it pointing at the old pose and makes the
+     * first frame of the next drag teleport the part back there.
+     */
+    private resyncGizmo(component: MirabufSceneObject) {
+        World.sceneRenderer.gizmosOnMirabuf.get(component.id)?.syncToParent()
     }
 
     /**
@@ -241,6 +257,7 @@ class MixAndMatchScene {
             if (!component) continue
 
             setComponentWorldTransform(component, convertArrayToThreeMatrix4(componentState.transform))
+            this.resyncGizmo(component)
             // Re-asserted every sync: attaching and then dropping a transform gizmo re-enables physics
             // on its parent, and build mode wants collision off for the whole session.
             component.disablePhysics()
