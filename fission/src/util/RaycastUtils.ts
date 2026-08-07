@@ -7,7 +7,7 @@ import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "./
 
 export function rayCastForRigidBody(
     mousePos: [number, number]
-): { bodyId: Jolt.BodyID; hitPoint: THREE.Vector3; association: RigidNodeAssociate } | undefined {
+): { bodyId: Jolt.BodyID; hitPoint: THREE.Vector3; hitNormal: THREE.Vector3 | undefined; association: RigidNodeAssociate } | undefined {
     const origin = World.sceneRenderer.mainCamera.position
     const ignoredBodies: Jolt.BodyID[] = []
 
@@ -37,5 +37,10 @@ export function rayCastForRigidBody(
 
     const association = World.physicsSystem.getBodyAssociation(hit.data.mBodyID) as RigidNodeAssociate
 
-    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point, true), association }
+    return {
+        bodyId: hit.data.mBodyID,
+        hitPoint: convertJoltVec3ToThreeVector3(hit.point, true),
+        hitNormal: hit.normal ? convertJoltVec3ToThreeVector3(hit.normal, false) : undefined,
+        association,
+    }
 }

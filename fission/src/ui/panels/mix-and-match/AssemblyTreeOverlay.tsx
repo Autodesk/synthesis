@@ -1,20 +1,29 @@
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import type * as THREE from "three"
 import MixAndMatchMode from "@/mix-and-match/MixAndMatchMode"
+import { componentWorldTransform, DEBUG_SNAP_TO_FACE } from "@/mix-and-match/MixAndMatchPlacement"
 import type { ComponentState } from "@/mix-and-match/MixAndMatchTimeline"
 import type { ComponentId } from "@/mix-and-match/MixAndMatchTypes"
 import PartLibrary from "@/mix-and-match/PartLibrary"
 import EventSystem from "@/systems/EventSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import World from "@/systems/World"
 import Label from "@/ui/components/Label"
-import { NegativeButton } from "@/ui/components/StyledComponents"
+import { Button, NegativeButton, Spacer } from "@/ui/components/StyledComponents"
 import Tree, { type TreeNode } from "@/ui/components/Tree"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
+import { rayCastForRigidBody } from "@/util/RaycastUtils"
 
 const GIZMO_SIZE = 1.5
+
+/** "idle": not picking. "source": next click picks a face on the selected part. "target": next click picks the face to snap against. */
+type SnapPickStep = "idle" | "source" | "target"
+
+type PickedFace = { point: THREE.Vector3; normal: THREE.Vector3 }
 
 function partName(libraryPartRef: string): string {
     return PartLibrary.find(libraryPartRef)?.name ?? "Unknown Part"
@@ -64,6 +73,8 @@ const AssemblyTreeOverlay: React.FC = () => {
     const { openModal } = useUIContext()
     const [, bumpRevision] = useState(0)
     const [selected, setSelected] = useState<ComponentId | undefined>(undefined)
+    const [pickStep, setPickStep] = useState<SnapPickStep>("idle")
+    const [sourceFace, setSourceFace] = useState<PickedFace | undefined>(undefined)
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => EventSystem.listen("MixAndMatchStateChangedEvent", () => bumpRevision(x => x + 1)), [])
@@ -92,6 +103,88 @@ const AssemblyTreeOverlay: React.FC = () => {
 
         return () => cancelAnimationFrame(handle)
     }, [selected])
+
+    const cancelSnapPick = useCallback(() => {
+        setPickStep("idle")
+        setSourceFace(undefined)
+    }, [])
+
+    // Two clicks: first picks a face on the selected part, second picks the face to snap against.
+    useEffect(() => {
+        if (pickStep === "idle" || !selected) return
+
+        const onClick = (e: MouseEvent) => {
+            const hit = rayCastForRigidBody([e.clientX, e.clientY])
+            const componentId = hit && MixAndMatchMode.scene?.componentIdOfBody(hit.bodyId)
+
+            if (DEBUG_SNAP_TO_FACE) {
+                console.debug("[MixAndMatch] face pick raycast", {
+                    pickStep,
+                    selected,
+                    bodyId: hit?.bodyId?.GetIndex?.(),
+                    componentId,
+                    hitPoint: hit?.hitPoint.toArray(),
+                    hitNormal: hit?.hitNormal?.toArray(),
+                })
+            }
+
+            if (!hit || !componentId || !hit.hitNormal) {
+                if (DEBUG_SNAP_TO_FACE) console.debug("[MixAndMatch] face pick ignored: no hit, no component, or missing normal")
+                return
+            }
+
+            if (pickStep === "source") {
+                if (componentId !== selected) {
+                    if (DEBUG_SNAP_TO_FACE)
+                        console.debug("[MixAndMatch] source pick ignored: clicked component isn't the selected one", {
+                            clicked: componentId,
+                            selected,
+                        })
+                    return
+                }
+
+                setSourceFace({ point: hit.hitPoint, normal: hit.hitNormal })
+                if (DEBUG_SNAP_TO_FACE)
+                    console.debug("[MixAndMatch] source face picked", {
+                        componentId,
+                        point: hit.hitPoint.toArray(),
+                        normal: hit.hitNormal.toArray(),
+                    })
+                setPickStep("target")
+                return
+            }
+
+            if (componentId === selected || !sourceFace) {
+                if (DEBUG_SNAP_TO_FACE)
+                    console.debug("[MixAndMatch] target pick ignored: clicked the source part or no source face stored", {
+                        clicked: componentId,
+                        selected,
+                        hasSourceFace: !!sourceFace,
+                    })
+                return
+            }
+
+            if (DEBUG_SNAP_TO_FACE)
+                console.debug("[MixAndMatch] target face picked", {
+                    componentId,
+                    point: hit.hitPoint.toArray(),
+                    normal: hit.hitNormal.toArray(),
+                })
+
+            MixAndMatchMode.mateFaces(selected, componentId, sourceFace.point, sourceFace.normal, hit.hitPoint, hit.hitNormal)
+                .then(() => {
+                    const component = MixAndMatchMode.scene?.get(selected)
+                    if (component) gizmoRef.current?.setTransform(componentWorldTransform(component))
+                })
+                .catch(console.error)
+            cancelSnapPick()
+        }
+
+        World.sceneRenderer.renderer.domElement.addEventListener("click", onClick)
+        return () => World.sceneRenderer.renderer.domElement.removeEventListener("click", onClick)
+    }, [pickStep, selected, sourceFace, cancelSnapPick])
+
+    useEffect(() => cancelSnapPick(), [selected, cancelSnapPick])
 
     const confirmDelete = useCallback(() => {
         if (!selected) return
@@ -154,6 +247,17 @@ const AssemblyTreeOverlay: React.FC = () => {
                         defaultMode="translate"
                         scaleDisabled={true}
                     />
+                    <Spacer height={10} />
+                    <Stack direction="row" gap={1} alignItems="center">
+                        <Label size="sm">
+                            {pickStep === "idle" && "Snap flush against"}
+                            {pickStep === "source" && "Click a face on this part…"}
+                            {pickStep === "target" && "Click a face on the part to snap against…"}
+                        </Label>
+                        <Button onClick={() => (pickStep === "idle" ? setPickStep("source") : cancelSnapPick())}>
+                            {pickStep === "idle" ? "Snap to Face" : "Cancel"}
+                        </Button>
+                    </Stack>
                 </Box>
             )}
             {selected && (

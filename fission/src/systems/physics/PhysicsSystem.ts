@@ -1424,10 +1424,14 @@ class PhysicsSystem extends WorldSystem {
         const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
         const data = { mBodyID: new JOLT.BodyID(collector.mHit.mBodyID.GetIndexAndSequenceNumber()) }
 
+        // mSubShapeID2 is a reference into collector.mHit, not an owned copy — do not destroy it.
+        const body = this.getBody(data.mBodyID)
+        const normal = body?.GetWorldSpaceSurfaceNormal(collector.mHit.mSubShapeID2, hitPoint)
+
         JOLT.destroy(collector)
         JOLT.destroy(ray)
 
-        return { data, point: convertJoltRVec3ToJoltVec3(hitPoint) }
+        return { data, point: convertJoltRVec3ToJoltVec3(hitPoint), normal }
     }
 
     /**
@@ -2093,6 +2097,8 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
 export type RayCastHit = {
     data: { mBodyID: Jolt.BodyID }
     point: Jolt.Vec3
+    /** World-space surface normal at `point`, or undefined if the hit body could no longer be locked. */
+    normal: Jolt.Vec3 | undefined
 }
 
 export default PhysicsSystem

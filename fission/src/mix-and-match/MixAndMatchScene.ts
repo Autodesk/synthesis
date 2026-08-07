@@ -154,6 +154,18 @@ class MixAndMatchScene {
         this._componentBySceneObject.set(component.id, componentId)
     }
 
+    /** Moves a component and everything welded onto it by the same world delta. */
+    public moveTree(componentId: ComponentId, delta: THREE.Matrix4) {
+        const component = this._components.get(componentId)
+        if (!component) return
+
+        moveComponentBy(component, delta)
+        this.descendantsOf(componentId).forEach(descendantId => {
+            const descendant = this._components.get(descendantId)
+            if (descendant) moveComponentBy(descendant, delta)
+        })
+    }
+
     /**
      * Brings the scene in line with a timeline state: spawns components that appeared, drops ones that
      * went away, and re-places everything that moved.
