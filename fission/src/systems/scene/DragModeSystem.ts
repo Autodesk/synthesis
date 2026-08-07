@@ -1,5 +1,5 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
-import { type Message } from "@/systems/multiplayer/MultiplayerTypes"
+import type { Message } from "@/systems/multiplayer/MultiplayerTypes"
 import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -18,8 +18,8 @@ import {
     type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { SceneObjectId } from "./SceneRenderer"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type { SceneObjectId } from "./SceneRenderer"
 
 interface DragTarget {
     bodyId: Jolt.BodyID

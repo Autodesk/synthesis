@@ -348,60 +348,56 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             />
                         )}
 
-                        {configMode === undefined && selectedAssembly !== undefined && (
-                            <>
-                                {!selectedAssembly.isOwnObject ? (
-                                    <Label size={"sm"}>Cannot configure someone else's object</Label>
-                                ) : (
-                                    <>
-                                        <ConfigModeSelection
-                                            modes={modes}
-                                            configMode={configMode}
-                                            onModeSelected={mode => {
-                                                if (configMode !== undefined)
-                                                    EventSystem.dispatch("ConfigurationSavedEvent")
-                                                setConfigMode(mode)
-                                            }}
-                                        />
+                        {configMode === undefined &&
+                            selectedAssembly !== undefined &&
+                            (!selectedAssembly.isOwnObject ? (
+                                <Label size={"sm"}>Cannot configure someone else's object</Label>
+                            ) : (
+                                <>
+                                    <ConfigModeSelection
+                                        modes={modes}
+                                        configMode={configMode}
+                                        onModeSelected={mode => {
+                                            if (configMode !== undefined)
+                                                EventSystem.dispatch("ConfigurationSavedEvent")
+                                            setConfigMode(mode)
+                                        }}
+                                    />
 
-                                        {ConfigSubPanel != null && (
-                                            <ConfigSubPanel
-                                                panel={panel!}
-                                                selectedAssembly={selectedAssembly!}
-                                                setDisableAccept={setDisableAccept}
-                                                hasMadeChanges={hasMadeChanges}
-                                                registerCleanupFunction={registerCleanupFunctions}
-                                            />
-                                        )}
-                                        {
-                                            <>
-                                                <Spacer height={16} />
-                                                <AssemblyExportButton selectedAssembly={selectedAssembly} />
-                                                <Spacer height={16} />
-                                                <Button
-                                                    className={"w-full"}
-                                                    color={"warning"}
-                                                    onClick={() => {
-                                                        closePanel(panel!.id, CloseType.ACCEPT)
-                                                        selectedAssembly.resetPreferences()
-                                                        globalAddToast(
-                                                            "info",
-                                                            "Preferences for " +
-                                                                selectedAssembly.descriptiveName +
-                                                                " reset"
-                                                        )
-                                                    }}
-                                                >
-                                                    Reset
-                                                    <Spacer width={5} />
-                                                    <FaArrowsRotate />
-                                                </Button>
-                                            </>
-                                        }
-                                    </>
-                                )}
-                            </>
-                        )}
+                                    {ConfigSubPanel != null && (
+                                        <ConfigSubPanel
+                                            panel={panel!}
+                                            selectedAssembly={selectedAssembly!}
+                                            setDisableAccept={setDisableAccept}
+                                            hasMadeChanges={hasMadeChanges}
+                                            registerCleanupFunction={registerCleanupFunctions}
+                                        />
+                                    )}
+                                    {
+                                        <>
+                                            <Spacer height={16} />
+                                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                                            <Spacer height={16} />
+                                            <Button
+                                                className={"w-full"}
+                                                color={"warning"}
+                                                onClick={() => {
+                                                    closePanel(panel!.id, CloseType.ACCEPT)
+                                                    selectedAssembly.resetPreferences()
+                                                    globalAddToast(
+                                                        "info",
+                                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
+                                                    )
+                                                }}
+                                            >
+                                                Reset
+                                                <Spacer width={5} />
+                                                <FaArrowsRotate />
+                                            </Button>
+                                        </>
+                                    }
+                                </>
+                            ))}
                     </>
                 )}
             </div>

@@ -101,7 +101,7 @@ const CameraConfigInterface: React.FC<CameraConfigInterfaceProps> = ({ selectedR
     const gizmoComponent = useMemo(() => {
         if (!camera) {
             gizmoRef.current = undefined
-            return <></>
+            return
         }
 
         const postGizmoCreation = (gizmo: GizmoSceneObject) => {

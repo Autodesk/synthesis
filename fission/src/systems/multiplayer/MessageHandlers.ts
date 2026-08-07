@@ -23,7 +23,7 @@ import { multiplayerLogger as console } from "@/systems/multiplayer/MultiplayerS
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import { isDefined } from "@/util/Utility"
 import EventSystem from "@/systems/EventSystem.ts"
-import { EncodedAssembly } from "./MultiplayerTypes"
+import type { EncodedAssembly } from "./MultiplayerTypes"
 import { applyPhysicsBodyData, handleUpdateObjectPhysics } from "./UpdatePhysicsData"
 
 export const peerMessageHandlers = {

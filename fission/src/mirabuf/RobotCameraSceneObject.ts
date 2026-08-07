@@ -6,7 +6,7 @@ import SimCamera from "@/systems/simulation/wpilib_brain/sim/SimCamera"
 import World from "@/systems/World"
 import { convertArrayToThreeMatrix4, convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
-import Jolt from "@synthesis.adsk/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 
 const MAX_DIMENSION = 1280
 const MIN_DIMENSION = 16

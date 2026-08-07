@@ -1,6 +1,6 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { PhysicsBodyData } from "./MultiplayerMessageTypes"
-import Jolt from "@synthesis.adsk/jolt-physics"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import type { PhysicsBodyData } from "./MultiplayerMessageTypes"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import World from "../World"
 

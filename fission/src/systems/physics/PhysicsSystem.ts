@@ -22,7 +22,7 @@ import WorldSystem from "../WorldSystem"
 import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject.ts"
+import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import {
     inferURDFAutoWheelBasis,
@@ -43,7 +43,7 @@ import {
     setAxes,
 } from "./ConstraintSettingsUtilities"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
-import { PhysicsBodyData } from "../multiplayer/MultiplayerMessageTypes.ts"
+import type { PhysicsBodyData } from "../multiplayer/MultiplayerMessageTypes.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
 

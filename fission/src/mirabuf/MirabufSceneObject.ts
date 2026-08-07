@@ -5,7 +5,7 @@ import type { FieldConfiguration, RobotConfiguration } from "@/systems/multiplay
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
-import { LAYER_GHOST, LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { LAYER_GHOST, type LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import {
