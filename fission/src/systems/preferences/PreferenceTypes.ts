@@ -76,7 +76,7 @@ export function defaultUserPreferences(): UserPreferences {
         MultiplayerUsername: "",
         MultiplayerHost: "",
         MultiplayerPort: DEFAULT_MULTIPLAYER_PORT,
-        MultiplayerSecure: true,
+        MultiplayerSecure: false,
     }
 }
 
