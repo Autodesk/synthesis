@@ -25,6 +25,10 @@ export function miraTypeToConfigType(config: MiraType): ConfigurationType {
             return "ROBOTS"
         case MiraType.FIELD:
             return "FIELDS"
+        case MiraType.COMPONENT:
+            // Mix-and-match components should never be spawnable through the regular asset panel.
+            // Assign them a config type in case one ever is.
+            return "ROBOTS"
     }
 }
 

@@ -176,7 +176,7 @@ class MirabufCachingService {
 
             World.analyticsSystem?.event("Remote Download", {
                 assemblyName: name,
-                type: miraType === MiraType.ROBOT ? "robot" : "field",
+                type: miraTypeAnalyticsLabel(miraType),
                 fileSize: miraBuff.byteLength,
             })
 
@@ -231,7 +231,7 @@ class MirabufCachingService {
         }
 
         World.analyticsSystem?.event("APS Download", {
-            type: miraType == MiraType.ROBOT ? "robot" : "field",
+            type: miraTypeAnalyticsLabel(miraType),
             fileSize: miraBuff.byteLength,
         })
 
@@ -259,7 +259,7 @@ class MirabufCachingService {
         World.analyticsSystem?.event("Local Upload", {
             fileSize: buffer.byteLength,
             key: hash,
-            type: miraType == MiraType.ROBOT ? "robot" : "field",
+            type: miraTypeAnalyticsLabel(miraType),
         })
         if (assembly.dynamic && miraType == MiraType.FIELD) {
             globalAddToast("warning", "Cannot import robot assembly as a field")
@@ -298,7 +298,7 @@ class MirabufCachingService {
 
                 World.analyticsSystem?.event("Cache Get", {
                     key: info.hash,
-                    type: info.miraType == MiraType.ROBOT ? "robot" : "field",
+                    type: miraTypeAnalyticsLabel(info.miraType),
                     assemblyName: info.name,
                     fileSize: buffer.byteLength,
                 })
@@ -365,7 +365,7 @@ class MirabufCachingService {
             }
             World.analyticsSystem?.event("Cache Remove", {
                 key: info.hash,
-                type: info.miraType == MiraType.ROBOT ? "robot" : "field",
+                type: miraTypeAnalyticsLabel(info.miraType),
                 assemblyName: info.name,
             })
             console.log(`Removed ${hash} from cache`)
@@ -433,7 +433,7 @@ class MirabufCachingService {
             World.analyticsSystem?.event("Cache Store", {
                 assemblyName: info.name,
                 key: info.hash,
-                type: info.miraType == MiraType.ROBOT ? "robot" : "field",
+                type: miraTypeAnalyticsLabel(info.miraType),
                 fileSize: buffer.byteLength,
             })
             console.log(`Added cache entry for ${hash}`)
@@ -453,6 +453,18 @@ class MirabufCachingService {
 export enum MiraType {
     ROBOT = 1,
     FIELD,
+    COMPONENT,
+}
+
+function miraTypeAnalyticsLabel(miraType: MiraType): "robot" | "field" | "component" {
+    switch (miraType) {
+        case MiraType.ROBOT:
+            return "robot"
+        case MiraType.FIELD:
+            return "field"
+        case MiraType.COMPONENT:
+            return "component"
+    }
 }
 
 export default MirabufCachingService
