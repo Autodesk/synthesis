@@ -22,18 +22,13 @@ function nextComponentId(session: MixAndMatchSession): ComponentId {
 
 /**
  * An in-progress build: the session document, the timeline playhead, and the state the timeline
- * currently describes.
- *
- * Every user action goes through here as a timeline entry, including delete, so the whole build stays
- * scrubbable. Nothing in this class touches the scene or physics; {@link MixAndMatchScene} watches for
- * changes and reconciles what's rendered.
+ * currently describes. Every user action goes through here as a timeline entry.
  */
 class MixAndMatchBuild {
     private _session: MixAndMatchSession
     private _marker: number
     private _state: TimelineState
 
-    /** The serialized-shape document. Treat as read-only; go through the mutators to change it. */
     public get session(): Readonly<MixAndMatchSession> {
         return this._session
     }
@@ -42,7 +37,6 @@ class MixAndMatchBuild {
         return this._session.timeline
     }
 
-    /** How many timeline entries are currently applied. Equals `timeline.length` when fully caught up. */
     public get marker(): number {
         return this._marker
     }
@@ -51,12 +45,10 @@ class MixAndMatchBuild {
         return this._state
     }
 
-    /** Whether the playhead sits before the end of the timeline. */
     public get isScrubbed(): boolean {
         return this._marker < this._session.timeline.length
     }
 
-    /** How many entries a new action would discard right now. Ask before committing over history. */
     public get discardedByNextEdit(): number {
         return this._session.timeline.length - this._marker
     }
@@ -67,7 +59,6 @@ class MixAndMatchBuild {
         this._state = replayTimeline(session.timeline, this._marker)
     }
 
-    /** Moves the playhead. Does not modify the timeline; scrubbing is a preview, not an edit. */
     public scrubTo(marker: number) {
         const clamped = Math.max(0, Math.min(marker, this._session.timeline.length))
         if (clamped === this._marker) return
@@ -90,7 +81,7 @@ class MixAndMatchBuild {
 
     /**
      * Welds `childId` onto `parentId`. Replaces the child's existing weld, if any: a component has
-     * exactly one active external weld, matching mira's one-parent-per-node joint tree.
+     * exactly one active external weld.
      *
      * @returns Whether the weld was recorded. Rejected when it would weld a component to itself or
      *          close the weld tree into a cycle.
@@ -103,7 +94,7 @@ class MixAndMatchBuild {
         if (this._state.components.get(childId)?.weld?.parentId === parentId) return true
 
         // Replay refused it, which only happens for a weld that would close the tree into a cycle.
-        // Drop the entry again so the timeline only ever holds actions that took effect.
+        // Drop the entry again as it never took affect.
         this._session.timeline.pop()
         this._marker = this._session.timeline.length
         this.refresh()
