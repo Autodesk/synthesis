@@ -279,7 +279,7 @@ export function migrateUnstickForce(unstickForce: number): number {
         )
         return DEFAULT_UNSTICK_FORCE
     }
-    
+
     return unstickForce
 }
 
