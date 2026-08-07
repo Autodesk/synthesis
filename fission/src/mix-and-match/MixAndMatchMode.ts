@@ -207,9 +207,12 @@ class MixAndMatchMode {
     }
 
     /**
-     * Saves the build's merged assembly (or assemblies, one per weld tree) as ordinary tagged
-     * `.mira` files, ready to be re-opened for editing. Every other consumer sees a normal robot
-     * file. Unlike `finish`, the build-time scene is left alone - this is a snapshot, not an exit.
+     * Saves the build's merged assembly as an ordinary tagged `.mira` file, ready to be re-opened
+     * for editing. Every other consumer sees a normal robot file. Unlike `finish`, the build-time
+     * scene is left alone - this is a snapshot, not an exit.
+     *
+     * Refuses if any component is stranded (not welded into the rest of the build): an export must
+     * resolve into exactly one robot, not several loose ones.
      */
     public static async exportBuild(): Promise<boolean> {
         const [build, scene] = this.require()
@@ -221,18 +224,25 @@ class MixAndMatchMode {
         }
 
         const merged = mergeAssemblies(build.state, scene.assembliesByComponent())
-        merged.forEach(assembly => writeSessionToAssembly(assembly, build.session))
-
-        for (const [index, assembly] of merged.entries()) {
-            const baseName = assembly.info?.name ?? "Mix and Match Robot"
-            const name = merged.length > 1 ? `${baseName} ${index + 1}` : baseName
-            const encoded = mirabuf.Assembly.encode(assembly).finish()
-            downloadBlob(`${name}.mira`, encoded.buffer as ArrayBuffer)
-
-            // Cached as well so the saved build shows up in the part library, ready to be re-opened.
-            await MirabufCachingService.storeAssemblyInCache(assembly, { miraType: MiraType.ROBOT, name })
+        if (merged.length !== 1) {
+            globalAddToast(
+                "error",
+                "Export Failed",
+                "Weld every part together into one connected build before exporting."
+            )
+            return false
         }
-        globalAddToast("info", "Exported", merged.length === 1 ? `Saved ${merged[0]?.info?.name ?? "Mix and Match Robot"}.mira` : `Saved ${merged.length} robots`)
+
+        const [assembly] = merged
+        writeSessionToAssembly(assembly, build.session)
+
+        const name = assembly.info?.name ?? "Mix and Match Robot"
+        const encoded = mirabuf.Assembly.encode(assembly).finish()
+        downloadBlob(`${name}.mira`, encoded.buffer as ArrayBuffer)
+
+        // Cached as well so the saved build shows up in the part library, ready to be re-opened.
+        await MirabufCachingService.storeAssemblyInCache(assembly, { miraType: MiraType.ROBOT, name })
+        globalAddToast("info", "Exported", `Saved ${name}.mira`)
 
         return true
     }

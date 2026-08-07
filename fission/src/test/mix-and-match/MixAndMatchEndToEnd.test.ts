@@ -176,4 +176,24 @@ describe("Mix and Match End to End", () => {
         const assembly = await MirabufCachingService.get(exported.hash)
         expect(hasMixAndMatchSession(assembly!)).toBe(true)
     })
+
+    test("Refuses To Export While A Component Is Stranded", async () => {
+        const build = MixAndMatchMode.build!
+        const scene = MixAndMatchMode.scene!
+        const cachedBefore = MirabufCachingService.getAll(MiraType.ROBOT).length
+
+        // Third part is spawned but never welded to the other two, so the build resolves into two
+        // separate weld trees instead of one connected robot.
+        const strandedId = await MixAndMatchMode.spawnPart(dozerRef)
+        expect(strandedId).toBeDefined()
+
+        expect(await MixAndMatchMode.exportBuild()).toBe(false)
+
+        // Nothing exported: neither the cache nor the build/scene changed as a result of the attempt.
+        expect(MirabufCachingService.getAll(MiraType.ROBOT).length).toBe(cachedBefore)
+        expect(build.state.components.size).toBe(3)
+        expect(scene.components.size).toBe(3)
+
+        await MixAndMatchMode.deleteComponent(strandedId!)
+    })
 })
