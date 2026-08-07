@@ -11,6 +11,7 @@ import { getTargetControls } from "@/systems/scene/CameraControls.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import type { EncodedAssembly, Message } from "@/systems/multiplayer/MultiplayerTypes"
 import { consolePrefixer } from "console-prefixer"
+import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
 
 const console = consolePrefixer({
     defaultPrefix: {

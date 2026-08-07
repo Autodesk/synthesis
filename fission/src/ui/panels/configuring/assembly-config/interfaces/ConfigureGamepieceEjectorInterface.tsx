@@ -19,7 +19,6 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 // slider constants
 const MIN_VELOCITY = 0.0
