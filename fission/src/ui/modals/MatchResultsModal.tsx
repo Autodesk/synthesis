@@ -1,5 +1,6 @@
 import { Divider, Stack, styled, Typography } from "@mui/material"
 import type React from "react"
+import type { ReactNode } from "react"
 import { useEffect } from "react"
 import MatchMode from "@/systems/match_mode/MatchMode"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers.ts"
@@ -8,6 +9,7 @@ import type { ModalImplProps } from "../components/Modal"
 import { Button } from "../components/StyledComponents"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import World from "@/systems/World.ts"
+import { Box } from "@mui/system"
 
 type Entry = {
     name: string
@@ -38,12 +40,12 @@ const getPerRobotScores = (): { redRobotScores: Entry[]; blueRobotScores: Entry[
     return { redRobotScores, blueRobotScores }
 }
 
-const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }>(({ winnerColor, fontSize }) => ({
+const LabelStyled = styled(Typography)<{ color: string; fontSize: string }>(({ color, fontSize }) => ({
     fontWeight: 700,
     fontSize: fontSize,
     margin: "0pt",
     marginTop: "0.5rem",
-    color: winnerColor,
+    color: color,
 }))
 
 const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
@@ -67,50 +69,35 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     }, [configureScreen, modal])
 
     return (
-        <>
-            <LabelStyled winnerColor={color} fontSize="1.5rem">
+        <Stack direction={"column"}>
+            <LabelStyled color={color} fontSize="1.5rem">
                 {message}
             </LabelStyled>
             <Divider sx={{ my: "1rem" }} />
-            <Stack>
+            <Stack gap={1}>
                 {entries.map(e => (
                     <Stack key={e.name} direction="row" justifyContent={"space-between"}>
                         <Label size="md">{e.name}</Label>
-                        <Label size="md">{e.value}</Label>
+                        <ScoreBox>
+                            <Label size="md" sx={{ minWidth: "3em", textAlign: "center" }}>
+                                {e.value}
+                            </Label>
+                        </ScoreBox>
                     </Stack>
                 ))}
             </Stack>
             <Divider sx={{ my: "0.5rem" }} />
-            <LabelStyled winnerColor={primaryColor} fontSize="1.25rem">
+            <LabelStyled color={primaryColor} fontSize="1.25rem" mb={1}>
                 Robot Score Contributions
             </LabelStyled>
-            <Stack direction={"row"} justifyContent={"space-between"} gap={"1rem"}>
-                <Stack direction={"column"}>
-                    <LabelStyled winnerColor={redAllianceColor} fontSize="1rem">
-                        Red Alliance
-                    </LabelStyled>
-                    <div className="flex flex-col">
-                        {redRobotScores.map(e => (
-                            <Stack key={e.name} direction="row" justifyContent={"space-between"}>
-                                <Label size="md">{e.name}</Label>
-                                <Label size="md">{e.value}</Label>
-                            </Stack>
-                        ))}
-                    </div>
-                </Stack>
-                <Stack direction={"column"}>
-                    <LabelStyled winnerColor={blueAllianceColor} fontSize="1rem">
-                        Blue Alliance
-                    </LabelStyled>
-                    <div className="flex flex-col">
-                        {blueRobotScores.map(e => (
-                            <Stack key={e.name} direction="row" justifyContent={"space-between"}>
-                                <Label size="md">{e.name}</Label>
-                                <Label size="md">{e.value}</Label>
-                            </Stack>
-                        ))}
-                    </div>
-                </Stack>
+            <Stack direction={"row"} justifyContent={"space-between"} gap={2}>
+                <RobotContributions allianceColor={redAllianceColor} label={"Red Alliance"} scores={redRobotScores} />
+                <Divider orientation={"vertical"} flexItem />
+                <RobotContributions
+                    allianceColor={blueAllianceColor}
+                    label={"Blue Alliance"}
+                    scores={blueRobotScores}
+                />
             </Stack>
             <Button
                 onClick={() => {
@@ -121,8 +108,40 @@ const MatchResultsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
             >
                 Back to Sandbox Mode
             </Button>
-        </>
+        </Stack>
     )
+}
+
+interface RobotContributionProps {
+    allianceColor: string
+    scores: Entry[]
+    label: string
+}
+
+const RobotContributions: React.FC<RobotContributionProps> = ({ allianceColor, scores, label }) => {
+    return (
+        <Stack direction={"column"}>
+            <LabelStyled color={allianceColor} fontSize="1rem">
+                {label}
+            </LabelStyled>
+            <div className="flex flex-col">
+                {scores.map(e => (
+                    <Stack key={e.name} direction="row" alignItems="center" justifyContent={"space-between"} gap={2}>
+                        <Label size="md">{e.name}</Label>
+                        <ScoreBox key={e.name}>
+                            <Label size="sm" sx={{ minWidth: "2em", textAlign: "center" }}>
+                                {e.value}
+                            </Label>
+                        </ScoreBox>
+                    </Stack>
+                ))}
+            </div>
+        </Stack>
+    )
+}
+
+const ScoreBox: React.FC<{ children: ReactNode }> = ({ children }) => {
+    return <Box sx={{ bgcolor: "background.paper", padding: 0.5, borderRadius: 2 }}>{children}</Box>
 }
 
 export default MatchResultsModal

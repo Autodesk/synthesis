@@ -2,7 +2,6 @@ import { Stack } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { useStateContext } from "../helpers/StateProviderHelpers"
 import Label from "./Label"
 import type { SceneOverlayTag } from "./SceneOverlayEvents"
 import ViewCube from "./ViewCube"
@@ -10,7 +9,6 @@ import ViewCube from "./ViewCube"
 const tagMap = new Map<number, SceneOverlayTag>()
 
 const SceneOverlay: React.FC = () => {
-    const { isMainMenuOpen } = useStateContext()
     /* State to determine if the overlay is disabled */
     const [isDisabled, setIsDisabled] = useState(false)
 
@@ -19,7 +17,7 @@ const SceneOverlay: React.FC = () => {
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
-        if (isDisabled) return <></> // if the overlay is disabled, return nothing
+        if (isDisabled) return null
 
         return [...tagMap.values()].map(x => (
             <div
@@ -93,7 +91,7 @@ const SceneOverlay: React.FC = () => {
             }}
         >
             {components}
-            {showViewCube && !isMainMenuOpen && <ViewCube position={{ top: 20, right: 20 }} />}
+            {showViewCube && <ViewCube position={{ top: "calc(20px + var(--top-bar-height, 0px))", right: 20 }} />}
         </Stack>
     )
 }

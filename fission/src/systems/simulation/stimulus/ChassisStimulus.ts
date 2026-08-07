@@ -25,7 +25,7 @@ class ChassisStimulus extends Stimulus {
         super(id, info)
 
         this._body = World.physicsSystem.getBody(bodyId)!
-        this._mass = this._body.GetShape().GetMassProperties().mMass
+        this._mass = 1 / this._body.GetMotionProperties().GetInverseMass()
     }
 
     public update(_: number): void {}

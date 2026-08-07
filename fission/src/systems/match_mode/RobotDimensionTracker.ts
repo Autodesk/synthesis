@@ -1,16 +1,17 @@
 import World from "@/systems/World"
 import MatchMode from "./MatchMode"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const BUFFER_HEIGHT = 0.1
 const SIDE_BUFFER = 0.1
 
 class RobotDimensionTracker {
-    private static _robotLastFramePenalty: Map<number, boolean> = new Map()
+    private static _robotLastFramePenalty: Map<SceneObjectId, boolean> = new Map()
     private static _ignoreRotation: boolean = true
     private static _maxHeight: number = Infinity
     private static _heightLimitPenalty: number = 0
     private static _sideExtensionPenalty: number = 0
-    private static _robotSize: Map<number, { width: number; depth: number }> = new Map()
+    private static _robotSize: Map<SceneObjectId, { width: number; depth: number }> = new Map()
     private static _sideMaxExtension: number = 0
 
     public static setConfigValues(

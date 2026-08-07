@@ -43,7 +43,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
             InputSchemeManager.saveSchemes(modal?.id)
 
             if (brainIndex !== undefined) {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
             }
 
             setSelectedScheme(scheme)
@@ -83,33 +83,31 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) =>
     }
 
     return (
-        <>
-            <Stack gap={2}>
-                <TextField
-                    label="Name"
-                    placeholder=""
-                    value={name}
-                    onChange={handleNameChange}
-                    error={nameError}
-                    helperText={nameErrorText}
-                />
-                <FormControl fullWidth>
-                    <InputLabel id="drive-type-label">Drive Type</InputLabel>
-                    <Select
-                        labelId="drive-type-label"
-                        label="Drive Type"
-                        value={type}
-                        onChange={e => setType(e.target.value as DriveType)}
-                    >
-                        {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
-                            <MenuItem key={dt} value={dt}>
-                                {dt}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </Stack>
-        </>
+        <Stack gap={2}>
+            <TextField
+                label="Name"
+                placeholder=""
+                value={name}
+                onChange={handleNameChange}
+                error={nameError}
+                helperText={nameErrorText}
+            />
+            <FormControl fullWidth>
+                <InputLabel id="drive-type-label">Drive Type</InputLabel>
+                <Select
+                    labelId="drive-type-label"
+                    label="Drive Type"
+                    value={type}
+                    onChange={e => setType(e.target.value as DriveType)}
+                >
+                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE, DriveType.MECANUM].map(dt => (
+                        <MenuItem key={dt} value={dt}>
+                            {dt}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Stack>
     )
 }
 
