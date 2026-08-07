@@ -9,7 +9,7 @@ import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import { getTargetControls } from "@/systems/scene/CameraControls.ts"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
-import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/types.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
@@ -501,7 +501,7 @@ export async function spawnCachedMira(
                         type: "newObject",
                         timestamp: Date.now(),
                         data: {
-                            sceneObjectKey: mirabufSceneObject.id as RemoteSceneObjectId,
+                            sceneObjectKey: mirabufSceneObject.id,
                             assembly: encodedAssembly,
                             assemblyHash: info.hash,
                             miraType: info.miraType,
@@ -510,7 +510,7 @@ export async function spawnCachedMira(
                         },
                     }
                     await World.multiplayerSystem?.broadcast(message)
-                    World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id as LocalSceneObjectId)
+                    World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
                 }
 
                 if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
@@ -518,7 +518,7 @@ export async function spawnCachedMira(
                 }
 
                 progressHandle.done()
-
+                World.physicsSystem.deactivateGamepieces()
                 if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                     globalOpenPanel(InitialConfigPanel, undefined)
                 }

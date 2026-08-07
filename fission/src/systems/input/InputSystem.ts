@@ -28,14 +28,21 @@ class InputSystem extends WorldSystem {
     private static _rightJoystickPos: { x: number; y: number } = { x: 0, y: 0 }
 
     /** Maps a brain index to an input scheme. */
-    public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+    private static _brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+
+    public static get brainIndexSchemeMap() {
+        return this._brainIndexSchemeMap
+    }
 
     public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
-        InputSystem.brainIndexSchemeMap.set(index, scheme)
+        this.brainIndexSchemeMap.set(index, scheme)
         World.analyticsSystem?.event("Scheme Applied", {
             isCustomized: scheme.customized,
             schemeName: scheme.schemeName,
         })
+    }
+    public static getBrainIndexSchemeMapping(index: number): InputScheme | undefined {
+        return this.brainIndexSchemeMap.get(index)
     }
 
     // Janky solution to centralize escape key closing logic, first in the list is higher priority, returning true consumes the keypress
@@ -191,7 +198,7 @@ class InputSystem extends WorldSystem {
             return 0
         }
 
-        const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        const targetScheme = InputSystem.getBrainIndexSchemeMapping(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
 
