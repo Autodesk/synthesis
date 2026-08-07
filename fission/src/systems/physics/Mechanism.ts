@@ -20,6 +20,7 @@ class Mechanism {
     public nodeToBody: Map<RigidNodeId, Jolt.BodyID>
     public constraints: MechanismConstraint[] = []
     public stepListeners: Jolt.PhysicsStepListener[] = []
+    public vehicleTesters: Jolt.VehicleCollisionTester[] = []
     public layerReserve?: LayerReserve
     public controllable: boolean
     public ghostBodies: Jolt.BodyID[] = []
@@ -45,6 +46,10 @@ class Mechanism {
 
     public addStepListener(listener: Jolt.PhysicsStepListener) {
         this.stepListeners.push(listener)
+    }
+
+    public addVehicleTester(tester: Jolt.VehicleCollisionTester) {
+        this.vehicleTesters.push(tester)
     }
 
     public getBodyByNodeId(nodeId: string) {
