@@ -11,6 +11,12 @@ test("only auto depends on gameplay", () => {
     expect(isScoreboardVisible("off", true)).toBe(false)
 })
 
+test("a running match shows the scoreboard in every mode", () => {
+    for (const mode of SCOREBOARD_MODES) {
+        expect(isScoreboardVisible(mode, true, true)).toBe(true)
+    }
+})
+
 test("cycling visits every mode and returns to the start", () => {
     let mode: ScoreboardMode = SCOREBOARD_MODES[0]
     const visited = SCOREBOARD_MODES.map(() => (mode = nextScoreboardMode(mode)))

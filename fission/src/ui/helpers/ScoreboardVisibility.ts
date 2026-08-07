@@ -23,8 +23,8 @@ export const SCOREBOARD_GLYPH_SX: Record<ScoreboardMode, SxProps<Theme>> = {
     off: { ...TOP_BAR_GLYPH_SX, opacity: MUTED_GLYPH_OPACITY },
 }
 
-export function isScoreboardVisible(mode: ScoreboardMode, gameplayActive: boolean): boolean {
-    return mode === "on" || (mode === "auto" && gameplayActive)
+export function isScoreboardVisible(mode: ScoreboardMode, gameplayActive: boolean, matchActive = false): boolean {
+    return matchActive || mode === "on" || (mode === "auto" && gameplayActive)
 }
 
 export function nextScoreboardMode(mode: ScoreboardMode): ScoreboardMode {
@@ -34,6 +34,7 @@ export function nextScoreboardMode(mode: ScoreboardMode): ScoreboardMode {
 export interface Scoreboard {
     mode: ScoreboardMode
     visible: boolean
+    overriddenByMatch: boolean // the scoreboard is visible when a match is active
     setMode: (mode: ScoreboardMode) => void
 }
 
@@ -67,5 +68,10 @@ export function useScoreboard(): Scoreboard {
         [inMatchMode]
     )
 
-    return { mode, visible: isScoreboardVisible(mode, gameplayActive), setMode }
+    return {
+        mode,
+        visible: isScoreboardVisible(mode, gameplayActive, inMatchMode),
+        overriddenByMatch: inMatchMode && !isScoreboardVisible(mode, gameplayActive),
+        setMode,
+    }
 }

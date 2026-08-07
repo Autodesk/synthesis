@@ -17,8 +17,10 @@ const SCOREBOARD_TOOLTIPS: Record<ScoreboardMode, string> = {
     off: "Scoreboard: always off",
 }
 
+const MATCH_OVERRIDE_TOOLTIP = "Scoreboard: shown while a match is running"
+
 const ScoreboardModeButton: React.FC = () => {
-    const { mode, visible, setMode } = useScoreboard()
+    const { mode, visible, overriddenByMatch, setMode } = useScoreboard()
 
     const ScoreboardGlyph = visible ? SynthesisIcons.SCOREBOARD : SynthesisIcons.SCOREBOARD_HIDDEN
     const nextMode = nextScoreboardMode(mode)
@@ -26,9 +28,9 @@ const ScoreboardModeButton: React.FC = () => {
 
     return (
         <TopBarButton
-            label={SCOREBOARD_TOOLTIPS[mode]}
+            label={overriddenByMatch ? MATCH_OVERRIDE_TOOLTIP : SCOREBOARD_TOOLTIPS[mode]}
             icon={
-                <Box sx={SCOREBOARD_GLYPH_SX[mode]}>
+                <Box sx={overriddenByMatch ? SCOREBOARD_GLYPH_SX.on : SCOREBOARD_GLYPH_SX[mode]}>
                     <ScoreboardGlyph />
                 </Box>
             }
