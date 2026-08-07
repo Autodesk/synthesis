@@ -1,4 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
@@ -11,7 +10,7 @@ import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/driv
 import SwerveDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SwerveDriveBehavior.ts"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
+import { convertJoltQuatToThreeQuaternion } from "@/util/TypeConversions"
 import Brain from "../Brain"
 import type Behavior from "../behavior/Behavior"
 import { DriveType } from "../behavior/Behavior"
@@ -29,6 +28,7 @@ import HingeStimulus from "../stimulus/HingeStimulus"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import WheelRotationStimulus from "../stimulus/WheelStimulus"
 import { pairNearestHinges } from "./SwervePairing"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -79,7 +79,11 @@ class SynthesisBrain extends Brain {
         return this._brainIndex
     }
 
-    public configureDriveBehavior(driveType: DriveType) {
+    /**
+     * Applies the requested drive type and returns the drive type actually in effect afterwards.
+     * These can differ when the requested type is swerve but swerve detection fails.
+     */
+    public configureDriveBehavior(driveType: DriveType): DriveType {
         const previousType = this.driveType
         this.driveType = driveType
 
@@ -90,16 +94,17 @@ class SynthesisBrain extends Brain {
         const needsRebuild = (type: DriveType) => type === DriveType.SWERVE || type === DriveType.MECANUM
         if (needsRebuild(driveType) || needsRebuild(previousType)) {
             this.configure()
-            return
+            return this.driveType
         }
 
         // Tank <-> Arcade is a lightweight toggle on the existing skid-steer behavior.
         const existing = this._behaviors.find((behavior: Behavior) => behavior instanceof SkidSteerDriveBehavior)
         if (existing == null) {
             console.error("Can't find drive behavior!")
-            return
+            return this.driveType
         }
         existing.isArcade = driveType == DriveType.ARCADE
+        return this.driveType
     }
 
     /** Toggles robot-centric mecanum drive without rebuilding the drivetrain. */
@@ -134,6 +139,11 @@ class SynthesisBrain extends Brain {
             const useSwerve = this.driveType === DriveType.SWERVE && swerveInfo.inSwerve
             if (this.driveType === DriveType.SWERVE && !swerveInfo.inSwerve) {
                 console.warn("[Swerve] swerve detection failed for this robot; falling back to arcade drive.")
+                globalAddToast(
+                    "warning",
+                    `Swerve detection failed for this ${this.assemblyName}; falling back to arcade drive.`
+                )
+                this.driveType = DriveType.ARCADE
             }
 
             let driveBehavior: DriveBehavior
@@ -233,11 +243,6 @@ class SynthesisBrain extends Brain {
             stimulus => stimulus instanceof WheelRotationStimulus
         ) as WheelRotationStimulus[]
 
-        // Two body constraints are part of wheels and are used to determine which way a wheel is facing
-        const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints
-            .filter(mechConstraint => mechConstraint.primaryConstraint instanceof JOLT.TwoBodyConstraint)
-            .map(mechConstraint => mechConstraint.primaryConstraint as Jolt.TwoBodyConstraint)
-
         const leftWheels: WheelDriver[] = []
         const leftStimuli: WheelRotationStimulus[] = []
 
@@ -251,46 +256,49 @@ class SynthesisBrain extends Brain {
             ? chassisBody.GetCenterOfMassPosition()
             : World.physicsSystem.getBody(this._mechanism.constraints[0].childBody)!.GetCenterOfMassPosition()
 
-        // Collect constraint positions to determine the correct lateral axis.
+        // Get each wheel's position from its own vehicle constraint, expressed relative to the
+        // chassis CoM in the chassis-local frame.
+        const chassisRotation = chassisBody?.GetRotation()
+        const wheelPositions: { x: number; z: number }[] = wheelDrivers.map(w => {
+            const forward = new JOLT.Vec3(1, 0, 0)
+            const up = new JOLT.Vec3(0, 1, 0)
+            const transform = w.constraint.GetWheelWorldTransform(0, forward, up)
+            const translation = transform.GetTranslation()
+            const relWorld = new JOLT.Vec3(
+                translation.GetX() - robotCOM.GetX(),
+                translation.GetY() - robotCOM.GetY(),
+                translation.GetZ() - robotCOM.GetZ()
+            )
+            // InverseRotate returns a reused temporary; read it out before freeing relWorld.
+            const relLocal = chassisRotation ? chassisRotation.InverseRotate(relWorld) : relWorld
+            const pos = { x: relLocal.GetX(), z: relLocal.GetZ() }
+            JOLT.destroy(forward)
+            JOLT.destroy(up)
+            JOLT.destroy(relWorld)
+            return pos
+        })
+
         // For skid-steer robots the lateral axis (left vs right) is the one that splits
         // wheels into two equal groups. Try X and Z; pick the more balanced split.
-        const constraintPositions: { x: number; z: number }[] = []
-        for (let i = 0; i < wheelDrivers.length; i++) {
-            const m = fixedConstraints[i].GetConstraintToBody1Matrix() // STATIC_ALIAS
-            const t = m.GetTranslation()
-            constraintPositions.push({ x: t.GetX() - robotCOM.GetX(), z: t.GetZ() - robotCOM.GetZ() })
-        }
-
         const xImbalance = Math.abs(
-            constraintPositions.filter(p => p.x >= 0).length - constraintPositions.filter(p => p.x < 0).length
+            wheelPositions.filter(p => p.x >= 0).length - wheelPositions.filter(p => p.x < 0).length
         )
         const zImbalance = Math.abs(
-            constraintPositions.filter(p => p.z >= 0).length - constraintPositions.filter(p => p.z < 0).length
+            wheelPositions.filter(p => p.z >= 0).length - wheelPositions.filter(p => p.z < 0).length
         )
 
         // Use Z axis when it gives a more balanced split (URDF robots); fall back to X (Fusion 360 robots).
         // URDF's usual +Y-left convention converts to -Z-left in Synthesis, so +Z is the right side.
         const useLateralZ = zImbalance < xImbalance
-        const rightVector = useLateralZ ? new JOLT.RVec3(0, 0, -1) : new JOLT.RVec3(1, 0, 0)
 
         for (let i = 0; i < wheelDrivers.length; i++) {
-            // Jolt value returns (GetConstraintToBody1Matrix, GetTranslation, SubRVec3,
-            // GetCenterOfMassPosition) point to reused static temporaries, not heap
-            // allocations. Don't destroy them; freeing a non-heap address corrupts the heap.
-            const constraintMatrix = fixedConstraints[i].GetConstraintToBody1Matrix()
-            const translation = constraintMatrix.GetTranslation()
-            const wheelPos = convertJoltVec3ToJoltRVec3(translation, false)
-
-            const dotProduct = rightVector.Dot(wheelPos.SubRVec3(robotCOM))
+            // rightVector is (0,0,-1) for the Z axis and (1,0,0) for the X axis.
+            const dotProduct = useLateralZ ? -wheelPositions[i].z : wheelPositions[i].x
             const [wheels, stimuli] = dotProduct < 0 ? [rightWheels, rightStimuli] : [leftWheels, leftStimuli]
 
             wheels.push(wheelDrivers[i])
             stimuli.push(wheelStimuli[i])
-
-            // wheelPos is the only heap allocation in this loop.
-            JOLT.destroy(wheelPos)
         }
-        JOLT.destroy(rightVector)
 
         return new SkidSteerDriveBehavior(
             leftWheels,
