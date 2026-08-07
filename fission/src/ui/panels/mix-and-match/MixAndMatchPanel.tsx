@@ -68,7 +68,7 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const scene = MixAndMatchMode.scene
     const placed = [...(build?.state.components.values() ?? [])]
     const library = PartLibrary.list()
-    const savedBuilds = MirabufCachingService.getAll(MiraType.ROBOT)
+    const savedBuilds = MirabufCachingService.getAll(MiraType.ROBOT).filter(info => info.isMixAndMatchBuild)
     const selectedComponent = selected ? scene?.get(selected) : undefined
 
     useEffect(() => {
