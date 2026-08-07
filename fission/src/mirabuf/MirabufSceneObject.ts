@@ -416,14 +416,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         )
 
         const yUnitVec = new JOLT.Vec3(0, 1, 0)
-        const initialRotation = JOLT.Quat.prototype.sRotation(yUnitVec, initialPos.yaw)
+        const initialRotation = JOLT.Quat.prototype.sRotation(yUnitVec, initialPos.yaw) // STATIC_ALIAS
 
         const blankVec = new JOLT.Vec3()
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
             const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
             if (!jBodyId) return
 
-            const position = World.physicsSystem.getBody(jBodyId)!.GetPosition()
+            const position = World.physicsSystem.getBody(jBodyId)!.GetPosition() // STATIC_ALIAS
             const offset = convertJoltRVec3ToJoltVec3(position.Sub(bodyCenter))
 
             World.physicsSystem.setBodyPositionRotationAndVelocity(
@@ -435,7 +435,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 false
             )
 
-            JOLT.destroy(position)
             JOLT.destroy(offset)
         })
 
@@ -443,7 +442,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         JOLT.destroy(bodyCenter)
         JOLT.destroy(initialTranslation)
-        JOLT.destroy(initialRotation)
         JOLT.destroy(yUnitVec)
         JOLT.destroy(blankVec)
     }
@@ -460,6 +458,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public dispose(): void {
         this.mirabufInstance.dispose(World.sceneRenderer.scene)
+
+        if (this._unrotatedRootNodeToCenterPositionTranslation) {
+            JOLT.destroy(this._unrotatedRootNodeToCenterPositionTranslation)
+            this._unrotatedRootNodeToCenterPositionTranslation = undefined
+        }
 
         if (this._brain?.isSynthesis()) {
             this._brain.clearControls()
@@ -545,7 +548,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * Matches mesh transforms to their Jolt counterparts.
      */
     public updateMeshTransforms() {
-        let weightedCOM = new JOLT.RVec3(0, 0, 0)
+        const weightedCom = new THREE.Vector3()
         let totalMass = 0
 
         // If this.dispose() has been ran then return
@@ -555,18 +558,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 const body = World.physicsSystem.getBody(bodyId)
                 if (!body) return
 
-                const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+                const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()) // STATIC_ALIAS
                 this.updateNodeParts(rn, transform)
 
-                const position = body.GetPosition()
+                const position = body.GetPosition() // STATIC_ALIAS
                 if (Number.isNaN(position.GetX())) {
-                    const vel = body.GetLinearVelocity()
+                    const vel = body.GetLinearVelocity() // STATIC_ALIAS
                     console.warn(
                         `Invalid Position.\nPosition => ${position.GetX()}, ${position.GetY()}, ${position.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
                     )
-
-                    JOLT.destroy(vel)
-                    JOLT.destroy(position)
                 }
 
                 if (this._debugBodies) {
@@ -584,32 +584,24 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     const inverseMass = body.GetMotionProperties().GetInverseMass()
 
                     if (inverseMass > 0) {
-                        const oldWeighedCOM = weightedCOM
-
                         const mass = 1 / inverseMass
-                        const com = body.GetCenterOfMassPosition().Mul(mass)
+                        const comPosition = body.GetCenterOfMassPosition() // STATIC_ALIAS
 
-                        weightedCOM = weightedCOM.AddRVec3(com)
+                        weightedCom.addScaledVector(convertJoltVec3ToThreeVector3(comPosition, false), mass)
                         totalMass += mass
-
-                        JOLT.destroy(oldWeighedCOM)
-                        JOLT.destroy(com)
                     }
                 }
             })
         }
 
         if (this._centerOfMassIndicator) {
-            const setPositionAndVisibility = (netCoM: Jolt.RVec3) => {
-                this._centerOfMassIndicator!.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
-                this._centerOfMassIndicator!.visible = PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")
+            if (totalMass > 0) {
+                weightedCom.divideScalar(totalMass)
             }
 
-            const com = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
-            setPositionAndVisibility(com)
+            this._centerOfMassIndicator.position.copy(weightedCom)
+            this._centerOfMassIndicator.visible = PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")
         }
-
-        JOLT.destroy(weightedCOM)
     }
 
     public updateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
@@ -827,9 +819,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         const inverseRotation = this.getInverseRotationOfBody()
 
-        const biggest = JOLT.AABox.prototype.sBiggest()
+        const biggest = JOLT.AABox.prototype.sBiggest() // STATIC_ALIAS
         const scale = new JOLT.Vec3(1, 1, 1)
-        const identity = JOLT.Quat.prototype.sIdentity()
+        const identity = JOLT.Quat.prototype.sIdentity() // STATIC_ALIAS
 
         this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
             const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
@@ -883,8 +875,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         JOLT.destroy(inverseRotation)
 
         JOLT.destroy(scale)
-        JOLT.destroy(biggest)
-        JOLT.destroy(identity)
 
         const mins = [this._furthestVertices.x.min, this._furthestVertices.y.min, this._furthestVertices.z.min]
         const maxes = [this._furthestVertices.x.max, this._furthestVertices.y.max, this._furthestVertices.z.max]
@@ -937,11 +927,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // Finally, we just offset the root node to get the true center
         const position = convertJoltRVec3ToJoltVec3(rootBody.GetPosition().Add(offset))
-        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position)
+        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position) // STATIC_ALIAS
 
         const orientedBoundingBox = new JOLT.OrientedBox(transform, halfExtent)
 
-        JOLT.destroy(transform)
+        JOLT.destroy(offset)
+        JOLT.destroy(position)
         JOLT.destroy(halfExtent)
 
         return orientedBoundingBox
@@ -985,9 +976,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
             const shape = body.GetShape()
             const scale = new JOLT.Vec3(1, 1, 1)
-            const biggest = JOLT.AABox.prototype.sBiggest()
-
-            const identity = JOLT.Quat.prototype.sIdentity()
+            const biggest = JOLT.AABox.prototype.sBiggest() // STATIC_ALIAS
+            const identity = JOLT.Quat.prototype.sIdentity() // STATIC_ALIAS
             const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
 
             try {
@@ -1008,8 +998,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             } finally {
                 JOLT.destroy(triangleContext)
                 JOLT.destroy(scale)
-                JOLT.destroy(biggest)
-                JOLT.destroy(identity)
             }
         })
 

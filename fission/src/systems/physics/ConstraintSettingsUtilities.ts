@@ -6,6 +6,7 @@ import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } fro
 
 type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
+// Returns a STATIC_ALIAS `RVec3.AddRVec3()`'s scratch buffer.
 export function createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint) {
     const jointOrigin = jointDefinition.origin
         ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin)

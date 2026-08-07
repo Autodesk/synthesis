@@ -46,14 +46,16 @@ const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
                 <Select // TODO: disable/hide when wpilib brain selected
                     labelId="drivetrain-type-label"
                     label="Drivetrain Type"
-                    defaultValue={driveType}
+                    value={driveType}
                     onChange={e => {
                         if (selectedAssembly.brain?.isSynthesis()) {
-                            const newDriveType = e.target.value as DriveType
-                            selectedAssembly.brain.configureDriveBehavior(newDriveType)
+                            const appliedDriveType = selectedAssembly.brain.configureDriveBehavior(
+                                e.target.value as DriveType
+                            )
+                            setDriveType(appliedDriveType)
+
                             InputSchemeManager.applyCompatibleScheme(selectedAssembly.brain.brainIndex)
                             EventSystem.dispatch("InputSchemeChanged", {})
-                            setDriveType(newDriveType)
                         }
                     }}
                 >
