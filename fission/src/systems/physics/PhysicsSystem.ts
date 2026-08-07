@@ -514,21 +514,19 @@ class PhysicsSystem extends WorldSystem {
                             ? [bodyA, bodyB]
                             : [bodyB, bodyA]
 
-                        const [fixedConstraint, vehicleConstraint, vehicleListener, wheelForward] =
-                            this.createWheelConstraint(
-                                jointInst,
-                                jDef,
-                                maxAcceleration ?? 1.5,
-                                bodyOne,
-                                bodyTwo,
-                                parser.assembly.info!.version!,
-                                urdfImport,
-                                wheelRadii.get(jointGuid)
-                            )
+                        const [fixedConstraint, vehicleConstraint, vehicleListener] = this.createWheelConstraint(
+                            jointInst,
+                            jDef,
+                            maxAcceleration ?? 1.5,
+                            bodyOne,
+                            bodyTwo,
+                            parser.assembly.info!.version!,
+                            urdfImport,
+                            wheelRadii.get(jointGuid)
+                        )
                         addConstraint(fixedConstraint)
                         addConstraint(vehicleConstraint)
                         listener = vehicleListener
-                        if (wheelForward && !mechanism.urdfWheelForward) mechanism.urdfWheelForward = wheelForward
 
                         break
                     }

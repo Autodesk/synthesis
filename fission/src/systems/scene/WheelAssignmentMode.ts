@@ -4,7 +4,6 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { applyWheelAssignments, type WheelAssignment } from "@/mirabuf/WheelJointBuilder"
 import EventSystem from "@/systems/EventSystem.ts"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import {
     computeWheelAxisFromAABB,
@@ -129,13 +128,10 @@ class WheelAssignmentMode extends WorldSystem {
     public toggleReverseDrive(): void {
         this._driveReversed = !this._driveReversed
 
-        for (const sceneObject of World.sceneRenderer.mirabufSceneObjects.getAll()) {
-            if (!sceneObject.mechanism.urdfWheelForward) continue
-            if (!(sceneObject.brain instanceof SynthesisBrain)) continue
+        if (!this._object?.brain?.isSynthesis()) return
 
-            for (const driver of sceneObject.brain.getWheelDrivers()) {
-                driver.reversed = this._driveReversed
-            }
+        for (const driver of this._object.brain.getWheelDrivers()) {
+            driver.reversed = this._driveReversed
         }
 
         EventSystem.dispatch("WheelAssignmentDriveReversedChanged", { reversed: this._driveReversed })

@@ -20,11 +20,9 @@ const DrivetrainConfig: React.FC<SubpanelProps> = ({ sceneObject, pauseRef }) =>
     useEffect(() => {
         if (!sceneObject.brain?.isSynthesis()) return
         const driveBehavior = sceneObject.brain.getDriveBehavior()
-        console.log("driveBehavior", driveBehavior)
         if (!driveBehavior) return
         if (isRunning) {
             World.physicsSystem.releasePause(pauseRef)
-            console.log(World.physicsSystem.isPaused)
             driveBehavior.runTestingForward(0.5)
         } else {
             driveBehavior.releaseTesting()

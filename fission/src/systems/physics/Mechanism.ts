@@ -25,8 +25,6 @@ class Mechanism {
     public ghostBodies: Jolt.BodyID[] = []
     public touchedObjects: MirabufSceneObject[] = [] // [SceneObjectKey, rootBodyId]
 
-    public urdfWheelForward?: { x: number; y: number; z: number }
-
     public constructor(
         rootBody: string,
         bodyMap: Map<string, Jolt.BodyID>,
