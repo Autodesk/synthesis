@@ -16,7 +16,8 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../../AssemblyConfigHooks"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener } from "../../AssemblyConfigHooks"
 
 /**
  * Saves zone configuration to selected field.
@@ -161,7 +162,7 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
 
     useConfigurationSavedListener(saveEvent)
 
-    useHoldPhysicsPauseWhileMounted()
+    useHoldPhysicsPause()
 
     const defaultGizmoMesh = useMemo(() => {
         if (!selectedZone) return undefined

@@ -18,7 +18,8 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../AssemblyConfigHooks"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener } from "../AssemblyConfigHooks"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -180,7 +181,7 @@ const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly])
 
-    useHoldPhysicsPauseWhileMounted()
+    useHoldPhysicsPause()
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {

@@ -11,7 +11,8 @@ import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../AssemblyConfigHooks"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener } from "../AssemblyConfigHooks"
 import {
     useDirectionIndicatorMesh,
     useFieldPointMarkers,
@@ -51,7 +52,7 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, points, onChange, on
     const saveEvent = useCallback(() => persist(points, selectedField), [points, selectedField])
 
     useConfigurationSavedListener(saveEvent)
-    useHoldPhysicsPauseWhileMounted()
+    useHoldPhysicsPause()
     useEffect(() => persist(points, selectedField), [selectedField, points])
 
     const markerPoints = useMemo(
@@ -148,7 +149,7 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
     }, [readFieldRelativePosition, lookType, name, yawDeg, pitchDeg])
 
     useConfigurationSavedListener(useCallback(() => onSave(buildPoint()), [buildPoint, onSave]))
-    useHoldPhysicsPauseWhileMounted()
+    useHoldPhysicsPause()
 
     return (
         <Stack gap={2} className="bg-background-secondary rounded-md p-2">

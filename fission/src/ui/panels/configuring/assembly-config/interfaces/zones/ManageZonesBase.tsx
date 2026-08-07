@@ -4,7 +4,8 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import { Button, DeleteButton, EditButton, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { useConfigurationSavedListener, useHoldPhysicsPauseWhileMounted } from "../../AssemblyConfigHooks"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener } from "../../AssemblyConfigHooks"
 import type { BaseZonePreferences } from "./ZoneConfigBase"
 
 export type ZoneListItem = {
@@ -60,12 +61,11 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
     }, [zones, selectedField, persistZones])
 
     useConfigurationSavedListener(saveEvent)
+    useHoldPhysicsPause()
 
     useEffect(() => {
         saveZonesGeneric(zones, selectedField, persistZones)
     }, [selectedField, zones, persistZones])
-
-    useHoldPhysicsPauseWhileMounted()
 
     return (
         <Stack gap={2}>
