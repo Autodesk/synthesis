@@ -1,2 +1,4 @@
-[header]
-key = "value"
+cert-dir = "./secrets/"
+port = 2610
+headless = false
+secure = false
