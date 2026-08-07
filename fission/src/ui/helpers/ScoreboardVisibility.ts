@@ -9,12 +9,6 @@ import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 
-export const SCOREBOARD_MODE_LABELS: Record<ScoreboardMode, string> = {
-    auto: "Auto (during gameplay)",
-    on: "Always shown",
-    off: "Always hidden",
-}
-
 const MUTED_GLYPH_OPACITY = 0.55
 
 export const SCOREBOARD_GLYPH_SX: Record<ScoreboardMode, SxProps<Theme>> = {

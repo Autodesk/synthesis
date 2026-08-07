@@ -10,8 +10,7 @@ import Checkbox, { type CheckboxProps } from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import StatefulSlider, { type StatefulSliderProps } from "@/ui/components/StatefulSlider"
-import { Button, LabelWithTooltip, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { SCOREBOARD_MODE_LABELS, useScoreboard } from "@/ui/helpers/ScoreboardVisibility"
+import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
@@ -21,8 +20,6 @@ import {
     lowGraphicsPreferences,
     highGraphicsPreferences,
     type GraphicsPreferences,
-    SCOREBOARD_MODES,
-    type ScoreboardMode,
 } from "@/systems/preferences/PreferenceTypes"
 import { Select, MenuItem } from "@mui/material"
 
@@ -142,31 +139,6 @@ const GeneralTabCheckbox = ({
     return <Checkbox {...props} label={label} checked={pref} onClick={setPref} />
 }
 
-const ScoreboardModeSetting = () => {
-    const { mode, setMode } = useScoreboard()
-
-    return (
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <LabelWithTooltip
-                labelText="Scoreboard"
-                tooltipText="Auto shows the scoreboard while you are in gameplay or a match is running."
-            />
-            <Select
-                value={mode}
-                onChange={e => setMode(e.target.value as ScoreboardMode)}
-                size="small"
-                sx={{ width: 220, mr: 1.5 }}
-            >
-                {SCOREBOARD_MODES.map(m => (
-                    <MenuItem key={m} value={m}>
-                        {SCOREBOARD_MODE_LABELS[m]}
-                    </MenuItem>
-                ))}
-            </Select>
-        </Stack>
-    )
-}
-
 const GeneralTab: React.FC = () => (
     <Stack direction="column" gap={2}>
         <Spacer height={5} />
@@ -231,7 +203,6 @@ const GeneralTab: React.FC = () => (
                 tooltip="If disabled, protected zones will not be visible but will continue to function the same."
             />
             <GeneralTabCheckbox preference="RenderSceneTags" label="Show Scene Tags" tooltip="Name tags above robot." />
-            <ScoreboardModeSetting />
             <GeneralTabCheckbox
                 preference="ShowCenterOfMassIndicators"
                 label="Show Centers of Mass"
