@@ -89,7 +89,7 @@ export type OpenModalFn = <T, P>(
     customProps: P,
     parent?: UIScreen<any, any>,
     props?: Omit<ModalProps<P>, "type" | "configured" | "custom"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept">
-) => string
+) => string | null
 export type OpenPanelFn = <T, P>(
     content: FunctionComponent<PanelImplProps<T, P>>,
     customProps: P,
@@ -118,9 +118,17 @@ export type ConfigureScreenFn = <T extends UIScreen<any, any>>(
           : never
 ) => void
 
+export type UIBlockState =
+    | {
+          blocked: true
+          blockMessage: string
+      }
+    | { blocked: false }
+
 export type UIContextProps = {
     modal?: Modal<any, any>
     panels: Panel<any, any>[]
+    blockState: UIBlockState
     openModal: OpenModalFn
     openPanel: OpenPanelFn
     togglePanel: TogglePanelFn
@@ -134,6 +142,7 @@ export type UIContextProps = {
 
 export const UIContext = createContext<UIContextProps>({
     panels: [],
+    blockState: { blocked: false },
     openModal: (_content, _customProps, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
     openPanel: (
         _content,

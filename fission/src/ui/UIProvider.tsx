@@ -2,6 +2,7 @@ import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
+import { useMemo } from "react"
 import type { FunctionComponent, ReactNode } from "react"
 import { Fragment, useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
@@ -18,6 +19,7 @@ import {
     type Panel,
     type PanelProps,
     type TogglePanelFn,
+    type UIBlockState,
     UIContext,
     type UIScreen,
     type UIScreenCallbacks,
@@ -80,7 +82,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
 
-    const [_, refresh] = useReducer(x => !x, false)
+    const [refreshDep, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
@@ -105,6 +107,20 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         return false
     }
 
+    const blockState: UIBlockState = useMemo(() => {
+        const blockingPanel = panels.find(p => p.props.blocking)
+        if (blockingPanel != null) {
+            return {
+                blocked: true,
+                blockMessage:
+                    blockingPanel?.props?.blockingMessage ?? "Close the current panel before opening another.",
+            }
+        }
+        return {
+            blocked: false,
+        }
+    }, [refreshDep, panels])
+
     const openModal: OpenModalFn = useCallback(
         <T, P>(
             content: FunctionComponent<ModalImplProps<T, P>>,
@@ -113,6 +129,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             props: Omit<ModalProps<P>, "type" | "configured" | "custom"> &
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS
         ) => {
+            if (blockState.blocked) {
+                addToast("warning", blockState.blockMessage)
+                return null
+            }
+
             const id = uuidv4()
             const newModal = {
                 id,
@@ -143,7 +164,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setModal(newModal as Modal<any, any>)
             return id
         },
-        [modal]
+        [modal, blockState]
     )
 
     const snackbarAction = useCallback(
@@ -195,12 +216,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             }
 
             // if any (generic) open panel declares itself as blocking, prevent opening a new one
-            const blockingPanel = panels.find(p => p.props.blocking)
-            if (blockingPanel) {
-                const msg = blockingPanel.props.blockingMessage ?? "Close the current panel before opening another."
-                addToast("warning", msg)
+            if (blockState.blocked) {
+                addToast("warning", blockState.blockMessage)
                 return null
             }
+
             const id = uuidv4()
             const panel = {
                 id,
@@ -305,6 +325,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             value={{
                 modal,
                 panels,
+                blockState,
                 openModal,
                 openPanel,
                 togglePanel,
