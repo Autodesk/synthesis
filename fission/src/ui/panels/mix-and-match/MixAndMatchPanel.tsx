@@ -1,10 +1,11 @@
 import { Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useReducer, useState } from "react"
+import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 import MixAndMatchMode from "@/mix-and-match/MixAndMatchMode"
 import type { ComponentId } from "@/mix-and-match/MixAndMatchTypes"
 import PartLibrary from "@/mix-and-match/PartLibrary"
 import EventSystem from "@/systems/EventSystem"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import {
@@ -17,8 +18,11 @@ import {
     ToggleButton,
     ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
+
+const GIZMO_SIZE = 1.5
 
 function partName(libraryPartRef: string): string {
     return PartLibrary.find(libraryPartRef)?.name ?? "Unknown Part"
@@ -29,6 +33,7 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     const [, bumpRevision] = useReducer((x: number) => x + 1, 0)
     const [selected, setSelected] = useState<ComponentId | undefined>(undefined)
+    const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => {
         configureScreen(panel!, { title: "Mix and Match", hideAccept: true, cancelText: "Close Build" }, {})
@@ -43,12 +48,30 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     useEffect(() => EventSystem.listen("MixAndMatchStateChangedEvent", bumpRevision), [])
 
     const build = MixAndMatchMode.build
+    const scene = MixAndMatchMode.scene
     const placed = [...(build?.state.components.values() ?? [])]
     const library = PartLibrary.list()
+    const selectedComponent = selected ? scene?.get(selected) : undefined
 
     useEffect(() => {
         if (selected && !MixAndMatchMode.build?.state.components.has(selected)) setSelected(undefined)
     })
+
+    // The transform gizmo has no drag-end callback, so the placement is recorded when dragging stops.
+    useEffect(() => {
+        if (!selected) return
+
+        let wasDragging = false
+        let handle = requestAnimationFrame(function tick() {
+            const dragging = gizmoRef.current?.isDragging ?? false
+            if (wasDragging && !dragging) MixAndMatchMode.commitPlacement(selected).catch(console.error)
+
+            wasDragging = dragging
+            handle = requestAnimationFrame(tick)
+        })
+
+        return () => cancelAnimationFrame(handle)
+    }, [selected])
 
     const confirmDelete = useCallback(() => {
         if (!selected) return
@@ -110,6 +133,24 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                     {selected && <NegativeButton onClick={confirmDelete}>Delete Part</NegativeButton>}
                 </AccordionDetails>
             </Accordion>
+
+            {selectedComponent && (
+                <Accordion defaultExpanded>
+                    <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
+                        <Label size="md">Placement</Label>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <TransformGizmoControl
+                            key={`mix-and-match-gizmo-${selected}`}
+                            size={GIZMO_SIZE}
+                            gizmoRef={gizmoRef}
+                            parent={selectedComponent}
+                            defaultMode="translate"
+                            scaleDisabled={true}
+                        />
+                    </AccordionDetails>
+                </Accordion>
+            )}
         </Stack>
     )
 }
