@@ -59,7 +59,7 @@ export function convertThreeMatrix4ToJoltMat44(m: THREE.Matrix4) {
     return jMat
 }
 
-export function convertJoltVec3ToThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3, destroy: boolean = true) {
+export function convertJoltVec3ToThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3, destroy: boolean = false) {
     const [x, y, z] = [vec.GetX(), vec.GetY(), vec.GetZ()]
     if (destroy) JOLT.destroy(vec)
 
@@ -79,11 +79,11 @@ export function convertJoltQuatToThreeQuaternion(quat: Jolt.Quat, destroy: boole
 }
 
 export function convertJoltMat44ToThreeMatrix4(m: Jolt.RMat44, destroy: boolean = false): THREE.Matrix4 {
-    const [t, q] = [m.GetTranslation(), m.GetQuaternion()]
+    const [t, q] = [m.GetTranslation(), m.GetQuaternion()] // STATIC_ALIAS
 
     const mat = new THREE.Matrix4().compose(
-        convertJoltVec3ToThreeVector3(t, false),
-        convertJoltQuatToThreeQuaternion(q, false),
+        convertJoltVec3ToThreeVector3(t),
+        convertJoltQuatToThreeQuaternion(q),
         new THREE.Vector3(1, 1, 1)
     )
 
@@ -99,7 +99,7 @@ export function convertJoltVec3ToJoltRVec3(vec: Jolt.Vec3, destroy: boolean = tr
     return new JOLT.RVec3(x, y, z)
 }
 
-export function convertJoltRVec3ToJoltVec3(vec: Jolt.RVec3, destroy: boolean = true): Jolt.Vec3 {
+export function convertJoltRVec3ToJoltVec3(vec: Jolt.RVec3, destroy: boolean = false): Jolt.Vec3 {
     const [x, y, z] = [vec.GetX(), vec.GetY(), vec.GetZ()]
     if (destroy) JOLT.destroy(vec)
 
