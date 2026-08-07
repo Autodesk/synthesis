@@ -5,23 +5,9 @@ import type { LibraryPartRef } from "./MixAndMatchTypes"
 
 /**
  * The catalog of parts a build can be assembled from.
- * 
+ *
  * Library parts are of type `MiraType.COMPONENT`.
  */
-
-/**
- * Optional key a part author can set in their own mira's `Parts.user_data` to declare the discrete
- * sizes that part ships in. JSON array of {@link PartSizeOption}. Absent on parts that aren't
- * resizable.
- */
-export const MIX_AND_MATCH_SIZES_KEY = "mixAndMatchSizes"
-
-export interface PartSizeOption {
-    id: string
-    label: string
-    /** The library part to swap in for this size. May be the declaring part itself. */
-    partRef: LibraryPartRef
-}
 
 export interface LibraryPart {
     ref: LibraryPartRef
@@ -85,29 +71,6 @@ class PartLibrary {
         }
 
         return await MirabufCachingService.get(ref)
-    }
-
-    /** @returns The discrete sizes a part declares, or an empty list when it isn't resizable. */
-    public static sizesOf(assembly: mirabuf.IAssembly): PartSizeOption[] {
-        const raw = assembly.data?.parts?.userData?.data?.[MIX_AND_MATCH_SIZES_KEY]
-        if (!raw) return []
-
-        try {
-            const parsed: unknown = JSON.parse(raw)
-            if (!Array.isArray(parsed)) return []
-
-            return parsed.filter(
-                (option): option is PartSizeOption =>
-                    typeof option === "object" &&
-                    option != null &&
-                    typeof option.id === "string" &&
-                    typeof option.label === "string" &&
-                    typeof option.partRef === "string"
-            )
-        } catch (e) {
-            console.warn(`Malformed ${MIX_AND_MATCH_SIZES_KEY} on ${assembly.info?.name}`, e)
-            return []
-        }
     }
 }
 
