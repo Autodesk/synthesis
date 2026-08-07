@@ -177,6 +177,30 @@ describe("Mix and Match End to End", () => {
         expect(hasMixAndMatchSession(assembly!)).toBe(true)
     })
 
+    test("Resumes A Build From A Saved Mira By Cache Hash", async () => {
+        expect(await MixAndMatchMode.exportBuild()).toBe(true)
+        const exportedHash = MirabufCachingService.getAll(MiraType.ROBOT).at(-1)!.hash
+
+        expect(await MixAndMatchMode.resumeFrom(exportedHash)).toBe(true)
+
+        const build = MixAndMatchMode.build!
+        expect(build.state.components.size).toBe(2)
+        expect(MixAndMatchMode.scene!.components.size).toBe(2)
+
+        const welded = [...build.state.components.values()].filter(component => component.weld)
+        expect(welded).toHaveLength(1)
+    })
+
+    test("Refuses To Resume From A Mira With No Saved Build", async () => {
+        const info = await MirabufCachingService.cacheRemote(ROBOT_MODELS.DOZER, MiraType.ROBOT)
+        const buildBefore = MixAndMatchMode.build
+
+        expect(await MixAndMatchMode.resumeFrom(info!.hash)).toBe(false)
+
+        // Refused before touching the current build.
+        expect(MixAndMatchMode.build).toBe(buildBefore)
+    })
+
     test("Refuses To Export While A Component Is Stranded", async () => {
         const build = MixAndMatchMode.build!
         const scene = MixAndMatchMode.scene!
