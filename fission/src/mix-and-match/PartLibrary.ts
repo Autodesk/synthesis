@@ -5,16 +5,14 @@ import type { LibraryPartRef } from "./MixAndMatchTypes"
 
 /**
  * The catalog of parts a build can be assembled from.
- *
- * A library part is a whole assembly — a chassis frame, a swerve pod, an elevator — not a raw
- * sub-part, so v1 draws straight from the assemblies already available to the user rather than
- * introducing a second asset pipeline.
+ * 
+ * Library parts are of type `MiraType.COMPONENT`.
  */
 
 /**
  * Optional key a part author can set in their own mira's `Parts.user_data` to declare the discrete
  * sizes that part ships in. JSON array of {@link PartSizeOption}. Absent on parts that aren't
- * resizable, which is every bought-whole vendor assembly.
+ * resizable.
  */
 export const MIX_AND_MATCH_SIZES_KEY = "mixAndMatchSizes"
 
@@ -40,7 +38,7 @@ function stripExtension(name: string): string {
 class PartLibrary {
     /** Everything spawnable right now, cached assets first. */
     public static list(): LibraryPart[] {
-        const cached = MirabufCachingService.getAll(MiraType.ROBOT).map<LibraryPart>(info => ({
+        const cached = MirabufCachingService.getAll(MiraType.COMPONENT).map<LibraryPart>(info => ({
             ref: info.hash,
             name: stripExtension(info.name || "Unnamed"),
             cached: true,
@@ -48,7 +46,7 @@ class PartLibrary {
         }))
 
         const cachedRefs = new Set(cached.map(part => part.ref))
-        const remote = DefaultAssetLoader.robots
+        const remote = DefaultAssetLoader.components
             .filter(asset => !cachedRefs.has(asset.hash))
             .map<LibraryPart>(asset => ({
                 ref: asset.hash,
@@ -74,7 +72,12 @@ class PartLibrary {
         const part = this.find(ref)
 
         if (part && !part.cached && part.remotePath) {
-            const info = await MirabufCachingService.cacheRemote(part.remotePath, MiraType.ROBOT, part.name, part.ref)
+            const info = await MirabufCachingService.cacheRemote(
+                part.remotePath,
+                MiraType.COMPONENT,
+                part.name,
+                part.ref
+            )
             if (!info) {
                 console.error(`Failed to download library part ${part.name}`)
                 return undefined

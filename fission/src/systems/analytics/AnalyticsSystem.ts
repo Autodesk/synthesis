@@ -20,7 +20,7 @@ export interface AccumTimes {
 }
 type MiraEvent = {
     key?: string
-    type?: "robot" | "field"
+    type?: "robot" | "field" | "component"
     assemblyName?: string
     /**
      * Size (in bytes) of the mirabuf file

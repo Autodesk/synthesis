@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from "uuid"
 import FieldMiraEditor from "@/mirabuf/FieldMiraEditor.ts"
 
 const basepath = "public/Downloadables/Mira"
-const map: ManifestFileType = { fields: [], private: [], robots: [] }
+const map: ManifestFileType = { fields: [], private: [], robots: [], components: [] }
 
 const dirs = Object.keys(map) as (keyof typeof map)[]
 

@@ -22,6 +22,7 @@ class DefaultAssetLoader {
         const miraTypeMap: Partial<Record<keyof ManifestFileType, MiraType>> = {
             robots: MiraType.ROBOT,
             fields: MiraType.FIELD,
+            components: MiraType.COMPONENT,
         }
 
         Object.entries(manifest).forEach(([dir, assets]) => {
@@ -45,6 +46,10 @@ class DefaultAssetLoader {
 
     public static get fields() {
         return this._assets.filter(obj => obj.miraType == MiraType.FIELD)
+    }
+
+    public static get components() {
+        return this._assets.filter(obj => obj.miraType == MiraType.COMPONENT)
     }
 }
 
