@@ -156,4 +156,24 @@ describe("Mix and Match End to End", () => {
         const welded = [...build.state.components.values()].filter(component => component.weld)
         expect(welded).toHaveLength(1)
     })
+
+    test("Exports A Build Without Ending It", async () => {
+        const build = MixAndMatchMode.build!
+        const scene = MixAndMatchMode.scene!
+        const cachedBefore = MirabufCachingService.getAll(MiraType.ROBOT).length
+
+        expect(await MixAndMatchMode.exportBuild()).toBe(true)
+
+        // A snapshot, not an exit: the build-time scene is untouched.
+        expect(MixAndMatchMode.isActive).toBe(true)
+        expect(scene.components.size).toBe(2)
+        expect(build.state.components.size).toBe(2)
+
+        // Cached under the same tagged mira the build would produce on finish.
+        const cachedAfter = MirabufCachingService.getAll(MiraType.ROBOT)
+        expect(cachedAfter.length).toBe(cachedBefore + 1)
+        const exported = cachedAfter.at(-1)!
+        const assembly = await MirabufCachingService.get(exported.hash)
+        expect(hasMixAndMatchSession(assembly!)).toBe(true)
+    })
 })

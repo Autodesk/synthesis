@@ -1,10 +1,13 @@
 import type * as THREE from "three"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { mirabuf } from "@/proto/mirabuf"
 import EventSystem from "@/systems/EventSystem"
 import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
+import { downloadBlob } from "@/util/Utility"
 import { mergeAssemblies } from "./MixAndMatchAssemblyMerge"
 import MixAndMatchBuild from "./MixAndMatchBuild"
 import { writeSessionToAssembly } from "./MixAndMatchDocument"
@@ -199,6 +202,37 @@ class MixAndMatchMode {
             if (sceneObject) World.sceneRenderer.registerSceneObject(sceneObject)
         }
         globalAddToast("info", "Build Finished", "Build finished")
+
+        return true
+    }
+
+    /**
+     * Saves the build's merged assembly (or assemblies, one per weld tree) as ordinary tagged
+     * `.mira` files, ready to be re-opened for editing. Every other consumer sees a normal robot
+     * file. Unlike `finish`, the build-time scene is left alone - this is a snapshot, not an exit.
+     */
+    public static async exportBuild(): Promise<boolean> {
+        const [build, scene] = this.require()
+        if (!build || !scene) return false
+
+        if (build.state.components.size === 0) {
+            globalAddToast("warning", "Nothing to Export", "Add at least one part first.")
+            return false
+        }
+
+        const merged = mergeAssemblies(build.state, scene.assembliesByComponent())
+        merged.forEach(assembly => writeSessionToAssembly(assembly, build.session))
+
+        for (const [index, assembly] of merged.entries()) {
+            const baseName = assembly.info?.name ?? "Mix and Match Robot"
+            const name = merged.length > 1 ? `${baseName} ${index + 1}` : baseName
+            const encoded = mirabuf.Assembly.encode(assembly).finish()
+            downloadBlob(`${name}.mira`, encoded.buffer as ArrayBuffer)
+
+            // Cached as well so the saved build shows up in the part library, ready to be re-opened.
+            await MirabufCachingService.storeAssemblyInCache(assembly, { miraType: MiraType.ROBOT, name })
+        }
+        globalAddToast("info", "Exported", merged.length === 1 ? `Saved ${merged[0]?.info?.name ?? "Mix and Match Robot"}.mira` : `Saved ${merged.length} robots`)
 
         return true
     }
