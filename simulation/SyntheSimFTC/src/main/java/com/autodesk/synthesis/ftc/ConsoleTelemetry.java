@@ -4,7 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-/** Prints to stdout on update() -- good enough until Fission has a telemetry readout panel. */
+/** 
+ * Prints to stdout on update(). 
+ * 
+ * Should revisit when we add telemetry output to fission.
+ */
 public class ConsoleTelemetry implements Telemetry {
     private final Map<String, Object> data = new LinkedHashMap<>();
 

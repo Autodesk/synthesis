@@ -11,12 +11,6 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-/**
- * Fission-facing half of FTC codesim. The robot code process is the WS
- * *server*, Fission's browser worker is the *client*. Sends {type, device,
- * data} JSON messages on a distinct path/port (/ftcsimws, default 3301) so
- * it can run alongside other sim kinds without colliding.
- */
 public class FTCWsBridge extends WebSocketServer {
     public static final int DEFAULT_PORT = 3301;
     private static final String PATH = "/ftcsimws";

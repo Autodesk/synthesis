@@ -22,9 +22,8 @@ import javax.tools.ToolProvider;
 /**
  * Headless stand-in for FTC's OnBotJava: compiles a plain directory of team
  * source with the JDK's own compiler (no Gradle/Android project needed),
- * classloads the result, finds the @TeleOp LinearOpMode by reflection (same
- * discovery mechanism the real SDK uses on-device), and drives its lifecycle
- * off Fission WS connect/disconnect events.
+ * classloads the result, finds the @TeleOp LinearOpMode by reflection and 
+ * drives its lifecycle off Fission WS connect/disconnect events.
  */
 public class OpModeRunner {
     public static void main(String[] args) throws Exception {
@@ -108,6 +107,7 @@ public class OpModeRunner {
                     Thread.currentThread().interrupt();
                 }
             }
+
             current = null;
             thread = null;
         }
@@ -117,6 +117,7 @@ public class OpModeRunner {
             if (requestedType.isAssignableFrom(SynthesisDcMotor.class)) {
                 return new SynthesisDcMotor(deviceName, bridge);
             }
+
             return null;
         }
     }
@@ -126,6 +127,7 @@ public class OpModeRunner {
         try (Stream<Path> walk = Files.walk(srcDir)) {
             sourceFiles = walk.filter(p -> p.toString().endsWith(".java")).collect(Collectors.toList());
         }
+
         if (sourceFiles.isEmpty()) {
             throw new IllegalArgumentException("No .java files found under " + srcDir);
         }
@@ -167,16 +169,19 @@ public class OpModeRunner {
         if (candidates.isEmpty()) {
             throw new IllegalStateException("No @TeleOp LinearOpMode class found under " + srcDir);
         }
+
         if (requestedName != null) {
             return candidates.stream()
                     .filter(c -> c.getSimpleName().equals(requestedName) || c.getName().equals(requestedName))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No @TeleOp class named " + requestedName + " found"));
         }
+
         if (candidates.size() > 1) {
             System.out.println("[OpModeRunner] Multiple @TeleOp classes found, using the first: "
                     + candidates.stream().map(Class::getName).collect(Collectors.joining(", ")));
         }
+
         return candidates.get(0);
     }
 }

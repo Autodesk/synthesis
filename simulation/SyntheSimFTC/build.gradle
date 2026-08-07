@@ -1,7 +1,7 @@
 /*
  * SyntheSimFTC: clean-room shim of the FTC SDK's hardware/opmode surface,
  * plus the OpModeRunner harness that compiles+runs team OpMode source and
- * bridges it to Fission over a WebSocket -- see docs/CODE_SIMULATION.md.
+ * bridges it to Fission over a WebSocket.
  */
 
 plugins {

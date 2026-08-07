@@ -24,25 +24,3 @@ You should see updates both in Fission and in the readouts in the code simulator
 The robot code will control the movement of the robot in Fission, and you can expand each of the devices in the robot code simulator GUI to see if their fields are being updated by Fission.
 For example, running the JavaAutoSample should cause the `ADXL362[4]` and `SYN AHRS[0]` devices to update with rotation and acceleration data from Fission
 (note that the names may differ if the code changes).
-
-## FTC Code Simulation
-
-Same idea, over WS, but for FTC. We have a clean-room shim of the base FTC SDK's hardware/opmode surface called SyntheSimFTC under `simulation/SyntheSimFTC/`, plus an `OpModeRunner` harness that compiles+runs team OpMode source (JDK compiler only, no Gradle/Android project needed yet) and bridges it to Fission.
-
-To run:
-
-```
-cd simulation/SyntheSimFTC
-./gradlew run --args="--src <path-to-teamcode-src> [--opmode <ClassName>] [--port <port>]"
-```
-
-`--src` points at a plain directory of `.java` files, rooted so package folders (`org/firstinspires/ftc/teamcode/...`) hang off it. `--opmode` picks a class by name when multiple `@TeleOp` classes are found; defaults to the first discovered. `--port` defaults to `3301`.
-
-Example, running the dozer sample under `simulation/samples/FTCDozerArcadeDriveSample`. From the Synthesis repo root:
-
-```
-cd simulation/SyntheSimFTC
-./gradlew run --args="--src ../samples/FTCDozerArcadeDriveSample --opmode ExampleDozerArcadeDrive"
-```
-
-In Fission, configure the brain as FTC and it should connect to the running OpModeRunner.
