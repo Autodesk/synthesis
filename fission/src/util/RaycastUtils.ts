@@ -2,6 +2,7 @@ import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "./TypeConversions"
 
 export function rayCastForRigidBody(
@@ -26,12 +27,15 @@ export function rayCastForRigidBody(
     /** Transparent objects such as scoring zones should be ignored by `raycasting` [SYNTH-106] */
     while (hit && !(World.physicsSystem.getBodyAssociation(hit.data.mBodyID) instanceof RigidNodeAssociate)) {
         ignoredBodies.push(hit.data.mBodyID)
+        JOLT.destroy(hit.point)
         hit = performRayCast()
     }
+
+    ignoredBodies.forEach(id => JOLT.destroy(id))
 
     if (!hit) return undefined
 
     const association = World.physicsSystem.getBodyAssociation(hit.data.mBodyID) as RigidNodeAssociate
 
-    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point, false), association }
+    return { bodyId: hit.data.mBodyID, hitPoint: convertJoltVec3ToThreeVector3(hit.point, true), association }
 }

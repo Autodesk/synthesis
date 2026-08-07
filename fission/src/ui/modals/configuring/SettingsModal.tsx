@@ -1,15 +1,15 @@
 import { Box, Stack, Tab, Tabs, TextField } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useReducer, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { UserPreference, UserPreferences } from "@/systems/preferences/PreferenceTypes"
+import type { UserPreferences } from "@/systems/preferences/PreferenceTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
-import Checkbox from "@/ui/components/Checkbox"
+import Checkbox, { type CheckboxProps } from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
-import StatefulSlider from "@/ui/components/StatefulSlider"
+import StatefulSlider, { type StatefulSliderProps } from "@/ui/components/StatefulSlider"
 import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -52,10 +52,6 @@ type ThemeEditorTabActions = {
     reset: () => void
 }
 
-type GeneralTabProps = {
-    writePreference: <K extends UserPreference>(pref: K, value: UserPreferences[K]) => void
-}
-
 type GraphicsTabProps = {
     onActionsChange?: (actions: GraphicsTabActions) => void
 }
@@ -71,7 +67,7 @@ interface TabConfigBase {
 
 interface GeneralTabConfig extends TabConfigBase {
     key: "general"
-    component: React.ComponentType<GeneralTabProps>
+    component: React.ComponentType
 }
 
 interface GraphicsTabConfig extends TabConfigBase {
@@ -113,46 +109,72 @@ const ColorEditor: React.FC<{
     )
 }
 
-const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
+type TypedPreferenceKey<T> = {
+    [K in keyof UserPreferences]: UserPreferences[K] extends T ? K : never
+}[keyof UserPreferences]
+
+const GeneralTabSlider = ({
+    preference,
+    label,
+    ...props
+}: Omit<StatefulSliderProps, "defaultValue" | "onChange"> & { preference: TypedPreferenceKey<number> }) => {
+    const [pref, setPref] = useState(PreferencesSystem.getUserPreference(preference))
+    useEffect(() => {
+        PreferencesSystem.setUserPreference(preference, pref)
+    }, [pref])
+
+    return <StatefulSlider {...props} label={label} defaultValue={pref} onChange={setPref} />
+}
+
+const GeneralTabCheckbox = ({
+    preference,
+    label,
+    ...props
+}: Omit<CheckboxProps, "checked" | "onClick"> & { preference: TypedPreferenceKey<boolean> }) => {
+    const [pref, setPref] = useState(PreferencesSystem.getUserPreference(preference))
+    useEffect(() => {
+        PreferencesSystem.setUserPreference(preference, pref)
+    }, [pref])
+
+    return <Checkbox {...props} label={label} checked={pref} onClick={setPref} />
+}
+
+const GeneralTab: React.FC = () => (
     <Stack direction="column" gap={2}>
         <Spacer height={5} />
         <Label size="sm">Camera Settings</Label>
-        <StatefulSlider
-            min={0.1}
-            max={2.0}
-            defaultValue={PreferencesSystem.getUserPreference("SceneRotationSensitivity")}
-            label={"Scene Rotation Sensitivity"}
-            onChange={value => writePreference("SceneRotationSensitivity", value)}
-            step={0.1}
+        <GeneralTabSlider
+            preference="SceneRotationSensitivity"
+            label="Scene Rotation Sensitivity"
             tooltip="Controls how fast the scene rotates when dragging with the mouse."
             showValue={false}
+            min={0.1}
+            max={2.0}
+            step={0.1}
         />
         <Spacer height={5} />
-        <StatefulSlider
-            min={0.1}
-            max={3.0}
-            defaultValue={PreferencesSystem.getUserPreference("ScenePanSensitivity")}
-            label={"Scene Pan Sensitivity"}
-            onChange={value => writePreference("ScenePanSensitivity", value)}
-            step={0.1}
+        <GeneralTabSlider
+            preference="ScenePanSensitivity"
+            label="Scene Pan Sensitivity"
             tooltip="Controls how fast the scene pans when dragging with the right mouse button."
             showValue={false}
+            min={0.1}
+            max={3.0}
+            step={0.1}
         />
         <Spacer height={5} />
-        <StatefulSlider
-            min={0.06}
-            max={6.0}
-            defaultValue={PreferencesSystem.getUserPreference("ViewCubeRotationSensitivity")}
-            label={"ViewCube Rotation Sensitivity"}
-            onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
-            step={0.06}
+        <GeneralTabSlider
+            preference="ViewCubeRotationSensitivity"
+            label="ViewCube Rotation Sensitivity"
             tooltip="Controls how fast the view changes when dragging on the view cube."
             showValue={false}
+            min={0.06}
+            max={6.0}
+            step={0.06}
         />
-        <Checkbox
+        <GeneralTabCheckbox
+            preference="ShowViewCube"
             label="Show View Cube"
-            checked={PreferencesSystem.getUserPreference("ShowViewCube")}
-            onClick={checked => writePreference("ShowViewCube", checked)}
             tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
         />
         <Spacer height={10} />
@@ -160,71 +182,74 @@ const GeneralTab: React.FC<GeneralTabProps> = ({ writePreference }) => (
             Preferences
         </Label>
         <Stack direction="column">
-            <Checkbox
+            <GeneralTabCheckbox
+                preference="ReportAnalytics"
                 label="Report Analytics"
-                checked={PreferencesSystem.getUserPreference("ReportAnalytics")}
-                onClick={checked => writePreference("ReportAnalytics", checked)}
                 tooltip="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
             />
-            <Checkbox
+            <GeneralTabCheckbox
+                preference="SubsystemGravity"
                 label="Realistic Subsystem Gravity"
-                checked={PreferencesSystem.getUserPreference("SubsystemGravity")}
-                onClick={checked => writePreference("SubsystemGravity", checked)}
                 tooltip="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
             />
-            <Checkbox
+            <GeneralTabCheckbox
+                preference="RenderScoringZones"
                 label="Show Score Zones"
-                checked={PreferencesSystem.getUserPreference("RenderScoringZones")}
-                onClick={checked => writePreference("RenderScoringZones", checked)}
                 tooltip="If disabled, scoring zones will not be visible but will continue to function the same."
             />
-            <Checkbox
+            <GeneralTabCheckbox
+                preference="RenderProtectedZones"
                 label="Show Protected Zones"
-                checked={PreferencesSystem.getUserPreference("RenderProtectedZones")}
-                onClick={checked => writePreference("RenderProtectedZones", checked)}
                 tooltip="If disabled, protected zones will not be visible but will continue to function the same."
             />
-            <Checkbox
-                label="Show Scene Tags"
-                checked={PreferencesSystem.getUserPreference("RenderSceneTags")}
-                onClick={checked => writePreference("RenderSceneTags", checked)}
-                tooltip="Name tags above robot."
-            />
-            <Checkbox
-                label="Show Scoreboard"
-                checked={PreferencesSystem.getUserPreference("RenderScoreboard")}
-                onClick={checked => {
-                    writePreference("RenderScoreboard", checked)
-                    if (checked) {
-                        // TODO: figure out scoreboard - I think it should be its own component and not a panel
-                        // openPanel("scoreboard");
-                    }
-                }}
-            />
-            <Checkbox
+            <GeneralTabCheckbox preference="RenderSceneTags" label="Show Scene Tags" tooltip="Name tags above robot." />
+            <GeneralTabCheckbox preference="RenderScoreboard" label="Show Scoreboard" />
+            <GeneralTabCheckbox
+                preference="ShowCenterOfMassIndicators"
                 label="Show Centers of Mass"
-                checked={PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")}
-                onClick={checked => writePreference("ShowCenterOfMassIndicators", checked)}
                 tooltip="Show a purple dot to indicate the center of mass of each robot in frame"
             />
-            <Checkbox
-                label="Mute All Sound"
-                checked={PreferencesSystem.getUserPreference("MuteAllSound")}
-                onClick={checked => writePreference("MuteAllSound", checked)}
-            />
-            <StatefulSlider
+            <GeneralTabCheckbox preference="MuteAllSound" label="Mute All Sound" />
+            <GeneralTabSlider
+                preference="SFXVolume"
+                label="SFX Volume"
+                tooltip="Volume of sound effects (%)."
                 min={0}
                 max={100}
-                defaultValue={PreferencesSystem.getUserPreference("SFXVolume")}
-                label={"SFX Volume"}
-                onChange={value => writePreference("SFXVolume", value)}
-                tooltip="Volume of sound effects (%)."
             />
         </Stack>
     </Stack>
 )
 
 type GraphicsPreset = "low" | "medium" | "high" | "custom"
+
+const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
+    return (
+        a.fancyShadows === b.fancyShadows &&
+        a.maxFar === b.maxFar &&
+        a.cascades === b.cascades &&
+        a.shadowMapSize === b.shadowMapSize &&
+        a.antiAliasing === b.antiAliasing
+    )
+}
+
+const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
+    const lowPrefs = lowGraphicsPreferences()
+    if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
+        return "low"
+    }
+
+    const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
+        { key: "medium", prefs: mediumGraphicsPreferences() },
+        { key: "high", prefs: highGraphicsPreferences() },
+    ]
+
+    for (const p of presets) {
+        if (prefsEqual(prefs, p.prefs)) return p.key
+    }
+
+    return "custom"
+}
 
 const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [reload, setReload] = useState<boolean>(false)
@@ -237,34 +262,6 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [cascades, setCascades] = useState<number>(PreferencesSystem.getGraphicsPreferences().cascades)
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
-
-    const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
-        return (
-            a.fancyShadows === b.fancyShadows &&
-            a.maxFar === b.maxFar &&
-            a.cascades === b.cascades &&
-            a.shadowMapSize === b.shadowMapSize &&
-            a.antiAliasing === b.antiAliasing
-        )
-    }
-
-    const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
-        const lowPrefs = lowGraphicsPreferences()
-        if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
-            return "low"
-        }
-
-        const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
-            { key: "medium", prefs: mediumGraphicsPreferences() },
-            { key: "high", prefs: highGraphicsPreferences() },
-        ]
-
-        for (const p of presets) {
-            if (prefsEqual(prefs, p.prefs)) return p.key
-        }
-
-        return "custom"
-    }
 
     const applyGraphicsPreferencesLocally = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
         setLightIntensity(prefs.lightIntensity)
@@ -450,16 +447,25 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
         secondaryColor,
         blueAllianceColor,
         redAllianceColor,
+        topBarColor,
+        surfaceColor,
+        topBarTextColor,
         setPrimaryColor,
         setSecondaryColor,
         setBlueAllianceColor,
         setRedAllianceColor,
+        setTopBarColor,
+        setSurfaceColor,
+        setTopBarTextColor,
     } = useThemeContext()
 
     const [tempPrimary, setTempPrimary] = useState(primaryColor)
     const [tempSecondary, setTempSecondary] = useState(secondaryColor)
     const [tempBlue, setTempBlue] = useState(blueAllianceColor)
     const [tempRed, setTempRed] = useState(redAllianceColor)
+    const [tempTopBar, setTempTopBar] = useState(topBarColor)
+    const [tempSurface, setTempSurface] = useState(surfaceColor)
+    const [tempTopBarText, setTempTopBarText] = useState(topBarTextColor)
 
     // Create actions object and notify parent
     useEffect(() => {
@@ -469,12 +475,18 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
                 setSecondaryColor(tempSecondary)
                 setBlueAllianceColor(tempBlue)
                 setRedAllianceColor(tempRed)
+                setTopBarColor(tempTopBar)
+                setSurfaceColor(tempSurface)
+                setTopBarTextColor(tempTopBarText)
             },
             reset: () => {
                 setTempPrimary(primaryColor)
                 setTempSecondary(secondaryColor)
                 setTempBlue(blueAllianceColor)
                 setTempRed(redAllianceColor)
+                setTempTopBar(topBarColor)
+                setTempSurface(surfaceColor)
+                setTempTopBarText(topBarTextColor)
             },
         }
         onActionsChange?.(actions)
@@ -483,15 +495,24 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
         tempSecondary,
         tempBlue,
         tempRed,
+        tempTopBar,
+        tempSurface,
+        tempTopBarText,
         primaryColor,
         secondaryColor,
         blueAllianceColor,
         redAllianceColor,
+        topBarColor,
+        surfaceColor,
+        topBarTextColor,
         onActionsChange,
         setBlueAllianceColor,
         setPrimaryColor,
         setRedAllianceColor,
         setSecondaryColor,
+        setTopBarColor,
+        setSurfaceColor,
+        setTopBarTextColor,
     ])
 
     return (
@@ -501,6 +522,9 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
             <ColorEditor label="Secondary Color" color={tempSecondary} setColor={setTempSecondary} />
             <ColorEditor label="Blue Alliance" color={tempBlue} setColor={setTempBlue} />
             <ColorEditor label="Red Alliance" color={tempRed} setColor={setTempRed} />
+            <ColorEditor label="Top Bar" color={tempTopBar} setColor={setTempTopBar} />
+            <ColorEditor label="Surface" color={tempSurface} setColor={setTempSurface} />
+            <ColorEditor label="Top Bar Text" color={tempTopBarText} setColor={setTempTopBarText} />
             <Button
                 startIcon={<SynthesisIcons.DICE />}
                 onClick={() => {
@@ -516,6 +540,9 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
                     setTempSecondary("#ce93d8")
                     setTempBlue("#0066b3")
                     setTempRed("#ed1c24")
+                    setTempTopBar("#3d4352")
+                    setTempSurface("#2a3340")
+                    setTempTopBarText("#b5bcca")
                 }}
             >
                 Reset
@@ -526,6 +553,9 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
                     setSecondaryColor(tempSecondary)
                     setBlueAllianceColor(tempBlue)
                     setRedAllianceColor(tempRed)
+                    setTopBarColor(tempTopBar)
+                    setSurfaceColor(tempSurface)
+                    setTopBarTextColor(tempTopBarText)
                 }}
             >
                 Apply
@@ -539,7 +569,6 @@ interface SettingsModalCustomProps {
 
 const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | undefined>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
-    const [_, refresh] = useReducer(x => !x, false)
     const [activeTab, setActiveTab] = useState<string>(modal?.props.custom?.initialTab || "general")
 
     const [graphicsActions, setGraphicsActions] = useState<GraphicsTabActions | null>(null)
@@ -551,11 +580,6 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
         { key: "graphics", label: "Graphics", component: GraphicsTab },
         { key: "theme", label: "Theme Editor", component: ThemeEditorTab },
     ]
-
-    const writePreference = <K extends UserPreference>(pref: K, value: UserPreferences[K]) => {
-        PreferencesSystem.setUserPreference(pref, value)
-        refresh()
-    }
 
     const save = useCallback(() => {
         if (graphicsActions) {
@@ -595,7 +619,7 @@ const SettingsModal: React.FC<ModalImplProps<void, SettingsModalCustomProps | un
         switch (currentTab.key) {
             case "general": {
                 const GeneralComponent = currentTab.component
-                return <GeneralComponent writePreference={writePreference} />
+                return <GeneralComponent />
             }
             case "graphics": {
                 const GraphicsComponent = currentTab.component

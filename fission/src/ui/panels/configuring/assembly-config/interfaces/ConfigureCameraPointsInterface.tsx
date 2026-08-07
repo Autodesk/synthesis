@@ -3,15 +3,15 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import * as THREE from "three"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { CameraLook, CameraPoint } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 const RAD_TO_DEG = 180 / Math.PI
 const DEG_TO_RAD = Math.PI / 180
@@ -47,11 +47,9 @@ const ListView: React.FC<ListViewProps> = ({ selectedField, points, onChange, on
     useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
     useEffect(() => {
         persist(points, selectedField)
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
     }, [selectedField, points])
+
+    useHoldPhysicsPause()
 
     return (
         <>
@@ -133,12 +131,7 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
     }, [selectedField, point.pos, lookType, name, yawDeg, pitchDeg])
 
     useEffect(() => EventSystem.listen("ConfigurationSavedEvent", () => onSave(buildPoint())), [buildPoint, onSave])
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
+    useHoldPhysicsPause()
 
     return (
         <Stack gap={2} className="bg-background-secondary rounded-md p-2">
@@ -195,32 +188,39 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
     )
 }
 
-interface ConfigureCameraPointsProps {
-    selectedField: MirabufSceneObject
-    initialPoints: CameraPoint[]
-}
-
-const ConfigureCameraPointsInterface: React.FC<ConfigureCameraPointsProps> = ({ selectedField, initialPoints }) => {
-    const [points, setPoints] = useState<CameraPoint[]>(initialPoints)
+const ConfigureCameraPointsInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
+}) => {
+    const [points, setPoints] = useState<CameraPoint[]>(selectedAssembly.fieldPreferences?.cameraPoints ?? [])
     const [editIndex, setEditIndex] = useState<number | undefined>(undefined)
+
+    useEffect(() => {
+        const initial = structuredClone(selectedAssembly.fieldPreferences!.cameraPoints)
+        registerCleanupFunction(undefined, () => {
+            const prefs = selectedAssembly.fieldPreferences
+            if (prefs == null) return
+            prefs.cameraPoints = initial
+        })
+    }, [registerCleanupFunction, selectedAssembly])
 
     const updatePoint = useCallback(
         (idx: number, updated: CameraPoint) => {
             setPoints(prev => {
                 const next = [...prev]
                 next[idx] = updated
-                persist(next, selectedField)
+                persist(next, selectedAssembly)
                 return next
             })
         },
-        [selectedField]
+        [selectedAssembly]
     )
 
     const handleAdd = () => {
         const newPoint: CameraPoint = { name: "New Camera", pos: [0, 3, 0], look: { type: "field" } }
         setPoints(prev => {
             const next = [...prev, newPoint]
-            persist(next, selectedField)
+            persist(next, selectedAssembly)
             setEditIndex(next.length - 1)
             return next
         })
@@ -236,7 +236,7 @@ const ConfigureCameraPointsInterface: React.FC<ConfigureCameraPointsProps> = ({ 
                 </Stack>
                 <Divider />
                 <EditView
-                    selectedField={selectedField}
+                    selectedField={selectedAssembly}
                     point={toEditable(points[editIndex])}
                     onSave={updated => updatePoint(editIndex, updated)}
                 />
@@ -246,11 +246,11 @@ const ConfigureCameraPointsInterface: React.FC<ConfigureCameraPointsProps> = ({ 
 
     return (
         <ListView
-            selectedField={selectedField}
+            selectedField={selectedAssembly}
             points={points}
             onChange={newPoints => {
                 setPoints(newPoints)
-                persist(newPoints, selectedField)
+                persist(newPoints, selectedAssembly)
             }}
             onAdd={handleAdd}
             onEdit={idx => setEditIndex(idx)}
