@@ -171,8 +171,11 @@ class MixAndMatchMode {
     }
 
     /**
-     * Turns the build into an ordinary simulated robot: welds become fixed constraints, physics comes
-     * back on, and the parts are handed off to the scene as they are.
+     * Turns the build into an ordinary simulated robot and hands the parts off to the scene as they
+     * are.
+     *
+     * TODO: Update this step to include logic for combining all the mix-and-match bodies into one
+     * mira assembly.
      *
      * @returns Whether the build was finished. Refused while scrubbed or while nothing is placed.
      */
@@ -193,9 +196,8 @@ class MixAndMatchMode {
         const assembly = scene.rootAssembly(build.state)
         if (assembly) writeSessionToAssembly(assembly, build.session)
 
-        const welds = scene.bakeWelds(build.state)
         this.exit(true)
-        globalAddToast("info", "Build Finished", `${welds} weld${welds === 1 ? "" : "s"} applied`)
+        globalAddToast("info", "Build Finished", "Build finished")
 
         return true
     }
