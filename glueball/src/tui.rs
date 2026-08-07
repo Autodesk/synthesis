@@ -9,6 +9,8 @@
 //!
 //! The admin can select a user with the arrows and kick them with `k` (after a confirmation),
 //! and lock or unlock the focused room with `l` to control whether new clients may join.
+//!
+//! DISCLAIMER: This system is sort of a mess
 
 use crate::lock;
 use crate::logging::{self, LogSnapshot, Logger, RoomLogs};
@@ -25,9 +27,7 @@ use std::{process, thread};
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
-use ratatui::widgets::{
-    Block, BorderType, Clear, List, ListItem, ListState, Paragraph, Tabs, Wrap,
-};
+use ratatui::widgets::{Block, BorderType, Clear, List, ListItem, ListState, Paragraph, Tabs};
 use ratatui::{
     DefaultTerminal, Frame,
     text::{Line, Span},
@@ -92,7 +92,24 @@ fn run_app(
             && let Event::Key(key) = event::read()?
             && key.kind == KeyEventKind::Press
         {
-            app.on_key(key.code, key.modifiers);
+            let room_logs_len = app
+                .focused_room
+                .clone()
+                .map(|room_id| {
+                    logger_snapshot
+                        .1
+                        .get::<str>(room_id.as_ref())
+                        .map(|logs| logs.len())
+                })
+                .flatten()
+                .unwrap_or(0);
+
+            app.on_key(
+                key.code,
+                key.modifiers,
+                room_logs_len,
+                logger_snapshot.0.len(),
+            );
         }
 
         if app.should_quit {
@@ -113,6 +130,11 @@ struct App {
     pending_kick: Option<ClientId>,
     should_quit: bool,
 
+    /// Cursor distance from the bottom in the focused room log (0 = latest entry).
+    room_log_cursor: usize,
+    /// Cursor distance from the bottom in the system log (0 = latest entry).
+    system_log_cursor: usize,
+
     /// Informatoin cached from the last `sync` so key handling can act without a snapshot.
     tab_count: usize,
     panels_on_tab: usize,
@@ -130,6 +152,9 @@ impl App {
             selected_user: 0,
             pending_kick: None,
             should_quit: false,
+
+            room_log_cursor: 0,
+            system_log_cursor: 0,
 
             tab_count: 1,
             panels_on_tab: 0,
@@ -162,7 +187,11 @@ impl App {
         }
 
         let focused = &snapshot.rooms[base + self.focused_panel];
-        self.focused_room = Some(focused.id.clone());
+        let new_focused_room = Some(focused.id.clone());
+        if self.focused_room != new_focused_room {
+            self.room_log_cursor = 0;
+        }
+        self.focused_room = new_focused_room;
         self.focused_members.clone_from(&focused.members);
 
         if self.focused_members.is_empty() {
@@ -172,7 +201,13 @@ impl App {
         }
     }
 
-    fn on_key(&mut self, code: KeyCode, mods: KeyModifiers) {
+    fn on_key(
+        &mut self,
+        code: KeyCode,
+        mods: KeyModifiers,
+        room_log_len: usize,
+        sys_log_len: usize,
+    ) {
         // While a kick is pending, only y/n/esc are meaningful.
         if self.pending_kick.is_some() {
             match code {
@@ -199,10 +234,10 @@ impl App {
 
             KeyCode::Left => self.focused_panel = self.focused_panel.saturating_sub(1),
             KeyCode::Right => self.focused_panel += 1, // clamped in `sync`
-            //
+
             KeyCode::Up => self.selected_user = self.selected_user.saturating_sub(1),
             KeyCode::Down => self.selected_user += 1, // clamped in `sync`
-            //
+
             KeyCode::Char('k') => {
                 if let Some((uid, _)) = self.focused_members.get(self.selected_user) {
                     self.pending_kick = Some(*uid);
@@ -213,6 +248,23 @@ impl App {
                     lock!(self.state).toggle_room_lock(room_id);
                 }
             }
+
+            // Room log cursor: [ moves up (older), ] moves down (newer).
+            // Clamping to valid range is handled in render_logs.
+            KeyCode::Char('[') => {
+                self.room_log_cursor =
+                    usize::min(self.room_log_cursor + 1, room_log_len.saturating_sub(1))
+            }
+            KeyCode::Char(']') => self.room_log_cursor = self.room_log_cursor.saturating_sub(1),
+
+            // System log cursor: { moves up (older), } moves down (newer).
+            // Clamping to valid range is handled in render_logs.
+            KeyCode::Char('{') => {
+                self.system_log_cursor =
+                    usize::min(self.system_log_cursor + 1, sys_log_len.saturating_sub(1))
+            }
+            KeyCode::Char('}') => self.system_log_cursor = self.system_log_cursor.saturating_sub(1),
+
             _ => {}
         }
     }
@@ -236,7 +288,7 @@ fn ui(frame: &mut Frame, app: &App, snapshot: &Snapshot, log_snapshot: &LogSnaps
 
     render_tabs(frame, chunks[0], app, snapshot);
     render_body(frame, middle[0], app, snapshot, &log_snapshot.1);
-    render_system_log(frame, middle[1], &log_snapshot.0);
+    render_system_log(frame, middle[1], &log_snapshot.0, app.system_log_cursor);
     render_status(frame, chunks[2]);
 
     if let Some(uid) = app.pending_kick {
@@ -305,7 +357,16 @@ fn render_body(
                 let fallback = VecDeque::new();
                 let room_log = room_logs.get(&room.id).unwrap_or(&fallback);
 
-                render_room_panel(frame, col, room, room_log, focused, app.selected_user);
+                let log_cursor = if focused { app.room_log_cursor } else { 0 };
+                render_room_panel(
+                    frame,
+                    col,
+                    room,
+                    room_log,
+                    focused,
+                    app.selected_user,
+                    log_cursor,
+                );
             }
             None => {
                 frame.render_widget(Block::bordered().title(" (empty) "), col);
@@ -321,6 +382,7 @@ fn render_room_panel(
     logs: &VecDeque<logging::Event>,
     focused: bool,
     cursor: usize,
+    log_cursor: usize,
 ) {
     let border_style = if focused {
         Style::default().fg(Color::Yellow)
@@ -357,7 +419,7 @@ fn render_room_panel(
         .split(inner);
 
     render_users(frame, rows[0], room, focused, cursor);
-    render_logs(frame, rows[1], logs);
+    render_logs(frame, rows[1], logs, log_cursor);
 }
 
 fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: bool, cursor: usize) {
@@ -398,33 +460,118 @@ fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: boo
     }
 }
 
-fn render_logs(frame: &mut Frame, area: Rect, logs: &VecDeque<logging::Event>) {
-    // Show the newest lines that fit (area height minus the two border rows).
+fn render_logs(
+    frame: &mut Frame,
+    area: Rect,
+    logs: &VecDeque<logging::Event>,
+    cursor_from_end: usize,
+) {
     let visible = area.height.saturating_sub(2) as usize;
-    let start = logs.len().saturating_sub(visible);
-    let text: Vec<Line> = logs.iter().skip(start).map(Line::from).collect();
+    let len = logs.len();
 
-    let logs = Paragraph::new(text)
-        .block(Block::bordered().title(" Logs "))
-        .wrap(Wrap { trim: false });
+    if len == 0 {
+        frame.render_widget(Block::bordered().title(" Logs "), area);
+        return;
+    }
 
-    frame.render_widget(logs, area);
+    // Cursor as absolute index: 0 = oldest, len-1 = newest.
+    let cursor_abs = (len - 1).saturating_sub(cursor_from_end);
+
+    // Centre the cursor in the view window, then clamp so we don't overrun.
+    let view_start = cursor_abs.saturating_sub(visible / 2);
+    let view_start = if view_start + visible > len {
+        len.saturating_sub(visible)
+    } else {
+        view_start
+    };
+    let view_end = (view_start + visible).min(len);
+
+    let text: Vec<Line> = logs
+        .iter()
+        .enumerate()
+        .skip(view_start)
+        .take(view_end - view_start)
+        .map(|(i, event)| {
+            let style = Style::from(&event.kind);
+            let line = Line::from(event.message.clone());
+            if i == cursor_abs {
+                line.style(style.bg(Color::Indexed(245)))
+            } else {
+                line.style(style)
+            }
+        })
+        .collect();
+
+    let title = if cursor_from_end > 0 {
+        format!(" Logs [{}/{}] ", cursor_abs + 1, len)
+    } else {
+        " Logs ".to_string()
+    };
+
+    frame.render_widget(
+        Paragraph::new(text).block(Block::bordered().title(title)),
+        area,
+    );
 }
 
-fn render_system_log(frame: &mut Frame, area: Rect, global_log: &VecDeque<logging::Event>) {
+fn render_system_log(
+    frame: &mut Frame,
+    area: Rect,
+    global_log: &VecDeque<logging::Event>,
+    cursor_from_end: usize,
+) {
     let visible = area.height.saturating_sub(2) as usize;
-    let start = global_log.len().saturating_sub(visible);
-    let text: Vec<Line> = global_log.iter().skip(start).map(Line::from).collect();
+    let len = global_log.len();
 
-    let panel = Paragraph::new(text)
-        .block(Block::bordered().title(" System "))
-        .style(Style::default().fg(Color::DarkGray))
-        .wrap(Wrap { trim: false });
-    frame.render_widget(panel, area);
+    if len == 0 {
+        frame.render_widget(
+            Block::bordered()
+                .title(" System ")
+                .style(Style::default().fg(Color::DarkGray)),
+            area,
+        );
+        return;
+    }
+
+    let cursor_abs = (len - 1).saturating_sub(cursor_from_end);
+
+    let view_start = cursor_abs.saturating_sub(visible / 2);
+    let view_start = if view_start + visible > len {
+        len.saturating_sub(visible)
+    } else {
+        view_start
+    };
+    let view_end = (view_start + visible).min(len);
+
+    let text: Vec<Line> = global_log
+        .iter()
+        .enumerate()
+        .skip(view_start)
+        .take(view_end - view_start)
+        .map(|(i, event)| {
+            let line = Line::from(event.message.clone());
+            if i == cursor_abs {
+                line.style(Style::from(&event.kind).bg(Color::Indexed(245)))
+            } else {
+                line.style(Style::from(&event.kind))
+            }
+        })
+        .collect();
+
+    let title = if cursor_from_end > 0 {
+        format!(" System [{}/{}] ", cursor_abs + 1, len)
+    } else {
+        " System ".to_string()
+    };
+
+    frame.render_widget(
+        Paragraph::new(text).block(Block::bordered().title(title)),
+        area,
+    );
 }
 
 fn render_status(frame: &mut Frame, area: Rect) {
-    let hints = " q quit  │  Tab/⇧Tab page rooms  │  ←/→ focus panel  │  ↑/↓ select user  │  k kick  │  l lock/unlock ";
+    let hints = " q quit  │  Tab/⇧Tab page rooms  │  ←/→ focus panel  │  ↑/↓ select user  │  k kick  │  l lock/unlock  │  [/] scroll room log  │  {/} scroll system log ";
     let status = Paragraph::new(hints).style(Style::default().fg(Color::Black).bg(Color::Gray));
     frame.render_widget(status, area);
 }

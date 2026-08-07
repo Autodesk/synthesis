@@ -108,7 +108,7 @@ impl From<&EventType> for colored::Color {
 impl From<&EventType> for Style {
     fn from(value: &EventType) -> Self {
         match value {
-            EventType::Info => Self::new().white(),
+            EventType::Info => Self::new().green(),
             EventType::Warning => Self::new().yellow(),
             EventType::Error => Self::new().red(),
         }
@@ -138,7 +138,7 @@ impl Logger {
     }
 
     pub fn push_global(&mut self, message: String, kind: EventType) {
-        if self.maximum_lines >= self.global_log.len() {
+        if self.maximum_lines <= self.global_log.len() {
             self.global_log.pop_front();
         }
 
@@ -149,7 +149,7 @@ impl Logger {
     pub fn push_room(&mut self, message: String, kind: EventType, room_id: RoomId) {
         let room_log = self.room_logs.entry(room_id).or_default();
 
-        if self.maximum_lines == room_log.len() + 1 {
+        if self.maximum_lines <= room_log.len() {
             room_log.pop_front();
         }
 
