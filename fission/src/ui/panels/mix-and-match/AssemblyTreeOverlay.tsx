@@ -8,7 +8,7 @@ import PartLibrary from "@/mix-and-match/PartLibrary"
 import EventSystem from "@/systems/EventSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import Label from "@/ui/components/Label"
-import { NegativeButton } from "@/ui/components/StyledComponents"
+import { Button, NegativeButton } from "@/ui/components/StyledComponents"
 import Tree, { type TreeNode } from "@/ui/components/Tree"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -108,6 +108,10 @@ const AssemblyTreeOverlay: React.FC = () => {
         })
     }, [openModal, selected])
 
+    const finishBuild = useCallback(() => {
+        MixAndMatchMode.finish().catch(console.error)
+    }, [])
+
     return (
         <Box
             sx={{
@@ -165,6 +169,11 @@ const AssemblyTreeOverlay: React.FC = () => {
                     </NegativeButton>
                 </Box>
             )}
+            <Box sx={{ px: 1, py: 1, borderTop: 1, borderColor: "divider" }}>
+                <Button disabled={!components?.size} onClick={finishBuild} fullWidth>
+                    Finish Build
+                </Button>
+            </Box>
         </Box>
     )
 }
