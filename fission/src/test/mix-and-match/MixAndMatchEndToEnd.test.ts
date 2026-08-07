@@ -72,10 +72,8 @@ const STEPS = 90
 
 /**
  * The end-to-end check the whole feature rests on: place two parts, weld them, and confirm the
- * finished build carries a session a later robot load can read back and replay.
- *
- * Finishing does not yet merge the parts into one physical `mirabuf.Assembly` — see
- * MIX_AND_MATCH_RESTACK.md item 8 — so this does not assert the two parts move as one rigid body.
+ * finished build becomes one merged robot - not two `MirabufSceneObject`s left standing - that
+ * carries a session a later robot load can read back and replay.
  */
 describe("Mix and Match End to End", () => {
     let dozerRef: string
@@ -90,7 +88,7 @@ describe("Mix and Match End to End", () => {
         MixAndMatchMode.exit()
     })
 
-    test("Two Welded Parts Finish Into A Replayable Session", async () => {
+    test("Two Welded Parts Finish Into One Merged Robot", async () => {
         await MixAndMatchMode.enter()
         expect(physicsSystem.isPaused).toBe(true)
 
@@ -110,17 +108,30 @@ describe("Mix and Match End to End", () => {
             expect(physicsSystem.getBody(bodyId)!.GetObjectLayer()).toBe(frameLayer)
         })
 
+        const combinedBodyCount = frame.getAllBodyIds().length + pod.getAllBodyIds().length
+
         expect(await MixAndMatchMode.weld(frameId!, podId!)).toBe(true)
-
-        const assembly = frame.mirabufInstance.parser.assembly
-
         expect(await MixAndMatchMode.finish()).toBe(true)
         expect(physicsSystem.isPaused).toBe(false)
+
+        // The build-time scene objects are gone; exactly one merged robot took their place. (Its own
+        // intake sensor scene object, registered as a side effect of Dozer having one configured,
+        // rides along same as it would for any freshly spawned robot.)
+        expect(scene.components.size).toBe(0)
+        const mergedCandidates = [...sceneObjects.values()].filter(
+            (obj): obj is MirabufSceneObject => "mirabufInstance" in obj
+        )
+        expect(mergedCandidates).toHaveLength(1)
+        const merged = mergedCandidates[0]
+        // One body fewer than the sum: the weld fuses frame's and pod's root bodies into one shared
+        // RigidNode instead of leaving them as two, which is the whole point of merging.
+        expect(merged.getAllBodyIds().length).toBe(combinedBodyCount - 1)
 
         for (let i = 0; i < STEPS; i++) physicsSystem.update(STEP)
 
         // The finished build carries its own session, so it can be re-opened and replayed later while
         // still reading as an ordinary robot to everything else.
+        const assembly = merged.mirabufInstance.parser.assembly
         expect(hasMixAndMatchSession(assembly)).toBe(true)
         const session = readSessionFromAssembly(assembly)!
         expect(session.timeline.filter(entry => entry.type === "spawn")).toHaveLength(2)

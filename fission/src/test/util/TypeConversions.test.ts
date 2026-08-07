@@ -9,6 +9,7 @@ import {
     convertMirabufTransformToThreeMatrix,
     convertThreeMatrix4ToArray,
     convertThreeMatrix4ToJoltMat44,
+    convertThreeMatrix4ToMirabufTransform,
     convertThreeQuaternionToJoltQuat,
     convertThreeToJoltQuat,
     convertThreeVector3ToJoltVec3,
@@ -209,6 +210,42 @@ describe("Mirabuf to Three Conversions", () => {
         for (let i = 0; i < 16; i++) {
             expect(threeArr[i]).toBeCloseTo(miraArr[i])
         }
+    })
+})
+
+describe("Three to Mirabuf Conversions", () => {
+    function expectRoundTrip(mat: THREE.Matrix4) {
+        const roundTripped = convertMirabufTransformToThreeMatrix(convertThreeMatrix4ToMirabufTransform(mat))
+
+        for (let i = 0; i < 16; i++) {
+            expect(roundTripped.elements[i]).toBeCloseTo(mat.elements[i], 4)
+        }
+    }
+
+    test("THREE.Matrix4 [Identity] -> Mirabuf.Transform -> THREE.Matrix4", () => {
+        expectRoundTrip(new THREE.Matrix4())
+    })
+
+    test("THREE.Matrix4 [Translation] -> Mirabuf.Transform -> THREE.Matrix4", () => {
+        expectRoundTrip(new THREE.Matrix4().makeTranslation(1, 2, 3))
+    })
+
+    test("THREE.Matrix4 [Rotation + Translation] -> Mirabuf.Transform -> THREE.Matrix4", () => {
+        const quat = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.4, 1.1, -0.7))
+        const mat = new THREE.Matrix4().compose(new THREE.Vector3(2, -5, 0.5), quat, new THREE.Vector3(1, 1, 1))
+
+        expectRoundTrip(mat)
+    })
+
+    test("Mirabuf.Transform -> THREE.Matrix4 -> Mirabuf.Transform", () => {
+        const original = new mirabuf.Transform()
+        original.spatialMatrix = [1, 0, 0, 0, 0, 0, 1, 5, 0, -1, 0, 20, 0, 0, 0, 1]
+
+        const roundTripped = convertThreeMatrix4ToMirabufTransform(convertMirabufTransformToThreeMatrix(original))
+
+        original.spatialMatrix!.forEach((value, i) => {
+            expect(roundTripped.spatialMatrix![i]).toBeCloseTo(value, 4)
+        })
     })
 })
 
