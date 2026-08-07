@@ -2,7 +2,7 @@ import * as THREE from "three"
 import MirabufParser, { GROUNDED_JOINT_ID } from "@/mirabuf/MirabufParser"
 import { mirabuf } from "@/proto/mirabuf"
 import { convertArrayToThreeMatrix4, convertThreeMatrix4ToMirabufTransform } from "@/util/TypeConversions"
-import { applyRelativeOffset } from "./MixAndMatchPlacement"
+import { applyRelativeOffset, relativeOffsetBetween } from "./MixAndMatchPlacement"
 import { subtreeOf, type TimelineState } from "./MixAndMatchTimeline"
 import type { ComponentId } from "./MixAndMatchTypes"
 
@@ -11,9 +11,11 @@ import type { ComponentId } from "./MixAndMatchTypes"
  * `mirabuf.Assembly` per weld tree - the shape the simulator loads like any other robot, not N
  * `MirabufSceneObject`s held together by runtime constraints.
  *
- * Pure data: every part instance's baked pose comes from the weld graph's recorded offsets, not
- * live Jolt bodies, so this has no dependency on physics or the scene and is unit-testable against
- * plain proto fixtures.
+ * Pure data: every part instance's baked pose comes from the timeline's replayed `ComponentState`
+ * transforms, not live Jolt bodies, so this has no dependency on physics or the scene and is
+ * unit-testable against plain proto fixtures. The weld graph itself is only used for tree structure
+ * (who's grafted onto whom) - not position, since a component's `transform` already reflects every
+ * move applied after its weld.
  *
  * Assembly-level `physicalData` is left as whatever the tree's root already declared, and goes
  * stale the moment a second component is grafted in - a known gap. Per-part mass is unaffected:
@@ -201,7 +203,8 @@ function graft(root: mirabuf.Assembly, child: mirabuf.Assembly) {
 /**
  * Combines every component in one weld tree into a single `mirabuf.Assembly`. The tree's root keeps
  * its own coordinate frame unchanged - it becomes the merged assembly's frame - while every welded
- * component is namespaced and repositioned by its accumulated weld offset before being grafted in.
+ * component is namespaced and repositioned to its live transform relative to the root before being
+ * grafted in.
  */
 function mergeTree(
     rootId: ComponentId,
@@ -217,28 +220,29 @@ function mergeTree(
         rootAnchorGuid
     )!
 
-    // Offset from the tree root to each component, chained through intermediate welds. The root
-    // itself sits at its own identity.
-    const accumulatedOffset = new Map<ComponentId, THREE.Matrix4>([[rootId, new THREE.Matrix4()]])
+    // Each component's live world transform (kept current by every "move" replay, including
+    // snap-to-face) relative to the root's live world transform - not the weld's `relativeOffset`,
+    // which is frozen at weld time and goes stale the moment the component is moved again.
+    const rootTransform = convertArrayToThreeMatrix4(state.components.get(rootId)!.transform)
     const anchorGuidByComponent = new Map<ComponentId, string>([[rootId, rootAnchorGuid]])
 
     for (const componentId of subtreeOf(state.components, rootId)) {
         if (componentId === rootId) continue
 
-        const weld = state.components.get(componentId)?.weld
+        const componentState = state.components.get(componentId)
+        const weld = componentState?.weld
         const childAssemblyOriginal = assembliesByComponent.get(componentId)
-        const parentAccumulated = weld ? accumulatedOffset.get(weld.parentId) : undefined
         const parentAnchorGuid = weld ? anchorGuidByComponent.get(weld.parentId) : undefined
-        if (!weld || !childAssemblyOriginal || !parentAccumulated || !parentAnchorGuid) continue
+        if (!weld || !componentState || !childAssemblyOriginal || !parentAnchorGuid) continue
 
         const childParser = new MirabufParser(cloneAssembly(childAssemblyOriginal))
         const childAnchorGuidOriginal = groundedPartGuid(childAssemblyOriginal)
         const childAnchorGlobalOriginal = childParser.globalTransforms.get(childAnchorGuidOriginal)!
 
-        const accumulated = applyRelativeOffset(parentAccumulated, convertArrayToThreeMatrix4(weld.relativeOffset))
-        accumulatedOffset.set(componentId, accumulated)
+        const childTransform = convertArrayToThreeMatrix4(componentState.transform)
+        const relativeOffset = relativeOffsetBetween(rootTransform, childTransform)
 
-        const newAnchorGlobal = applyRelativeOffset(rootAnchorGlobal, accumulated)
+        const newAnchorGlobal = applyRelativeOffset(rootAnchorGlobal, relativeOffset)
         const worldDelta = newAnchorGlobal.clone().multiply(childAnchorGlobalOriginal.clone().invert())
 
         const child = cloneAssembly(childAssemblyOriginal)

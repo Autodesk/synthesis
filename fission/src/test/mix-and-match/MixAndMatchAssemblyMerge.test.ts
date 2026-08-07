@@ -44,8 +44,8 @@ function fixtureAssembly(partGuid: string, transform: number[]): mirabuf.Assembl
     })
 }
 
-function component(id: ComponentId, weld?: ComponentState["weld"]): ComponentState {
-    return { id, libraryPartRef: `lib-${id}`, transform: IDENTITY, weld }
+function component(id: ComponentId, weld?: ComponentState["weld"], transform: TransformArray = IDENTITY): ComponentState {
+    return { id, libraryPartRef: `lib-${id}`, transform, weld }
 }
 
 function stateOf(...components: ComponentState[]): TimelineState {
@@ -65,11 +65,14 @@ describe("Mix and Match Assembly Merge", () => {
         expect(merged).toHaveLength(2)
     })
 
-    test("Grafts A Welded Child Under The Root, Baking Its Pose From The Weld Offset", () => {
-        const state = stateOf(component("a"), component("b", { parentId: "a", relativeOffset: weldOffset(2, 0, 0) }))
+    test("Grafts A Welded Child Under The Root, Baking Its Pose From Its Live Transform", () => {
+        const state = stateOf(
+            component("a"),
+            component("b", { parentId: "a", relativeOffset: weldOffset(2, 0, 0) }, weldOffset(2, 0, 0))
+        )
         const assemblies = new Map([
             ["a", fixtureAssembly("part-a", miraTranslation(10, 0, 0))],
-            // Where "part-b" originally sat is irrelevant - the weld offset overrides it entirely.
+            // Where "part-b" originally sat is irrelevant - its live transform overrides it entirely.
             ["b", fixtureAssembly("part-b", miraTranslation(999, -50, 3))],
         ])
 
@@ -81,10 +84,31 @@ describe("Mix and Match Assembly Merge", () => {
 
         const namespacedPartB = Object.keys(partInstances).find(key => key !== "part-a")!
         const bakedGlobal = convertMirabufTransformToThreeMatrix(partInstances[namespacedPartB].transform!)
-        // Root sits at x=10m, weld offset is +2m along the root's frame, so the child lands at x=12m.
+        // Root sits at x=10m, child's live transform is +2m along the root's frame, so it lands at x=12m.
         expect(bakedGlobal.elements[12]).toBeCloseTo(12, 4)
         expect(bakedGlobal.elements[13]).toBeCloseTo(0, 4)
         expect(bakedGlobal.elements[14]).toBeCloseTo(0, 4)
+    })
+
+    test("Bakes The Pose From The Live Transform, Not A Stale Weld Offset Left Behind By A Later Move", () => {
+        // "b" was welded to "a" at +2m, recording that in relativeOffset - then dragged to +5m.
+        // applyMove keeps b.transform current but never touches the weld's own relativeOffset.
+        const state = stateOf(
+            component("a"),
+            component("b", { parentId: "a", relativeOffset: weldOffset(2, 0, 0) }, weldOffset(5, 0, 0))
+        )
+        const assemblies = new Map([
+            ["a", fixtureAssembly("part-a", miraTranslation(0, 0, 0))],
+            ["b", fixtureAssembly("part-b", miraTranslation(0, 0, 0))],
+        ])
+
+        const [merged] = mergeAssemblies(state, assemblies)
+
+        const partInstances = merged.data!.parts!.partInstances!
+        const namespacedPartB = Object.keys(partInstances).find(key => key !== "part-a")!
+        const bakedGlobal = convertMirabufTransformToThreeMatrix(partInstances[namespacedPartB].transform!)
+        // Must land at the post-move x=5m, not the stale weld-time x=2m.
+        expect(bakedGlobal.elements[12]).toBeCloseTo(5, 4)
     })
 
     test("Folds The Weld Into One Shared RigidGroup Anchored On The Parent's Root Part", () => {
