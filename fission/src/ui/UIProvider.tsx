@@ -77,11 +77,11 @@ const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseT
             break
     }
 }
-
+type ConfigureWaiter = (screen: UIScreen<unknown, unknown>) => void
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
-
+    const [_, setConfigureWaiters] = useState<ConfigureWaiter[]>([])
     const [refreshDep, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
@@ -198,7 +198,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     )
 
     const openPanel: OpenPanelFn = useCallback(
-        <T, P>(
+        async <T, P>(
             content: FunctionComponent<PanelImplProps<T, P>>,
             customProps: P,
             parent?: UIScreen<any, any>,
@@ -247,6 +247,21 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             panel.onCancel = new UICallback()
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
+            setPanels(panels => {
+                const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
+                return [...nextPanels, panel as Panel<any, any>]
+            })
+
+            await new Promise<void>(resolve => {
+                const cb: ConfigureWaiter = screen => {
+                    if (screen == panel) {
+                        resolve()
+                        return
+                    }
+                    setConfigureWaiters(v => [...v, cb])
+                }
+                setConfigureWaiters(v => [...v, cb])
+            })
             const exclusiveGroup = panel.props.exclusiveGroup
             if (exclusiveGroup != null) {
                 const existing = panels.find(p => p.props.exclusiveGroup == exclusiveGroup)
@@ -255,13 +270,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 }
             }
 
-            setPanels(panels => {
-                const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
-                return [...nextPanels, panel as Panel<any, any>]
-            })
             return id
         },
-        [panels, addToast]
+        [panels, addToast, blockState]
     )
 
     const closeModal = useCallback(
@@ -281,7 +292,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     }, [])
 
     const togglePanel: TogglePanelFn = useCallback(
-        <T, P>(
+        async <T, P>(
             content: FunctionComponent<PanelImplProps<T, P>>,
             customProps: P,
             matchesOpen?: (openCustomProps: P) => boolean
@@ -312,6 +323,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
         if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
         if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
+
+        setConfigureWaiters(waiters => {
+            waiters.forEach(cb => cb(screen))
+            return []
+        })
 
         refresh()
     }, [])
