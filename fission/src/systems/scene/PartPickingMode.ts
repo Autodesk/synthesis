@@ -5,6 +5,15 @@ import World from "../World"
 import WorldSystem from "../WorldSystem"
 import { type InteractionEnd, type InteractionStart, PRIMARY_MOUSE_INTERACTION } from "./ScreenInteractionHandler"
 
+const HOVER_OUTLINE_MAT = new THREE.MeshBasicMaterial({
+    color: 0xffff60,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
+    transparent: true,
+    opacity: 0.5,
+})
+
 export interface PartPick {
     guid: string
     object: THREE.BatchedMesh
@@ -22,8 +31,6 @@ export interface PartSelection {
     highlight: PartHighlight
 }
 
-/** Tint for the part under the cursor. */
-export const HOVER_HIGHLIGHT_COLOR = new THREE.Color(1, 1, 0.1)
 /** Default BatchedMesh instance color; used to un-tint. */
 export const DEFAULT_INSTANCE_COLOR = new THREE.Color(1, 1, 1)
 
@@ -45,24 +52,17 @@ type HighlightStyler = (isSelected: boolean, highlight: PartHighlight) => void
 /** Tracks a set of picked parts and tints their meshes; a hovered pending part keeps `selectedColor`. */
 export class HighlightMap<T extends PartSelection> {
     private _map = new Map<string, T>()
-    private _highlightKeys = new Set<HighlightKey>()
 
     public constructor(
         public readonly styler: HighlightStyler,
-        private _getHoverKey: () => HighlightKey | undefined,
         private _dispatchUpdate: (values: T[]) => void
     ) {}
 
     removePart(guid: string): void {
         const highlight = this._map.get(guid)?.highlight
         if (!highlight) return
-
-        if (this._getHoverKey() !== toKey(highlight)) {
-            this.styler(false, highlight)
-        }
-
+        this.styler(false, highlight)
         this._map.delete(guid)
-        this._highlightKeys.delete(toKey(highlight))
         this.dispatchUpdate()
     }
 
@@ -74,18 +74,9 @@ export class HighlightMap<T extends PartSelection> {
         return this._map.values()
     }
 
-    hasHighlight(key: HighlightKey): boolean {
-        return this._highlightKeys.has(key)
-    }
-
     addPart(guid: string, selection: T): void {
         this._map.set(guid, selection)
-
-        const { highlight } = selection
-        this._highlightKeys.add(toKey(highlight))
-        if (highlight) {
-            this.styler(true, highlight)
-        }
+        this.styler(true, selection.highlight)
         this.dispatchUpdate()
     }
 
@@ -94,9 +85,7 @@ export class HighlightMap<T extends PartSelection> {
     }
 
     clear() {
-        this._map.forEach(({ highlight }) => {
-            highlight.mesh.setColorAt(highlight.instanceId, DEFAULT_INSTANCE_COLOR)
-        })
+        this._map.forEach(({ highlight }) => this.styler(false, highlight))
         this._map.clear()
         this.dispatchUpdate()
     }
@@ -104,7 +93,6 @@ export class HighlightMap<T extends PartSelection> {
     /** Drops tracking without touching mesh colors -- used once the batches are already gone (e.g. post-rebuild). */
     clearSilently() {
         this._map.clear()
-        this._highlightKeys.clear()
         this.dispatchUpdate()
     }
 
@@ -125,6 +113,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
 
     private _pointerMoveListener: ((e: PointerEvent) => void) | undefined
     private _hover: PartHighlight | undefined
+    private _hoverOutline: THREE.Mesh | null = null
     private _latestMousePos: [number, number] | undefined
     private _lastProcessedMousePos: [number, number] | undefined
 
@@ -134,7 +123,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
 
     protected constructor(styler: HighlightStyler, dispatchUpdate: (values: T[]) => void) {
         super()
-        this.pending = new HighlightMap<T>(styler, () => toKey(this._hover), dispatchUpdate)
+        this.pending = new HighlightMap<T>(styler, dispatchUpdate)
     }
 
     public get enabled() {
@@ -170,6 +159,8 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
 
     public destroy(): void {
         this.disable()
+        this._hoverOutline?.geometry.dispose()
+        this._hoverOutline = null
     }
 
     private hookInteractionHandlers(): void {
@@ -209,9 +200,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         this._candidateBatches = []
         this._pickIndex = new Map()
         if (this._object == null) return
-        for (const batch of this._object.mirabufInstance.batches) {
-            this._candidateBatches.push(batch)
-        }
+        this._candidateBatches = [...this._object.mirabufInstance.batches]
 
         for (const [guid, entries] of this._object.mirabufInstance.meshes) {
             for (const [mesh, instanceId] of entries) {
@@ -260,18 +249,29 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         if (toKey(this._hover) === toKey(hover)) return
 
         this.clearHover()
-        this.pending.styler(false, hover)
-        hover.mesh.setColorAt(hover.instanceId, HOVER_HIGHLIGHT_COLOR)
+        const geoId = hover.mesh.getGeometryIdAt(hover.instanceId)
+        if (geoId >= 0) {
+            const { indexStart, indexCount } = hover.mesh.getGeometryRangeAt(geoId)!
+            if (!this._hoverOutline) {
+                this._hoverOutline = new THREE.Mesh(new THREE.BufferGeometry(), HOVER_OUTLINE_MAT)
+                this._hoverOutline.matrixAutoUpdate = false
+            }
+            const geo = this._hoverOutline.geometry
+            geo.setAttribute("position", hover.mesh.geometry.getAttribute("position"))
+            geo.setIndex(hover.mesh.geometry.index)
+            geo.setDrawRange(indexStart, indexCount)
+            const m = new THREE.Matrix4()
+            hover.mesh.getMatrixAt(hover.instanceId, m)
+            this._hoverOutline.matrix.multiplyMatrices(hover.mesh.matrixWorld, m)
+            this._hoverOutline.matrixWorldNeedsUpdate = true
+            if (!this._hoverOutline.parent) World.sceneRenderer.scene.add(this._hoverOutline)
+        }
         this._hover = hover
     }
 
     public clearHover(): void {
         if (!this._hover) return
-        this._hover.mesh.setColorAt(this._hover.instanceId, DEFAULT_INSTANCE_COLOR)
-
-        const isPending = this.pending.hasHighlight(toKey(this._hover))
-        this.pending.styler(isPending, this._hover)
-
+        if (this._hoverOutline?.parent) World.sceneRenderer.scene.remove(this._hoverOutline)
         this._hover = undefined
     }
 
