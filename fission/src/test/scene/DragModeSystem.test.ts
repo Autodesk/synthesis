@@ -8,6 +8,7 @@ import { CameraMode, CustomTargetControls } from "@/systems/scene/CameraControls
 import DragModeSystem from "@/systems/scene/DragModeSystem"
 import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
 import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -152,11 +153,10 @@ describe("DragModeSystem Integration Tests", () => {
             physicsSystem.getBodyAssociation = vi.fn().mockReturnValue(mockAssociation)
 
             const originalRayCast = physicsSystem.rayCast
-            const mockRaycastResult = {
+            physicsSystem.rayCast = vi.fn().mockImplementation(() => ({
                 data: { mBodyID: bodyId },
-                point: { GetX: () => 0, GetY: () => 0, GetZ: () => 0 },
-            }
-            physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
+                point: new JOLT.Vec3(0, 0, 0),
+            }))
 
             const physicsBody = physicsSystem.getBody(bodyId)!
             dragModeSystem.enabled = true
