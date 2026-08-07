@@ -70,8 +70,10 @@ export function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
 
     if (!threeObj) return undefined
 
-    threeObj.position.copy(convertJoltVec3ToThreeVector3(body.GetPosition()))
-    threeObj.quaternion.copy(convertJoltQuatToThreeQuaternion(body.GetRotation(), true))
+    const position = body.GetPosition() // STATIC_ALIAS
+    const rotation = body.GetRotation() // STATIC_ALIAS
+    threeObj.position.copy(convertJoltVec3ToThreeVector3(position))
+    threeObj.quaternion.copy(convertJoltQuatToThreeQuaternion(rotation))
 
     return threeObj
 }
@@ -127,10 +129,9 @@ export function deltaFieldTransformsPhysicalProp(
     const rotation = new THREE.Quaternion(0, 0, 0, 1)
     const scale = new THREE.Vector3(1, 1, 1)
     zoneTransformation.decompose(translation, rotation, scale)
-
     return {
-        translation,
-        rotation,
-        scale,
+        translation: translation,
+        rotation: rotation,
+        scale: scale,
     }
 }

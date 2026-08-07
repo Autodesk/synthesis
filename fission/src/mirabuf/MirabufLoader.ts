@@ -8,8 +8,8 @@ import InitialConfigPanel from "@/panels/configuring/initial-config/InitialConfi
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import { getTargetControls } from "@/systems/scene/CameraControls.ts"
-import type { EncodedAssembly, Message } from "@/systems/multiplayer/MultiplayerTypes"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/MultiplayerTypes"
 import { consolePrefixer } from "console-prefixer"
 
 const console = consolePrefixer({
@@ -277,6 +277,10 @@ class MirabufCachingService {
         if (!assembly.dynamic && miraType != MiraType.FIELD) {
             globalAddToast("warning", "Cannot import field assembly as a robot")
             return
+        }
+
+        if (assembly.dynamic) {
+            detectAndTagWheels(assembly)
         }
 
         const info = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })

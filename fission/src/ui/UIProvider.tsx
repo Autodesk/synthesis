@@ -3,7 +3,7 @@ import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
 import type { FunctionComponent, ReactNode } from "react"
-import { useCallback, useReducer, useState } from "react"
+import { Fragment, useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
 import type { PanelImplProps } from "./components/Panel"
@@ -158,16 +158,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const addToast = useCallback(
         (variant: VariantType, ...contents: SnackbarMessage[]) => {
             enqueueSnackbar(
-                contents.length <= 1
-                    ? { ...contents }
-                    : {
-                          ...contents.map(child => (
-                              <>
-                                  {child}
-                                  <br />
-                              </>
-                          )),
-                      },
+                contents.length <= 1 ? (
+                    (contents[0] ?? "")
+                ) : (
+                    <span>
+                        {contents.map((content, index) => (
+                            <Fragment key={index}>
+                                {content}
+                                {index < contents.length - 1 && <br />}
+                            </Fragment>
+                        ))}
+                    </span>
+                ),
                 { variant, action: snackbarAction }
             )
         },

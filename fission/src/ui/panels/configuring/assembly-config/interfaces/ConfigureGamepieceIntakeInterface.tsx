@@ -21,6 +21,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -209,7 +210,10 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly])
 
+    useHoldPhysicsPause()
+
     useEffect(() => {
+        // Hide the visual indicator when entering configuration mode
         if (selectedAssembly) {
             selectedAssembly.disablePhysics()
             // Hide the visual indicator when entering configuration mode
@@ -217,6 +221,7 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
         }
 
         return () => {
+            // Show the visual indicator when exiting configuration mode
             if (selectedAssembly) {
                 selectedAssembly.enablePhysics()
                 // Show the visual indicator when exiting configuration mode
