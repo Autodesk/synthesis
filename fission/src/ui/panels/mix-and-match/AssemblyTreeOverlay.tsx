@@ -112,6 +112,10 @@ const AssemblyTreeOverlay: React.FC = () => {
         MixAndMatchMode.finish().catch(console.error)
     }, [])
 
+    const exportBuild = useCallback(() => {
+        MixAndMatchMode.exportBuild().catch(console.error)
+    }, [])
+
     return (
         <Box
             sx={{
@@ -170,9 +174,14 @@ const AssemblyTreeOverlay: React.FC = () => {
                 </Box>
             )}
             <Box sx={{ px: 1, py: 1, borderTop: 1, borderColor: "divider" }}>
-                <Button disabled={!components?.size} onClick={finishBuild} fullWidth>
-                    Finish Build
-                </Button>
+                <Stack direction="row" gap={1}>
+                    <Button disabled={!components?.size} onClick={finishBuild} fullWidth>
+                        Finish Build
+                    </Button>
+                    <Button disabled={!components?.size} onClick={exportBuild} fullWidth>
+                        Export as Mira
+                    </Button>
+                </Stack>
             </Box>
         </Box>
     )
