@@ -24,6 +24,15 @@ CommandRegistry.get().registerCommand({
     keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
     perform: () => {
         if (MatchMode.getInstance().isMatchEnabled()) {
+            if (World.multiplayerSystem) {
+                World.multiplayerSystem.broadcast({
+                    type: "matchModeState",
+                    data: {
+                        event: "cancel",
+                    },
+                })
+            }
+
             MatchMode.getInstance().sandboxModeStart()
             globalAddToast("info", "Match Mode Cancelled")
         } else {
