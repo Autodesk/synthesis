@@ -13,6 +13,9 @@ import Tree, { type TreeNode } from "@/ui/components/Tree"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
+import NameBuildModal from "@/ui/modals/mix-and-match/NameBuildModal"
+
+const DEFAULT_BUILD_NAME = "Mix and Match Robot"
 
 const GIZMO_SIZE = 1.5
 
@@ -109,12 +112,22 @@ const AssemblyTreeOverlay: React.FC = () => {
     }, [openModal, selected])
 
     const finishBuild = useCallback(() => {
-        MixAndMatchMode.finish().catch(console.error)
-    }, [])
+        openModal(
+            NameBuildModal,
+            { title: "Finish Build", acceptText: "Finish", defaultName: DEFAULT_BUILD_NAME },
+            undefined,
+            { onAccept: (name: string) => MixAndMatchMode.finish(name).catch(console.error) }
+        )
+    }, [openModal])
 
     const exportBuild = useCallback(() => {
-        MixAndMatchMode.exportBuild().catch(console.error)
-    }, [])
+        openModal(
+            NameBuildModal,
+            { title: "Export as Mira", acceptText: "Export", defaultName: DEFAULT_BUILD_NAME },
+            undefined,
+            { onAccept: (name: string) => MixAndMatchMode.exportBuild(name).catch(console.error) }
+        )
+    }, [openModal])
 
     return (
         <Box
