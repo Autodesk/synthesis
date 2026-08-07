@@ -264,6 +264,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 title: "Configure Assets",
                 acceptText: "Save",
                 cancelText: hasMadeChanges ? "Revert" : "Cancel",
+                exclusiveGroup: "assembly-init",
                 disableAccept,
             },
             { onBeforeAccept, onCancel, onClose }

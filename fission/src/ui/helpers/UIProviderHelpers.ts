@@ -49,6 +49,10 @@ export interface ModalProps<P> extends UIScreenProps<P> {
  */
 export interface PanelProps<P> extends UIScreenProps<P> {
     type: "panel"
+    /**
+     * When a panel is opened, any panels with the same exclusiveGroup will be closed.
+     */
+    exclusiveGroup?: "assembly-init"
     position?: PanelPosition
 }
 
