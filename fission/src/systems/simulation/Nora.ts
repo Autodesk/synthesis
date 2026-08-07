@@ -1,59 +1,162 @@
+/// Type system for the code simulation wiring panel.
+///
+/// The purpose of the type system is to prevent the user from being able to misconfigure
+/// their robot by connecting two nodes that aren't compatible. Each individual value is typed
+/// based on what it can be used for. Each value's type can be represented as the combination of
+/// the underlying primitive data type, a unit, and a derivative order.
+/// E.g., an angular velocity would be a number that is the first derivative of an angle
+///
+/// A base unit of NONE is included for unitless values such as a motor's percent output.
+///
+/// See the `SerializedNoraBaseType` definition for information on the serialized representation
+/// of the various types
+
+/// NOTE: the variant string values should match TypeScript types (i.e., possible as the result of `typeof`)
+export enum BaseType {
+    NUMBER = "number",
+    BOOLEAN = "boolean",
+}
+
+export enum BaseUnit {
+    NONE = "none",
+    POSITION = "position",
+    ANGLE = "angle",
+}
+
+export enum DerivativeOrder {
+    ZERO = "0", // base
+    ONE = "1", // velocity
+    TWO = "2", // acceleration
+}
+
+/// A NoraBaseType represents a single unit of data within this type system. E.g., a single axis angle from a gyroscope
+export type NoraBaseType =
+    | { type: BaseType.NUMBER; unit: BaseUnit; order: DerivativeOrder }
+    | { type: BaseType.BOOLEAN }
+
+export type NoraBaseValue = number | boolean
+export type NoraBaseValueOf<T extends NoraBaseType> = T extends { type: BaseType.BOOLEAN } ? boolean : number
+
+/// A NoraType represents the entire input/output of a driver or stimulus. E.g., all angles reported by a gyroscope
+export type NoraType = readonly NoraBaseType[]
+
+export type NoraValue = readonly NoraBaseValue[]
+export type NoraValueOf<T extends NoraType> = { readonly [K in keyof T]: NoraBaseValueOf<T[K]> }
+
+/// Numbers serialize to `number:<unit>:<order>` while booleans serialize to just `boolean`
+type SerializedNoraBaseType<T extends NoraBaseType> = T extends {
+    type: BaseType.NUMBER
+    unit: infer U extends BaseUnit
+    order: infer O extends DerivativeOrder
+}
+    ? `${BaseType.NUMBER}:${U}:${O}`
+    : `${BaseType.BOOLEAN}`
+
+/// Ends up expanding to a comma separated string containing all serialized Nora base types from the array provided
+/// Resolves to `never` for empty or non-tuple types
+type SerializedNoraType<T extends readonly NoraBaseType[]> = T extends readonly [infer H extends NoraBaseType]
+    ? SerializedNoraBaseType<H>
+    : T extends readonly [infer H extends NoraBaseType, ...infer R extends readonly NoraBaseType[]]
+    ? `${SerializedNoraBaseType<H>},${SerializedNoraType<R>}`
+    : never
+
 /**
- * To build input validation into the node editor, I had to
- * make this poor man's type system. Please make it better.
- *
- * We should be able to assign identifiers to the types and
- * probably have more in-tune mechanisms for handling the
- * junction situations. Right now its kinda patched together
- * with the averaging function setup I have below.
+ * Enforces that T be const and satisfy `NoraType`, meaning we have better type safety when using `NoraTypeOf`
  */
-
-// type is "<unit>:<shape>", but absent unit means only shape determines connection viability
-// (e.g., NUMBER3 can be connected to any 3-arity type)
-export enum NoraTypes {
-    NUMBER = "num",
-    NUMBER2 = "(num,num)",
-    NUMBER3 = "(num,num,num)",
-    NUMBER6 = "(num,num,num,num,num,num)",
-    GYRO = "gyro:(num,num,num,num,num,num)",
-    ACCEL = "accel:(num,num,num,num,num,num)",
-    UNKNOWN = "unknown",
+export function noraType<const T extends NoraType>(t: T): T {
+    return t
 }
 
-function shapeOf(type: NoraTypes): string {
-    const i = type.indexOf(":")
-    return i === -1 ? type : type.substring(i + 1)
+/**
+ * Utility function for defining a number in a `NoraType` definition
+ */
+export function num<const U extends BaseUnit, const O extends DerivativeOrder>(unit: U, order: O) {
+    return { type: BaseType.NUMBER, unit, order } as const
 }
 
-type Tuple<N extends number, T, R extends T[] = []> = R["length"] extends N ? R : Tuple<N, T, [...R, T]>
-
-export type NoraNumber = number
-export type NoraValue<N extends number, T = number> = N extends 1 ? T : Tuple<N, T>
-export type NoraUnknown = unknown
-
-export type NoraType = NoraValue<1> | NoraValue<2> | NoraValue<3> | NoraValue<6> | NoraUnknown
-
-export function deconstructNoraType(type: NoraTypes): NoraTypes[] | undefined {
-    const shape = shapeOf(type)
-    if (shape.charAt(0) != "(" || shape.charAt(shape.length - 1) != ")") return undefined
-    return shape.substring(1, shape.length - 1).split(",") as NoraTypes[]
+/**
+ * Utility function for defining a boolean in a `NoraType` definition
+ */
+export function bool() {
+    return { type: BaseType.BOOLEAN } as const
 }
 
-export function isNoraDeconstructable(type: NoraTypes): boolean {
-    const shape = shapeOf(type)
-    return shape.charAt(0) == "(" && shape.charAt(shape.length - 1) == ")"
+const UNITS = new Set<string>(Object.values(BaseUnit))
+const ORDERS = new Set<string>(Object.values(DerivativeOrder))
+
+/**
+ * Serializes a Nora base type into its string representation
+ *
+ * @see {@link SerializedNoraBaseType} for the string representation
+ */
+export function serializeNoraBaseType<T extends NoraBaseType>(t: T): SerializedNoraBaseType<T> {
+    switch (t.type) {
+        case BaseType.NUMBER:
+            return `${t.type}:${t.unit}:${t.order}` as SerializedNoraBaseType<T>
+        case BaseType.BOOLEAN:
+            return `${t.type}` as SerializedNoraBaseType<T>
+    }
 }
 
-const averageFuncMap: { [shape: string]: ((...many: NoraType[]) => NoraType) | undefined } = {
-    [NoraTypes.NUMBER]: function (...many: NoraType[]): NoraType {
-        return many.reduce<NoraNumber>((prev, next) => prev + (next as NoraNumber), 0)
-    },
+/**
+ * Tries to deserialize a string into its Nora base type
+ *
+ * @throws Throws an error if the provided string doesn't represent a serialized Nora base type
+ */
+export function deserializeNoraBaseType(serialized: string): NoraBaseType {
+    if (serialized === BaseType.BOOLEAN) return { type: BaseType.BOOLEAN }
+
+    const split = serialized.split(":")
+
+    if (split.length !== 3) throw new Error(`Invalid serialized type ${serialized}`)
+
+    const [type, unit, order] = split
+
+    if (type !== BaseType.NUMBER || !UNITS.has(unit as BaseUnit) || !ORDERS.has(order as DerivativeOrder))
+        throw new Error(`Invalid serialized components in ${serialized}`)
+
+    return { type, unit, order } as NoraBaseType
 }
 
-export function noraAverageFunc(type: NoraTypes): ((...many: NoraType[]) => NoraType) | undefined {
-    return averageFuncMap[shapeOf(type)]
+/**
+ * Tries to serialize a Nora type into its string representation
+ * @see {@link SerializedNoraType} for the string representation
+ *
+ * @throws Throws an error if the provided Nora type is empty ([])
+ */
+export function serializeNoraType<const T extends readonly NoraBaseType[]>(t: T): SerializedNoraType<T> {
+    if (t.length === 0) throw new Error("Tried to serialize a zero-length Nora type (illegal)")
+
+    return t.map(serializeNoraBaseType).join(",") as SerializedNoraType<T>
 }
 
-export function hasNoraAverageFunc(type: NoraTypes): boolean {
-    return averageFuncMap[shapeOf(type)] != undefined
+/**
+ * Tries to deserialize a string into its Nora type.
+ *
+ * @throws Throws an error if the provided string doesn't represent a serialized Nora type
+ */
+export function deserializeNoraType(serialized: string): NoraType {
+    if (serialized === "") throw new Error("Tried to deserialize an empty Nora type (illegal)")
+
+    return serialized.split(",").map(deserializeNoraBaseType)
+}
+
+/**
+ * @returns {boolean} whether the two types are compatible
+ */
+export function areTypesCompatible(type1: NoraType, type2: NoraType): boolean {
+    return serializeNoraType(type1) === serializeNoraType(type2)
+}
+
+/**
+ * @returns {boolean} whether the value adheres to the defined type
+ */
+export function valueMatchesType(value: NoraValue, type: NoraType): boolean {
+    return (
+        value.length === type.length &&
+        value.every((val, i) => {
+            const t = typeof val // needed because otherwise ESLint complains about invalid typeof comparison
+            return t === (type[i].type as string)
+        })
+    )
 }

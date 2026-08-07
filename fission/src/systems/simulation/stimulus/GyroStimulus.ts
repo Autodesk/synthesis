@@ -7,12 +7,21 @@ import {
     convertJoltQuatToThreeQuaternion,
     convertJoltVec3ToThreeVector3,
 } from "@/util/TypeConversions"
-import { type NoraValue, NoraTypes } from "../Nora"
+import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
 import { SimType } from "../wpilib_brain/WPILibTypes"
 import SimGeneric from "../wpilib_brain/sim/SimGeneric"
 import Stimulus, { type StimulusID } from "./Stimulus"
 
-class GyroStimulus extends Stimulus {
+const GYRO_TYPE = noraType([
+    num(BaseUnit.ANGLE, DerivativeOrder.ZERO),
+    num(BaseUnit.ANGLE, DerivativeOrder.ZERO),
+    num(BaseUnit.ANGLE, DerivativeOrder.ZERO),
+    num(BaseUnit.ANGLE, DerivativeOrder.ONE),
+    num(BaseUnit.ANGLE, DerivativeOrder.ONE),
+    num(BaseUnit.ANGLE, DerivativeOrder.ONE),
+])
+
+class GyroStimulus extends Stimulus<typeof GYRO_TYPE> {
     private _body: Jolt.Body
     private _mountRotation: THREE.Quaternion
     private _device: string
@@ -76,12 +85,14 @@ class GyroStimulus extends Stimulus {
         this._angle.z = this.integrateAngle("z", this._rate.z, deltaT)
     }
 
-    public getSupplierType(): NoraTypes {
-        return NoraTypes.GYRO
+    public get supplierType() {
+        return GYRO_TYPE
     }
-    public getSupplierValue(): NoraValue<6> {
+
+    public supplyValue(): NoraValueOf<typeof GYRO_TYPE> {
         return [this._angle.x, this._angle.y, this._angle.z, this._rate.x, this._rate.y, this._rate.z]
     }
+
     public displayName(): string {
         return `${this.info?.name ?? "-"} [Gyro]`
     }

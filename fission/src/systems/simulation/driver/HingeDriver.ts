@@ -3,7 +3,7 @@ import type { mirabuf } from "@/proto/mirabuf"
 import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { type NoraNumber, NoraTypes } from "../Nora"
+import { BaseType, BaseUnit, DerivativeOrder, num, type NoraType, type NoraValueOf } from "../Nora"
 import Driver, { DriverControlMode, type DriverID } from "./Driver"
 
 const MAX_TORQUE_WITHOUT_GRAV = 100
@@ -22,7 +22,9 @@ function shortestAngleDelta(from: number, to: number): number {
     return d
 }
 
-class HingeDriver extends Driver {
+const HINGE_TYPE = [num(BaseUnit.ANGLE, DerivativeOrder.ZERO)] as const satisfies NoraType
+
+class HingeDriver extends Driver<typeof HINGE_TYPE> {
     private _constraint: Jolt.HingeConstraint
 
     private _controlMode: DriverControlMode = DriverControlMode.VELOCITY
@@ -164,11 +166,11 @@ class HingeDriver extends Driver {
         }
     }
 
-    public getReceiverType(): NoraTypes {
-        return NoraTypes.NUMBER
+    public get receiverType() {
+        return HINGE_TYPE
     }
 
-    public setReceiverValue(val: NoraNumber): void {
+    protected receiveValue([val]: NoraValueOf<typeof HINGE_TYPE>): void {
         this.accelerationDirection = val
     }
 

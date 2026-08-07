@@ -1,10 +1,15 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
-import { type NoraValue, NoraTypes } from "../Nora"
 import EncoderStimulus from "./EncoderStimulus"
 import type { StimulusID } from "./Stimulus"
+import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num, } from "../Nora"
 
-class SliderStimulus extends EncoderStimulus {
+const SLIDER_TYPE = noraType([
+    num(BaseUnit.POSITION, DerivativeOrder.ZERO),
+    num(BaseUnit.POSITION, DerivativeOrder.ONE),
+])
+
+class SliderStimulus extends EncoderStimulus<typeof SLIDER_TYPE> {
     private _slider: Jolt.SliderConstraint
     private _velocity: number = 0.0
 
@@ -27,12 +32,14 @@ class SliderStimulus extends EncoderStimulus {
         this._lastPosition = this._slider.GetCurrentPosition()
     }
 
-    public getSupplierType(): NoraTypes {
-        return NoraTypes.NUMBER2
+    public get supplierType() {
+        return SLIDER_TYPE
     }
-    public getSupplierValue(): NoraValue<2> {
+
+    public supplyValue(): NoraValueOf<typeof SLIDER_TYPE> {
         return [this.positionValue, this.velocityValue]
     }
+
     public displayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`
     }

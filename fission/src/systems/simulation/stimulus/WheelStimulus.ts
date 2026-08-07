@@ -1,13 +1,12 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
-import { type NoraValue, NoraTypes } from "../Nora"
+import { BaseUnit, DerivativeOrder, noraType, num, type NoraValueOf } from "../Nora"
 import EncoderStimulus from "./EncoderStimulus"
 import type { StimulusID } from "./Stimulus"
 
-/**
- *
- */
-class WheelRotationStimulus extends EncoderStimulus {
+const WHEEL_TYPE = noraType([num(BaseUnit.ANGLE, DerivativeOrder.ZERO), num(BaseUnit.ANGLE, DerivativeOrder.ONE)])
+
+class WheelRotationStimulus extends EncoderStimulus<typeof WHEEL_TYPE> {
     private _accum: boolean = true
     private _wheelRotationAccum = 0.0
     private _wheel: Jolt.Wheel
@@ -47,12 +46,14 @@ class WheelRotationStimulus extends EncoderStimulus {
         this._wheelRotationAccum = 0.0
     }
 
-    public getSupplierType(): NoraTypes {
-        return NoraTypes.NUMBER2
+    public get supplierType() {
+        return WHEEL_TYPE
     }
-    public getSupplierValue(): NoraValue<2> {
+
+    public supplyValue(): NoraValueOf<typeof WHEEL_TYPE> {
         return [this.positionValue, this.velocityValue]
     }
+
     public displayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`
     }

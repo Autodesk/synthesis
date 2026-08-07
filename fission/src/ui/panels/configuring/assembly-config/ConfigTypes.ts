@@ -87,11 +87,7 @@ const baseRobotConfigModes = [
         "Configure the robot’s intake position and parent node for picking up game pieces."
     ),
 
-    new ConfigModeSelectionOption(
-        "Sensors",
-        ConfigMode.SENSORS,
-        "Place sensors on your robot"
-    ),
+    new ConfigModeSelectionOption("Sensors", ConfigMode.SENSORS, "Place sensors on your robot"),
 
     new ConfigModeSelectionOption(
         "Ejector",

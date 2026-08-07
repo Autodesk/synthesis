@@ -124,9 +124,9 @@ class SimulationLayer {
     }
 
     private buildSensorStimuli(assembly: MirabufSceneObject) {
-        assembly.robotPreferences.sensors.forEach((sensor, i) => {
+        assembly.robotPreferences.sensors.forEach((sensor, _i) => {
             const body = this._mechanism.nodeToBody.get(sensor.parentNode ?? this._mechanism.rootBody)!
-            const guid = `SENSOR_${i}_GUID`
+            const guid = `SENSOR_${sensor.name}_GUID`
             const info = { GUID: guid, name: sensor.name }
             let stim: Stimulus
             switch (sensor.sensorType) {

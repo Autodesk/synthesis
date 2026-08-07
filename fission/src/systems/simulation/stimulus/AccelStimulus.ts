@@ -7,10 +7,19 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltVec3ToThreeVector3,
 } from "@/util/TypeConversions"
-import { type NoraValue, NoraTypes } from "../Nora"
 import Stimulus, { type StimulusID } from "./Stimulus"
+import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
 
-class AccelStimulus extends Stimulus {
+export const ACCEL_TYPE = noraType([
+    num(BaseUnit.POSITION, DerivativeOrder.TWO),
+    num(BaseUnit.POSITION, DerivativeOrder.TWO),
+    num(BaseUnit.POSITION, DerivativeOrder.TWO),
+    num(BaseUnit.POSITION, DerivativeOrder.ONE),
+    num(BaseUnit.POSITION, DerivativeOrder.ONE),
+    num(BaseUnit.POSITION, DerivativeOrder.ONE),
+])
+
+class AccelStimulus extends Stimulus<typeof ACCEL_TYPE> {
     private _body: Jolt.Body
     private _delta: THREE.Matrix4
 
@@ -65,12 +74,14 @@ class AccelStimulus extends Stimulus {
         this._prevOmega = omega.clone()
     }
 
-    public getSupplierType(): NoraTypes {
-        return NoraTypes.ACCEL
+    public get supplierType() {
+        return ACCEL_TYPE
     }
-    public getSupplierValue(): NoraValue<6> {
+
+    protected supplyValue(): NoraValueOf<typeof ACCEL_TYPE> {
         return [this._accel.x, this._accel.y, this._accel.z, this._vel.x, this._vel.y, this._vel.z]
     }
+
     public displayName(): string {
         return `${this.info?.name ?? "-"} [Accel]`
     }

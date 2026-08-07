@@ -1,13 +1,13 @@
-import { type NoraNumber, type NoraType, NoraTypes } from "../Nora"
+import { areTypesCompatible, type NoraType, type NoraValueOf } from "../Nora"
 
-export type SimSupplier = {
-    getSupplierType(): NoraTypes
-    getSupplierValue(): NoraType
+export type SimSupplier<T extends NoraType = NoraType> = {
+    get supplierType(): T
+    getSupplierValue(): NoraValueOf<T>
 }
 
-export type SimReceiver = {
-    getReceiverType(): NoraTypes
-    setReceiverValue(val: NoraType): void
+export type SimReceiver<T extends NoraType = NoraType> = {
+    get receiverType(): T
+    setReceiverValue(val: NoraValueOf<T>): void
 }
 
 export type SimFlow = {

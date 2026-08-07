@@ -1,8 +1,8 @@
 import type { mirabuf } from "@/proto/mirabuf"
 import type { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import type { NoraType, NoraTypes } from "../Nora"
 import type { SimSupplier } from "../wpilib_brain/SimDataFlow"
+import { type NoraValueOf, serializeNoraType, valueMatchesType, type NoraType, type NoraValue } from "../Nora"
 
 export enum StimulusType {
     STIM_ACCEL = "Stim_Accel",
@@ -34,7 +34,7 @@ export function makeStimulusID(constraint: MechanismConstraint): StimulusID {
     }
 }
 
-abstract class Stimulus implements SimSupplier {
+abstract class Stimulus<T extends NoraType = NoraType> implements SimSupplier {
     private _id: StimulusID
     private _info?: mirabuf.IInfo
 
@@ -57,8 +57,21 @@ abstract class Stimulus implements SimSupplier {
         return this._info
     }
 
-    public abstract getSupplierType(): NoraTypes
-    public abstract getSupplierValue(): NoraType
+    public abstract get supplierType(): T
+
+    public getSupplierValue(): NoraValue {
+        const val = this.supplyValue()
+
+        if (!valueMatchesType(val, this.supplierType))
+            throw new Error(
+                `${this.displayName()}: supplied value of length ${val.length} does not match supplier type ${serializeNoraType(this.supplierType)}`
+            )
+        
+        return val
+    }
+
+    protected abstract supplyValue(): NoraValueOf<T>
+
     public abstract displayName(): string
 }
 
