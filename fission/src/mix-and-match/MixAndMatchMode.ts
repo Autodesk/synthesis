@@ -1,10 +1,9 @@
-import * as THREE from "three"
 import EventSystem from "@/systems/EventSystem"
 import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
 import MixAndMatchBuild from "./MixAndMatchBuild"
-import { componentWorldBounds, componentWorldTransform, snapToFaceOffset } from "./MixAndMatchPlacement"
+import { componentWorldTransform } from "./MixAndMatchPlacement"
 import MixAndMatchScene from "./MixAndMatchScene"
 import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMatchTypes"
 
@@ -90,22 +89,6 @@ class MixAndMatchMode {
 
         build.move(componentId, [...convertThreeMatrix4ToArray(componentWorldTransform(component))])
         await this.sync()
-    }
-
-    /**
-     * Slides `componentId` flush against `targetId`. A one-shot alignment nudge: it forms no
-     * relationship between the two parts, and welding stays a separate explicit action.
-     */
-    public static async snapToFace(componentId: ComponentId, targetId: ComponentId) {
-        const [build, scene] = this.require()
-        const component = scene?.get(componentId)
-        const target = scene?.get(targetId)
-        if (!build || !scene || !component || !target || componentId === targetId) return
-
-        const offset = snapToFaceOffset(componentWorldBounds(component), componentWorldBounds(target))
-        scene.moveTree(componentId, new THREE.Matrix4().makeTranslation(offset.x, offset.y, offset.z))
-
-        await this.commitPlacement(componentId)
     }
 
     public static async deleteComponent(componentId: ComponentId) {
