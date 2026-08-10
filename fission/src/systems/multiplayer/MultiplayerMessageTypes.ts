@@ -80,7 +80,10 @@ export type NeedAssemblyBody = {
     assemblyHash: string
 }
 
-export type UpdateBody = UpdateObjectData[]
+export type UpdateBody = {
+    sceneObject: UpdateObjectData
+    touchedBodies: UpdatePhysicsBodyData[]
+}
 export type CollisionBody = UpdateObjectData[]
 export type UpdateObjectData = {
     sceneObjectKey: SceneObjectId

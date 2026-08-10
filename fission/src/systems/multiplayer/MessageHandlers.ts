@@ -15,6 +15,7 @@ import type {
     MessageType,
     NeedAssemblyBody,
     NewObjectBody,
+    UpdateBody,
     UpdateObjectData,
     UpdatePhysicsBodyData,
 } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
@@ -84,7 +85,7 @@ async function handleInfoMessage(this: MultiplayerSystem, { info, introduceSelf 
 
 const clientToUpdateMap = new Map<string, number>()
 
-function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp: number) {
+function handleUpdateMessage(data: UpdateBody, peerId: string, timestamp: number) {
     // const bodyMap = World.multiplayerSystem?.clientToBodyMap.get(peerId)!
 
     const lastTimestamp = clientToUpdateMap.get(peerId)
@@ -94,43 +95,47 @@ function handleUpdateMessage(data: UpdateObjectData[], peerId: string, timestamp
     }
     clientToUpdateMap.set(peerId, timestamp)
 
-    data.forEach(({ sceneObjectKey, gamePiecesControlled, bodies }) => {
-        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
-        if (sceneObject == null) {
-            console.warn(
-                `Multiplayer SceneObject: ${sceneObjectKey} not found in sceneObjects map. Multiplayer SceneObjects must be initialized before being updated.`
-            )
-            return
-        } else if (!(sceneObject instanceof MirabufSceneObject)) {
-            console.error(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
-            return
-        }
+    // Handle Scene object update
 
-        const fieldSceneObject = World.sceneRenderer.mirabufSceneObjects.getField()
-        if (fieldSceneObject) {
-            // Add all the ejectables that are in activeEjectables but not gamePiecesControlled
-            const gamePiecesControlledBodies = gamePiecesControlled
-                .map(rnId => fieldSceneObject.mechanism.getBodyByNodeId(rnId)?.GetIndexAndSequenceNumber())
-                .filter(isDefined)
+    const { sceneObjectKey, gamePiecesControlled, bodies } = data.sceneObject
 
-            const activeEjectables = sceneObject.activeEjectables.map(id => id.GetIndexAndSequenceNumber())
+    const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
+    if (sceneObject == null) {
+        console.warn(
+            `Multiplayer SceneObject: ${sceneObjectKey} not found in sceneObjects map. Multiplayer SceneObjects must be initialized before being updated.`
+        )
+        return
+    } else if (!(sceneObject instanceof MirabufSceneObject)) {
+        console.error(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
+        return
+    }
 
-            activeEjectables
-                .filter(idx => !gamePiecesControlledBodies.includes(idx))
-                // We're not ejecting the specific game piece here, but the robots should be configured to eject in the same order so it's fine
-                .forEach(_ => sceneObject.eject())
+    const fieldSceneObject = World.sceneRenderer.mirabufSceneObjects.getField()
+    if (fieldSceneObject) {
+        // Add all the ejectables that are in activeEjectables but not gamePiecesControlled
+        const gamePiecesControlledBodies = gamePiecesControlled
+            .map(rnId => fieldSceneObject.mechanism.getBodyByNodeId(rnId)?.GetIndexAndSequenceNumber())
+            .filter(isDefined)
 
-            // Add all the ejectables that are in gamePiecesControlled but not activeEjectables
-            gamePiecesControlledBodies
-                .filter(idx => !activeEjectables.includes(idx))
-                .forEach(idx => {
-                    const bodyId = new JOLT.BodyID(idx)
-                    return sceneObject.setEjectable(bodyId)
-                })
-        }
+        const activeEjectables = sceneObject.activeEjectables.map(id => id.GetIndexAndSequenceNumber())
 
-        handleUpdateObjectPhysics(sceneObject, bodies, peerId)
-    })
+        activeEjectables
+            .filter(idx => !gamePiecesControlledBodies.includes(idx))
+            // We're not ejecting the specific game piece here, but the robots should be configured to eject in the same order so it's fine
+            .forEach(_ => sceneObject.eject())
+
+        // Add all the ejectables that are in gamePiecesControlled but not activeEjectables
+        gamePiecesControlledBodies
+            .filter(idx => !activeEjectables.includes(idx))
+            .forEach(idx => {
+                const bodyId = new JOLT.BodyID(idx)
+                return sceneObject.setEjectable(bodyId)
+            })
+    }
+
+    handleUpdateObjectPhysics(sceneObject, bodies, peerId)
+
+    data.touchedBodies.forEach(data => handleUpdatePhysicsBody(data, peerId, timestamp))
 }
 
 function handleUpdatePhysicsBody(data: UpdatePhysicsBodyData, peerId: string, _timestamp: number) {

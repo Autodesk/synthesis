@@ -13,7 +13,7 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeId, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { Message } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -43,7 +43,7 @@ import {
     setAxes,
 } from "./ConstraintSettingsUtilities"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
-import type { PhysicsBodyData } from "../multiplayer/MultiplayerMessageTypes.ts"
+import type { PhysicsBodyData, UpdatePhysicsBodyData } from "../multiplayer/MultiplayerMessageTypes.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
 
@@ -1608,16 +1608,19 @@ class PhysicsSystem extends WorldSystem {
                         return
                     }
 
-                    const touchedObjects = clientSceneObject.mechanism.touchedObjects
+                    const touchedObjects = clientSceneObject.mechanism.touchedBodies
 
                     const message: Message = {
                         type: "update",
-                        data: [clientSceneObject, ...touchedObjects].map(object => object.getUpdateData()),
+                        data: {
+                            sceneObject: clientSceneObject.getUpdateData(),
+                            touchedBodies: touchedObjects.map(data => this.getRNUpdateData(...data)),
+                        },
                     }
                     World.multiplayerSystem?.broadcast(message)
 
                     if (clientSceneObjectId != null) {
-                        clientSceneObject.mechanism.touchedObjects = []
+                        clientSceneObject.mechanism.touchedBodies = []
                     }
                 })
             }
@@ -1628,6 +1631,25 @@ class PhysicsSystem extends WorldSystem {
             this.releaseContactEventPayload(x)
         })
         this._physicsEventQueue = []
+    }
+
+    public getRNUpdateData(sceneObjectId: SceneObjectId, rigidNodeId: RigidNodeId): UpdatePhysicsBodyData {
+        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectId) as MirabufSceneObject
+        const body = this.getBody(sceneObject.mechanism.nodeToBody.get(rigidNodeId) as Jolt.BodyID)!
+
+        const linearVelocity = body.GetLinearVelocity()
+        const angularVelocity = body.GetAngularVelocity()
+        const position = body.GetPosition()
+        const rotation = body.GetRotation()
+
+        return {
+            sceneObjectId,
+            rigidNodeId,
+            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+        }
     }
 
     public getBodyUpdateData(body: Jolt.Body): PhysicsBodyData {
@@ -1941,7 +1963,9 @@ class PhysicsSystem extends WorldSystem {
         const otherSceneObject = this.bodyToMiraSceneObject(other)
         if (robotSceneObject == null || otherSceneObject == null) return
 
-        robotSceneObject.mechanism.touchedObjects.push(otherSceneObject)
+        const rigidNodeId = (<RigidNodeAssociate>this.getBodyAssociation(other.GetID())).rigidNodeId
+
+        robotSceneObject.mechanism.touchedBodies.push([otherSceneObject.id, rigidNodeId])
     }
 
     /**
