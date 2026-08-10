@@ -5,8 +5,8 @@ import type { AddToastFn, OpenModalFn, OpenPanelFn } from "../helpers/UIProvider
  */
 
 export let globalAddToast: AddToastFn = () => {}
-export let globalOpenPanel: OpenPanelFn = async () => ""
-export let globalOpenModal: OpenModalFn = () => ""
+export let globalOpenPanel: OpenPanelFn = () => null
+export let globalOpenModal: OpenModalFn = () => null
 
 export function setAddToast(func: typeof globalAddToast) {
     globalAddToast = func

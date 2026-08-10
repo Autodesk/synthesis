@@ -77,11 +77,10 @@ const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseT
             break
     }
 }
-type ConfigureWaiter = (screen: UIScreen<unknown, unknown>) => void
+
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
-    const [_, setConfigureWaiters] = useState<ConfigureWaiter[]>([])
     const [refreshDep, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
@@ -198,7 +197,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     )
 
     const openPanel: OpenPanelFn = useCallback(
-        async <T, P>(
+        <T, P>(
             content: FunctionComponent<PanelImplProps<T, P>>,
             customProps: P,
             parent?: UIScreen<any, any>,
@@ -251,25 +250,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
                 return [...nextPanels, panel as Panel<any, any>]
             })
-
-            await new Promise<void>(resolve => {
-                const cb: ConfigureWaiter = screen => {
-                    if (screen == panel) {
-                        resolve()
-                        return
-                    }
-                    setConfigureWaiters(v => [...v, cb])
-                }
-                setConfigureWaiters(v => [...v, cb])
-            })
-            const exclusiveGroup = panel.props.exclusiveGroup
-            if (exclusiveGroup != null) {
-                const existing = panels.find(p => p.props.exclusiveGroup == exclusiveGroup)
-                if (existing) {
-                    closePanel(existing.id, CloseType.OVERWRITE)
-                }
-            }
-
             return id
         },
         [panels, addToast, blockState]
@@ -292,7 +272,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     }, [])
 
     const togglePanel: TogglePanelFn = useCallback(
-        async <T, P>(
+        <T, P>(
             content: FunctionComponent<PanelImplProps<T, P>>,
             customProps: P,
             matchesOpen?: (openCustomProps: P) => boolean
@@ -310,27 +290,34 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     )
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
-    const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {
-        type PropKey = keyof typeof screen.props
-        type PropValue = (typeof screen.props)[keyof typeof screen.props]
+    const configureScreen: ConfigureScreenFn = useCallback(
+        (screen, props, callbacks) => {
+            type PropKey = keyof typeof screen.props
+            type PropValue = (typeof screen.props)[keyof typeof screen.props]
 
-        for (const [k, v] of Object.entries(props)) {
-            ;(screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
-        }
+            for (const [k, v] of Object.entries(props)) {
+                ;(screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
+            }
 
-        screen.props.configured = true
+            screen.props.configured = true
 
-        if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
-        if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
-        if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
+            if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
+            if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
+            if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
 
-        setConfigureWaiters(waiters => {
-            waiters.forEach(cb => cb(screen))
-            return []
-        })
-
-        refresh()
-    }, [])
+            if ("exclusiveGroup" in screen.props) {
+                const exclusiveGroup = screen.props.exclusiveGroup
+                if (exclusiveGroup != null) {
+                    const existing = panels.find(p => p.props.exclusiveGroup == exclusiveGroup && p !== screen)
+                    if (existing) {
+                        closePanel(existing.id, CloseType.OVERWRITE)
+                    }
+                }
+            }
+            refresh()
+        },
+        [closePanel, panels]
+    )
 
     return (
         <UIContext.Provider
