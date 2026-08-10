@@ -6,7 +6,6 @@ import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import EventSystem from "@/systems/EventSystem.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
@@ -18,6 +17,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 /**
  * Saves zone configuration to selected field.
@@ -164,12 +164,7 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
         return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
     }, [saveEvent])
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
+    useHoldPhysicsPause()
 
     const defaultGizmoMesh = useMemo(() => {
         if (!selectedZone) return undefined
@@ -202,21 +197,21 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
     )
 
     const gizmoComponent = useMemo(() => {
-        if (selectedField && selectedZone) {
-            return (
-                <TransformGizmoControl
-                    key="zone-transform-gizmo"
-                    size={1.5}
-                    gizmoRef={gizmoRef}
-                    defaultMode="translate"
-                    defaultMesh={defaultGizmoMesh}
-                    postGizmoCreation={postGizmoCreation}
-                />
-            )
-        } else {
+        if (!selectedField || !selectedZone) {
             gizmoRef.current = undefined
-            return <></>
+            return null
         }
+
+        return (
+            <TransformGizmoControl
+                key="zone-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+                defaultMesh={defaultGizmoMesh}
+                postGizmoCreation={postGizmoCreation}
+            />
+        )
     }, [selectedField, selectedZone, defaultGizmoMesh, postGizmoCreation])
 
     const trySetSelectedNode = useCallback(
