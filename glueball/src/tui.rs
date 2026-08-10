@@ -13,6 +13,7 @@
 //! DISCLAIMER: This system is sort of a mess
 //! WARNING: Do not call any methods on state, you should pass messages down channels instead
 
+use crate::kick::UserAction;
 use crate::lock;
 use crate::logging::{self, LogSnapshot, Logger, RoomLogs};
 use crate::panic::set_panic_hook_to_cleanup_terminal;
@@ -51,7 +52,7 @@ const COLOR_PALETTE_SIZE: usize = 6;
 
 pub fn start_tui_thread(
     state: &Arc<State>,
-    kick_tx: Producer<ClientId>,
+    usr_msg_tx: Producer<UserAction>,
     logger: Arc<Mutex<Logger>>,
 ) {
     let tui_state_handle = state.clone();
@@ -60,21 +61,22 @@ pub fn start_tui_thread(
     // On an OS thread because crossterm (and thus ratatui) will block on user input
     // So it wouldn't play nice with tokio's runtime, which expects yielding
     thread::spawn(move || {
-        if let Err(e) = run(tui_state_handle, kick_tx, &logger) {
+        if let Err(e) = run(tui_state_handle, usr_msg_tx, &logger) {
             eprintln!("TUI error: {e}");
         }
 
+        // TODO Send message to main thread warning to panic
         process::exit(0);
     });
 }
 
 fn run(
     state: Arc<State>,
-    kick_tx: Producer<ClientId>,
+    usr_msg_tx: Producer<UserAction>,
     logger: &Arc<Mutex<Logger>>,
 ) -> io::Result<()> {
     let mut terminal = ratatui::init();
-    let result = run_app(&mut terminal, state, kick_tx, logger);
+    let result = run_app(&mut terminal, state, usr_msg_tx, logger);
     ratatui::restore();
     result
 }
@@ -82,7 +84,7 @@ fn run(
 fn run_app(
     terminal: &mut DefaultTerminal,
     state: Arc<State>,
-    mut kick_tx: Producer<ClientId>,
+    mut usr_msg_tx: Producer<UserAction>,
     logger: &Arc<Mutex<Logger>>,
 ) -> io::Result<()> {
     let mut app = App::new(state);
@@ -114,7 +116,7 @@ fn run_app(
             app.on_key(
                 key.code,
                 key.modifiers,
-                &mut kick_tx,
+                &mut usr_msg_tx,
                 room_logs_len,
                 logger_snapshot.0.len(),
             );
@@ -213,7 +215,7 @@ impl App {
         &mut self,
         code: KeyCode,
         mods: KeyModifiers,
-        kick_tx: &mut Producer<ClientId>,
+        user_msg_tx: &mut Producer<UserAction>,
         room_log_len: usize,
         sys_log_len: usize,
     ) {
@@ -222,7 +224,7 @@ impl App {
             match code {
                 KeyCode::Char('y' | 'Y') => {
                     if let Some(user_id) = self.pending_kick.take() {
-                        let _ = kick_tx.push(user_id).is_ok();
+                        let _ = user_msg_tx.push(UserAction::Kick(user_id));
 
                         self.selected_user = self.selected_user.saturating_sub(1);
                     }
@@ -255,7 +257,7 @@ impl App {
             }
             KeyCode::Char('l') => {
                 if let Some(room_id) = &self.focused_room {
-                    self.state.toggle_room_lock(room_id);
+                    let _ = user_msg_tx.push(UserAction::Lock(room_id.clone()));
                 }
             }
 

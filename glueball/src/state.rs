@@ -3,7 +3,7 @@ use crate::model::RoomInfo;
 
 use anyhow::{Result, bail};
 use dashmap::DashMap;
-use dashmap::mapref::one::RefMut;
+use dashmap::mapref::one::{Ref, RefMut};
 use rand::RngExt;
 use tokio::sync::mpsc::{self};
 use tokio_tungstenite::tungstenite::Message;
@@ -15,11 +15,11 @@ const VALID_ROOM_ID_CHARACTERS: [char; 36] = valid_room_id_characters();
 const MAX_ROOM_COUNT: usize = 32;
 
 pub struct State {
-    users: ClientMap,
-    rooms: RoomMap,
+    pub users: ClientMap,
+    pub rooms: RoomMap,
     /// Server-wide events not tied to a specific room
     /// (e.g. connections, handshakes, failed joins)
-    log_tx: LogSender,
+    pub log_tx: LogSender,
 }
 
 impl State {
@@ -47,7 +47,7 @@ impl State {
     }
 
     pub fn get_client_tx(&self, client_id: &ClientId) -> Option<ClientSender> {
-        let room = self.get_room_of_client_mut(client_id)?;
+        let room = self.get_room_of_client(client_id)?;
         room.get_sender(client_id)
     }
 
@@ -83,6 +83,27 @@ impl State {
         Ok((host_id, room_id))
     }
 
+    /// # Safety
+    /// Relinquish all locks on `self.room` before calling
+    pub fn remove_client(&self, client_id: &ClientId) {
+        let Some(room_id) = self.users.get(client_id).map(|a| a.value().clone()) else {
+            return;
+        };
+
+        // Room lock held
+        let Some(mut room) = self.rooms.get_mut(&room_id) else {
+            return;
+        };
+
+        let room_closed = room.remove_client(client_id, &self.log_tx) == RoomStatus::Closed;
+        drop(room);
+
+        if room_closed {
+            self.rooms.remove(&room_id);
+            remove_room!(self.log_tx, room_id);
+        }
+    }
+
     pub fn add_client_to_room(
         &self,
         client_name: &str,
@@ -116,43 +137,6 @@ impl State {
         Some(client_id)
     }
 
-    pub fn remove_client(&self, client_id: ClientId) {
-        let log_tx = self.log_tx.clone();
-
-        let Some(mut room) = self.get_room_of_client_mut(&client_id) else {
-            warn_global!(
-                log_tx,
-                "Attempted to remove {client_id} from room that does not exist"
-            );
-            return;
-        };
-
-        let Ok(client_name) = room.get_client_name(&client_id) else {
-            warn_global!(
-                log_tx,
-                "Attempted to remove {client_id} from room they are not in"
-            );
-
-            return;
-        };
-
-        if room.remove_client(&client_id, &log_tx) == RoomStatus::Closed {
-            match self.rooms.remove(&room.key().clone()) {
-                Some(_) => remove_room!(&log_tx, room.key().clone()),
-                None => {
-                    warn_global!(
-                        log_tx,
-                        "Attempetd to remove {client_id} from room that does not exist"
-                    );
-                }
-            }
-        }
-
-        info_room!(log_tx, room.key().clone(), "{client_name} left",);
-
-        self.users.remove(&client_id);
-    }
-
     pub fn new_permanent_room(&self, room_id: RoomId) {
         if !is_valid_room_id(&room_id) {
             error_global!(
@@ -180,12 +164,18 @@ impl State {
         self.rooms.get_mut(&room_id.value().clone())
     }
 
+    pub fn get_room_of_client(&self, client_id: &ClientId) -> Option<Ref<'_, RoomId, Room>> {
+        let room_id = self.users.get(client_id)?.value().clone();
+
+        self.rooms.get(&room_id)
+    }
+
     pub fn get_senders_from_user_room(&self, client_id: ClientId) -> Vec<ClientSender> {
-        let Some(room) = self.get_room_of_client_mut(&client_id) else {
+        let Some(room) = self.get_room_of_client(&client_id) else {
             return Vec::new();
         };
 
-        room.get_senders(&client_id)
+        room.get_peer_senders(&client_id)
     }
 
     /// Flips whether new clients can join `room_id`.
@@ -314,25 +304,16 @@ pub struct Room {
     permanent: bool,
 }
 
-pub trait RoomBehavior {
-    fn get_client_name(&self, client_id: &ClientId) -> Result<String>;
-
-    fn get_senders(&self, exclude: &ClientId) -> Vec<ClientSender>;
-
-    fn get_sender(&self, id: &ClientId) -> Option<ClientSender>;
-
-    fn remove_client(&mut self, client_id: &ClientId, logging_tx: &LogSender) -> RoomStatus;
-}
-
-impl RoomBehavior for RefMut<'_, String, Room> {
-    fn get_client_name(&self, client_id: &ClientId) -> Result<String> {
+impl Room {
+    pub fn get_client_name(&self, client_id: &ClientId) -> Result<String> {
         let Some(client) = self.members.iter().find(|user| user.id == *client_id) else {
             bail!("Client not in room");
         };
 
         Ok(client.name.clone())
     }
-    fn get_senders(&self, exclude: &ClientId) -> Vec<ClientSender> {
+
+    pub fn get_peer_senders(&self, exclude: &ClientId) -> Vec<ClientSender> {
         self.members
             .iter()
             .filter(|client| *exclude != client.id)
@@ -340,14 +321,14 @@ impl RoomBehavior for RefMut<'_, String, Room> {
             .collect()
     }
 
-    fn get_sender(&self, id: &ClientId) -> Option<ClientSender> {
+    pub fn get_sender(&self, id: &ClientId) -> Option<ClientSender> {
         self.members
             .iter()
             .find(|client| client.id == *id)
             .map(|client| client.tx.clone())
     }
 
-    fn remove_client(&mut self, client_id: &ClientId, logging_tx: &LogSender) -> RoomStatus {
+    pub fn remove_client(&mut self, client_id: &ClientId, logging_tx: &LogSender) -> RoomStatus {
         let Some(idx) = self
             .members
             .iter()
@@ -361,7 +342,7 @@ impl RoomBehavior for RefMut<'_, String, Room> {
             return RoomStatus::Open;
         };
 
-        self.value_mut().members.remove(idx);
+        self.members.remove(idx);
 
         if Some(*client_id) == self.host {
             match self.members.first() {
@@ -374,8 +355,6 @@ impl RoomBehavior for RefMut<'_, String, Room> {
         RoomStatus::Open
     }
 }
-
-impl Room {}
 
 pub struct Client {
     pub id: ClientId,
@@ -476,7 +455,7 @@ mod tests {
         let (client_id, _) = state
             .add_room_and_host("Alice".to_string(), client_tx())
             .unwrap();
-        state.remove_client(client_id);
+        state.remove_client(&client_id);
 
         assert_eq!(state.room_count(), 0);
     }
@@ -491,7 +470,7 @@ mod tests {
         state
             .add_client_to_room("Bob", client_tx(), &room_id)
             .unwrap();
-        state.remove_client(host_id);
+        state.remove_client(&host_id);
 
         assert_eq!(state.room_count(), 1);
     }

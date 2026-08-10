@@ -16,7 +16,7 @@ mod util;
 
 use crate::cert::build_tls_config;
 use crate::config::retrieve_config;
-use crate::kick::setup_kick_system;
+use crate::kick::setup_user_action_system;
 use crate::logging::{
     EventType, LogDestination, LogRequest, Logger, MAX_LOG_LINES, print_global, print_room,
     spawn_log_receiver,
@@ -25,10 +25,8 @@ use crate::messaging::handle_connection;
 use crate::state::State;
 use crate::tui::start_tui_thread;
 use crate::util::get_local_ip;
-
-use std::sync::{Arc, Mutex};
-
 use anyhow::{Result, bail};
+use std::sync::{Arc, Mutex};
 use tokio::net::TcpListener;
 use tokio::sync::mpsc;
 use tokio_rustls::TlsAcceptor;
@@ -46,7 +44,7 @@ async fn main() -> Result<()> {
 
     let state = Arc::new(State::new(logging_tx.clone()));
 
-    let kick_tx = setup_kick_system(&state);
+    let user_action_tx = setup_user_action_system(&state);
 
     if config.headless {
         // Read the logging channel and immediantly print result
@@ -69,7 +67,7 @@ async fn main() -> Result<()> {
         // instead of having to take a lock to log
         let logger = Arc::new(Mutex::new(Logger::new(MAX_LOG_LINES)));
 
-        start_tui_thread(&state, kick_tx, logger.clone());
+        start_tui_thread(&state, user_action_tx, logger.clone());
 
         // Read the logging channel and write every message to the `logger`
         let send_to_logger =

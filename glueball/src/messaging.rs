@@ -2,7 +2,7 @@ use crate::EventType;
 use crate::logging::{LogDestination, LogSender};
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
-use crate::state::{ClientId, ClientSender, RoomBehavior, State};
+use crate::state::{ClientId, ClientSender, State};
 use crate::util::{deserialize_messagepack, server_sent_msg, trim_uuid};
 
 use anyhow::{Result, bail};
@@ -241,7 +241,7 @@ async fn handle_client_message(
 
             ops::ControlFlow::Break(())
         }
-        _ => todo!("Handle ws protocol ping/pong and text messagaes"),
+        _ => ops::ControlFlow::Continue(()),
     }
 }
 
@@ -307,8 +307,10 @@ async fn handle_client_close(
     let client_name = room.get_client_name(&client_id)?;
     warn_global!(logging_tx, "Connection with {client_name} closed");
 
-    let senders = room.get_senders(&client_id);
-    state.remove_client(client_id);
+    let senders = room.get_peer_senders(&client_id);
+    drop(room);
+
+    state.remove_client(&client_id);
 
     let tasks = senders.iter().map(|tx| tx.send(message.clone()));
     let _ = futures_util::future::join_all(tasks).await;

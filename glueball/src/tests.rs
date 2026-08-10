@@ -1,6 +1,6 @@
 /// The purpose of these tests is to test the `handle_connection` function
 /// In the future, more shared functionality (such as spawning an insecure server) extracted
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use futures_util::{SinkExt, StreamExt};
 use tokio::net::TcpListener;
@@ -11,7 +11,7 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 use crate::logging::LogSender;
 use crate::messaging::handle_connection;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
-use crate::room::State;
+use crate::state::State;
 use crate::util::{deserialize_messagepack, serialize_and_prefix};
 
 const RECV_TIMEOUT: Duration = Duration::from_secs(3);
@@ -19,7 +19,7 @@ const RECV_TIMEOUT: Duration = Duration::from_secs(3);
 /// Binds a server on a random port and returns the `ws://` URL.
 async fn spawn_server_insecure() -> String {
     let (log_tx, _log_rx): (LogSender, _) = mpsc::channel(128);
-    let state = Arc::new(Mutex::new(State::new(log_tx.clone())));
+    let state = Arc::new(State::new(log_tx.clone()));
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = listener.local_addr().unwrap().port();
 
