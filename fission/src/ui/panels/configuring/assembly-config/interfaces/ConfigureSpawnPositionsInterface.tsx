@@ -198,14 +198,14 @@ const ConfigureSpawnPositionsInterface: ConfigurationSubpanelComponent = ({
 
     const updateLocation = useCallback(
         (slot: SpawnSlot, updated: SpawnLocation) => {
-            setLocations(prev => {
-                const next = setSpawnLocation(prev, slot.path, updated)
-                next.hasConfiguredLocations = true
-                persist(next, selectedAssembly)
-                return next
-            })
+            const next: SpawnLocations = {
+                ...setSpawnLocation(locations, slot.path, updated),
+                hasConfiguredLocations: true,
+            }
+            persist(next, selectedAssembly)
+            setLocations(next)
         },
-        [selectedAssembly]
+        [locations, selectedAssembly]
     )
 
     if (editSlot !== undefined) {

@@ -4,16 +4,14 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 
-const DIRECTION_INDICATOR_COLOR = 0xffcc33
 const INDICATOR_RENDER_ORDER = 1000
 
-function createIndicatorMaterial(): THREE.MeshToonMaterial {
-    const material = World.sceneRenderer.createToonMaterial(DIRECTION_INDICATOR_COLOR)
-    material.depthTest = false
-    material.depthWrite = false
-    material.transparent = true
-    return material
-}
+const INDICATOR_MATERIAL = new THREE.MeshBasicMaterial({
+    color: 0xffcc33,
+    depthTest: false,
+    depthWrite: false,
+    transparent: true,
+})
 
 function createDirectionConeGeometry(facing: "+z" | "-z" = "+z"): THREE.ConeGeometry {
     const sign = facing === "+z" ? 1 : -1
@@ -55,18 +53,13 @@ export function useFieldRelativeGizmoPosition(
  */
 export function useDirectionIndicatorMesh(facing: "+z" | "-z" = "+z") {
     const mesh = useMemo(() => {
-        const m = new THREE.Mesh(createDirectionConeGeometry(facing), createIndicatorMaterial())
-        m.renderOrder = 1000
+        const m = new THREE.Mesh(createDirectionConeGeometry(facing), INDICATOR_MATERIAL)
+        m.renderOrder = INDICATOR_RENDER_ORDER
         return m
     }, [facing])
 
     useEffect(() => {
-        return () => {
-            mesh.geometry.dispose()
-            const material = mesh.material as THREE.MeshToonMaterial
-            material.gradientMap?.dispose()
-            material.dispose()
-        }
+        return () => mesh.geometry.dispose()
     }, [mesh])
 
     return mesh
@@ -100,9 +93,8 @@ export function useFieldPointMarkers(
         const fieldRef = selectedField.getXZPositionTransform(new THREE.Vector3())
 
         const markers = points.map(({ pos, yaw, pitch }) => {
-            const material = createIndicatorMaterial()
             const geometries: THREE.BufferGeometry[] = [new THREE.SphereGeometry(0.1, 12, 12)]
-            const dot = new THREE.Mesh(geometries[0], material)
+            const dot = new THREE.Mesh(geometries[0], INDICATOR_MATERIAL)
             dot.renderOrder = INDICATOR_RENDER_ORDER
 
             const group = new THREE.Group()
@@ -112,7 +104,7 @@ export function useFieldPointMarkers(
             if (yaw !== undefined) {
                 const coneGeometry = createDirectionConeGeometry(facing)
                 geometries.push(coneGeometry)
-                const cone = new THREE.Mesh(coneGeometry, material)
+                const cone = new THREE.Mesh(coneGeometry, INDICATOR_MATERIAL)
                 cone.renderOrder = INDICATOR_RENDER_ORDER
                 group.rotation.set(pitch ?? 0, yaw, 0, "YXZ")
                 group.add(cone)
@@ -120,15 +112,13 @@ export function useFieldPointMarkers(
 
             World.sceneRenderer.scene.add(group)
 
-            return { group, material, geometries }
+            return { group, geometries }
         })
 
         return () => {
-            markers.forEach(({ group, material, geometries }) => {
+            markers.forEach(({ group, geometries }) => {
                 World.sceneRenderer.scene.remove(group)
                 geometries.forEach(geometry => geometry.dispose())
-                material.gradientMap?.dispose()
-                material.dispose()
             })
         }
     }, [selectedField, points, facing])
