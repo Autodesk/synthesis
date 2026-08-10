@@ -4,23 +4,22 @@ import { BaseUnit, DerivativeOrder, noraType, num, type NoraValueOf } from "../N
 import EncoderStimulus from "./EncoderStimulus"
 import type { StimulusID } from "./Stimulus"
 
-const HINGE_TYPE = noraType([num(BaseUnit.POSITION, DerivativeOrder.ZERO), num(BaseUnit.POSITION, DerivativeOrder.ONE)])
+const HINGE_TYPE = noraType([num(BaseUnit.ANGLE, DerivativeOrder.ZERO), num(BaseUnit.ANGLE, DerivativeOrder.ONE)])
 
 class HingeStimulus extends EncoderStimulus<typeof HINGE_TYPE> {
     private _accum: boolean = false
     private _hingeAngleAccum: number = 0.0
     private _hinge: Jolt.HingeConstraint
 
-    public get positionValue(): number {
-        if (this._accum) {
-            return this._hingeAngleAccum
-        } else {
-            return this._hinge.GetCurrentAngle()
-        }
+    public get positionValue() {
+        let value = this._hingeAngleAccum
+        if (!this._accum) value = this._hinge.GetCurrentAngle()
+
+        return { value, baseType: num(BaseUnit.ANGLE, DerivativeOrder.ZERO) }
     }
 
-    public get velocityValue(): number {
-        return 0.0
+    public get velocityValue() {
+        return { value: 0.0, baseType: num(BaseUnit.ANGLE, DerivativeOrder.ONE) }
     }
 
     public set accum(shouldAccum: boolean) {

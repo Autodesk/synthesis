@@ -40,7 +40,7 @@ export function makeDriverID(constraint: MechanismConstraint): DriverID {
     }
 }
 
-abstract class Driver<T extends NoraType = NoraType> implements SimReceiver {
+abstract class Driver<T extends NoraType = NoraType> implements SimReceiver<T> {
     private _id: DriverID
     private _info?: mirabuf.IInfo
 

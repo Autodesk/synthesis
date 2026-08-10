@@ -7,18 +7,18 @@ import {
     convertJoltQuatToThreeQuaternion,
     convertJoltVec3ToThreeVector3,
 } from "@/util/TypeConversions"
-import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
+import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, BaseAxis, numAxis } from "../Nora"
 import { SimType } from "../wpilib_brain/WPILibTypes"
 import SimGeneric from "../wpilib_brain/sim/SimGeneric"
 import Stimulus, { type StimulusID } from "./Stimulus"
 
-const GYRO_TYPE = noraType([
-    num(BaseUnit.ANGLE, DerivativeOrder.ZERO),
-    num(BaseUnit.ANGLE, DerivativeOrder.ZERO),
-    num(BaseUnit.ANGLE, DerivativeOrder.ZERO),
-    num(BaseUnit.ANGLE, DerivativeOrder.ONE),
-    num(BaseUnit.ANGLE, DerivativeOrder.ONE),
-    num(BaseUnit.ANGLE, DerivativeOrder.ONE),
+export const GYRO_TYPE = noraType([
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.X),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.Y),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.Z),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.X),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.Y),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.Z),
 ])
 
 class GyroStimulus extends Stimulus<typeof GYRO_TYPE> {
@@ -90,7 +90,14 @@ class GyroStimulus extends Stimulus<typeof GYRO_TYPE> {
     }
 
     public supplyValue(): NoraValueOf<typeof GYRO_TYPE> {
-        return [this._angle.x, this._angle.y, this._angle.z, this._rate.x, this._rate.y, this._rate.z]
+        return [
+            { value: this._angle.x, baseType: GYRO_TYPE[0] },
+            { value: this._angle.y, baseType: GYRO_TYPE[1] },
+            { value: this._angle.z, baseType: GYRO_TYPE[2] },
+            { value: this._rate.x, baseType: GYRO_TYPE[3] },
+            { value: this._rate.y, baseType: GYRO_TYPE[4] },
+            { value: this._rate.z, baseType: GYRO_TYPE[5] },
+        ]
     }
 
     public displayName(): string {

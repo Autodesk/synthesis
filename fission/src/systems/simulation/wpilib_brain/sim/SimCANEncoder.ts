@@ -1,26 +1,42 @@
-import type { NoraValue } from "../../Nora"
+import type { BaseType, BaseUnit, DerivativeOrder, NoraBaseValueOf, NoraValueOf } from "../../Nora"
 import type EncoderStimulus from "../../stimulus/EncoderStimulus"
+import { WHEEL_STIMULUS_TYPE } from "../../stimulus/WheelStimulus"
 import type { SimReceiver } from "../SimDataFlow"
 import { SimInput } from "../SimInput"
-import { receiverTypeMap } from "../WPILibState"
 import { CANENCODER_POSITION, CANENCODER_VELOCITY, SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
 
+export const CAN_ENCODER_TYPE = WHEEL_STIMULUS_TYPE
+
 export default class SimCANEncoder {
-    private constructor() {}
+    private constructor() { }
 
-    public static setVelocity(device: string, velocity: number): boolean {
-        return SimGeneric.set(SimType.CAN_ENCODER, device, CANENCODER_VELOCITY, velocity)
+    public static setVelocity(
+        device: string,
+        velocity: NoraBaseValueOf<{
+            type: BaseType.NUMBER
+            unit: BaseUnit.ANGLE
+            order: DerivativeOrder.ONE
+        }>
+    ): boolean {
+        return SimGeneric.set(SimType.CAN_ENCODER, device, CANENCODER_VELOCITY, velocity.value)
     }
 
-    public static setPosition(device: string, position: number): boolean {
-        return SimGeneric.set(SimType.CAN_ENCODER, device, CANENCODER_POSITION, position)
+    public static setPosition(
+        device: string,
+        position: NoraBaseValueOf<{
+            type: BaseType.NUMBER
+            unit: BaseUnit.ANGLE
+            order: DerivativeOrder.ZERO
+        }>
+    ): boolean {
+        return SimGeneric.set(SimType.CAN_ENCODER, device, CANENCODER_POSITION, position.value)
     }
 
-    public static genReceiver(device: string): SimReceiver {
+    public static genReceiver(device: string): SimReceiver<typeof CAN_ENCODER_TYPE> {
         return {
-            getReceiverType: () => receiverTypeMap[SimType.CAN_ENCODER]!,
-            setReceiverValue: ([count, rate]: NoraValue<2>) => {
+            receiverType: CAN_ENCODER_TYPE,
+            setReceiverValue: ([count, rate]: NoraValueOf<typeof CAN_ENCODER_TYPE>) => {
                 SimCANEncoder.setPosition(device, count)
                 SimCANEncoder.setVelocity(device, rate)
             },
@@ -29,9 +45,9 @@ export default class SimCANEncoder {
 }
 
 export class SimEncoderInput extends SimInput {
-    private _stimulus: EncoderStimulus
+    private _stimulus: EncoderStimulus<typeof CAN_ENCODER_TYPE>
 
-    constructor(device: string, stimulus: EncoderStimulus) {
+    constructor(device: string, stimulus: EncoderStimulus<typeof CAN_ENCODER_TYPE>) {
         super(device)
         this._stimulus = stimulus
     }

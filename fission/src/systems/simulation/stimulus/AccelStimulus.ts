@@ -8,15 +8,15 @@ import {
     convertJoltVec3ToThreeVector3,
 } from "@/util/TypeConversions"
 import Stimulus, { type StimulusID } from "./Stimulus"
-import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
+import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, BaseAxis, numAxis } from "../Nora"
 
 export const ACCEL_TYPE = noraType([
-    num(BaseUnit.POSITION, DerivativeOrder.TWO),
-    num(BaseUnit.POSITION, DerivativeOrder.TWO),
-    num(BaseUnit.POSITION, DerivativeOrder.TWO),
-    num(BaseUnit.POSITION, DerivativeOrder.ONE),
-    num(BaseUnit.POSITION, DerivativeOrder.ONE),
-    num(BaseUnit.POSITION, DerivativeOrder.ONE),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.X),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.Y),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.Z),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.X),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.Y),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.Z),
 ])
 
 class AccelStimulus extends Stimulus<typeof ACCEL_TYPE> {
@@ -79,7 +79,14 @@ class AccelStimulus extends Stimulus<typeof ACCEL_TYPE> {
     }
 
     protected supplyValue(): NoraValueOf<typeof ACCEL_TYPE> {
-        return [this._accel.x, this._accel.y, this._accel.z, this._vel.x, this._vel.y, this._vel.z]
+        return [
+            { value: this._accel.x, baseType: ACCEL_TYPE[0] },
+            { value: this._accel.y, baseType: ACCEL_TYPE[1] },
+            { value: this._accel.z, baseType: ACCEL_TYPE[2] },
+            { value: this._vel.x, baseType: ACCEL_TYPE[3] },
+            { value: this._vel.y, baseType: ACCEL_TYPE[4] },
+            { value: this._vel.z, baseType: ACCEL_TYPE[5] },
+        ]
     }
 
     public displayName(): string {

@@ -3,7 +3,7 @@ import type { mirabuf } from "@/proto/mirabuf"
 import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { BaseType, BaseUnit, DerivativeOrder, num, type NoraType, type NoraValueOf } from "../Nora"
+import { BaseUnit, DerivativeOrder, num, type NoraType, type NoraValueOf } from "../Nora"
 import Driver, { DriverControlMode, type DriverID } from "./Driver"
 
 const MAX_TORQUE_WITHOUT_GRAV = 100
@@ -171,7 +171,7 @@ class HingeDriver extends Driver<typeof HINGE_TYPE> {
     }
 
     protected receiveValue([val]: NoraValueOf<typeof HINGE_TYPE>): void {
-        this.accelerationDirection = val
+        this.accelerationDirection = val.value
     }
 
     public displayName(): string {

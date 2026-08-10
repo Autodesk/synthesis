@@ -1,7 +1,7 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
 import Driver, { type DriverID } from "./Driver"
-import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num, } from "../Nora"
+import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
 
 const INTAKE_TYPE = noraType([num(BaseUnit.ANGLE, DerivativeOrder.ZERO)])
 
@@ -22,7 +22,7 @@ class IntakeDriver extends Driver<typeof INTAKE_TYPE> {
     }
 
     protected receiveValue([val]: NoraValueOf<typeof INTAKE_TYPE>): void {
-        this.value = val
+        this.value = val.value
     }
 
     public get receiverType() {

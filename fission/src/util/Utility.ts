@@ -42,6 +42,16 @@ export async function hashBuffer(buffer: ArrayBuffer, fallbackHash?: string): Pr
         .join("")
 }
 
+export function hashBufferSync(str: string): string {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i)
+        hash |= 0
+    }
+
+    return `${hash >>> 0}`
+}
+
 export function forPair<T, U>(listOne: T[], listTwo: U[], predicate: (one: T, two: U) => void): void {
     listOne.forEach(a => listTwo.forEach(b => predicate(a, b)))
 }

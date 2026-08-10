@@ -11,6 +11,10 @@
 /// See the `SerializedNoraBaseType` definition for information on the serialized representation
 /// of the various types
 
+// for node colors
+import { hashBufferSync } from "@/util/Utility"
+import * as THREE from "three"
+
 /// NOTE: the variant string values should match TypeScript types (i.e., possible as the result of `typeof`)
 export enum BaseType {
     NUMBER = "number",
@@ -29,13 +33,21 @@ export enum DerivativeOrder {
     TWO = "2", // acceleration
 }
 
+export enum BaseAxis {
+    X = "x",
+    Y = "y",
+    Z = "z",
+}
+
 /// A NoraBaseType represents a single unit of data within this type system. E.g., a single axis angle from a gyroscope
 export type NoraBaseType =
-    | { type: BaseType.NUMBER; unit: BaseUnit; order: DerivativeOrder }
+    | { type: BaseType.NUMBER; unit: BaseUnit; order: DerivativeOrder; axis?: BaseAxis }
     | { type: BaseType.BOOLEAN }
 
-export type NoraBaseValue = number | boolean
-export type NoraBaseValueOf<T extends NoraBaseType> = T extends { type: BaseType.BOOLEAN } ? boolean : number
+export type NoraBaseValue = NoraBaseValueOf<NoraBaseType>
+export type NoraBaseValueOf<T extends NoraBaseType> = T extends { type: BaseType.BOOLEAN }
+    ? { value: boolean; baseType: T }
+    : { value: number; baseType: T }
 
 /// A NoraType represents the entire input/output of a driver or stimulus. E.g., all angles reported by a gyroscope
 export type NoraType = readonly NoraBaseType[]
@@ -43,12 +55,15 @@ export type NoraType = readonly NoraBaseType[]
 export type NoraValue = readonly NoraBaseValue[]
 export type NoraValueOf<T extends NoraType> = { readonly [K in keyof T]: NoraBaseValueOf<T[K]> }
 
-/// Numbers serialize to `number:<unit>:<order>` while booleans serialize to just `boolean`
+/// Numbers serialize to `number:<unit>:<order>[:<axis>]` while booleans serialize to just `boolean`
 type SerializedNoraBaseType<T extends NoraBaseType> = T extends {
     type: BaseType.NUMBER
     unit: infer U extends BaseUnit
     order: infer O extends DerivativeOrder
+    axis: infer A extends BaseAxis
 }
+    ? `${BaseType.NUMBER}:${U}:${O}:${A}`
+    : T extends { type: BaseType.NUMBER; unit: infer U extends BaseUnit; order: infer O extends DerivativeOrder }
     ? `${BaseType.NUMBER}:${U}:${O}`
     : `${BaseType.BOOLEAN}`
 
@@ -75,6 +90,17 @@ export function num<const U extends BaseUnit, const O extends DerivativeOrder>(u
 }
 
 /**
+ * Utility function for defining a number with an axis in a `NoraType` definition
+ */
+export function numAxis<const U extends BaseUnit, const O extends DerivativeOrder, const A extends BaseAxis>(
+    unit: U,
+    order: O,
+    axis?: A
+) {
+    return { type: BaseType.NUMBER, unit, order, axis } as const
+}
+
+/**
  * Utility function for defining a boolean in a `NoraType` definition
  */
 export function bool() {
@@ -83,6 +109,7 @@ export function bool() {
 
 const UNITS = new Set<string>(Object.values(BaseUnit))
 const ORDERS = new Set<string>(Object.values(DerivativeOrder))
+const AXES = new Set<string>(Object.values(BaseAxis))
 
 /**
  * Serializes a Nora base type into its string representation
@@ -92,7 +119,7 @@ const ORDERS = new Set<string>(Object.values(DerivativeOrder))
 export function serializeNoraBaseType<T extends NoraBaseType>(t: T): SerializedNoraBaseType<T> {
     switch (t.type) {
         case BaseType.NUMBER:
-            return `${t.type}:${t.unit}:${t.order}` as SerializedNoraBaseType<T>
+            return `${t.type}:${t.unit}:${t.order}${t.axis !== undefined ? `:${t.axis}` : ""}` as SerializedNoraBaseType<T>
         case BaseType.BOOLEAN:
             return `${t.type}` as SerializedNoraBaseType<T>
     }
@@ -108,14 +135,20 @@ export function deserializeNoraBaseType(serialized: string): NoraBaseType {
 
     const split = serialized.split(":")
 
-    if (split.length !== 3) throw new Error(`Invalid serialized type ${serialized}`)
+    // 3 without axis, 4 with
+    if (split.length < 3 || split.length > 4) throw new Error(`Invalid serialized type ${serialized}`)
 
-    const [type, unit, order] = split
+    const [type, unit, order, axis] = split
 
-    if (type !== BaseType.NUMBER || !UNITS.has(unit as BaseUnit) || !ORDERS.has(order as DerivativeOrder))
+    if (
+        type !== BaseType.NUMBER ||
+        !UNITS.has(unit as BaseUnit) ||
+        !ORDERS.has(order as DerivativeOrder) ||
+        (axis !== undefined && !AXES.has(axis as BaseAxis))
+    )
         throw new Error(`Invalid serialized components in ${serialized}`)
 
-    return { type, unit, order } as NoraBaseType
+    return { type, unit, order, axis } as NoraBaseType
 }
 
 /**
@@ -149,14 +182,50 @@ export function areTypesCompatible(type1: NoraType, type2: NoraType): boolean {
 }
 
 /**
+ * @returns {boolean} whether the two base types are compatible
+ */
+export function areBaseTypesCompatible(type1: NoraBaseType, type2: NoraBaseType): boolean {
+    return serializeNoraBaseType(type1) === serializeNoraBaseType(type2)
+}
+
+/**
  * @returns {boolean} whether the value adheres to the defined type
  */
 export function valueMatchesType(value: NoraValue, type: NoraType): boolean {
     return (
         value.length === type.length &&
-        value.every((val, i) => {
-            const t = typeof val // needed because otherwise ESLint complains about invalid typeof comparison
-            return t === (type[i].type as string)
-        })
+        areTypesCompatible(
+            value.map(v => v.baseType),
+            type
+        )
     )
+}
+
+// TODO: is there a better way to do this?
+export const noraTypeToColorStr = (type: NoraType): string => {
+    const hsl = { h: 0, s: 0, l: 0 }
+    const allColors = type.map(t => noraBaseTypeToColor(t))
+
+    // doesn't accurately average hues on the hsl wheel but idrc, it's deterministic
+    let avgHue = 0
+    for (const color of allColors) {
+        color.getHSL(hsl)
+
+        avgHue += hsl.h
+    }
+
+    avgHue /= type.length
+
+    // use different s, l values to ensure Nora types always differ from Nora base types
+    return `#${new THREE.Color().setHSL(avgHue, 0.5, 0.5).getHexString()}`
+}
+
+export const noraBaseTypeToColor = (baseType: NoraBaseType): THREE.Color => {
+    const hash = hashBufferSync(serializeNoraBaseType(baseType))
+    const hue = (parseInt(hash.slice(0, 6), 16) % 360) / 360
+    return new THREE.Color().setHSL(hue, 0.7, 0.6)
+}
+
+export const noraBaseTypeToColorStr = (baseType: NoraBaseType): string => {
+    return `#${(noraBaseTypeToColor(baseType)).getHexString()}`
 }

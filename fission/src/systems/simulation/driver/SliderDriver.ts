@@ -114,7 +114,7 @@ class SliderDriver extends Driver<typeof SLIDER_TYPE> {
     }
 
     protected receiveValue([val]: NoraValueOf<typeof SLIDER_TYPE>): void {
-        this.accelerationDirection = val
+        this.accelerationDirection = val.value
     }
 
     public displayName(): string {

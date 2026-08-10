@@ -3,7 +3,7 @@ import type { mirabuf } from "@/proto/mirabuf"
 import Driver, { type DriverID } from "./Driver"
 import { BaseUnit, DerivativeOrder, noraType, num, type NoraValueOf } from "../Nora"
 
-const EJECTOR_TYPE = noraType([num(BaseUnit.NONE, DerivativeOrder.ZERO)])
+export const EJECTOR_TYPE = noraType([num(BaseUnit.NONE, DerivativeOrder.ZERO)])
 
 class EjectorDriver extends Driver<typeof EJECTOR_TYPE> {
     private _value: number
@@ -22,7 +22,7 @@ class EjectorDriver extends Driver<typeof EJECTOR_TYPE> {
     }
 
     protected receiveValue([val]: NoraValueOf<typeof EJECTOR_TYPE>): void {
-        this._value = val
+        this._value = val.value
     }
 
     public get receiverType() {

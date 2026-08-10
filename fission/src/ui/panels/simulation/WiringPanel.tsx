@@ -16,7 +16,6 @@ import type React from "react"
 import { type ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
-import { isNoraDeconstructable } from "@/systems/simulation/Nora"
 import {
     type ConfigState,
     type HandleInfo,
@@ -367,13 +366,15 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
             const { clientX, clientY } = "changedTouches" in event ? event.changedTouches[0] : event
 
             const handleInfo = simConfig.handles[state.fromHandle.id!]
-            if (!handleInfo || !isNoraDeconstructable(handleInfo.noraType)) {
+            // null means wildcard, so any type can connect to handle.
+            // we can't deconstruct wildcard handles
+            if (!handleInfo || handleInfo.noraType === null) {
                 return
             }
 
             const newHandleId = (handleInfo.isSource ? SimConfig.addDeconstructorNode : SimConfig.addConstructorNode)(
                 simConfig,
-                handleInfo.noraType,
+                handleInfo.noraType!,
                 screenToFlowPosition({ x: clientX, y: clientY })
             )
             if (!newHandleId) return
@@ -409,7 +410,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo reset={reset ?? (() => {})} />
+            <FlowInfo reset={reset ?? (() => { })} />
         </ReactFlow>
     )
 }

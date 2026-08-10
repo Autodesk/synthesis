@@ -1,7 +1,6 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { NoraTypes } from "../Nora"
 import type WPILibBrain from "./WPILibBrain"
-import { type SimMap, SimType, worker } from "./WPILibTypes"
+import { type SimMap, worker } from "./WPILibTypes"
 
 export const simMaps = new Map<string, SimMap>()
 
@@ -42,6 +41,7 @@ export function getIsConnected() {
     return isConnected
 }
 
+/*
 export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.PWM]: NoraTypes.NUMBER,
     [SimType.SIM_DEVICE]: undefined,
@@ -71,3 +71,4 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.DRIVERS_STATION]: undefined,
     [SimType.CAMERA]: undefined,
 }
+*/
