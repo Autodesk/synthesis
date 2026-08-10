@@ -9,17 +9,14 @@ import {
     type GraphicsPreferences,
     type RobotPreferences,
     type UserPreference,
-    type UserPreferences,
 } from "@/systems/preferences/PreferenceTypes"
 
-/**
- * Captures the full current user-preferences state by resolving every key
- * defined by defaultUserPreferences() through the public getter, so the whole
- * set can be asserted with toMatchSnapshot().
- */
-function captureUserPreferences(): UserPreferences {
-    const keys = Object.keys(defaultUserPreferences()) as UserPreference[]
-    return Object.fromEntries(keys.map(key => [key, PreferencesSystem.getUserPreference(key)])) as UserPreferences
+function expectDefaultPreferences() {
+    const defaults = defaultUserPreferences()
+    const keys = Object.keys(defaults) as UserPreference[]
+    keys.forEach(key => {
+        expect(PreferencesSystem.getUserPreference(key), `Mismatch in preference ${key}`).toEqual(defaults[key])
+    })
 }
 
 describe("Preferences System Global Values", () => {
@@ -41,7 +38,7 @@ describe("Preferences System Global Values", () => {
         window.localStorage.setItem("Preferences", "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
 
-        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
+        expectDefaultPreferences()
     })
 
     test("Reset to default if undefined", () => {
@@ -49,7 +46,7 @@ describe("Preferences System Global Values", () => {
         PreferencesSystem.setUserPreference("RenderSceneTags", undefined as unknown as boolean)
         PreferencesSystem.setUserPreference("RenderScoreboard", undefined as unknown as boolean)
 
-        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
+        expectDefaultPreferences()
     })
 
     test("Setting then saving", () => {
@@ -75,7 +72,7 @@ describe("Preferences System Global Values", () => {
 
         PreferencesSystem.clearPreferences()
 
-        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
+        expectDefaultPreferences()
     })
 
     test("Graphics preferences", () => {
