@@ -16,7 +16,7 @@
 use crate::lock;
 use crate::logging::{self, LogSnapshot, Logger, RoomLogs};
 use crate::panic::set_panic_hook_to_cleanup_terminal;
-use crate::room::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
+use crate::state::{ClientId, RoomId, RoomSnapshot, Snapshot, State};
 use crate::util::trim_uuid;
 
 use std::collections::VecDeque;
@@ -50,14 +50,10 @@ const COLOR_PALETTE: &[Color] = &[
 const COLOR_PALETTE_SIZE: usize = 6;
 
 pub fn start_tui_thread(
-    state: &Arc<Mutex<State>>,
+    state: &Arc<State>,
     kick_tx: Producer<ClientId>,
     logger: Arc<Mutex<Logger>>,
 ) {
-    {
-        lock!(state).set_tui();
-    }
-
     let tui_state_handle = state.clone();
     set_panic_hook_to_cleanup_terminal();
 
@@ -73,7 +69,7 @@ pub fn start_tui_thread(
 }
 
 fn run(
-    state: Arc<Mutex<State>>,
+    state: Arc<State>,
     kick_tx: Producer<ClientId>,
     logger: &Arc<Mutex<Logger>>,
 ) -> io::Result<()> {
@@ -85,7 +81,7 @@ fn run(
 
 fn run_app(
     terminal: &mut DefaultTerminal,
-    state: Arc<Mutex<State>>,
+    state: Arc<State>,
     mut kick_tx: Producer<ClientId>,
     logger: &Arc<Mutex<Logger>>,
 ) -> io::Result<()> {
@@ -93,7 +89,7 @@ fn run_app(
 
     loop {
         let logger_snapshot = lock!(logger).snapshot();
-        let state_snapshot = lock!(app.state).snapshot();
+        let state_snapshot = app.state.snapshot();
         app.sync(&state_snapshot);
 
         terminal.draw(|frame| ui(frame, &app, &state_snapshot, &logger_snapshot))?;
@@ -131,7 +127,7 @@ fn run_app(
 }
 
 struct App {
-    state: Arc<Mutex<State>>,
+    state: Arc<State>,
     /// Index of current tab
     tab: usize,
     /// Index of focused panel within tab
@@ -156,7 +152,7 @@ struct App {
 }
 
 impl App {
-    const fn new(state: Arc<Mutex<State>>) -> Self {
+    const fn new(state: Arc<State>) -> Self {
         Self {
             state,
             tab: 0,
@@ -259,7 +255,7 @@ impl App {
             }
             KeyCode::Char('l') => {
                 if let Some(room_id) = &self.focused_room {
-                    lock!(self.state).toggle_room_lock(room_id);
+                    self.state.toggle_room_lock(room_id);
                 }
             }
 

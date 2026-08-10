@@ -7,7 +7,7 @@ mod messaging;
 mod model;
 mod panic;
 mod prefixed;
-mod room;
+mod state;
 #[cfg(test)]
 mod tests;
 mod tui;
@@ -22,7 +22,7 @@ use crate::logging::{
     spawn_log_receiver,
 };
 use crate::messaging::handle_connection;
-use crate::room::State;
+use crate::state::State;
 use crate::tui::start_tui_thread;
 use crate::util::get_local_ip;
 
@@ -44,7 +44,7 @@ async fn main() -> Result<()> {
     // tui running on a different OS thread or just printing them
     let (logging_tx, logging_rx) = mpsc::channel::<LogRequest>(MAX_LOG_LINES);
 
-    let state = Arc::new(Mutex::new(State::new(logging_tx.clone())));
+    let state = Arc::new(State::new(logging_tx.clone()));
 
     let kick_tx = setup_kick_system(&state);
 
@@ -85,7 +85,7 @@ async fn main() -> Result<()> {
     }
 
     if let Some(room_id) = config.permanent_room {
-        lock!(state).new_permanent_room(room_id);
+        state.new_permanent_room(room_id);
     }
 
     // # Setup socket listener

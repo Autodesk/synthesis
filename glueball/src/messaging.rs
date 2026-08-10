@@ -1,9 +1,9 @@
+use crate::EventType;
 use crate::logging::{LogDestination, LogSender};
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
-use crate::room::{ClientId, ClientSender, State};
+use crate::state::{ClientId, ClientSender, RoomBehavior, State};
 use crate::util::{deserialize_messagepack, server_sent_msg, trim_uuid};
-use crate::{EventType, lock};
 
 use anyhow::{Result, bail};
 use bytes::Bytes;
@@ -17,7 +17,7 @@ use tokio_tungstenite::{WebSocketStream, tungstenite::Message};
 
 use std::net::SocketAddr;
 use std::ops;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::time::Duration;
 
 type WsStream<S> = WebSocketStream<Prefixed<S>>;
@@ -25,7 +25,7 @@ type WsStream<S> = WebSocketStream<Prefixed<S>>;
 const TIMEOUT: Duration = Duration::from_secs(30);
 
 pub async fn handle_connection<S>(
-    state: Arc<Mutex<State>>,
+    state: Arc<State>,
     raw_stream: S,
     addr: SocketAddr,
     logging_tx: LogSender,
@@ -117,7 +117,7 @@ pub async fn handle_connection<S>(
 ///
 /// If any message is unable to be parse, the function returns `None`.
 async fn wait_for_initialization<S>(
-    state: Arc<Mutex<State>>,
+    state: Arc<State>,
     read: &mut SplitStream<WsStream<S>>,
     write: &mut SplitSink<WsStream<S>, Message>,
     tx: ClientSender,
@@ -138,7 +138,7 @@ where
             Some(ClientToServerMessage::InitializeConnection { room_id, name }) => {
                 let (client_id, room_id) = {
                     // The lock is relinquished at the end of this expression
-                    let info = lock!(state).initialize_client_in_room(tx, room_id, &name);
+                    let info = state.initialize_client_in_room(tx, room_id, &name);
                     match info {
                         Some(info) => info,
                         None => return None,
@@ -196,13 +196,13 @@ where
 }
 
 async fn handle_room_list_request<S>(
-    state: Arc<Mutex<State>>,
+    state: Arc<State>,
     write: &mut SplitSink<WebSocketStream<Prefixed<S>>, Message>,
 ) where
     S: SynthesisStream,
 {
     let message = server_sent_msg(ServerToClientMessage::RoomList {
-        rooms: lock!(state).list_rooms(),
+        rooms: state.list_rooms(),
     });
 
     write.send(message).await.ok();
@@ -210,7 +210,7 @@ async fn handle_room_list_request<S>(
 
 async fn handle_client_message(
     message: Message,
-    state: Arc<Mutex<State>>,
+    state: Arc<State>,
     client_id: ClientId,
     logging_tx: LogSender,
 ) -> ops::ControlFlow<(), ()> {
@@ -228,7 +228,7 @@ async fn handle_client_message(
             // If we're here, that means the message has a client-client prefix
             // which we want anyway, so there's no need to prefix the message
             // we can just forward it!
-            let senders: Vec<ClientSender> = { lock!(state).get_senders_from_user_room(client_id) };
+            let senders: Vec<ClientSender> = { state.get_senders_from_user_room(client_id) };
 
             let tasks = senders.iter().map(|tx| tx.send(message.clone()));
             let _ = futures_util::future::join_all(tasks).await;
@@ -248,7 +248,7 @@ async fn handle_client_message(
 async fn handle_client_ping(
     bytes: &Bytes,
     client_id: &ClientId,
-    state: &Arc<Mutex<State>>,
+    state: &Arc<State>,
     logging_tx: LogSender,
 ) {
     let Ok(ClientToServerMessage::Ping { timestamp }) =
@@ -273,7 +273,7 @@ async fn handle_client_ping(
     // Scope hack to avoid holding the guard while sending a message
     // Because Mutex locks are not Send
     let tx = {
-        let Some(tx) = lock!(state).get_client_tx(client_id) else {
+        let Some(tx) = state.get_client_tx(client_id) else {
             error_global!(
                 logging_tx,
                 "Received client-server message from client not in room"
@@ -289,7 +289,7 @@ async fn handle_client_ping(
 
 async fn handle_client_close(
     client_id: ClientId,
-    state: &Arc<Mutex<State>>,
+    state: &Arc<State>,
     logging_tx: LogSender,
 ) -> Result<()> {
     // Send message to all other clients telling them `client_id` has been kicked
@@ -297,24 +297,18 @@ async fn handle_client_close(
         client_id: client_id.to_string(),
     });
 
-    let senders = {
-        let mut guard = lock!(state);
+    let Some(room) = state.get_room_of_client_mut(&client_id) else {
+        let err = "Client attempted to leave when they were not in a room ";
 
-        let Some((_, room)) = guard.get_room_of_client_mut(&client_id) else {
-            let err = "Client attempted to leave when they were not in a room ";
-
-            error_global!(logging_tx, "{}", err);
-            bail!(err);
-        };
-
-        let client_name = room.get_client_name(&client_id)?;
-        warn_global!(logging_tx, "Connection with {client_name} closed");
-
-        let senders = room.get_senders(&client_id);
-        guard.remove_client(client_id);
-
-        senders
+        error_global!(logging_tx, "{}", err);
+        bail!(err);
     };
+
+    let client_name = room.get_client_name(&client_id)?;
+    warn_global!(logging_tx, "Connection with {client_name} closed");
+
+    let senders = room.get_senders(&client_id);
+    state.remove_client(client_id);
 
     let tasks = senders.iter().map(|tx| tx.send(message.clone()));
     let _ = futures_util::future::join_all(tasks).await;
