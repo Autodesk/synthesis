@@ -216,6 +216,10 @@ async fn handle_client_message(
 ) -> ops::ControlFlow<(), ()> {
     match message {
         Message::Binary(ref bytes) => {
+            if bytes.len() <= 1 {
+                return ops::ControlFlow::Continue(());
+            }
+
             if bytes[0] == MessagePrefix::Server as u8 {
                 handle_client_ping(bytes, &client_id, &state, logging_tx).await;
                 return ops::ControlFlow::Continue(());
@@ -288,7 +292,7 @@ async fn handle_client_close(
     state: &Arc<Mutex<State>>,
     logging_tx: LogSender,
 ) -> Result<()> {
-    // Send message toa ll other clients telling them `client_id` has been kicked
+    // Send message to all other clients telling them `client_id` has been kicked
     let message = server_sent_msg(ServerToClientMessage::Kick {
         client_id: client_id.to_string(),
     });

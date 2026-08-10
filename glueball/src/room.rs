@@ -1,6 +1,5 @@
 use crate::logging::{EventType, LogDestination, LogSender};
-use crate::model::{RoomInfo, ServerToClientMessage};
-use crate::util::server_sent_msg;
+use crate::model::RoomInfo;
 
 use anyhow::{Result, bail};
 use rand::RngExt;
@@ -140,14 +139,16 @@ impl State {
             return;
         };
 
-        // TODO Clippy likes this but I don't
-        if room.remove_client(&client_id, &log_tx) == RoomStatus::Closed
-            && self.rooms.remove(&room_id).is_none()
-        {
-            warn_global!(
-                log_tx,
-                "Attempetd to remove {client_id} from room that does not exist"
-            );
+        if room.remove_client(&client_id, &log_tx) == RoomStatus::Closed {
+            match self.rooms.remove(&room_id) {
+                Some(_) => remove_room!(&log_tx, room_id.clone()),
+                None => {
+                    warn_global!(
+                        log_tx,
+                        "Attempetd to remove {client_id} from room that does not exist"
+                    );
+                }
+            }
         }
 
         info_room!(log_tx, room_id, "{client_name} left",);
@@ -206,39 +207,6 @@ impl State {
         }
 
         Some(locked)
-    }
-
-    /// WARNING
-    /// DO NOT CALL FROM TOKIO RUNTIME
-    ///
-    /// TODO
-    /// Refactor to be sent down a channel from the tui, as this function should not be callable
-    /// from tokio since it calls a blocking function  
-    pub fn kick(&mut self, client_id: ClientId) {
-        let Some((room_id, room)) = self.get_room_of_client_mut(&client_id) else {
-            return;
-        };
-
-        let Some(tx) = room.get_sender(&client_id) else {
-            return;
-        };
-
-        // The close message gets forwarded to the client getting kicked
-        let _ = tx.blocking_send(Message::Close(None));
-
-        room.tell_room_client_left_blocking(&client_id);
-
-        let Ok(client_name) = room.get_client_name(&client_id) else {
-            warn_global!(
-                self.log_tx,
-                "Attempted to remove {client_id} from room they were not in"
-            );
-
-            return;
-        };
-        info_room!(self.log_tx, room_id, "Kicked {client_name}");
-
-        self.remove_client(client_id);
     }
 
     pub fn list_rooms(&self) -> Vec<RoomInfo> {
@@ -371,22 +339,11 @@ impl Room {
             .collect()
     }
 
-    fn get_sender(&self, id: &ClientId) -> Option<ClientSender> {
+    pub fn get_sender(&self, id: &ClientId) -> Option<ClientSender> {
         self.members
             .iter()
             .find(|client| client.id == *id)
             .map(|client| client.tx.clone())
-    }
-
-    pub fn tell_room_client_left_blocking(&self, client_id: &ClientId) {
-        // Send message toa ll other clients telling them `client_id` has been kicked
-        let message = server_sent_msg(ServerToClientMessage::Kick {
-            client_id: client_id.to_string(),
-        });
-
-        for tx in self.get_senders(client_id) {
-            let _ = tx.blocking_send(message.clone());
-        }
     }
 
     pub fn remove_client(&mut self, client_id: &ClientId, logging_tx: &LogSender) -> RoomStatus {

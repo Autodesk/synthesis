@@ -10,7 +10,7 @@ use toml::{Table, Value};
 
 use crate::util::tilde_expansion;
 
-pub const DEFAULT_PORT: u32 = 2610;
+pub const DEFAULT_PORT: u16 = 2610;
 
 pub fn certification_directory() -> Result<PathBuf> {
     let dir = match ProjectDirs::from("com", "Autodesk", "synthesis-glueball") {
@@ -39,7 +39,7 @@ pub struct CliConfig {
     // This doesn't have a default because otherwise we wouldn't be able to have it take precedence
     // over the file config analog of this argument properly
     #[argh(option, short = 'p', description = "port to listen on")]
-    pub port: Option<u32>,
+    pub port: Option<u16>,
 
     #[argh(
         switch,
@@ -86,7 +86,7 @@ where
     if let Some(Value::Integer(port)) = &table.get("port")
         && old_config.port.is_none()
     {
-        old_config.port = u32::try_from(*port).ok();
+        old_config.port = u16::try_from(*port).ok();
     }
 
     if let Some(Value::Boolean(headless)) = &table.get("headless")
@@ -110,7 +110,15 @@ where
     Ok(())
 }
 
-pub fn config_or_default(config: &CliConfig) -> Result<(PathBuf, u32)> {
+pub struct AppConfig {
+    pub cert_dir: PathBuf,
+    pub permanent_room: Option<String>,
+    pub port: u16,
+    pub headless: bool,
+    pub secure: bool,
+}
+
+fn config_or_default(config: CliConfig) -> Result<AppConfig> {
     let mut cert_dir = config
         .cert_dir
         .clone()
@@ -119,5 +127,21 @@ pub fn config_or_default(config: &CliConfig) -> Result<(PathBuf, u32)> {
 
     tilde_expansion(&mut cert_dir)?;
 
-    Ok((cert_dir, port))
+    Ok(AppConfig {
+        cert_dir,
+        permanent_room: config.permanent_room,
+        port,
+        headless: config.headless,
+        secure: config.secure,
+    })
+}
+
+pub fn retrieve_config() -> Result<AppConfig> {
+    let mut config: CliConfig = argh::from_env();
+
+    if let Some(config_file) = config.config_file.clone() {
+        parse_config_file(config_file, &mut config)?;
+    }
+
+    config_or_default(config)
 }

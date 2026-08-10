@@ -11,6 +11,7 @@
 //! and lock or unlock the focused room with `l` to control whether new clients may join.
 //!
 //! DISCLAIMER: This system is sort of a mess
+//! WARNING: Do not call any methods on state, you should pass messages down channels instead
 
 use crate::lock;
 use crate::logging::{self, LogSnapshot, Logger, RoomLogs};
@@ -32,6 +33,7 @@ use ratatui::{
     DefaultTerminal, Frame,
     text::{Line, Span},
 };
+use rtrb::Producer;
 use uuid::Uuid;
 
 /// How many room panels are shown side-by-side on a single tab.
@@ -47,7 +49,11 @@ const COLOR_PALETTE: &[Color] = &[
 ];
 const COLOR_PALETTE_SIZE: usize = 6;
 
-pub fn start_tui_thread(state: &Arc<Mutex<State>>, logger: Arc<Mutex<Logger>>) {
+pub fn start_tui_thread(
+    state: &Arc<Mutex<State>>,
+    kick_tx: Producer<ClientId>,
+    logger: Arc<Mutex<Logger>>,
+) {
     {
         lock!(state).set_tui();
     }
@@ -58,7 +64,7 @@ pub fn start_tui_thread(state: &Arc<Mutex<State>>, logger: Arc<Mutex<Logger>>) {
     // On an OS thread because crossterm (and thus ratatui) will block on user input
     // So it wouldn't play nice with tokio's runtime, which expects yielding
     thread::spawn(move || {
-        if let Err(e) = run(tui_state_handle, &logger) {
+        if let Err(e) = run(tui_state_handle, kick_tx, &logger) {
             eprintln!("TUI error: {e}");
         }
 
@@ -66,9 +72,13 @@ pub fn start_tui_thread(state: &Arc<Mutex<State>>, logger: Arc<Mutex<Logger>>) {
     });
 }
 
-fn run(state: Arc<Mutex<State>>, logger: &Arc<Mutex<Logger>>) -> io::Result<()> {
+fn run(
+    state: Arc<Mutex<State>>,
+    kick_tx: Producer<ClientId>,
+    logger: &Arc<Mutex<Logger>>,
+) -> io::Result<()> {
     let mut terminal = ratatui::init();
-    let result = run_app(&mut terminal, state, logger);
+    let result = run_app(&mut terminal, state, kick_tx, logger);
     ratatui::restore();
     result
 }
@@ -76,6 +86,7 @@ fn run(state: Arc<Mutex<State>>, logger: &Arc<Mutex<Logger>>) -> io::Result<()> 
 fn run_app(
     terminal: &mut DefaultTerminal,
     state: Arc<Mutex<State>>,
+    mut kick_tx: Producer<ClientId>,
     logger: &Arc<Mutex<Logger>>,
 ) -> io::Result<()> {
     let mut app = App::new(state);
@@ -107,6 +118,7 @@ fn run_app(
             app.on_key(
                 key.code,
                 key.modifiers,
+                &mut kick_tx,
                 room_logs_len,
                 logger_snapshot.0.len(),
             );
@@ -205,6 +217,7 @@ impl App {
         &mut self,
         code: KeyCode,
         mods: KeyModifiers,
+        kick_tx: &mut Producer<ClientId>,
         room_log_len: usize,
         sys_log_len: usize,
     ) {
@@ -213,7 +226,8 @@ impl App {
             match code {
                 KeyCode::Char('y' | 'Y') => {
                     if let Some(user_id) = self.pending_kick.take() {
-                        lock!(self.state).kick(user_id);
+                        let _ = kick_tx.push(user_id).is_ok();
+
                         self.selected_user = self.selected_user.saturating_sub(1);
                     }
                 }
@@ -425,7 +439,6 @@ fn render_room_panel(
 fn render_users(frame: &mut Frame, area: Rect, room: &RoomSnapshot, focused: bool, cursor: usize) {
     let member_to_item = |member_and_idx: (usize, &(Uuid, String))| -> ListItem<'_> {
         let (i, (uid, name)) = member_and_idx;
-        // This totally could happen but like that would probably be a bug so whatever
         let color = COLOR_PALETTE[i % COLOR_PALETTE_SIZE];
         let host_marker = if Some(*uid) == room.host { "  [H]" } else { "" };
         let uid = trim_uuid(uid);

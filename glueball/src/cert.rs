@@ -48,7 +48,11 @@ fn ensure_certificate(path: &PathBuf) -> Result<()> {
         return Ok(());
     }
 
-    let subject_alt_names = vec!["localhost".to_string(), "127.0.0.1".to_string()];
+    let subject_alt_names = vec![
+        "localhost".to_string(),
+        "127.0.0.1".to_string(),
+        "0.0.0.0".to_string(),
+    ];
     let CertifiedKey { cert, signing_key } = generate_simple_self_signed(subject_alt_names)?;
 
     fs::write(path.join("cert.pem"), cert.pem())?;

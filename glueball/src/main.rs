@@ -2,6 +2,7 @@ mod cert;
 mod config;
 #[macro_use]
 mod logging;
+mod kick;
 mod messaging;
 mod model;
 mod panic;
@@ -14,9 +15,11 @@ mod tui;
 mod util;
 
 use crate::cert::build_tls_config;
-use crate::config::{CliConfig, config_or_default, parse_config_file};
+use crate::config::retrieve_config;
+use crate::kick::setup_kick_system;
 use crate::logging::{
-    EventType, LogDestination, Logger, MAX_LOG_LINES, print_global, print_room, spawn_log_receiver,
+    EventType, LogDestination, LogRequest, Logger, MAX_LOG_LINES, print_global, print_room,
+    spawn_log_receiver,
 };
 use crate::messaging::handle_connection;
 use crate::room::State;
@@ -32,49 +35,41 @@ use tokio_rustls::TlsAcceptor;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Setup logging
+    // # Parse and create defaults for the application configuration
+    let config = retrieve_config()?;
+
+    // # Setup logging, state, channels and listeners, etc
+
     // In my mind, this is the best way to handling an interface that could be sending message to a
     // tui running on a different OS thread or just printing them
-
-    // Always use the logging chanel
-    let (logging_tx, logging_rx) =
-        mpsc::channel::<(String, EventType, LogDestination)>(MAX_LOG_LINES);
-
-    // Only use the `logger` in tui mode
-    // `logger` will be jointly owned by the main thread and the tui thread
-    // Tokio tasks will pass their log messages down the logging channel
-    // instead of having to take a lock to log
-    let logger = Arc::new(Mutex::new(Logger::new(MAX_LOG_LINES)));
+    let (logging_tx, logging_rx) = mpsc::channel::<LogRequest>(MAX_LOG_LINES);
 
     let state = Arc::new(Mutex::new(State::new(logging_tx.clone())));
 
-    // Parse and create defaults for the application configuration
-    let mut config: CliConfig = argh::from_env();
-    if let Some(config_file) = config.config_file.clone() {
-        parse_config_file(config_file, &mut config)?;
-    }
-    let (cert_dir, port) = config_or_default(&config)?;
-
-    // `listener` will be used regardless of the security level specified
-    let Ok(listener) = TcpListener::bind(format!("0.0.0.0:{port}")).await else {
-        bail!("Could not create TCP listener (the port is likely in use)");
-    };
-
-    let local_ip = get_local_ip().unwrap_or_else(|| String::from("0.0.0.0"));
+    let kick_tx = setup_kick_system(&state);
 
     if config.headless {
         // Read the logging channel and immediantly print result
         let print_to_terminal =
-            |message: String, kind: EventType, log_destination: LogDestination| {
+            move |message: String, kind: EventType, log_destination: LogDestination| {
                 match log_destination {
                     LogDestination::Global => print_global(&message, &kind),
                     LogDestination::Room(id) => print_room(&message, &kind, &id),
+                    // This can be a no-op, because no room is ever created,
+                    // as the logger isn't used
+                    LogDestination::RemoveRoom(_) => {}
                 }
             };
 
         spawn_log_receiver(logging_rx, print_to_terminal);
     } else {
-        start_tui_thread(&state, logger.clone());
+        // Only use the `logger` in tui mode
+        // `logger` will be jointly owned by the main thread and the tui thread
+        // Tokio tasks will pass their log messages down the logging channel
+        // instead of having to take a lock to log
+        let logger = Arc::new(Mutex::new(Logger::new(MAX_LOG_LINES)));
+
+        start_tui_thread(&state, kick_tx, logger.clone());
 
         // Read the logging channel and write every message to the `logger`
         let send_to_logger =
@@ -82,6 +77,7 @@ async fn main() -> Result<()> {
                 match log_destination {
                     LogDestination::Global => lock!(logger).push_global(message, kind),
                     LogDestination::Room(id) => lock!(logger).push_room(message, kind, id),
+                    LogDestination::RemoveRoom(id) => lock!(logger).remove_room(&id),
                 }
             };
 
@@ -92,10 +88,21 @@ async fn main() -> Result<()> {
         lock!(state).new_permanent_room(room_id);
     }
 
+    // # Setup socket listener
+
+    // `listener` will be used regardless of the security level specified
+    let Ok(listener) = TcpListener::bind(format!("0.0.0.0:{}", config.port)).await else {
+        bail!("Could not create TCP listener (the port is likely in use)");
+    };
+
+    let local_ip = get_local_ip().unwrap_or_else(|| String::from("0.0.0.0"));
+
+    // Run insecure server
     if !config.secure {
         info_global!(
             logging_tx,
-            "Server hosted on {local_ip} listening at port {port} (insecure)"
+            "Server hosted on {local_ip} listening at port {} (insecure)",
+            config.port
         );
 
         while let Ok((stream, addr)) = listener.accept().await {
@@ -111,12 +118,13 @@ async fn main() -> Result<()> {
     }
 
     // Run secure server
-    let tls_config = build_tls_config(&cert_dir)?;
+    let tls_config = build_tls_config(&config.cert_dir)?;
     let acceptor = TlsAcceptor::from(Arc::new(tls_config));
 
     info_global!(
         logging_tx,
-        "Server hosted on {local_ip} listening at port {port} (secure)"
+        "Server hosted on {local_ip} listening at port {} (secure)",
+        config.port
     );
 
     while let Ok((stream, addr)) = listener.accept().await {

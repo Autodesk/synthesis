@@ -14,7 +14,8 @@ pub const MAX_LOG_LINES: usize = 500;
 pub type RoomLogs = HashMap<RoomId, VecDeque<Event>>;
 pub type GlobalLog = VecDeque<Event>;
 pub type LogSnapshot = (GlobalLog, RoomLogs);
-pub type LogSender = Sender<(String, EventType, LogDestination)>;
+pub type LogSender = Sender<LogRequest>;
+pub type LogRequest = (String, EventType, LogDestination);
 
 #[macro_export]
 macro_rules! info_global {
@@ -61,9 +62,21 @@ macro_rules! error_room {
     }};
 }
 
+#[macro_export]
+macro_rules! remove_room {
+    ($log_tx:expr, $room_id:expr) => {{
+        let _ = $log_tx.try_send((
+            "".to_string(),
+            EventType::Info,
+            LogDestination::RemoveRoom($room_id),
+        ));
+    }};
+}
+
 pub enum LogDestination {
     Global,
     Room(RoomId),
+    RemoveRoom(RoomId),
 }
 
 #[derive(Debug, Clone)]
@@ -157,15 +170,17 @@ impl Logger {
         room_log.push_back(event);
     }
 
+    pub fn remove_room(&mut self, id: &RoomId) {
+        let _ = self.room_logs.remove(id);
+    }
+
     pub fn snapshot(&self) -> LogSnapshot {
         (self.global_log.clone(), self.room_logs.clone())
     }
 }
 
-pub fn spawn_log_receiver<F>(
-    mut logging_rx: Receiver<(String, EventType, LogDestination)>,
-    handle_log: F,
-) where
+pub fn spawn_log_receiver<F>(mut logging_rx: Receiver<LogRequest>, handle_log: F)
+where
     F: Fn(String, EventType, LogDestination) + Send + 'static,
 {
     tokio::spawn(async move {
