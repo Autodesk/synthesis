@@ -11,7 +11,6 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
-    AddButton,
     NegativeButton,
     SynthesisIcons,
     ToggleButton,
@@ -44,7 +43,6 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     const build = MixAndMatchMode.build
     const placed = [...(build?.state.components.values() ?? [])]
-    const library = PartLibrary.list()
 
     useEffect(() => {
         if (selected && !MixAndMatchMode.build?.state.components.has(selected)) setSelected(undefined)
@@ -65,29 +63,6 @@ const MixAndMatchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     return (
         <Stack direction="column" gap={1} className="overflow-y-auto" minWidth="20rem">
-            <Accordion defaultExpanded>
-                <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
-                    <Label size="md">{`Part Library (${library.length})`}</Label>
-                </AccordionSummary>
-                <AccordionDetails>
-                    {library.length === 0 && <Label size="sm">No parts available</Label>}
-                    {library.map(part => (
-                        <Stack key={part.ref} direction="row" justifyContent="space-between" alignItems="center">
-                            <Label size="sm" className="text-wrap break-all">
-                                {part.cached ? part.name : `${part.name} (download)`}
-                            </Label>
-                            <AddButton
-                                onClick={() =>
-                                    MixAndMatchMode.spawnPart(part.ref)
-                                        .then(componentId => componentId && setSelected(componentId))
-                                        .catch(console.error)
-                                }
-                            />
-                        </Stack>
-                    ))}
-                </AccordionDetails>
-            </Accordion>
-
             <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<SynthesisIcons.EXPAND_MORE_LARGE />}>
                     <Label size="md">{`Placed Parts (${placed.length})`}</Label>

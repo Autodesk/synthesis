@@ -7,7 +7,7 @@ import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
 import { deobf } from "@/util/Utility"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import APSManagementModal from "@/modals/APSManagementModal"
 import SettingsModal from "@/modals/configuring/SettingsModal"
 import type { ConfigurationType } from "@/panels/configuring/assembly-config/ConfigTypes"
@@ -16,6 +16,7 @@ import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import MixAndMatchPanel from "@/ui/panels/mix-and-match/MixAndMatchPanel"
+import PartLibraryPanel from "@/ui/panels/mix-and-match/PartLibraryPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
@@ -32,7 +33,7 @@ import UserIcon from "@/ui/components/UserIcon"
 import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 
 const TopBar: React.FC = () => {
-    const { openModal, openPanel, togglePanel, addToast } = useUIContext()
+    const { openModal, openPanel, togglePanel, closePanel, addToast } = useUIContext()
     const { appMode } = useStateContext()
     const isTouchDevice = useIsTouchDevice()
     const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
@@ -67,6 +68,15 @@ const TopBar: React.FC = () => {
             setUserInfo(APS.userInfo)
         })
     }, [])
+
+    useEffect(() => {
+        if (appMode !== "MixAndMatch") return
+
+        const id = openPanel(MixAndMatchPanel, undefined)
+        if (!id) return
+
+        return () => closePanel(id, CloseType.CANCEL)
+    }, [appMode, openPanel, closePanel])
 
     useEffect(() => {
         document.documentElement.style.setProperty("--top-bar-height", `${TOP_BAR_HEIGHT}px`)
@@ -114,7 +124,9 @@ const TopBar: React.FC = () => {
                     label="Add Assembly"
                     icon={<TopBarIcon name="add" size={30} />}
                     onClick={() =>
-                        togglePanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
+                        appMode === "MixAndMatch"
+                            ? togglePanel(PartLibraryPanel, undefined)
+                            : togglePanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
                     }
                 />
 

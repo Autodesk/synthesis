@@ -1,22 +1,38 @@
-import { MenuItem, Stack } from "@mui/material"
+import { Box, MenuItem, Stack } from "@mui/material"
 import { IoMdArrowDropdown } from "react-icons/io"
 import type React from "react"
 import { APP_MODES, type AppMode } from "@/systems/AppMode"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import { Select } from "@/ui/components/StyledComponents"
+import { Select, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarIcon, type TopBarIconName } from "@/ui/components/topbar/TopBarIcons"
 
-export const MODE_ICONS: Record<AppMode, TopBarIconName> = {
+export const MODE_LABELS: Record<AppMode, string> = {
+    Configure: "Configure",
+    Codesim: "Codesim",
+    Gameplay: "Gameplay",
+    MixAndMatch: "Mix and Match",
+}
+
+const MODE_ICONS: Record<AppMode, TopBarIconName | undefined> = {
     Configure: "mode-configure",
     Codesim: "mode-codesim",
     Gameplay: "mode-gameplay",
+    MixAndMatch: undefined,
+}
+
+const ModeIcon: React.FC<{ mode: AppMode }> = ({ mode }) => {
+    const iconName = MODE_ICONS[mode]
+    if (!iconName) return <SynthesisIcons.SCREWDRIVER_WRENCH size={18} />
+    return <TopBarIcon name={iconName} size={18} />
 }
 
 const ModeLabel: React.FC<{ mode: AppMode }> = ({ mode }) => (
     <Stack direction="row" alignItems="center" gap={1} sx={{ pointerEvents: "none" }}>
-        <TopBarIcon name={MODE_ICONS[mode]} size={18} />
-        {mode}
+        <Box sx={{ display: "flex" }}>
+            <ModeIcon mode={mode} />
+        </Box>
+        {MODE_LABELS[mode]}
     </Stack>
 )
 
