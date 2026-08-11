@@ -76,12 +76,11 @@ const TopBar: React.FC = () => {
         prevAppMode.current = appMode
         if (prevMode === appMode) return
 
+        for (const p of panels) closePanel(p.id, CloseType.CANCEL)
+
         if (appMode === "MixAndMatch") {
             MixAndMatchMode.enter().catch(console.error)
         } else if (prevMode === "MixAndMatch") {
-            for (const p of panels) {
-                if (p.content === PartLibraryPanel || p.content === SnapToFacePanel) closePanel(p.id, CloseType.CANCEL)
-            }
             MixAndMatchMode.exit()
         }
     }, [appMode, closePanel, panels])

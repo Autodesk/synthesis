@@ -228,11 +228,15 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
             const contentName = (content as unknown as { name?: string })?.name ?? ""
-            const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel", "InitialConfigPanel"]
+            const mutuallyExclusiveGroups = [
+                ["ImportMirabufPanel", "ConfigurePanel", "InitialConfigPanel"],
+                ["PartLibraryPanel", "SnapToFacePanel"],
+            ]
+            const group = mutuallyExclusiveGroups.find(g => g.includes(contentName))
 
-            if (mutuallyExclusive.includes(contentName)) {
+            if (group) {
                 const existing = panels.find(p =>
-                    mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
+                    group.includes((p.content as unknown as { name?: string })?.name ?? "")
                 )
                 if (existing) {
                     closePanel(existing.id, CloseType.OVERWRITE)
