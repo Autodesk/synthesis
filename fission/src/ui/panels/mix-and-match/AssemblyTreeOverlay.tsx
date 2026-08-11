@@ -1,6 +1,6 @@
 import { Box, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import MixAndMatchMode from "@/mix-and-match/MixAndMatchMode"
 import type { ComponentState } from "@/mix-and-match/MixAndMatchTimeline"
 import type { ComponentId } from "@/mix-and-match/MixAndMatchTypes"
@@ -68,7 +68,7 @@ const AssemblyTreeOverlay: React.FC = () => {
     })
 
     const components = MixAndMatchMode.build?.state.components
-    const nodes = components ? buildNodes(components) : []
+    const nodes = useMemo(() => (components ? buildNodes(components) : []), [components])
 
     const confirmDelete = useCallback(() => {
         if (!selected) return
