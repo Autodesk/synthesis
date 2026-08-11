@@ -17,6 +17,7 @@ import type { ComponentId, LibraryPartRef, MixAndMatchSession } from "./MixAndMa
 class MixAndMatchMode {
     private static _build: MixAndMatchBuild | undefined
     private static _scene: MixAndMatchScene | undefined
+    private static _selected: ComponentId | undefined
 
     public static get build(): MixAndMatchBuild | undefined {
         return this._build
@@ -28,6 +29,16 @@ class MixAndMatchMode {
 
     public static get isActive(): boolean {
         return this._build != null
+    }
+
+    /** The component currently selected in the assembly tree, shared with panels like Snap to Face. */
+    public static get selected(): ComponentId | undefined {
+        return this._selected
+    }
+
+    public static setSelected(componentId: ComponentId | undefined) {
+        this._selected = componentId
+        EventSystem.dispatch("MixAndMatchStateChangedEvent")
     }
 
     /**
@@ -62,6 +73,7 @@ class MixAndMatchMode {
         this._scene?.dispose(keepComponents)
         this._scene = undefined
         this._build = undefined
+        this._selected = undefined
         World.physicsSystem.releasePause(PAUSE_REF_MIX_AND_MATCH)
         EventSystem.dispatch("MixAndMatchStateChangedEvent")
     }
@@ -97,12 +109,15 @@ class MixAndMatchMode {
      * `targetId`, facing it. A one-shot alignment nudge: it forms no relationship between the two
      * parts, and welding stays a separate explicit action.
      *
+     * Only moves the live scene object; nothing is written to the timeline until `commitPlacement` is
+     * called, so the caller can preview the snap and back out with `discardPreview` if unwanted.
+     *
      * @param movingPoint  World-space point clicked on `componentId`.
      * @param movingNormal World-space surface normal at `movingPoint`.
      * @param targetPoint  World-space point clicked on `targetId`.
      * @param targetNormal World-space surface normal at `targetPoint`.
      */
-    public static async mateFaces(
+    public static previewMateFaces(
         componentId: ComponentId,
         targetId: ComponentId,
         movingPoint: THREE.Vector3,
@@ -117,8 +132,11 @@ class MixAndMatchMode {
 
         const delta = mateFacesTransform(movingPoint, movingNormal, targetPoint, targetNormal)
         scene.moveTree(componentId, delta)
+    }
 
-        await this.commitPlacement(componentId)
+    /** Snaps the scene back to the last committed timeline state, undoing any uncommitted preview move. */
+    public static async discardPreview() {
+        await this.sync()
     }
 
     public static async deleteComponent(componentId: ComponentId) {

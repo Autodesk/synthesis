@@ -17,6 +17,7 @@ import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import PartLibraryPanel from "@/ui/panels/mix-and-match/PartLibraryPanel"
+import SnapToFacePanel from "@/ui/panels/mix-and-match/SnapToFacePanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
@@ -79,7 +80,7 @@ const TopBar: React.FC = () => {
             MixAndMatchMode.enter().catch(console.error)
         } else if (prevMode === "MixAndMatch") {
             for (const p of panels) {
-                if (p.content === PartLibraryPanel) closePanel(p.id, CloseType.CANCEL)
+                if (p.content === PartLibraryPanel || p.content === SnapToFacePanel) closePanel(p.id, CloseType.CANCEL)
             }
             MixAndMatchMode.exit()
         }
@@ -136,6 +137,18 @@ const TopBar: React.FC = () => {
                             : togglePanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
                     }
                 />
+
+                {appMode === "MixAndMatch" && (
+                    <TopBarButton
+                        label="Snap to Face"
+                        icon={
+                            <Box sx={TOP_BAR_GLYPH_SX}>
+                                <SynthesisIcons.CONNECT />
+                            </Box>
+                        }
+                        onClick={() => togglePanel(SnapToFacePanel, undefined)}
+                    />
+                )}
 
                 <Box sx={TOP_BAR_DIVIDER_SX} />
 

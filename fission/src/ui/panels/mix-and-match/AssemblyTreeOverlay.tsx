@@ -1,28 +1,20 @@
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import type * as THREE from "three"
 import MixAndMatchMode from "@/mix-and-match/MixAndMatchMode"
 import type { ComponentState } from "@/mix-and-match/MixAndMatchTimeline"
 import type { ComponentId } from "@/mix-and-match/MixAndMatchTypes"
 import PartLibrary from "@/mix-and-match/PartLibrary"
 import EventSystem from "@/systems/EventSystem"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import World from "@/systems/World"
 import Label from "@/ui/components/Label"
-import { Button, NegativeButton, Spacer } from "@/ui/components/StyledComponents"
+import { NegativeButton } from "@/ui/components/StyledComponents"
 import Tree, { type TreeNode } from "@/ui/components/Tree"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
-import { rayCastMesh } from "@/util/RaycastUtils"
 
 const GIZMO_SIZE = 1.5
-
-/** "idle": not picking. "source": next click picks a face on the selected part. "target": next click picks the face to snap against. */
-type SnapPickStep = "idle" | "source" | "target"
-
-type PickedFace = { point: THREE.Vector3; normal: THREE.Vector3 }
 
 function partName(libraryPartRef: string): string {
     return PartLibrary.find(libraryPartRef)?.name ?? "Unknown Part"
@@ -71,17 +63,17 @@ function buildNodes(components: ReadonlyMap<ComponentId, ComponentState>): TreeN
 const AssemblyTreeOverlay: React.FC = () => {
     const { openModal } = useUIContext()
     const [, bumpRevision] = useState(0)
-    const [selected, setSelected] = useState<ComponentId | undefined>(undefined)
-    const [pickStep, setPickStep] = useState<SnapPickStep>("idle")
-    const [sourceFace, setSourceFace] = useState<PickedFace | undefined>(undefined)
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => EventSystem.listen("MixAndMatchStateChangedEvent", () => bumpRevision(x => x + 1)), [])
 
     useEffect(() => {
-        if (selected && !MixAndMatchMode.build?.state.components.has(selected)) setSelected(undefined)
+        if (MixAndMatchMode.selected && !MixAndMatchMode.build?.state.components.has(MixAndMatchMode.selected)) {
+            MixAndMatchMode.setSelected(undefined)
+        }
     })
 
+    const selected = MixAndMatchMode.selected
     const components = MixAndMatchMode.build?.state.components
     const nodes = useMemo(() => (components ? buildNodes(components) : []), [components])
     const scene = MixAndMatchMode.scene
@@ -103,65 +95,6 @@ const AssemblyTreeOverlay: React.FC = () => {
         return () => cancelAnimationFrame(handle)
     }, [selected])
 
-    const cancelSnapPick = useCallback(() => {
-        setPickStep("idle")
-        setSourceFace(undefined)
-    }, [])
-
-    // Two clicks: first picks a face on the selected part, second picks the face to snap against.
-    useEffect(() => {
-        if (pickStep === "idle" || !selected) return
-
-        const onClick = (e: MouseEvent) => {
-            const components = MixAndMatchMode.scene?.components
-            if (!components) return
-
-            // Raycast against the actual render mesh rather than physics colliders: colliders are
-            // convex hulls that can approximate a part's shape, so a hull-derived normal can point a
-            // different way than the visible surface the user is clicking on.
-            const batchToComponent = new Map<THREE.Object3D, ComponentId>()
-            const objects: THREE.Object3D[] = []
-            components.forEach((component, componentId) => {
-                component.mirabufInstance.batches.forEach(batch => {
-                    batchToComponent.set(batch, componentId)
-                    objects.push(batch)
-                })
-            })
-
-            const hit = rayCastMesh([e.clientX, e.clientY], objects)
-            const componentId = hit && batchToComponent.get(hit.object)
-
-            if (!hit || !componentId) return
-
-            if (pickStep === "source") {
-                if (componentId !== selected) return
-
-                setSourceFace({ point: hit.point, normal: hit.normal })
-                setPickStep("target")
-                return
-            }
-
-            if (componentId === selected || !sourceFace) return
-
-            MixAndMatchMode.mateFaces(
-                selected,
-                componentId,
-                sourceFace.point,
-                sourceFace.normal,
-                hit.point,
-                hit.normal
-            ).catch(console.error)
-            cancelSnapPick()
-        }
-
-        World.sceneRenderer.renderer.domElement.addEventListener("click", onClick)
-        return () => World.sceneRenderer.renderer.domElement.removeEventListener("click", onClick)
-    }, [pickStep, selected, sourceFace, cancelSnapPick])
-
-    useEffect(() => {
-        cancelSnapPick()
-    }, [selected, cancelSnapPick])
-
     const confirmDelete = useCallback(() => {
         if (!selected) return
 
@@ -170,7 +103,7 @@ const AssemblyTreeOverlay: React.FC = () => {
             acceptText: "Delete",
             onAccept: () => {
                 MixAndMatchMode.deleteComponent(selected).catch(console.error)
-                setSelected(undefined)
+                MixAndMatchMode.setSelected(undefined)
             },
         })
     }, [openModal, selected])
@@ -206,7 +139,7 @@ const AssemblyTreeOverlay: React.FC = () => {
                     <Tree
                         nodes={nodes}
                         selectedId={selected}
-                        onSelect={id => setSelected(prev => (prev === id ? undefined : id))}
+                        onSelect={id => MixAndMatchMode.setSelected(selected === id ? undefined : id)}
                     />
                 )}
             </Box>
@@ -223,17 +156,6 @@ const AssemblyTreeOverlay: React.FC = () => {
                         defaultMode="translate"
                         scaleDisabled={true}
                     />
-                    <Spacer height={10} />
-                    <Stack direction="row" gap={1} alignItems="center">
-                        <Label size="sm">
-                            {pickStep === "idle" && "Snap flush against"}
-                            {pickStep === "source" && "Click a face on this part…"}
-                            {pickStep === "target" && "Click a face on the part to snap against…"}
-                        </Label>
-                        <Button onClick={() => (pickStep === "idle" ? setPickStep("source") : cancelSnapPick())}>
-                            {pickStep === "idle" ? "Snap to Face" : "Cancel"}
-                        </Button>
-                    </Stack>
                 </Box>
             )}
             {selected && (
