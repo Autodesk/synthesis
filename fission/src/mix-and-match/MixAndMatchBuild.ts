@@ -1,5 +1,5 @@
 import EventSystem from "@/systems/EventSystem"
-import { replayTimeline, type TimelineState } from "./MixAndMatchTimeline"
+import { replayTimeline, subtreeOf, type TimelineState } from "./MixAndMatchTimeline"
 import {
     type ComponentId,
     createEmptySession,
@@ -107,8 +107,11 @@ class MixAndMatchBuild {
         this.commit({ type: "resize", componentId, sizeOption })
     }
 
+    /** Deletes `componentId` and everything welded onto it, directly or transitively. */
     public delete(componentId: ComponentId) {
-        this.commit({ type: "delete", componentId })
+        for (const id of subtreeOf(this._state.components, componentId)) {
+            this.commit({ type: "delete", componentId: id })
+        }
     }
 
     /**

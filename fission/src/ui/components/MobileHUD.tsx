@@ -12,7 +12,6 @@ import MultiplayerStartModal from "../modals/MultiplayerStartModal"
 import { startMultiplayerWorld } from "../helpers/StartMultiplayerWorld"
 import type { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
-import MixAndMatchPanel from "../panels/mix-and-match/MixAndMatchPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { IconButton, SynthesisIcons } from "./StyledComponents"
 import { AssemblySelect } from "./topbar/AssemblySelect"
@@ -86,12 +85,6 @@ const MobileHUD: React.FC = () => {
                 />
 
                 <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />
-
-                <HUDMenuButton
-                    label="Mix and Match"
-                    icon={<SynthesisIcons.SCREWDRIVER_WRENCH />}
-                    onClick={() => runAction(() => openPanel(MixAndMatchPanel, undefined))}
-                />
 
                 <HUDMenuButton label="Multiplayer" iconName="gp-1" onClick={() => runAction(openMultiplayer)} />
 

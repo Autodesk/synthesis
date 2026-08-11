@@ -1,7 +1,8 @@
 import { Box, Stack, Tooltip } from "@mui/material"
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import APS from "@/aps/APS"
+import MixAndMatchMode from "@/mix-and-match/MixAndMatchMode"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
@@ -15,7 +16,6 @@ import CameraSelectionPanel from "@/panels/configuring/CameraSelectionPanel"
 import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import MixAndMatchPanel from "@/ui/panels/mix-and-match/MixAndMatchPanel"
 import PartLibraryPanel from "@/ui/panels/mix-and-match/PartLibraryPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -33,7 +33,7 @@ import UserIcon from "@/ui/components/UserIcon"
 import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 
 const TopBar: React.FC = () => {
-    const { openModal, openPanel, togglePanel, closePanel, addToast } = useUIContext()
+    const { openModal, openPanel, togglePanel, closePanel, panels, addToast } = useUIContext()
     const { appMode } = useStateContext()
     const isTouchDevice = useIsTouchDevice()
     const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
@@ -45,6 +45,7 @@ const TopBar: React.FC = () => {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
     const [modeHovered, setModeHovered] = useState(false)
     const [modeMenuOpen, setModeMenuOpen] = useState(false)
+    const prevAppMode = useRef(appMode)
 
     useEffect(() => {
         // biome-ignore-start lint/suspicious/noExplicitAny: allow any for window and document access
@@ -70,13 +71,19 @@ const TopBar: React.FC = () => {
     }, [])
 
     useEffect(() => {
-        if (appMode !== "MixAndMatch") return
+        const prevMode = prevAppMode.current
+        prevAppMode.current = appMode
+        if (prevMode === appMode) return
 
-        const id = openPanel(MixAndMatchPanel, undefined)
-        if (!id) return
-
-        return () => closePanel(id, CloseType.CANCEL)
-    }, [appMode, openPanel, closePanel])
+        if (appMode === "MixAndMatch") {
+            MixAndMatchMode.enter().catch(console.error)
+        } else if (prevMode === "MixAndMatch") {
+            for (const p of panels) {
+                if (p.content === PartLibraryPanel) closePanel(p.id, CloseType.CANCEL)
+            }
+            MixAndMatchMode.exit()
+        }
+    }, [appMode, closePanel, panels])
 
     useEffect(() => {
         document.documentElement.style.setProperty("--top-bar-height", `${TOP_BAR_HEIGHT}px`)
@@ -128,16 +135,6 @@ const TopBar: React.FC = () => {
                             ? togglePanel(PartLibraryPanel, undefined)
                             : togglePanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
                     }
-                />
-
-                <TopBarButton
-                    label="Mix and Match"
-                    icon={
-                        <Box sx={TOP_BAR_GLYPH_SX}>
-                            <SynthesisIcons.SCREWDRIVER_WRENCH />
-                        </Box>
-                    }
-                    onClick={() => togglePanel(MixAndMatchPanel, undefined)}
                 />
 
                 <Box sx={TOP_BAR_DIVIDER_SX} />

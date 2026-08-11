@@ -2,6 +2,8 @@ import { Stack } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import AssemblyTreeOverlay from "@/ui/panels/mix-and-match/AssemblyTreeOverlay"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import Label from "./Label"
 import type { SceneOverlayTag } from "./SceneOverlayEvents"
 import ViewCube from "./ViewCube"
@@ -9,6 +11,8 @@ import ViewCube from "./ViewCube"
 const tagMap = new Map<number, SceneOverlayTag>()
 
 const SceneOverlay: React.FC = () => {
+    const { appMode } = useStateContext()
+
     /* State to determine if the overlay is disabled */
     const [isDisabled, setIsDisabled] = useState(false)
 
@@ -92,6 +96,7 @@ const SceneOverlay: React.FC = () => {
         >
             {components}
             {showViewCube && <ViewCube position={{ top: "calc(20px + var(--top-bar-height, 0px))", right: 20 }} />}
+            {appMode === "MixAndMatch" && <AssemblyTreeOverlay />}
         </Stack>
     )
 }

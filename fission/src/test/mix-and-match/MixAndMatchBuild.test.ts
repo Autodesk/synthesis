@@ -34,6 +34,19 @@ describe("Mix and Match Build", () => {
         expect(build.isScrubbed).toBe(false)
     })
 
+    test("Deleting A Component Cascades To Everything Welded Onto It", () => {
+        const build = new MixAndMatchBuild()
+        const frame = build.spawn("frame", ORIGIN)
+        const pod = build.spawn("pod", translation(1, 0, 0))
+        const antenna = build.spawn("antenna", translation(2, 0, 0))
+        build.weld(frame, pod, translation(1, 0, 0))
+        build.weld(pod, antenna, translation(1, 0, 0))
+
+        build.delete(frame)
+
+        expect(build.state.components.size).toBe(0)
+    })
+
     test("Rejects Self Welds And Cycles Without Recording Them", () => {
         const build = new MixAndMatchBuild()
         const a = build.spawn("a", ORIGIN)
