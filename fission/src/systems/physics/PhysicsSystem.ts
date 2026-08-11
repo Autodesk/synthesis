@@ -1583,47 +1583,51 @@ class PhysicsSystem extends WorldSystem {
         this.applySphereGamePieceStiction()
 
         if (World.multiplayerSystem != null) {
-            const interObjectCollisions = this._physicsEventQueue
-                .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
-                .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
+            if (World.multiplayerSystem.sinceLastUpdate == 0) {
+                const interObjectCollisions = this._physicsEventQueue
+                    .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
+                    .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
 
-            if (interObjectCollisions.length > 0) {
-                // If there's a collision, we send over every scene object we have.
-                // That way whichever client happens to catch the collision first (tracked by timestamp)
-                // will act as the authority for every mirabuf scene object's state
-                const message: Message = {
-                    type: "collision",
-                    data: World.sceneRenderer.mirabufSceneObjects.getAll().map(object => object.getUpdateData()),
-                }
-
-                World.multiplayerSystem.broadcast(message)
-            } else {
-                // If there's no collision, then we can just deal with our own scene objects and send their positions over
-                World.multiplayerSystem.getOwnRobots().forEach(clientSceneObject => {
-                    const clientSceneObjectId = clientSceneObject.id
-
-                    if (!(clientSceneObject instanceof MirabufSceneObject)) {
-                        console.warn("Could not find multiplayer robot") // happens when you delete
-                        World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
-                        return
-                    }
-
-                    const touchedObjects = clientSceneObject.mechanism.touchedBodies
-
+                if (interObjectCollisions.length > 0) {
+                    // If there's a collision, we send over every scene object we have.
+                    // That way whichever client happens to catch the collision first (tracked by timestamp)
+                    // will act as the authority for every mirabuf scene object's state
                     const message: Message = {
-                        type: "update",
-                        data: {
-                            sceneObject: clientSceneObject.getUpdateData(),
-                            touchedBodies: touchedObjects.map(data => this.getRNUpdateData(...data)),
-                        },
+                        type: "collision",
+                        data: World.sceneRenderer.mirabufSceneObjects.getAll().map(object => object.getUpdateData()),
                     }
-                    World.multiplayerSystem?.broadcast(message)
 
-                    if (clientSceneObjectId != null) {
-                        clientSceneObject.mechanism.touchedBodies = []
-                    }
-                })
+                    World.multiplayerSystem.broadcast(message)
+                } else {
+                    // If there's no collision, then we can just deal with our own scene objects and send their positions over
+                    World.multiplayerSystem.getOwnRobots().forEach(clientSceneObject => {
+                        const clientSceneObjectId = clientSceneObject.id
+
+                        if (!(clientSceneObject instanceof MirabufSceneObject)) {
+                            console.warn("Could not find multiplayer robot") // happens when you delete
+                            World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
+                            return
+                        }
+
+                        const touchedObjects = clientSceneObject.mechanism.touchedBodies
+
+                        const message: Message = {
+                            type: "update",
+                            data: {
+                                sceneObject: clientSceneObject.getUpdateData(),
+                                touchedBodies: touchedObjects.map(data => this.getRNUpdateData(...data)),
+                            },
+                        }
+                        World.multiplayerSystem?.broadcast(message)
+
+                        if (clientSceneObjectId != null) {
+                            clientSceneObject.mechanism.touchedBodies = []
+                        }
+                    })
+                }
             }
+
+            World.multiplayerSystem.sinceLastUpdate = (World.multiplayerSystem.sinceLastUpdate + 1) % 3
         }
 
         this._physicsEventQueue.forEach(x => {

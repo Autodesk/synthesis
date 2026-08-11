@@ -45,6 +45,8 @@ class MultiplayerSystem {
 
     public isHost: boolean
 
+    public sinceLastUpdate = 0
+
     public static async setup(ws: MultiplayerWebsocket, displayName: string, isHost: boolean): Promise<boolean> {
         MatchMode.getInstance().sandboxModeStart()
 
