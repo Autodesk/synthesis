@@ -7,7 +7,7 @@ import SimGeneric from "./SimGeneric"
 export const DIO_TYPE = noraType([bool()])
 
 export default class SimDIO {
-    private constructor() { }
+    private constructor() {}
 
     public static setValue(
         device: string,

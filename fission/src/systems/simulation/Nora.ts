@@ -203,21 +203,12 @@ export function valueMatchesType(value: NoraValue, type: NoraType): boolean {
 
 // TODO: is there a better way to do this?
 export const noraTypeToColorStr = (type: NoraType): string => {
-    const hsl = { h: 0, s: 0, l: 0 }
-    const allColors = type.map(t => noraBaseTypeToColor(t))
+    const allColors = type.map(t => hashBufferSync(serializeNoraBaseType(t)))
+    const hash = hashBufferSync(allColors.join(""))
 
-    // doesn't accurately average hues on the hsl wheel but idrc, it's deterministic
-    let avgHue = 0
-    for (const color of allColors) {
-        color.getHSL(hsl)
-
-        avgHue += hsl.h
-    }
-
-    avgHue /= type.length
-
-    // use different s, l values to ensure Nora types always differ from Nora base types
-    return `#${new THREE.Color().setHSL(avgHue, 0.5, 0.5).getHexString()}`
+    const hue = (parseInt(hash.slice(0, 6), 16) % 360) / 360
+    const color = new THREE.Color().setHSL(hue, 0.5, 0.6).getHexString()
+    return `#${color}`
 }
 
 export const noraBaseTypeToColor = (baseType: NoraBaseType): THREE.Color => {

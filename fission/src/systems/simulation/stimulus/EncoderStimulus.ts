@@ -1,6 +1,6 @@
 import type { mirabuf } from "@/proto/mirabuf"
 import Stimulus, { type StimulusID } from "./Stimulus"
-import type { NoraBaseType, NoraBaseValueOf, } from "../Nora"
+import type { NoraBaseType, NoraBaseValueOf } from "../Nora"
 
 abstract class EncoderStimulus<T extends readonly [NoraBaseType, NoraBaseType]> extends Stimulus<T> {
     public abstract get positionValue(): NoraBaseValueOf<T[0]>

@@ -1,7 +1,7 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import Brain from "../Brain"
-import { SimConfig } from "../SimConfigShared"
+import { compile } from "../wiring/Compile"
 import type { SimulationLayer } from "../SimulationSystem"
 import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import { type SimFlow, validate } from "./SimDataFlow"
@@ -134,7 +134,7 @@ class WPILibBrain extends Brain {
         const configData = this._assembly.simConfigData
         if (!configData) return false
 
-        const flows = SimConfig.compile(configData, this._assembly)
+        const flows = compile(configData, this._assembly)
         if (!flows) {
             console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
             return false

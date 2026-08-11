@@ -9,7 +9,7 @@ import SimGeneric from "./SimGeneric"
 export const CAN_ENCODER_TYPE = WHEEL_STIMULUS_TYPE
 
 export default class SimCANEncoder {
-    private constructor() { }
+    private constructor() {}
 
     public static setVelocity(
         device: string,

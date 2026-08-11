@@ -5,7 +5,7 @@ import { GYRO_TYPE } from "../../stimulus/GyroStimulus"
 import type { BaseAxis, BaseType, BaseUnit, DerivativeOrder, NoraBaseValueOf, NoraValueOf } from "../../Nora"
 
 export default class SimGyro {
-    private constructor() { }
+    private constructor() {}
 
     public static setAngleX(
         device: string,

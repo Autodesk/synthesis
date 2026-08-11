@@ -2,7 +2,7 @@ import type { Vector3Tuple } from "three"
 import type { ContactType } from "@/mirabuf/ZoneTypes"
 import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { InputScheme } from "../input/InputTypes"
-import type { SimConfigData } from "../simulation/SimConfigShared"
+import type { SimConfigData } from "../simulation/wiring/SimGraph"
 
 /** Names of all global preferences. */
 

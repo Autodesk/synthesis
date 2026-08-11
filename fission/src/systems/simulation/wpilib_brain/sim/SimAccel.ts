@@ -5,7 +5,7 @@ import { SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
 
 export default class SimAccel {
-    private constructor() { }
+    private constructor() {}
 
     public static setX(
         device: string,

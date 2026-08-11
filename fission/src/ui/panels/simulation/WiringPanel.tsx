@@ -17,15 +17,23 @@ import { type ComponentType, useCallback, useEffect, useMemo, useReducer, useSta
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import {
-    type ConfigState,
+    deleteConnection,
     type HandleInfo,
     handleInfoDisplayCompare,
-    NODE_ID_ROBOT_IO,
-    NODE_ID_SIM_IN,
-    NODE_ID_SIM_OUT,
-    SimConfig,
+    makeConnection,
+    removeNode,
     type SimConfigData,
-} from "@/systems/simulation/SimConfigShared"
+} from "@/systems/simulation/wiring/SimGraph"
+import {
+    addConstructorNode,
+    addDeconstructorNode,
+    addJunctionNode,
+    defaultConfig,
+    refreshRobotIO,
+    syncRobotIOHandles,
+    syncSimIOHandles,
+} from "@/systems/simulation/wiring/NodeFactories"
+import { compile } from "@/systems/simulation/wiring/Compile"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import World from "@/systems/World.ts"
 import Checkbox from "@/ui/components/Checkbox"
@@ -36,7 +44,12 @@ import { Button } from "@/ui/components/StyledComponents"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
-import WiringNode from "./WiringNode"
+import { NODE_ID_ROBOT_IO, RobotIONode } from "@/systems/simulation/wiring/nodes/RobotIONode"
+import { JunctionNode } from "@/systems/simulation/wiring/nodes/JunctionNode"
+import { NODE_ID_SIM_IN, SimInputNode } from "@/systems/simulation/wiring/nodes/SimInputNode"
+import { NODE_ID_SIM_OUT, SimOutputNode } from "@/systems/simulation/wiring/nodes/SimOutputNode"
+
+export type ConfigState = "wiring" | "simIO" | "robotIO"
 
 /**
  * WARNING: Please test *thoroughly* when making changes. React Flow is very temperamental with how nodes
@@ -57,12 +70,19 @@ type NodeType = ComponentType<
     }
 >
 
-const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
-    [k: string]: NodeType
-}>((prev, next) => {
-    prev[next.name] = next
-    return prev
-}, {})
+// const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
+//     [k: string]: NodeType
+// }>((prev, next) => {
+//     prev[next.name] = next
+//     return prev
+// }, {})
+
+const nodeTypes = {
+    robotIO: RobotIONode,
+    simInput: SimInputNode,
+    simOutput: SimOutputNode,
+    junction: JunctionNode,
+}
 
 function generateGraph(
     simConfig: SimConfigData,
@@ -83,7 +103,7 @@ function generateGraph(
                 title = "Robot IO"
                 onEdit = () => setConfigState("robotIO")
                 onRefresh = () => {
-                    SimConfig.refreshRobotIO(simConfig)
+                    refreshRobotIO(simConfig)
                     refreshGraph()
                 }
                 break
@@ -97,7 +117,7 @@ function generateGraph(
                 break
             default:
                 onDelete = () => {
-                    if (SimConfig.removeNode(simConfig, v.id)) refreshGraph()
+                    if (removeNode(simConfig, v.id)) refreshGraph()
                 }
                 break
         }
@@ -327,7 +347,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
 
     const onEdgeDoubleClick = useCallback(
         (_: React.MouseEvent, edge: FlowEdge) => {
-            if (SimConfig.deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
+            if (deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
                 refreshGraph()
             }
         },
@@ -350,7 +370,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         (connection: Connection) => {
             const sourceId = connection.sourceHandle
             const targetId = connection.targetHandle
-            if (SimConfig.makeConnection(simConfig, sourceId!, targetId!)) {
+            if (makeConnection(simConfig, sourceId!, targetId!)) {
                 refreshGraph()
             }
         },
@@ -372,7 +392,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
                 return
             }
 
-            const newHandleId = (handleInfo.isSource ? SimConfig.addDeconstructorNode : SimConfig.addConstructorNode)(
+            const newHandleId = (handleInfo.isSource ? addDeconstructorNode : addConstructorNode)(
                 simConfig,
                 handleInfo.noraType!,
                 screenToFlowPosition({ x: clientX, y: clientY })
@@ -381,8 +401,8 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
 
             if (
                 handleInfo.isSource
-                    ? SimConfig.makeConnection(simConfig, handleInfo.id, newHandleId)
-                    : SimConfig.makeConnection(simConfig, newHandleId, handleInfo.id)
+                    ? makeConnection(simConfig, handleInfo.id, newHandleId)
+                    : makeConnection(simConfig, newHandleId, handleInfo.id)
             )
                 refreshGraph()
         },
@@ -390,7 +410,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     )
 
     const onCreateJunction = useCallback(() => {
-        SimConfig.addJunctionNode(simConfig)
+        addJunctionNode(simConfig)
         refreshGraph()
     }, [refreshGraph, simConfig])
 
@@ -410,7 +430,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo reset={reset ?? (() => { })} />
+            <FlowInfo reset={reset ?? (() => {})} />
         </ReactFlow>
     )
 }
@@ -435,16 +455,19 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         const existingConfig = selectedAssembly.simConfigData
         if (existingConfig) {
             console.debug("Existing SimConfig found")
-            setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
+            const config = JSON.parse(JSON.stringify(existingConfig)) as SimConfigData
+            syncRobotIOHandles(config)
+            syncSimIOHandles(config, selectedAssembly)
+            setSimConfig(config)
         } else {
             console.debug("No SimConfig found, creating default...")
-            setSimConfig(SimConfig.default(selectedAssembly))
+            setSimConfig(defaultConfig(selectedAssembly))
         }
     }, [selectedAssembly])
 
     const save = useCallback(() => {
         if (simConfig && selectedAssembly) {
-            const flows = SimConfig.compile(simConfig, selectedAssembly)
+            const flows = compile(simConfig, selectedAssembly)
             if (!flows) {
                 console.error("Compilation Failed")
                 return
@@ -459,7 +482,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     const reset = useCallback(() => {
         if (selectedAssembly) {
-            setSimConfig(SimConfig.default(selectedAssembly))
+            setSimConfig(defaultConfig(selectedAssembly))
         }
     }, [selectedAssembly])
 

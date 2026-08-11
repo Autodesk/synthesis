@@ -4,9 +4,9 @@ import { useCallback, useMemo } from "react"
 import {
     type HandleInfo,
     handleInfoDisplayCompare,
-    SimConfig,
     type SimConfigData,
-} from "@/systems/simulation/SimConfigShared"
+} from "@/systems/simulation/wiring/SimGraph"
+import { validateConnection as validateConfigConnection } from "@/systems/simulation/wiring/Typing"
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
 import { noraTypeToColorStr } from "@/systems/simulation/Nora"
 
@@ -22,7 +22,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
 
     const validateConnection = useCallback(
         (edge: Edge | Connection) => {
-            return SimConfig.validateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
+            return validateConfigConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
         },
         [simConfig]
     )

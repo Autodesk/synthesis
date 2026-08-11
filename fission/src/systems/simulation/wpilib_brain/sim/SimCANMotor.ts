@@ -15,7 +15,7 @@ import SimGeneric from "./SimGeneric"
 export const CAN_MOTOR_TYPE = WHEEL_DRIVER_TYPE
 
 export default class SimCANMotor {
-    private constructor() { }
+    private constructor() {}
 
     public static getPercentOutput(device: string): number | undefined {
         return SimDriverStation.isEnabled()

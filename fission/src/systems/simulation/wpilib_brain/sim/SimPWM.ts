@@ -7,7 +7,7 @@ import SimGeneric from "./SimGeneric"
 export const PWM_TYPE = noraType([num(BaseUnit.NONE, DerivativeOrder.ZERO), num(BaseUnit.NONE, DerivativeOrder.ONE)])
 
 export default class SimPWM {
-    private constructor() { }
+    private constructor() {}
 
     public static getSpeed(
         device: string
@@ -26,10 +26,7 @@ export default class SimPWM {
     public static genSupplier(device: string): SimSupplier<typeof PWM_TYPE> {
         return {
             supplierType: PWM_TYPE,
-            getSupplierValue: () => [
-                SimPWM.getPosition(device),
-                SimPWM.getSpeed(device)
-            ],
+            getSupplierValue: () => [SimPWM.getPosition(device), SimPWM.getSpeed(device)],
         }
     }
 }

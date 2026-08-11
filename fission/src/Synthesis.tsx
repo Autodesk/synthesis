@@ -19,6 +19,7 @@ import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
+import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
 
 const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
