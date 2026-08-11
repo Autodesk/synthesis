@@ -18,6 +18,7 @@ import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import PartLibraryPanel from "@/ui/panels/mix-and-match/PartLibraryPanel"
 import SnapToFacePanel from "@/ui/panels/mix-and-match/SnapToFacePanel"
+import WeldPanel from "@/ui/panels/mix-and-match/WeldPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
@@ -146,6 +147,18 @@ const TopBar: React.FC = () => {
                             </Box>
                         }
                         onClick={() => togglePanel(SnapToFacePanel, undefined)}
+                    />
+                )}
+
+                {appMode === "MixAndMatch" && (
+                    <TopBarButton
+                        label="Weld"
+                        icon={
+                            <Box sx={TOP_BAR_GLYPH_SX}>
+                                <SynthesisIcons.SCREWDRIVER_WRENCH />
+                            </Box>
+                        }
+                        onClick={() => togglePanel(WeldPanel, undefined)}
                     />
                 )}
 
