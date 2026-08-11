@@ -3,9 +3,7 @@ import type { MessageWithTimestamp } from "@/systems/multiplayer/MultiplayerType
 import { Encoder, Decoder } from "@msgpack/msgpack"
 import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
 import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
-
-const CLIENT_PREFIX = 0b00000001
-const SERVER_PREFIX = 0b00000011
+import { MultiplayerTransport, SERVER_PREFIX } from "@/systems/multiplayer/MultiplayerTransport.ts"
 
 const console = consolePrefixer({
     defaultPrefix: {
@@ -14,24 +12,19 @@ const console = consolePrefixer({
     },
 })
 
-class MultiplayerWebsocket {
+class MultiplayerWebsocket extends MultiplayerTransport {
     private readonly _ws: WebSocket
 
     private readonly _encoder: Encoder<never> = new Encoder()
     private readonly _decoder: Decoder<never> = new Decoder()
     private _prefixBuf = new Uint8Array(1)
 
-    public onServerMessage?: (msg: ServerToClientMessage) => void
-    public onPeerMessage?: (msg: MessageWithTimestamp) => void
-    public onOpen?: ((this: MultiplayerWebsocket, ev: Event) => unknown) | null
-    public onClose?: ((this: MultiplayerWebsocket, ev: CloseEvent) => unknown) | null
-    public onError?: ((this: MultiplayerWebsocket, ev: Event) => unknown) | null
-
-    public get ready() {
+    public override get ready() {
         return this._ws.readyState === WebSocket.OPEN
     }
 
     constructor(url: string) {
+        super()
         this._ws = new WebSocket(url)
         console.log("Connecting to", url)
         this._ws.onopen = e => {
@@ -68,40 +61,14 @@ class MultiplayerWebsocket {
         }
     }
 
-    public static init(roomId: string | null, displayName: string, ws: MultiplayerWebsocket): MultiplayerWebsocket {
-        const initialMessage: ClientToServerMessage = {
-            type: "initializeconnection",
-            room_id: roomId,
-            name: displayName,
-        }
-
-        if (ws._ws.readyState == WebSocket.OPEN) {
-            ws.sendServer(initialMessage)
-        } else {
-            ws.onOpen = () => {
-                ws.sendServer(initialMessage)
-            }
-        }
-
-        return ws
-    }
-
-    private send(prefix: number, msg: MessageWithTimestamp | ClientToServerMessage): void {
+    override send(prefix: number, msg: MessageWithTimestamp | ClientToServerMessage): void {
         if (msg.type != "update") console.debug("Sending", msg)
         const encoded = this._encoder.encodeSharedRef(msg)
         this._prefixBuf[0] = prefix
         return this._ws.send(new Blob([this._prefixBuf, encoded]))
     }
 
-    public sendPeer(msg: MessageWithTimestamp): void {
-        return this.send(CLIENT_PREFIX, msg)
-    }
-
-    public sendServer(msg: ClientToServerMessage): void {
-        return this.send(SERVER_PREFIX, msg)
-    }
-
-    public close(code?: number, reason?: string) {
+    override close(code?: number, reason?: string) {
         return this._ws.close(code, reason)
     }
 }

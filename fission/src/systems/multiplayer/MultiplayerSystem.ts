@@ -12,6 +12,7 @@ import { hashBuffer } from "@/util/Utility.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import MatchMode from "../match_mode/MatchMode.ts"
+import type { MultiplayerTransport } from "@/systems/multiplayer/MultiplayerTransport.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -24,7 +25,7 @@ export const multiplayerLogger = consolePrefixer({
 const console = multiplayerLogger
 
 class MultiplayerSystem {
-    public readonly client: MultiplayerWebsocket
+    public readonly client: MultiplayerTransport
     public roomId: string = ""
     public clientId: string = ""
     private _initializationPromise: Promise<boolean>
