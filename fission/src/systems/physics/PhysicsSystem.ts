@@ -1650,7 +1650,7 @@ class PhysicsSystem extends WorldSystem {
                 }
             }
 
-            World.multiplayerSystem.sinceLastUpdate = (World.multiplayerSystem.sinceLastUpdate + 1) % 5
+            World.multiplayerSystem.sinceLastUpdate = (World.multiplayerSystem.sinceLastUpdate + 1) % 2
         }
 
         this._physicsEventQueue.forEach(x => {
