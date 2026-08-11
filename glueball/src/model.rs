@@ -17,6 +17,36 @@ pub enum ClientToServerMessage {
     },
 }
 
+/// Answer to `GET /cert`, carrying what a client needs to pin this server's
+/// certificate with `serverCertificateHashes` when connecting.
+///
+/// A browser will not offer to trust a self-signed certificate for
+/// `WebTransport` the way it does for HTTPS, so pinning the digest is the only
+/// way a self-signed server is reachable at all.
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]
+#[ts(export)]
+pub struct CertificateHashes {
+    pub hashes: Vec<CertificateHash>,
+}
+
+/// One digest, shaped like the `WebTransportHash` dictionary a browser expects.
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]
+#[ts(export)]
+pub struct CertificateHash {
+    pub algorithm: String,
+    /// The raw digest bytes, ready to be handed to `new Uint8Array(value)`
+    pub value: Vec<u8>,
+}
+
+impl CertificateHash {
+    pub fn sha256(digest: &[u8; 32]) -> Self {
+        Self {
+            algorithm: "sha-256".to_string(),
+            value: digest.to_vec(),
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 pub struct RoomInfo {

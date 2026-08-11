@@ -1,12 +1,12 @@
 use crate::logging::{EventType, LogDestination, LogSender};
 use crate::model::RoomInfo;
+use crate::wire::Outbound;
 
 use anyhow::{Result, bail};
 use dashmap::DashMap;
 use dashmap::mapref::one::{Ref, RefMut};
 use rand::RngExt;
 use tokio::sync::mpsc::{self};
-use tokio_tungstenite::tungstenite::Message;
 use uuid::Uuid;
 
 /// Maximum number of log lines retained in each log (both per-room and system logs)
@@ -282,7 +282,7 @@ fn generate_6_digit_code() -> String {
 pub type ClientId = Uuid;
 pub type ClientMap = DashMap<ClientId, RoomId>;
 
-pub type ClientSender = mpsc::Sender<Message>;
+pub type ClientSender = mpsc::Sender<Outbound>;
 
 pub type RoomId = String;
 pub type RoomMap = DashMap<RoomId, Room>;
@@ -485,7 +485,7 @@ mod tests {
         let client_id = state
             .add_client_to_room("Alice", client_tx(), &room_id)
             .unwrap();
-        state.remove_client(client_id);
+        state.remove_client(&client_id);
 
         assert_eq!(state.room_count(), 1);
     }

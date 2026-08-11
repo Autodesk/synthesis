@@ -80,10 +80,15 @@ export type NeedAssemblyBody = {
     assemblyHash: string
 }
 
+/**
+ * The part of a robot's state that isn't attached to any one body. Its bodies
+ * travel separately, as one `updatePhysicsBody` per body.
+ */
 export type UpdateBody = {
-    sceneObject: UpdateObjectData
-    touchedBodies: UpdatePhysicsBodyData[]
+    objId: SceneObjectId
+    gamePiecesControlled: RigidNodeId[] // rnIds within the field, since there's only one
 }
+
 export type CollisionBody = UpdateObjectData[]
 export type UpdateObjectData = {
     sceneObjectKey: SceneObjectId
@@ -91,17 +96,29 @@ export type UpdateObjectData = {
     bodies: PhysicsBodyData[]
 }
 
-export type UpdatePhysicsBodyData = {
-    sceneObjectId: SceneObjectId
-} & PhysicsBodyData
+/**
+ * One body's state, addressed by the scene object owning it.
+ *
+ * Each of these is sent as its own message so it fits in a datagram, and so that
+ * losing one costs a single body for a single tick.
+ */
+export type UpdatePhysicsBodyData = [objId: SceneObjectId, body: PhysicsBodyData]
 
-export type PhysicsBodyData = {
-    rigidNodeId: RigidNodeId // rnIds are relative to their scene object, so be sure to send the id for that too
-    // {x, y, z, w?}
-    linearVelocityStr: string
-    angularVelocityStr: string
-    positionStr: string
-    rotationStr: string
-}
+/**
+ * One body's physics state.
+ *
+ * Packed as a tuple rather than an object: these go out per physics tick, and the
+ * field names cost more on the wire than the numbers they label. The order below
+ * *is* the wire schema, so a change here has to land on both the producer
+ * (`PhysicsSystem`) and the consumer (`UpdatePhysicsData`) at once.
+ */
+export type PhysicsBodyData = [
+    // rnIds are relative to their scene object, so be sure to send the id for that too
+    rnId: RigidNodeId,
+    linVel: [x: number, y: number, z: number],
+    rotVel: [x: number, y: number, z: number],
+    pos: [x: number, y: number, z: number],
+    rot: [x: number, y: number, z: number, w: number],
+]
 
 export type LatencyInfoBody = { latencyMS: number }

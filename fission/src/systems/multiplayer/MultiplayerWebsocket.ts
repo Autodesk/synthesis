@@ -15,8 +15,8 @@ const console = consolePrefixer({
 class MultiplayerWebsocket extends MultiplayerTransport {
     private readonly _ws: WebSocket
 
-    private readonly _encoder: Encoder<never> = new Encoder()
-    private readonly _decoder: Decoder<never> = new Decoder()
+    private readonly _encoder: Encoder = new Encoder({ forceFloat32: true })
+    private readonly _decoder: Decoder = new Decoder()
     private _prefixBuf = new Uint8Array(1)
 
     public override get ready() {
@@ -52,7 +52,7 @@ class MultiplayerWebsocket extends MultiplayerTransport {
             const data = msg.slice(1).stream()
             const decoded = (await this._decoder.decodeAsync(data)) as ServerToClientMessage | MessageWithTimestamp
             const isServer = headerByte == SERVER_PREFIX
-            if (decoded.type != "update") console.debug("Recieving", isServer ? "server" : "client", decoded)
+            // if (decoded.type != "update") console.debug("Recieving", isServer ? "server" : "client", decoded)
             if (isServer) {
                 this.onServerMessage?.(decoded as ServerToClientMessage)
             } else {
@@ -62,7 +62,6 @@ class MultiplayerWebsocket extends MultiplayerTransport {
     }
 
     override send(prefix: number, msg: MessageWithTimestamp | ClientToServerMessage): void {
-        if (msg.type != "update") console.debug("Sending", msg)
         const encoded = this._encoder.encodeSharedRef(msg)
         this._prefixBuf[0] = prefix
         return this._ws.send(new Blob([this._prefixBuf, encoded]))

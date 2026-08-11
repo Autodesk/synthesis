@@ -3,10 +3,10 @@ use crate::{
     model::ServerToClientMessage,
     state::{ClientId, ClientSender, RoomId, RoomStatus, State},
     util::server_sent_msg,
+    wire::Outbound,
 };
 use rtrb::{Consumer, Producer, RingBuffer};
 use std::sync::Arc;
-use tokio_tungstenite::tungstenite::Message;
 
 const MAX_PENDING_KICK_MESSAGES: usize = 12;
 
@@ -52,16 +52,18 @@ async fn kick(state: Arc<State>, client_id: ClientId) {
 
     info_global!(state.log_tx, "Kicked {}", client_name);
 
-    // The close message gets forwarded to the client getting kicked
+    // The kicked client's session gets torn down by its writer task
     // TODO Don't have send a close back / deal with double removal
-    let _ = client_tx.send(Message::Close(None)).await;
+    let _ = client_tx.send(Outbound::Close).await;
 
     // Send message to all other clients telling them `client_id` has been kicked
     let message = server_sent_msg(ServerToClientMessage::Kick {
         client_id: client_id.to_string(),
     });
 
-    let outgoing = peer_senders.iter().map(|tx| tx.send(message.clone()));
+    let outgoing = peer_senders
+        .iter()
+        .map(|tx| tx.send(Outbound::Stream(message.clone())));
     futures_util::future::join_all(outgoing).await;
 }
 

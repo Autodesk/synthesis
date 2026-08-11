@@ -21,10 +21,10 @@ import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
 import SessionStorage, { applyAutoToast } from "@/util/SessionStorage.ts"
-import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld.ts"
 import { Stack } from "@mui/material"
+import MultiplayerWebtransport from "@/systems/multiplayer/MultiplayerWebtransport.ts"
 
 const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
@@ -54,11 +54,13 @@ const Synthesis = () => {
         if (urlParams.has("autojoin")) {
             const room = urlParams.get("autojoin")!
             const name = PreferencesSystem.getUserPreference("MultiplayerUsername") ?? "TestUser"
-            const ws = new MultiplayerWebsocket(
-                `ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`
-            )
-            MultiplayerWebsocket.init(room || null, name, ws)
-            setTimeout(() => startMultiplayerWorld({ displayName: name, ws, keepAssets: false, isHost: false }))
+            MultiplayerWebtransport.create(
+                `https://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`
+            ).then(ws => {
+                if (ws === null) return
+                MultiplayerWebtransport.init(room || null, name, ws)
+                setTimeout(() => startMultiplayerWorld({ displayName: name, ws, keepAssets: false, isHost: false }))
+            })
         }
 
         applyAutoToast()

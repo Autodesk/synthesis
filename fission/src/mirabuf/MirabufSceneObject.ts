@@ -1374,10 +1374,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return data
     }
 
-    public getUpdateData(): UpdateObjectData {
-        const gamePiecesControlled: RigidNodeId[] = this.activeEjectables.map(
+    public getGamePiecesControlled(): RigidNodeId[] {
+        return this.activeEjectables.map(
             bodyId => (<RigidNodeAssociate>World.physicsSystem.getBodyAssociation(bodyId)).rigidNodeId
         )
+    }
+
+    public getUpdateData(): UpdateObjectData {
+        const gamePiecesControlled = this.getGamePiecesControlled()
 
         const bodies = this.getAllBodies()
             .map(body => World.physicsSystem.getBodyUpdateData(body))

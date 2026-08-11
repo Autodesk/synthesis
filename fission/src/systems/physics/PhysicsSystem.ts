@@ -13,7 +13,12 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeId, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import {
+    GAMEPIECE_SUFFIX,
+    GROUNDED_JOINT_ID,
+    type RigidNodeId,
+    type RigidNodeReadOnly,
+} from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { Message } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -1609,16 +1614,34 @@ class PhysicsSystem extends WorldSystem {
                             return
                         }
 
-                        const touchedObjects = clientSceneObject.mechanism.touchedBodies
-
-                        const message: Message = {
+                        // A robot's bodies go out one message at a time rather than as one
+                        // batch. A whole robot does not fit in a datagram, and split up they
+                        // do, which keeps them on the unreliable path where they belong:
+                        // a body's position is superseded a few ticks later anyway, so
+                        // dropping one beats delaying everything behind it.
+                        World.multiplayerSystem?.broadcast({
                             type: "update",
                             data: {
-                                sceneObject: clientSceneObject.getUpdateData(),
-                                touchedBodies: touchedObjects.map(data => this.getRNUpdateData(...data)),
+                                objId: clientSceneObjectId,
+                                gamePiecesControlled: clientSceneObject.getGamePiecesControlled(),
                             },
+                        })
+
+                        for (const body of clientSceneObject.getAllBodies()) {
+                            const message: Message = {
+                                type: "updatePhysicsBody",
+                                data: [clientSceneObjectId, this.getBodyUpdateData(body)],
+                            }
+                            World.multiplayerSystem?.broadcast(message)
                         }
-                        World.multiplayerSystem?.broadcast(message)
+
+                        for (const touched of clientSceneObject.mechanism.touchedBodies) {
+                            const message: Message = {
+                                type: "updatePhysicsBody",
+                                data: this.getRNUpdateData(...touched),
+                            }
+                            World.multiplayerSystem?.broadcast(message)
+                        }
 
                         if (clientSceneObjectId != null) {
                             clientSceneObject.mechanism.touchedBodies = []
@@ -1646,14 +1669,16 @@ class PhysicsSystem extends WorldSystem {
         const position = body.GetPosition()
         const rotation = body.GetRotation()
 
-        return {
+        return [
             sceneObjectId,
-            rigidNodeId,
-            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
-            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
-            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
-            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
-        }
+            [
+                rigidNodeId,
+                [linearVelocity.GetX(), linearVelocity.GetY(), linearVelocity.GetZ()],
+                [angularVelocity.GetX(), angularVelocity.GetY(), angularVelocity.GetZ()],
+                [position.GetX(), position.GetY(), position.GetZ()],
+                [rotation.GetX(), rotation.GetY(), rotation.GetZ(), rotation.GetW()],
+            ],
+        ]
     }
 
     public getBodyUpdateData(body: Jolt.Body): PhysicsBodyData {
@@ -1662,14 +1687,13 @@ class PhysicsSystem extends WorldSystem {
         const angularVelocity = body.GetAngularVelocity()
         const position = body.GetPosition()
         const rotation = body.GetRotation()
-
-        return {
+        return [
             rigidNodeId,
-            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
-            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
-            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
-            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
-        }
+            [linearVelocity.GetX(), linearVelocity.GetY(), linearVelocity.GetZ()],
+            [angularVelocity.GetX(), angularVelocity.GetY(), angularVelocity.GetZ()],
+            [position.GetX(), position.GetY(), position.GetZ()],
+            [rotation.GetX(), rotation.GetY(), rotation.GetZ(), rotation.GetW()],
+        ]
     }
 
     /**

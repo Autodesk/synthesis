@@ -96,7 +96,7 @@ function handleUpdateMessage(data: UpdateBody, peerId: string, timestamp: number
 
     // Handle Scene object update
 
-    const { sceneObjectKey, gamePiecesControlled, bodies } = data.sceneObject
+    const { objId: sceneObjectKey, gamePiecesControlled } = data
 
     const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
     if (sceneObject == null) {
@@ -131,22 +131,36 @@ function handleUpdateMessage(data: UpdateBody, peerId: string, timestamp: number
                 return sceneObject.setEjectable(bodyId)
             })
     }
-
-    handleUpdateObjectPhysics(sceneObject, bodies, peerId)
-
-    data.touchedBodies.forEach(data => handleUpdatePhysicsBody(data, peerId, timestamp))
 }
 
-function handleUpdatePhysicsBody(data: UpdatePhysicsBodyData, peerId: string, _timestamp: number) {
+/// Last applied timestamp per body, keyed by scene object then rigid node. Bodies
+/// now arrive as independent messages, so two updates for the same body can turn up
+/// out of order and a stale one must not overwrite a fresher one.
+const bodyToUpdateMap = new Map<SceneObjectId, Map<string, number>>()
+
+function handleUpdatePhysicsBody(data: UpdatePhysicsBodyData, peerId: string, timestamp: number) {
+    const [objId, body] = data
+    const rnId = body[0]
+
+    let bodyTimestamps = bodyToUpdateMap.get(objId)
+    if (bodyTimestamps == null) {
+        bodyTimestamps = new Map()
+        bodyToUpdateMap.set(objId, bodyTimestamps)
+    }
+
+    const lastTimestamp = bodyTimestamps.get(rnId)
+    if (lastTimestamp != null && lastTimestamp > timestamp) return
+    bodyTimestamps.set(rnId, timestamp)
+
     // We only want to send it through the mapping if it's not a game piece we own
-    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectId) as MirabufSceneObject
-    const bodyId = sceneObject.mechanism.getBodyByNodeId(data.rigidNodeId)
+    const sceneObject = World.sceneRenderer.sceneObjects.get(objId) as MirabufSceneObject | undefined
+    const bodyId = sceneObject?.mechanism.getBodyByNodeId(rnId)
     if (bodyId == null) {
         console.error(`BodyId: ${bodyId} sent by ${peerId} does not exist in bodyMap`)
         return
     }
 
-    applyPhysicsBodyData(bodyId, data)
+    applyPhysicsBodyData(bodyId, body)
 }
 
 function handleCollisionMessage() {

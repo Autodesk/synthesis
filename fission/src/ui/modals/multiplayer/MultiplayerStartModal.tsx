@@ -5,13 +5,13 @@ import { CloseType, useUIContext } from "../../helpers/UIProviderHelpers.ts"
 import ConnectionModal from "@/modals/multiplayer/ConnectionModal.tsx"
 import RoomModal from "@/modals/multiplayer/RoomModal.tsx"
 import type { RoomInfo } from "@/systems/multiplayer/bindings/RoomInfo.ts"
-import type MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import World from "@/systems/World.ts"
 import { Button } from "@/components/StyledComponents.tsx"
+import type { MultiplayerTransport } from "@/systems/multiplayer/MultiplayerTransport.ts"
 
 export interface MultiplayerInitProps {
     displayName: string
-    ws: MultiplayerWebsocket
+    ws: MultiplayerTransport
     isHost: boolean
     keepAssets: boolean
 }

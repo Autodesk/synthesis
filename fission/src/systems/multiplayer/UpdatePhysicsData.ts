@@ -9,36 +9,34 @@ import World from "../World"
  */
 export function handleUpdateObjectPhysics(sceneObject: MirabufSceneObject, bodies: PhysicsBodyData[], peerId: string) {
     // Sets the physics data for each body in the assembly
-    for (const { rigidNodeId, ...physicsData } of bodies) {
-        const bodyId = sceneObject.mechanism.getBodyByNodeId(rigidNodeId)
+    for (const body of bodies) {
+        const bodyId = sceneObject.mechanism.getBodyByNodeId(body[0])
         if (bodyId == null) {
             console.error(`BodyId: ${bodyId} sent by ${peerId} does not exist in bodyMap`)
             continue
         }
 
-        applyPhysicsBodyData(bodyId, physicsData)
+        applyPhysicsBodyData(bodyId, body)
     }
 }
 
 /**
  * Updates the physics data for a specific body
  */
-export function applyPhysicsBodyData(bodyId: Jolt.BodyID, data: Omit<PhysicsBodyData, "rigidNodeId">) {
+export function applyPhysicsBodyData(bodyId: Jolt.BodyID, data: PhysicsBodyData) {
     const clientBody = World.physicsSystem.getBody(bodyId)
     if (!clientBody) {
         console.error(`Body ${bodyId} not found`)
         return
     }
 
-    const lin: { x: number; y: number; z: number } = JSON.parse(data.linearVelocityStr)
-    const ang: { x: number; y: number; z: number } = JSON.parse(data.angularVelocityStr)
-    const pos: { x: number; y: number; z: number } = JSON.parse(data.positionStr)
-    const rot: { x: number; y: number; z: number; w: number } = JSON.parse(data.rotationStr)
+    // The caller has already resolved `rnId` into `bodyId`, so skip past it
+    const [, [linX, linY, linZ], [angX, angY, angZ], [posX, posY, posZ], [rotX, rotY, rotZ, rotW]] = data
 
-    const linearVelocity = new JOLT.Vec3(lin.x, lin.y, lin.z)
-    const angularVelocity = new JOLT.Vec3(ang.x, ang.y, ang.z)
-    const position = new JOLT.RVec3(pos.x, pos.y, pos.z)
-    const rotation = new JOLT.Quat(rot.x, rot.y, rot.z, rot.w)
+    const linearVelocity = new JOLT.Vec3(linX, linY, linZ)
+    const angularVelocity = new JOLT.Vec3(angX, angY, angZ)
+    const position = new JOLT.RVec3(posX, posY, posZ)
+    const rotation = new JOLT.Quat(rotX, rotY, rotZ, rotW)
 
     clientBody.SetLinearVelocity(linearVelocity)
     clientBody.SetAngularVelocity(angularVelocity)

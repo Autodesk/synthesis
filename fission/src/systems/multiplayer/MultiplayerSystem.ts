@@ -7,7 +7,6 @@ import type { ClientAndLatencyInfo, ClientInfo, Message, MessageWithTimestamp } 
 import EventSystem from "@/systems/EventSystem.ts"
 import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
 import { consolePrefixer } from "console-prefixer"
-import type MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import { hashBuffer } from "@/util/Utility.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
@@ -48,7 +47,7 @@ class MultiplayerSystem {
 
     public sinceLastUpdate = 0
 
-    public static async setup(ws: MultiplayerWebsocket, displayName: string, isHost: boolean): Promise<boolean> {
+    public static async setup(ws: MultiplayerTransport, displayName: string, isHost: boolean): Promise<boolean> {
         MatchMode.getInstance().sandboxModeStart()
 
         console.group("Multiplayer initialization")
@@ -62,7 +61,7 @@ class MultiplayerSystem {
         return initResult
     }
 
-    private constructor(ws: MultiplayerWebsocket, displayName: string, isHost: boolean) {
+    private constructor(ws: MultiplayerTransport, displayName: string, isHost: boolean) {
         this.isHost = isHost
         this.client = ws
 
@@ -137,7 +136,6 @@ class MultiplayerSystem {
     }
 
     async handleServerMessage(message: ServerToClientMessage) {
-        console.debug(`Incoming server message ${message.type}`)
         switch (message.type) {
             case "sendinfo":
                 this.roomId = message.room_id
@@ -173,15 +171,12 @@ class MultiplayerSystem {
             console.info("Ignoring message for", message.recipientId)
             return
         }
-        if (message.type != "update") {
-            console.info(`Receiving Message ${message.type}`, message)
+        const baseHandler = peerMessageHandlers[message.type]
+        if (baseHandler == null) {
+            console.error("Unknown message recieved:", message.type, message.data)
+            return message.type
         }
-
-        const handler = peerMessageHandlers[message.type].bind(this) as (
-            data: unknown,
-            peerid: string,
-            time: number
-        ) => Promise<void> | void
+        const handler = baseHandler.bind(this) as (data: unknown, peerid: string, time: number) => Promise<void> | void
         await handler(message.data, message.clientId, message.timestamp)
         return message.type
     }
@@ -197,7 +192,7 @@ class MultiplayerSystem {
         if (message.type == "newObject" && message.data.miraType == MiraType.FIELD) {
             this.fieldTransferLock = { ts: message.timestamp, id: message.data.sceneObjectId }
         }
-        this.client.sendPeer(message as MessageWithTimestamp)
+        this.client.sendPeer(message as MessageWithTimestamp, message.type == "update")
     }
 
     async introduceSelf(requestIntroductions: boolean, peerID?: string) {

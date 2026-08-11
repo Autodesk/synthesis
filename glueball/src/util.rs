@@ -1,8 +1,8 @@
 use std::{env::home_dir, net::UdpSocket, ops::Deref, path::PathBuf};
 
 use anyhow::{Result, bail};
+use bytes::Bytes;
 use serde::{Deserialize, Serialize};
-use tokio_tungstenite::tungstenite::Message;
 use uuid::Uuid;
 
 use crate::model::{MessagePrefix, ServerToClientMessage};
@@ -43,11 +43,11 @@ pub fn tilde_expansion(path: &mut PathBuf) -> Result<()> {
     Ok(())
 }
 
-pub fn server_sent_msg(message: ServerToClientMessage) -> Message {
+pub fn server_sent_msg(message: ServerToClientMessage) -> Bytes {
     serialize_and_prefix(message, MessagePrefix::Server)
 }
 
-pub fn serialize_and_prefix<M>(message: M, prefix: MessagePrefix) -> Message
+pub fn serialize_and_prefix<M>(message: M, prefix: MessagePrefix) -> Bytes
 where
     M: Serialize,
 {
@@ -55,9 +55,9 @@ where
     prefix_message(bytes, prefix)
 }
 
-/// Creates a new `Message::Binary` containing `bytes`,
+/// Creates a new payload containing `bytes`,
 /// prefixed with the byte value of `MessagePrefix`
-fn prefix_message<M>(bytes: M, prefix: MessagePrefix) -> Message
+fn prefix_message<M>(bytes: M, prefix: MessagePrefix) -> Bytes
 where
     M: Deref<Target = [u8]>,
 {
@@ -65,7 +65,7 @@ where
     buf[1..].copy_from_slice(&bytes);
     buf[0] = prefix as u8;
 
-    Message::Binary(buf.into())
+    buf.into()
 }
 
 fn serialize_messagepack<M>(message: M) -> Vec<u8>

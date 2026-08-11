@@ -8,8 +8,8 @@ import type { MultiplayerInitProps } from "@/modals/multiplayer/MultiplayerStart
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import { withTimeout } from "@/util/Utility.ts"
 import type { RoomInfo } from "@/systems/multiplayer/bindings/RoomInfo.ts"
-import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld.ts"
+import MultiplayerWebtransport from "@/systems/multiplayer/MultiplayerWebtransport.ts"
 
 interface RoomModalProps {
     initialRoomList: RoomInfo[]
@@ -22,7 +22,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
     const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
     const [roomList, setRoomList] = useState(initialRoomList)
     const [updatingRoomList, setUpdatingRoomList] = useState(false)
-    const wsRef = useRef<MultiplayerWebsocket | null>(null)
+    const wsRef = useRef<MultiplayerWebtransport | null>(null)
     const usernameRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
@@ -46,18 +46,28 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
         return withTimeout(
             new Promise(resolve => {
                 if (wsRef.current == null) {
-                    wsRef.current = new MultiplayerWebsocket(url)
-                    wsRef.current.onOpen = () => {
-                        wsRef.current!.sendServer({ type: "requestrooms" })
-                    }
+                    MultiplayerWebtransport.create(url).then(ws => {
+                        if (ws === null) {
+                            return
+                        }
+                        wsRef.current = ws
+                        wsRef.current.onOpen = () => {
+                            wsRef.current!.sendServer({ type: "requestrooms" })
+                        }
+                        wsRef.current.onServerMessage = msg => {
+                            if (msg.type === "roomlist") {
+                                setRoomList(msg.rooms)
+                                resolve(true)
+                            }
+                        }
+                    })
                 } else {
                     wsRef.current.sendServer({ type: "requestrooms" })
-                }
-
-                wsRef.current.onServerMessage = msg => {
-                    if (msg.type === "roomlist") {
-                        setRoomList(msg.rooms)
-                        resolve(true)
+                    wsRef.current.onServerMessage = msg => {
+                        if (msg.type === "roomlist") {
+                            setRoomList(msg.rooms)
+                            resolve(true)
+                        }
                     }
                 }
             }),
@@ -67,7 +77,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
     }, [url])
 
     const validate = useCallback(
-        (room: string | undefined, keepAssets: boolean): MultiplayerInitProps | undefined => {
+        async (room: string | undefined, keepAssets: boolean): Promise<MultiplayerInitProps | undefined> => {
             if (name.length < 3) {
                 globalAddToast("warning", "Invalid Username", "Must be at least 3 characters")
                 usernameRef.current?.querySelector("input")?.focus()
@@ -82,7 +92,11 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
 
             return {
                 displayName: name,
-                ws: MultiplayerWebsocket.init(room ?? null, name, wsRef.current ?? new MultiplayerWebsocket(url)),
+                ws: MultiplayerWebtransport.init(
+                    room ?? null,
+                    name,
+                    wsRef.current ?? (await MultiplayerWebtransport.create(url))!
+                ),
                 isHost: room == undefined,
                 keepAssets: keepAssets ?? false,
             }
@@ -92,7 +106,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
 
     const joinRoom = useCallback(
         async (roomId: string | undefined, keepAssets: boolean) => {
-            const initData = validate(roomId, keepAssets)
+            const initData = await validate(roomId, keepAssets)
             if (initData == null) return
 
             const success = await withTimeout(startMultiplayerWorld(initData), "Multiplayer connect timed out")

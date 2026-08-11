@@ -574,11 +574,7 @@ class DragModeSystem extends WorldSystem {
         if (World.multiplayerSystem && this._dragTarget.isGamePiece) {
             const message: Message = {
                 type: "updatePhysicsBody",
-                data: {
-                    sceneObjectId: this._dragTarget.sceneObjectId,
-                    ...World.physicsSystem.getBodyUpdateData(body),
-                    rigidNodeId: this._dragTarget.rn,
-                },
+                data: [this._dragTarget.sceneObjectId, World.physicsSystem.getBodyUpdateData(body)],
             }
             World.multiplayerSystem.broadcast(message)
         }

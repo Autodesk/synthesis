@@ -1,108 +1,202 @@
 use crate::EventType;
 use crate::logging::{LogDestination, LogSender};
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
-use crate::prefixed::{ConnectionStatus, Prefixed, SynthesisStream, into_prefixed_or_respond};
 use crate::state::{ClientId, ClientSender, State};
 use crate::util::{deserialize_messagepack, server_sent_msg, trim_uuid};
+use crate::wire::{Delivery, Outbound, read_message, write_message};
 
 use anyhow::{Result, bail};
 use bytes::Bytes;
 use chrono::Utc;
-use futures_util::stream::{SplitSink, SplitStream};
-use futures_util::{SinkExt, StreamExt};
-use tokio::io::{AsyncRead, AsyncWrite};
 use tokio::sync::mpsc::{self};
 use tokio::time::timeout;
-use tokio_tungstenite::{WebSocketStream, tungstenite::Message};
+use wtransport::VarInt;
+use wtransport::endpoint::IncomingSession;
+use wtransport::error::SendDatagramError;
+use wtransport::Connection;
 
 use std::net::SocketAddr;
-use std::ops;
 use std::sync::Arc;
 use std::time::Duration;
 
-type WsStream<S> = WebSocketStream<Prefixed<S>>;
-
+/// How long to wait for a client's next message before assuming it is gone.
+/// Clients ping every five seconds, so a silent client is a dead one even while
+/// its datagrams keep arriving.
 const TIMEOUT: Duration = Duration::from_secs(30);
 
-pub async fn handle_connection<S>(
-    state: Arc<State>,
-    raw_stream: S,
-    addr: SocketAddr,
-    logging_tx: LogSender,
-) where
-    S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
-{
-    let ConnectionStatus::Ws(stream) =
-        into_prefixed_or_respond(raw_stream, addr, logging_tx.clone()).await
-    else {
-        return;
-    };
+/// Number of messages that may be queued for one client before writes to it
+/// block (streams) or are dropped (datagrams).
+const OUTBOUND_CAPACITY: usize = 64;
 
-    let ws_stream = match tokio_tungstenite::accept_async(stream).await {
-        Ok(ws_stream) => ws_stream,
+/// Application error code sent to a client whose session the server terminates.
+const CLOSED_BY_SERVER: VarInt = VarInt::from_u32(0);
+
+/// Completes the `WebTransport` handshake for an incoming QUIC connection, then
+/// hands the session to [`handle_connection`].
+pub async fn handle_session(state: Arc<State>, session: IncomingSession, logging_tx: LogSender) {
+    let addr = session.remote_address();
+
+    let request = match session.await {
+        Ok(request) => request,
         Err(e) => {
-            error_global!(logging_tx, "Websocket handshake with {addr} failed: {e}");
+            error_global!(logging_tx, "QUIC handshake with {addr} failed: {e}");
             return;
         }
     };
 
-    info_global!(logging_tx, "WS connection established with {addr}");
+    let connection = match request.accept().await {
+        Ok(connection) => connection,
+        Err(e) => {
+            error_global!(logging_tx, "WebTransport handshake with {addr} failed: {e}");
+            return;
+        }
+    };
+
+    handle_connection(state, connection, addr, logging_tx).await;
+}
+
+pub async fn handle_connection(
+    state: Arc<State>,
+    connection: Connection,
+    addr: SocketAddr,
+    logging_tx: LogSender,
+) {
+    info_global!(logging_tx, "WT session established with {addr}");
 
     // Each client gets an mpsc channel
     // Other client threads on the server can write to it
-    // Everything written gets dumped back to its client through the `write` sink
-    let (tx, mut rx) = mpsc::channel::<Message>(64);
+    // Everything written gets dumped back to its client by the writer task
+    let (tx, rx) = mpsc::channel::<Outbound>(OUTBOUND_CAPACITY);
 
     // Order of messages sent from a new client to the server:
     // 1-n. Any number of `RequestRooms` messages -> server will return a list of rooms
     // n..n+1. An `InitializationMessage`, indicating whether the client wishes to create or join a room -> server will return a room and client id
     // n+1..m. Any number of messages that will be forwarded to every other client in their room -> server will not respond, instead forwarding
-    let (mut write, mut read) = ws_stream.split();
-
-    let Some(client_id) = wait_for_initialization(
-        state.clone(),
-        &mut read,
-        &mut write,
-        tx.clone(),
-        addr,
-        logging_tx.clone(),
-    )
-    .await
+    let Some(client_id) =
+        wait_for_initialization(&state, &connection, tx.clone(), addr, &logging_tx).await
     else {
         return;
     };
 
-    // This task listens for messages to the channel and sends them down the sink to the client
-    tokio::spawn(async move {
-        while let Some(msg) = rx.recv().await {
-            if write.send(msg).await.is_err() {
-                break;
-            }
-        }
-    });
+    spawn_writer(connection.clone(), rx, logging_tx.clone());
+    spawn_datagram_reader(
+        connection.clone(),
+        state.clone(),
+        client_id,
+        logging_tx.clone(),
+    );
 
     // Listen for and pass along messages to other client channels in the same room
     loop {
-        let result = timeout(TIMEOUT, read.next()).await;
+        // Messages are taken one at a time rather than concurrently: streams give
+        // no ordering guarantees between each other, so draining them in arrival
+        // order is the closest thing to the ordering clients used to rely on
+        let message = match timeout(TIMEOUT, accept_message(&connection)).await {
+            Ok(Ok(message)) => message,
+            Ok(Err(e)) => {
+                warn_global!(logging_tx, "{} disconnected: {e}", trim_uuid(&client_id));
+                break;
+            }
+            Err(_) => {
+                warn_global!(logging_tx, "{} timed out", trim_uuid(&client_id));
+                break;
+            }
+        };
 
-        // If it's a timeout error, we print such
-        if result.is_err() {
-            warn_global!(logging_tx, "{} timed out", trim_uuid(&client_id));
-        }
-
-        // If it's anything but a correct response, we disconnect
-        let Ok(Some(Ok(message))) = result else { break };
-
-        let message_result =
-            handle_client_message(message, state.clone(), client_id, logging_tx.clone()).await;
-
-        if message_result.is_break() {
-            // We don't break here, to avoid double closing the connection
-            return;
-        }
+        handle_client_message(message, Delivery::Stream, &state, client_id, &logging_tx).await;
     }
 
     let _ = handle_client_close(client_id, &state, logging_tx).await;
+}
+
+/// Waits for the client's next stream and reads the message off it.
+///
+/// Only unidirectional streams count as messages. Replies are sent as their own
+/// stream rather than written back onto the request's stream, so there is nothing
+/// a bidirectional stream would buy, and ignoring them means a client that opens
+/// one and leaves it empty cannot stall this loop.
+async fn accept_message(connection: &Connection) -> Result<Bytes> {
+    let read = connection.accept_uni().await?;
+
+    read_message(read).await
+}
+
+/// Drains `rx` onto the client's session.
+fn spawn_writer(connection: Connection, mut rx: mpsc::Receiver<Outbound>, logging_tx: LogSender) {
+    tokio::spawn(async move {
+        // Undeliverable datagrams come in floods rather than one at a time, so the
+        // reason is worth saying once and then never again for this session
+        let mut warned_undeliverable = false;
+
+        while let Some(message) = rx.recv().await {
+            match message {
+                Outbound::Stream(payload) => {
+                    if write_message(&connection, &payload).await.is_err() {
+                        break;
+                    }
+                }
+
+                // Datagrams are best-effort, so one that cannot be sent is dropped
+                // rather than retried. It is still worth saying so once: a payload
+                // that never fits looks exactly like a peer that has gone quiet,
+                // which is a miserable thing to debug
+                Outbound::Datagram(payload) => {
+                    let size = payload.len();
+
+                    match connection.send_datagram(payload) {
+                        Ok(()) => {}
+                        Err(SendDatagramError::NotConnected) => break,
+                        Err(e) if warned_undeliverable => {
+                            let _ = e;
+                        }
+                        Err(SendDatagramError::TooLarge) => {
+                            warned_undeliverable = true;
+                            warn_global!(
+                                logging_tx,
+                                "Dropping datagrams: {size} bytes exceeds the {} the path allows. Send these over a stream instead",
+                                connection.max_datagram_size().unwrap_or_default()
+                            );
+                        }
+                        Err(SendDatagramError::UnsupportedByPeer) => {
+                            warned_undeliverable = true;
+                            warn_global!(
+                                logging_tx,
+                                "Dropping datagrams: the client does not accept them"
+                            );
+                        }
+                    }
+                }
+
+                Outbound::Close => {
+                    connection.close(CLOSED_BY_SERVER, b"Closed by server");
+                    break;
+                }
+            }
+        }
+    });
+}
+
+/// Reads datagrams for the lifetime of the session.
+///
+/// Datagrams arrive outside of any stream, so they need a reader of their own.
+fn spawn_datagram_reader(
+    connection: Connection,
+    state: Arc<State>,
+    client_id: ClientId,
+    logging_tx: LogSender,
+) {
+    tokio::spawn(async move {
+        while let Ok(datagram) = connection.receive_datagram().await {
+            handle_client_message(
+                datagram.payload(),
+                Delivery::Datagram,
+                &state,
+                client_id,
+                &logging_tx,
+            )
+            .await;
+        }
+    });
 }
 
 /// Waits for and handles messages from the client that are intended for the server.
@@ -116,41 +210,30 @@ pub async fn handle_connection<S>(
 /// The function then returns the generated `ClientId`
 ///
 /// If any message is unable to be parse, the function returns `None`.
-async fn wait_for_initialization<S>(
-    state: Arc<State>,
-    read: &mut SplitStream<WsStream<S>>,
-    write: &mut SplitSink<WsStream<S>, Message>,
+async fn wait_for_initialization(
+    state: &Arc<State>,
+    connection: &Connection,
     tx: ClientSender,
     addr: SocketAddr,
-    logging_tx: LogSender,
-) -> Option<ClientId>
-where
-    S: SynthesisStream,
-{
+    logging_tx: &LogSender,
+) -> Option<ClientId> {
     loop {
-        match parse_first_message(read, addr, logging_tx.clone()).await {
+        match parse_first_message(connection, addr, logging_tx).await {
             Some(ClientToServerMessage::RequestRooms) => {
-                handle_room_list_request(state.clone(), write).await;
+                handle_room_list_request(state, connection).await;
             }
 
             // When they ask to initialize a connection, then we add them to a room
             // Or create a room for them
             Some(ClientToServerMessage::InitializeConnection { room_id, name }) => {
-                let (client_id, room_id) = {
-                    // The lock is relinquished at the end of this expression
-                    let info = state.initialize_client_in_room(tx, room_id, &name);
-                    match info {
-                        Some(info) => info,
-                        None => return None,
-                    }
-                };
+                let (client_id, room_id) = state.initialize_client_in_room(tx, room_id, &name)?;
 
                 let message = server_sent_msg(ServerToClientMessage::SendInfo {
                     room_id,
                     client_id: client_id.to_string(),
                 });
 
-                if write.send(message).await.is_err() {
+                if write_message(connection, &message).await.is_err() {
                     error_global!(logging_tx, "Failed to send back initial response");
 
                     return None;
@@ -170,22 +253,31 @@ where
     }
 }
 
-async fn parse_first_message<S>(
-    read: &mut SplitStream<WebSocketStream<Prefixed<S>>>,
+async fn parse_first_message(
+    connection: &Connection,
     addr: SocketAddr,
-    logging_tx: LogSender,
-) -> Option<ClientToServerMessage>
-where
-    S: SynthesisStream,
-{
+    logging_tx: &LogSender,
+) -> Option<ClientToServerMessage> {
     // Parse initial message, then user in correct room
-    let Some(Ok(Message::Binary(message_data))) = read.next().await else {
-        warn_global!(
-            logging_tx,
-            "Client disconnected before handshake (probably a test)"
-        );
-        return None;
+    let message_data = match timeout(TIMEOUT, accept_message(connection)).await {
+        Ok(Ok(message_data)) => message_data,
+        Ok(Err(e)) => {
+            warn_global!(logging_tx, "{addr} disconnected before handshake: {e}");
+            return None;
+        }
+        Err(_) => {
+            warn_global!(
+                logging_tx,
+                "{addr} did not complete a message before the handshake timed out. A client must finish each stream it writes, since that is what ends the message"
+            );
+            return None;
+        }
     };
+
+    if message_data.is_empty() {
+        error_global!(logging_tx, "{addr} sent an empty initial message");
+        return None;
+    }
 
     let Ok(message) = deserialize_messagepack::<ClientToServerMessage>(&message_data[1..]) else {
         error_global!(logging_tx, "{addr} sent an invalid initial message");
@@ -195,53 +287,74 @@ where
     Some(message)
 }
 
-async fn handle_room_list_request<S>(
-    state: Arc<State>,
-    write: &mut SplitSink<WebSocketStream<Prefixed<S>>, Message>,
-) where
-    S: SynthesisStream,
-{
+async fn handle_room_list_request(state: &Arc<State>, connection: &Connection) {
     let message = server_sent_msg(ServerToClientMessage::RoomList {
         rooms: state.list_rooms(),
     });
 
-    write.send(message).await.ok();
+    let _ = write_message(connection, &message).await;
 }
 
+/// Routes one message from a client.
+///
+/// Messages carrying [`MessagePrefix::Server`] are for the server to answer;
+/// everything else is forwarded verbatim to the client's roommates over the same
+/// kind of channel it arrived on.
 async fn handle_client_message(
-    message: Message,
-    state: Arc<State>,
+    payload: Bytes,
+    delivery: Delivery,
+    state: &Arc<State>,
     client_id: ClientId,
-    logging_tx: LogSender,
-) -> ops::ControlFlow<(), ()> {
-    match message {
-        Message::Binary(ref bytes) => {
-            if bytes.len() <= 1 {
-                return ops::ControlFlow::Continue(());
-            }
+    logging_tx: &LogSender,
+) {
+    // A prefix byte on its own carries nothing
+    if payload.len() <= 1 {
+        warn_global!(
+            logging_tx,
+            "Discarding {} byte message from {}",
+            payload.len(),
+            trim_uuid(&client_id)
+        );
+        return;
+    }
 
-            if bytes[0] == MessagePrefix::Server as u8 {
-                handle_client_ping(bytes, &client_id, &state, logging_tx).await;
-                return ops::ControlFlow::Continue(());
-            }
+    if payload[0] == MessagePrefix::Server as u8 {
+        if delivery == Delivery::Datagram {
+            // Answering still works, but the client should not be risking a
+            // dropped client-server message in the first place
+            warn_global!(
+                logging_tx,
+                "{} sent a client-server message as a datagram",
+                trim_uuid(&client_id)
+            );
+        }
 
-            // If we're here, that means the message has a client-client prefix
-            // which we want anyway, so there's no need to prefix the message
-            // we can just forward it!
-            let senders: Vec<ClientSender> = { state.get_senders_from_user_room(client_id) };
+        handle_client_ping(&payload, &client_id, state, logging_tx.clone()).await;
+        return;
+    }
 
-            let tasks = senders.iter().map(|tx| tx.send(message.clone()));
+    // If we're here, that means the message has a client-client prefix
+    // which we want anyway, so there's no need to prefix the message
+    // we can just forward it!
+    let senders: Vec<ClientSender> = { state.get_senders_from_user_room(client_id) };
+
+    match delivery {
+        // Guaranteed traffic waits for room in each peer's queue
+        Delivery::Stream => {
+            let tasks = senders
+                .iter()
+                .map(|tx| tx.send(delivery.queue(payload.clone())));
             let _ = futures_util::future::join_all(tasks).await;
-
-            ops::ControlFlow::Continue(())
         }
 
-        Message::Close(_) => {
-            let _ = handle_client_close(client_id, &state, logging_tx).await;
-
-            ops::ControlFlow::Break(())
+        // Unreliable traffic is dropped instead of queued: one peer that cannot
+        // keep up must not stall every other peer's updates, and a stale physics
+        // update is worth less than the one behind it
+        Delivery::Datagram => {
+            for tx in &senders {
+                let _ = tx.try_send(delivery.queue(payload.clone()));
+            }
         }
-        _ => ops::ControlFlow::Continue(()),
     }
 }
 
@@ -284,7 +397,7 @@ async fn handle_client_ping(
         tx
     };
 
-    let _ = tx.send(message).await;
+    let _ = tx.send(Outbound::Stream(message)).await;
 }
 
 async fn handle_client_close(
@@ -312,7 +425,9 @@ async fn handle_client_close(
 
     state.remove_client(&client_id);
 
-    let tasks = senders.iter().map(|tx| tx.send(message.clone()));
+    let tasks = senders
+        .iter()
+        .map(|tx| tx.send(Outbound::Stream(message.clone())));
     let _ = futures_util::future::join_all(tasks).await;
 
     Ok(())

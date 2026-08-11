@@ -3,34 +3,40 @@ mod cleanup;
 mod config;
 #[macro_use]
 mod logging;
+mod http;
 mod kick;
 mod messaging;
 mod model;
-mod prefixed;
 mod state;
 #[cfg(test)]
 mod tests;
 mod tui;
 #[macro_use]
 mod util;
+mod wire;
 
-use crate::cert::build_tls_config;
+use crate::cert::build_identity;
 use crate::cleanup::Cleanup;
 use crate::config::retrieve_config;
+use crate::http::spawn_http_responder;
 use crate::kick::setup_user_action_system;
 use crate::logging::{
     EventType, LogDestination, LogRequest, Logger, MAX_LOG_LINES, print_global, print_room,
     spawn_log_receiver,
 };
-use crate::messaging::handle_connection;
+use crate::messaging::handle_session;
+use crate::model::{CertificateHash, CertificateHashes};
 use crate::state::State;
 use crate::tui::start_tui_thread;
 use crate::util::get_local_ip;
 use anyhow::{Result, bail};
 use std::sync::{Arc, Mutex};
-use tokio::net::TcpListener;
+use std::time::Duration;
 use tokio::sync::mpsc;
-use tokio_rustls::TlsAcceptor;
+use wtransport::{Endpoint, ServerConfig};
+
+/// How often to poke an otherwise idle connection so QUIC doesn't time it out.
+const KEEP_ALIVE_INTERVAL: Duration = Duration::from_secs(10);
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -89,60 +95,54 @@ async fn main() -> Result<()> {
         state.new_permanent_room(room_id);
     }
 
-    // # Setup socket listener
+    if !config.secure {
+        warn_global!(
+            logging_tx,
+            "Ignoring the insecure setting: WebTransport traffic is always encrypted"
+        );
+    }
 
-    // `listener` will be used regardless of the security level specified
-    let Ok(listener) = TcpListener::bind(format!("0.0.0.0:{}", config.port)).await else {
-        bail!("Could not create TCP listener (the port is likely in use)");
+    // # Setup the WebTransport endpoint
+
+    let identity = build_identity(&config.cert_dir).await?;
+
+    // Browsers will not offer to trust a self-signed WebTransport certificate the
+    // way they do for HTTPS, so clients pin these digests with
+    // `serverCertificateHashes` instead. They are served over `GET /cert`
+    let hashes = CertificateHashes {
+        hashes: identity
+            .certificate_chain()
+            .as_slice()
+            .iter()
+            .map(|certificate| CertificateHash::sha256(certificate.hash().as_ref()))
+            .collect(),
     };
+
+    let server_config = ServerConfig::builder()
+        .with_bind_default(config.port)
+        .with_identity(identity)
+        .keep_alive_interval(Some(KEEP_ALIVE_INTERVAL))
+        .build();
+
+    let Ok(endpoint) = Endpoint::server(server_config) else {
+        bail!("Could not create UDP listener (the port is likely in use)");
+    };
+
+    // Serves the certificate digests over the TCP half of the same port
+    spawn_http_responder(config.port, hashes, logging_tx.clone()).await?;
 
     let local_ip = get_local_ip().unwrap_or_else(|| String::from("0.0.0.0"));
 
-    // Run insecure server
-    if !config.secure {
-        info_global!(
-            logging_tx,
-            "Server hosted on {local_ip} listening at port {} (insecure)",
-            config.port
-        );
-
-        while let Ok((stream, addr)) = listener.accept().await {
-            tokio::spawn(handle_connection(
-                state.clone(),
-                stream,
-                addr,
-                logging_tx.clone(),
-            ));
-        }
-
-        return Ok(());
-    }
-
-    // Run secure server
-    let tls_config = build_tls_config(&config.cert_dir)?;
-    let acceptor = TlsAcceptor::from(Arc::new(tls_config));
-
     info_global!(
         logging_tx,
-        "Server hosted on {local_ip} listening at port {} (secure)",
+        "Server hosted on {local_ip} listening at port {} (UDP), certificate at /cert (TCP)",
         config.port
     );
 
-    while let Ok((stream, addr)) = listener.accept().await {
-        let acceptor = acceptor.clone();
-        let state = state.clone();
+    loop {
+        let session = endpoint.accept().await;
 
-        // TLS handshake happens in task to avoid being held up by a slow client
-        let logging_tx = logging_tx.clone();
-        tokio::spawn(async move {
-            match acceptor.accept(stream).await {
-                Ok(tls_stream) => handle_connection(state, tls_stream, addr, logging_tx).await,
-                Err(e) => {
-                    error_global!(logging_tx, "Secure connection with client failed {}", e);
-                }
-            }
-        });
+        // The handshake happens in a task to avoid being held up by a slow client
+        tokio::spawn(handle_session(state.clone(), session, logging_tx.clone()));
     }
-
-    Ok(())
 }
