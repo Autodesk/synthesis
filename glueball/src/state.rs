@@ -1,4 +1,5 @@
-use crate::logging::{EventType, LogDestination, LogSender};
+use std::fmt::Display;
+
 use crate::model::RoomInfo;
 use crate::wire::Outbound;
 
@@ -17,17 +18,13 @@ const MAX_ROOM_COUNT: usize = 32;
 pub struct State {
     pub users: ClientMap,
     pub rooms: RoomMap,
-    /// Server-wide events not tied to a specific room
-    /// (e.g. connections, handshakes, failed joins)
-    pub log_tx: LogSender,
 }
 
 impl State {
-    pub fn new(log_tx: LogSender) -> Self {
+    pub fn new() -> Self {
         Self {
             users: DashMap::new(),
             rooms: DashMap::new(),
-            log_tx,
         }
     }
 
@@ -39,7 +36,7 @@ impl State {
     ) -> Option<(ClientId, RoomId)> {
         match room_id {
             None if self.room_count() == MAX_ROOM_COUNT => None,
-            None => Some(self.add_room_and_host(name.to_string(), tx).ok()?),
+            None => Some(self.add_room_and_host(name, tx)),
             Some(room_id) => self
                 .add_client_to_room(name, tx, &room_id)
                 .map(|client_id| (client_id, room_id)),
@@ -53,12 +50,12 @@ impl State {
 
     pub fn add_room_and_host(
         &self,
-        host_name: String,
+        host_name: impl ToString + Display,
         host_tx: ClientSender,
-    ) -> Result<(ClientId, RoomId)> {
+    ) -> (ClientId, RoomId) {
         let host_id = Uuid::new_v4();
         let room = Room {
-            members: vec![Client::new(host_id, host_name.clone(), host_tx)],
+            members: vec![Client::new(host_id, host_name.to_string(), host_tx)],
             host: Some(host_id),
             locked: false,
             permanent: false,
@@ -71,16 +68,12 @@ impl State {
             }
         };
 
-        info_room!(
-            self.log_tx,
-            room_id,
-            "{host_name} [H] created room {room_id}",
-        );
+        info_room!(room_id, "{host_name} [H] created room {room_id}",);
 
         self.users.insert(host_id, room_id.clone());
         self.rooms.insert(room_id.clone(), room);
 
-        Ok((host_id, room_id))
+        (host_id, room_id)
     }
 
     /// # Safety
@@ -95,12 +88,12 @@ impl State {
             return;
         };
 
-        let room_closed = room.remove_client(client_id, &self.log_tx) == RoomStatus::Closed;
+        let room_closed = room.remove_client(client_id) == RoomStatus::Closed;
         drop(room);
 
         if room_closed {
             self.rooms.remove(&room_id);
-            remove_room!(self.log_tx, room_id);
+            remove_room!(room_id);
         }
     }
 
@@ -112,10 +105,7 @@ impl State {
     ) -> Option<ClientId> {
         let client_id = Uuid::new_v4();
         let Some(mut room) = self.rooms.get_mut(room_id) else {
-            warn_global!(
-                self.log_tx,
-                "Attempted to add {client_id} into non-existant room {room_id}"
-            );
+            warn_global!("Attempted to add {client_id} into non-existant room {room_id}");
             return None;
         };
 
@@ -128,11 +118,11 @@ impl State {
         self.users.insert(client_id, room_id.clone());
 
         if room.host.is_none() {
-            info_room!(self.log_tx, room_id, "{client_name} became host of room",);
+            info_room!(room_id, "{client_name} became host of room",);
             room.host = Some(client_id);
         }
 
-        info_room!(self.log_tx, room_id, "{client_name} joined room",);
+        info_room!(room_id, "{client_name} joined room",);
 
         Some(client_id)
     }
@@ -140,7 +130,6 @@ impl State {
     pub fn new_permanent_room(&self, room_id: RoomId) {
         if !is_valid_room_id(&room_id) {
             error_global!(
-                self.log_tx,
                 "Invalid permanent room id: {room_id}, must be 6 characters and each character must match `[0-9A-Z]`"
             );
             return;
@@ -157,7 +146,7 @@ impl State {
 
     pub fn get_room_of_client_mut(&self, client_id: &ClientId) -> Option<RefMut<'_, RoomId, Room>> {
         let Some(room_id) = self.users.get(client_id) else {
-            warn_global!(self.log_tx, "Attempted to get client that does not exist");
+            warn_global!("Attempted to get client that does not exist");
             return None;
         };
 
@@ -184,11 +173,12 @@ impl State {
         let mut room = self.rooms.get_mut(room_id)?;
         room.locked = !room.locked;
         let locked = room.locked;
+        drop(room);
 
         if locked {
-            info_room!(self.log_tx, room_id, "Room Locked");
+            info_room!(room_id, "Room Locked");
         } else {
-            info_room!(self.log_tx, room_id, "Room Unlocked");
+            info_room!(room_id, "Room Unlocked");
         }
 
         Some(locked)
@@ -328,17 +318,14 @@ impl Room {
             .map(|client| client.tx.clone())
     }
 
-    pub fn remove_client(&mut self, client_id: &ClientId, logging_tx: &LogSender) -> RoomStatus {
+    pub fn remove_client(&mut self, client_id: &ClientId) -> RoomStatus {
         let Some(idx) = self
             .members
             .iter()
             .map(|client| client.id)
             .position(|id| id == *client_id)
         else {
-            warn_global!(
-                logging_tx,
-                "Attempted to remove client from room they are not in"
-            );
+            warn_global!("Attempted to remove client from room they are not in");
             return RoomStatus::Open;
         };
 
@@ -383,12 +370,12 @@ pub struct RoomSnapshot {
 #[cfg(test)]
 mod tests {
     use super::{ClientSender, MAX_ROOM_COUNT, State, is_valid_room_id};
-    use crate::logging::LogSender;
     use tokio::sync::mpsc;
 
-    fn log_tx() -> LogSender {
+    fn log_tx() {
         let (tx, _rx) = mpsc::channel(64);
-        tx
+
+        crate::LOG_TX.set(tx).unwrap()
     }
 
     fn client_tx() -> ClientSender {
@@ -398,10 +385,10 @@ mod tests {
 
     #[test]
     fn create_room_adds_host() {
-        let state = State::new(log_tx());
-        state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        log_tx();
+
+        let state = State::new();
+        state.add_room_and_host("Alice", client_tx());
         assert_eq!(state.room_count(), 1);
 
         let rooms = state.list_rooms();
@@ -411,10 +398,10 @@ mod tests {
 
     #[test]
     fn join_existing_room() {
-        let state = State::new(log_tx());
-        let (_, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        log_tx();
+
+        let state = State::new();
+        let (_, room_id) = state.add_room_and_host("Alice", client_tx());
 
         assert!(
             state
@@ -426,7 +413,9 @@ mod tests {
 
     #[test]
     fn join_nonexistent_room_returns_none() {
-        let state = State::new(log_tx());
+        log_tx();
+
+        let state = State::new();
         assert!(
             state
                 .add_client_to_room("Bob", client_tx(), &"ZZZZZZ".to_string())
@@ -436,10 +425,10 @@ mod tests {
 
     #[test]
     fn join_locked_room_returns_none() {
-        let state = State::new(log_tx());
-        let (_, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        log_tx();
+
+        let state = State::new();
+        let (_, room_id) = state.add_room_and_host("Alice", client_tx());
         state.toggle_room_lock(&room_id);
 
         assert!(
@@ -451,10 +440,10 @@ mod tests {
 
     #[test]
     fn last_client_leaving_closes_room() {
-        let state = State::new(log_tx());
-        let (client_id, _) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        log_tx();
+
+        let state = State::new();
+        let (client_id, _) = state.add_room_and_host("Alice", client_tx());
         state.remove_client(&client_id);
 
         assert_eq!(state.room_count(), 0);
@@ -462,10 +451,10 @@ mod tests {
 
     #[test]
     fn host_leaving_transfers_to_next_member() {
-        let state = State::new(log_tx());
-        let (host_id, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        log_tx();
+
+        let state = State::new();
+        let (host_id, room_id) = state.add_room_and_host("Alice", client_tx());
 
         state
             .add_client_to_room("Bob", client_tx(), &room_id)
@@ -477,7 +466,9 @@ mod tests {
 
     #[test]
     fn permanent_room_stays_open_when_empty() {
-        let state = State::new(log_tx());
+        log_tx();
+
+        let state = State::new();
 
         let room_id = "PERM01".to_string();
         state.new_permanent_room(room_id.clone());
@@ -492,12 +483,12 @@ mod tests {
 
     #[test]
     fn list_rooms_shows_host_and_lock_status() {
-        let state = State::new(log_tx());
+        log_tx();
+
+        let state = State::new();
         assert!(state.list_rooms().is_empty());
 
-        let (_, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        let (_, room_id) = state.add_room_and_host("Alice", client_tx());
         state.toggle_room_lock(&room_id);
         let rooms = state.list_rooms();
 
@@ -508,10 +499,10 @@ mod tests {
 
     #[test]
     fn toggle_lock_flips_state() {
-        let state = State::new(log_tx());
-        let (_, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        log_tx();
+
+        let state = State::new();
+        let (_, room_id) = state.add_room_and_host("Alice", client_tx());
 
         assert_eq!(state.toggle_room_lock(&room_id), Some(true));
         assert_eq!(state.toggle_room_lock(&room_id), Some(false));
@@ -519,11 +510,11 @@ mod tests {
 
     #[test]
     fn max_rooms_prevents_new_room() {
-        let state = State::new(log_tx());
+        log_tx();
+
+        let state = State::new();
         for i in 0..MAX_ROOM_COUNT {
-            state
-                .add_room_and_host(format!("Client{i}"), client_tx())
-                .unwrap();
+            state.add_room_and_host(format!("Client{i}"), client_tx());
         }
 
         assert!(

@@ -26,26 +26,6 @@ const READ_CHUNK_SIZE: usize = 8 * 1024;
 /// than buffer for it.
 const MAX_MESSAGE_SIZE: usize = 4 * 1024 * 1024;
 
-/// How a message travelled, and therefore how anything derived from it should
-/// travel back out.
-#[derive(Copy, Clone, PartialEq, Eq)]
-pub enum Delivery {
-    /// On a stream of its own: ordered and guaranteed.
-    Stream,
-    /// As a datagram: unordered, and dropped rather than retransmitted.
-    Datagram,
-}
-
-impl Delivery {
-    /// Queues `payload` for delivery over this same kind of channel.
-    pub const fn queue(self, payload: Bytes) -> Outbound {
-        match self {
-            Self::Stream => Outbound::Stream(payload),
-            Self::Datagram => Outbound::Datagram(payload),
-        }
-    }
-}
-
 /// A payload queued for delivery to a single client.
 #[derive(Clone)]
 pub enum Outbound {

@@ -3,6 +3,8 @@ use std::{fs, path::Path};
 use anyhow::Result;
 use wtransport::Identity;
 
+use crate::model::{CertificateHash, CertificateHashes};
+
 /// `WebTransport` runs over QUIC, so the server always needs a TLS identity.
 /// Loads the certificate and key from `cert_directory`, generating a self-signed
 /// pair there if none is present.
@@ -46,4 +48,18 @@ async fn ensure_certificate(path: &Path) -> Result<()> {
         .await?;
 
     Ok(())
+}
+
+/// Browsers will not offer to trust a self-signed WebTransport certificate the
+/// way they do for HTTPS, so clients pin these digests with
+/// `serverCertificateHashes` instead. They are served over `GET /cert`
+pub fn build_hashes(identity: &Identity) -> CertificateHashes {
+    CertificateHashes {
+        hashes: identity
+            .certificate_chain()
+            .as_slice()
+            .iter()
+            .map(|certificate| CertificateHash::sha256(certificate.hash().as_ref()))
+            .collect(),
+    }
 }

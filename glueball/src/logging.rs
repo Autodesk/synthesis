@@ -5,67 +5,74 @@ use ratatui::{
     style::{Style, Stylize},
     text::Line,
 };
-use tokio::sync::mpsc::{Receiver, Sender};
+use tokio::sync::mpsc::{self, Receiver};
 
-use crate::state::RoomId;
+use crate::{LOG_TX, state::RoomId};
 
 pub const MAX_LOG_LINES: usize = 500;
 
 pub type RoomLogs = HashMap<RoomId, VecDeque<Event>>;
 pub type GlobalLog = VecDeque<Event>;
 pub type LogSnapshot = (GlobalLog, RoomLogs);
-pub type LogSender = Sender<LogRequest>;
 pub type LogRequest = (String, EventType, LogDestination);
 
 #[macro_export]
 macro_rules! info_global {
-    ($log_tx:expr, $($arg:tt)*) => {
-        let _ = $log_tx.try_send((format!($($arg)*), EventType::Info, LogDestination::Global));
+    ($($arg:tt)*) => {
+        use $crate::{LOG_TX, EventType, LogDestination};
+        let _ = LOG_TX.get().unwrap().try_send((format!($($arg)*), EventType::Info, LogDestination::Global));
     }
 }
 
 #[macro_export]
 macro_rules! warn_global {
-    ($log_tx:expr, $($arg:tt)*) => {
-        let _ = $log_tx.try_send((format!($($arg)*), EventType::Warning, LogDestination::Global));
+    ($($arg:tt)*) => {
+        use $crate::{LOG_TX, EventType, LogDestination};
+        let _ = LOG_TX.get().unwrap().try_send((format!($($arg)*), EventType::Warning, LogDestination::Global));
     }
 }
 
 #[macro_export]
 macro_rules! error_global {
-    ($log_tx:expr, $($arg:tt)*) => {
-        let _ = $log_tx.try_send((format!($($arg)*), EventType::Error, LogDestination::Global));
+    ($($arg:tt)*) => {
+        use $crate::{LOG_TX, EventType, LogDestination};
+        let _ = LOG_TX.get().unwrap().try_send((format!($($arg)*), EventType::Error, LogDestination::Global));
     }
 }
 
 /// Takes a lock on `state`
 #[macro_export]
 macro_rules! info_room {
-    ($log_tx:expr, $room_id:expr, $($arg:tt)*) => {{
-        let _ = $log_tx.try_send((format!($($arg)*), EventType::Info, LogDestination::Room($room_id.clone())));
+    ($room_id:expr, $($arg:tt)*) => {{
+        use $crate::{LOG_TX, EventType, LogDestination};
+        let _ = LOG_TX.get().unwrap().try_send((format!($($arg)*), EventType::Info, LogDestination::Room($room_id.clone())));
     }};
 }
 
 /// Takes a lock on `state`
 #[macro_export]
 macro_rules! warn_room {
-    ($log_tx:expr, $room_id:expr, $($arg:tt)*) => {{
-        let _ = $log_tx.try_send((format!($($arg)*), EventType::Warning, LogDestination::Room($room_id.clone())));
+    ($room_id:expr, $($arg:tt)*) => {{
+        use $crate::{LOG_TX, EventType, LogDestination};
+        let _ = LOG_TX.get().unwrap().try_send((format!($($arg)*), EventType::Warning, LogDestination::Room($room_id.clone())));
     }};
 }
 
 /// Takes a lock on `state`
 #[macro_export]
 macro_rules! error_room {
-    ($log_tx:expr, $room_id:expr, $($arg:tt)*) => {{
-        let _ = $log_tx.try_send((format!($($arg)*), EventType::Error, LogDestination::Room($room_id.clone())));
+    ($room_id:expr, $($arg:tt)*) => {{
+        use $crate::{LOG_TX, EventType, LogDestination};
+        let _ = LOG_TX.get().unwrap().try_send((format!($($arg)*), EventType::Error, LogDestination::Room($room_id.clone())));
     }};
 }
 
 #[macro_export]
 macro_rules! remove_room {
-    ($log_tx:expr, $room_id:expr) => {{
-        let _ = $log_tx.try_send((
+    ($room_id:expr) => {{
+        use $crate::{EventType, LOG_TX, LogDestination};
+
+        let _ = LOG_TX.get().unwrap().try_send((
             "".to_string(),
             EventType::Info,
             LogDestination::RemoveRoom($room_id),
@@ -177,6 +184,15 @@ impl Logger {
     pub fn snapshot(&self) -> LogSnapshot {
         (self.global_log.clone(), self.room_logs.clone())
     }
+}
+
+pub fn create_logging_channel() -> Receiver<LogRequest> {
+    let (logging_tx, logging_rx) = mpsc::channel::<LogRequest>(MAX_LOG_LINES);
+
+    #[allow(clippy::expect_used)]
+    LOG_TX.set(logging_tx).expect("Failed to set LOG_TX");
+
+    logging_rx
 }
 
 pub fn spawn_log_receiver<F>(mut logging_rx: Receiver<LogRequest>, handle_log: F)

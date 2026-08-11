@@ -14,8 +14,6 @@
 //! circular. Browsers treat `localhost` and `127.0.0.1` as trustworthy origins,
 //! so mixed-content rules do not block this for the local servers it exists for.
 
-use crate::EventType;
-use crate::logging::{LogDestination, LogSender};
 use crate::model::CertificateHashes;
 
 use anyhow::{Result, bail};
@@ -31,32 +29,27 @@ const MAX_REQUEST_SIZE: usize = 1024;
 
 /// These responses are read by a page served from a different origin, so they
 /// have to opt in to being read cross-origin.
-const CORS_HEADERS: &str = "Access-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, OPTIONS\r\n";
+const CORS_HEADERS: &str =
+    "Access-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, OPTIONS\r\n";
 
 /// Binds the TCP half of `port` and starts answering HTTP requests on it.
 ///
 /// Binding happens before returning so a port conflict is reported to the caller
 /// rather than swallowed by a background task.
-pub async fn spawn_http_responder(
-    port: u16,
-    hashes: CertificateHashes,
-    logging_tx: LogSender,
-) -> Result<()> {
+pub async fn spawn_http_responder(port: u16, hashes: CertificateHashes) -> Result<()> {
     let Ok(listener) = TcpListener::bind(format!("0.0.0.0:{port}")).await else {
         bail!("Could not create TCP listener (the port is likely in use)");
     };
 
-    // The digests never change, so the response body is built once and shared
     let certificate_response = Arc::new(json_response(&serde_json::to_string(&hashes)?));
 
     tokio::spawn(async move {
         while let Ok((stream, addr)) = listener.accept().await {
             let certificate_response = certificate_response.clone();
-            let logging_tx = logging_tx.clone();
 
             // Each request gets a task so a slow client cannot hold up the others
             tokio::spawn(async move {
-                handle_request(stream, addr, &certificate_response, &logging_tx).await;
+                handle_request(stream, addr, &certificate_response).await;
             });
         }
     });
@@ -69,25 +62,20 @@ pub async fn spawn_http_responder(
 /// Connections are never kept alive, so there is no need to find the end of the
 /// request head: the first read tells us the method and path, which is all that
 /// distinguishes the handful of responses we serve.
-async fn handle_request(
-    mut stream: TcpStream,
-    addr: SocketAddr,
-    certificate_response: &str,
-    logging_tx: &LogSender,
-) {
-    let mut buf = vec![0u8; MAX_REQUEST_SIZE];
+async fn handle_request(mut stream: TcpStream, addr: SocketAddr, certificate_response: &str) {
+    let mut buf = [0u8; MAX_REQUEST_SIZE];
 
     let count = match stream.read(&mut buf).await {
         Ok(0) => return,
         Ok(count) => count,
         Err(e) => {
-            error_global!(logging_tx, "Failed to read from {addr}: {e}");
+            error_global!("Failed to read from {addr}: {e}");
             return;
         }
     };
-    buf.truncate(count);
 
-    let request = String::from_utf8_lossy(&buf).to_ascii_lowercase();
+    let truncated = &buf[0..count];
+    let request = String::from_utf8_lossy(truncated).to_ascii_lowercase();
 
     let response = if request.starts_with("get /cert ") {
         certificate_response.to_string()

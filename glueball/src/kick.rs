@@ -1,5 +1,4 @@
 use crate::{
-    EventType, LogDestination,
     model::ServerToClientMessage,
     state::{ClientId, ClientSender, RoomId, RoomStatus, State},
     util::server_sent_msg,
@@ -50,7 +49,7 @@ async fn kick(state: Arc<State>, client_id: ClientId) {
         return;
     };
 
-    info_global!(state.log_tx, "Kicked {}", client_name);
+    info_global!("Kicked {}", client_name);
 
     // The kicked client's session gets torn down by its writer task
     // TODO Don't have send a close back / deal with double removal
@@ -82,12 +81,12 @@ impl State {
         let client_tx = room.get_sender(client_id)?;
         let peer_senders = room.get_peer_senders(client_id);
 
-        let room_closed = room.remove_client(client_id, &self.log_tx) == RoomStatus::Closed;
+        let room_closed = room.remove_client(client_id) == RoomStatus::Closed;
         drop(room); // Relinquish room lock
 
         if room_closed {
             self.rooms.remove(&room_id);
-            remove_room!(self.log_tx, room_id);
+            remove_room!(room_id);
         }
 
         self.users.remove(client_id);

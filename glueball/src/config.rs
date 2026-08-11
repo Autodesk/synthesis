@@ -1,16 +1,21 @@
 use std::{
     fs::read_to_string,
     path::{Path, PathBuf},
+    time::Duration,
 };
 
 use anyhow::{Result, bail};
 use argh::FromArgs;
 use directories::ProjectDirs;
 use toml::{Table, Value};
+use wtransport::{Identity, ServerConfig};
 
 use crate::util::tilde_expansion;
 
 pub const DEFAULT_PORT: u16 = 2610;
+
+/// How often to poke an otherwise idle connection so QUIC doesn't time it out.
+const KEEP_ALIVE_INTERVAL: Duration = Duration::from_secs(10);
 
 pub fn certification_directory() -> Result<PathBuf> {
     let dir = match ProjectDirs::from("com", "Autodesk", "synthesis-glueball") {
@@ -32,7 +37,7 @@ pub struct CliConfig {
 
     #[argh(
         option,
-        description = "directory in which to store certificates and key files (only for --secure mode)"
+        description = "directory in which to store certificates and key files"
     )]
     pub cert_dir: Option<PathBuf>,
 
@@ -47,13 +52,6 @@ pub struct CliConfig {
         description = "show a text console instead of the interactive TUI"
     )]
     pub headless: bool,
-
-    #[argh(
-        switch,
-        short = 's',
-        description = "encrypt websocket traffic using TLS. self-signed PEM certificates will be automatically generated"
-    )]
-    pub secure: bool,
 
     #[argh(
         option,
@@ -95,12 +93,6 @@ where
         old_config.headless = *headless;
     }
 
-    if let Some(Value::Boolean(secure)) = &table.get("secure")
-        && !old_config.secure
-    {
-        old_config.secure = *secure;
-    }
-
     if let Some(Value::String(room_id)) = &table.get("permanent_room")
         && old_config.permanent_room.is_none()
     {
@@ -115,7 +107,6 @@ pub struct AppConfig {
     pub permanent_room: Option<String>,
     pub port: u16,
     pub headless: bool,
-    pub secure: bool,
 }
 
 fn config_or_default(config: CliConfig) -> Result<AppConfig> {
@@ -132,7 +123,6 @@ fn config_or_default(config: CliConfig) -> Result<AppConfig> {
         permanent_room: config.permanent_room,
         port,
         headless: config.headless,
-        secure: config.secure,
     })
 }
 
@@ -144,4 +134,12 @@ pub fn retrieve_config() -> Result<AppConfig> {
     }
 
     config_or_default(config)
+}
+
+pub fn build_server_config(port: u16, identity: Identity) -> ServerConfig {
+    ServerConfig::builder()
+        .with_bind_default(port)
+        .with_identity(identity)
+        .keep_alive_interval(Some(KEEP_ALIVE_INTERVAL))
+        .build()
 }
