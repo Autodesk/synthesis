@@ -1,11 +1,11 @@
 mod cert;
+mod cleanup;
 mod config;
 #[macro_use]
 mod logging;
 mod kick;
 mod messaging;
 mod model;
-mod panic;
 mod prefixed;
 mod state;
 #[cfg(test)]
@@ -15,6 +15,7 @@ mod tui;
 mod util;
 
 use crate::cert::build_tls_config;
+use crate::cleanup::Cleanup;
 use crate::config::retrieve_config;
 use crate::kick::setup_user_action_system;
 use crate::logging::{
@@ -22,7 +23,6 @@ use crate::logging::{
     spawn_log_receiver,
 };
 use crate::messaging::handle_connection;
-use crate::panic::cleanup_terminal;
 use crate::state::State;
 use crate::tui::start_tui_thread;
 use crate::util::get_local_ip;
@@ -34,6 +34,8 @@ use tokio_rustls::TlsAcceptor;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let _cleanup_trigger = Cleanup;
+
     // # Parse and create defaults for the application configuration
     let config = retrieve_config()?;
 
@@ -91,8 +93,6 @@ async fn main() -> Result<()> {
 
     // `listener` will be used regardless of the security level specified
     let Ok(listener) = TcpListener::bind(format!("0.0.0.0:{}", config.port)).await else {
-        cleanup_terminal();
-
         bail!("Could not create TCP listener (the port is likely in use)");
     };
 
