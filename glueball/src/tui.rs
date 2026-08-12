@@ -499,17 +499,12 @@ fn render_logs(
 
     let text: Vec<Line> = logs
         .iter()
-        .enumerate()
         .skip(view_start)
         .take(view_end - view_start)
-        .map(|(i, event)| {
+        .map(|event| {
             let style = Style::from(&event.kind);
             let line = Line::from(event.message.clone());
-            if i == cursor_abs {
-                line.style(style.bg(Color::Indexed(245)))
-            } else {
-                line.style(style)
-            }
+            line.style(style);
         })
         .collect();
 
@@ -556,16 +551,11 @@ fn render_system_log(
 
     let text: Vec<Line> = global_log
         .iter()
-        .enumerate()
         .skip(view_start)
         .take(view_end - view_start)
-        .map(|(i, event)| {
+        .map(|event| {
             let line = Line::from(event.message.clone());
-            if i == cursor_abs {
-                line.style(Style::from(&event.kind).bg(Color::Indexed(245)))
-            } else {
-                line.style(Style::from(&event.kind))
-            }
+            line.style(Style::from(&event.kind))
         })
         .collect();
 

@@ -22,6 +22,7 @@ use crate::logging::{
     spawn_log_receiver,
 };
 use crate::messaging::handle_connection;
+use crate::panic::cleanup_terminal;
 use crate::state::State;
 use crate::tui::start_tui_thread;
 use crate::util::get_local_ip;
@@ -90,6 +91,8 @@ async fn main() -> Result<()> {
 
     // `listener` will be used regardless of the security level specified
     let Ok(listener) = TcpListener::bind(format!("0.0.0.0:{}", config.port)).await else {
+        cleanup_terminal();
+
         bail!("Could not create TCP listener (the port is likely in use)");
     };
 
