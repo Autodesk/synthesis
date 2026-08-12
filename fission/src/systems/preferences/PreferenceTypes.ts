@@ -199,7 +199,7 @@ export type RobotPreferences = {
     cameras: CameraPreferences[]
     driveVelocity: number
     driveAcceleration: number
-    unstickForce: number
+    unstickStrength: number
     sequentialConfig?: SequentialBehaviorPreferences[]
     simConfig?: SimConfigData
 }
@@ -269,6 +269,9 @@ export type FieldPreferences = {
     cameraPoints: CameraPoint[]
 }
 
+export const MIN_UNSTICK_STRENGTH = 0
+export const MAX_UNSTICK_STRENGTH = 5
+
 export function defaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
@@ -290,7 +293,7 @@ export function defaultRobotPreferences(): RobotPreferences {
         cameras: [],
         driveVelocity: 0,
         driveAcceleration: 0,
-        unstickForce: 8000,
+        unstickStrength: 1,
     }
 }
 
