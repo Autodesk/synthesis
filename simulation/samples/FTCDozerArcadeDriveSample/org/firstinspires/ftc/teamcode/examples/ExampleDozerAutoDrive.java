@@ -17,10 +17,8 @@ public class ExampleDozerAutoDrive extends LinearOpMode {
     public void runOpMode() {
         // Hardware initialization
         DcMotorSimple leftFront   = hardwareMap.get(DcMotorSimple.class, "leftFront");
-        DcMotorSimple leftMiddle  = hardwareMap.get(DcMotorSimple.class, "leftMiddle");
         DcMotorSimple leftBack    = hardwareMap.get(DcMotorSimple.class, "leftBack");
         DcMotorSimple rightFront  = hardwareMap.get(DcMotorSimple.class, "rightFront");
-        DcMotorSimple rightMiddle = hardwareMap.get(DcMotorSimple.class, "rightMiddle");
         DcMotorSimple rightBack   = hardwareMap.get(DcMotorSimple.class, "rightBack");
 
         DriveState currentState = DriveState.DRIVE_FORWARD;
@@ -38,28 +36,25 @@ public class ExampleDozerAutoDrive extends LinearOpMode {
 
             switch (currentState) {
                 case DRIVE_FORWARD:
-                    setAllPower(leftFront, leftMiddle, leftBack, rightFront, rightMiddle, rightBack, 0.5);
+                    setAllPower(leftFront, leftBack, rightFront, rightBack, 0.5);
                     break;
 
                 case DRIVE_BACKWARD:
-                    setAllPower(leftFront, leftMiddle, leftBack, rightFront, rightMiddle, rightBack, -0.5);
+                    setAllPower(leftFront, leftBack, rightFront, rightBack, -0.5);
                     break;
 
                 case STOPPED:
-                    setAllPower(leftFront, leftMiddle, leftBack, rightFront, rightMiddle, rightBack, 0.0);
+                    setAllPower(leftFront, leftBack, rightFront, rightBack, 0.0);
                     break;
             }
         }
     }
 
     // Helper method to reduce code repetition when setting motor power
-    private void setAllPower(DcMotorSimple lf, DcMotorSimple lm, DcMotorSimple lb, 
-                             DcMotorSimple rf, DcMotorSimple rm, DcMotorSimple rb, double power) {
+    private void setAllPower(DcMotorSimple lf, DcMotorSimple lb, DcMotorSimple rf, DcMotorSimple rb, double power) {
         lf.setPower(power);
-        lm.setPower(power);
         lb.setPower(power);
         rf.setPower(power);
-        rm.setPower(power);
         rb.setPower(power);
     }
 }

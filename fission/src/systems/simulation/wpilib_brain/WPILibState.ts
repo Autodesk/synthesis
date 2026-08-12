@@ -1,7 +1,8 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { NoraTypes } from "../Nora"
+import SimDriverStation from "./sim/SimDriverStation"
 import type WPILibBrain from "./WPILibBrain"
-import { FTC_WS_URL, type SimMap, SimType, WPILIB_WS_URL, worker } from "./WPILibTypes"
+import { FTC_WS_URL, RobotSimMode, type SimMap, SimType, WPILIB_WS_URL, worker } from "./WPILibTypes"
 
 export const simMaps = new Map<string, SimMap>()
 
@@ -12,12 +13,20 @@ export function setSimBrain(brain: WPILibBrain | undefined) {
     }
     if (simBrain) worker.getValue().postMessage({ command: "disable" })
     simBrain = brain
-    if (simBrain)
+    if (simBrain) {
+        const simMap = simMaps.get(simBrain.assemblyId)
+        if (simMap && !simMap.has(SimType.DRIVERS_STATION)) {
+            simMap.set(SimType.DRIVERS_STATION, new Map())
+        }
+        if (simBrain.brainType === "ftc") {
+            SimDriverStation.setMode(RobotSimMode.TELEOP)
+        }
         worker.getValue().postMessage({
             command: "enable",
             url: simBrain.brainType === "ftc" ? FTC_WS_URL : WPILIB_WS_URL,
             reconnect: PreferencesSystem.getUserPreference("SimAutoReconnect"),
         })
+    }
 }
 
 export function getSimBrain() {
