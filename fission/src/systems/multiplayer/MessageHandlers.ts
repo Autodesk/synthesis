@@ -138,7 +138,9 @@ function handleUpdateMessage(data: UpdateBody, peerId: string, timestamp: number
 
 function handleUpdatePhysicsBody(data: UpdatePhysicsBodyData, peerId: string, _timestamp: number) {
     // We only want to send it through the mapping if it's not a game piece we own
-    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectId) as MirabufSceneObject
+    const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectId) as MirabufSceneObject | undefined
+    if (!sceneObject) return
+
     const bodyId = sceneObject.mechanism.getBodyByNodeId(data.rigidNodeId)
     if (bodyId == null) {
         console.error(`BodyId: ${bodyId} sent by ${peerId} does not exist in bodyMap`)

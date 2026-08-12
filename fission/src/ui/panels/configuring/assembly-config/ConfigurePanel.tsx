@@ -338,16 +338,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             pendingDeletes={pendingDeletes}
                         />
 
-                        {ConfigSubPanel != null && (
-                            <ConfigSubPanel
-                                panel={panel!}
-                                selectedAssembly={selectedAssembly!}
-                                hasMadeChanges={hasMadeChanges}
-                                setDisableAccept={setDisableAccept}
-                                registerCleanupFunction={registerCleanupFunctions}
-                            />
-                        )}
-
                         {configMode === undefined &&
                             selectedAssembly !== undefined &&
                             (!selectedAssembly.isOwnObject ? (

@@ -229,7 +229,7 @@ class MultiplayerSystem {
 
     sendOngoingMatchModeInfo() {
         const matchMode = MatchMode.getInstance()
-        if (!matchMode.isMatchEnabled) return
+        if (!matchMode.isMatchEnabled()) return
 
         this.broadcast({
             type: "matchModeState",
@@ -279,13 +279,10 @@ class MultiplayerSystem {
         } else {
             this.clientToObjectMap.set(this.clientId, [objectId])
         }
-        console.warn(this.getOwnObjects())
     }
 
     registerExistingSceneObjects() {
-        console.log("testing", JSON.stringify(World.sceneRenderer.mirabufSceneObjects))
         const objects = World.sceneRenderer.mirabufSceneObjects.getAll()
-        console.warn("EXISTING", objects)
         objects.forEach(object => {
             console.warn("Checking", object.id)
             if (object.isOwnObject) {
