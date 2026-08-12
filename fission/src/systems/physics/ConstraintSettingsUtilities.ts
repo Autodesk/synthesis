@@ -6,19 +6,17 @@ import { convertMirabufVector3ToJoltRVec3, convertMirabufVector3ToJoltVec3 } fro
 
 type LimitSpecs = Omit<DOFSpecs, "friction" | "axis">
 
-// Returns a STATIC_ALIAS `RVec3.AddRVec3()`'s scratch buffer.
 export function createAnchorPoint(jointInstance: mirabuf.joint.JointInstance, jointDefinition: mirabuf.joint.Joint) {
-    const jointOrigin = jointDefinition.origin
+    const anchorPoint = jointDefinition.origin
         ? convertMirabufVector3ToJoltRVec3(jointDefinition.origin)
         : new JOLT.RVec3(0, 0, 0)
     // TODO: Offset transformation for robot builder.
     const jointOriginOffset = jointInstance.offset
-        ? convertMirabufVector3ToJoltRVec3(jointInstance.offset)
-        : new JOLT.RVec3(0, 0, 0)
+        ? convertMirabufVector3ToJoltVec3(jointInstance.offset)
+        : new JOLT.Vec3(0, 0, 0)
 
-    const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
+    anchorPoint.Add(jointOriginOffset)
 
-    JOLT.destroy(jointOrigin)
     JOLT.destroy(jointOriginOffset)
 
     return anchorPoint

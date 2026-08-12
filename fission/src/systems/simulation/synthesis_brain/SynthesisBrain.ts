@@ -197,16 +197,16 @@ class SynthesisBrain extends Brain {
         // Handle unstick
         const unstickPressed = InputSystem.getInput("unstick", this._brainIndex) === 1
         if (unstickPressed && !this._prevUnstickPressed) {
-            this.applyUnstickForce()
+            this.applyUnstickStrength()
         }
 
         this._prevUnstickPressed = unstickPressed
     }
 
     /**
-     * Applies a small upward force to the robot's main body to help unstick it
+     * Applies a small upward impulse to the robot's main body to help unstick it
      */
-    private applyUnstickForce(): void {
+    private applyUnstickStrength(): void {
         const rootBodyId = this._mechanism.getBodyByNodeId(this._mechanism.rootBody)
         if (!rootBodyId) {
             console.warn("Could not find root body for unstick")
@@ -219,9 +219,16 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        const unstickForce = new JOLT.Vec3(0, this._assembly.robotPreferences.unstickForce, 0)
-        body.AddForce(unstickForce) // CLONE
-        JOLT.destroy(unstickForce)
+        const inverseMass = body.GetMotionProperties().GetInverseMass()
+        if (inverseMass <= 0) {
+            console.warn("Root body has no mass, skipping unstick")
+            return
+        }
+
+        const mass = 1.0 / inverseMass
+        const unstickImpulse = new JOLT.Vec3(0, this._assembly.robotPreferences.unstickStrength * mass, 0)
+        body.AddImpulse(unstickImpulse) // CLONE
+        JOLT.destroy(unstickImpulse)
     }
 
     public disable(): void {

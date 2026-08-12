@@ -25,7 +25,7 @@ const WheelAssignmentDebugPanel: React.FC = () => {
         }
     }, [])
 
-    if (!import.meta.env.DEV) return <></>
+    if (!import.meta.env.DEV) return null
 
     return (
         <Stack
