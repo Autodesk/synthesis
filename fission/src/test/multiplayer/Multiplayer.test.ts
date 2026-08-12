@@ -1,8 +1,8 @@
-import { afterEach, beforeAll, describe, expect, test, vi, afterAll } from "vitest"
+import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from "vitest"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import World from "@/systems/World.ts"
 import { mockConsole } from "@/test/mocks/Common.ts"
-import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
+import { MultiplayerWorker } from "@/systems/multiplayer/MultiplayerWorkerWrapper.ts"
 
 const HOST = "wss://localhost:2610/"
 
@@ -44,18 +44,18 @@ describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", (
     })
 
     test("Multiplayer clients connect to each other", async () => {
-        const ws = new MultiplayerWebsocket(HOST)
+        const ws = new MultiplayerWorker(HOST)
         await new Promise<void>((resolve, reject) => {
             ws.onOpen = () => {
                 resolve()
             }
-            ws.onClose = err => {
-                reject(err)
+            ws.onClose = () => {
+                reject("closed")
             }
         })
         expect(ws.ready).toBe(true)
 
-        await MultiplayerSystem.setup(MultiplayerWebsocket.init(null, "User", ws), "User", true)
+        await MultiplayerSystem.setup(ws.init(null, "User"), "User", true)
 
         expect(multiplayer).toBeDefined()
         expect(multiplayer?.roomId).toBeDefined()
@@ -63,18 +63,18 @@ describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", (
 })
 
 async function setUpClient(roomId: null | string, name: string) {
-    const ws = new MultiplayerWebsocket(HOST)
+    const ws = new MultiplayerWorker(HOST)
     await new Promise<void>((resolve, reject) => {
         ws.onOpen = () => {
             resolve()
         }
-        ws.onClose = err => {
-            reject(err)
+        ws.onClose = () => {
+            reject("closed")
         }
     })
     expect(ws.ready).toBe(true)
 
-    const success = await MultiplayerSystem.setup(MultiplayerWebsocket.init(roomId, name, ws), name, false)
+    const success = await MultiplayerSystem.setup(ws.init(roomId, name), name, false)
     expect(success).toBe(true)
     return ws
 }

@@ -13,7 +13,12 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeId, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import {
+    GAMEPIECE_SUFFIX,
+    GROUNDED_JOINT_ID,
+    type RigidNodeId,
+    type RigidNodeReadOnly,
+} from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { Message } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -46,6 +51,8 @@ import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import type { PhysicsBodyData, UpdatePhysicsBodyData } from "../multiplayer/MultiplayerMessageTypes.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
+
+const MULTIPLAYER_FREQUENCY = 2 // Send update packets every n frames
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -1627,7 +1634,8 @@ class PhysicsSystem extends WorldSystem {
                 }
             }
 
-            World.multiplayerSystem.sinceLastUpdate = (World.multiplayerSystem.sinceLastUpdate + 1) % 5
+            World.multiplayerSystem.sinceLastUpdate =
+                (World.multiplayerSystem.sinceLastUpdate + 1) % MULTIPLAYER_FREQUENCY
         }
 
         this._physicsEventQueue.forEach(x => {
