@@ -4,11 +4,10 @@ use std::sync::Arc;
 
 use futures_util::{SinkExt, StreamExt};
 use tokio::net::TcpListener;
-use tokio::sync::mpsc;
 use tokio::time::{Duration, timeout};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
-use crate::logging::LogSender;
+use crate::logging::create_logging_channel;
 use crate::messaging::handle_connection;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::state::State;
@@ -18,19 +17,15 @@ const RECV_TIMEOUT: Duration = Duration::from_secs(3);
 
 /// Binds a server on a random port and returns the `ws://` URL.
 async fn spawn_server_insecure() -> String {
-    let (log_tx, _log_rx): (LogSender, _) = mpsc::channel(128);
-    let state = Arc::new(State::new(log_tx.clone()));
+    let _log_rx = create_logging_channel();
+
+    let state = Arc::new(State::new());
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = listener.local_addr().unwrap().port();
 
     tokio::spawn(async move {
         while let Ok((stream, addr)) = listener.accept().await {
-            tokio::spawn(handle_connection(
-                state.clone(),
-                stream,
-                addr,
-                log_tx.clone(),
-            ));
+            tokio::spawn(handle_connection(state.clone(), stream, addr));
         }
     });
 

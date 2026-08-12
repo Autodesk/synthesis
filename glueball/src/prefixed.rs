@@ -1,5 +1,3 @@
-use crate::EventType;
-use crate::logging::{LogDestination, LogSender};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, ReadBuf};
 
 use std::net::SocketAddr;
@@ -72,11 +70,7 @@ pub enum ConnectionStatus<S> {
     Ws(Prefixed<S>),
 }
 
-pub async fn into_prefixed_or_respond<S>(
-    mut raw_stream: S,
-    addr: SocketAddr,
-    logging_tx: LogSender,
-) -> ConnectionStatus<S>
+pub async fn into_prefixed_or_respond<S>(mut raw_stream: S, addr: SocketAddr) -> ConnectionStatus<S>
 where
     S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
 {
@@ -89,7 +83,7 @@ where
         Ok(0) => return ConnectionStatus::HungUp,
         Ok(n) => n,
         Err(e) => {
-            error_global!(logging_tx, "Failed to read from {addr}: {e}");
+            error_global!("Failed to read from {addr}: {e}");
             return ConnectionStatus::Error;
         }
     };

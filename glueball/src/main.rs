@@ -19,33 +19,30 @@ use crate::cleanup::Cleanup;
 use crate::config::retrieve_config;
 use crate::kick::setup_user_action_system;
 use crate::logging::{
-    EventType, LogDestination, LogRequest, Logger, MAX_LOG_LINES, print_global, print_room,
-    spawn_log_receiver,
+    EventType, LogDestination, LogRequest, Logger, MAX_LOG_LINES, create_logging_channel,
+    print_global, print_room, spawn_log_receiver,
 };
 use crate::messaging::handle_connection;
 use crate::state::State;
 use crate::tui::start_tui_thread;
 use crate::util::get_local_ip;
 use anyhow::{Result, bail};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock};
 use tokio::net::TcpListener;
-use tokio::sync::mpsc;
+use tokio::sync::mpsc::Sender;
 use tokio_rustls::TlsAcceptor;
+
+static LOG_TX: OnceLock<Sender<LogRequest>> = OnceLock::new();
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let _cleanup_trigger = Cleanup;
 
-    // # Parse and create defaults for the application configuration
     let config = retrieve_config()?;
 
-    // # Setup logging, state, channels and listeners, etc
+    let logging_rx = create_logging_channel();
 
-    // In my mind, this is the best way to handling an interface that could be sending message to a
-    // tui running on a different OS thread or just printing them
-    let (logging_tx, logging_rx) = mpsc::channel::<LogRequest>(MAX_LOG_LINES);
-
-    let state = Arc::new(State::new(logging_tx.clone()));
+    let state = Arc::new(State::new());
 
     let user_action_tx = setup_user_action_system(&state);
 
@@ -101,18 +98,12 @@ async fn main() -> Result<()> {
     // Run insecure server
     if !config.secure {
         info_global!(
-            logging_tx,
             "Server hosted on {local_ip} listening at port {} (insecure)",
             config.port
         );
 
         while let Ok((stream, addr)) = listener.accept().await {
-            tokio::spawn(handle_connection(
-                state.clone(),
-                stream,
-                addr,
-                logging_tx.clone(),
-            ));
+            tokio::spawn(handle_connection(state.clone(), stream, addr));
         }
 
         return Ok(());
@@ -123,7 +114,6 @@ async fn main() -> Result<()> {
     let acceptor = TlsAcceptor::from(Arc::new(tls_config));
 
     info_global!(
-        logging_tx,
         "Server hosted on {local_ip} listening at port {} (secure)",
         config.port
     );
@@ -133,12 +123,11 @@ async fn main() -> Result<()> {
         let state = state.clone();
 
         // TLS handshake happens in task to avoid being held up by a slow client
-        let logging_tx = logging_tx.clone();
         tokio::spawn(async move {
             match acceptor.accept(stream).await {
-                Ok(tls_stream) => handle_connection(state, tls_stream, addr, logging_tx).await,
+                Ok(tls_stream) => handle_connection(state, tls_stream, addr).await,
                 Err(e) => {
-                    error_global!(logging_tx, "Secure connection with client failed {}", e);
+                    error_global!("Secure connection with client failed {}", e);
                 }
             }
         });
