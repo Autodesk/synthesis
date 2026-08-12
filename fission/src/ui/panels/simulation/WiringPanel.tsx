@@ -414,6 +414,13 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         refreshGraph()
     }, [refreshGraph, simConfig])
 
+    const onEdgesDelete = useCallback((edges: FlowEdge[]) => {
+        edges.forEach(edge => {
+            deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
+        })
+        refreshGraph()
+    }, [refreshGraph, simConfig])
+
     return (
         <ReactFlow
             colorMode="dark"
@@ -423,6 +430,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onEdgeDoubleClick={onEdgeDoubleClick}
+            onEdgesDelete={onEdgesDelete}
             onConnect={onConnect}
             onConnectEnd={onConnectEnd}
             nodeTypes={nodeTypes}
@@ -430,7 +438,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo reset={reset ?? (() => {})} />
+            <FlowInfo reset={reset ?? (() => { })} />
         </ReactFlow>
     )
 }
