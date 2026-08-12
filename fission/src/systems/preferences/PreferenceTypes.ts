@@ -4,10 +4,6 @@ import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { InputScheme } from "../input/InputTypes"
 import type { SimConfigData } from "../simulation/SimConfigShared"
 
-export const SCOREBOARD_MODES = ["auto", "on", "off"] as const
-
-export type ScoreboardMode = (typeof SCOREBOARD_MODES)[number]
-
 /** Names of all global preferences. */
 
 export type UserPreferences = {
@@ -23,7 +19,7 @@ export type UserPreferences = {
     RenderProtectedZones: boolean
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
-    ScoreboardMode: ScoreboardMode
+    AlwaysShowScoreboard: boolean
     SubsystemGravity: boolean
     TouchControls: boolean
     SimAutoReconnect: boolean
@@ -67,7 +63,7 @@ export function defaultUserPreferences(): UserPreferences {
         RenderProtectedZones: true,
         InputSchemes: [],
         RenderSceneTags: true,
-        ScoreboardMode: "auto",
+        AlwaysShowScoreboard: true,
         SubsystemGravity: false,
         TouchControls: false,
         SimAutoReconnect: false,

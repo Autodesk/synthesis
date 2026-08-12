@@ -2,6 +2,7 @@
 
 exports[`Preferences System Global Values > Clearing preferences > default user preferences 1`] = `
 {
+  "AlwaysShowScoreboard": true,
   "InputSchemes": [],
   "MultiplayerClientID": "",
   "MultiplayerUsername": "",
@@ -14,7 +15,6 @@ exports[`Preferences System Global Values > Clearing preferences > default user 
   "SFXVolume": 25,
   "ScenePanSensitivity": 1,
   "SceneRotationSensitivity": 0.5,
-  "ScoreboardMode": "auto",
   "ShowCenterOfMassIndicators": false,
   "ShowViewCube": true,
   "SimAutoReconnect": false,
@@ -29,6 +29,7 @@ exports[`Preferences System Global Values > Clearing preferences > default user 
 
 exports[`Preferences System Global Values > Reset to default if undefined > default user preferences 1`] = `
 {
+  "AlwaysShowScoreboard": true,
   "InputSchemes": [],
   "MultiplayerClientID": "",
   "MultiplayerUsername": "",
@@ -41,7 +42,6 @@ exports[`Preferences System Global Values > Reset to default if undefined > defa
   "SFXVolume": 25,
   "ScenePanSensitivity": 1,
   "SceneRotationSensitivity": 0.5,
-  "ScoreboardMode": "auto",
   "ShowCenterOfMassIndicators": false,
   "ShowViewCube": true,
   "SimAutoReconnect": false,
@@ -56,6 +56,7 @@ exports[`Preferences System Global Values > Reset to default if undefined > defa
 
 exports[`Preferences System Global Values > Setting without saving > default user preferences 1`] = `
 {
+  "AlwaysShowScoreboard": true,
   "InputSchemes": [],
   "MultiplayerClientID": "",
   "MultiplayerUsername": "",
@@ -68,7 +69,6 @@ exports[`Preferences System Global Values > Setting without saving > default use
   "SFXVolume": 25,
   "ScenePanSensitivity": 1,
   "SceneRotationSensitivity": 0.5,
-  "ScoreboardMode": "auto",
   "ShowCenterOfMassIndicators": false,
   "ShowViewCube": true,
   "SimAutoReconnect": false,

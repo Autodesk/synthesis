@@ -1,40 +1,39 @@
 import { Box, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback } from "react"
-import type { ScoreboardMode } from "@/systems/preferences/PreferenceTypes"
+import { useEffect, useState } from "react"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { nextScoreboardMode, SCOREBOARD_GLYPH_SX, useScoreboard } from "@/ui/helpers/ScoreboardVisibility"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import MultiplayerStartModal from "@/ui/modals/MultiplayerStartModal"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
+import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 
-const SCOREBOARD_TOOLTIPS: Record<ScoreboardMode, string> = {
-    auto: "Scoreboard: auto (shown in gameplay only)",
-    on: "Scoreboard: always on",
-    off: "Scoreboard: always off",
-}
+const ScoreboardButton: React.FC = () => {
+    const [alwaysOn, setAlwaysOn] = useState(() => PreferencesSystem.getUserPreference("AlwaysShowScoreboard"))
 
-const MATCH_OVERRIDE_TOOLTIP = "Scoreboard: shown while a match is running"
+    useEffect(
+        () => PreferencesSystem.addPreferenceEventListener("AlwaysShowScoreboard", e => setAlwaysOn(e.prefValue)),
+        []
+    )
 
-const ScoreboardModeButton: React.FC = () => {
-    const { mode, visible, overriddenByMatch, setMode } = useScoreboard()
-
-    const ScoreboardGlyph = visible ? SynthesisIcons.SCOREBOARD : SynthesisIcons.SCOREBOARD_HIDDEN
-    const nextMode = nextScoreboardMode(mode)
-    const cycleMode = useCallback(() => setMode(nextMode), [setMode, nextMode])
+    const toggleAlwaysOn = () => {
+        PreferencesSystem.setUserPreference("AlwaysShowScoreboard", !alwaysOn)
+        PreferencesSystem.savePreferences()
+    }
 
     return (
         <TopBarButton
-            label={overriddenByMatch ? MATCH_OVERRIDE_TOOLTIP : SCOREBOARD_TOOLTIPS[mode]}
+            label={alwaysOn ? "Scoreboard: Always On" : "Scoreboard: Only During Matches"}
+            active={alwaysOn}
             icon={
-                <Box sx={overriddenByMatch ? SCOREBOARD_GLYPH_SX.on : SCOREBOARD_GLYPH_SX[mode]}>
-                    <ScoreboardGlyph />
+                <Box sx={TOP_BAR_GLYPH_SX}>
+                    <SynthesisIcons.SCOREBOARD />
                 </Box>
             }
-            onClick={cycleMode}
+            onClick={toggleAlwaysOn}
         />
     )
 }
@@ -58,7 +57,7 @@ const GameplayControls: React.FC = () => {
                 icon={<TopBarIcon name="gp-multiplayer" size={30} />}
                 onClick={openMultiplayer}
             />
-            <ScoreboardModeButton />
+            <ScoreboardButton />
         </Stack>
     )
 }

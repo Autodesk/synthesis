@@ -204,6 +204,11 @@ const GeneralTab: React.FC = () => (
             />
             <GeneralTabCheckbox preference="RenderSceneTags" label="Show Scene Tags" tooltip="Name tags above robot." />
             <GeneralTabCheckbox
+                preference="AlwaysShowScoreboard"
+                label="Always Show Scoreboard"
+                tooltip="If disabled, the scoreboard is only shown while a match is running."
+            />
+            <GeneralTabCheckbox
                 preference="ShowCenterOfMassIndicators"
                 label="Show Centers of Mass"
                 tooltip="Show a purple dot to indicate the center of mass of each robot in frame"
