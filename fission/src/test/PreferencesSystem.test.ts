@@ -5,6 +5,8 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     defaultFieldPreferences,
     defaultUserPreferences,
+    MAX_UNSTICK_STRENGTH,
+    MIN_UNSTICK_STRENGTH,
     type FieldPreferences,
     type GraphicsPreferences,
     type RobotPreferences,
@@ -125,7 +127,7 @@ describe("Preference System Robot/Field", () => {
             cameras: [],
             driveVelocity: 3,
             driveAcceleration: 6,
-            unstickForce: 8000,
+            unstickStrength: MAX_UNSTICK_STRENGTH,
         }
         const robotPreferences2: RobotPreferences = {
             inputsSchemes: [],
@@ -147,7 +149,7 @@ describe("Preference System Robot/Field", () => {
             cameras: [],
             driveVelocity: 1.5,
             driveAcceleration: 8,
-            unstickForce: 10000,
+            unstickStrength: MIN_UNSTICK_STRENGTH,
         }
 
         PreferencesSystem.setRobotPreferences("RobotPreferences1", robotPreferences1)
