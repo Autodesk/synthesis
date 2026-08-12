@@ -1,6 +1,7 @@
 mod cert;
 mod cleanup;
 mod config;
+mod connection;
 #[macro_use]
 mod logging;
 mod kick;
@@ -17,19 +18,19 @@ mod util;
 use crate::cert::build_tls_config;
 use crate::cleanup::Cleanup;
 use crate::config::retrieve_config;
+use crate::connection::handle_connection;
 use crate::kick::setup_user_action_system;
 use crate::logging::{
     EventType, LogDestination, LogRequest, Logger, MAX_LOG_LINES, create_logging_channel,
     print_global, print_room, spawn_log_receiver,
 };
-use crate::messaging::handle_connection;
 use crate::state::State;
 use crate::tui::start_tui_thread;
 use crate::util::get_local_ip;
 use anyhow::{Result, bail};
 use std::sync::{Arc, Mutex, OnceLock};
 use tokio::net::TcpListener;
-use tokio::sync::mpsc::Sender;
+use tokio::sync::mpsc::{self, Sender};
 use tokio_rustls::TlsAcceptor;
 
 static LOG_TX: OnceLock<Sender<LogRequest>> = OnceLock::new();
@@ -44,49 +45,15 @@ async fn main() -> Result<()> {
 
     let state = Arc::new(State::new());
 
-    let user_action_tx = setup_user_action_system(&state);
-
     if config.headless {
-        // Read the logging channel and immediantly print result
-        let print_to_terminal =
-            move |message: String, kind: EventType, log_destination: LogDestination| {
-                match log_destination {
-                    LogDestination::Global => print_global(&message, &kind),
-                    LogDestination::Room(id) => print_room(&message, &kind, &id),
-                    // This can be a no-op, because no room is ever created,
-                    // as the logger isn't used
-                    LogDestination::RemoveRoom(_) => {}
-                }
-            };
-
-        spawn_log_receiver(logging_rx, print_to_terminal);
+        setup_cli_logging(logging_rx);
     } else {
-        // Only use the `logger` in tui mode
-        // `logger` will be jointly owned by the main thread and the tui thread
-        // Tokio tasks will pass their log messages down the logging channel
-        // instead of having to take a lock to log
-        let logger = Arc::new(Mutex::new(Logger::new(MAX_LOG_LINES)));
-
-        start_tui_thread(&state, user_action_tx, logger.clone());
-
-        // Read the logging channel and write every message to the `logger`
-        let send_to_logger =
-            move |message: String, kind: EventType, log_destination: LogDestination| {
-                match log_destination {
-                    LogDestination::Global => lock!(logger).push_global(message, kind),
-                    LogDestination::Room(id) => lock!(logger).push_room(message, kind, id),
-                    LogDestination::RemoveRoom(id) => lock!(logger).remove_room(&id),
-                }
-            };
-
-        spawn_log_receiver(logging_rx, send_to_logger);
+        setup_tui_with_logger(&state, logging_rx);
     }
 
     if let Some(room_id) = config.permanent_room {
         state.new_permanent_room(room_id);
     }
-
-    // # Setup socket listener
 
     // `listener` will be used regardless of the security level specified
     let Ok(listener) = TcpListener::bind(format!("0.0.0.0:{}", config.port)).await else {
@@ -134,4 +101,44 @@ async fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+fn setup_cli_logging(logging_rx: mpsc::Receiver<LogRequest>) {
+    // Read the logging channel and immediantly print result
+    let print_to_terminal =
+        move |message: String, kind: EventType, log_destination: LogDestination| {
+            match log_destination {
+                LogDestination::Global => print_global(&message, &kind),
+                LogDestination::Room(id) => print_room(&message, &kind, &id),
+                // This can be a no-op, because no room is ever created,
+                // as the logger isn't used
+                LogDestination::RemoveRoom(_) => {}
+            }
+        };
+
+    spawn_log_receiver(logging_rx, print_to_terminal);
+}
+
+fn setup_tui_with_logger(state: &Arc<State>, logging_rx: mpsc::Receiver<LogRequest>) {
+    // Only use the `logger` in tui mode
+    // `logger` will be jointly owned by the main thread and the tui thread
+    // Tokio tasks will pass their log messages down the logging channel
+    // instead of having to take a lock to log
+    let logger = Arc::new(Mutex::new(Logger::new(MAX_LOG_LINES)));
+
+    let user_action_tx = setup_user_action_system(state);
+
+    start_tui_thread(state, user_action_tx, logger.clone());
+
+    // Read the logging channel and write every message to the `logger`
+    let send_to_logger =
+        move |message: String, kind: EventType, log_destination: LogDestination| {
+            match log_destination {
+                LogDestination::Global => lock!(logger).push_global(message, kind),
+                LogDestination::Room(id) => lock!(logger).push_room(message, kind, id),
+                LogDestination::RemoveRoom(id) => lock!(logger).remove_room(&id),
+            }
+        };
+
+    spawn_log_receiver(logging_rx, send_to_logger);
 }
