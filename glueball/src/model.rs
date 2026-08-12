@@ -1,4 +1,4 @@
-use crate::state::RoomId;
+use crate::room::RoomId;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, ts_rs::TS)]

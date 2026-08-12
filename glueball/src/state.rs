@@ -1,12 +1,14 @@
 use crate::model::RoomInfo;
+use crate::room::{Client, ClientId, ClientSender, Room, RoomId, RoomStatus};
 
-use anyhow::{Result, bail};
+use anyhow::Result;
 use dashmap::DashMap;
 use dashmap::mapref::one::{Ref, RefMut};
 use rand::RngExt;
-use tokio::sync::mpsc::{self};
-use tokio_tungstenite::tungstenite::Message;
 use uuid::Uuid;
+
+pub type ClientMap = DashMap<ClientId, RoomId>;
+pub type RoomMap = DashMap<RoomId, Room>;
 
 /// Maximum number of log lines retained in each log (both per-room and system logs)
 /// Oldest lines are dropped once the buffer is full.
@@ -52,12 +54,7 @@ impl State {
         host_tx: ClientSender,
     ) -> Result<(ClientId, RoomId)> {
         let host_id = Uuid::new_v4();
-        let room = Room {
-            members: vec![Client::new(host_id, host_name.clone(), host_tx)],
-            host: Some(host_id),
-            locked: false,
-            permanent: false,
-        };
+        let room = Room::new_with_host(&host_id, &host_name, host_tx);
 
         let room_id = loop {
             let code = generate_6_digit_code();
@@ -264,92 +261,6 @@ fn generate_6_digit_code() -> String {
     }
 
     code
-}
-
-pub type ClientId = Uuid;
-pub type ClientMap = DashMap<ClientId, RoomId>;
-
-pub type ClientSender = mpsc::Sender<Message>;
-
-pub type RoomId = String;
-pub type RoomMap = DashMap<RoomId, Room>;
-
-#[derive(PartialEq, Eq)]
-pub enum RoomStatus {
-    Closed,
-    Open,
-}
-
-pub struct Room {
-    /// A list of each connected client and their write channel
-    members: Vec<Client>,
-    /// Host (initially the creator) of the room
-    host: Option<ClientId>,
-    /// Whether new players can enter a room
-    locked: bool,
-    /// Whether the room closes when it has no players
-    permanent: bool,
-}
-
-impl Room {
-    pub fn get_client_name(&self, client_id: &ClientId) -> Result<String> {
-        let Some(client) = self.members.iter().find(|user| user.id == *client_id) else {
-            bail!("Client not in room");
-        };
-
-        Ok(client.name.clone())
-    }
-
-    pub fn get_peer_senders(&self, exclude: &ClientId) -> Vec<ClientSender> {
-        self.members
-            .iter()
-            .filter(|client| *exclude != client.id)
-            .map(|client| client.tx.clone())
-            .collect()
-    }
-
-    pub fn get_sender(&self, id: &ClientId) -> Option<ClientSender> {
-        self.members
-            .iter()
-            .find(|client| client.id == *id)
-            .map(|client| client.tx.clone())
-    }
-
-    pub fn remove_client(&mut self, client_id: &ClientId) -> RoomStatus {
-        let Some(idx) = self
-            .members
-            .iter()
-            .map(|client| client.id)
-            .position(|id| id == *client_id)
-        else {
-            warn_global!("Attempted to remove client from room they are not in");
-            return RoomStatus::Open;
-        };
-
-        self.members.remove(idx);
-
-        if Some(*client_id) == self.host {
-            match self.members.first() {
-                Some(next) => self.host = Some(next.id),
-                None if self.permanent => self.host = None,
-                None => return RoomStatus::Closed,
-            }
-        }
-
-        RoomStatus::Open
-    }
-}
-
-pub struct Client {
-    pub id: ClientId,
-    pub name: String,
-    pub tx: ClientSender,
-}
-
-impl Client {
-    const fn new(id: ClientId, name: String, tx: ClientSender) -> Self {
-        Self { id, name, tx }
-    }
 }
 
 /// An immutable, cloned view of server state for rendering.

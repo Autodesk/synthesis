@@ -5,7 +5,8 @@
 use crate::connection::handle_client_close;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::prefixed::{Prefixed, SynthesisStream};
-use crate::state::{ClientId, ClientSender, State};
+use crate::room::{ClientId, ClientSender};
+use crate::state::State;
 use crate::util::{deserialize_messagepack, server_sent_msg};
 
 use bytes::Bytes;

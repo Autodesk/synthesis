@@ -8,6 +8,7 @@ mod action;
 mod messaging;
 mod model;
 mod prefixed;
+mod room;
 mod state;
 #[cfg(test)]
 mod tests;

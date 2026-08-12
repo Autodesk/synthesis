@@ -7,7 +7,8 @@ use crate::{
     messaging::{handle_client_message, wait_for_initialization},
     model::ServerToClientMessage,
     prefixed::{ConnectionStatus, into_prefixed_or_respond},
-    state::{ClientId, State},
+    room::ClientId,
+    state::State,
     util::{server_sent_msg, trim_uuid},
     warn_global,
 };

@@ -7,7 +7,7 @@ use ratatui::{
 };
 use tokio::sync::mpsc::{self, Receiver};
 
-use crate::{LOG_TX, state::RoomId};
+use crate::{LOG_TX, room::RoomId};
 
 pub const MAX_LOG_LINES: usize = 500;
 

@@ -1,6 +1,7 @@
 use crate::{
     model::ServerToClientMessage,
-    state::{ClientId, ClientSender, RoomId, RoomStatus, State},
+    room::{ClientId, ClientSender, RoomId, RoomStatus},
+    state::State,
     util::server_sent_msg,
 };
 use rtrb::{Consumer, Producer, RingBuffer};
