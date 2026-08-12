@@ -7,7 +7,6 @@ import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
@@ -21,7 +20,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -124,9 +123,7 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useConfigurationSavedListener(saveEvent)
 
     useEffect(() => {
         if (!gizmoRef.current) {

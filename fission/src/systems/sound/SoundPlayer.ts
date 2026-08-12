@@ -8,8 +8,8 @@ import PreferencesSystem from "../preferences/PreferencesSystem"
 
 const preloadSounds = [dropdownMenuSound, clickdownSound, clickupSound, checkdownSound, checkupSound]
 type SoundEffect = {
-    onMouseDown?: () => void
-    onMouseUp?: () => void
+    onMouseDown?: (e?: MouseEvent | unknown) => void
+    onMouseUp?: (e?: MouseEvent | unknown) => void
 }
 export class SoundPlayer {
     private readonly _audioContext = new AudioContext()
@@ -107,7 +107,18 @@ export class SoundPlayer {
     }
     public dropdownSoundEffects(): SoundEffect {
         return {
-            onMouseDown: () => this.playDropdownSound(),
+            onMouseDown: e => {
+                if (
+                    typeof e == "object" &&
+                    e != null &&
+                    "target" in e &&
+                    e.target instanceof HTMLElement &&
+                    e.target.getAttribute("aria-disabled") === "true"
+                ) {
+                    return
+                }
+                void this.playDropdownSound()
+            },
         }
     }
 

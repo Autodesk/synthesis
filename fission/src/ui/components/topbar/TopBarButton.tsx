@@ -2,6 +2,7 @@ import { Tooltip } from "@mui/material"
 import type React from "react"
 import { IconButton } from "@/ui/components/StyledComponents"
 import { TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 
 type TopBarButtonProps = {
     label: string
@@ -12,7 +13,8 @@ type TopBarButtonProps = {
 
 /** component for all buttons located on topbar */
 export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disabledTooltip, onClick }) => {
-    const disabled = disabledTooltip !== undefined
+    const { blockState } = useUIContext()
+    const disabled = disabledTooltip !== undefined || blockState.blocked
 
     return (
         <Tooltip title={disabledTooltip ?? label}>

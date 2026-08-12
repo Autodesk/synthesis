@@ -71,6 +71,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 cancelText: "Remove",
                 blocking: true,
                 blockingMessage: "Finish Assembly Setup first!",
+                exclusiveGroup: "assembly-init",
             },
             {
                 onBeforeAccept: () => {
