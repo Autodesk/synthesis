@@ -24,17 +24,7 @@ CommandRegistry.get().registerCommand({
     keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
     perform: () => {
         if (MatchMode.getInstance().isMatchEnabled()) {
-            if (World.multiplayerSystem) {
-                World.multiplayerSystem.broadcast({
-                    type: "matchModeState",
-                    data: {
-                        event: "cancel",
-                    },
-                })
-            }
-
-            MatchMode.getInstance().sandboxModeStart()
-            globalAddToast("info", "Match Mode Cancelled")
+            MatchMode.getInstance().abort()
         } else {
             import("@/ui/panels/configuring/MatchModeConfigPanel").then(m => {
                 globalOpenPanel(m.default, undefined)
@@ -53,7 +43,7 @@ class MatchMode {
         EventSystem.dispatch("MatchStateChangedEvent", { mode: val })
     }
 
-    private _startTime: number = 0
+    private _startTime: number | null = null
     private _timeUsed: number = 0
     private _intervalId: number | null = null
     private _cancelHandler: (() => void) | null = null
@@ -97,12 +87,13 @@ class MatchMode {
     async runForNext(duration: number, updateTimeLeft: boolean = true) {
         if (this._intervalId !== null) {
             console.warn("Timer already running")
+            return
         }
 
         // Dispatch an event to update the time left in the UI
         if (updateTimeLeft) EventSystem.dispatch("TimeChangedEvent", { time: duration })
         this._intervalId = window.setInterval(() => {
-            const timeElapsed = (Date.now() - this._startTime - this._timeUsed) / 1000
+            const timeElapsed = (Date.now() - this._startTime! - this._timeUsed) / 1000
             const timeLeft = duration - timeElapsed
 
             if (timeLeft >= 0 && updateTimeLeft) {
@@ -119,15 +110,19 @@ class MatchMode {
             }
         }, 100)
 
-        const remainingTime = this._startTime + this._timeUsed - Date.now() + duration * 1000
+        const remainingTime = this._startTime! + this._timeUsed - Date.now() + duration * 1000
+
         return new Promise((res, reject) => {
             setTimeout(res, remainingTime)
             this._cancelHandler = () => reject("Cancelled")
-        }).finally(() => {
-            this._timeUsed += duration * 1000
-            clearInterval(this._intervalId as number)
-            this._intervalId = null
         })
+            .then(() => {
+                this._timeUsed += duration * 1000
+            })
+            .finally(() => {
+                clearInterval(this._intervalId as number)
+                this._intervalId = null
+            })
     }
 
     autonomousModeStart() {
@@ -166,6 +161,11 @@ class MatchMode {
         if (this._resultsModalId) {
             globalCloseModal(CloseType.ACCEPT, this._resultsModalId)
             this._resultsModalId = null
+        }
+
+        if (this._startTime !== null) {
+            globalAddToast("warning", "Match mode already active")
+            return
         }
 
         if (broadcast && World.multiplayerSystem) {
@@ -215,12 +215,25 @@ class MatchMode {
 
     reset() {
         clearInterval(this._intervalId as number)
-        this._startTime = 0
+        this._startTime = null
         this._timeUsed = 0
         this._endgame = false
         this._cancelHandler?.()
         EventSystem.dispatch("TimeChangedEvent", { time: 0 })
         World.scoreTracker.resetScores()
+    }
+
+    abort(broadcast: boolean = true) {
+        if (broadcast) {
+            World.multiplayerSystem?.broadcast({
+                type: "matchModeState",
+                data: {
+                    event: "cancel",
+                },
+            })
+        }
+        globalAddToast("info", "Match Mode Cancelled")
+        this.sandboxModeStart()
     }
     sandboxModeStart() {
         this.setMatchModeType(MatchModeType.SANDBOX)

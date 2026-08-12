@@ -236,7 +236,7 @@ class MultiplayerSystem {
             data: {
                 event: "ongoing",
                 config: matchMode.matchModeConfig,
-                startTime: this.toServerTime(matchMode.startTime),
+                startTime: this.toServerTime(matchMode.startTime!),
             },
         })
     }

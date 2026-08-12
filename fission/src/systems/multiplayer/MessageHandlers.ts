@@ -64,8 +64,7 @@ async function handleMatchModeStateMessage(data: MatchModeStateBody) {
             break
         }
         case "cancel": {
-            matchMode.sandboxModeStart()
-            globalAddToast("info", "Match Mode Cancelled")
+            matchMode.abort(false)
             break
         }
     }
