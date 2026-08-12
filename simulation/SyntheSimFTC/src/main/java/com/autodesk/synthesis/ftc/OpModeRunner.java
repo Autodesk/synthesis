@@ -146,9 +146,11 @@ public class OpModeRunner {
         }
 
         private com.qualcomm.robotcore.hardware.HardwareDevice createDevice(Class<?> requestedType, String deviceName) {
-            // Widen this as the shim grows past DcMotorSimple (Servo, CRServo, IMU, ...).
             if (requestedType.isAssignableFrom(SynthesisDcMotor.class)) {
                 return new SynthesisDcMotor(deviceName, bridge);
+            }
+            if (requestedType.isAssignableFrom(SynthesisServo.class)) {
+                return new SynthesisServo(deviceName, bridge);
             }
 
             return null;
