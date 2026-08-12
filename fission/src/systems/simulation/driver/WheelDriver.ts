@@ -87,7 +87,6 @@ class WheelDriver extends Driver {
 
     private get _targetVelocity() {
         let vel = this.accelerationDirection * (this.reversed ? -1 : 1) * this.maxVelocity
-        console.log(this.reversed)
         if (vel - this._prevVel < -this.maxAcceleration) vel = this._prevVel - this.maxAcceleration
         if (vel - this._prevVel > this.maxAcceleration) vel = this._prevVel + this.maxAcceleration
 

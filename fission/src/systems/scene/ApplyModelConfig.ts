@@ -20,7 +20,7 @@ export async function applyModelConfigChanges(): Promise<boolean> {
 
     const sceneObject = World.wheelAssignmentMode.sceneObject ?? World.partDeletionMode.sceneObject
     if (sceneObject == null) {
-        console.warn("Missing part handler", World.wheelAssignmentMode.sceneObject, World.partDeletionMode.sceneObject)
+        console.warn("Missing part handler")
         return false
     }
     const sceneId = sceneObject.id

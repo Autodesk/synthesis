@@ -130,7 +130,7 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
                     size={"medium"}
                     sx={{ px: 4, flex: "auto" }}
                     onClick={() => {
-                        ;() => closePanel(panel!.id, CloseType.CANCEL)
+                        closePanel(panel!.id, CloseType.CANCEL)
                     }}
                 >
                     Abort

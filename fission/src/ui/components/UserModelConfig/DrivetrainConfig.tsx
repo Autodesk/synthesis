@@ -20,7 +20,6 @@ const DrivetrainConfig: React.FC<SubpanelProps> = ({ sceneObject, pauseRef }) =>
         }
 
         for (const driver of sceneObject.brain.getWheelDrivers()) {
-            console.log(`drive reversed ${driver}`, newDriveReversed)
             driver.reversed = newDriveReversed
         }
 
