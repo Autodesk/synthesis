@@ -9,13 +9,14 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import type { ConfigurationType } from "../ConfigTypes"
 import type { ConfigurePanelCustomProps } from "../ConfigurePanel"
 import EventSystem from "@/systems/EventSystem.ts"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 interface AssemblySelectionProps {
     configurationType: ConfigurationType
     onAssemblySelected: (assembly?: MirabufSceneObject) => void
     selectedAssembly?: MirabufSceneObject
     onStageDelete: (opt: SelectMenuOption) => void
-    pendingDeletes: number[]
+    pendingDeletes: SceneObjectId[]
 }
 
 export class AssemblySelectionOption extends SelectMenuOption {
@@ -80,7 +81,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
     return (
         <SelectMenu
             options={options}
-            onOptionSelected={val => onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)}
+            onOptionSelected={val => onAssemblySelected(val?.assemblyObject)}
             defaultHeaderText={`Select a ${configurationType === "ROBOTS" ? "Robot" : "Field"}`}
             onDelete={val => {
                 onStageDelete(val)
@@ -88,7 +89,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
             }}
             onAddClicked={() => {
                 // Save current configuration first, then open Spawn panel next tick
-                closePanel(panel!.id, CloseType.Accept)
+                closePanel(panel!.id, CloseType.ACCEPT)
                 setTimeout(() => openPanel(ImportMirabufPanel, { configurationType }), 0)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}

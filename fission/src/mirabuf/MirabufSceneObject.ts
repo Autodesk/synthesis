@@ -1,13 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
-import type {
-    FieldConfiguration,
-    LocalSceneObjectId,
-    RemoteSceneObjectId,
-    RobotConfiguration,
-    UpdateObjectData,
-} from "@/systems/multiplayer/types"
+import type { FieldConfiguration, RobotConfiguration, UpdateObjectData } from "@/systems/multiplayer/types"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
@@ -19,6 +13,7 @@ import {
     defaultFieldPreferences,
     defaultFieldSpawnLocation,
     defaultRobotPreferences,
+    type CameraPreferences,
     type EjectorPreferences,
     type FieldPreferences,
     type IntakePreferences,
@@ -38,7 +33,7 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
 import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
@@ -47,6 +42,7 @@ import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import CameraPreviewPanel from "@/ui/panels/simulation/CameraPreviewPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -61,12 +57,13 @@ import FieldMiraEditor from "./FieldMiraEditor"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import MirabufInstance from "./MirabufInstance"
 import MirabufCachingService, { MiraType } from "./MirabufLoader"
+import RobotCameraSceneObject from "./RobotCameraSceneObject"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import InputSystem from "@/systems/input/InputSystem.ts"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const DEBUG_BODIES = false
 
@@ -81,7 +78,7 @@ interface RnDebugMeshes {
  * last spawned in, however, systems (such as the configuration UI) can elect
  * assemblies to be in the spotlight when moving from interface to interface.
  */
-let spotlightAssembly: number | undefined
+let spotlightAssembly: SceneObjectId | undefined
 
 export function setSpotlightAssembly(assembly: MirabufSceneObject) {
     spotlightAssembly = assembly.id
@@ -89,7 +86,9 @@ export function setSpotlightAssembly(assembly: MirabufSceneObject) {
 
 // TODO: If nothing is in the spotlight, select last entry before defaulting to undefined
 export function getSpotlightAssembly(): MirabufSceneObject | undefined {
-    return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
+    return spotlightAssembly != null
+        ? (World.sceneRenderer.sceneObjects.get(spotlightAssembly) as MirabufSceneObject)
+        : undefined
 }
 
 type MinMax = { min: number; max: number }
@@ -115,6 +114,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _ejectables: EjectableSceneObject[] = []
     private _intakeSensor?: IntakeSensorSceneObject
+    private _cameras: RobotCameraSceneObject[] = []
     private _scoringZones: ScoringZoneSceneObject[] = []
     private _protectedZones: ProtectedZoneSceneObject[] = []
 
@@ -125,7 +125,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public intakeActive = false
     public ejectorActive = false
 
-    private multiplayerOwningClientId?: string
+    private _multiplayerOwningClientId?: string
 
     private _lastEjectableToastTime = 0
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
@@ -160,9 +160,20 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.robotPreferences.ejector = val
     }
 
+    public get cameraPreferences(): CameraPreferences[] {
+        return this.robotPreferences.cameras
+    }
+    public set cameraPreferences(val: CameraPreferences[]) {
+        this.robotPreferences.cameras = val
+    }
+
+    public get cameras(): Readonly<RobotCameraSceneObject[]> {
+        return this._cameras
+    }
+
     public get multiplayerOwnerName(): string | undefined {
-        if (this.multiplayerOwningClientId == null) return undefined
-        return World.multiplayerSystem?._clientToInfoMap?.get(this.multiplayerOwningClientId)?.displayName
+        if (this._multiplayerOwningClientId == null) return undefined
+        return World.multiplayerSystem?._clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
     }
 
     get simConfigData() {
@@ -178,7 +189,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     get isOwnObject() {
-        return this.multiplayerOwningClientId == undefined
+        return this._multiplayerOwningClientId == undefined
     }
 
     public get activeEjectables(): Jolt.BodyID[] {
@@ -204,7 +215,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get descriptiveName(): string {
-        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? InputSystem.brainIndexSchemeMap.get((this.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}] ` : ""}${this.assemblyName}`
+        return `${this.miraType === MiraType.ROBOT ? `[${this.multiplayerOwnerName ?? (this.brain instanceof SynthesisBrain ? this.brain.inputSchemeName : "Magic")}] ` : ""}${this.assemblyName}`
     }
 
     public get assemblyName() {
@@ -218,7 +229,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public constructor(mirabufInstance: MirabufInstance, progressHandle?: ProgressHandle, multiplayerOwnerId?: string) {
         super()
         this.mirabufInstance = mirabufInstance
-        this.multiplayerOwningClientId = multiplayerOwnerId
+        this._multiplayerOwningClientId = multiplayerOwnerId
         this.loadPreferences()
 
         progressHandle?.update("Creating scene object...", 0.9)
@@ -233,11 +244,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._nameTag = new SceneOverlayTag(() => {
                 const name =
                     this.nameOverride ??
-                    (this._brain instanceof SynthesisBrain
+                    (this._brain?.isSynthesis()
                         ? this._brain.inputSchemeName
-                        : this._brain instanceof WPILibBrain
+                        : this._brain?.isWPILib()
                           ? "Magic"
-                          : "Not Configured")
+                          : "Not Configured!")
                 if (World.multiplayerSystem != null) {
                     return `${name} (${this.alliance === "red" ? "R" : this.alliance === "blue" ? "B" : "..."}${this.station ?? ""})`
                 }
@@ -311,6 +322,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._brain = new SynthesisBrain(this)
             simLayer.setBrain(this._brain)
         }
+
+        // Intake
+        this.updateIntakeSensor()
+        this.updateCameras()
+        this.updateScoringZones()
+        this.updateProtectedZones()
 
         if (this.isOwnObject) {
             setSpotlightAssembly(this)
@@ -399,14 +416,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         )
 
         const yUnitVec = new JOLT.Vec3(0, 1, 0)
-        const initialRotation = JOLT.Quat.prototype.sRotation(yUnitVec, initialPos.yaw)
+        const initialRotation = JOLT.Quat.prototype.sRotation(yUnitVec, initialPos.yaw) // STATIC_ALIAS
 
         const blankVec = new JOLT.Vec3()
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
             const jBodyId = this.mechanism.getBodyByNodeId(rn.id)
             if (!jBodyId) return
 
-            const position = World.physicsSystem.getBody(jBodyId)!.GetPosition()
+            const position = World.physicsSystem.getBody(jBodyId)!.GetPosition() // STATIC_ALIAS
             const offset = convertJoltRVec3ToJoltVec3(position.Sub(bodyCenter))
 
             World.physicsSystem.setBodyPositionRotationAndVelocity(
@@ -418,7 +435,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 false
             )
 
-            JOLT.destroy(position)
             JOLT.destroy(offset)
         })
 
@@ -426,7 +442,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         JOLT.destroy(bodyCenter)
         JOLT.destroy(initialTranslation)
-        JOLT.destroy(initialRotation)
         JOLT.destroy(yUnitVec)
         JOLT.destroy(blankVec)
     }
@@ -444,7 +459,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public dispose(): void {
         this.mirabufInstance.dispose(World.sceneRenderer.scene)
 
-        if (this._brain && this._brain instanceof SynthesisBrain) {
+        if (this._unrotatedRootNodeToCenterPositionTranslation) {
+            JOLT.destroy(this._unrotatedRootNodeToCenterPositionTranslation)
+            this._unrotatedRootNodeToCenterPositionTranslation = undefined
+        }
+
+        if (this._brain?.isSynthesis()) {
             this._brain.clearControls()
         }
 
@@ -465,6 +485,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             World.sceneRenderer.removeSceneObject(this._intakeSensor.id)
             this._intakeSensor = undefined
         }
+
+        this._cameras.forEach(c => World.sceneRenderer.removeSceneObject(c.id))
+        this._cameras = []
+
+        EventSystem.dispatch("RobotCamerasChangeEvent")
 
         this._scoringZones.forEach(zone => World.sceneRenderer.removeSceneObject(zone.id))
         this._scoringZones.length = 0
@@ -523,7 +548,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * Matches mesh transforms to their Jolt counterparts.
      */
     public updateMeshTransforms() {
-        let weightedCOM = new JOLT.RVec3(0, 0, 0)
+        const weightedCom = new THREE.Vector3()
         let totalMass = 0
 
         // If this.dispose() has been ran then return
@@ -533,18 +558,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 const body = World.physicsSystem.getBody(bodyId)
                 if (!body) return
 
-                const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+                const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()) // STATIC_ALIAS
                 this.updateNodeParts(rn, transform)
 
-                const position = body.GetPosition()
+                const position = body.GetPosition() // STATIC_ALIAS
                 if (Number.isNaN(position.GetX())) {
-                    const vel = body.GetLinearVelocity()
+                    const vel = body.GetLinearVelocity() // STATIC_ALIAS
                     console.warn(
                         `Invalid Position.\nPosition => ${position.GetX()}, ${position.GetY()}, ${position.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
                     )
-
-                    JOLT.destroy(vel)
-                    JOLT.destroy(position)
                 }
 
                 if (this._debugBodies) {
@@ -562,32 +584,24 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     const inverseMass = body.GetMotionProperties().GetInverseMass()
 
                     if (inverseMass > 0) {
-                        const oldWeighedCOM = weightedCOM
-
                         const mass = 1 / inverseMass
-                        const com = body.GetCenterOfMassPosition().Mul(mass)
+                        const comPosition = body.GetCenterOfMassPosition() // STATIC_ALIAS
 
-                        weightedCOM = weightedCOM.AddRVec3(com)
+                        weightedCom.addScaledVector(convertJoltVec3ToThreeVector3(comPosition, false), mass)
                         totalMass += mass
-
-                        JOLT.destroy(oldWeighedCOM)
-                        JOLT.destroy(com)
                     }
                 }
             })
         }
 
         if (this._centerOfMassIndicator) {
-            const setPositionAndVisibility = (netCoM: Jolt.RVec3) => {
-                this._centerOfMassIndicator!.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
-                this._centerOfMassIndicator!.visible = PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")
+            if (totalMass > 0) {
+                weightedCom.divideScalar(totalMass)
             }
 
-            const com = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
-            setPositionAndVisibility(com)
+            this._centerOfMassIndicator.position.copy(weightedCom)
+            this._centerOfMassIndicator.visible = PreferencesSystem.getUserPreference("ShowCenterOfMassIndicators")
         }
-
-        JOLT.destroy(weightedCOM)
     }
 
     public updateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
@@ -642,6 +656,21 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._intakeSensor = new IntakeSensorSceneObject(this)
             World.sceneRenderer.registerSceneObject(this._intakeSensor)
         }
+    }
+
+    public updateCameras() {
+        this._cameras.forEach(c => World.sceneRenderer.removeSceneObject(c.id))
+        this._cameras = []
+
+        if (this.miraType !== MiraType.ROBOT) return
+
+        this._cameras = this.cameraPreferences?.map(camPref => {
+            const camera = new RobotCameraSceneObject(this, camPref)
+            World.sceneRenderer.registerSceneObject(camera)
+            return camera
+        })
+
+        EventSystem.dispatch("RobotCamerasChangeEvent")
     }
 
     public setIntakeVisualIndicatorVisible(visible: boolean) {
@@ -710,7 +739,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     private removeSceneObjects(objs: SceneObject[]) {
-        objs.filter(obj => obj.id != -1).forEach(obj => World.sceneRenderer.removeSceneObject(obj.id))
+        objs.forEach(obj => World.sceneRenderer.removeSceneObject(obj.id))
         objs.length = 0
     }
 
@@ -722,7 +751,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (zoneObject == null) return
 
         World.sceneRenderer.removeSceneObject(zoneObject.id)
-        zoneObject.id = -1
     }
 
     public removeProtectedZoneObject(zone: ProtectedZonePreferences) {
@@ -733,7 +761,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (zoneObject == null) return
 
         World.sceneRenderer.removeSceneObject(zoneObject.id)
-        zoneObject.id = -1
     }
 
     /**
@@ -792,9 +819,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         const inverseRotation = this.getInverseRotationOfBody()
 
-        const biggest = JOLT.AABox.prototype.sBiggest()
+        const biggest = JOLT.AABox.prototype.sBiggest() // STATIC_ALIAS
         const scale = new JOLT.Vec3(1, 1, 1)
-        const identity = JOLT.Quat.prototype.sIdentity()
+        const identity = JOLT.Quat.prototype.sIdentity() // STATIC_ALIAS
 
         this.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
             const bodyId = this.mechanism.getBodyByNodeId(rigidNode.id)
@@ -848,8 +875,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         JOLT.destroy(inverseRotation)
 
         JOLT.destroy(scale)
-        JOLT.destroy(biggest)
-        JOLT.destroy(identity)
 
         const mins = [this._furthestVertices.x.min, this._furthestVertices.y.min, this._furthestVertices.z.min]
         const maxes = [this._furthestVertices.x.max, this._furthestVertices.y.max, this._furthestVertices.z.max]
@@ -902,11 +927,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         // Finally, we just offset the root node to get the true center
         const position = convertJoltRVec3ToJoltVec3(rootBody.GetPosition().Add(offset))
-        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position)
+        const transform = JOLT.Mat44.prototype.sRotationTranslation(rotation, position) // STATIC_ALIAS
 
         const orientedBoundingBox = new JOLT.OrientedBox(transform, halfExtent)
 
-        JOLT.destroy(transform)
+        JOLT.destroy(offset)
+        JOLT.destroy(position)
         JOLT.destroy(halfExtent)
 
         return orientedBoundingBox
@@ -950,9 +976,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
             const shape = body.GetShape()
             const scale = new JOLT.Vec3(1, 1, 1)
-            const biggest = JOLT.AABox.prototype.sBiggest()
-
-            const identity = JOLT.Quat.prototype.sIdentity()
+            const biggest = JOLT.AABox.prototype.sBiggest() // STATIC_ALIAS
+            const identity = JOLT.Quat.prototype.sIdentity() // STATIC_ALIAS
             const triangleContext = new JOLT.ShapeGetTriangles(shape, biggest, shape.GetCenterOfMass(), identity, scale)
 
             try {
@@ -973,8 +998,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             } finally {
                 JOLT.destroy(triangleContext)
                 JOLT.destroy(scale)
-                JOLT.destroy(biggest)
-                JOLT.destroy(identity)
             }
         })
 
@@ -1025,7 +1048,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         await World.multiplayerSystem.broadcast({
             type: "configureObject",
             data: {
-                sceneObjectKey: this.id as RemoteSceneObjectId,
+                sceneObjectKey: this.id,
                 objectConfigurationData: data,
             },
         })
@@ -1128,6 +1151,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.updateScoringZones()
         this.updateProtectedZones()
         this.updateIntakeSensor()
+        this.updateCameras()
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {
@@ -1137,8 +1161,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public enablePhysics() {
-        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id as LocalSceneObjectId)) {
-            World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id as RemoteSceneObjectId })
+        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
+            World.multiplayerSystem.broadcast({ type: "enableObjectPhysics", data: this.id })
         }
 
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
@@ -1148,8 +1172,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public disablePhysics() {
-        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id as LocalSceneObjectId)) {
-            World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id as RemoteSceneObjectId })
+        if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
+            World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id })
         }
 
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
@@ -1163,8 +1187,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return rootBody.IsActive() && !rootBody.IsSensor()
     }
 
-    public getRootNodeId(): Jolt.BodyID | undefined {
+    public getRootNodeId(): Jolt.BodyID {
         return this.mechanism.getBodyByNodeId(this.mechanism.rootBody)!
+    }
+
+    public getRootBody(): Jolt.Body {
+        return World.physicsSystem.getBody(this.getRootNodeId())!
     }
 
     public loadFocusTransform(mat: THREE.Matrix4) {
@@ -1193,9 +1221,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private addRobotCameraMenuItems(data: ContextData, cameraControls: CustomTargetControls) {
         const modes = [
-            { mode: CameraMode.Follow, name: "Camera: Follow Robot" },
-            { mode: CameraMode.Locked, name: "Camera: Lock to Robot" },
-            { mode: CameraMode.Face, name: "Camera: Face Robot" },
+            { mode: CameraMode.FOLLOW, name: "Camera: Follow Robot" },
+            { mode: CameraMode.LOCKED, name: "Camera: Lock to Robot" },
+            { mode: CameraMode.FACE, name: "Camera: Face Robot" },
         ]
 
         modes
@@ -1212,7 +1240,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public getSupplierData(): ContextData {
         const data: ContextData = {
-            title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
+            title: this.miraType == MiraType.ROBOT ? `${this.descriptiveName}` : "Field",
             items: [],
         }
 
@@ -1244,6 +1272,17 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 name: "Auto Testing",
                 screen: AutoTestPanel,
                 type: "panel",
+            })
+        }
+
+        if (this.miraType === MiraType.ROBOT && this._cameras.length > 0) {
+            data.items.push({
+                name: "Camera Preview",
+                screen: CameraPreviewPanel,
+                type: "panel",
+                customProps: {
+                    selectedAssembly: this,
+                },
             })
         }
 
@@ -1339,7 +1378,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             .filter(n => n != null)
 
         return {
-            sceneObjectKey: this.id as RemoteSceneObjectId,
+            sceneObjectKey: this.id,
             gamePiecesControlled,
             bodies,
         }
