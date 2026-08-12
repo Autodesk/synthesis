@@ -8,8 +8,8 @@ import type { MultiplayerInitProps } from "@/modals/multiplayer/MultiplayerStart
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import { withTimeout } from "@/util/Utility.ts"
 import type { RoomInfo } from "@/systems/multiplayer/bindings/RoomInfo.ts"
-import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld.ts"
+import { MultiplayerWorker } from "@/systems/multiplayer/MultiplayerWorkerWrapper.ts"
 
 interface RoomModalProps {
     initialRoomList: RoomInfo[]
@@ -22,7 +22,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
     const [name, setName] = useState<string>(PreferencesSystem.getUserPreference("MultiplayerUsername"))
     const [roomList, setRoomList] = useState(initialRoomList)
     const [updatingRoomList, setUpdatingRoomList] = useState(false)
-    const wsRef = useRef<MultiplayerWebsocket | null>(null)
+    const wsRef = useRef<MultiplayerWorker | null>(null)
     const usernameRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
@@ -46,7 +46,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
         return withTimeout(
             new Promise(resolve => {
                 if (wsRef.current == null) {
-                    wsRef.current = new MultiplayerWebsocket(url)
+                    wsRef.current = new MultiplayerWorker(url)
                     wsRef.current.onOpen = () => {
                         wsRef.current!.sendServer({ type: "requestrooms" })
                     }
@@ -82,7 +82,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ initialRoomList, url, onBack }) =
 
             return {
                 displayName: name,
-                ws: MultiplayerWebsocket.init(room ?? null, name, wsRef.current ?? new MultiplayerWebsocket(url)),
+                ws: (wsRef.current ?? new MultiplayerWorker(url)).init(room ?? null, name),
                 isHost: room == undefined,
                 keepAssets: keepAssets ?? false,
             }

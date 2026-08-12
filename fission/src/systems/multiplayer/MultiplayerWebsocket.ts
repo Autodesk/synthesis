@@ -32,11 +32,18 @@ class MultiplayerWebsocket {
         return this._ws.readyState === WebSocket.OPEN
     }
 
+    public get url() {
+        return this._ws.url
+    }
+
+    public readonly addEventListener: typeof WebSocket.prototype.addEventListener
+
     constructor(url: string) {
         this._ws = new WebSocket(url)
+        this.addEventListener = this._ws.addEventListener.bind(this._ws)
         console.log("Connecting to", url)
         this._ws.onopen = e => {
-            console.info("Opened")
+            console.info("Opened", this.onOpen)
             if (this.onOpen) {
                 this.onOpen.bind(this)(e)
             }
@@ -71,22 +78,22 @@ class MultiplayerWebsocket {
         }
     }
 
-    public static init(roomId: string | null, displayName: string, ws: MultiplayerWebsocket): MultiplayerWebsocket {
+    public init(roomId: string | null, displayName: string): MultiplayerWebsocket {
         const initialMessage: ClientToServerMessage = {
             type: "initializeconnection",
             room_id: roomId,
             name: displayName,
         }
 
-        if (ws._ws.readyState == WebSocket.OPEN) {
-            ws.sendServer(initialMessage)
+        if (this._ws.readyState == WebSocket.OPEN) {
+            this.sendServer(initialMessage)
         } else {
-            ws.onOpen = () => {
-                ws.sendServer(initialMessage)
+            this.onOpen = () => {
+                this.sendServer(initialMessage)
             }
         }
 
-        return ws
+        return this
     }
 
     private send(prefix: number, msg: MessageWithTimestamp | ClientToServerMessage): void {

@@ -7,11 +7,11 @@ import type { ClientAndLatencyInfo, ClientInfo, Message, MessageWithTimestamp } 
 import EventSystem from "@/systems/EventSystem.ts"
 import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
 import { consolePrefixer } from "console-prefixer"
-import type MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 import { hashBuffer } from "@/util/Utility.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import MatchMode from "../match_mode/MatchMode.ts"
+import type { MultiplayerWorker } from "@/systems/multiplayer/MultiplayerWorkerWrapper.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -24,7 +24,7 @@ export const multiplayerLogger = consolePrefixer({
 const console = multiplayerLogger
 
 class MultiplayerSystem {
-    public readonly client: MultiplayerWebsocket
+    public readonly client: MultiplayerWorker
     public roomId: string = ""
     public clientId: string = ""
     private _initializationPromise: Promise<boolean>
@@ -47,7 +47,7 @@ class MultiplayerSystem {
 
     public sinceLastUpdate = 0
 
-    public static async setup(ws: MultiplayerWebsocket, displayName: string, isHost: boolean): Promise<boolean> {
+    public static async setup(ws: MultiplayerWorker, displayName: string, isHost: boolean): Promise<boolean> {
         MatchMode.getInstance().sandboxModeStart()
 
         console.group("Multiplayer initialization")
@@ -61,10 +61,9 @@ class MultiplayerSystem {
         return initResult
     }
 
-    private constructor(ws: MultiplayerWebsocket, displayName: string, isHost: boolean) {
+    private constructor(ws: MultiplayerWorker, displayName: string, isHost: boolean) {
         this.isHost = isHost
         this.client = ws
-
         this.client.onError = () => {
             globalAddToast("warning", "Multiplayer error")
         }
