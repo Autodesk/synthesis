@@ -8,6 +8,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import { createZoneMaterial } from "@/mirabuf/ZoneSceneObject"
 import World from "@/systems/World"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -72,18 +73,8 @@ export type ZoneConfigBaseProps<TZone extends BaseZonePreferences> = {
     children?: React.ReactNode
 }
 
-const DEFAULT_RED_MATERIAL = new THREE.MeshPhongMaterial({
-    color: 0xed1c24,
-    shininess: 0.0,
-    opacity: 0.7,
-    transparent: true,
-})
-const DEFAULT_BLUE_MATERIAL = new THREE.MeshPhongMaterial({
-    color: 0x0066b3,
-    shininess: 0.0,
-    opacity: 0.7,
-    transparent: true,
-})
+const DEFAULT_RED_MATERIAL = createZoneMaterial(0xed1c24, 0.7)
+const DEFAULT_BLUE_MATERIAL = createZoneMaterial(0x0066b3, 0.7)
 
 function computeDeltaFromGizmo(
     field: MirabufSceneObject,
