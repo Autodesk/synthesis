@@ -1,9 +1,8 @@
-//! Message delivery for the `WebTransport` wire protocol.
+//! This module is responsible for all `WebTransport` network I/O
 //!
 //! A message on the wire is unchanged from the `WebSocket` protocol: a single
 //! [`MessagePrefix`](crate::model::MessagePrefix) byte followed by a
-//! `MessagePack` body. What changes is how one message is delimited from the
-//! next.
+//! `MessagePack` body.
 //!
 //! * Every message travelling over a stream gets its own unidirectional stream.
 //!   The sender writes the payload and finishes the stream; that finish *is* the
@@ -46,7 +45,7 @@ pub async fn read_message(mut read: RecvStream) -> Result<Bytes> {
     // A `None` read is the peer finishing the stream, which ends the message
     while let Some(count) = read.read(&mut chunk).await? {
         if payload.len() + count > MAX_MESSAGE_SIZE {
-            bail!("message exceeds the {MAX_MESSAGE_SIZE} byte limit");
+            bail!("Message exceeds the {MAX_MESSAGE_SIZE} byte limit");
         }
 
         payload.extend_from_slice(&chunk[..count]);
@@ -59,7 +58,7 @@ pub async fn read_message(mut read: RecvStream) -> Result<Bytes> {
 ///
 /// The stream is finished before returning, because an unfinished stream leaves
 /// the client waiting for a boundary that never arrives.
-pub async fn write_message(connection: &Connection, payload: &[u8]) -> Result<()> {
+pub async fn send_message(connection: &Connection, payload: &[u8]) -> Result<()> {
     let mut write = connection.open_uni().await?.await?;
 
     write.write_all(payload).await?;

@@ -1,6 +1,18 @@
 //! Module for handling all connections with a client
 //! Heavily utilizes methods from the `messaging` module
 
+use crate::messaging::{
+    CLOSED_BY_SERVER, accept_message, handle_client_close, handle_client_message_datagram,
+    handle_client_message_stream, handle_first_message, handle_room_list_request,
+};
+use crate::model::{ClientToServerMessage, ServerToClientMessage};
+use crate::state::{ClientId, ClientSender};
+use crate::util::{server_sent_msg, trim_uuid};
+use crate::wire::send_message;
+use crate::{
+    config::build_server_config, error_global, info_global, state::State, util::get_local_ip,
+    warn_global, wire::Outbound,
+};
 use anyhow::{Result, bail};
 use futures_util::never::Never;
 use std::net::SocketAddr;
@@ -12,19 +24,6 @@ use tokio::{
 };
 use wtransport::error::SendDatagramError;
 use wtransport::{Connection, Endpoint, Identity, endpoint::IncomingSession};
-
-use crate::messaging::{
-    CLOSED_BY_SERVER, accept_message, handle_client_close, handle_client_message_datagram,
-    handle_client_message_stream, handle_first_message, handle_room_list_request,
-};
-use crate::model::{ClientToServerMessage, ServerToClientMessage};
-use crate::state::{ClientId, ClientSender};
-use crate::util::{server_sent_msg, trim_uuid};
-use crate::wire::write_message;
-use crate::{
-    config::build_server_config, error_global, info_global, state::State, util::get_local_ip,
-    warn_global, wire::Outbound,
-};
 
 /// How long to wait for a client's next message before assuming it is gone.
 /// Clients ping every five seconds, so a silent client is a dead one even while
@@ -62,8 +61,9 @@ pub async fn spawn_webtransport_responder(
 }
 
 /// Completes the `WebTransport` handshake for an incoming QUIC connection
+///
 /// Then hands the session to [`handle_connection`].
-async fn accept_incoming_session(state: Arc<State>, session: IncomingSession) {
+pub async fn accept_incoming_session(state: Arc<State>, session: IncomingSession) {
     let addr = session.remote_address();
 
     let request = match session.await {
@@ -103,7 +103,7 @@ async fn handle_connection(state: Arc<State>, connection: Connection, addr: Sock
     };
 
     spawn_client_sink(connection.clone(), rx);
-    spawn_datagram_reader(connection.clone(), state.clone(), client_id);
+    spawn_datagram_listener(connection.clone(), state.clone(), client_id);
 
     // Listen for and pass along meskesages to other client channels in the same room
     loop {
@@ -161,7 +161,7 @@ async fn wait_for_initialization(
                     client_id: client_id.to_string(),
                 });
 
-                if write_message(connection, &message).await.is_err() {
+                if send_message(connection, &message).await.is_err() {
                     error_global!("Failed to send back initial response");
 
                     return None;
@@ -179,6 +179,8 @@ async fn wait_for_initialization(
     }
 }
 
+/// Client sink passes all messages from `rx` down the client's `connection`,
+/// back to the client machine.
 fn spawn_client_sink(connection: Connection, mut rx: Receiver<Outbound>) {
     tokio::spawn(async move {
         // Undeliverable datagrams come in floods rather than one at a time, so the
@@ -188,7 +190,7 @@ fn spawn_client_sink(connection: Connection, mut rx: Receiver<Outbound>) {
         while let Some(message) = rx.recv().await {
             match message {
                 Outbound::Stream(payload) => {
-                    if write_message(&connection, &payload).await.is_err() {
+                    if send_message(&connection, &payload).await.is_err() {
                         break;
                     }
                 }
@@ -225,7 +227,7 @@ fn spawn_client_sink(connection: Connection, mut rx: Receiver<Outbound>) {
 }
 
 /// Reads datagrams, extracting their payload and sending them to [`handle_client_message`]
-fn spawn_datagram_reader(connection: Connection, state: Arc<State>, client_id: ClientId) {
+fn spawn_datagram_listener(connection: Connection, state: Arc<State>, client_id: ClientId) {
     tokio::spawn(async move {
         while let Ok(datagram) = connection.receive_datagram().await {
             handle_client_message_datagram(datagram.payload(), &state, &client_id).await;

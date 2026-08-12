@@ -1,7 +1,8 @@
 //! A minimal HTTP/1.1 responder sharing the server's port over TCP.
 //!
-//! `WebTransport` is carried over QUIC, which is UDP, so nothing here touches
-//! game traffic — the TCP half of the port would otherwise sit unused. Its job is
+//! `WebTransport` is carried over QUIC, which is UDP.
+//!
+//! The TCP half of the port would otherwise sit unused. Its job is
 //! to answer the plain HTTP requests a browser makes before it connects:
 //!
 //! * `GET /cert` returns this server's certificate digests as JSON, which a
@@ -9,9 +10,11 @@
 //! * Anything else gets a short body, so hitting the port in a browser says
 //!   something useful instead of hanging.
 //!
-//! Responses are plain HTTP rather than HTTPS on purpose: serving them over TLS
-//! with the very certificate the client is trying to learn about would be
-//! circular. Browsers treat `localhost` and `127.0.0.1` as trustworthy origins,
+//! Responses are plain HTTP rather than HTTPS on purpose:
+//! serving them over TLS with the very certificate the client
+//! is trying to learn about would be circular!
+//!
+//! Browsers treat `localhost` and `127.0.0.1` as trustworthy origins,
 //! so mixed-content rules do not block this for the local servers it exists for.
 
 use crate::model::CertificateHashes;

@@ -3,17 +3,16 @@
 use std::sync::Arc;
 
 use bytes::Bytes;
-use tokio::sync::mpsc;
 use tokio::time::{Duration, timeout};
 use wtransport::{ClientConfig, Connection, Endpoint, Identity, ServerConfig, VarInt};
 
+use crate::connection::accept_incoming_session;
 use crate::kick::{UserAction, setup_user_action_system};
-use crate::logging::LogSender;
-use crate::messaging::handle_session;
+use crate::logging::create_logging_channel;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::state::State;
 use crate::util::{deserialize_messagepack, serialize_and_prefix};
-use crate::wire::{read_message, write_message};
+use crate::wire::{read_message, send_message};
 
 const RECV_TIMEOUT: Duration = Duration::from_secs(3);
 
@@ -27,8 +26,9 @@ async fn spawn_server() -> (String, wtransport::tls::Sha256Digest) {
 /// As [`spawn_server`], but also hands back the server's state so a test can act
 /// on it the way the TUI does.
 async fn spawn_server_with_state() -> (String, wtransport::tls::Sha256Digest, Arc<State>) {
-    let (log_tx, _log_rx): (LogSender, _) = mpsc::channel(128);
-    let state = Arc::new(State::new(log_tx.clone()));
+    let _log_rx = create_logging_channel();
+
+    let state = Arc::new(State::new());
 
     let identity = Identity::self_signed(["localhost", "127.0.0.1", "::1"]).unwrap();
     let hash = identity.certificate_chain().as_slice()[0].hash();
@@ -45,11 +45,7 @@ async fn spawn_server_with_state() -> (String, wtransport::tls::Sha256Digest, Ar
     tokio::spawn(async move {
         loop {
             let session = endpoint.accept().await;
-            tokio::spawn(handle_session(
-                accept_state.clone(),
-                session,
-                log_tx.clone(),
-            ));
+            tokio::spawn(accept_incoming_session(accept_state.clone(), session));
         }
     });
 
@@ -82,11 +78,11 @@ impl TestClient {
 
     async fn send_server(&self, message: ClientToServerMessage) {
         let payload = serialize_and_prefix(message, MessagePrefix::Server);
-        write_message(&self.connection, &payload).await.unwrap();
+        send_message(&self.connection, &payload).await.unwrap();
     }
 
     async fn send_peer_stream(&self, payload: &[u8]) {
-        write_message(&self.connection, payload).await.unwrap();
+        send_message(&self.connection, payload).await.unwrap();
     }
 
     fn send_peer_datagram(&self, payload: &[u8]) {
@@ -145,7 +141,9 @@ async fn request_rooms_returns_empty_list() {
     let (url, hash) = spawn_server().await;
     let client = TestClient::connect(&url, hash).await;
 
-    client.send_server(ClientToServerMessage::RequestRooms).await;
+    client
+        .send_server(ClientToServerMessage::RequestRooms)
+        .await;
 
     let ServerToClientMessage::RoomList { rooms } = client.recv_server().await else {
         panic!("Expected RoomList");

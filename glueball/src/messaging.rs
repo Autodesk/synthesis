@@ -2,7 +2,7 @@ use crate::connection::TIMEOUT;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::state::{ClientId, ClientSender, State};
 use crate::util::{deserialize_messagepack, server_sent_msg, trim_uuid};
-use crate::wire::{Outbound, read_message, write_message};
+use crate::wire::{Outbound, read_message, send_message};
 
 use anyhow::{Result, bail};
 use bytes::Bytes;
@@ -71,7 +71,7 @@ pub async fn handle_room_list_request(state: &Arc<State>, connection: &Connectio
         rooms: state.list_rooms(),
     });
 
-    let _ = write_message(connection, &message).await;
+    let _ = send_message(connection, &message).await;
 }
 
 pub async fn handle_client_message_datagram(

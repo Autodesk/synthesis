@@ -33,6 +33,8 @@ use std::sync::{Arc, Mutex, OnceLock};
 use tokio::sync::mpsc::{Receiver, Sender};
 
 /// Please copy out of this once lock when you want to log
+/// This variable is a once lock instead of a lazy lock because we want to return more than one
+/// thing from the [`create_logging_channel`] function and so want it called in our main function.
 static LOG_TX: OnceLock<Sender<LogRequest>> = OnceLock::new();
 
 #[tokio::main]
@@ -65,25 +67,14 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-fn setup_cli_logging(logging_rx: Receiver<LogRequest>) {
-    // Read the logging channel and immediantly print result
-    let print_to_terminal =
-        move |message: String, kind: EventType, log_destination: LogDestination| {
-            match log_destination {
-                LogDestination::Global => print_global(&message, &kind),
-                LogDestination::Room(id) => print_room(&message, &kind, &id),
-                // This can be a no-op, because no room is ever created,
-                // as the logger isn't used
-                LogDestination::RemoveRoom(_) => {}
-            }
-        };
-
-    spawn_log_receiver(logging_rx, print_to_terminal);
-}
+// The reason these functions are in the main module is because `setup_tui_with_logger` touches
+// two different systems and `setup_cli_logging`, despite only affecting logging, is the former
+// function's counterpart, and thus I believe it is clearer to have them on the same (top) level.
 
 fn setup_tui_with_logger(state: &Arc<State>, logging_rx: Receiver<LogRequest>) {
     // Only use the `logger` in tui mode
     // `logger` will be jointly owned by the main thread and the tui thread
+    //
     // Tokio tasks will pass their log messages down the logging channel
     // instead of having to take a lock to log
     let logger = Arc::new(Mutex::new(Logger::new(MAX_LOG_LINES)));
@@ -102,4 +93,20 @@ fn setup_tui_with_logger(state: &Arc<State>, logging_rx: Receiver<LogRequest>) {
         };
 
     spawn_log_receiver(logging_rx, send_to_logger);
+}
+
+fn setup_cli_logging(logging_rx: Receiver<LogRequest>) {
+    // Read the logging channel and immediantly print result
+    let print_to_terminal =
+        move |message: String, kind: EventType, log_destination: LogDestination| {
+            match log_destination {
+                LogDestination::Global => print_global(&message, &kind),
+                LogDestination::Room(id) => print_room(&message, &kind, &id),
+                // This can be a no-op, because no room is ever created,
+                // as the logger isn't used
+                LogDestination::RemoveRoom(_) => {}
+            }
+        };
+
+    spawn_log_receiver(logging_rx, print_to_terminal);
 }
