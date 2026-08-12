@@ -13,8 +13,8 @@
 //! DISCLAIMER: This system is sort of a mess
 //! WARNING: Do not call any methods on state, you should pass messages down channels instead
 
+use crate::action::UserAction;
 use crate::cleanup::set_panic_hook_to_cleanup_terminal;
-use crate::kick::UserAction;
 use crate::lock;
 use crate::logging::{self, LogSnapshot, Logger, RoomLogs};
 use crate::state::{ClientId, RoomId, RoomSnapshot, Snapshot, State};

@@ -4,7 +4,7 @@ mod config;
 mod connection;
 #[macro_use]
 mod logging;
-mod kick;
+mod action;
 mod messaging;
 mod model;
 mod prefixed;
@@ -15,11 +15,11 @@ mod tui;
 #[macro_use]
 mod util;
 
+use crate::action::setup_user_action_system;
 use crate::cert::build_tls_config;
 use crate::cleanup::Cleanup;
 use crate::config::retrieve_config;
 use crate::connection::handle_connection;
-use crate::kick::setup_user_action_system;
 use crate::logging::{
     EventType, LogDestination, LogRequest, Logger, MAX_LOG_LINES, create_logging_channel,
     print_global, print_room, spawn_log_receiver,
