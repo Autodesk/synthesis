@@ -7,14 +7,10 @@ import type { SimConfigData } from "../simulation/SimConfigShared"
 /** Names of all global preferences. */
 
 export type UserPreferences = {
-    ZoomSensitivity: number
-    PitchSensitivity: number
-    YawSensitivity: number
     SceneRotationSensitivity: number
     ScenePanSensitivity: number
     ViewCubeRotationSensitivity: number
     ReportAnalytics: boolean
-    UseMetric: boolean
     RenderScoringZones: boolean
     RenderProtectedZones: boolean
     InputSchemes: InputScheme[]
@@ -51,14 +47,10 @@ export type Preferences = {
  */
 export function defaultUserPreferences(): UserPreferences {
     return {
-        ZoomSensitivity: 15,
-        PitchSensitivity: 10,
-        YawSensitivity: 3,
         SceneRotationSensitivity: 0.5,
         ScenePanSensitivity: 1.0,
         ViewCubeRotationSensitivity: 0.025,
         ReportAnalytics: false,
-        UseMetric: false,
         RenderScoringZones: true,
         RenderProtectedZones: true,
         InputSchemes: [],
