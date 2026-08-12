@@ -8,6 +8,8 @@ import type {
 } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage"
+import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage"
 
 export interface MessageType {
     info: InfoBody
@@ -30,6 +32,30 @@ export interface MessageType {
     latencyInfo: LatencyInfoBody
     matchModeState: MatchModeStateBody
     matchModePenalty: MatchModePenaltyBody
+}
+
+type MessageKeys = keyof MessageType | ServerToClientMessage["type"] | ClientToServerMessage["type"]
+export const shouldLog: { [K in MessageKeys]: boolean } = {
+    collision: false,
+    configureObject: true,
+    deleteObject: true,
+    disableObjectPhysics: true,
+    enableObjectPhysics: true,
+    initializeconnection: true,
+    kick: true,
+    latencyInfo: false,
+    matchModePenalty: true,
+    matchModeState: true,
+    needAssembly: true,
+    newObject: true,
+    ping: false,
+    pong: false,
+    requestrooms: true,
+    roomlist: true,
+    sendinfo: true,
+    update: false,
+    updatePhysicsBody: false,
+    info: true,
 }
 
 export interface InfoBody {

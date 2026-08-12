@@ -136,7 +136,6 @@ class MultiplayerSystem {
     }
 
     async handleServerMessage(message: ServerToClientMessage) {
-        console.debug(`Incoming server message ${message.type}`)
         switch (message.type) {
             case "sendinfo":
                 this.roomId = message.room_id
@@ -171,9 +170,6 @@ class MultiplayerSystem {
         if (message.recipientId != null && message.recipientId != this.clientId) {
             console.info("Ignoring message for", message.recipientId)
             return
-        }
-        if (message.type != "update") {
-            console.info(`Receiving Message ${message.type}`, message)
         }
 
         const handler = peerMessageHandlers[message.type].bind(this) as (
@@ -210,7 +206,6 @@ class MultiplayerSystem {
             },
             peerID
         )
-        console.warn("INTRODUCING SELF", this.getOwnObjects())
         for (const obj of this.getOwnObjects()) {
             this.send(
                 {

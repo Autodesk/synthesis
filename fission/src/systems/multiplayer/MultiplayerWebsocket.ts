@@ -1,8 +1,9 @@
 import { consolePrefixer } from "console-prefixer"
 import type { MessageWithTimestamp } from "@/systems/multiplayer/MultiplayerTypes.ts"
-import { Encoder, Decoder } from "@msgpack/msgpack"
+import { Decoder, Encoder } from "@msgpack/msgpack"
 import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
 import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
+import { shouldLog } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
 
 const CLIENT_PREFIX = 0b00000001
 const SERVER_PREFIX = 0b00000011
@@ -59,7 +60,9 @@ class MultiplayerWebsocket {
             const data = msg.slice(1).stream()
             const decoded = (await this._decoder.decodeAsync(data)) as ServerToClientMessage | MessageWithTimestamp
             const isServer = headerByte == SERVER_PREFIX
-            if (decoded.type != "update") console.debug("Recieving", isServer ? "server" : "client", decoded)
+            if (shouldLog[decoded.type]) {
+                console.debug("Receiving", isServer ? "server" : "client", decoded)
+            }
             if (isServer) {
                 this.onServerMessage?.(decoded as ServerToClientMessage)
             } else {
@@ -87,7 +90,9 @@ class MultiplayerWebsocket {
     }
 
     private send(prefix: number, msg: MessageWithTimestamp | ClientToServerMessage): void {
-        if (msg.type != "update") console.debug("Sending", msg)
+        if (shouldLog[msg.type]) {
+            console.debug("Sending", msg)
+        }
         const encoded = this._encoder.encodeSharedRef(msg)
         this._prefixBuf[0] = prefix
         return this._ws.send(new Blob([this._prefixBuf, encoded]))
