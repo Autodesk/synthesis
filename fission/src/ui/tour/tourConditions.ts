@@ -74,6 +74,7 @@ export interface TourResult {
     toast?: string
 }
 
+/** The nearest preceding step whose `advanceOn` establishes this condition. */
 function producerOf(condition: TourCondition, before: number): number | undefined {
     for (let i = before - 1; i >= 0; i--) {
         const advanceOn = TOUR_STEPS[i].advanceOn
@@ -87,6 +88,11 @@ function countFor(stepIndex: number, snapshot: TourSnapshot): number | undefined
     return condition ? CONDITIONS[condition].count?.(snapshot) : undefined
 }
 
+/**
+ * given the current step and the progress of the simulator, returns what step the user should be on.
+ *
+ * Used for rewinding in the event of a user being outside the tour and advancing when step condition met
+ */
 export function reconcile(stepIndex: number, snapshot: TourSnapshot, previous: TourRuntime): TourResult {
     const step = TOUR_STEPS[stepIndex]
 

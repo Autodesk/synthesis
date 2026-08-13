@@ -11,6 +11,10 @@ import {
 import World from "@/systems/World"
 import { unzipMira } from "@/util/Utility"
 
+/**
+ * wire tag protobuf has for thumbnails
+ * derived so renumbering the schema can't desync from the generated code
+ */
 const ASSEMBLY_THUMBNAIL_TAG = Reader.create(
     mirabuf.Assembly.encode(new mirabuf.Assembly({ thumbnail: new mirabuf.Thumbnail() })).finish()
 ).uint32()

@@ -15,6 +15,8 @@ const SCRIM_COLOR = "rgba(0,0,0,0.5)"
 // Gap from the top bar / viewport edge for an anchorless card that is pinned to a corner.
 const SCREEN_EDGE_GAP = 12
 const SPOTLIGHT_PAD = 6
+
+// after step changes we remeasure points. Anchors can move without resizing because of MUI stuff / panels
 const SETTLE_DELAYS = [0, 100, 250, 450]
 
 /** Fixed-position style for an anchorless card, keyed by its {@link ScreenPosition}. */

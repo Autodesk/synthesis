@@ -33,7 +33,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
     useHoldPhysicsPause()
 
-    // bug: pressing 'enter' will open the library modal. Instead, we focus on this panel
+    // The Add Assembly button keeps DOM focus after spawning, so Enter would reopen the Library.
     useEffect(() => {
         if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
     }, [])
