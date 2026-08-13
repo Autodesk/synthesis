@@ -4,12 +4,11 @@ import { useEffect, useState } from "react"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
-import MultiplayerStartModal from "@/ui/modals/MultiplayerStartModal"
-import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { TOP_BAR_GLYPH_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
+import MultiplayerStartModal from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 
 export const ScoreboardButton: React.FC = () => {
     const [alwaysOn, setAlwaysOn] = useState(() => PreferencesSystem.getUserPreference("AlwaysShowScoreboard"))
@@ -43,7 +42,7 @@ const GameplayControls: React.FC = () => {
 
     const openMatchMode = () => togglePanel(MatchModeConfigPanel, undefined)
 
-    const openMultiplayer = () => openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
+    const openMultiplayer = () => openModal(MultiplayerStartModal, undefined)
 
     return (
         <Stack direction="row" alignItems="center" gap={1.5}>

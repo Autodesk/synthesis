@@ -10,9 +10,7 @@ import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
-    const { configureButtons, openConfig } = useConfigureAssembly(selectedAssembly)
-
-    const disabledTooltip = selectedAssembly ? undefined : "Spawn an assembly first"
+    const { configureButtons, openConfig, disabledMessage } = useConfigureAssembly(selectedAssembly)
 
     const items: CollapsibleItem[] = useMemo(
         () =>
@@ -22,12 +20,12 @@ const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = (
                     <TopBarButton
                         label={label}
                         icon={<ConfigureIcon icon={icon} size={30} />}
-                        disabledTooltip={disabledTooltip}
+                        disabledTooltip={disabledMessage}
                         onClick={() => openConfig(mode)}
                     />
                 ),
             })),
-        [configureButtons, disabledTooltip, openConfig]
+        [configureButtons, disabledMessage, openConfig]
     )
 
     // TODO: add a "..." after a long robot name to ensure it isn't rendered underneath the dropdown arrow
@@ -37,7 +35,7 @@ const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = (
             always={
                 <>
                     <Box sx={TOP_BAR_DIVIDER_SX} />
-                    <ConfigureSplitDropdown selectedAssembly={selectedAssembly} />
+                    <ConfigureSplitDropdown disabledMessage={disabledMessage} selectedAssembly={selectedAssembly} />
                 </>
             }
         />

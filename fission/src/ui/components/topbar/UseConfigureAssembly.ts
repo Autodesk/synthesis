@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -34,7 +34,8 @@ export const FIELD_CONFIGURE_BUTTONS: ConfigureButton[] = [
     { icon: { sprite: "cfg-camera-positions" }, label: "Camera Positions", mode: ConfigMode.CAMERA_POINTS },
 ]
 
-const readSpawned = (): MirabufSceneObject[] => (World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getAll() : [])
+const readSpawned = (): MirabufSceneObject[] =>
+    World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getAll().filter(assembly => assembly.isOwnObject) : []
 
 /** owns spawned assembly list in topbar */
 export function useAssemblySelection() {
@@ -44,6 +45,8 @@ export function useAssemblySelection() {
     useEffect(() => {
         // `spawned` is the assembly just added / null when one removed
         const sync = (spawned?: MirabufSceneObject | null) => {
+            if (spawned != null && !spawned.isOwnObject) return
+
             const current = readSpawned()
             setAssemblies(current)
 
@@ -85,6 +88,10 @@ export function useConfigureAssembly(selectedAssembly?: MirabufSceneObject) {
                 addToast("warning", "No Assembly Selected", "Select an assembly to configure first.")
                 return
             }
+            if (!selectedAssembly.isOwnObject) {
+                addToast("warning", `This assembly belongs to ${selectedAssembly.multiplayerOwnerName}`)
+                return
+            }
             togglePanel(
                 ConfigurePanel,
                 { selectedAssembly, configMode: mode, configurationType },
@@ -95,11 +102,18 @@ export function useConfigureAssembly(selectedAssembly?: MirabufSceneObject) {
         [selectedAssembly, addToast, togglePanel, configurationType]
     )
 
+    const disabledMessage: string | undefined = useMemo(() => {
+        if (selectedAssembly == null) return "Spawn an assembly first"
+        if (!selectedAssembly.isOwnObject)
+            return `Cannot configure assembly owned by ${selectedAssembly.multiplayerOwnerName}`
+    }, [selectedAssembly])
+
     return {
         isField,
         isWpilibBrain,
         configurationType,
         configureButtons,
         openConfig,
+        disabledMessage,
     }
 }

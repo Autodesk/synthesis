@@ -24,7 +24,9 @@ export type UserPreferences = {
     SFXVolume: number
     ShowCenterOfMassIndicators: boolean
     MultiplayerUsername: string
-    MultiplayerClientID: string
+    MultiplayerPort: number
+    MultiplayerHost: string
+    MultiplayerSecure: boolean
 }
 
 export type UserPreference = keyof UserPreferences
@@ -63,10 +65,14 @@ export function defaultUserPreferences(): UserPreferences {
         MuteAllSound: false,
         SFXVolume: 25,
         ShowCenterOfMassIndicators: false,
-        MultiplayerClientID: "",
         MultiplayerUsername: "",
+        MultiplayerHost: "",
+        MultiplayerPort: DEFAULT_MULTIPLAYER_PORT,
+        MultiplayerSecure: false,
     }
 }
+
+export const DEFAULT_MULTIPLAYER_PORT = 2610
 
 export type GraphicsPreferences = {
     lightIntensity: number

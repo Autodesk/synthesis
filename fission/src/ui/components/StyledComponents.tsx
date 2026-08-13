@@ -109,6 +109,7 @@ export class SynthesisIcons {
     public static readonly CODE_CONNECTION = MdCode
     public static readonly NO_CODE_CONNECTION = MdCodeOff
     public static readonly SCOREBOARD = MdScoreboard
+    public static readonly REFRESH = BiRefresh
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })
@@ -148,13 +149,15 @@ export const Spacer: React.FC<SpacerProps> = ({ height = 0, width = 0 }) => {
     return <Box minHeight={`${height}px`} minWidth={`${width}px`} />
 }
 
-export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiButton>
-    )
-}
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    ({ children, onClick, onMouseDown, onMouseUp, ...props }, ref) => {
+        return (
+            <MuiButton ref={ref} onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+                {children}
+            </MuiButton>
+        )
+    }
+)
 
 export type IconButtonSound = "button" | "dropdown"
 
@@ -172,13 +175,15 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps & { soun
 )
 IconButton.displayName = "IconButton"
 
-export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiToggleButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiToggleButton>
-    )
-}
+export const ToggleButton = React.forwardRef<HTMLButtonElement, ToggleButtonProps>(
+    ({ children, onClick, onMouseDown, onMouseUp, ...props }, ref) => {
+        return (
+            <MuiToggleButton ref={ref} onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+                {children}
+            </MuiToggleButton>
+        )
+    }
+)
 
 export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, ...props }) => {
     // The sound is played by the individual ToggleButton that was clicked
