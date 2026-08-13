@@ -140,14 +140,14 @@ const TourCard: React.FC<TourCardProps> = ({
                     disabled={isFirst}
                     aria-label="Previous step"
                     sx={{
-                        borderRadius: "50%",
-                        p: 0.25,
-                        color: "topBarText.main",
-                        opacity: isFirst ? 0.25 : 1,
-                        "&:hover": { bgcolor: "surface.main" },
+                        ...PILL_SX,
+                        gap: 0.25,
+                        pl: 0.5,
+                        ...(isFirst && { opacity: 0.4, "&:hover": { opacity: 0.4 } }),
                     }}
                 >
-                    <MdChevronLeft size={20} />
+                    <MdChevronLeft size={14} />
+                    Back
                 </ButtonBase>
 
                 <Typography sx={{ fontSize: 11, fontWeight: 700, opacity: 0.9 }}>
