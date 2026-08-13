@@ -24,7 +24,7 @@ const MenuIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 )
 
 const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
-    const { togglePanel } = useUIContext()
+    const { togglePanel, blockState } = useUIContext()
     const { configureButtons, isField, configurationType, openConfig } = useConfigureAssembly(selectedAssembly)
 
     const menuOnlyConfigs = isField ? MENU_ONLY_CONFIGS.filter(c => c.mode !== ConfigMode.BRAIN) : MENU_ONLY_CONFIGS
@@ -46,6 +46,8 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }
 
     return (
         <SplitButtonDropdown
+            iconDisabled={blockState.blocked}
+            caretDisabled={blockState.blocked}
             icon={
                 <Box sx={{ fontSize: 22, display: "flex" }}>
                     <SynthesisIcons.GEAR />

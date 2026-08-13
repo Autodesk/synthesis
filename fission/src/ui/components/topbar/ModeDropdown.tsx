@@ -6,6 +6,7 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { Select } from "@/ui/components/StyledComponents"
 import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarIcon, type TopBarIconName } from "@/ui/components/topbar/TopBarIcons"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 
 export const MODE_ICONS: Record<AppMode, TopBarIconName> = {
     Configure: "mode-configure",
@@ -22,10 +23,11 @@ const ModeLabel: React.FC<{ mode: AppMode }> = ({ mode }) => (
 
 const ModeDropdown: React.FC<{ onOpenChange?: (open: boolean) => void }> = ({ onOpenChange }) => {
     const { appMode, setAppMode } = useStateContext()
-
+    const { blockState } = useUIContext()
     return (
         <Select
             value={appMode}
+            disabled={blockState.blocked}
             onChange={e => setAppMode(e.target.value as AppMode)}
             onOpen={() => onOpenChange?.(true)}
             onClose={() => onOpenChange?.(false)}
