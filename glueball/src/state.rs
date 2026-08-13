@@ -368,7 +368,7 @@ mod tests {
         let state = State::new();
 
         let room_id = "PERM01".to_string();
-        state.new_permanent_room(room_id.clone());
+        state.new_permanent_room(&room_id);
 
         let client_id = state
             .add_client_to_room("Alice", client_tx(), &room_id)
