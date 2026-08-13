@@ -1,11 +1,11 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { act } from "react"
 import { beforeEach, describe, expect, test } from "vitest"
 import EventSystem from "@/systems/EventSystem"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Scoreboard from "@/ui/components/Scoreboard"
-import GameplayControls from "@/ui/components/topbar/GameplayControls"
+import ScoreboardButton from "@/ui/components/topbar/ScoreboardButton"
 
 const isShown = (container: HTMLElement) => container.firstChild !== null
 
@@ -38,25 +38,29 @@ describe("Scoreboard", () => {
 })
 
 describe("ScoreboardButton", () => {
-    const button = () => within(screen.getByLabelText(/^Scoreboard:/)).getByRole("button")
+    const button = () => screen.getByRole("button")
+
+    const tooltip = () => button().parentElement?.getAttribute("aria-label")
 
     beforeEach(() => setAlwaysShow(false))
 
     test("reports the current mode and toggles the preference when clicked", async () => {
-        render(<GameplayControls />)
+        render(<ScoreboardButton />)
 
-        expect(screen.getByLabelText("Scoreboard: Only During Matches")).toBeInTheDocument()
         expect(button()).toHaveAttribute("aria-pressed", "false")
+        const matchesOnlyTooltip = tooltip()
+        expect(matchesOnlyTooltip).toBeTruthy()
 
         fireEvent.click(button())
 
         expect(PreferencesSystem.getUserPreference("AlwaysShowScoreboard")).toBe(true)
-        await waitFor(() => expect(screen.getByLabelText("Scoreboard: Always On")).toBeInTheDocument())
-        expect(button()).toHaveAttribute("aria-pressed", "true")
+        await waitFor(() => expect(button()).toHaveAttribute("aria-pressed", "true"))
+        expect(tooltip()).toBeTruthy()
+        expect(tooltip()).not.toBe(matchesOnlyTooltip)
     })
 
     test("follows the preference when it changes elsewhere", async () => {
-        render(<GameplayControls />)
+        render(<ScoreboardButton />)
 
         setAlwaysShow(true)
 
