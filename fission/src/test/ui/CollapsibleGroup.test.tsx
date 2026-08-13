@@ -3,24 +3,28 @@ import type React from "react"
 import { useRef } from "react"
 import { describe, expect, test } from "vitest"
 import { CollapsibleGroup, type CollapsibleItem } from "@/ui/components/topbar/CollapsibleGroup"
+import { TOP_BAR_GAP_PX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarFitProvider } from "@/ui/components/topbar/TopBarFitProvider"
 
 const ITEM_COUNT = 5
 
-const ITEMS: readonly CollapsibleItem[] = Array.from({ length: ITEM_COUNT }, (_, i) => ({
-    key: `item-${i}`,
-    node: <div data-testid="item" style={{ width: 40, height: 20 }} />,
-}))
+const makeItems = (count: number, width: number): CollapsibleItem[] =>
+    Array.from({ length: count }, (_, i) => ({
+        key: `w${width}-${i}`,
+        node: <div data-testid="item" style={{ width, height: 20 }} />,
+    }))
 
-const Harness: React.FC<{ width: number }> = ({ width }) => {
+const ITEMS = makeItems(ITEM_COUNT, 40)
+
+const Harness: React.FC<{ width: number; items?: readonly CollapsibleItem[] }> = ({ width, items = ITEMS }) => {
     const rowRef = useRef<HTMLDivElement>(null)
     const spacerRef = useRef<HTMLDivElement>(null)
 
     return (
-        <div ref={rowRef} style={{ display: "flex", alignItems: "center", gap: 12, width }}>
+        <div ref={rowRef} style={{ display: "flex", alignItems: "center", gap: TOP_BAR_GAP_PX, width }}>
             <TopBarFitProvider rowRef={rowRef} spacerRef={spacerRef}>
                 <CollapsibleGroup
-                    items={ITEMS}
+                    items={items}
                     always={<div data-testid="always" style={{ width: 60, height: 20, flexShrink: 0 }} />}
                 />
                 <div ref={spacerRef} style={{ flexGrow: 1 }} />
@@ -48,13 +52,22 @@ describe("CollapsibleGroup", () => {
 
         await waitFor(() => expect(visibleItems(container)).toBe(ITEM_COUNT))
         expectNoOverflow(container)
-    })
 
-    test("keeps the always slot even when every item has been shed", async () => {
-        const { container } = render(<Harness width={80} />)
+        rerender(<Harness width={80} />)
 
         await waitFor(() => expect(visibleItems(container)).toBe(0))
         expect(container.querySelectorAll("[data-testid=always]")).toHaveLength(1)
+        expectNoOverflow(container)
+    })
+
+    test("re-measures when the item set changes instead of reusing stale widths", async () => {
+        const { container, rerender } = render(<Harness width={400} items={makeItems(5, 40)} />)
+
+        await waitFor(() => expect(visibleItems(container)).toBe(5))
+
+        rerender(<Harness width={400} items={makeItems(5, 150)} />)
+
+        await waitFor(() => expect(visibleItems(container)).toBeLessThan(5))
         expectNoOverflow(container)
     })
 })

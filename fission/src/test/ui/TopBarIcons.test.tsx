@@ -3,7 +3,13 @@ import { describe, expect, test } from "vitest"
 import { TOP_BAR_ICON_NAMES, TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 
 describe("TopBarIcon", () => {
-    test("every declared icon name resolves to an svg file", () => {
+    test("every icon name maps to an svg on disk, and every svg on disk is named", () => {
+        const onDisk = Object.keys(import.meta.glob("../../ui/components/topbar/icons/*.svg")).map(path =>
+            path.replace(/^.*\//, "").replace(/\.svg$/, "")
+        )
+
+        expect([...TOP_BAR_ICON_NAMES].sort()).toEqual(onDisk.sort())
+
         for (const name of TOP_BAR_ICON_NAMES) {
             const { container } = render(<TopBarIcon name={name} />)
 

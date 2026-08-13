@@ -2,33 +2,48 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { describe, expect, test, vi } from "vitest"
 import SplitButtonDropdown, { type SplitButtonMenuItem } from "@/ui/components/SplitButtonDropdown"
 
-const renderDropdown = (items: SplitButtonMenuItem[], onIconClick = vi.fn()) => {
-    render(<SplitButtonDropdown icon={<span>icon</span>} onIconClick={onIconClick} items={items} />)
-    return onIconClick
-}
-
 const openMenu = () => fireEvent.click(screen.getByLabelText("Open dropdown"))
 
-const expectMenuClosed = () => waitFor(() => expect(screen.queryByRole("menu")).toBeNull())
-
 describe("SplitButtonDropdown", () => {
-    test("a click anywhere inside a row selects it and closes the menu", async () => {
+    test("clicking a row's leading icon still selects the item and closes the menu", async () => {
         const onSelect = vi.fn()
-        renderDropdown([{ key: "only", label: "Always shown", icon: <span data-testid="leading-icon" />, onSelect }])
+        const items: SplitButtonMenuItem[] = [
+            { key: "only", label: "Always shown", icon: <span data-testid="leading-icon" />, onSelect },
+        ]
+        render(<SplitButtonDropdown icon={<span>icon</span>} onIconClick={vi.fn()} items={items} />)
 
         openMenu()
         fireEvent.click(screen.getByTestId("leading-icon"))
 
         expect(onSelect).toHaveBeenCalledTimes(1)
-        await expectMenuClosed()
+        await waitFor(() => expect(screen.queryByRole("menu")).toBeNull())
     })
 
     test("the icon half runs its own action without opening the menu", () => {
-        const onIconClick = renderDropdown([{ key: "only", label: "Always shown", onSelect: vi.fn() }])
+        const onIconClick = vi.fn()
+        const items: SplitButtonMenuItem[] = [{ key: "only", label: "Always shown", onSelect: vi.fn() }]
+        render(<SplitButtonDropdown icon={<span>icon</span>} onIconClick={onIconClick} items={items} />)
 
         fireEvent.click(screen.getByText("icon"))
 
         expect(onIconClick).toHaveBeenCalledTimes(1)
         expect(screen.queryByRole("menu")).toBeNull()
+    })
+
+    test("reserves the icon slot on every row once any row has an icon", () => {
+        const items: SplitButtonMenuItem[] = [
+            { key: "with", label: "With icon", icon: <span data-testid="leading-icon" />, onSelect: vi.fn() },
+            { key: "without", label: "Without icon", onSelect: vi.fn() },
+        ]
+        render(<SplitButtonDropdown icon={<span>icon</span>} onIconClick={vi.fn()} items={items} />)
+
+        openMenu()
+
+        const rows = screen.getAllByRole("menuitem")
+        const slotWidth = (row: HTMLElement) => row.firstElementChild!.getBoundingClientRect().width
+
+        expect(rows).toHaveLength(2)
+        expect(slotWidth(rows[1])).toBe(slotWidth(rows[0]))
+        expect(slotWidth(rows[1])).toBeGreaterThan(0)
     })
 })

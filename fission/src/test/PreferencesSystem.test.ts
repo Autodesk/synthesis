@@ -35,7 +35,7 @@ describe("Preferences System Global Values", () => {
     test("Setting without saving", () => {
         PreferencesSystem.setUserPreference("SceneRotationSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("ShowViewCube", true)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         window.localStorage.setItem("Preferences", "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
