@@ -20,7 +20,7 @@ const snapshot = (overrides: Partial<TourSnapshot> = {}): TourSnapshot => ({
     ...overrides,
 })
 
-const fresh: TourRuntime = { step: -1, armed: false }
+const fresh: TourRuntime = { step: -1 }
 
 function run(stepIndex: number, snapshots: TourSnapshot[], runtime: TourRuntime = fresh): TourResult {
     let result: TourResult = { stepIndex, runtime }
@@ -41,12 +41,7 @@ function settle(stepIndex: number, s: TourSnapshot, runtime: TourRuntime = fresh
 }
 
 describe("tour reconciler", () => {
-    test("does not advance on the tick a step is entered", () => {
-        const result = run(stepOf("Add a Field"), [snapshot({ modal: "LibraryModal" })])
-        expect(result.stepIndex).toBe(stepOf("Add a Field"))
-    })
-
-    test("advances once the condition rises", () => {
+    test("advances as soon as the step's condition holds", () => {
         const result = run(stepOf("Add a Field"), [snapshot(), snapshot({ modal: "LibraryModal" })])
         expect(result.stepIndex).toBe(stepOf("Open the Library"))
     })
@@ -55,6 +50,14 @@ describe("tour reconciler", () => {
         const open = snapshot({ fieldCount: 1, robotCount: 1, panels: [{ id: "InitialConfigPanel" }] })
         const result = run(stepOf("Set Up Your Assembly"), [open, { ...open, panels: [] }])
         expect(result.stepIndex).toBe(stepOf("Select an Assembly"))
+    })
+
+    test("does not re-ask for work the user already did", () => {
+        const done = snapshot({ fieldCount: 1, robotCount: 1 })
+        expect(run(stepOf("Choose a Robot"), [{ ...done, modal: "LibraryModal" }]).stepIndex).toBe(
+            stepOf("Set Up Your Assembly")
+        )
+        expect(run(stepOf("Set Up Your Assembly"), [done]).stepIndex).toBe(stepOf("Select an Assembly"))
     })
 
     test("rewinds to the step that reopens a screen the user closed", () => {
@@ -99,15 +102,6 @@ describe("tour reconciler", () => {
             snapshot({ fieldCount: 1, modal: "LibraryModal" }),
             snapshot({ fieldCount: 1, spawnPending: true }),
             snapshot({ fieldCount: 1, robotCount: 1 }),
-        ])
-        expect(result.stepIndex).toBe(stepOf("Set Up Your Assembly"))
-    })
-
-    test("completes a spawn step when the user already had one of that asset", () => {
-        const result = run(stepOf("Choose a Robot"), [
-            snapshot({ fieldCount: 1, robotCount: 1, modal: "LibraryModal" }),
-            snapshot({ fieldCount: 1, robotCount: 1, spawnPending: true }),
-            snapshot({ fieldCount: 1, robotCount: 2 }),
         ])
         expect(result.stepIndex).toBe(stepOf("Set Up Your Assembly"))
     })

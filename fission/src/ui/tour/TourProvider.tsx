@@ -87,12 +87,12 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
         }
     }, [isMobile])
 
-    const runtimeRef = useRef<TourRuntime>({ step: -1, armed: false })
+    const runtimeRef = useRef<TourRuntime>({ step: -1 })
 
     useEffect(() => {
         if (isMobile) return
         return EventSystem.listen("TourRestartEvent", () => {
-            runtimeRef.current = { step: -1, armed: false }
+            runtimeRef.current = { step: -1 }
             setStepIndex(0)
             setActive(true)
         })
