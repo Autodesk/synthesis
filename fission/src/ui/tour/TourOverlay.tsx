@@ -12,6 +12,7 @@ import { useTourContext } from "./TourProviderHelpers"
 const ZIndex = 1400 // above panels/modals (1300) and the top bar (1200)
 const SCRIM_Z_INDEX = ZIndex - 10
 const SCRIM_COLOR = "rgba(0,0,0,0.5)"
+const SCRIM_TEST_ID = "tour-scrim"
 // Gap from the top bar / viewport edge for an anchorless card that is pinned to a corner.
 const SCREEN_EDGE_GAP = 12
 const SPOTLIGHT_PAD = 6
@@ -38,30 +39,30 @@ function arrowEdgeFor(placement: PopperPlacementType) {
 const sameRect = (a: DOMRect | null, b: DOMRect) =>
     a !== null && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height
 
-function useAnchorRect(el: HTMLElement | null, enabled: boolean) {
+function useAnchorRect(element: HTMLElement | null, enabled: boolean) {
     const [rect, setRect] = useState<DOMRect | null>(null)
 
     useEffect(() => {
-        if (!el || !enabled) {
+        if (!element || !enabled) {
             setRect(null)
             return
         }
         const update = () =>
             setRect(prev => {
-                const next = el.getBoundingClientRect()
+                const next = element.getBoundingClientRect()
                 return sameRect(prev, next) ? prev : next
             })
 
         const timers = SETTLE_DELAYS.map(delay => setTimeout(update, delay))
         const observer = new ResizeObserver(update)
-        observer.observe(el)
+        observer.observe(element)
         window.addEventListener("resize", update)
         return () => {
             timers.forEach(clearTimeout)
             observer.disconnect()
             window.removeEventListener("resize", update)
         }
-    }, [el, enabled])
+    }, [element, enabled])
 
     return rect
 }
@@ -84,6 +85,7 @@ const SpotlightScrim: React.FC<{ rect: DOMRect }> = ({ rect }) => {
             {Object.entries(bands).map(([edge, band]) => (
                 <Box
                     key={edge}
+                    data-testid={SCRIM_TEST_ID}
                     sx={{
                         position: "fixed",
                         bgcolor: SCRIM_COLOR,
@@ -119,7 +121,7 @@ const TourOverlay: React.FC = () => {
     // Consuming the context re-renders this component whenever the provider value changes -
     // including the anchorVersion bump on anchor (de)registration - so the anchor below is
     // always re-resolved when a panel mounts or unmounts.
-    const { active, stepIndex, canAdvance, next, prev, skip, nudge, getAnchor, anchorVersion } = useTourContext()
+    const { active, stepIndex, canAdvance, next, prev, skip, getAnchor, anchorVersion } = useTourContext()
     const { blockState } = useUIContext()
     const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null)
     const popperRef = useRef<PopperInstance>(null)
@@ -143,10 +145,11 @@ const TourOverlay: React.FC = () => {
 
     if (!step) return null
 
-    const nextDisabled = !canAdvance
-
     const scrim = blockState.blocked ? null : step.focus === "screen" ? (
-        <Box sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: SCRIM_Z_INDEX, pointerEvents: "auto" }} />
+        <Box
+            data-testid={SCRIM_TEST_ID}
+            sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: SCRIM_Z_INDEX, pointerEvents: "auto" }}
+        />
     ) : spotlightRect ? (
         <SpotlightScrim rect={spotlightRect} />
     ) : null
@@ -156,10 +159,10 @@ const TourOverlay: React.FC = () => {
             step={step}
             stepIndex={stepIndex}
             total={TOUR_STEPS.length}
-            onNext={nextDisabled ? nudge : next}
+            onNext={next}
             onPrev={prev}
             onSkip={skip}
-            nextDisabled={nextDisabled}
+            nextDisabled={!canAdvance}
             {...(anchorEl && { setArrowRef, arrowEdge: arrowEdgeFor(step.placement) })}
         />
     )

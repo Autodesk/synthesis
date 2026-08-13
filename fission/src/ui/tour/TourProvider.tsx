@@ -8,7 +8,7 @@ import { useIsMobile } from "@/ui/helpers/useIsMobile"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { hasPendingSpawn } from "@/ui/modals/mirabuf/LibrarySpawnActions"
 import type { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import { advanceConditionMet, reconcile, stepHint, type TourRuntime, type TourSnapshot } from "./TourConditions"
+import { advanceConditionMet, reconcile, type TourRuntime, type TourSnapshot } from "./TourConditions"
 import { TourContext, type TourContextValue } from "./TourProviderHelpers"
 import type { TourAnchorId } from "./TourSteps"
 import { TOUR_STEPS, tourIdOf } from "./TourSteps"
@@ -38,9 +38,9 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
     const anchorsRef = useRef(new Map<TourAnchorId, HTMLElement>())
     const [anchorVersion, setAnchorVersion] = useState(0)
 
-    const registerAnchor = useCallback((id: TourAnchorId, el: HTMLElement | null) => {
+    const registerAnchor = useCallback((id: TourAnchorId, element: HTMLElement | null) => {
         const anchors = anchorsRef.current
-        if (el) anchors.set(id, el)
+        if (element) anchors.set(id, element)
         else anchors.delete(id)
         setAnchorVersion(v => v + 1)
     }, [])
@@ -71,8 +71,6 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
     const prev = useCallback(() => setStepIndex(i => Math.max(0, i - 1)), [])
 
     const skip = useCallback(() => finish(), [finish])
-
-    const nudge = useCallback(() => addToast("warning", stepHint(TOUR_STEPS[stepIndex])), [addToast, stepIndex])
 
     // First-visit trigger. Desktop only, once per browser (persisted preference).
     const startedRef = useRef(false)
@@ -127,19 +125,17 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
     const canAdvance = active ? advanceConditionMet(TOUR_STEPS[stepIndex], snapshot) : true
 
     useEffect(() => {
-        const step = active ? TOUR_STEPS[stepIndex] : undefined
-        if (!step || (!step.advanceOn && !step.requires)) return
-        // Above modals and panels so a step can refuse a close that would strand the user, below
-        // the command palette so that stays dismissible.
+        if (!active) return
+        // tour has the highest priority for 'esc'. Then next is modals and panels
         return InputSystem.addEscapeHandler(() => {
-            addToast("warning", stepHint(step))
+            skip()
             return true
         }, ESCAPE_PRIORITY.TOUR)
-    }, [active, stepIndex, addToast])
+    }, [active, skip])
 
     const value = useMemo<TourContextValue>(
-        () => ({ active, stepIndex, canAdvance, next, prev, skip, nudge, registerAnchor, getAnchor, anchorVersion }),
-        [active, stepIndex, canAdvance, next, prev, skip, nudge, registerAnchor, getAnchor, anchorVersion]
+        () => ({ active, stepIndex, canAdvance, next, prev, skip, registerAnchor, getAnchor, anchorVersion }),
+        [active, stepIndex, canAdvance, next, prev, skip, registerAnchor, getAnchor, anchorVersion]
     )
 
     return <TourContext.Provider value={value}>{children}</TourContext.Provider>

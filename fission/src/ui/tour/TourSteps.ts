@@ -41,7 +41,6 @@ export interface TourStep {
     screenPosition?: ScreenPosition
     advanceOn?: { condition: TourCondition; state?: boolean }
     requires?: TourCondition[]
-    hint?: string
     focus?: TourFocus
 }
 
@@ -83,11 +82,10 @@ export const TOUR_STEPS: TourStep[] = [
     },
     {
         title: "Set Up Your Assembly",
-        body: "Select an input scheme for your robot, or just press Finish and the Ernie (WASD) scheme is assigned automatically. You can change the input scheme, alliance, and station later.",
+        body: "Select an input scheme for your robot, or just press Finish and a compatible scheme is assigned automatically. You can change the input scheme, alliance, and station later.",
         anchorId: "assembly-setup",
         placement: "left",
         advanceOn: { condition: "setupPanel", state: false },
-        hint: "Press Finish in Assembly Setup to continue.",
     },
     {
         title: "Select an Assembly",
@@ -128,11 +126,10 @@ export const TOUR_STEPS: TourStep[] = [
         anchorId: "configure-panel",
         placement: "left",
         advanceOn: { condition: "intakePanel", state: false },
-        hint: "Press Save in the Configure Assets panel to continue.",
     },
     {
         title: "Drive Your Robot",
-        body: "Now drive using WASD, and E for the intake. When a game piece enters the sphere, your newly configured intake picks it up. Press Next when you are ready to move on.",
+        body: "Now drive your robot with the input scheme you picked, and trigger its intake. When a game piece enters the sphere, your newly configured intake picks it up. Press Next when you are ready to move on.",
         placement: "top",
         screenPosition: "top-left",
         requires: ["robot"],

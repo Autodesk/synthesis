@@ -28,7 +28,6 @@ const tourContext = (stepIndex: number, canAdvance: boolean): TourContextValue =
     next: () => {},
     prev: () => {},
     skip: () => {},
-    nudge: () => {},
     registerAnchor: () => {},
     getAnchor: () => null,
     anchorVersion: 0,

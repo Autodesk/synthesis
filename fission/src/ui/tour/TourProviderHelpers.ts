@@ -13,9 +13,8 @@ export interface TourContextValue {
     prev: () => void
     /** Dismiss the tour and mark it as seen. */
     skip: () => void
-    nudge: () => void
     /** Register (or clear, with `null`) a DOM element as a named tour anchor. */
-    registerAnchor: (id: TourAnchorId, el: HTMLElement | null) => void
+    registerAnchor: (id: TourAnchorId, element: HTMLElement | null) => void
     /** Resolve the current element registered for an anchor id. */
     getAnchor: (id: TourAnchorId) => HTMLElement | null
     /** Bumped whenever the anchor registry changes, so the overlay re-resolves. */
@@ -31,7 +30,6 @@ export const TourContext = createContext<TourContextValue>({
     canAdvance: true,
     prev: noop,
     skip: noop,
-    nudge: noop,
     registerAnchor: noop,
     getAnchor: () => null,
     anchorVersion: 0,
@@ -52,5 +50,5 @@ export const useTourContext = () => useContext(TourContext)
  */
 export function useTourAnchor(id: TourAnchorId) {
     const { registerAnchor } = useTourContext()
-    return useCallback((el: HTMLElement | null) => registerAnchor(id, el), [registerAnchor, id])
+    return useCallback((element: HTMLElement | null) => registerAnchor(id, element), [registerAnchor, id])
 }

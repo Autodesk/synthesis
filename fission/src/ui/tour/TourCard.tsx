@@ -156,7 +156,7 @@ const TourCard: React.FC<TourCardProps> = ({
 
                 <ButtonBase
                     onClick={onNext}
-                    aria-disabled={nextDisabled}
+                    disabled={nextDisabled}
                     aria-label="Next step"
                     sx={{
                         ...PILL_SX,

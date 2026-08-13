@@ -50,12 +50,6 @@ export const CONDITIONS: Record<TourCondition, TourConditionDef> = {
     },
 }
 
-const MANUAL_HINT = "Use the tour card to continue, or press Skip to exit the tour."
-
-export function stepHint(step: TourStep): string {
-    return step.hint ?? (step.advanceOn ? CONDITIONS[step.advanceOn.condition].hint : MANUAL_HINT)
-}
-
 export function advanceConditionMet(step: TourStep, snapshot: TourSnapshot): boolean {
     if (!step.advanceOn) return true
     return CONDITIONS[step.advanceOn.condition].holds(snapshot) === (step.advanceOn.state ?? true)
