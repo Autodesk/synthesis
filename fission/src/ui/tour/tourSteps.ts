@@ -56,7 +56,7 @@ export const TOUR_STEPS: TourStep[] = [
     },
     {
         title: "Open the Library",
-        body: "The library groups fields and robots by year. Select the 2026 year tab and spawn the field.",
+        body: "The library groups fields and robots by year. Pick the newest year tab and spawn the field.",
         anchorId: "spawn-panel",
         placement: "left",
         focus: "anchor",
@@ -74,7 +74,7 @@ export const TOUR_STEPS: TourStep[] = [
     },
     {
         title: "Choose a Robot",
-        body: "With the library open, on the 2026 year tab, pick a robot.",
+        body: "With the library open, pick a robot from the newest year tab.",
         anchorId: "spawn-panel",
         placement: "left",
         focus: "anchor",
@@ -144,5 +144,3 @@ export const TOUR_STEPS: TourStep[] = [
         placement: "bottom-start",
     },
 ]
-
-export const TOUR_STEP_COUNT = TOUR_STEPS.length

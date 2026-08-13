@@ -425,7 +425,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             return miraObj
         }
         addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
-        // closePanel(panel!.id, CloseType.CANCEL)
+        // closePanel(panel!.id, CloseType.Cancel)
     }, [addToast])
 
     useEffect(() => {
