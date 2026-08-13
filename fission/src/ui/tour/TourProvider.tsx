@@ -14,8 +14,8 @@ import type { TourAnchorId } from "./tourSteps"
 import { TOUR_STEPS, tourIdOf } from "./tourSteps"
 
 const readWorld = () => ({
-    hasField: World.isAlive && World.sceneRenderer.mirabufSceneObjects.getField() !== undefined,
-    hasRobot: World.isAlive && World.sceneRenderer.mirabufSceneObjects.getRobots().length > 0,
+    fieldCount: World.isAlive && World.sceneRenderer.mirabufSceneObjects.getField() !== undefined ? 1 : 0,
+    robotCount: World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getRobots().length : 0,
 })
 
 export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) => {

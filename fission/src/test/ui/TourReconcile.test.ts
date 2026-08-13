@@ -8,8 +8,8 @@ const stepOf = (title: string) => TOUR_STEPS.findIndex(step => step.title === ti
 const snapshot = (overrides: Partial<TourSnapshot> = {}): TourSnapshot => ({
     panels: [],
     appMode: "Configure",
-    hasField: false,
-    hasRobot: false,
+    fieldCount: 0,
+    robotCount: 0,
     spawnPending: false,
     ...overrides,
 })
@@ -46,13 +46,13 @@ describe("tour reconciler", () => {
     })
 
     test("advances when the step's screen closes", () => {
-        const open = snapshot({ hasField: true, hasRobot: true, panels: [{ id: "InitialConfigPanel" }] })
+        const open = snapshot({ fieldCount: 1, robotCount: 1, panels: [{ id: "InitialConfigPanel" }] })
         const result = run(stepOf("Set Up Your Assembly"), [open, { ...open, panels: [] }])
         expect(result.stepIndex).toBe(stepOf("Select an Assembly"))
     })
 
     test("rewinds to the step that reopens a screen the user closed", () => {
-        const result = run(stepOf("Choose a Robot"), [snapshot({ hasField: true })])
+        const result = run(stepOf("Choose a Robot"), [snapshot({ fieldCount: 1 })])
         expect(result.stepIndex).toBe(stepOf("Add a Robot"))
         expect(result.toast).toBeDefined()
     })
@@ -73,7 +73,7 @@ describe("tour reconciler", () => {
     })
 
     test("holds the step, once, when nothing in the tour re-establishes the condition", () => {
-        const gameplay = snapshot({ hasRobot: true, hasField: true, appMode: "Gameplay" })
+        const gameplay = snapshot({ robotCount: 1, fieldCount: 1, appMode: "Gameplay" })
         const first = run(stepOf("Select an Assembly"), [gameplay])
         expect(first.stepIndex).toBe(stepOf("Select an Assembly"))
         expect(first.toast).toBeDefined()
@@ -83,22 +83,31 @@ describe("tour reconciler", () => {
     })
 
     test("leaves requirements alone while a spawn is in flight", () => {
-        const result = run(stepOf("Choose a Robot"), [snapshot({ hasField: true, spawnPending: true })])
+        const result = run(stepOf("Choose a Robot"), [snapshot({ fieldCount: 1, spawnPending: true })])
         expect(result.stepIndex).toBe(stepOf("Choose a Robot"))
         expect(result.toast).toBeUndefined()
     })
 
     test("completes a spawn step even though the library closed first", () => {
         const result = run(stepOf("Choose a Robot"), [
-            snapshot({ hasField: true, modal: "LibraryModal" }),
-            snapshot({ hasField: true, spawnPending: true }),
-            snapshot({ hasField: true, hasRobot: true }),
+            snapshot({ fieldCount: 1, modal: "LibraryModal" }),
+            snapshot({ fieldCount: 1, spawnPending: true }),
+            snapshot({ fieldCount: 1, robotCount: 1 }),
+        ])
+        expect(result.stepIndex).toBe(stepOf("Set Up Your Assembly"))
+    })
+
+    test("completes a spawn step when the user already had one of that asset", () => {
+        const result = run(stepOf("Choose a Robot"), [
+            snapshot({ fieldCount: 1, robotCount: 1, modal: "LibraryModal" }),
+            snapshot({ fieldCount: 1, robotCount: 1, spawnPending: true }),
+            snapshot({ fieldCount: 1, robotCount: 2 }),
         ])
         expect(result.stepIndex).toBe(stepOf("Set Up Your Assembly"))
     })
 
     test("recovers the intake panel by sending the user back to the step that opens it", () => {
-        const configured = snapshot({ hasField: true, hasRobot: true })
+        const configured = snapshot({ fieldCount: 1, robotCount: 1 })
         const result = run(stepOf("Adjust the Intake"), [
             { ...configured, panels: [{ id: "ConfigurePanel", configMode: ConfigMode.INTAKE }] },
             configured,

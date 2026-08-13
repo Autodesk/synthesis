@@ -7,25 +7,33 @@ export interface TourSnapshot {
     modal?: TourTargetId
     panels: { id?: TourTargetId; configMode?: ConfigMode }[]
     appMode: AppMode
-    hasField: boolean
-    hasRobot: boolean
+    fieldCount: number
+    robotCount: number
     spawnPending: boolean
 }
 
 const hasPanel = (snapshot: TourSnapshot, id: TourTargetId, configMode?: ConfigMode) =>
     snapshot.panels.some(p => p.id === id && (configMode === undefined || p.configMode === configMode))
 
-export const CONDITIONS: Record<TourCondition, { holds: (snapshot: TourSnapshot) => boolean; hint: string }> = {
+interface TourConditionDef {
+    holds: (snapshot: TourSnapshot) => boolean
+    count?: (snapshot: TourSnapshot) => number
+    hint: string
+}
+
+export const CONDITIONS: Record<TourCondition, TourConditionDef> = {
     libraryOpen: {
         holds: s => s.modal === "LibraryModal",
         hint: "Open the assets library with the Add Assembly button to continue.",
     },
     field: {
-        holds: s => s.hasField,
+        holds: s => s.fieldCount > 0,
+        count: s => s.fieldCount,
         hint: "Spawn a field from the library to continue.",
     },
     robot: {
-        holds: s => s.hasRobot,
+        holds: s => s.robotCount > 0,
+        count: s => s.robotCount,
         hint: "Spawn a robot from the library to continue.",
     },
     setupPanel: {
@@ -52,6 +60,7 @@ export interface TourRuntime {
     step: number
     armed: boolean
     reported?: TourCondition
+    baseline?: number
 }
 
 export interface TourResult {
@@ -68,19 +77,31 @@ function producerOf(condition: TourCondition, before: number): number | undefine
     return undefined
 }
 
+function countFor(stepIndex: number, snapshot: TourSnapshot): number | undefined {
+    const condition = TOUR_STEPS[stepIndex]?.advanceOn?.condition
+    return condition ? CONDITIONS[condition].count?.(snapshot) : undefined
+}
+
 export function reconcile(stepIndex: number, snapshot: TourSnapshot, previous: TourRuntime): TourResult {
     const step = TOUR_STEPS[stepIndex]
-    const entering = previous.step !== stepIndex
-    const runtime: TourRuntime = entering ? { step: stepIndex, armed: false } : { ...previous }
+
+    const runtimeAt = (target: number, reported?: TourCondition): TourRuntime => ({
+        step: target,
+        armed: false,
+        reported,
+        baseline: countFor(target, snapshot),
+    })
+
+    const runtime: TourRuntime = previous.step !== stepIndex ? runtimeAt(stepIndex) : { ...previous }
 
     if (step.advanceOn) {
         const target = step.advanceOn.state ?? true
-        if (CONDITIONS[step.advanceOn.condition].holds(snapshot) !== target) {
-            runtime.armed = true
-        } else if (runtime.armed) {
-            const next = stepIndex + 1
-            return { stepIndex: next, runtime: { step: next, armed: false } }
-        }
+        const holds = CONDITIONS[step.advanceOn.condition].holds(snapshot) === target
+        const count = countFor(stepIndex, snapshot)
+        const grown = count !== undefined && runtime.baseline !== undefined && count > runtime.baseline
+
+        if (grown || (holds && runtime.armed)) return { stepIndex: stepIndex + 1, runtime: runtimeAt(stepIndex + 1) }
+        if (!holds) runtime.armed = true
     }
 
     if (snapshot.spawnPending) return { stepIndex, runtime }
@@ -92,7 +113,7 @@ export function reconcile(stepIndex: number, snapshot: TourSnapshot, previous: T
     const target = producerOf(unmet, stepIndex) ?? stepIndex
     return {
         stepIndex: target,
-        runtime: { step: target, armed: false, reported: unmet },
+        runtime: runtimeAt(target, unmet),
         toast: runtime.reported === undefined ? CONDITIONS[unmet].hint : undefined,
     }
 }
