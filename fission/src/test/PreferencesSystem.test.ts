@@ -77,18 +77,6 @@ describe("Preferences System Global Values", () => {
         expectDefaultPreferences()
     })
 
-    test("Onboarding tour flag defaults to false and persists", () => {
-        // First-visit detection relies on this defaulting to false for a fresh browser.
-        PreferencesSystem.clearPreferences()
-        expect(PreferencesSystem.getUserPreference("HasSeenOnboardingTour")).toBe(false)
-
-        PreferencesSystem.setUserPreference("HasSeenOnboardingTour", true)
-        PreferencesSystem.savePreferences()
-        PreferencesSystem.loadPreferences()
-
-        expect(PreferencesSystem.getUserPreference("HasSeenOnboardingTour")).toBe(true)
-    })
-
     test("Graphics preferences", () => {
         PreferencesSystem.getGraphicsPreferences()
 

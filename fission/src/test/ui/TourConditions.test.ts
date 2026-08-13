@@ -2,14 +2,15 @@ import { describe, expect, test } from "vitest"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import {
     advanceConditionMet,
+    CONDITIONS,
     reconcile,
     type TourResult,
     type TourRuntime,
     type TourSnapshot,
 } from "@/ui/tour/TourConditions"
-import { TOUR_STEPS } from "@/ui/tour/TourSteps"
+import { TOUR_STEPS, type TourStepId } from "@/ui/tour/TourSteps"
 
-const stepOf = (title: string) => TOUR_STEPS.findIndex(step => step.title === title)
+const stepOf = (id: TourStepId) => TOUR_STEPS.findIndex(step => step.id === id)
 
 const snapshot = (overrides: Partial<TourSnapshot> = {}): TourSnapshot => ({
     panels: [],
@@ -42,49 +43,49 @@ function settle(stepIndex: number, s: TourSnapshot, runtime: TourRuntime = fresh
 
 describe("tour reconciler", () => {
     test("advances as soon as the step's condition holds", () => {
-        const result = run(stepOf("Add a Field"), [snapshot(), snapshot({ modal: "LibraryModal" })])
-        expect(result.stepIndex).toBe(stepOf("Open the Library"))
+        const result = run(stepOf("add-field"), [snapshot(), snapshot({ modal: "LibraryModal" })])
+        expect(result.stepIndex).toBe(stepOf("spawn-field"))
     })
 
     test("advances when the step's screen closes", () => {
         const open = snapshot({ fieldCount: 1, robotCount: 1, panels: [{ id: "InitialConfigPanel" }] })
-        const result = run(stepOf("Set Up Your Assembly"), [open, { ...open, panels: [] }])
-        expect(result.stepIndex).toBe(stepOf("Select an Assembly"))
+        const result = run(stepOf("setup-assembly"), [open, { ...open, panels: [] }])
+        expect(result.stepIndex).toBe(stepOf("select-assembly"))
     })
 
     test("does not re-ask for work the user already did", () => {
         const done = snapshot({ fieldCount: 1, robotCount: 1 })
-        expect(run(stepOf("Choose a Robot"), [{ ...done, modal: "LibraryModal" }]).stepIndex).toBe(
-            stepOf("Set Up Your Assembly")
+        expect(run(stepOf("spawn-robot"), [{ ...done, modal: "LibraryModal" }]).stepIndex).toBe(
+            stepOf("setup-assembly")
         )
-        expect(run(stepOf("Set Up Your Assembly"), [done]).stepIndex).toBe(stepOf("Select an Assembly"))
+        expect(run(stepOf("setup-assembly"), [done]).stepIndex).toBe(stepOf("select-assembly"))
     })
 
     test("rewinds to the step that reopens a screen the user closed", () => {
-        const result = run(stepOf("Choose a Robot"), [snapshot({ fieldCount: 1 })])
-        expect(result.stepIndex).toBe(stepOf("Add a Robot"))
+        const result = run(stepOf("spawn-robot"), [snapshot({ fieldCount: 1 })])
+        expect(result.stepIndex).toBe(stepOf("add-robot"))
         expect(result.toast).toBeDefined()
     })
 
     test("cascades back to the first step when everything is gone", () => {
-        expect(settle(stepOf("Choose a Robot"), snapshot()).stepIndex).toBe(stepOf("Add a Field"))
+        expect(settle(stepOf("spawn-robot"), snapshot()).stepIndex).toBe(stepOf("add-field"))
     })
 
     test("explains a cascade once, with the reason the tour moved", () => {
         const empty = snapshot()
         const toasts: string[] = []
-        let result: TourResult = { stepIndex: stepOf("Select an Assembly"), runtime: fresh }
+        let result: TourResult = { stepIndex: stepOf("select-assembly"), runtime: fresh }
         for (let i = 0; i < TOUR_STEPS.length; i++) {
             result = reconcile(result.stepIndex, empty, result.runtime)
             if (result.toast) toasts.push(result.toast)
         }
-        expect(toasts).toEqual(["Spawn a robot from the library to continue."])
+        expect(toasts).toEqual([CONDITIONS.robot.hint])
     })
 
     test("holds the step, once, when nothing in the tour re-establishes the condition", () => {
         const gameplay = snapshot({ robotCount: 1, fieldCount: 1, appMode: "Gameplay" })
-        const first = run(stepOf("Select an Assembly"), [gameplay])
-        expect(first.stepIndex).toBe(stepOf("Select an Assembly"))
+        const first = run(stepOf("select-assembly"), [gameplay])
+        expect(first.stepIndex).toBe(stepOf("select-assembly"))
         expect(first.toast).toBeDefined()
 
         const second = reconcile(first.stepIndex, gameplay, first.runtime)
@@ -92,38 +93,38 @@ describe("tour reconciler", () => {
     })
 
     test("leaves requirements alone while a spawn is in flight", () => {
-        const result = run(stepOf("Choose a Robot"), [snapshot({ fieldCount: 1, spawnPending: true })])
-        expect(result.stepIndex).toBe(stepOf("Choose a Robot"))
+        const result = run(stepOf("spawn-robot"), [snapshot({ fieldCount: 1, spawnPending: true })])
+        expect(result.stepIndex).toBe(stepOf("spawn-robot"))
         expect(result.toast).toBeUndefined()
     })
 
     test("completes a spawn step even though the library closed first", () => {
-        const result = run(stepOf("Choose a Robot"), [
+        const result = run(stepOf("spawn-robot"), [
             snapshot({ fieldCount: 1, modal: "LibraryModal" }),
             snapshot({ fieldCount: 1, spawnPending: true }),
             snapshot({ fieldCount: 1, robotCount: 1 }),
         ])
-        expect(result.stepIndex).toBe(stepOf("Set Up Your Assembly"))
+        expect(result.stepIndex).toBe(stepOf("setup-assembly"))
     })
 
     test("offers Next on a step whose screen is already closed", () => {
         const closed = snapshot({ fieldCount: 1, robotCount: 1 })
-        expect(advanceConditionMet(TOUR_STEPS[stepOf("Set Up Your Assembly")], closed)).toBe(true)
-        expect(advanceConditionMet(TOUR_STEPS[stepOf("Finish Up")], closed)).toBe(true)
+        expect(advanceConditionMet(TOUR_STEPS[stepOf("setup-assembly")], closed)).toBe(true)
+        expect(advanceConditionMet(TOUR_STEPS[stepOf("save-config")], closed)).toBe(true)
     })
 
     test("withholds Next while a step is still waiting on its condition", () => {
         const empty = snapshot()
-        expect(advanceConditionMet(TOUR_STEPS[stepOf("Add a Field")], empty)).toBe(false)
-        expect(advanceConditionMet(TOUR_STEPS[stepOf("Choose a Robot")], empty)).toBe(false)
+        expect(advanceConditionMet(TOUR_STEPS[stepOf("add-field")], empty)).toBe(false)
+        expect(advanceConditionMet(TOUR_STEPS[stepOf("spawn-robot")], empty)).toBe(false)
     })
 
     test("recovers the intake panel by sending the user back to the step that opens it", () => {
         const configured = snapshot({ fieldCount: 1, robotCount: 1 })
-        const result = run(stepOf("Adjust the Intake"), [
+        const result = run(stepOf("adjust-intake"), [
             { ...configured, panels: [{ id: "ConfigurePanel", configMode: ConfigMode.INTAKE }] },
             configured,
         ])
-        expect(result.stepIndex).toBe(stepOf("Pick What to Configure"))
+        expect(result.stepIndex).toBe(stepOf("pick-config"))
     })
 })
