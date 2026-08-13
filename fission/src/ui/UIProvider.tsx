@@ -3,7 +3,7 @@ import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
 import type { FunctionComponent, ReactNode } from "react"
-import { useCallback, useReducer, useState } from "react"
+import { useCallback, useEffect, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
 import type { PanelImplProps } from "./components/Panel"
@@ -94,27 +94,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [_, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-
-    InputSystem.escapeKeyListeners[1] = () => {
-        if (modal != null) {
-            if (!modal.props.hideCancel) {
-                closeModal(CloseType.CANCEL)
-            }
-            return true
-        }
-        return false
-    }
-
-    InputSystem.escapeKeyListeners[2] = () => {
-        if (panels.length > 0) {
-            const panel = panels[panels.length - 1]
-            if (!panel.props.hideCancel) {
-                closePanel(panel.id, CloseType.CANCEL)
-                return true
-            }
-        }
-        return false
-    }
 
     const openModal: OpenModalFn = useCallback(
         <T, P>(
@@ -284,6 +263,28 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
         })
     }, [])
+
+    // 'esc' closes modal
+    useEffect(
+        () =>
+            InputSystem.addEscapeHandler(() => {
+                if (modal == null) return false
+                if (!modal.props.hideCancel) closeModal(CloseType.CANCEL)
+                return true
+            }, 10),
+        [modal, closeModal]
+    )
+
+    useEffect(
+        () =>
+            InputSystem.addEscapeHandler(() => {
+                const panel = panels[panels.length - 1]
+                if (panel == null || panel.props.hideCancel) return false
+                closePanel(panel.id, CloseType.CANCEL)
+                return true
+            }, 0),
+        [panels, closePanel]
+    )
 
     const togglePanel: TogglePanelFn = useCallback(
         <T, P>(

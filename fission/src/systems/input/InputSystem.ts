@@ -7,6 +7,9 @@ import type Input from "./inputs/Input"
 
 const LOG_GAMEPAD_EVENTS = false
 
+// returns true if 'esc' was consumed
+type EscapeHandler = () => boolean
+
 /**
  *  The input system listens for and records key presses and joystick positions to be used by robots.
  *  It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.
@@ -45,8 +48,18 @@ class InputSystem extends WorldSystem {
         return this.brainIndexSchemeMap.get(index)
     }
 
-    // Janky solution to centralize escape key closing logic, first in the list is higher priority, returning true consumes the keypress
-    public static escapeKeyListeners: (null | (() => boolean))[] = [null, null, null]
+    private static _escapeHandlers: { priority: number; handler: EscapeHandler }[] = []
+
+    /** highest priority is asked first. call the result to unregister. */
+    public static addEscapeHandler(handler: EscapeHandler, priority = 0): () => void {
+        const entry = { priority, handler }
+        InputSystem._escapeHandlers.push(entry)
+        InputSystem._escapeHandlers.sort((a, b) => b.priority - a.priority)
+
+        return () => {
+            InputSystem._escapeHandlers = InputSystem._escapeHandlers.filter(e => e !== entry)
+        }
+    }
 
     /**
      * Sets whether the command palette is open, which blocks all robot inputs
@@ -139,8 +152,7 @@ class InputSystem extends WorldSystem {
 
     private checkEscapeKey(event: KeyboardEvent) {
         if (event.key == "Escape") {
-            const anyMatched = InputSystem.escapeKeyListeners.some(cb => cb != null && cb())
-            if (anyMatched) {
+            if (InputSystem._escapeHandlers.some(entry => entry.handler())) {
                 event.preventDefault()
             }
         }

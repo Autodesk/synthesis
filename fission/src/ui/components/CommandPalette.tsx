@@ -96,13 +96,16 @@ const CommandPalette: React.FC = () => {
         })
     }, [commands])
 
-    InputSystem.escapeKeyListeners[0] = () => {
-        if (isOpen) {
-            closePalette()
-            return true
-        }
-        return false
-    }
+    // command palette should be highest priority in 'esc' queue
+    useEffect(
+        () =>
+            InputSystem.addEscapeHandler(() => {
+                if (!isOpen) return false
+                closePalette()
+                return true
+            }, 30),
+        [isOpen, closePalette]
+    )
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase()
