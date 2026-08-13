@@ -12,6 +12,10 @@ export function getFontSize(element: Element): number {
     return Number(str.substring(0, str.length - 2))
 }
 
+export function capitalize(word: string): string {
+    return word[0].toUpperCase() + word.slice(1)
+}
+
 export function clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max)
 }

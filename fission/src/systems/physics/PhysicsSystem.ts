@@ -626,6 +626,7 @@ class PhysicsSystem extends WorldSystem {
 
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
+        JOLT.destroy(anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
@@ -659,6 +660,7 @@ class PhysicsSystem extends WorldSystem {
 
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         constraintSettings.mPoint1 = constraintSettings.mPoint2 = anchorPoint
+        JOLT.destroy(anchorPoint)
 
         const freedom = jointDefinition.prismatic!.prismaticFreedom!
 
@@ -856,6 +858,7 @@ class PhysicsSystem extends WorldSystem {
 
         JOLT.destroy(axis)
         JOLT.destroy(unitAxis)
+        JOLT.destroy(anchorPoint)
 
         const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc, urdfWheelBasis)
         const { listener, tester } = this.createVehicleListeners(vehicleConstraint, bodyWheel)
@@ -886,6 +889,7 @@ class PhysicsSystem extends WorldSystem {
         const dofs = jointDefinition.custom?.dofs
         if (!dofs || dofs.length < 3) {
             console.warn("Empty degrees-of-freedom in joint definition for ball constraint")
+            JOLT.destroy(anchorPoint)
 
             return
         }
@@ -939,6 +943,8 @@ class PhysicsSystem extends WorldSystem {
 
             JOLT.destroy(constraintSpecifications.axis)
         })
+
+        JOLT.destroy(anchorPoint)
     }
 
     /**

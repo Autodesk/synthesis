@@ -27,7 +27,7 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject; 
     selectedAssembly,
     disabledMessage,
 }) => {
-    const { togglePanel } = useUIContext()
+    const { togglePanel, blockState } = useUIContext()
     const { configureButtons, isField, configurationType, openConfig } = useConfigureAssembly(selectedAssembly)
 
     const menuOnlyConfigs = isField ? MENU_ONLY_CONFIGS.filter(c => c.mode !== ConfigMode.BRAIN) : MENU_ONLY_CONFIGS
@@ -56,8 +56,8 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject; 
             }
             iconTooltip={disabledMessage ?? "Configure Asset"}
             caretTooltip={disabledMessage ?? "Configure options"}
-            caretDisabled={disabledMessage != null}
-            iconDisabled={disabledMessage != null}
+            caretDisabled={disabledMessage != null || blockState.blocked}
+            iconDisabled={disabledMessage != null || blockState.blocked}
             onIconClick={() => togglePanel(ConfigurePanel, { selectedAssembly, configurationType })}
         >
             {entries.map(({ key, icon, label, mode }) => (

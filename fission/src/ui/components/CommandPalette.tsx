@@ -20,7 +20,7 @@ function isTextInputTarget(target: EventTarget | null): boolean {
 }
 
 const CommandPalette: React.FC = () => {
-    const { addToast, modal } = useUIContext()
+    const { addToast, modal, blockState } = useUIContext()
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [query, setQuery] = useState<string>("")
@@ -37,10 +37,11 @@ const CommandPalette: React.FC = () => {
     }, [])
 
     const openPalette = useCallback(() => {
+        if (blockState.blocked) return
         setIsOpen(true)
         InputSystem.setCommandPaletteOpen(true)
         setTimeout(() => inputRef.current?.focus(), 0)
-    }, [])
+    }, [blockState])
 
     // Register command(s) not owned elsewhere
     useEffect(() => {

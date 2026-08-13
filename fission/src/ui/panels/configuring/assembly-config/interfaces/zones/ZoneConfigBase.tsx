@@ -1,9 +1,8 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import { Button, Stack, TextField } from "@mui/material"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
-import EventSystem from "@/systems/EventSystem.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
@@ -17,7 +16,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 /**
  * Saves zone configuration to selected field.
@@ -160,9 +159,7 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
         saveAllZones,
     ])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useConfigurationSavedListener(saveEvent)
 
     useHoldPhysicsPause()
 

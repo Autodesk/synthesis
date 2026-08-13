@@ -5,8 +5,8 @@ import type { AddToastFn, CloseModalFn, OpenModalFn, OpenPanelFn } from "../help
  */
 
 export let globalAddToast: AddToastFn = () => {}
-export let globalOpenPanel: OpenPanelFn = () => ""
-export let globalOpenModal: OpenModalFn = () => ""
+export let globalOpenPanel: OpenPanelFn = () => null
+export let globalOpenModal: OpenModalFn = () => null
 export let globalCloseModal: CloseModalFn = () => {}
 
 export function setAddToast(func: typeof globalAddToast) {

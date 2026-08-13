@@ -19,13 +19,14 @@ import AssemblySelection, { type AssemblySelectionOption } from "./configure/Ass
 import ConfigModeSelection from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
+import ConfigureGamepieceIntakeInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
+import ConfigureGamepieceEjectorInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
 import ConfigureJointsInterface from "./interfaces/ConfigureJointsInterface"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsInterface"
+import ConfigureSpawnPositionsInterface from "./interfaces/ConfigureSpawnPositionsInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
@@ -148,13 +149,14 @@ export interface ConfigurePanelCustomProps {
 
 const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
     [ConfigMode.JOINTS]: ConfigureJointsInterface,
-    [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface,
+    [ConfigMode.EJECTOR]: ConfigureGamepieceEjectorInterface,
+    [ConfigMode.INTAKE]: ConfigureGamepieceIntakeInterface,
     [ConfigMode.CAMERA]: ConfigureCameraInterface,
-    [ConfigMode.INTAKE]: ConfigureGamepiecePickupInterface,
     [ConfigMode.CONTROLS]: ControlsConfigInterface,
     [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
     [ConfigMode.PROTECTED_ZONES]: ConfigureProtectedZonesInterface,
     [ConfigMode.CAMERA_POINTS]: ConfigureCameraPointsInterface,
+    [ConfigMode.SPAWN_POSITIONS]: ConfigureSpawnPositionsInterface,
     [ConfigMode.MOVE]: MoveInterface,
     [ConfigMode.SIM]: SimulationInterface,
     [ConfigMode.BRAIN]: BrainSelectionInterface,
@@ -275,6 +277,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 title: "Configure Assets",
                 acceptText: "Save",
                 cancelText: hasMadeChanges ? "Revert" : "Cancel",
+                exclusiveGroup: "assembly-init",
                 disableAccept,
             },
             { onBeforeAccept, onCancel, onClose }
