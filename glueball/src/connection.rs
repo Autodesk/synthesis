@@ -6,7 +6,7 @@ use crate::{
     error_global, info_global,
     messaging::{handle_client_message, wait_for_initialization},
     model::ServerToClientMessage,
-    prefixed::{ConnectionStatus, into_prefixed_or_respond},
+    prefixed::{ConnectionStatus, SynthesisStream, into_prefixed_or_respond},
     room::ClientId,
     state::State,
     util::{server_sent_msg, trim_uuid},
@@ -15,18 +15,14 @@ use crate::{
 use anyhow::{Result, bail};
 use futures_util::{SinkExt, StreamExt};
 use std::{net::SocketAddr, sync::Arc, time::Duration};
-use tokio::{
-    io::{AsyncRead, AsyncWrite},
-    sync::mpsc,
-    time::timeout,
-};
+use tokio::{sync::mpsc, time::timeout};
 use tokio_tungstenite::tungstenite::Message;
 
 pub const TIMEOUT: Duration = Duration::from_secs(30);
 
 pub async fn handle_connection<S>(state: Arc<State>, raw_stream: S, addr: SocketAddr)
 where
-    S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
+    S: SynthesisStream,
 {
     let ConnectionStatus::Ws(stream) = into_prefixed_or_respond(raw_stream, addr).await else {
         return;

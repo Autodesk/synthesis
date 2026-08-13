@@ -33,8 +33,10 @@ impl<S: AsyncRead + Unpin> AsyncRead for Prefixed<S> {
 
         if pos < data.len() {
             let n = (data.len() - pos).min(buf.remaining());
+
             buf.put_slice(&data[pos..pos + n]);
             self.prefix.set_position((pos + n) as u64);
+
             return Poll::Ready(Ok(()));
         }
 
@@ -72,7 +74,7 @@ pub enum ConnectionStatus<S> {
 
 pub async fn into_prefixed_or_respond<S>(mut raw_stream: S, addr: SocketAddr) -> ConnectionStatus<S>
 where
-    S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
+    S: SynthesisStream,
 {
     // "Peek" at the request: read the first chunk, then replay it in front of
     // the stream. `peek()` is an inherent method on `TcpStream` (not a trait),
