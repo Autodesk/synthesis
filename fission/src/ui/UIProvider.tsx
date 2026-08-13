@@ -44,17 +44,6 @@ function shallowEqualProps(a: unknown, b: unknown): boolean {
     return aKeys.every(k => a[k] === b[k])
 }
 
-const getContentName = (content: unknown): string => (content as { name?: string } | undefined)?.name ?? ""
-
-/** True for a ConfigurePanel with unsaved work (an assembly selected or a config mode set). */
-function isActivelyConfiguring(panel: { content: unknown; props: unknown }): boolean {
-    if (getContentName(panel.content) !== "ConfigurePanel") return false
-    const custom = (panel.props as { custom?: { selectedAssembly?: unknown; configMode?: unknown } }).custom ?? {}
-    return Boolean(custom.selectedAssembly) || custom.configMode !== undefined
-}
-
-const UNSAVED_CONFIG_WARNING = "You have unsaved configuration open. Close it before spawning."
-
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
 const DEFAULT_PROPS = {
     hideAccept: false,
@@ -123,13 +112,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 return null
             }
 
-            // Block opening the asset Library while an assembly is actively being configured
-            // (mirrors the panel-level guard that used to apply when the Library was a panel).
-            if (getContentName(content) === "LibraryModal" && panels.some(isActivelyConfiguring)) {
-                addToast("warning", UNSAVED_CONFIG_WARNING)
-                return null
-            }
-
             const id = uuidv4()
             const newModal = {
                 id,
@@ -160,7 +142,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setModal(newModal as Modal<any, any>)
             return id
         },
-        [modal, panels, blockState]
+        [modal, blockState]
     )
 
     const snackbarAction = useCallback(
@@ -215,17 +197,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             if (blockState.blocked) {
                 addToast("warning", blockState.blockMessage)
                 return null
-            }
-
-            // Opening InitialConfigPanel over an actively-edited ConfigurePanel would drop
-            // unsaved work; warn the user and keep Configure open.
-            if (getContentName(content) === "InitialConfigPanel") {
-                const existing = panels.find(isActivelyConfiguring)
-                if (existing) {
-                    addToast("warning", UNSAVED_CONFIG_WARNING)
-                    setPanels(p => [...p.filter(x => x !== existing), existing])
-                    return existing.id
-                }
             }
 
             const id = uuidv4()
