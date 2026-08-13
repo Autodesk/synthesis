@@ -7,8 +7,6 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Scoreboard from "@/ui/components/Scoreboard"
 import { ScoreboardButton } from "@/ui/components/topbar/GameplayControls"
 
-const isShown = (container: HTMLElement) => container.firstChild !== null
-
 const setAlwaysShow = (value: boolean) => act(() => PreferencesSystem.setUserPreference("AlwaysShowScoreboard", value))
 
 const setMatchMode = (mode: MatchModeType) => act(() => EventSystem.dispatch("MatchStateChangedEvent", { mode }))
@@ -18,22 +16,22 @@ describe("Scoreboard", () => {
 
     test("only follows match state when it is not set to always show", async () => {
         const { container } = render(<Scoreboard />)
-        expect(isShown(container)).toBe(false)
+        expect(container).toBeEmptyDOMElement()
 
         setMatchMode(MatchModeType.TELEOP)
-        await waitFor(() => expect(isShown(container)).toBe(true))
+        await waitFor(() => expect(container).not.toBeEmptyDOMElement())
 
         setMatchMode(MatchModeType.SANDBOX)
-        await waitFor(() => expect(isShown(container)).toBe(false))
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
     })
 
     test("stays shown outside of a match when set to always show", async () => {
         setAlwaysShow(true)
         const { container } = render(<Scoreboard />)
-        expect(isShown(container)).toBe(true)
+        expect(container).not.toBeEmptyDOMElement()
 
         setAlwaysShow(false)
-        await waitFor(() => expect(isShown(container)).toBe(false))
+        await waitFor(() => expect(container).toBeEmptyDOMElement())
     })
 })
 
