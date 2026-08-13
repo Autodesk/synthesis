@@ -9,11 +9,12 @@ import TourCard from "./TourCard"
 import { useTourContext } from "./TourProviderHelpers"
 
 const ZIndex = 1400 // above panels/modals (1300) and the top bar (1200)
-// Full-screen blocking scrim for informational steps: dims the app and swallows every click,
-// so only the tour card (which sits above it at `ZIndex`) stays interactive.
 const ScrimZIndex = ZIndex - 10
+const SCRIM_COLOR = "rgba(0,0,0,0.5)"
 // Gap from the top bar / viewport edge for an anchorless card that is pinned to a corner.
 const SCREEN_EDGE_GAP = 12
+const SPOTLIGHT_PAD = 6
+const SETTLE_DELAYS = [0, 100, 250, 450]
 
 /** Fixed-position style for an anchorless card, keyed by its {@link ScreenPosition}. */
 function screenPositionStyle(position: ScreenPosition | undefined) {
@@ -39,6 +40,81 @@ function arrowEdgeFor(placement: string): "top" | "bottom" | "left" | "right" {
     }
 }
 
+const sameRect = (a: DOMRect | null, b: DOMRect) =>
+    a !== null && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height
+
+function useAnchorRect(el: HTMLElement | null, enabled: boolean) {
+    const [rect, setRect] = useState<DOMRect | null>(null)
+
+    useEffect(() => {
+        if (!el || !enabled) {
+            setRect(null)
+            return
+        }
+        const update = () =>
+            setRect(prev => {
+                const next = el.getBoundingClientRect()
+                return sameRect(prev, next) ? prev : next
+            })
+
+        const timers = SETTLE_DELAYS.map(delay => setTimeout(update, delay))
+        const observer = new ResizeObserver(update)
+        observer.observe(el)
+        window.addEventListener("resize", update)
+        return () => {
+            timers.forEach(clearTimeout)
+            observer.disconnect()
+            window.removeEventListener("resize", update)
+        }
+    }, [el, enabled])
+
+    return rect
+}
+
+const SpotlightScrim: React.FC<{ rect: DOMRect }> = ({ rect }) => {
+    const top = Math.max(0, rect.top - SPOTLIGHT_PAD)
+    const left = Math.max(0, rect.left - SPOTLIGHT_PAD)
+    const right = rect.right + SPOTLIGHT_PAD
+    const bottom = rect.bottom + SPOTLIGHT_PAD
+
+    const bands = {
+        above: { top: 0, left: 0, right: 0, height: top },
+        below: { top: bottom, left: 0, right: 0, bottom: 0 },
+        before: { top, left: 0, width: left, height: bottom - top },
+        after: { top, left: right, right: 0, height: bottom - top },
+    }
+
+    return (
+        <>
+            {Object.entries(bands).map(([edge, band]) => (
+                <Box
+                    key={edge}
+                    sx={{
+                        position: "fixed",
+                        bgcolor: SCRIM_COLOR,
+                        zIndex: ScrimZIndex,
+                        pointerEvents: "auto",
+                        ...band,
+                    }}
+                />
+            ))}
+            <Box
+                sx={{
+                    position: "fixed",
+                    top,
+                    left,
+                    width: right - left,
+                    height: bottom - top,
+                    borderRadius: "6px",
+                    boxShadow: "0 0 0 2px rgba(255,255,255,0.35)",
+                    zIndex: ScrimZIndex,
+                    pointerEvents: "none",
+                }}
+            />
+        </>
+    )
+}
+
 /**
  * Renders the current tour step's card, anchored to its registered element via an MUI
  * Popper (which repositions on resize, so cards stay attached across screen sizes).
@@ -48,49 +124,46 @@ const TourOverlay: React.FC = () => {
     // Consuming the context re-renders this component whenever the provider value changes -
     // including the anchorVersion bump on anchor (de)registration - so the anchor below is
     // always re-resolved when a panel mounts or unmounts.
-    const { active, stepIndex, next, prev, skip, getAnchor, anchorVersion } = useTourContext()
+    const { active, stepIndex, next, prev, skip, nudge, getAnchor, anchorVersion } = useTourContext()
     const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null)
     const popperRef = useRef<PopperInstance>(null)
 
     const step = active ? TOUR_STEPS[stepIndex] : undefined
-
-    // Re-sync the Popper position over a short burst after an anchored step (re)mounts. Some anchors
-    // (e.g. the Assembly Setup panel) slide in via a CSS transform, which fires no resize/scroll
-    // event, so the Popper's one-shot measurement lands on the anchor's pre-animation position and
-    // never corrects. Nudging update() as the anchor settles fixes that; it is idempotent otherwise.
-    useEffect(() => {
-        const timers = [0, 100, 250, 450].map(delay => setTimeout(() => popperRef.current?.update(), delay))
-        return () => timers.forEach(clearTimeout)
-    }, [stepIndex, anchorVersion])
-
-    if (!step) return null
-
-    // Gate the `>` button on steps that advance only when the user performs the real action.
-    const nextDisabled = !!step.advanceOn
 
     // Resolved on every render; the context change from anchor (de)registration drives re-renders.
     // Guard on `isConnected`: while an anchor's host (a panel/modal) unmounts, the element can be
     // detached from the document for a tick before its callback ref clears the registry entry.
     // Feeding a detached node to the Popper throws an MUI "invalid anchorEl" warning, so we treat
     // it as absent and fall through to the centered card until a live anchor re-registers.
-    const rawAnchor = step.anchorId ? getAnchor(step.anchorId) : null
+    const rawAnchor = step?.anchorId ? getAnchor(step.anchorId) : null
     const anchorEl = rawAnchor?.isConnected ? rawAnchor : null
 
-    // Informational steps float above a full-screen scrim that dims the app and absorbs every click
-    // (no handler = clicks go nowhere), leaving only the card's buttons live. Rendered as a sibling
-    // beneath the card so it never covers the card itself.
-    const scrim = step.informational ? (
-        <Box
-            sx={{ position: "fixed", inset: 0, bgcolor: "rgba(0,0,0,0.5)", zIndex: ScrimZIndex, pointerEvents: "auto" }}
-        />
-    ) : null
+    const spotlightRect = useAnchorRect(anchorEl, step?.focus === "anchor")
+
+    useEffect(() => {
+        const timers = SETTLE_DELAYS.map(delay => setTimeout(() => popperRef.current?.update(), delay))
+        return () => timers.forEach(clearTimeout)
+    }, [stepIndex, anchorVersion])
+
+    if (!step) return null
+
+    const nextDisabled = !!step.advanceOn
+
+    const scrim =
+        step.focus === "screen" ? (
+            <Box
+                sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: ScrimZIndex, pointerEvents: "auto" }}
+            />
+        ) : spotlightRect ? (
+            <SpotlightScrim rect={spotlightRect} />
+        ) : null
 
     const card = (
         <TourCard
             step={step}
             stepIndex={stepIndex}
             total={TOUR_STEPS.length}
-            onNext={next}
+            onNext={nextDisabled ? nudge : next}
             onPrev={prev}
             onSkip={skip}
             nextDisabled={nextDisabled}

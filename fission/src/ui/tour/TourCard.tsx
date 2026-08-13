@@ -4,6 +4,16 @@ import { MdChevronLeft, MdChevronRight } from "react-icons/md"
 import type { TourStep } from "./tourSteps"
 
 const CARD_WIDTH = 265
+const PILL_SX = {
+    bgcolor: "surface.main",
+    color: "topBarText.main",
+    borderRadius: "4px",
+    px: 1,
+    py: 0.25,
+    fontSize: 11,
+    fontWeight: 700,
+    "&:hover": { opacity: 0.85 },
+} as const
 /** Length of the pointer's base, running along the card edge. */
 const ARROW_BASE = 16
 /** How far the pointer's tip protrudes past the card edge toward the anchor. */
@@ -62,11 +72,6 @@ interface TourCardProps {
     setArrowRef?: (el: HTMLElement | null) => void
     /** Which card edge the pointer sits on. Omit to hide the pointer. */
     arrowEdge?: "top" | "bottom" | "left" | "right"
-    /**
-     * Gate forward navigation. True on steps that advance only once the user performs the
-     * real action (see `TourStep.advanceOn`): the `>` button is disabled so the tour cannot
-     * jump past a required interaction. `<` and Skip stay available as escape hatches.
-     */
     nextDisabled?: boolean
 }
 
@@ -122,20 +127,7 @@ const TourCard: React.FC<TourCardProps> = ({
 
             <Stack direction="row" alignItems="flex-start" justifyContent="space-between" gap={1}>
                 <Typography sx={{ fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>{step.title}</Typography>
-                <ButtonBase
-                    onClick={onSkip}
-                    sx={{
-                        flexShrink: 0,
-                        bgcolor: "surface.main",
-                        color: "topBarText.main",
-                        borderRadius: "4px",
-                        px: 1,
-                        py: 0.25,
-                        fontSize: 11,
-                        fontWeight: 700,
-                        "&:hover": { opacity: 0.85 },
-                    }}
-                >
+                <ButtonBase onClick={onSkip} sx={{ ...PILL_SX, flexShrink: 0 }}>
                     Skip
                 </ButtonBase>
             </Stack>
@@ -162,36 +154,34 @@ const TourCard: React.FC<TourCardProps> = ({
                     {stepIndex + 1} of {total}
                 </Typography>
 
-                {isLast ? (
+                {nextDisabled ? (
                     <ButtonBase
                         onClick={onNext}
-                        sx={{
-                            bgcolor: "surface.main",
-                            color: "topBarText.main",
-                            borderRadius: "4px",
-                            px: 1,
-                            py: 0.25,
-                            fontSize: 11,
-                            fontWeight: 700,
-                            "&:hover": { opacity: 0.85 },
-                        }}
-                    >
-                        Done
-                    </ButtonBase>
-                ) : (
-                    <ButtonBase
-                        onClick={onNext}
-                        disabled={nextDisabled}
+                        aria-disabled
                         aria-label="Next step"
                         sx={{
                             borderRadius: "50%",
                             p: 0.25,
                             color: "topBarText.main",
-                            opacity: nextDisabled ? 0.25 : 1,
-                            "&:hover": { bgcolor: nextDisabled ? "transparent" : "surface.main" },
+                            opacity: 0.25,
+                            "&:hover": { bgcolor: "transparent" },
                         }}
                     >
                         <MdChevronRight size={20} />
+                    </ButtonBase>
+                ) : (
+                    <ButtonBase
+                        onClick={onNext}
+                        sx={{
+                            ...PILL_SX,
+                            bgcolor: "primary.main",
+                            color: "primary.contrastText",
+                            gap: 0.25,
+                            pr: isLast ? 1 : 0.5,
+                        }}
+                    >
+                        {isLast ? "Done" : "Next"}
+                        {!isLast && <MdChevronRight size={14} />}
                     </ButtonBase>
                 )}
             </Stack>
