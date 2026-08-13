@@ -22,9 +22,10 @@ describe("MatchModeConfigPanel", () => {
 
         getConfigsSpy = vi.spyOn(DefaultMatchModeConfigs, "getConfigs").mockResolvedValue([])
 
-        container = createTestContainer()
-        // letting the getConfigs() promise settle so state updates before testing
-        await act(async () => {})
+        // act() lets the getConfigs() promise settle so state updates before testing
+        await act(async () => {
+            container = createTestContainer()
+        })
     })
 
     afterEach(() => {
