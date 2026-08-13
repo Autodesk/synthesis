@@ -7,8 +7,8 @@ use tokio::net::TcpListener;
 use tokio::time::{Duration, timeout};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
+use crate::connection::handle_connection;
 use crate::logging::create_logging_channel;
-use crate::messaging::handle_connection;
 use crate::model::{ClientToServerMessage, MessagePrefix, ServerToClientMessage};
 use crate::state::State;
 use crate::util::{deserialize_messagepack, serialize_and_prefix};

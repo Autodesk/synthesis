@@ -98,10 +98,7 @@ pub async fn handle_client_close(client_id: ClientId, state: &Arc<State>) -> Res
     });
 
     let Some(room) = state.get_room_of_client_mut(&client_id) else {
-        let err = "Client attempted to leave when they were not in a room ";
-
-        error_global!("{}", err);
-        bail!(err);
+        bail!("Client attempted to leave when they were not in a room ");
     };
 
     let client_name = room.get_client_name(&client_id)?;

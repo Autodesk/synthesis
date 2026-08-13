@@ -51,13 +51,10 @@ where
             // When they ask to initialize a connection, then we add them to a room
             // Or create a room for them
             Some(ClientToServerMessage::InitializeConnection { room_id, name }) => {
-                let (client_id, room_id) = {
-                    // The lock is relinquished at the end of this expression
-                    let info = state.initialize_client_in_room(tx, room_id, &name);
-                    match info {
-                        Some(info) => info,
-                        None => return None,
-                    }
+                let info = state.initialize_client_in_room(tx, room_id, &name);
+                let (client_id, room_id) = match info {
+                    Some(info) => info,
+                    None => break None,
                 };
 
                 let message = server_sent_msg(ServerToClientMessage::SendInfo {
@@ -68,20 +65,23 @@ where
                 if write.send(message).await.is_err() {
                     error_global!("Failed to send back initial response");
 
-                    return None;
+                    break None;
                 }
 
                 break Some(client_id);
             }
+
             Some(ClientToServerMessage::Ping { timestamp: _ }) => {
                 error_global!("Received ping from client during initialization");
-                return None;
+                break None;
             }
-            None => return None,
+
+            None => break None,
         }
     }
 }
 
+/// Waits for and then parses the initial message sent by the client
 async fn parse_first_message<S>(
     read: &mut SplitStream<WebSocketStream<Prefixed<S>>>,
     addr: SocketAddr,
@@ -89,7 +89,6 @@ async fn parse_first_message<S>(
 where
     S: SynthesisStream,
 {
-    // Parse initial message, then user in correct room
     let Some(Ok(Message::Binary(message_data))) = read.next().await else {
         warn_global!("Client disconnected before handshake (probably a test)");
         return None;
@@ -135,7 +134,7 @@ pub async fn handle_client_message(
             // If we're here, that means the message has a client-client prefix
             // which we want anyway, so there's no need to prefix the message
             // we can just forward it!
-            let senders: Vec<ClientSender> = { state.get_senders_from_user_room(client_id) };
+            let senders: Vec<ClientSender> = state.get_senders_from_user_room(client_id);
 
             let tasks = senders.iter().map(|tx| tx.send(message.clone()));
             let _ = futures_util::future::join_all(tasks).await;
@@ -169,15 +168,9 @@ async fn handle_client_ping(bytes: &Bytes, client_id: &ClientId, state: &Arc<Sta
         server_ts: current_server_timestamp,
     });
 
-    // Scope hack to avoid holding the guard while sending a message
-    // Because Mutex locks are not Send
-    let tx = {
-        let Some(tx) = state.get_client_tx(client_id) else {
-            error_global!("Received client-server message from client not in room");
-            return;
-        };
-
-        tx
+    let Some(tx) = state.get_client_tx(client_id) else {
+        error_global!("Received client-server message from client not in room");
+        return;
     };
 
     let _ = tx.send(message).await;

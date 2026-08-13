@@ -19,7 +19,7 @@ mod util;
 use crate::action::setup_user_action_system;
 use crate::cert::build_tls_config;
 use crate::cleanup::Cleanup;
-use crate::config::retrieve_config;
+use crate::config::{AppConfig, retrieve_config};
 use crate::connection::handle_connection;
 use crate::logging::{
     EventType, LogDestination, LogRequest, Logger, MAX_LOG_LINES, create_logging_channel,
@@ -52,8 +52,8 @@ async fn main() -> Result<()> {
         setup_tui_with_logger(&state, logging_rx);
     }
 
-    if let Some(room_id) = config.permanent_room {
-        state.new_permanent_room(room_id);
+    if let Some(ref room_id) = config.permanent_room {
+        state.new_permanent_room(&room_id);
     }
 
     // `listener` will be used regardless of the security level specified
@@ -63,21 +63,37 @@ async fn main() -> Result<()> {
 
     let local_ip = get_local_ip().unwrap_or_else(|| String::from("0.0.0.0"));
 
-    // Run insecure server
-    if !config.secure {
-        info_global!(
-            "Server hosted on {local_ip} listening at port {} (insecure)",
-            config.port
-        );
+    if config.secure {
+        run_secure_server(state, listener, config, local_ip).await
+    } else {
+        run_insecure_server(state, listener, config, local_ip).await
+    }
+}
 
-        while let Ok((stream, addr)) = listener.accept().await {
-            tokio::spawn(handle_connection(state.clone(), stream, addr));
-        }
+async fn run_insecure_server(
+    state: Arc<State>,
+    listener: TcpListener,
+    config: AppConfig,
+    local_ip: String,
+) -> Result<()> {
+    info_global!(
+        "Server hosted on {local_ip} listening at port {} (insecure)",
+        config.port
+    );
 
-        return Ok(());
+    while let Ok((stream, addr)) = listener.accept().await {
+        tokio::spawn(handle_connection(state.clone(), stream, addr));
     }
 
-    // Run secure server
+    Ok(())
+}
+
+async fn run_secure_server(
+    state: Arc<State>,
+    listener: TcpListener,
+    config: AppConfig,
+    local_ip: String,
+) -> Result<()> {
     let tls_config = build_tls_config(&config.cert_dir)?;
     let acceptor = TlsAcceptor::from(Arc::new(tls_config));
 

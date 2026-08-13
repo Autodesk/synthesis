@@ -117,8 +117,8 @@ impl State {
         Some(client_id)
     }
 
-    pub fn new_permanent_room(&self, room_id: RoomId) {
-        if !is_valid_room_id(&room_id) {
+    pub fn new_permanent_room(&self, room_id: &RoomId) {
+        if !is_valid_room_id(room_id) {
             error_global!(
                 "Invalid permanent room id: {room_id}, must be 6 characters and each character must match `[0-9A-Z]`"
             );
@@ -131,7 +131,7 @@ impl State {
             locked: false,
             permanent: true,
         };
-        self.rooms.insert(room_id, room);
+        self.rooms.insert(room_id.to_string(), room);
     }
 
     pub fn get_room_of_client_mut(&self, client_id: &ClientId) -> Option<RefMut<'_, RoomId, Room>> {
