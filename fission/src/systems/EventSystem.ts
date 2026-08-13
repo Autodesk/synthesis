@@ -49,6 +49,7 @@ interface EventDataMap {
     SetPlaceAssetButtonVisibleEvent: boolean
     ToggleTouchControlsVisibilityEvent: never
     SetTouchControlsVisibilityEvent: boolean
+    TouchControlsVisibilityChangedEvent: { visible: boolean }
 
     SetDragModeEvent: { enabled: boolean }
 

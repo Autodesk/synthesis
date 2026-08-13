@@ -3,6 +3,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import APS from "@/aps/APS"
 import EventSystem from "@/systems/EventSystem.ts"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
@@ -47,11 +48,22 @@ const TopBar: React.FC = () => {
     const [modeHovered, setModeHovered] = useState(false)
     const [modeMenuOpen, setModeMenuOpen] = useState(false)
     const [dragModeEnabled, setDragModeEnabled] = useState(World.isAlive && World.dragModeSystem.enabled)
+    const [touchControlsVisible, setTouchControlsVisible] = useState(() =>
+        PreferencesSystem.getUserPreference("TouchControls")
+    )
 
     const rowRef = useRef<HTMLDivElement>(null)
     const spacerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => EventSystem.listen("SetDragModeEvent", ({ enabled }) => setDragModeEnabled(enabled)), [])
+
+    useEffect(
+        () =>
+            EventSystem.listen("TouchControlsVisibilityChangedEvent", ({ visible }) =>
+                setTouchControlsVisible(visible)
+            ),
+        []
+    )
 
     useEffect(() => {
         // biome-ignore-start lint/suspicious/noExplicitAny: allow any for window and document access
@@ -174,7 +186,8 @@ const TopBar: React.FC = () => {
                     )}
                     {isTouchDevice && (
                         <TopBarButton
-                            label="Toggle Joysticks"
+                            label={touchControlsVisible ? "Hide Joysticks" : "Show Joysticks"}
+                            active={touchControlsVisible}
                             icon={
                                 <Box sx={TOP_BAR_GLYPH_SX}>
                                     <SynthesisIcons.GAMEPAD />
