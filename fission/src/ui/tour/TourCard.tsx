@@ -1,7 +1,7 @@
 import { Box, ButtonBase, Stack, Typography } from "@mui/material"
 import type React from "react"
 import { MdChevronLeft, MdChevronRight } from "react-icons/md"
-import type { TourStep } from "./tourSteps"
+import type { TourStep } from "./TourSteps"
 
 const CARD_WIDTH = 265
 const PILL_SX = {

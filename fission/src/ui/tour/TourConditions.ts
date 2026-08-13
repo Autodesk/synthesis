@@ -1,7 +1,7 @@
 import type { AppMode } from "@/systems/AppMode"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import type { TourCondition, TourStep, TourTargetId } from "./tourSteps"
-import { TOUR_STEPS } from "./tourSteps"
+import type { TourCondition, TourStep, TourTargetId } from "./TourSteps"
+import { TOUR_STEPS } from "./TourSteps"
 
 export interface TourSnapshot {
     modal?: TourTargetId

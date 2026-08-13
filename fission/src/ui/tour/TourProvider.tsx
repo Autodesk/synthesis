@@ -6,12 +6,12 @@ import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useIsMobile } from "@/ui/helpers/useIsMobile"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { hasPendingSpawn } from "@/ui/modals/mirabuf/librarySpawnActions"
+import { hasPendingSpawn } from "@/ui/modals/mirabuf/LibrarySpawnActions"
 import type { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import { advanceConditionMet, reconcile, stepHint, type TourRuntime, type TourSnapshot } from "./tourConditions"
+import { advanceConditionMet, reconcile, stepHint, type TourRuntime, type TourSnapshot } from "./TourConditions"
 import { TourContext, type TourContextValue } from "./TourProviderHelpers"
-import type { TourAnchorId } from "./tourSteps"
-import { TOUR_STEPS, tourIdOf } from "./tourSteps"
+import type { TourAnchorId } from "./TourSteps"
+import { TOUR_STEPS, tourIdOf } from "./TourSteps"
 
 const readWorld = () => ({
     fieldCount: World.isAlive && World.sceneRenderer.mirabufSceneObjects.getField() !== undefined ? 1 : 0,

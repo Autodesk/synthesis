@@ -31,7 +31,7 @@ import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProt
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
 import { Box, Tab, Tabs, type TabsActions } from "@mui/material"
-import { tourTarget } from "@/ui/tour/tourSteps"
+import { tourTarget } from "@/ui/tour/TourSteps"
 import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"

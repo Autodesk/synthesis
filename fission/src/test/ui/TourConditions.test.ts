@@ -6,8 +6,8 @@ import {
     type TourResult,
     type TourRuntime,
     type TourSnapshot,
-} from "@/ui/tour/tourConditions"
-import { TOUR_STEPS } from "@/ui/tour/tourSteps"
+} from "@/ui/tour/TourConditions"
+import { TOUR_STEPS } from "@/ui/tour/TourSteps"
 
 const stepOf = (title: string) => TOUR_STEPS.findIndex(step => step.title === title)
 

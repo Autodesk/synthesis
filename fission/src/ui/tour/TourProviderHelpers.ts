@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext } from "react"
-import type { TourAnchorId } from "./tourSteps"
+import type { TourAnchorId } from "./TourSteps"
 
 export interface TourContextValue {
     /** Whether the tour is currently running. */

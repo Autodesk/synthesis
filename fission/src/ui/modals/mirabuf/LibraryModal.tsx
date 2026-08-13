@@ -25,11 +25,11 @@ import {
     ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { tourTarget } from "@/ui/tour/tourSteps"
+import { tourTarget } from "@/ui/tour/TourSteps"
 import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type TaskStatus from "@/util/TaskStatus"
-import { downloadAll, spawnAPS, spawnCachedMira, spawnRemote } from "./librarySpawnActions"
+import { downloadAll, spawnAPS, spawnCachedMira, spawnRemote } from "./LibrarySpawnActions"
 
 const OTHER_YEAR = "Other" as const
 type YearKey = number | typeof OTHER_YEAR

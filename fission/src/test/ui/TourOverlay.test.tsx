@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest"
 import { UIContext, type UIBlockState, type UIContextProps } from "@/ui/helpers/UIProviderHelpers"
 import { TourContext, type TourContextValue } from "@/ui/tour/TourProviderHelpers"
 import TourOverlay from "@/ui/tour/TourOverlay"
-import { TOUR_STEPS } from "@/ui/tour/tourSteps"
+import { TOUR_STEPS } from "@/ui/tour/TourSteps"
 
 const SCRIM_COLOR = "rgba(0, 0, 0, 0.5)"
 const SCREEN_STEP = TOUR_STEPS.findIndex(step => step.focus === "screen")
