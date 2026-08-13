@@ -5,7 +5,7 @@ import EventSystem from "@/systems/EventSystem"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Scoreboard from "@/ui/components/Scoreboard"
-import ScoreboardButton from "@/ui/components/topbar/ScoreboardButton"
+import { ScoreboardButton } from "@/ui/components/topbar/GameplayControls"
 
 const isShown = (container: HTMLElement) => container.firstChild !== null
 

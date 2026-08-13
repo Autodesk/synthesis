@@ -152,6 +152,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
         <Stack
             direction="row"
             key={id}
+            data-testid="match-mode-config"
             justifyContent={"space-between"}
             alignItems={"center"}
             gap={"1rem"}

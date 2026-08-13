@@ -58,7 +58,7 @@ describe("MatchModeConfigPanel", () => {
     }
 
     function getMatchModeCount(container: HTMLElement): number {
-        return parseInt(getByText(container, /^\d+ Match Modes?$/).textContent!, 10)
+        return container.querySelectorAll("[data-testid='match-mode-config']").length
     }
 
     async function uploadMatchModeConfig(container: HTMLElement, json: unknown) {

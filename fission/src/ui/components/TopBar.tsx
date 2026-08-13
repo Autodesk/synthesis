@@ -34,6 +34,27 @@ import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 
 const TUTORIALS_URL = "https://synthesis.autodesk.com/tutorials"
 
+export const DragModeButton: React.FC = () => {
+    const [enabled, setEnabled] = useState(World.isAlive && World.dragModeSystem.enabled)
+
+    useEffect(() => EventSystem.listen("SetDragModeEvent", e => setEnabled(e.enabled)), [])
+
+    const toggleDragMode = () => EventSystem.dispatch("SetDragModeEvent", { enabled: !enabled })
+
+    return (
+        <TopBarButton
+            label={enabled ? "Disable Drag Mode" : "Drag Mode"}
+            active={enabled}
+            icon={
+                <Box sx={TOP_BAR_GLYPH_SX}>
+                    <SynthesisIcons.HAND />
+                </Box>
+            }
+            onClick={toggleDragMode}
+        />
+    )
+}
+
 const TopBar: React.FC = () => {
     const { openModal, openPanel, togglePanel, addToast } = useUIContext()
     const { appMode } = useStateContext()
@@ -47,15 +68,12 @@ const TopBar: React.FC = () => {
     const [userInfo, setUserInfo] = useState(APS.userInfo)
     const [modeHovered, setModeHovered] = useState(false)
     const [modeMenuOpen, setModeMenuOpen] = useState(false)
-    const [dragModeEnabled, setDragModeEnabled] = useState(World.isAlive && World.dragModeSystem.enabled)
     const [touchControlsVisible, setTouchControlsVisible] = useState(() =>
         PreferencesSystem.getUserPreference("TouchControls")
     )
 
     const rowRef = useRef<HTMLDivElement>(null)
     const spacerRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => EventSystem.listen("SetDragModeEvent", ({ enabled }) => setDragModeEnabled(enabled)), [])
 
     useEffect(
         () =>
@@ -196,16 +214,7 @@ const TopBar: React.FC = () => {
                             onClick={() => EventSystem.dispatch("ToggleTouchControlsVisibilityEvent")}
                         />
                     )}
-                    <TopBarButton
-                        label={dragModeEnabled ? "Disable Drag Mode" : "Drag Mode"}
-                        active={dragModeEnabled}
-                        icon={
-                            <Box sx={TOP_BAR_GLYPH_SX}>
-                                <SynthesisIcons.HAND />
-                            </Box>
-                        }
-                        onClick={() => EventSystem.dispatch("SetDragModeEvent", { enabled: !dragModeEnabled })}
-                    />
+                    <DragModeButton />
                     <TopBarButton
                         label="Configure Camera"
                         icon={
