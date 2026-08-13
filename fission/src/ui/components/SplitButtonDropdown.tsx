@@ -89,7 +89,8 @@ const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
         [closeMenu]
     )
 
-    const hasIconSlot = items.some(item => item.icon !== undefined || item.selected !== undefined)
+    // !== undefined because row needs room for checkmark
+    const reservesIconColumn = items.some(item => item.icon !== undefined || item.selected !== undefined)
 
     return (
         <>
@@ -128,7 +129,7 @@ const SplitButtonDropdown: React.FC<SplitButtonDropdownProps> = ({
                         onClick={() => selectItem(item)}
                         sx={{ gap: 1 }}
                     >
-                        {hasIconSlot && (
+                        {reservesIconColumn && (
                             <Box sx={ICON_SLOT_SX}>
                                 {item.icon ?? (item.selected ? <SynthesisIcons.CHECK /> : null)}
                             </Box>

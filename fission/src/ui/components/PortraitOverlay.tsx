@@ -4,7 +4,7 @@ import type React from "react"
 import { useCallback, useState } from "react"
 import { useIsMobile } from "@/ui/helpers/useIsMobile"
 
-/** Rotate your device to landscape screen */
+/** "Rotate your device to landscape" screen; dismissible */
 const PortraitOverlay: React.FC = () => {
     const isMobile = useIsMobile()
     const isPortrait = useMediaQuery("(orientation: portrait)")

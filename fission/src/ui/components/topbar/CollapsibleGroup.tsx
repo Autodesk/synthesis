@@ -16,7 +16,7 @@ interface CollapsibleGroupProps {
 
 const GROUP_SX = { flexShrink: 0, "& > *": { flexShrink: 0 } } as const
 
-const KEY_SEPARATOR = "\u0000"
+const KEY_SEPARATOR = "\u0000" // joins item keys into comparable string
 
 export const CollapsibleGroup: React.FC<CollapsibleGroupProps> = ({ items, always }) => {
     const fit = useTopBarFit()
@@ -26,6 +26,7 @@ export const CollapsibleGroup: React.FC<CollapsibleGroupProps> = ({ items, alway
     const itemCount = items.length
     const itemsKey = items.map(item => item.key).join(KEY_SEPARATOR)
 
+    // adding guard to ensure 'fitted' isn't stale during renders
     const [fitted, setFitted] = useState({ itemsKey, visibleCount: itemCount })
     if (fitted.itemsKey !== itemsKey) {
         widthsRef.current = []
@@ -49,6 +50,7 @@ export const CollapsibleGroup: React.FC<CollapsibleGroupProps> = ({ items, alway
         const spacer = fit?.spacerRef.current
         if (!row || !spacer) return
 
+        // width the items occupy; free space the flex spacer is taking rn; subtracting anything overflowing out of the row already
         const widths = widthsRef.current
         const usedByItems = widths.slice(0, visibleCount).reduce((total, width) => total + width + TOP_BAR_GAP_PX, 0)
         const overflow = Math.max(0, row.scrollWidth - row.clientWidth)

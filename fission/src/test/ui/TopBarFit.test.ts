@@ -1,13 +1,12 @@
 import { describe, expect, test } from "vitest"
-import { computeVisibleCount } from "@/ui/components/topbar/TopBarFit"
+import { computeVisibleCount, FIT_TOLERANCE_PX } from "@/ui/components/topbar/TopBarFit"
 
 const GAP = 12
 const BUTTON = 40
-const SUBPIXEL_SLACK_PX = 8
 
 const BUTTONS = Array<number>(6).fill(BUTTON)
 
-const leastBudgetFitting = (n: number) => n * (BUTTON + GAP) + SUBPIXEL_SLACK_PX
+const leastBudgetFitting = (n: number) => n * (BUTTON + GAP) + FIT_TOLERANCE_PX
 
 describe("computeVisibleCount", () => {
     test("drops exactly one item per item-width of budget, holding back slack", () => {

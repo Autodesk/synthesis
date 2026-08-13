@@ -12,6 +12,7 @@ class DefaultMatchModeConfigs {
     private static readonly MANIFEST_LOCATION = `${API_URL}/match_configs/manifest.json`
     private static _configs: MatchModeConfig[] = []
 
+    /** deferring loading so when you import this module, it doesn't fire a request */
     private static _loading: Promise<void> = new Promise<void>(resolve => {
         setTimeout(() => resolve(this.load()))
     })
@@ -47,10 +48,6 @@ class DefaultMatchModeConfigs {
 
     public static async getConfigs(): Promise<MatchModeConfig[]> {
         await this._loading
-        return this._configs
-    }
-
-    public static get configs(): MatchModeConfig[] {
         return this._configs
     }
 

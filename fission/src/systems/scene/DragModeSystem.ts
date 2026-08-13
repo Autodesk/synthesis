@@ -95,6 +95,7 @@ class DragModeSystem extends WorldSystem {
         return this._enabled
     }
 
+    /** toggle using SetDragModeEvent. Not this */
     public set enabled(enabled: boolean) {
         if (this._enabled === enabled) return
 

@@ -1,10 +1,10 @@
 import type React from "react"
 import { createContext, useContext } from "react"
 
-const SUBPIXEL_SLACK_PX = 8
+export const FIT_TOLERANCE_PX = 8
 
 export function computeVisibleCount(budget: number, widths: readonly number[], gap: number): number {
-    const spendable = budget - SUBPIXEL_SLACK_PX
+    const spendable = budget - FIT_TOLERANCE_PX
 
     let used = 0
     for (let i = 0; i < widths.length; i++) {
@@ -17,6 +17,7 @@ export function computeVisibleCount(budget: number, widths: readonly number[], g
 export interface TopBarFitValue {
     rowRef: React.RefObject<HTMLElement | null>
     spacerRef: React.RefObject<HTMLElement | null>
+    // not read. increased on resize to give context value new identity & re-run
     resizeTick: number
 }
 

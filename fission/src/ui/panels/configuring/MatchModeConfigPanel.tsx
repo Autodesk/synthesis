@@ -204,6 +204,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                     window.localStorage.getItem("match-mode-configs") || "[]"
                 )
 
+                // `prev` last so configs added while the manifest was loading survive.
                 setMatchModeConfigs(prev =>
                     Array.from(
                         new Map([...defaultConfigs, ...localConfigs, ...prev].map(item => [item.id, item])).values()
