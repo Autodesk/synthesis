@@ -39,6 +39,11 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         }
     }, [])
 
+    // bug: pressing 'enter' will open the library modal. Instead, we focus on this panel
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+    }, [])
+
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             targetAssembly.alliance = alliance
