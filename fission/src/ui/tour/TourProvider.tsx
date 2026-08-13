@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
-import InputSystem from "@/systems/input/InputSystem.ts"
+import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "@/systems/World.ts"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
@@ -134,7 +134,7 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
         return InputSystem.addEscapeHandler(() => {
             addToast("warning", stepHint(step))
             return true
-        }, 20)
+        }, ESCAPE_PRIORITY.TOUR)
     }, [active, stepIndex, addToast])
 
     const value = useMemo<TourContextValue>(

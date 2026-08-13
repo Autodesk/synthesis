@@ -26,7 +26,7 @@ import {
     type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
-import InputSystem from "@/systems/input/InputSystem.ts"
+import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem.ts"
 
 export type UIProviderProps = {
     children?: ReactNode
@@ -257,7 +257,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 if (modal == null) return false
                 if (!modal.props.hideCancel) closeModal(CloseType.CANCEL)
                 return true
-            }, 10),
+            }, ESCAPE_PRIORITY.MODAL),
         [modal, closeModal]
     )
 
@@ -268,7 +268,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 if (panel == null || panel.props.hideCancel) return false
                 closePanel(panel.id, CloseType.CANCEL)
                 return true
-            }, 0),
+            }, ESCAPE_PRIORITY.PANEL),
         [panels, closePanel]
     )
 

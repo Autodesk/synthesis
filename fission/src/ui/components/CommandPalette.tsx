@@ -3,7 +3,7 @@ import Fuse from "fuse.js"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import World from "@/systems/World"
-import InputSystem from "@/systems/input/InputSystem"
+import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry, { type CommandDefinition } from "@/ui/components/CommandRegistry"
 import "@/ui/panels/DebugPanel"
@@ -104,7 +104,7 @@ const CommandPalette: React.FC = () => {
                 if (!isOpen) return false
                 closePalette()
                 return true
-            }, 30),
+            }, ESCAPE_PRIORITY.COMMAND_PALETTE),
         [isOpen, closePalette]
     )
 

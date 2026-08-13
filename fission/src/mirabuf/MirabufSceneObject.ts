@@ -1412,9 +1412,10 @@ export async function createMirabuf(
 ): Promise<MirabufSceneObject | undefined> {
     const parser = new MirabufParser(assembly, progressHandle)
 
-    if (!parser.assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)) {
-        hash = (await migrateUUID(parser, hash)) ?? hash
-    }
+    const resolvedHash = parser.assembly.info?.GUID?.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/)
+        ? hash
+        : ((await migrateUUID(parser, hash)) ?? hash)
+
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
@@ -1426,7 +1427,7 @@ export async function createMirabuf(
     await yieldToMain()
 
     const sceneObject = new MirabufSceneObject(mirabufInstance, progressHandle, multiplayerOwnerId)
-    sceneObject.assemblyHash = MirabufCachingService.has(hash) ? hash : undefined
+    sceneObject.assemblyHash = MirabufCachingService.has(resolvedHash) ? resolvedHash : undefined
     return sceneObject
 }
 

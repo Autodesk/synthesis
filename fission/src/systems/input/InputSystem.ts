@@ -10,6 +10,8 @@ const LOG_GAMEPAD_EVENTS = false
 // returns true if 'esc' was consumed
 type EscapeHandler = () => boolean
 
+export const ESCAPE_PRIORITY = { COMMAND_PALETTE: 30, TOUR: 20, MODAL: 10, PANEL: 0 } as const
+
 /**
  *  The input system listens for and records key presses and joystick positions to be used by robots.
  *  It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.

@@ -1,4 +1,4 @@
-import { Box, Popper } from "@mui/material"
+import { Box, Popper, type PopperPlacementType } from "@mui/material"
 import type { Instance as PopperInstance } from "@popperjs/core"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
@@ -10,7 +10,7 @@ import TourCard from "./TourCard"
 import { useTourContext } from "./TourProviderHelpers"
 
 const ZIndex = 1400 // above panels/modals (1300) and the top bar (1200)
-const ScrimZIndex = ZIndex - 10
+const SCRIM_Z_INDEX = ZIndex - 10
 const SCRIM_COLOR = "rgba(0,0,0,0.5)"
 // Gap from the top bar / viewport edge for an anchorless card that is pinned to a corner.
 const SCREEN_EDGE_GAP = 12
@@ -27,18 +27,10 @@ function screenPositionStyle(position: ScreenPosition | undefined) {
 }
 
 /** Maps a Popper placement to the card edge its pointer should sit on. */
-function arrowEdgeFor(placement: string): "top" | "bottom" | "left" | "right" {
-    const base = placement.split("-")[0]
-    switch (base) {
-        case "top":
-            return "bottom"
-        case "left":
-            return "right"
-        case "right":
-            return "left"
-        default:
-            return "top" // bottom placement -> pointer on the card's top edge
-    }
+const ARROW_EDGE_BY_BASE = { top: "bottom", bottom: "top", left: "right", right: "left" } as const
+
+function arrowEdgeFor(placement: PopperPlacementType) {
+    return ARROW_EDGE_BY_BASE[placement.split("-")[0] as keyof typeof ARROW_EDGE_BY_BASE]
 }
 
 const sameRect = (a: DOMRect | null, b: DOMRect) =>
@@ -93,7 +85,7 @@ const SpotlightScrim: React.FC<{ rect: DOMRect }> = ({ rect }) => {
                     sx={{
                         position: "fixed",
                         bgcolor: SCRIM_COLOR,
-                        zIndex: ScrimZIndex,
+                        zIndex: SCRIM_Z_INDEX,
                         pointerEvents: "auto",
                         ...band,
                     }}
@@ -108,7 +100,7 @@ const SpotlightScrim: React.FC<{ rect: DOMRect }> = ({ rect }) => {
                     height: bottom - top,
                     borderRadius: "6px",
                     boxShadow: "0 0 0 2px rgba(255,255,255,0.35)",
-                    zIndex: ScrimZIndex,
+                    zIndex: SCRIM_Z_INDEX,
                     pointerEvents: "none",
                 }}
             />
@@ -152,7 +144,7 @@ const TourOverlay: React.FC = () => {
     const nextDisabled = !canAdvance
 
     const scrim = blockState.blocked ? null : step.focus === "screen" ? (
-        <Box sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: ScrimZIndex, pointerEvents: "auto" }} />
+        <Box sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: SCRIM_Z_INDEX, pointerEvents: "auto" }} />
     ) : spotlightRect ? (
         <SpotlightScrim rect={spotlightRect} />
     ) : null
