@@ -36,7 +36,8 @@ const Half: React.FC<HalfProps> = ({ onClick, children, tooltip, disabled, ariaL
             aria-label={ariaLabel}
             onClick={onClick}
             sound={sound}
-            sx={{ ...HALF_SX, ...sx }}
+            // the icons are pngs wrapped in svgs so disabled `color` won't dim them so we have to fade the icon
+            sx={{ ...HALF_SX, ...(disabled && { opacity: 0.4 }), ...sx }}
         >
             {children}
         </IconButton>

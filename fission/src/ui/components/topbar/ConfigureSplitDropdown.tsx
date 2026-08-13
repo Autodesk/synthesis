@@ -1,4 +1,3 @@
-import { Box } from "@mui/material"
 import type React from "react"
 import { useMemo } from "react"
 import SplitButtonDropdown from "@/ui/components/SplitButtonDropdown"
@@ -9,6 +8,7 @@ import ConfigurePanel from "@/panels/configuring/assembly-config/ConfigurePanel"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { ConfigureIcon } from "@/ui/components/topbar/ConfigureIcon"
 import { DROPDOWN_MENU_ICON_SIZE } from "@/ui/components/topbar/TopBarConfig"
+import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { type ConfigureButton, useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 const MENU_ONLY_CONFIGS: ConfigureButton[] = [
@@ -37,11 +37,7 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject; 
 
     return (
         <SplitButtonDropdown
-            icon={
-                <Box sx={{ fontSize: 22, display: "flex" }}>
-                    <SynthesisIcons.GEAR />
-                </Box>
-            }
+            icon={<TopBarIcon name="settings" size={28} />}
             iconTooltip={disabledMessage ?? "Configure Asset"}
             caretTooltip={disabledMessage ?? "Configure options"}
             caretDisabled={disabledMessage != null || blockState.blocked}

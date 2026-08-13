@@ -227,7 +227,11 @@ const TopBar: React.FC = () => {
                     />
                     <TopBarButton
                         label="Settings"
-                        icon={<TopBarIcon name="settings" size={30} />}
+                        icon={
+                            <Box sx={TOP_BAR_GLYPH_SX}>
+                                <SynthesisIcons.GEAR />
+                            </Box>
+                        }
                         onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
                     />
                     <TopBarButton
