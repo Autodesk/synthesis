@@ -18,7 +18,7 @@
     "bracketSpacing": true,
     "expand": "auto",
     "useEditorconfig": true,
-    "includes": ["**", "!dist"]
+    "includes": ["**", "!dist", "!src/systems/multiplayer/bindings"]
   },
   "linter": {
     "enabled": true,
@@ -281,6 +281,9 @@
     },
     {
       "includes": ["src/proto/**/*"],
+      "formatter": {
+        "enabled": false
+      },
       "linter": {
         "enabled": false
       }

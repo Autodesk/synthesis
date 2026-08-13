@@ -8,7 +8,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import {
     Accordion,
     AccordionDetails,

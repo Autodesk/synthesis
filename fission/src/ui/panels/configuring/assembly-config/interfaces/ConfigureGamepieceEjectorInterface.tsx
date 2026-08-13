@@ -18,7 +18,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener } from "@/util/ReactHooks.ts"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -180,7 +180,14 @@ const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly])
 
-    useHoldPhysicsPause()
+    // We don't want to pause physics here, we just want the robot being moved to have its physics disabled
+    useEffect(() => {
+        if (selectedAssembly) selectedAssembly.disablePhysics()
+
+        return () => {
+            if (selectedAssembly) selectedAssembly.enablePhysics()
+        }
+    }, [selectedAssembly])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
