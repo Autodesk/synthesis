@@ -12,14 +12,11 @@ export const TOP_BAR_ICON_BUTTON_SX = {
     "&:focus, &:focus-visible": { outline: "none" },
 } as const
 
-const tintedCurrentColor = (percent: number) => `color-mix(in srgb, currentColor ${percent}%, transparent)`
-
-/** The tints resolve against the `color` below - keep the two together. */
 export const TOP_BAR_ICON_BUTTON_ACTIVE_SX = {
     borderRadius: 1,
     color: "primary.main",
-    backgroundColor: tintedCurrentColor(16),
-    "&:hover": { backgroundColor: tintedCurrentColor(24) },
+    backgroundColor: "color-mix(in srgb, currentColor 16%, transparent)",
+    "&:hover": { backgroundColor: "color-mix(in srgb, currentColor 24%, transparent)" },
 } as const
 
 // making react-icon glyph consistent with buttons
