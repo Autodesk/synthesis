@@ -70,6 +70,12 @@
         }
       );
 
+      packages = forEachSystem (
+        { pkgs, ... }: {
+          glueball = pkgs.callPackage ./glueball/package.nix { };
+        }
+      );
+
       formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
 
       # Build all devShells, instead of just verifying they are derivations
