@@ -8,7 +8,7 @@ import {
     type SimSupplier,
 } from "@/systems/simulation/wpilib_brain/SimDataFlow"
 import World from "@/systems/World"
-import type { NoraType } from "../Nora"
+import { areTypesCompatible, serializeNoraType, type NoraType } from "../Nora"
 import SimAccel from "../wpilib_brain/sim/SimAccel"
 import SimCANEncoder from "../wpilib_brain/sim/SimCANEncoder"
 import SimCANMotor from "../wpilib_brain/sim/SimCANMotor"
@@ -52,6 +52,7 @@ export function compileTargetHandle(
     targetHandleId: HandleIdAlias,
     encountered: Set<HandleIdAlias>
 ): SimFlow | undefined {
+    console.debug("Compiling target handle with ID", targetHandleId)
     const edges = Object.keys(config.adjacency[targetHandleId])
     if (!edges || edges.length < 1) {
         console.warn("No edges found for target handle")
@@ -60,7 +61,10 @@ export function compileTargetHandle(
 
     // Generate receiver
     const targetHandle = config.handles[targetHandleId]
-    if (!targetHandle) return undefined
+    if (!targetHandle) {
+        console.warn("No target handle found")
+        return undefined
+    }
 
     const targetNoraType = targetHandle.noraType
     let receiver: SimReceiver<NoraType> | undefined = undefined
@@ -89,17 +93,38 @@ export function compileTargetHandle(
             },
         }
     }
-    if (!receiver) return undefined
+    if (!receiver) {
+        console.warn("No valid receiver type")
+        return undefined
+    }
 
-    if (!targetHandle.many && edges.length > 1) return
+    if (!targetHandle.many && edges.length > 1) {
+        console.warn("Edge count doesn't match allowed")
+        return undefined
+    }
 
     const suppliers: SimSupplier[] = []
     edges.forEach(edgeId => {
+        console.debug(`Creating edge with ID ${edgeId}`)
         const edge = config.edges[edgeId]
-        if (!edge) return
+        if (!edge) {
+            console.warn("Could not find edge with ID", edgeId)
+            return
+        }
+        console.debug(`Edge is between ${edge.sourceId} and ${edge.targetId}`)
         const sourceHandle = config.handles[edge.sourceId]
-        if (!sourceHandle || sourceHandle.noraType !== targetNoraType) return
-        if (encountered.has(sourceHandle.id)) return
+        if (!sourceHandle || !areTypesCompatible(sourceHandle.noraType!, targetNoraType!)) {
+            console.warn(
+                !sourceHandle
+                    ? "No source handle"
+                    : `Source handle type ${serializeNoraType(sourceHandle.noraType!)} doesn't match target type ${serializeNoraType(targetNoraType!)}`
+            )
+            return
+        }
+        if (encountered.has(sourceHandle.id)) {
+            console.warn("Already encountered source handle with ID", sourceHandle.id)
+            return
+        }
         encountered.add(sourceHandle.id)
         switch (sourceHandle.nodeId) {
             case NODE_ID_ROBOT_IO: {
@@ -136,7 +161,10 @@ export function compileTargetHandle(
         encountered.delete(sourceHandle.id)
     })
 
-    if (suppliers.length === 0) return undefined
+    if (suppliers.length === 0) {
+        console.warn("No suppliers created")
+        return undefined
+    }
 
     if (suppliers.length === 1) {
         return {
@@ -148,15 +176,83 @@ export function compileTargetHandle(
         supplier: {
             supplierType: targetNoraType,
             // TODO: fix to not always be average
-            getSupplierValue: () =>
-                aggregateValues(
-                    AggregateStrategy.AVERAGE,
-                    targetNoraType,
-                    suppliers.map(s => s.getSupplierValue())
-                ),
+            getSupplierValue: () => {
+                const supp = suppliers.map(s => s.getSupplierValue())
+                const val = aggregateValues(AggregateStrategy.AVERAGE, targetNoraType, supp)
+
+                return val
+            },
         },
         receiver: receiver,
     }
+}
+
+function compileConstructorNode(
+    config: SimConfigData,
+    simLayer: SimulationLayer,
+    node: NodeInfo,
+    encountered: Set<HandleIdAlias>
+): SimSupplier<NoraType>[] | undefined {
+    if (node.sources.length !== 1 || node.targets.length < 1) {
+        return undefined
+    }
+    const outputType = config.handles[node.sources[0]].noraType
+    const inputs = node.targets.map(x => {
+        const flow = compileTargetHandle(config, simLayer, x, encountered)
+        if (!flow) {
+            console.error(`Failed to compile flow. TargetHandleId: ${x}`)
+            throw new Error("Failed to compile SimConfig")
+        }
+        return flow.supplier
+    })
+    return [
+        {
+            supplierType: outputType,
+            getSupplierValue: () => inputs.flatMap(x => x.getSupplierValue()),
+        },
+    ]
+}
+
+export function compileDeconstructorNode(
+    config: SimConfigData,
+    simLayer: SimulationLayer,
+    node: NodeInfo,
+    encountered: Set<HandleIdAlias>
+): SimSupplier<NoraType>[] | undefined {
+    if (node.sources.length < 1 || node.targets.length !== 1) {
+        return undefined
+    }
+    const inputType = config.handles[node.targets[0]].noraType
+    const input = compileTargetHandle(config, simLayer, node.targets[0], encountered)
+    if (!input) {
+        console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
+        throw new Error("Failed to compile SimConfig")
+    }
+    const suppliers: SimSupplier<NoraType>[] = []
+    for (let i = 0; i < inputType.length; ++i) {
+        suppliers.push({
+            supplierType: [inputType[i]],
+            getSupplierValue: () => [input.supplier.getSupplierValue()[i]],
+        })
+    }
+    return suppliers
+}
+
+export function compileJunctionNode(
+    config: SimConfigData,
+    simLayer: SimulationLayer,
+    node: NodeInfo,
+    encountered: Set<HandleIdAlias>
+): SimSupplier<NoraType>[] | undefined {
+    if (node.sources.length !== 1 || node.targets.length !== 1) {
+        return undefined
+    }
+    const input = compileTargetHandle(config, simLayer, node.targets[0], encountered)
+    if (!input) {
+        console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
+        throw new Error("Failed to compile SimConfig")
+    }
+    return [input.supplier]
 }
 
 export function compileFunctionNode(
@@ -164,58 +260,14 @@ export function compileFunctionNode(
     simLayer: SimulationLayer,
     node: NodeInfo,
     encountered: Set<HandleIdAlias>
-): SimSupplier[] | undefined {
+): SimSupplier<NoraType>[] | undefined {
     switch (node.funcType) {
-        case FuncType.CONSTRUCTOR: {
-            if (node.sources.length !== 1 || node.targets.length < 1) {
-                return undefined
-            }
-            const outputType = config.handles[node.sources[0]].noraType
-            const inputs = node.targets.map(x => {
-                const flow = compileTargetHandle(config, simLayer, x, encountered)
-                if (!flow) {
-                    console.error(`Failed to compile flow. TargetHandleId: ${x}`)
-                    throw new Error("Failed to compile SimConfig")
-                }
-                return flow.supplier
-            })
-            return [
-                {
-                    supplierType: outputType,
-                    getSupplierValue: () => inputs.flatMap(x => x.getSupplierValue()),
-                },
-            ]
-        }
-        case FuncType.DECONSTRUCTOR: {
-            if (node.sources.length < 1 || node.targets.length !== 1) {
-                return undefined
-            }
-            const inputType = config.handles[node.targets[0]].noraType
-            const input = compileTargetHandle(config, simLayer, node.targets[0], encountered)
-            if (!input) {
-                console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
-                throw new Error("Failed to compile SimConfig")
-            }
-            const suppliers: SimSupplier[] = []
-            for (let i = 0; i < inputType.length; ++i) {
-                suppliers.push({
-                    supplierType: [inputType[i]],
-                    getSupplierValue: () => [input.supplier.getSupplierValue()[i]],
-                })
-            }
-            return suppliers
-        }
-        case FuncType.JUNCTION: {
-            if (node.sources.length !== 1 || node.targets.length !== 1) {
-                return undefined
-            }
-            const input = compileTargetHandle(config, simLayer, node.targets[0], encountered)
-            if (!input) {
-                console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
-                throw new Error("Failed to compile SimConfig")
-            }
-            return [input.supplier]
-        }
+        case FuncType.CONSTRUCTOR:
+            return compileConstructorNode(config, simLayer, node, encountered)
+        case FuncType.DECONSTRUCTOR:
+            return compileDeconstructorNode(config, simLayer, node, encountered)
+        case FuncType.JUNCTION:
+            return compileJunctionNode(config, simLayer, node, encountered)
     }
     return undefined
 }

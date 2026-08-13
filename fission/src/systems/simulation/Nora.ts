@@ -177,8 +177,11 @@ export function deserializeNoraType(serialized: string): NoraType {
 /**
  * @returns {boolean} whether the two types are compatible
  */
-export function areTypesCompatible(type1: NoraType, type2: NoraType): boolean {
-    return serializeNoraType(type1) === serializeNoraType(type2)
+export function areTypesCompatible(type1: NoraType | null, type2: NoraType | null): boolean {
+    if (type1 === null && type2 === null) return true
+    if (type1 !== type2 && (type1 === null || type2 === null)) return false
+
+    return serializeNoraType(type1!) === serializeNoraType(type2!)
 }
 
 /**

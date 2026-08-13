@@ -38,7 +38,7 @@ const aggregateAverage: AggregateValuesFunc = <T extends NoraType>(type: T, vals
     // TODO: test this
     for (let i = 0; i < type.length; i++) {
         const t = type[i]
-        const avg = vals.map(v => Number(v[i])).reduce((acc, v) => acc + v, 0) / vals.length
+        const avg = vals.map(v => Number(v[i].value)).reduce((acc, v) => acc + v, 0) / vals.length
         if (t.type === BaseType.BOOLEAN) {
             // majority vote
             ret.push(avg > 0.5)
