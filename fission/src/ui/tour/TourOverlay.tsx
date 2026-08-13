@@ -125,7 +125,7 @@ const TourOverlay: React.FC = () => {
     // Consuming the context re-renders this component whenever the provider value changes -
     // including the anchorVersion bump on anchor (de)registration - so the anchor below is
     // always re-resolved when a panel mounts or unmounts.
-    const { active, stepIndex, next, prev, skip, nudge, getAnchor, anchorVersion } = useTourContext()
+    const { active, stepIndex, canAdvance, next, prev, skip, nudge, getAnchor, anchorVersion } = useTourContext()
     const { blockState } = useUIContext()
     const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null)
     const popperRef = useRef<PopperInstance>(null)
@@ -149,7 +149,7 @@ const TourOverlay: React.FC = () => {
 
     if (!step) return null
 
-    const nextDisabled = !!step.advanceOn
+    const nextDisabled = !canAdvance
 
     const scrim = blockState.blocked ? null : step.focus === "screen" ? (
         <Box sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: ScrimZIndex, pointerEvents: "auto" }} />

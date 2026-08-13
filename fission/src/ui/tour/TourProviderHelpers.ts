@@ -8,6 +8,7 @@ export interface TourContextValue {
     stepIndex: number
     /** Advance to the next step (or finish on the last step). */
     next: () => void
+    canAdvance: boolean
     /** Go back a step (no-op on the first step). */
     prev: () => void
     /** Dismiss the tour and mark it as seen. */
@@ -27,6 +28,7 @@ export const TourContext = createContext<TourContextValue>({
     active: false,
     stepIndex: 0,
     next: noop,
+    canAdvance: true,
     prev: noop,
     skip: noop,
     nudge: noop,

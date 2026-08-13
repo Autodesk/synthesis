@@ -56,6 +56,11 @@ export function stepHint(step: TourStep): string {
     return step.hint ?? (step.advanceOn ? CONDITIONS[step.advanceOn.condition].hint : MANUAL_HINT)
 }
 
+export function advanceConditionMet(step: TourStep, snapshot: TourSnapshot): boolean {
+    if (!step.advanceOn) return true
+    return CONDITIONS[step.advanceOn.condition].holds(snapshot) === (step.advanceOn.state ?? true)
+}
+
 export interface TourRuntime {
     step: number
     armed: boolean
@@ -95,8 +100,7 @@ export function reconcile(stepIndex: number, snapshot: TourSnapshot, previous: T
     const runtime: TourRuntime = previous.step !== stepIndex ? runtimeAt(stepIndex) : { ...previous }
 
     if (step.advanceOn) {
-        const target = step.advanceOn.state ?? true
-        const holds = CONDITIONS[step.advanceOn.condition].holds(snapshot) === target
+        const holds = advanceConditionMet(step, snapshot)
         const count = countFor(stepIndex, snapshot)
         const grown = count !== undefined && runtime.baseline !== undefined && count > runtime.baseline
 

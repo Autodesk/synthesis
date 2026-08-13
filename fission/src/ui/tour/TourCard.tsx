@@ -154,36 +154,22 @@ const TourCard: React.FC<TourCardProps> = ({
                     {stepIndex + 1} of {total}
                 </Typography>
 
-                {nextDisabled ? (
-                    <ButtonBase
-                        onClick={onNext}
-                        aria-disabled
-                        aria-label="Next step"
-                        sx={{
-                            borderRadius: "50%",
-                            p: 0.25,
-                            color: "topBarText.main",
-                            opacity: 0.25,
-                            "&:hover": { bgcolor: "transparent" },
-                        }}
-                    >
-                        <MdChevronRight size={20} />
-                    </ButtonBase>
-                ) : (
-                    <ButtonBase
-                        onClick={onNext}
-                        sx={{
-                            ...PILL_SX,
-                            bgcolor: "primary.main",
-                            color: "primary.contrastText",
-                            gap: 0.25,
-                            pr: isLast ? 1 : 0.5,
-                        }}
-                    >
-                        {isLast ? "Done" : "Next"}
-                        {!isLast && <MdChevronRight size={14} />}
-                    </ButtonBase>
-                )}
+                <ButtonBase
+                    onClick={onNext}
+                    aria-disabled={nextDisabled}
+                    aria-label="Next step"
+                    sx={{
+                        ...PILL_SX,
+                        bgcolor: "primary.main",
+                        color: "primary.contrastText",
+                        gap: 0.25,
+                        pr: isLast ? 1 : 0.5,
+                        ...(nextDisabled && { opacity: 0.4, "&:hover": { opacity: 0.4 } }),
+                    }}
+                >
+                    {isLast ? "Done" : "Next"}
+                    {!isLast && <MdChevronRight size={14} />}
+                </ButtonBase>
             </Stack>
         </Box>
     )

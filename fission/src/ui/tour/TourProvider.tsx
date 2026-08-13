@@ -8,7 +8,7 @@ import { useIsMobile } from "@/ui/helpers/useIsMobile"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { hasPendingSpawn } from "@/ui/modals/mirabuf/librarySpawnActions"
 import type { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import { reconcile, stepHint, type TourRuntime } from "./tourConditions"
+import { advanceConditionMet, reconcile, stepHint, type TourRuntime, type TourSnapshot } from "./tourConditions"
 import { TourContext, type TourContextValue } from "./TourProviderHelpers"
 import type { TourAnchorId } from "./tourSteps"
 import { TOUR_STEPS, tourIdOf } from "./tourSteps"
@@ -28,6 +28,10 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
     const [world, setWorld] = useState(readWorld)
 
     useEffect(() => EventSystem.listen("MirabufObjectChangeEvent", () => setWorld(readWorld())), [])
+
+    const [spawnPending, setSpawnPending] = useState(hasPendingSpawn)
+
+    useEffect(() => EventSystem.listen("SpawnPendingChangeEvent", setSpawnPending), [])
 
     // Anchor registry. The Map lives in a ref (stable identity); a version counter
     // triggers overlay re-resolution when elements mount/unmount (e.g. panels opening).
@@ -75,7 +79,7 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
     useEffect(() => {
         if (isMobile) {
             // Never run on mobile; end the tour if the viewport crosses into mobile mid-run.
-            setActive(prevActive => (prevActive ? false : prevActive))
+            setActive(false)
             return
         }
         if (startedRef.current) return
@@ -96,28 +100,31 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
         })
     }, [isMobile])
 
+    const snapshot = useMemo<TourSnapshot>(
+        () => ({
+            modal: tourIdOf(modal?.content),
+            panels: panels.map(p => ({
+                id: tourIdOf(p.content),
+                configMode: (p.props.custom as { configMode?: ConfigMode } | undefined)?.configMode,
+            })),
+            appMode,
+            ...world,
+            spawnPending,
+        }),
+        [modal, panels, appMode, world, spawnPending]
+    )
+
     useEffect(() => {
         if (!active) return
-        const result = reconcile(
-            stepIndex,
-            {
-                modal: tourIdOf(modal?.content),
-                panels: panels.map(p => ({
-                    id: tourIdOf(p.content),
-                    configMode: (p.props.custom as { configMode?: ConfigMode } | undefined)?.configMode,
-                })),
-                appMode,
-                ...world,
-                spawnPending: hasPendingSpawn(),
-            },
-            runtimeRef.current
-        )
+        const result = reconcile(stepIndex, snapshot, runtimeRef.current)
         runtimeRef.current = result.runtime
 
         if (result.toast) addToast("warning", result.toast)
         if (result.stepIndex >= TOUR_STEPS.length) finish()
         else if (result.stepIndex !== stepIndex) setStepIndex(result.stepIndex)
-    }, [active, stepIndex, panels, modal, appMode, world, addToast, finish])
+    }, [active, stepIndex, snapshot, addToast, finish])
+
+    const canAdvance = active ? advanceConditionMet(TOUR_STEPS[stepIndex], snapshot) : true
 
     useEffect(() => {
         const step = active ? TOUR_STEPS[stepIndex] : undefined
@@ -131,8 +138,8 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
     }, [active, stepIndex, addToast])
 
     const value = useMemo<TourContextValue>(
-        () => ({ active, stepIndex, next, prev, skip, nudge, registerAnchor, getAnchor, anchorVersion }),
-        [active, stepIndex, next, prev, skip, nudge, registerAnchor, getAnchor, anchorVersion]
+        () => ({ active, stepIndex, canAdvance, next, prev, skip, nudge, registerAnchor, getAnchor, anchorVersion }),
+        [active, stepIndex, canAdvance, next, prev, skip, nudge, registerAnchor, getAnchor, anchorVersion]
     )
 
     return <TourContext.Provider value={value}>{children}</TourContext.Provider>

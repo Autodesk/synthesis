@@ -1,6 +1,12 @@
 import { describe, expect, test } from "vitest"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import { reconcile, type TourResult, type TourRuntime, type TourSnapshot } from "@/ui/tour/tourConditions"
+import {
+    advanceConditionMet,
+    reconcile,
+    type TourResult,
+    type TourRuntime,
+    type TourSnapshot,
+} from "@/ui/tour/tourConditions"
 import { TOUR_STEPS } from "@/ui/tour/tourSteps"
 
 const stepOf = (title: string) => TOUR_STEPS.findIndex(step => step.title === title)
@@ -104,6 +110,18 @@ describe("tour reconciler", () => {
             snapshot({ fieldCount: 1, robotCount: 2 }),
         ])
         expect(result.stepIndex).toBe(stepOf("Set Up Your Assembly"))
+    })
+
+    test("offers Next on a step whose screen is already closed", () => {
+        const closed = snapshot({ fieldCount: 1, robotCount: 1 })
+        expect(advanceConditionMet(TOUR_STEPS[stepOf("Set Up Your Assembly")], closed)).toBe(true)
+        expect(advanceConditionMet(TOUR_STEPS[stepOf("Finish Up")], closed)).toBe(true)
+    })
+
+    test("withholds Next while a step is still waiting on its condition", () => {
+        const empty = snapshot()
+        expect(advanceConditionMet(TOUR_STEPS[stepOf("Add a Field")], empty)).toBe(false)
+        expect(advanceConditionMet(TOUR_STEPS[stepOf("Choose a Robot")], empty)).toBe(false)
     })
 
     test("recovers the intake panel by sending the user back to the step that opens it", () => {
