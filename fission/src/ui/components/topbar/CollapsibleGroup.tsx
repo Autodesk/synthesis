@@ -41,9 +41,16 @@ export const CollapsibleGroup: React.FC<CollapsibleGroupProps> = ({ items, alway
         if (widthsRef.current.length !== itemCount) {
             if (group.children.length < itemCount) return
 
-            widthsRef.current = Array.from(group.children)
+            const measured = Array.from(group.children)
                 .slice(0, itemCount)
                 .map(child => (child as HTMLElement).offsetWidth)
+
+            // a zero width means the item hasn't been laid out yet. caching that would
+            // permanently under-measure the group, so leave the widths unset and wait for
+            // the resize tick that follows layout to measure again
+            if (measured.some(width => width === 0)) return
+
+            widthsRef.current = measured
         }
 
         const row = fit?.rowRef.current
