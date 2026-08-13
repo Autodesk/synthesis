@@ -2,8 +2,9 @@ import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
+import { useMemo } from "react"
 import type { FunctionComponent, ReactNode } from "react"
-import { useCallback, useEffect, useReducer, useState } from "react"
+import { Fragment, useCallback, useEffect, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
 import type { PanelImplProps } from "./components/Panel"
@@ -18,6 +19,7 @@ import {
     type Panel,
     type PanelProps,
     type TogglePanelFn,
+    type UIBlockState,
     UIContext,
     type UIScreen,
     type UIScreenCallbacks,
@@ -90,10 +92,23 @@ const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseT
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
-
-    const [_, refresh] = useReducer(x => !x, false)
+    const [refreshDep, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+    const blockState: UIBlockState = useMemo(() => {
+        const blockingPanel = panels.find(p => p.props.blocking)
+        if (blockingPanel != null) {
+            return {
+                blocked: true,
+                blockMessage:
+                    blockingPanel?.props?.blockingMessage ?? "Close the current panel before opening another.",
+            }
+        }
+        return {
+            blocked: false,
+        }
+    }, [refreshDep, panels])
 
     const openModal: OpenModalFn = useCallback(
         <T, P>(
@@ -103,11 +118,16 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             props: Omit<ModalProps<P>, "type" | "configured" | "custom"> &
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS
         ) => {
+            if (blockState.blocked) {
+                addToast("warning", blockState.blockMessage)
+                return null
+            }
+
             // Block opening the asset Library while an assembly is actively being configured
             // (mirrors the panel-level guard that used to apply when the Library was a panel).
             if (getContentName(content) === "LibraryModal" && panels.some(isActivelyConfiguring)) {
-                enqueueSnackbar(UNSAVED_CONFIG_WARNING, { variant: "warning", action: snackbarAction })
-                return ""
+                addToast("warning", UNSAVED_CONFIG_WARNING)
+                return null
             }
 
             const id = uuidv4()
@@ -140,7 +160,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setModal(newModal as Modal<any, any>)
             return id
         },
-        [modal, panels]
+        [modal, panels, blockState]
     )
 
     const snackbarAction = useCallback(
@@ -155,16 +175,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const addToast = useCallback(
         (variant: VariantType, ...contents: SnackbarMessage[]) => {
             enqueueSnackbar(
-                contents.length <= 1
-                    ? { ...contents }
-                    : {
-                          ...contents.map(child => (
-                              <>
-                                  {child}
-                                  <br />
-                              </>
-                          )),
-                      },
+                contents.length <= 1 ? (
+                    (contents[0] ?? "")
+                ) : (
+                    <span>
+                        {contents.map((content, index) => (
+                            <Fragment key={index}>
+                                {content}
+                                {index < contents.length - 1 && <br />}
+                            </Fragment>
+                        ))}
+                    </span>
+                ),
                 { variant, action: snackbarAction }
             )
         },
@@ -190,12 +212,22 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             }
 
             // if any (generic) open panel declares itself as blocking, prevent opening a new one
-            const blockingPanel = panels.find(p => p.props.blocking)
-            if (blockingPanel) {
-                const msg = blockingPanel.props.blockingMessage ?? "Close the current panel before opening another."
-                addToast("warning", msg)
+            if (blockState.blocked) {
+                addToast("warning", blockState.blockMessage)
                 return null
             }
+
+            // Opening InitialConfigPanel over an actively-edited ConfigurePanel would drop
+            // unsaved work; warn the user and keep Configure open.
+            if (getContentName(content) === "InitialConfigPanel") {
+                const existing = panels.find(isActivelyConfiguring)
+                if (existing) {
+                    addToast("warning", UNSAVED_CONFIG_WARNING)
+                    setPanels(p => [...p.filter(x => x !== existing), existing])
+                    return existing.id
+                }
+            }
+
             const id = uuidv4()
             const panel = {
                 id,
@@ -222,30 +254,13 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             panel.onCancel = new UICallback()
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
-            const contentName = getContentName(content)
-            const mutuallyExclusive = ["ConfigurePanel", "InitialConfigPanel"]
-
-            if (mutuallyExclusive.includes(contentName)) {
-                const existing = panels.find(p => mutuallyExclusive.includes(getContentName(p.content)))
-                if (existing) {
-                    // Opening InitialConfigPanel over an actively-edited ConfigurePanel would drop
-                    // unsaved work; warn the user and keep Configure open.
-                    if (contentName === "InitialConfigPanel" && isActivelyConfiguring(existing)) {
-                        enqueueSnackbar(UNSAVED_CONFIG_WARNING, { variant: "warning", action: snackbarAction })
-                        setPanels(p => [...p.filter(x => x !== existing), existing])
-                        return existing.id
-                    }
-                    closePanel(existing.id, CloseType.OVERWRITE)
-                }
-            }
-
             setPanels(panels => {
                 const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
                 return [...nextPanels, panel as Panel<any, any>]
             })
             return id
         },
-        [panels, addToast]
+        [panels, addToast, blockState]
     )
 
     const closeModal = useCallback(
@@ -305,28 +320,41 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     )
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
-    const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {
-        type PropKey = keyof typeof screen.props
-        type PropValue = (typeof screen.props)[keyof typeof screen.props]
+    const configureScreen: ConfigureScreenFn = useCallback(
+        (screen, props, callbacks) => {
+            type PropKey = keyof typeof screen.props
+            type PropValue = (typeof screen.props)[keyof typeof screen.props]
 
-        for (const [k, v] of Object.entries(props)) {
-            ;(screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
-        }
+            for (const [k, v] of Object.entries(props)) {
+                ;(screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
+            }
 
-        screen.props.configured = true
+            screen.props.configured = true
 
-        if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
-        if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
-        if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
+            if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
+            if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
+            if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
 
-        refresh()
-    }, [])
+            if ("exclusiveGroup" in screen.props) {
+                const exclusiveGroup = screen.props.exclusiveGroup
+                if (exclusiveGroup != null) {
+                    const existing = panels.find(p => p.props.exclusiveGroup == exclusiveGroup && p !== screen)
+                    if (existing) {
+                        closePanel(existing.id, CloseType.OVERWRITE)
+                    }
+                }
+            }
+            refresh()
+        },
+        [closePanel, panels]
+    )
 
     return (
         <UIContext.Provider
             value={{
                 modal,
                 panels,
+                blockState,
                 openModal,
                 openPanel,
                 togglePanel,

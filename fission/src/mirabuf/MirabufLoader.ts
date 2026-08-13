@@ -5,6 +5,7 @@ import World from "@/systems/World"
 import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
 import { MiraType } from "@/mirabuf/MiraType"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
+import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -284,6 +285,10 @@ class MirabufCachingService {
         if (!assembly.dynamic && miraType != MiraType.FIELD) {
             globalAddToast("warning", "Cannot import field assembly as a robot")
             return
+        }
+
+        if (assembly.dynamic) {
+            detectAndTagWheels(assembly)
         }
 
         const info = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
