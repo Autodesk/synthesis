@@ -1,9 +1,7 @@
 import type { PopperPlacementType } from "@mui/material"
 import type { FunctionComponent } from "react"
-import { MiraType } from "@/mirabuf/MiraType"
-import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
-export type TourTargetId = "LibraryModal" | "ConfigurePanel"
+export type TourTargetId = "LibraryModal" | "ConfigurePanel" | "InitialConfigPanel"
 
 interface TourTagged {
     tourId?: TourTargetId
@@ -28,14 +26,12 @@ export type TourAnchorId =
     | "configure-panel"
     | "intake-show-zone"
 
-export type AdvanceTrigger =
-    | { kind: "panel-open"; target: TourTargetId; configMode?: ConfigMode }
-    | { kind: "modal-open"; target: TourTargetId }
-    | { kind: "spawn"; miraType: MiraType }
-    | { kind: "event"; event: "ConfigurationSavedEvent" }
+export type TourCondition = "libraryOpen" | "field" | "robot" | "setupPanel" | "intakePanel" | "configureMode"
 
 // for anchorless cards
 export type ScreenPosition = "center" | "top-left"
+
+export type TourFocus = "anchor" | "screen"
 
 export interface TourStep {
     title: string
@@ -43,8 +39,10 @@ export interface TourStep {
     anchorId?: TourAnchorId
     placement: PopperPlacementType
     screenPosition?: ScreenPosition
-    advanceOn?: AdvanceTrigger
-    informational?: boolean
+    advanceOn?: { condition: TourCondition; state?: boolean }
+    requires?: TourCondition[]
+    hint?: string
+    focus?: TourFocus
 }
 
 export const TOUR_STEPS: TourStep[] = [
@@ -53,80 +51,95 @@ export const TOUR_STEPS: TourStep[] = [
         body: "First we need a field. Open the assets library with the Add Assembly button.",
         anchorId: "add-assembly",
         placement: "bottom-start",
-        advanceOn: { kind: "modal-open", target: "LibraryModal" },
+        focus: "anchor",
+        advanceOn: { condition: "libraryOpen" },
     },
     {
         title: "Open the Library",
         body: "The library groups fields and robots by year. Select the 2026 year tab and spawn the field.",
         anchorId: "spawn-panel",
         placement: "left",
-        advanceOn: { kind: "spawn", miraType: MiraType.FIELD },
+        focus: "anchor",
+        advanceOn: { condition: "field" },
+        requires: ["libraryOpen"],
     },
     {
         title: "Add a Robot",
         body: "Now open the Add Assembly library again to spawn a robot.",
         anchorId: "add-assembly",
         placement: "bottom-start",
-        advanceOn: { kind: "modal-open", target: "LibraryModal" },
+        focus: "anchor",
+        advanceOn: { condition: "libraryOpen" },
+        requires: ["field"],
     },
     {
         title: "Choose a Robot",
         body: "With the library open, on the 2026 year tab, pick a robot.",
         anchorId: "spawn-panel",
         placement: "left",
-        advanceOn: { kind: "spawn", miraType: MiraType.ROBOT },
+        focus: "anchor",
+        advanceOn: { condition: "robot" },
+        requires: ["libraryOpen", "field"],
     },
     {
         title: "Set Up Your Assembly",
         body: "Select an input scheme for your robot, or just press Finish and the Ernie (WASD) scheme is assigned automatically. You can change the input scheme, alliance, and station later.",
         anchorId: "assembly-setup",
         placement: "left",
-        advanceOn: { kind: "event", event: "ConfigurationSavedEvent" },
+        advanceOn: { condition: "setupPanel", state: false },
+        hint: "Press Finish in Assembly Setup to continue.",
     },
     {
         title: "Select an Assembly",
         body: "Your spawned robot is automatically selected here for configuration. You could switch to another assembly from this drop-down, but we will stick with your robot.",
         anchorId: "configure-assembly-select",
         placement: "bottom-start",
-        informational: true,
+        focus: "screen",
+        requires: ["robot", "configureMode"],
     },
     {
         title: "Pick What to Configure",
         body: "With your robot selected, choose what to configure. In this case, the intake.",
         anchorId: "configure-intake-button",
         placement: "bottom",
-        advanceOn: { kind: "panel-open", target: "ConfigurePanel", configMode: ConfigMode.INTAKE },
+        focus: "anchor",
+        advanceOn: { condition: "intakePanel" },
+        requires: ["robot", "configureMode"],
     },
     {
         title: "Adjust the Intake",
         body: "This is the Configure Assets panel. Here you can align the intake with the robot's intake mechanism and tune how it picks up game pieces.",
         anchorId: "configure-panel",
         placement: "left",
-        informational: true,
+        focus: "screen",
+        requires: ["intakePanel"],
     },
     {
         title: "Show the Intake Zone",
         body: "The 'Show intake zone indicator always' toggle keeps the intake's pickup zone visible, making it much easier to see.",
         anchorId: "intake-show-zone",
         placement: "left",
-        informational: true,
+        focus: "screen",
+        requires: ["intakePanel"],
     },
     {
         title: "Finish Up",
         body: "When you are happy with the intake, press Save to apply your configuration and close the panel.",
         anchorId: "configure-panel",
         placement: "left",
-        advanceOn: { kind: "event", event: "ConfigurationSavedEvent" },
+        advanceOn: { condition: "intakePanel", state: false },
+        hint: "Press Save in the Configure Assets panel to continue.",
     },
     {
         title: "Drive Your Robot",
-        body: "Now drive using WASD, and E for the intake. When a game piece enters the sphere, your newly configured intake picks it up.",
+        body: "Now drive using WASD, and E for the intake. When a game piece enters the sphere, your newly configured intake picks it up. Press Next when you are ready to move on.",
         placement: "top",
         screenPosition: "top-left",
+        requires: ["robot"],
     },
     {
         title: "Switch Modes",
-        body: "This drop-down switches between modes and changes the buttons available in the bar.",
+        body: "This drop-down switches between modes and changes the buttons available in the bar. Press Done to finish the tour.",
         anchorId: "mode-dropdown",
         placement: "bottom-start",
     },

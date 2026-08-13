@@ -1,37 +1,33 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
+import InputSystem from "@/systems/input/InputSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
+import World from "@/systems/World.ts"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useIsMobile } from "@/ui/helpers/useIsMobile"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import type { Modal, Panel } from "@/ui/helpers/UIProviderHelpers"
+import { hasPendingSpawn } from "@/ui/modals/mirabuf/librarySpawnActions"
+import type { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import { reconcile, stepHint, type TourRuntime } from "./tourConditions"
 import { TourContext, type TourContextValue } from "./TourProviderHelpers"
-import type { AdvanceTrigger, TourAnchorId } from "./tourSteps"
+import type { TourAnchorId } from "./tourSteps"
 import { TOUR_STEPS, tourIdOf } from "./tourSteps"
 
-/** True when a panel matching the trigger is currently open. */
-function isPanelOpen(panels: Panel<unknown, unknown>[], trigger: Extract<AdvanceTrigger, { kind: "panel-open" }>) {
-    return panels.some(p => {
-        if (tourIdOf(p.content) !== trigger.target) return false
-        if (trigger.configMode === undefined) return true
-        const custom = (p.props as unknown as { custom?: { configMode?: number } })?.custom
-        return custom?.configMode === trigger.configMode
-    })
-}
-
-/** True when the open modal matches the trigger. */
-function isModalOpen(
-    modal: Modal<unknown, unknown> | undefined,
-    trigger: Extract<AdvanceTrigger, { kind: "modal-open" }>
-) {
-    return tourIdOf(modal?.content) === trigger.target
-}
+const readWorld = () => ({
+    hasField: World.isAlive && World.sceneRenderer.mirabufSceneObjects.getField() !== undefined,
+    hasRobot: World.isAlive && World.sceneRenderer.mirabufSceneObjects.getRobots().length > 0,
+})
 
 export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) => {
-    const { panels, modal } = useUIContext()
+    const { panels, modal, addToast } = useUIContext()
+    const { appMode } = useStateContext()
     const isMobile = useIsMobile()
 
     const [active, setActive] = useState(false)
     const [stepIndex, setStepIndex] = useState(0)
+    const [world, setWorld] = useState(readWorld)
+
+    useEffect(() => EventSystem.listen("MirabufObjectChangeEvent", () => setWorld(readWorld())), [])
 
     // Anchor registry. The Map lives in a ref (stable identity); a version counter
     // triggers overlay re-resolution when elements mount/unmount (e.g. panels opening).
@@ -72,6 +68,8 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
 
     const skip = useCallback(() => finish(), [finish])
 
+    const nudge = useCallback(() => addToast("warning", stepHint(TOUR_STEPS[stepIndex])), [addToast, stepIndex])
+
     // First-visit trigger. Desktop only, once per browser (persisted preference).
     const startedRef = useRef(false)
     useEffect(() => {
@@ -87,46 +85,54 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
         }
     }, [isMobile])
 
-    // Auto-advance on `panel-open` / `modal-open` triggers, rising-edge only so an already-open
-    // screen (e.g. the Library still showing after a field spawn) does not skip a step.
-    const edgeRef = useRef<{ step: number; wasOpen: boolean }>({ step: -1, wasOpen: false })
+    const runtimeRef = useRef<TourRuntime>({ step: -1, armed: false })
+
+    useEffect(() => {
+        if (isMobile) return
+        return EventSystem.listen("TourRestartEvent", () => {
+            runtimeRef.current = { step: -1, armed: false }
+            setStepIndex(0)
+            setActive(true)
+        })
+    }, [isMobile])
+
     useEffect(() => {
         if (!active) return
-        const trigger = TOUR_STEPS[stepIndex]?.advanceOn
-        if (trigger?.kind !== "panel-open" && trigger?.kind !== "modal-open") return
+        const result = reconcile(
+            stepIndex,
+            {
+                modal: tourIdOf(modal?.content),
+                panels: panels.map(p => ({
+                    id: tourIdOf(p.content),
+                    configMode: (p.props.custom as { configMode?: ConfigMode } | undefined)?.configMode,
+                })),
+                appMode,
+                ...world,
+                spawnPending: hasPendingSpawn(),
+            },
+            runtimeRef.current
+        )
+        runtimeRef.current = result.runtime
 
-        const openNow = trigger.kind === "panel-open" ? isPanelOpen(panels, trigger) : isModalOpen(modal, trigger)
-        if (edgeRef.current.step !== stepIndex) {
-            // Entering this step: seed the baseline; never advance on the same tick.
-            edgeRef.current = { step: stepIndex, wasOpen: openNow }
-            return
-        }
-        if (openNow && !edgeRef.current.wasOpen) {
-            edgeRef.current.wasOpen = true
-            next()
-            return
-        }
-        edgeRef.current.wasOpen = openNow
-    }, [active, stepIndex, panels, modal, next])
+        if (result.toast) addToast("warning", result.toast)
+        if (result.stepIndex >= TOUR_STEPS.length) finish()
+        else if (result.stepIndex !== stepIndex) setStepIndex(result.stepIndex)
+    }, [active, stepIndex, panels, modal, appMode, world, addToast, finish])
 
-    // Auto-advance on `spawn` / `event` triggers via EventSystem.
     useEffect(() => {
-        if (!active) return
-        const trigger = TOUR_STEPS[stepIndex]?.advanceOn
-        if (!trigger) return
-        if (trigger.kind === "spawn") {
-            return EventSystem.listen("MirabufObjectChangeEvent", obj => {
-                if (obj && obj.miraType === trigger.miraType) next()
-            })
-        }
-        if (trigger.kind === "event") {
-            return EventSystem.listen(trigger.event, () => next())
-        }
-    }, [active, stepIndex, next])
+        const step = active ? TOUR_STEPS[stepIndex] : undefined
+        if (!step || (!step.advanceOn && !step.requires)) return
+        // Above modals and panels so a step can refuse a close that would strand the user, below
+        // the command palette so that stays dismissible.
+        return InputSystem.addEscapeHandler(() => {
+            addToast("warning", stepHint(step))
+            return true
+        }, 20)
+    }, [active, stepIndex, addToast])
 
     const value = useMemo<TourContextValue>(
-        () => ({ active, stepIndex, next, prev, skip, registerAnchor, getAnchor, anchorVersion }),
-        [active, stepIndex, next, prev, skip, registerAnchor, getAnchor, anchorVersion]
+        () => ({ active, stepIndex, next, prev, skip, nudge, registerAnchor, getAnchor, anchorVersion }),
+        [active, stepIndex, next, prev, skip, nudge, registerAnchor, getAnchor, anchorVersion]
     )
 
     return <TourContext.Provider value={value}>{children}</TourContext.Provider>

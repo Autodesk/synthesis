@@ -12,6 +12,7 @@ export interface TourContextValue {
     prev: () => void
     /** Dismiss the tour and mark it as seen. */
     skip: () => void
+    nudge: () => void
     /** Register (or clear, with `null`) a DOM element as a named tour anchor. */
     registerAnchor: (id: TourAnchorId, el: HTMLElement | null) => void
     /** Resolve the current element registered for an anchor id. */
@@ -28,6 +29,7 @@ export const TourContext = createContext<TourContextValue>({
     next: noop,
     prev: noop,
     skip: noop,
+    nudge: noop,
     registerAnchor: noop,
     getAnchor: () => null,
     anchorVersion: 0,

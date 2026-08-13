@@ -14,6 +14,7 @@ import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { tourTarget } from "@/ui/tour/tourSteps"
 import { useTourAnchor } from "@/ui/tour/useTourAnchor"
 import { Box, Stack } from "@mui/material"
 import type React from "react"
@@ -162,5 +163,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
         </Stack>
     )
 }
+
+tourTarget(InitialConfigPanel, "InitialConfigPanel")
 
 export default InitialConfigPanel

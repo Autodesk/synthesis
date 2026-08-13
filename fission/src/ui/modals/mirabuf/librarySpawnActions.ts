@@ -13,6 +13,10 @@ import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 
+let pendingSpawns = 0
+
+export const hasPendingSpawn = () => pendingSpawns > 0
+
 /** Announce a newly spawned scene object to the multiplayer session, if one is active. */
 async function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf.Assembly, info: MirabufCacheInfo) {
     const multiplayer = World.multiplayerSystem
@@ -51,6 +55,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = n
     }
 
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
+    pendingSpawns++
     try {
         const assembly = await MirabufCachingService.get(info.hash)
         if (!assembly) {
@@ -87,6 +92,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = n
         console.error(e)
         progressHandle.fail()
     } finally {
+        pendingSpawns--
         setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
     }
 }
@@ -103,6 +109,7 @@ function cacheDefaultAsset(info: DefaultAssetInfo) {
 
 /** Run `cache`, then spawn the cached assembly, reporting progress and failures on `status`. */
 async function cacheAndSpawn(status: ProgressHandle, cache: () => Promise<MirabufCacheInfo | undefined>) {
+    pendingSpawns++
     try {
         const cacheInfo = await cache()
         if (cacheInfo) {
@@ -113,6 +120,8 @@ async function cacheAndSpawn(status: ProgressHandle, cache: () => Promise<Mirabu
     } catch (e) {
         console.error(e)
         status.fail()
+    } finally {
+        pendingSpawns--
     }
 }
 

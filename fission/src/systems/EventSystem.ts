@@ -33,6 +33,8 @@ interface EventDataMap {
     ConfigurationSavedEvent: never
     InputSchemeChanged: { panelId?: string }
 
+    TourRestartEvent: never
+
     // Match Mode
     ScoreChangedEvent: { red: number; blue: number }
     TimeChangedEvent: { time: number }
