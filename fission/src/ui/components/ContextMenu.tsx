@@ -6,6 +6,7 @@ import type { ContextData } from "./ContextMenuData"
 import { globalOpenModal, globalOpenPanel } from "./GlobalUIControls"
 import Label from "./Label"
 import { Button } from "./StyledComponents"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 
 interface ContextMenuStateData {
     data: ContextData
@@ -13,6 +14,7 @@ interface ContextMenuStateData {
 }
 
 const ContextMenu: React.FC = () => {
+    const { blockState } = useUIContext()
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
     useEffect(() => {
@@ -24,7 +26,7 @@ const ContextMenu: React.FC = () => {
         })
     }, [])
 
-    if (!state) return null
+    if (!state || blockState.blocked) return null
 
     return (
         <Stack
