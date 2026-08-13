@@ -5,6 +5,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { embedAssemblyThumbnail } from "@/mirabuf/MirabufThumbnail"
 import { mirabuf } from "@/proto/mirabuf"
+import EventSystem from "@/systems/EventSystem"
 import type { EncodedAssembly, Message } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { getTargetControls } from "@/systems/scene/CameraControls"
@@ -16,6 +17,13 @@ import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialCo
 let pendingSpawns = 0
 
 export const hasPendingSpawn = () => pendingSpawns > 0
+
+function trackSpawn(delta: number) {
+    const was = pendingSpawns > 0
+    pendingSpawns += delta
+    const now = pendingSpawns > 0
+    if (was !== now) EventSystem.dispatch("SpawnPendingChangeEvent", now)
+}
 
 /** Announce a newly spawned scene object to the multiplayer session, if one is active. */
 async function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf.Assembly, info: MirabufCacheInfo) {
@@ -55,7 +63,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = n
     }
 
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    pendingSpawns++
+    trackSpawn(1)
     try {
         const assembly = await MirabufCachingService.get(info.hash)
         if (!assembly) {
@@ -92,7 +100,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = n
         console.error(e)
         progressHandle.fail()
     } finally {
-        pendingSpawns--
+        trackSpawn(-1)
         setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
     }
 }
@@ -109,7 +117,7 @@ function cacheDefaultAsset(info: DefaultAssetInfo) {
 
 /** Run `cache`, then spawn the cached assembly, reporting progress and failures on `status`. */
 async function cacheAndSpawn(status: ProgressHandle, cache: () => Promise<MirabufCacheInfo | undefined>) {
-    pendingSpawns++
+    trackSpawn(1)
     try {
         const cacheInfo = await cache()
         if (cacheInfo) {
@@ -121,7 +129,7 @@ async function cacheAndSpawn(status: ProgressHandle, cache: () => Promise<Mirabu
         console.error(e)
         status.fail()
     } finally {
-        pendingSpawns--
+        trackSpawn(-1)
     }
 }
 
