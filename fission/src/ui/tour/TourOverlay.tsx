@@ -3,6 +3,7 @@ import type { Instance as PopperInstance } from "@popperjs/core"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type { ScreenPosition } from "./tourSteps"
 import { TOUR_STEPS } from "./tourSteps"
 import TourCard from "./TourCard"
@@ -125,6 +126,7 @@ const TourOverlay: React.FC = () => {
     // including the anchorVersion bump on anchor (de)registration - so the anchor below is
     // always re-resolved when a panel mounts or unmounts.
     const { active, stepIndex, next, prev, skip, nudge, getAnchor, anchorVersion } = useTourContext()
+    const { blockState } = useUIContext()
     const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null)
     const popperRef = useRef<PopperInstance>(null)
 
@@ -149,14 +151,11 @@ const TourOverlay: React.FC = () => {
 
     const nextDisabled = !!step.advanceOn
 
-    const scrim =
-        step.focus === "screen" ? (
-            <Box
-                sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: ScrimZIndex, pointerEvents: "auto" }}
-            />
-        ) : spotlightRect ? (
-            <SpotlightScrim rect={spotlightRect} />
-        ) : null
+    const scrim = blockState.blocked ? null : step.focus === "screen" ? (
+        <Box sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: ScrimZIndex, pointerEvents: "auto" }} />
+    ) : spotlightRect ? (
+        <SpotlightScrim rect={spotlightRect} />
+    ) : null
 
     const card = (
         <TourCard
