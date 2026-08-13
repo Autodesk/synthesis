@@ -6,6 +6,14 @@ import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/Mirabu
 import { MiraType } from "@/mirabuf/MiraType"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
 import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
+import { consolePrefixer } from "console-prefixer"
+
+const console = consolePrefixer({
+    defaultPrefix: {
+        text: "[MirabufLoader]",
+        style: "background: linear-gradient(90deg,rgba(121, 171, 162, 1) 0%, rgba(100, 55, 179, 1) 100%); color: white;font-weight:bold; padding:2px; border-radius:2px;",
+    },
+})
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"

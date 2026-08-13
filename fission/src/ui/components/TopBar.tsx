@@ -14,7 +14,7 @@ import CameraSelectionPanel from "@/panels/configuring/CameraSelectionPanel"
 import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
 import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
-import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
+import { setAddToast, setCloseModal, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
 import CodesimControls from "@/ui/components/topbar/CodesimControls"
@@ -31,7 +31,7 @@ import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 
 const TopBar: React.FC = () => {
-    const { openModal, openPanel, togglePanel, addToast } = useUIContext()
+    const { openModal, openPanel, togglePanel, closeModal, addToast } = useUIContext()
     const { appMode } = useStateContext()
     const isTouchDevice = useIsTouchDevice()
     const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
@@ -44,6 +44,7 @@ const TopBar: React.FC = () => {
     setAddToast(addToast)
     setOpenPanel(openPanel)
     setOpenModal(openModal)
+    setCloseModal(closeModal)
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
     const [modeHovered, setModeHovered] = useState(false)

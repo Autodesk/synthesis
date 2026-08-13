@@ -23,7 +23,10 @@ const MenuIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     </Box>
 )
 
-const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
+const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject; disabledMessage?: string }> = ({
+    selectedAssembly,
+    disabledMessage,
+}) => {
     const { togglePanel, blockState } = useUIContext()
     const { configureButtons, isField, configurationType, openConfig } = useConfigureAssembly(selectedAssembly)
 
@@ -46,15 +49,15 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject }
 
     return (
         <SplitButtonDropdown
-            iconDisabled={blockState.blocked}
-            caretDisabled={blockState.blocked}
             icon={
                 <Box sx={{ fontSize: 22, display: "flex" }}>
                     <SynthesisIcons.GEAR />
                 </Box>
             }
-            iconTooltip="Configure Assets"
-            caretTooltip="Configure options"
+            iconTooltip={disabledMessage ?? "Configure Asset"}
+            caretTooltip={disabledMessage ?? "Configure options"}
+            caretDisabled={disabledMessage != null || blockState.blocked}
+            iconDisabled={disabledMessage != null || blockState.blocked}
             onIconClick={() => togglePanel(ConfigurePanel, { selectedAssembly, configurationType })}
         >
             {entries.map(({ key, icon, label, mode }) => (

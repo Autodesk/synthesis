@@ -6,11 +6,11 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { embedAssemblyThumbnail } from "@/mirabuf/MirabufThumbnail"
 import { mirabuf } from "@/proto/mirabuf"
 import EventSystem from "@/systems/EventSystem"
-import type { EncodedAssembly, Message } from "@/systems/multiplayer/types"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/MultiplayerTypes"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { getTargetControls } from "@/systems/scene/CameraControls"
 import World from "@/systems/World"
-import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 
@@ -26,7 +26,7 @@ function trackSpawn(delta: number) {
 }
 
 /** Announce a newly spawned scene object to the multiplayer session, if one is active. */
-async function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf.Assembly, info: MirabufCacheInfo) {
+function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf.Assembly, info: MirabufCacheInfo) {
     const multiplayer = World.multiplayerSystem
     if (multiplayer == null) return
 
@@ -39,15 +39,14 @@ async function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf
         type: "newObject",
         timestamp: Date.now(),
         data: {
-            sceneObjectKey: sceneObject.id,
+            sceneObjectId: sceneObject.id,
             assembly: encodedAssembly,
             assemblyHash: info.hash,
             miraType: info.miraType,
             initialPreferences: sceneObject.getPreferenceData(),
-            bodyIds: sceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
         },
     }
-    await multiplayer.broadcast(message)
+    multiplayer.broadcast(message)
     multiplayer.registerOwnSceneObject(sceneObject.id)
 }
 
@@ -59,6 +58,11 @@ async function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf
 export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = new ProgressHandle(info.name)) {
     // If spawning a field, then remove all other fields
     if (info.miraType === MiraType.FIELD) {
+        if (World.multiplayerSystem != null && World.sceneRenderer.mirabufSceneObjects.getField() != null) {
+            globalAddToast("warning", "Cannot spawn a second field!")
+            progressHandle.fail("Cannot spawn a second field")
+            return
+        }
         World.sceneRenderer.removeAllFields()
     }
 
@@ -82,7 +86,7 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = n
 
         const targetControls = getTargetControls()
 
-        await broadcastSpawn(sceneObject, assembly, info)
+        broadcastSpawn(sceneObject, assembly, info)
 
         if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
             targetControls.focusProvider = sceneObject

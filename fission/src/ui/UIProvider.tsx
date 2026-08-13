@@ -235,7 +235,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     )
 
     const closeModal = useCallback(
-        <T, P>(closeType: CloseType) => {
+        <T, P>(closeType: CloseType, id?: string) => {
+            if (modal != null && id != null && modal.id !== id) return //
             if (modal) closeCallbacks<T, P>(modal as Modal<T, P>, closeType)
             setModal(undefined)
         },

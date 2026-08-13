@@ -10,7 +10,7 @@ import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembl
 import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 
 const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
-    const { configureButtons, openConfig } = useConfigureAssembly(selectedAssembly)
+    const { configureButtons, openConfig, disabledMessage } = useConfigureAssembly(selectedAssembly)
 
     const intakeButtonRef = useTourAnchor("configure-intake-button")
 
@@ -22,7 +22,7 @@ const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = (
                     key={label}
                     label={label}
                     icon={<TopBarIcon name={name} size={30} />}
-                    disabledTooltip={selectedAssembly ? undefined : "Spawn an assembly first"}
+                    disabledTooltip={disabledMessage}
                     onClick={() => openConfig(mode)}
                     anchorRef={mode === ConfigMode.INTAKE ? intakeButtonRef : undefined}
                 />
@@ -30,7 +30,7 @@ const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = (
 
             <Box sx={TOP_BAR_DIVIDER_SX} />
 
-            <ConfigureSplitDropdown selectedAssembly={selectedAssembly} />
+            <ConfigureSplitDropdown disabledMessage={disabledMessage} selectedAssembly={selectedAssembly} />
         </Stack>
     )
 }
