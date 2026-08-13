@@ -14,9 +14,9 @@ interface CollapsibleGroupProps {
     always?: React.ReactNode
 }
 
+// '& > *' selects the direct children.
+// the group nor buttons should be shrunk by flex row
 const GROUP_SX = { flexShrink: 0, "& > *": { flexShrink: 0 } } as const
-
-const KEY_SEPARATOR = "\u0000" // joins item keys into comparable string
 
 export const CollapsibleGroup: React.FC<CollapsibleGroupProps> = ({ items, always }) => {
     const fit = useTopBarFit()
@@ -24,7 +24,7 @@ export const CollapsibleGroup: React.FC<CollapsibleGroupProps> = ({ items, alway
     const widthsRef = useRef<readonly number[]>([])
 
     const itemCount = items.length
-    const itemsKey = items.map(item => item.key).join(KEY_SEPARATOR)
+    const itemsKey = JSON.stringify(items.map(item => item.key))
 
     // adding guard to ensure 'fitted' isn't stale during renders
     const [fitted, setFitted] = useState({ itemsKey, visibleCount: itemCount })
