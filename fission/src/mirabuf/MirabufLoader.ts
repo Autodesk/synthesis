@@ -15,21 +15,14 @@ export interface MirabufCacheInfo {
     name: string
     miraType: MiraType
     remotePath?: string
-    thumbnailStorageID?: string
-    /** Competition year, when known (defaults from the remote manifest). */
     year?: number
-    /** Servable URL of a preview thumbnail, when available. */
     thumbnail?: string
 }
 
 export interface CacheRemoteOptions {
-    /** Display name for the cached file; defaults to the assembly's own name. */
     name?: string
-    /** When set, warn if the downloaded content's hash differs. */
     expectedHash?: string
-    /** Competition year to store on the cache entry. */
     year?: number
-    /** Servable thumbnail URL to store on the cache entry. */
     thumbnail?: string
 }
 
@@ -177,14 +170,13 @@ class MirabufCachingService {
         options: CacheRemoteOptions = {}
     ): Promise<MirabufCacheInfo | undefined> {
         const { expectedHash, year, thumbnail } = options
-        let { name } = options
         try {
             // grab file remote
             const resp = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
             if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`)
 
             const miraBuff = await resp.arrayBuffer()
-            name ??= this.assemblyFromBuffer(miraBuff).info?.name ?? fetchLocation
+            const name = options.name ?? this.assemblyFromBuffer(miraBuff).info?.name ?? fetchLocation
 
             World.analyticsSystem?.event("Remote Download", {
                 assemblyName: name,
@@ -367,7 +359,6 @@ class MirabufCachingService {
         return this._cacheMap.getAll(miraType)
     }
 
-    /** is assembly retrievable / not in memory */
     public static has(hash: string): boolean {
         return this._cacheMap.get(hash) != null
     }
