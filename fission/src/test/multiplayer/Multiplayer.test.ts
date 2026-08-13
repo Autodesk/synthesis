@@ -2,7 +2,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from "vite
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import World from "@/systems/World.ts"
 import { mockConsole } from "@/test/mocks/Common.ts"
-import { MultiplayerWorker } from "@/systems/multiplayer/MultiplayerWorkerWrapper.ts"
+import MultiplayerWebsocket from "@/systems/multiplayer/MultiplayerWebsocket.ts"
 
 const HOST = "wss://localhost:2610/"
 
@@ -44,7 +44,7 @@ describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", (
     })
 
     test("Multiplayer clients connect to each other", async () => {
-        const ws = new MultiplayerWorker(HOST)
+        const ws = new MultiplayerWebsocket(HOST)
         await new Promise<void>((resolve, reject) => {
             ws.onOpen = () => {
                 resolve()
@@ -63,7 +63,7 @@ describe.runIf(import.meta.env.VITE_RUN_MULTIPLAYER_TEST)("Multiplayer Tests", (
 })
 
 async function setUpClient(roomId: null | string, name: string) {
-    const ws = new MultiplayerWorker(HOST)
+    const ws = new MultiplayerWebsocket(HOST)
     await new Promise<void>((resolve, reject) => {
         ws.onOpen = () => {
             resolve()

@@ -6,15 +6,16 @@ import type {
 } from "@/systems/multiplayer/MultiplayerTypes.ts"
 import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
 import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
+import type { MultiplayerCommunicationProvider } from "@/systems/multiplayer/MultiplayerCommunicationInterface.ts"
 
-export class MultiplayerWorker {
+export class MultiplayerWorker implements MultiplayerCommunicationProvider {
     private _worker: Worker
 
     public onServerMessage?: (msg: ServerToClientMessage) => void
     public onPeerMessage?: (msg: MessageWithTimestamp) => void
     public onOpen?: (() => unknown) | null
     public onClose?: (() => unknown) | null
-    public onError?: ((v: ErrorEvent | string) => unknown) | null
+    public onError?: ((v?: Event) => unknown) | null
     public ready: boolean = false
     constructor(url: string) {
         this._worker = new MPWorker({ name: "MultiplayerWorker" })
@@ -35,7 +36,7 @@ export class MultiplayerWorker {
                     break
                 }
                 case "error": {
-                    this.onError?.(msg.data)
+                    this.onError?.(e)
                     break
                 }
                 case "peerMessage": {

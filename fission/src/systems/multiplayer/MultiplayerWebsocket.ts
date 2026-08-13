@@ -4,6 +4,7 @@ import { Decoder, Encoder } from "@msgpack/msgpack"
 import type { ClientToServerMessage } from "@/systems/multiplayer/bindings/ClientToServerMessage.ts"
 import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
 import { shouldLog } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
+import type { MultiplayerCommunicationProvider } from "@/systems/multiplayer/MultiplayerCommunicationInterface.ts"
 
 const CLIENT_PREFIX = 0b00000001
 const SERVER_PREFIX = 0b00000011
@@ -15,7 +16,7 @@ const console = consolePrefixer({
     },
 })
 
-class MultiplayerWebsocket {
+class MultiplayerWebsocket implements MultiplayerCommunicationProvider {
     private readonly _ws: WebSocket
 
     private readonly _encoder: Encoder<never> = new Encoder()
@@ -24,9 +25,9 @@ class MultiplayerWebsocket {
 
     public onServerMessage?: (msg: ServerToClientMessage) => void
     public onPeerMessage?: (msg: MessageWithTimestamp) => void
-    public onOpen?: ((this: MultiplayerWebsocket, ev: Event) => unknown) | null
-    public onClose?: ((this: MultiplayerWebsocket, ev: CloseEvent) => unknown) | null
-    public onError?: ((this: MultiplayerWebsocket, ev: Event) => unknown) | null
+    public onOpen?: ((e?: Event) => unknown) | null
+    public onClose?: ((e?: Event) => unknown) | null
+    public onError?: ((e?: Event) => unknown) | null
 
     public get ready() {
         return this._ws.readyState === WebSocket.OPEN
@@ -43,7 +44,7 @@ class MultiplayerWebsocket {
         this.addEventListener = this._ws.addEventListener.bind(this._ws)
         console.log("Connecting to", url)
         this._ws.onopen = e => {
-            console.info("Opened", this.onOpen)
+            console.info("Opened")
             if (this.onOpen) {
                 this.onOpen.bind(this)(e)
             }

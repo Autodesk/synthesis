@@ -11,7 +11,7 @@ import { hashBuffer } from "@/util/Utility.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import MatchMode from "../match_mode/MatchMode.ts"
-import type { MultiplayerWorker } from "@/systems/multiplayer/MultiplayerWorkerWrapper.ts"
+import type { MultiplayerCommunicationProvider } from "@/systems/multiplayer/MultiplayerCommunicationInterface.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -24,7 +24,7 @@ export const multiplayerLogger = consolePrefixer({
 const console = multiplayerLogger
 
 class MultiplayerSystem {
-    public readonly client: MultiplayerWorker
+    public readonly client: MultiplayerCommunicationProvider
     public roomId: string = ""
     public clientId: string = ""
     private _initializationPromise: Promise<boolean>
@@ -47,7 +47,11 @@ class MultiplayerSystem {
 
     public sinceLastUpdate = 0
 
-    public static async setup(ws: MultiplayerWorker, displayName: string, isHost: boolean): Promise<boolean> {
+    public static async setup(
+        ws: MultiplayerCommunicationProvider,
+        displayName: string,
+        isHost: boolean
+    ): Promise<boolean> {
         MatchMode.getInstance().sandboxModeStart()
 
         console.group("Multiplayer initialization")
@@ -61,7 +65,7 @@ class MultiplayerSystem {
         return initResult
     }
 
-    private constructor(ws: MultiplayerWorker, displayName: string, isHost: boolean) {
+    private constructor(ws: MultiplayerCommunicationProvider, displayName: string, isHost: boolean) {
         this.isHost = isHost
         this.client = ws
         this.client.onError = () => {
