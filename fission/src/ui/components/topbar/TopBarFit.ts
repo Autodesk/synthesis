@@ -3,6 +3,7 @@ import { createContext, useContext } from "react"
 
 export const FIT_TOLERANCE_PX = 8
 
+/** computing how many icons we can fit in the `budget` px. Each icon has a `gap` after each */
 export function computeVisibleCount(budget: number, widths: readonly number[], gap: number): number {
     const spendable = budget - FIT_TOLERANCE_PX
 

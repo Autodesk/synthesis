@@ -5,7 +5,7 @@ import { TopBarIcon, type TopBarIconName } from "@/ui/components/topbar/TopBarIc
 
 export type ConfigureIconSource = { sprite: TopBarIconName } | { glyph: IconType }
 
-// GLYPHS have a different scale than the SVGs so they match
+// glyphs render larger than sprites but appear the same size due to the differing sizes of the custom SVGs
 const GLYPH_SCALE = 0.87
 const glyphFontSize = (size: number | string) =>
     typeof size === "number" ? size * GLYPH_SCALE : `calc(${size} * ${GLYPH_SCALE})`
