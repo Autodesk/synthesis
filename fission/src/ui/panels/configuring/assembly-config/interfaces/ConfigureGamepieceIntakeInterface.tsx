@@ -13,7 +13,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import { Button, Spacer } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { useTourAnchor } from "@/ui/tour/useTourAnchor"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,

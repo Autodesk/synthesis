@@ -27,7 +27,7 @@ import {
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { tourTarget } from "@/ui/tour/tourSteps"
-import { useTourAnchor } from "@/ui/tour/useTourAnchor"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import type TaskStatus from "@/util/TaskStatus"

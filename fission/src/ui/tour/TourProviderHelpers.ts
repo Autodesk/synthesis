@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react"
+import { createContext, useCallback, useContext } from "react"
 import type { TourAnchorId } from "./tourSteps"
 
 export interface TourContextValue {
@@ -36,3 +36,19 @@ export const TourContext = createContext<TourContextValue>({
 })
 
 export const useTourContext = () => useContext(TourContext)
+
+/**
+ * Returns a callback ref that registers the attached DOM element as the named tour
+ * anchor for the lifetime it is mounted. Attach it to the element a tour step points at:
+ *
+ * ```tsx
+ * <IconButton ref={useTourAnchor("add-assembly")} ... />
+ * ```
+ *
+ * The registered element is what the tour card's Popper anchors to. When the tour is
+ * inactive this is effectively free - it just keeps the registry up to date.
+ */
+export function useTourAnchor(id: TourAnchorId) {
+    const { registerAnchor } = useTourContext()
+    return useCallback((el: HTMLElement | null) => registerAnchor(id, el), [registerAnchor, id])
+}

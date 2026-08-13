@@ -32,7 +32,7 @@ import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScorin
 import EventSystem from "@/systems/EventSystem.ts"
 import { Box, Tab, Tabs, type TabsActions } from "@mui/material"
 import { tourTarget } from "@/ui/tour/tourSteps"
-import { useTourAnchor } from "@/ui/tour/useTourAnchor"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"

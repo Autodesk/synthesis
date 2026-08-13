@@ -28,7 +28,7 @@ import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { useAssemblySelection } from "@/ui/components/topbar/UseConfigureAssembly"
 import UserIcon from "@/ui/components/UserIcon"
 import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
-import { useTourAnchor } from "@/ui/tour/useTourAnchor"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 
 const TopBar: React.FC = () => {
     const { openModal, openPanel, togglePanel, addToast } = useUIContext()

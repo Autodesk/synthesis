@@ -7,7 +7,7 @@ import { TOP_BAR_DIVIDER_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
-import { useTourAnchor } from "@/ui/tour/useTourAnchor"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 
 const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
     const { configureButtons, openConfig } = useConfigureAssembly(selectedAssembly)
